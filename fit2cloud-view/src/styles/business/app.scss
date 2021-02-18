@@ -1,0 +1,54 @@
+@import "~@/assets/font/Roboto/index.css";
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Roboto, Helvetica, PingFang SC, Arial, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
+
+:focus {
+  outline: none;
+}
+
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+// 滚动条整体部分
+::-webkit-scrollbar {
+  width: 6px; // 纵向滚动条宽度
+  height: 6px; // 横向滚动条高度
+}
+
+// 滑块
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #4A4B4D;
+}
+
+// 轨道
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: transparent;
+}
+

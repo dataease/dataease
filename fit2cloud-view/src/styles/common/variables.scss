@@ -1,0 +1,48 @@
+/* Element 变量 */
+$--color-primary: #447DF7;
+$--color-success: #87CB16;
+$--color-warning: #FFA534;
+$--color-danger: #FB404B;
+
+$--box-shadow-light: 0 1px 4px 0 rgb(0 0 0 / 14%);
+
+$--color-text-primary: #3c4858;
+
+/* layout */
+$layout-bg-color: #F2F2F2;
+
+/* sidebar */
+$sidebar-open-width: 260px;
+$sidebar-close-width: 80px;
+$sidebar-bg-color: #30373d;
+$sidebar-bg-gradient: linear-gradient(to bottom right, #30373D, #3E3E3D);
+
+/* menu */
+$menu-color: #BFCBD9;
+$menu-active-color: #FFF;
+$menu-active-bg-color: rgb(200 200 200 / 20%);
+$menu-bg-color: transparent;
+$menu-bg-color-hover: #4A4B4D;
+$menu-height: 50px;
+$submenu-height: 40px;
+$submenu-active-color: #FFF;
+$submenu-active-bg-color: $menu-active-bg-color;
+
+/* logo */
+$logo-height: 40px;
+$logo-bg-color: #4E5051;
+
+/* header */
+$header-height: 60px;
+$header-padding: 30px;
+
+/* main */
+$view-padding: 15px;
+
+/* fit2cloud-ui的variables加载了element-ui的变量 */
+@import "~fit2cloud-ui/src/styles/common/variables";
+
+:export {
+  theme: $--color-primary;
+}
+
