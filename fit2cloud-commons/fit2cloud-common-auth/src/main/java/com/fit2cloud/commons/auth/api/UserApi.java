@@ -1,11 +1,14 @@
 package com.fit2cloud.commons.auth.api;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.asymmetric.RSA;
 import com.fit2cloud.commons.auth.bean.LoginDto;
 import com.fit2cloud.commons.auth.bean.UserBean;
 import com.fit2cloud.commons.auth.bean.UserInfo;
+import com.fit2cloud.commons.auth.config.RsaProperties;
 import com.fit2cloud.commons.auth.service.UserService;
 import com.fit2cloud.commons.auth.util.JWTUtil;
+import com.fit2cloud.commons.auth.util.RsaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -23,18 +26,21 @@ public class UserApi {
     private UserService userService;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginDto loginDto){
+    public Map<String, Object> login(@RequestBody LoginDto loginDto) throws Exception{
         String username = loginDto.getUsername();
         String password = loginDto.getPassword();
         String realPwd = userService.getPassword(username);
+
         if (StrUtil.isEmpty(realPwd)){
             throw new RuntimeException("没有该用户！");
         }
-        if (!StrUtil.equals(realPwd, password)){
+        String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, password);
+        String realpwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, realPwd);
+        if (!StrUtil.equals(pwd, realpwd)){
             throw new RuntimeException("密码错误！");
         }
         Map<String,Object> result = new HashMap<>();
-        result.put("token", JWTUtil.sign(username, password));
+        result.put("token", JWTUtil.sign(username, realpwd));
         return result;
     }
 

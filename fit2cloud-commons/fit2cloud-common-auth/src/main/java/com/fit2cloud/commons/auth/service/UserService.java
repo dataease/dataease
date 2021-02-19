@@ -3,6 +3,7 @@ package com.fit2cloud.commons.auth.service;
 
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fit2cloud.commons.auth.bean.UserBean;
 import com.fit2cloud.commons.auth.dao.ExtUserMapper;
 import com.fit2cloud.commons.auth.entity.SysUser;
@@ -21,7 +22,8 @@ public class UserService {
     @Autowired(required = false)
     private SysUserMapper sysUserMapper;
     public UserBean getUser(String username){
-        SysUser sysUser = sysUserMapper.selectById(username);
+
+        SysUser sysUser = extUserMapper.getUser(username);
 
         if (ObjectUtil.isNull(sysUser))return null;
         String password = sysUser.getPassword();
