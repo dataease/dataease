@@ -64,7 +64,7 @@ public class CodeGenerator {
         PackageConfig pc = new PackageConfig();
         /*pc.setModuleName(scanner("模块名"));*/
         pc.setModuleName(basePackage);
-        pc.setParent("com.fit2cloud");
+        pc.setParent("io.database");
         pc.setEntity("entity");
         pc.setMapper("mapper");
         mpg.setPackageInfo(pc);

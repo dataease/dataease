@@ -3,6 +3,7 @@ package io.dataease.commons.auth.config;
 import io.dataease.commons.auth.bean.UserBean;
 import io.dataease.commons.auth.service.UserService;
 import io.dataease.commons.auth.util.JWTUtil;
+import io.dataease.commons.auth.util.RsaUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authc.AuthenticationException;
@@ -67,8 +68,13 @@ public class F2cRealm extends AuthorizingRealm {
         if (userBean == null) {
             throw new AuthenticationException("User didn't existed!");
         }
-
-        if (! JWTUtil.verify(token, username, userBean.getPassword())) {
+        String pass = null;
+        try {
+            pass = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, userBean.getPassword());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (! JWTUtil.verify(token, username, pass)) {
             throw new AuthenticationException("Username or password error");
         }
 
