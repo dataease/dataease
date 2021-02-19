@@ -1,21 +1,25 @@
-/* 前后端不分离的登录方式*/
-import {login, isLogin, getCurrentUser, updateInfo, logout} from '@/api/user'
+import {login, getCurrentUser, updateInfo, logout} from '@/api/user'
 import {resetRouter} from '@/router'
+import {getToken, setToken, removeToken} from '@/utils/token'
 import {getLanguage, setLanguage} from "@/i18n";
 
-const state = {
-  login: false,
-  name: "",
-  language: getLanguage(),
-  roles: []
+/* 前后端不分离的登录办法*/
+
+const getDefaultState = () => {
+  return {
+    token: getToken(),
+    name: "",
+    language: getLanguage(),
+    roles: []
+  }
 }
 
+const state = getDefaultState()
+
+
 const mutations = {
-  LOGIN: (state) => {
-    state.login = true
-  },
-  LOGOUT: (state) => {
-    state.login = false
+  SET_TOKEN: (state, token) => {
+    state.token = token
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -33,8 +37,10 @@ const actions = {
   login({commit}, userInfo) {
     const {username, password} = userInfo
     return new Promise((resolve, reject) => {
-      login({username: username.trim(), password: password}).then(response => {
-        commit('LOGIN')
+      login({username: username.trim(), password: password}).then(response => {      
+        let token = response.data.token
+        commit('SET_TOKEN', token)
+        setToken(token)
         resolve(response)
       }).catch(error => {
         reject(error)
@@ -43,17 +49,14 @@ const actions = {
   },
 
   isLogin({commit}) {
-    return new Promise((resolve) => {
-      if (state.login) {
+    return new Promise((resolve, reject) => {
+      let token = getToken()
+      if (token) {
+        commit('SET_TOKEN', token);
         resolve(true)
-        return;
+      } else {
+        reject(false)
       }
-      isLogin().then(() => {
-        commit('LOGIN')
-        resolve(true)
-      }).catch(() => {
-        resolve(false)
-      })
     });
   },
 
@@ -84,14 +87,15 @@ const actions = {
 
   logout({commit}) {
     logout().then(() => {
-      commit('LOGOUT')
+      commit('SET_TOKEN', "");
       commit('SET_ROLES', [])
+      removeToken()
       resetRouter()
     })
   },
 }
 
-export default {
+export default  {
   namespaced: true,
   state,
   mutations,

@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { encrypt } from '@/utils/rsaEncrypt'
 export default {
   name: "Login",
   data() {
@@ -96,8 +97,13 @@ export default {
     submit(form) {
       this.$refs[form].validate((valid) => {
         if (valid) {
+          const user = {
+            username: this.form.username,
+            password: this.form.password          
+          }
+          user.password = encrypt(user.password)
           this.loading = true;
-          this.$store.dispatch('user/login', this.form).then(() => {
+          this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({path: this.redirect || '/', query: this.otherQuery})
             this.loading = false
           }).catch(error => {

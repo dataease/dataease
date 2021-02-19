@@ -3,6 +3,7 @@ package com.fit2cloud.commons.auth.config;
 import com.fit2cloud.commons.auth.bean.UserBean;
 import com.fit2cloud.commons.auth.service.UserService;
 import com.fit2cloud.commons.auth.util.JWTUtil;
+import com.fit2cloud.commons.auth.util.RsaUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authc.AuthenticationException;
@@ -67,8 +68,13 @@ public class F2cRealm extends AuthorizingRealm {
         if (userBean == null) {
             throw new AuthenticationException("User didn't existed!");
         }
-
-        if (! JWTUtil.verify(token, username, userBean.getPassword())) {
+        String pwd = null;
+        try {
+            pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, userBean.getPassword());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (! JWTUtil.verify(token, username, pwd)) {
             throw new AuthenticationException("Username or password error");
         }
 

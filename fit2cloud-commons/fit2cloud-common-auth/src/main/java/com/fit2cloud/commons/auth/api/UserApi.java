@@ -35,12 +35,12 @@ public class UserApi {
             throw new RuntimeException("没有该用户！");
         }
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, password);
-        String realpwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, realPwd);
-        if (!StrUtil.equals(pwd, realpwd)){
+        String realPass = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, realPwd);
+        if (!StrUtil.equals(pwd, realPass)){
             throw new RuntimeException("密码错误！");
         }
         Map<String,Object> result = new HashMap<>();
-        result.put("token", JWTUtil.sign(username, realpwd));
+        result.put("token", JWTUtil.sign(username, realPass));
         return result;
     }
 

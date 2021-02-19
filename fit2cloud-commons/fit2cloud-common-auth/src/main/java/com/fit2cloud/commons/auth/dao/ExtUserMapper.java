@@ -15,7 +15,7 @@ public interface ExtUserMapper {
     @Select("select password from sys_user where username = #{userName,jdbcType=VARCHAR} ")
     String getPassword(String userName);
 
-    @Select("select role_id from sys_users_roles where username = #{userName,jdbcType=VARCHAR} ")
+    @Select("select role_id from sys_users_roles sur left join sys_user su on su.user_id = sur.user_id where su.username = #{userName,jdbcType=VARCHAR} ")
     List<String> getRole(String userName);
 
     @Select({
@@ -23,7 +23,8 @@ public interface ExtUserMapper {
             "from sys_users_roles sur ",
             "LEFT JOIN sys_roles_menus srm on srm.role_id = sur.role_id ",
             "LEFT JOIN sys_menu sm on sm.menu_id = srm.menu_id ",
-            "where sur.username = #{userName,jdbcType=VARCHAR} "
+            "LEFT JOIN sys_user su on su.user_id = sur.user_id ",
+            "where su.username = #{userName,jdbcType=VARCHAR} "
     })
     List<String> getPermission(String userName);
 

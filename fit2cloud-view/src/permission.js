@@ -14,12 +14,12 @@ const generateRoutes = async (to, from, next) => {
     next()
   } else {
     try {
-      const {roles} = await store.dispatch('user-token/getCurrentUser')
+      const {roles} = await store.dispatch('user/getCurrentUser')
       const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
       router.addRoutes(accessRoutes)
       next({...to, replace: true})
     } catch (error) {
-      await store.dispatch('user-token/logout')
+      await store.dispatch('user/logout')
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
@@ -29,7 +29,6 @@ const generateRoutes = async (to, from, next) => {
 // 路由前置钩子，根据实际需求修改
 router.beforeEach(async (to, from, next) => {
   NProgress.start()
-  // const isLogin = await store.dispatch('user-token/isLogin') // 或者user-token/isLogin
   const hasToken = getToken()
   if (hasToken) {
     if (to.path === '/login') {

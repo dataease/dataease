@@ -41,7 +41,7 @@ const users = {
 module.exports = [
   // user login
   {
-    url: '/samples/user-token/login',
+    url: '/samples/user/login',
     type: 'post',
     response: config => {
       const {username} = config.body
@@ -57,7 +57,7 @@ module.exports = [
 
   // get user info
   {
-    url: '/samples/user-token/info',
+    url: '/samples/user/info',
     type: 'get',
     response: (config) => {
       let token = config.headers[TOKEN_KEY]
