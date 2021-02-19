@@ -1,14 +1,15 @@
 package com.fit2cloud.commons.auth.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fit2cloud.commons.auth.bean.ExtPermissionBean;
 import com.fit2cloud.commons.auth.dao.ExtUserMapper;
-import com.fit2cloud.commons.auth.entity.Permission;
 import com.fit2cloud.commons.auth.service.ShiroService;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 @Service
 public class ShiroServiceImpl implements ShiroService {
@@ -44,29 +45,15 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/downline", "anon");
         // 放行 end ----------------------------------------------------------
         filterChainDefinitionMap.put("/logout", "logout");
-        //List<Resource> resources = resourceMapper.selectList(null);
-        QueryWrapper<Permission> wrapper = new QueryWrapper<>();
-        wrapper.eq("type", "role");
-        /*List<ExtPermissionBean> extPermissionBeans = extUserMapper.getPermissions();
 
+        List<ExtPermissionBean> extPermissionBeans = extUserMapper.getPermissions();
 
-        if (CollectionUtils.isNotEmpty(extPermissionBeans)){
-            Map<PermissionKey, List<ExtPermissionBean>> resourcePerMap = extPermissionBeans.stream().collect(Collectors.groupingBy(ExtPermissionBean::getKey));
-            resourcePerMap.entrySet().stream().forEach(entry -> {
-                PermissionKey permissionKey = entry.getKey();
-                String url = permissionKey.getUrl();
-                String resourceId = permissionKey.getResourceId();
-                //List<ExtPermissionBean> permissionList = entry.getValue();
-                //StringJoiner f2cRoles = new StringJoiner(",", "f2cRoles[", "]");
-                StringJoiner f2cPerms = new StringJoiner(",", "f2cPerms[", "]");
-                f2cPerms.add(resourceId);
-                *//*permissionList.forEach(per -> {
-                    String roleId = per.getRelationId();
-                    f2cRoles.add(roleId);
-                });*//*
-                filterChainDefinitionMap.put(url, "jwt," + f2cPerms);
-            });
-        }*/
+        extPermissionBeans.forEach(item -> {
+            StringJoiner f2cPerms = new StringJoiner(",", "f2cPerms[", "]");
+            f2cPerms.add(item.getPermission());
+            filterChainDefinitionMap.put(item.getPath(), "jwt," + f2cPerms);
+        });
+
         filterChainDefinitionMap.put("/**", "jwt");
         return filterChainDefinitionMap;
     }

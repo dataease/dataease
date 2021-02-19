@@ -3,8 +3,8 @@ package com.fit2cloud.system.api;
 
 import com.fit2cloud.common.db.PageUtils;
 import com.fit2cloud.common.db.Pager;
-import com.fit2cloud.commons.auth.entity.User;
-import com.fit2cloud.commons.auth.mapper.UserMapper;
+/*import com.fit2cloud.commons.auth.entity.User;
+import com.fit2cloud.commons.auth.mapper.UserMapper;*/
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class BusiApi {
     }
 
 
-    @Autowired
+    /*@Autowired
     private UserMapper userMapper;
 
     @GetMapping("/page")
@@ -33,5 +33,5 @@ public class BusiApi {
         List<User> users = userMapper.selectList(null);
         Pager<List<User>> pageInfo = PageUtils.setPageInfo(page, users);
         return pageInfo;
-    }
+    }*/
 }

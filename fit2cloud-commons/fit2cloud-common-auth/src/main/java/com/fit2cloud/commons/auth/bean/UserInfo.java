@@ -1,12 +1,11 @@
 package com.fit2cloud.commons.auth.bean;
 
 
-import com.fit2cloud.commons.auth.entity.User;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 import java.util.List;
 
