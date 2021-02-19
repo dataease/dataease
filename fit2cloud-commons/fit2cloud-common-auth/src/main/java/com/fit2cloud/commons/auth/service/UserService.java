@@ -1,11 +1,12 @@
 package com.fit2cloud.commons.auth.service;
 
 
+
 import cn.hutool.core.util.ObjectUtil;
 import com.fit2cloud.commons.auth.bean.UserBean;
 import com.fit2cloud.commons.auth.dao.ExtUserMapper;
-import com.fit2cloud.commons.auth.entity.User;
-import com.fit2cloud.commons.auth.mapper.UserMapper;
+import com.fit2cloud.commons.auth.entity.SysUser;
+import com.fit2cloud.commons.auth.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -18,11 +19,12 @@ public class UserService {
     private ExtUserMapper extUserMapper;
 
     @Autowired(required = false)
-    private UserMapper userMapper;
+    private SysUserMapper sysUserMapper;
     public UserBean getUser(String username){
-        User user = userMapper.selectById(username);
-        if (ObjectUtil.isNull(user))return null;
-        String password = user.getPassword();
+        SysUser sysUser = sysUserMapper.selectById(username);
+
+        if (ObjectUtil.isNull(sysUser))return null;
+        String password = sysUser.getPassword();
         List<String> roles = extUserMapper.getRole(username);
         String role = roles.stream().collect(Collectors.joining(","));
         List<String> permissions = extUserMapper.getPermission(username);
