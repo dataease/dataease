@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-export const TokenKey = 'App-Token' // 自行修改
+export const TokenKey = 'Authorization' // 自行修改
 
 export function getToken() {
   return Cookies.get(TokenKey)
