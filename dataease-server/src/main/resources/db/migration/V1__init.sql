@@ -76,9 +76,7 @@ DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role` (
   `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(255) NOT NULL COMMENT '名称',
-
   `description` varchar(255) DEFAULT NULL COMMENT '描述',
-
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',
   `update_by` varchar(255) DEFAULT NULL COMMENT '更新者',
   `create_time` datetime DEFAULT NULL COMMENT '创建日期',
@@ -87,6 +85,14 @@ CREATE TABLE `sys_role` (
   UNIQUE KEY `uniq_name` (`name`),
   KEY `role_name_index` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
+
+-- ----------------------------
+-- Records of sys_role
+-- ----------------------------
+BEGIN;
+INSERT INTO `sys_role` VALUES (1, '超级管理员', '-', NULL, 'admin', '2018-11-23 11:04:37', '2020-08-06 16:10:24');
+INSERT INTO `sys_role` VALUES (2, '普通用户', '-', NULL, 'admin', '2018-11-23 13:09:06', '2020-09-05 10:45:12');
+COMMIT;
 
 
 DROP TABLE IF EXISTS `sys_user`;
@@ -118,6 +124,9 @@ CREATE TABLE `sys_user` (
   KEY `inx_enabled` (`enabled`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统用户';
 
+BEGIN;
+INSERT INTO `sys_user` VALUES (1, 2, 'admin', '管理员', '男', '18888888888', '201507802@qq.com', 'avatar-20200806032259161.png', '/Users/jie/Documents/work/me/admin/eladmin/~/avatar/avatar-20200806032259161.png', 'AkE8KFGCjkd0eAI6upPrTCGaGUe9+NzYmr2sFqjmD7jcI/ObzxVwy4bf8ihHl2wVzAFf8RJccS7H+617sgvCeQ==', b'1', 1, NULL, 'admin', '2020-05-03 16:38:31', '2018-08-23 09:11:56', '2020-09-05 10:43:31');
+COMMIT;
 
 DROP TABLE IF EXISTS `sys_users_roles`;
 CREATE TABLE `sys_users_roles` (
@@ -140,3 +149,14 @@ CREATE TABLE `datasource` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='数据源链接';
+
+
+
+DROP TABLE IF EXISTS `sys_roles_menus`;
+CREATE TABLE `sys_roles_menus` (
+  `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  PRIMARY KEY (`menu_id`,`role_id`) USING BTREE,
+  KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色菜单关联';
+
