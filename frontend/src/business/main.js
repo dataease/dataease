@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import ElementUI from 'element-ui';
+import Fit2CloudUI from 'fit2cloud-ui';
 import '../assets/theme/index.css';
 import icon from "../common/js/icon";
 import filters from "../common/js/filter";
@@ -29,6 +30,9 @@ Vue.use(VuePapaParse)
 Vue.config.productionTip = false;
 Vue.use(icon);
 Vue.use(ElementUI, {
+  i18n: (key, value) => i18n.t(key, value)
+});
+Vue.use(Fit2CloudUI, {
   i18n: (key, value) => i18n.t(key, value)
 });
 Vue.use(filters);

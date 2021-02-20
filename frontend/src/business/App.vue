@@ -15,7 +15,7 @@
         <!-- float right -->
         <ms-user/>
         <ms-language-switch/>
-        <ms-header-org-ws/>
+        <!-- <ms-header-org-ws/> -->
       </el-col>
     </el-row>
 

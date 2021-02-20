@@ -1,6 +1,7 @@
 package io.dataease.controller.sys;
 
 import io.dataease.base.domain.SysDept;
+import io.dataease.controller.ResultHolder;
 import io.dataease.service.sys.DeptService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Api(tags = "系统：部门管理")
 @RequestMapping("/api/dept")
-public class SysDeptController {
+public class SysDeptController extends ResultHolder {
 
 
     @Resource
@@ -24,9 +25,9 @@ public class SysDeptController {
 
     @ApiOperation("查询部门")
     @PostMapping("/root")
-    public List<SysDept> rootData(){
+    public ResultHolder rootData(){
         List<SysDept> root = deptService.root();
-        return root;
+        return success(root);
     }
 
     @ApiOperation("新增部门")

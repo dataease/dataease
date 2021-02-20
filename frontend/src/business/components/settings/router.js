@@ -14,7 +14,7 @@ export default {
     },
     {
       path: 'organization',
-      component: () => import('@/business/components/settings/system/Organization'),
+      component: () => import('@/business/components/settings/sys/dept'),
       meta: {system: true, title: 'commons.organization'}
     },
     // {
