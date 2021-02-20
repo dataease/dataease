@@ -6,33 +6,36 @@ function resolve(dir) {
 
 module.exports = {
   productionSourceMap: true,
-  // 使用mock-server
   devServer: {
     port: 8080,
-    open: true,
-    overlay: {
-      warnings: false,
-      errors: true
-    },
-    before: require('./mock/mock-server.js')
+    proxy: {
+      ['^(?!/login)']: {
+        target: 'http://localhost:8081',
+        ws: true,
+      }
+    }
   },
-  // 不使用mock-server，直接连接开发服务器
-  // devServer: {
-  //   port: 8080,
-  //   proxy: {
-  //     ['^(?!/login)']: {
-  //       target: 'http://localhost:8081',
-  //       ws: true,
-  //     }
-  //   }
-  // },
+  pages: {
+    business: {
+      entry: "src/business/main.js",
+      template: "src/business/index.html",
+      filename: "index.html"
+    },
+    login: {
+      entry: "src/login/login.js",
+      template: "src/login/login.html",
+      filename: "login.html"
+    }
+  },
   configureWebpack: {
-    // devtool: 'source-map',
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     resolve: {
       alias: {
         '@': resolve('src')
       }
     }
+  },
+  chainWebpack(config) {
+    config.plugins.delete('prefetch')
   }
 };

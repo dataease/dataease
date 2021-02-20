@@ -1,0 +1,38 @@
+.header-menu.el-menu--horizontal > li {
+  height: 39px;
+  line-height: 40px;
+  color: dimgray;
+}
+
+.header-menu.el-menu--horizontal > li.el-submenu > * {
+  height: 39px;
+  line-height: 40px;
+  color: dimgray;
+}
+
+.header-user-menu.el-menu--horizontal > li.el-submenu > * {
+  height: 40px;
+  line-height: 40px;
+  color: inherit;
+}
+
+
+.header-top-menus.el-menu--horizontal > li {
+  height: 40px;
+  line-height: 40px;
+  color: inherit;
+}
+
+.header-top-menus.el-menu--horizontal > li.el-submenu > * {
+  height: 39px;
+  line-height: 40px;
+  color: inherit;
+}
+
+.header-top-menus.el-menu--horizontal > li.is-active {
+  background: #595591 !important;
+}
+
+.el-menu.el-menu--horizontal {
+   border-bottom: none;
+ }
