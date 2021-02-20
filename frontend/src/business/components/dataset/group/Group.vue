@@ -26,24 +26,34 @@
         <el-tree
           :data="data"
           node-key="id"
-          :expand-on-click-node="true">
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
-        <span>
-          <el-button
-            icon="el-icon-plus"
-            type="text"
-            size="mini"
-            @click="() => append(data)">
-          </el-button>
-          <el-button
-            icon="el-icon-more"
-            type="text"
-            size="mini"
-            @click="() => remove(node, data)">
-          </el-button>
+          :expand-on-click-node="true"
+          @node-click="nodeClick">
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span>
+            <span v-if="data.show">
+              <el-button
+                icon="el-icon-document"
+                type="text"
+                size="mini">
+            </el-button>
+            </span>
+            <span>{{ data.label }}</span>
+          </span>
+          <span>
+            <el-button
+              icon="el-icon-plus"
+              type="text"
+              size="mini"
+              @click.stop="() => append(data)">
+            </el-button>
+            <el-button
+              icon="el-icon-more"
+              type="text"
+              size="mini"
+              @click.stop="() => remove(node, data)">
+            </el-button>
+          </span>
         </span>
-      </span>
         </el-tree>
       </div>
     </el-col>
@@ -95,6 +105,12 @@
         data: JSON.parse(JSON.stringify(data))
       }
     },
+    mounted() {
+
+    },
+    activated() {
+
+    },
     methods: {
       addGroup() {
         this.$message(
@@ -114,8 +130,13 @@
         )
       },
 
+      nodeClick(data,node){
+        console.log(data);
+        console.log(node);
+      },
+
       append(data) {
-        const newChild = {id: id++, label: 'testtest', children: []};
+        const newChild = {id: id++, label: 'testtest', children: [], show: true};
         if (!data.children) {
           this.$set(data, 'children', []);
         }
