@@ -57,9 +57,10 @@
         this.dialogVisible = true;
       },
       getVersion() {
-        this.$get('/system/version', response => {
-          this.version = response.data;
-        });
+        // this.$get('/system/version', response => {
+        //   this.version = response.data;
+        // });
+        this.version = "1.0"
       }
     }
   }
