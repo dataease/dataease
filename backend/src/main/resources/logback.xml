@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true">
 	<property resource="application.properties"/>
-	<property file="/opt/metersphere/conf/metersphere.properties"/>
+	<property file="/opt/dataease/conf/dataease.properties"/>
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d %5p %40.40c:%4L - %m%n</pattern>
@@ -146,18 +146,18 @@
 		<appender-ref ref="console"/>
 	</root>
 
-	<logger name="io.metersphere" additivity="false">
+	<logger name="io.dataease" additivity="false">
 		<level value="${logger.level:INFO}"/>
 		<appender-ref ref="infoAsyncAppender"/>
 		<appender-ref ref="warnAsyncAppender"/>
 		<appender-ref ref="errorAsyncAppender"/>
 	</logger>
 
-	<logger name="io.metersphere.base.mapper" level="${logger.sql.level}">
+	<logger name="io.dataease.base.mapper" level="${logger.sql.level}">
 		<appender-ref ref="console"/>
 	</logger>
 
-	<logger name="io.metersphere.Application" additivity="false" level="${logger.level:INFO}">
+	<logger name="io.dataease.Application" additivity="false" level="${logger.level:INFO}">
 		<appender-ref ref="infoAsyncAppender"/>
 	</logger>
 
