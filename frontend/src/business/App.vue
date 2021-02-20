@@ -27,7 +27,7 @@
 import MsTopMenus from "./components/common/head/HeaderTopMenus";
 import MsView from "./components/common/router/View";
 import MsUser from "./components/common/head/HeaderUser";
-import MsHeaderOrgWs from "./components/common/head/HeaderOrgWs";
+// import MsHeaderOrgWs from "./components/common/head/HeaderOrgWs";
 import MsLanguageSwitch from "./components/common/head/LanguageSwitch";
 import {saveLocalStorage} from "@/common/js/utils";
 
@@ -80,7 +80,7 @@ export default {
     MsUser,
     MsView,
     MsTopMenus,
-    MsHeaderOrgWs,
+    // MsHeaderOrgWs,
     "LicenseMessage": header.default
   }
 }
