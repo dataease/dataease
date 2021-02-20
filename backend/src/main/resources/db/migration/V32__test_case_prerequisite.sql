@@ -1,0 +1,1 @@
+alter table test_case modify prerequisite varchar(500) null comment 'Test case prerequisite condition';

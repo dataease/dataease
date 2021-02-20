@@ -1,0 +1,1 @@
+ALTER TABLE test_plan_report ADD components VARCHAR (20);

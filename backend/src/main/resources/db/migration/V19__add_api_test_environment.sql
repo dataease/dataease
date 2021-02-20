@@ -1,0 +1,1 @@
+ALTER TABLE `api_test_environment` ADD `hosts` longtext  COMMENT 'hosts ';

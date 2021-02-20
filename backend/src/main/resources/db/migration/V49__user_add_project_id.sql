@@ -1,0 +1,1 @@
+alter table user add last_project_id varchar(50) null;

@@ -1,0 +1,1 @@
+ALTER TABLE api_scenario CHANGE tag_id tags varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT 'tag list';
