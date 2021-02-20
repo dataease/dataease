@@ -21,6 +21,7 @@
     "echarts": "^4.6.0",
     "el-table-infinite-scroll": "^1.0.10",
     "element-ui": "^2.13.0",
+    "fit2cloud-ui": "^0.1.2",
     "generate-schema": "^2.6.0",
     "html2canvas": "^1.0.0-rc.7",
     "js-base64": "^3.4.4",
