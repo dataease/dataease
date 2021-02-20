@@ -61,7 +61,7 @@ export default {
     test_resource_pool: '測試資源池',
     system_setting: '系統設置',
     api: '接口測試',
-    performance: '性能測試',
+    dataset: '數據',
     functional: '功能測試',
     input_content: '請輸入內容',
     create: '新建',
@@ -1519,5 +1519,10 @@ export default {
     delete_prompt: '此操作會刪除認證源，是否繼續？ ',
     title: '認證設置',
     auth_name_valid: '名稱不支持特殊字符',
+  },
+  dataset:{
+    datalist:'數據列表',
+    add_group:'添加分組',
+    add_scene:'添加場景'
   }
 };

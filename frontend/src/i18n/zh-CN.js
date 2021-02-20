@@ -61,7 +61,7 @@ export default {
     test_resource_pool: '测试资源池',
     system_setting: '系统设置',
     api: '视图',
-    performance: '数据',
+    dataset: '数据',
     functional: '功能测试',
     input_content: '请输入内容',
     create: '新建',
@@ -1521,5 +1521,10 @@ export default {
     delete_prompt: '此操作会删除认证源，是否继续？',
     title: '认证设置',
     auth_name_valid: '名称不支持特殊字符',
+  },
+  dataset:{
+    datalist:'数据列表',
+    add_group:'添加分组',
+    add_scene:'添加场景'
   }
 };

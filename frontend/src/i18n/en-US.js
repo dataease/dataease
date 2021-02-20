@@ -60,7 +60,7 @@ export default {
     test_resource_pool: 'Resource Pool',
     system_setting: 'Settings',
     api: 'API',
-    performance: 'Performance',
+    dataset: 'DataSet',
     functional: 'Functional test',
     input_content: 'Please enter content',
     create: 'Create',
@@ -1518,5 +1518,10 @@ export default {
     delete_prompt: 'This operation will delete the authentication source, do you want to continue? ',
     title: 'Auth Source',
     auth_name_valid: 'Name does not support special characters',
+  },
+  dataset:{
+    datalist:'Data List',
+    add_group:'Add Group',
+    add_scene:'Add Scene'
   }
 };
