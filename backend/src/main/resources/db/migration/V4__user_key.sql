@@ -12,9 +12,8 @@ CREATE TABLE `user_key` (
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;
 
-
 alter table user add source varchar(50) null;
 
 update user set source = 'LOCAL' where source is null;
-
 alter table user add last_project_id varchar(50) null;
+
