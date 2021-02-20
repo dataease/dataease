@@ -8,6 +8,11 @@ export default {
   },
   children: [
     {
+      path: 'datasource',
+      component: () => import('@/business/components/settings/system/Datasource'),
+      meta: {system: true, title: 'commons.datasource'}
+    },
+    {
       path: 'user',
       component: () => import('@/business/components/settings/system/User'),
       meta: {system: true, title: 'commons.user'}

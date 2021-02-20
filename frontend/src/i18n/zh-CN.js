@@ -192,7 +192,8 @@ export default {
     module: {
       select_module: "选择模块",
       default_module: "默认模块",
-    }
+    },
+    datasource: '数据连接'
   },
   license: {
     title: '授权管理',
@@ -1521,5 +1522,54 @@ export default {
     delete_prompt: '此操作会删除认证源，是否继续？',
     title: '认证设置',
     auth_name_valid: '名称不支持特殊字符',
-  }
+  },
+  datasource: {
+    create: '新建数据连接',
+    type: '类型',
+    please_choose_type: '请选择数据源类型',
+    data_base: '数据库名称',
+    user_name: '用户名',
+    password: '密码',
+    host: '主机',
+    port: '端口',
+    please_input_data_base: '请输入数据库名称',
+    please_input_user_name: '请输入用户名',
+    please_input_password: '请输入密码',
+    please_input_host: '请输入主机',
+    please_input_port: '请输入端口',
+    modify: '修改组织',
+    delete: '删除组织',
+    delete_confirm: '删除该组织会关联删除该组织下的所有资源(如：相关工作空间，项目，测试用例等），确定要删除吗?',
+    input_name: '请输入名称',
+    input_desc: '请输入描述',
+    select_organization: '请选择组织',
+    search_by_name: '根据名称搜索',
+    special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
+    none: '无组织',
+    select: '选择组织',
+    delete_warning: '删除该组织将同步删除该组织下所有相关工作空间和相关工作空间下的所有项目，以及项目中的所有用例、接口测试、性能测试等,确定要删除吗?',
+    service_integration: '服务集成',
+    defect_manage: '缺陷管理平台',
+    message_settings: '消息设置',
+    message: {
+      jenkins_task_notification: 'Jenkins接口调用任务通知',
+      test_plan_task_notification: '测试计划任务通知',
+      test_review_task_notice: '测试评审任务通知',
+      create_new_notification: '创建新通知',
+      mail_template_example: '邮件模版',
+      robot_template: '机器人模版',
+      select_events: '选择事件',
+      defect_task_notification: '缺陷任务通知',
+      select_receiving_method: '选择接收方式',
+      mail: '邮件',
+      nail_robot: '钉钉机器人',
+      enterprise_wechat_robot: '企业微信机器人',
+      notes: '1.钉钉和企业群里新建一个自定义机器人，然后复制 webhook 地址在我们平台上;\n' +
+        '       2.机器人选择为群机器人，安全验证选择“自定义关键词” ："任务通知";\n' +
+        '       3.选择接收人时必须是你所建的群里包含的人,接收人手机号为必填项且为钉钉企业所使用的手机号,',
+      message: '事件，接收人，接收方式为必填项',
+      message_webhook: '接收方式为钉钉和企业机器人时，webhook为必填项',
+      template: "模版"
+    },
+  },
 };

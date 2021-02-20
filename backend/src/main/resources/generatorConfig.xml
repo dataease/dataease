@@ -64,11 +64,8 @@
 
         <!--要生成的数据库表 -->
 
-        <table tableName="auth_source"/>
-        <table tableName="swagger_url_project"/>
-        <!--<table tableName="test_plan_api_scenario"/>-->
-        <!--<table tableName="test_plan"/>-->
-        <!--<table tableName="api_scenario_report"/>-->
+        <table tableName="datasource"/>
+
 
     </context>
 </generatorConfiguration>
