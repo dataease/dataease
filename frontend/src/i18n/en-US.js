@@ -1522,6 +1522,7 @@ export default {
   dataset:{
     datalist:'Data List',
     add_group:'Add Group',
-    add_scene:'Add Scene'
+    add_scene:'Add Scene',
+    group:'DataSet Group'
   }
 };

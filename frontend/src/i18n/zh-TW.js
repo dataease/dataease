@@ -1523,6 +1523,7 @@ export default {
   dataset:{
     datalist:'數據列表',
     add_group:'添加分組',
-    add_scene:'添加場景'
+    add_scene:'添加場景',
+    group:'分組'
   }
 };

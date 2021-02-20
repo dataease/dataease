@@ -57,6 +57,18 @@
         </el-tree>
       </div>
     </el-col>
+
+    <el-dialog :title="$t('dataset.group')" :visible="editGroup" :show-close="false">
+      <el-form :model="groupForm" :rules="groupFormRules" ref="groupForm">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="groupForm.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="close()">{{$t('commons.cancel')}}</el-button>
+        <el-button type="primary" @click="saveGroup()">{{$t('commons.confirm')}}</el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 
@@ -100,9 +112,21 @@
           label: '二级 3-2'
         }]
       }];
+
       return {
         search: '',
-        data: JSON.parse(JSON.stringify(data))
+        editGroup: false,
+        data: JSON.parse(JSON.stringify(data)),
+        groupForm: {
+          name: '',
+          pid: null,
+          level: 0
+        },
+        groupFormRules: {
+          name: [
+            {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
+          ],
+        }
       }
     },
     mounted() {
@@ -113,12 +137,36 @@
     },
     methods: {
       addGroup() {
-        this.$message(
-          {
-            message: '添加分组',
-            type: 'success'
+        this.editGroup = true;
+
+      },
+
+      saveGroup() {
+        console.log(this.groupForm);
+        this.$refs['groupForm'].validate((valid) => {
+          if (valid) {
+            this.$post("/dataset/group/save", this.groupForm, response => {
+              this.close();
+              this.$message({
+                message: this.$t('commons.save_success'),
+                type: 'success',
+                showClose: true,
+              });
+            })
+          } else {
+            this.$message({
+              message: this.$t('commons.input_content'),
+              type: 'error',
+              showClose: true,
+            });
+            return false;
           }
-        );
+        });
+      },
+
+      close() {
+        this.editGroup = false;
+        this.$refs['groupForm'].resetFields();
       },
 
       addScene() {
@@ -130,7 +178,7 @@
         )
       },
 
-      nodeClick(data,node){
+      nodeClick(data, node) {
         console.log(data);
         console.log(node);
       },

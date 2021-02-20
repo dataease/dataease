@@ -1525,6 +1525,7 @@ export default {
   dataset:{
     datalist:'数据列表',
     add_group:'添加分组',
-    add_scene:'添加场景'
+    add_scene:'添加场景',
+    group:'分组'
   }
 };
