@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 /**
  * 统一处理返回结果集
  */
-@RestControllerAdvice(value = {"io.metersphere"})
+@RestControllerAdvice(value = {"io.dataease"})
 public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
