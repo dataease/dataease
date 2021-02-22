@@ -1,11 +1,15 @@
 package io.dataease.datasource.provider;
 
+import io.dataease.base.domain.Datasource;
+
 import java.util.List;
 
 public abstract class DatasourceProvider {
 
-    protected String dataSourceConfigration;
-    protected String type;
+    protected String query;
+    private int resultLimit = 30000;
+    protected Datasource datasource;
+
 
     public String getQuery() {
         return query;
@@ -15,26 +19,13 @@ public abstract class DatasourceProvider {
         this.query = query;
     }
 
-    protected String query;
-    private int resultLimit = 30000;
-
-    public String getDataSourceConfigration() {
-        return dataSourceConfigration;
+    public Datasource getDatasource() {
+        return datasource;
     }
 
-    public void setDataSourceConfigration(String dataSourceConfigration) {
-        this.dataSourceConfigration = dataSourceConfigration;
+    public void setDatasource(Datasource datasource) {
+        this.datasource = datasource;
     }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-
 
     abstract public List<String[]> getData() throws Exception;
 

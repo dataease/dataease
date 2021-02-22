@@ -2,7 +2,7 @@ package io.dataease.controller;
 
 
 import io.dataease.commons.constants.I18nConstants;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
@@ -37,7 +37,7 @@ public class I18nController {
         if (targetLang == null) {
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             LogUtil.error("Invalid parameter: " + lang);
-            MSException.throwException(Translator.get("error_lang_invalid"));
+            DEException.throwException(Translator.get("error_lang_invalid"));
         }
         userService.setLanguage(targetLang.getDesc());
         Cookie cookie = new Cookie(I18nConstants.LANG_COOKIE_NAME, targetLang.getDesc());

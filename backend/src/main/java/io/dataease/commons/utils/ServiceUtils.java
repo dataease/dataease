@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.controller.request.BaseQueryRequest;
 import io.dataease.controller.request.OrderRequest;
 
@@ -44,7 +44,7 @@ public class ServiceUtils {
                 setIds.invoke(batchRequest, ids);
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
-                MSException.throwException("请求没有setIds方法");
+                DEException.throwException("请求没有setIds方法");
             }
         }
     }

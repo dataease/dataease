@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.base.domain.User;
 import io.dataease.commons.constants.RoleConstants;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.user.SessionUser;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -138,7 +138,7 @@ public class UserController {
     public UserDTO updateCurrentUser(@RequestBody User user) {
         String currentUserId = SessionUtils.getUserId();
         if (!StringUtils.equals(currentUserId, user.getId())) {
-            MSException.throwException(Translator.get("not_authorized"));
+            DEException.throwException(Translator.get("not_authorized"));
         }
         userService.updateUser(user);
         UserDTO userDTO = userService.getUserDTO(user.getId());
@@ -169,7 +169,7 @@ public class UserController {
     @GetMapping("/info/{userId}")
     public UserDTO getUserInfo(@PathVariable(value = "userId") String userId) {
         if (!StringUtils.equals(userId, SessionUtils.getUserId())) {
-            MSException.throwException(Translator.get("not_authorized"));
+            DEException.throwException(Translator.get("not_authorized"));
         }
         return userService.getUserInfo(userId);
     }
@@ -215,7 +215,7 @@ public class UserController {
         workspaceService.checkWorkspaceOwner(workspaceId);
         String currentUserId = SessionUtils.getUser().getId();
         if (StringUtils.equals(userId, currentUserId)) {
-            MSException.throwException(Translator.get("cannot_remove_current"));
+            DEException.throwException(Translator.get("cannot_remove_current"));
         }
         userService.deleteMember(workspaceId, userId);
     }
@@ -239,7 +239,7 @@ public class UserController {
         organizationService.checkOrgOwner(organizationId);
         String currentUserId = SessionUtils.getUser().getId();
         if (StringUtils.equals(userId, currentUserId)) {
-            MSException.throwException(Translator.get("cannot_remove_current"));
+            DEException.throwException(Translator.get("cannot_remove_current"));
         }
         userService.delOrganizationMember(organizationId, userId);
     }

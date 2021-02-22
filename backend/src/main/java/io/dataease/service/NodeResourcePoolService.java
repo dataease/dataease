@@ -5,7 +5,7 @@ import io.dataease.base.domain.TestResource;
 import io.dataease.base.domain.TestResourceExample;
 import io.dataease.base.mapper.TestResourceMapper;
 import io.dataease.commons.constants.ResourceStatusEnum;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.NodeDTO;
 import io.dataease.dto.TestResourcePoolDTO;
@@ -36,7 +36,7 @@ public class NodeResourcePoolService {
 
     public boolean validate(TestResourcePoolDTO testResourcePool) {
         if (CollectionUtils.isEmpty(testResourcePool.getResources())) {
-            MSException.throwException(Translator.get("no_nodes_message"));
+            DEException.throwException(Translator.get("no_nodes_message"));
         }
 
         deleteTestResource(testResourcePool.getId());
@@ -48,7 +48,7 @@ public class NodeResourcePoolService {
                 .distinct()
                 .collect(Collectors.toList());
         if (Ip_Port.size() < testResourcePool.getResources().size()) {
-            MSException.throwException(Translator.get("duplicate_node_ip_port"));
+            DEException.throwException(Translator.get("duplicate_node_ip_port"));
         }
         testResourcePool.setStatus(VALID.name());
         boolean isValid = true;

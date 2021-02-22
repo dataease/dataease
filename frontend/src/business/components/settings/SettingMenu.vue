@@ -10,7 +10,7 @@
       </el-menu-item>
     </el-submenu>
 
-    <el-submenu index="2" v-permission="['org_admin']" v-if="isCurrentOrganizationAdmin">
+    <!-- <el-submenu index="2" v-permission="['org_admin']" v-if="isCurrentOrganizationAdmin">
       <template v-slot:title>
         <font-awesome-icon class="icon organization" :icon="['far', 'building']" size="lg"/>
         <span>{{ $t('commons.organization') }}</span>
@@ -36,7 +36,7 @@
         <font-awesome-icon class="icon" :icon="['fa', 'bars']" size="lg"/>
         <span>{{ $t(menu.title) }}</span>
       </template>
-    </el-menu-item>
+    </el-menu-item> -->
 
     <el-submenu index="4">
       <template v-slot:title>

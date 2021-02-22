@@ -80,10 +80,10 @@ public class JdbcProvider extends DatasourceProvider{
         String password = null;
         String driver = null;
         String jdbcurl = null;
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(getType());
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(getDatasource().getType());
         switch (datasourceType){
             case mysql:
-                MysqlConfigrationDTO mysqlConfigrationDTO  = new Gson().fromJson(getDataSourceConfigration(), MysqlConfigrationDTO.class);
+                MysqlConfigrationDTO mysqlConfigrationDTO  = new Gson().fromJson(getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
                 username = mysqlConfigrationDTO.getUsername();
                 password = mysqlConfigrationDTO.getPassword();
                 driver = mysqlConfigrationDTO.getDriver();

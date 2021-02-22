@@ -4,7 +4,7 @@ import io.dataease.base.domain.UserKey;
 import io.dataease.base.domain.UserKeyExample;
 import io.dataease.base.mapper.UserKeyMapper;
 import io.dataease.commons.constants.ApiKeyConstants;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
@@ -32,14 +32,14 @@ public class UserKeyService {
 
     public UserKey generateUserKey(String userId) {
         if (userService.getUserDTO(userId) == null) {
-            MSException.throwException(Translator.get("user_not_exist") + userId);
+            DEException.throwException(Translator.get("user_not_exist") + userId);
         }
         UserKeyExample userKeysExample = new UserKeyExample();
         userKeysExample.createCriteria().andUserIdEqualTo(userId);
         List<UserKey> userKeysList = userKeyMapper.selectByExample(userKeysExample);
 
         if (!CollectionUtils.isEmpty(userKeysList) && userKeysList.size() >= 5) {
-            MSException.throwException(Translator.get("user_apikey_limit"));
+            DEException.throwException(Translator.get("user_apikey_limit"));
         }
 
         UserKey userKeys = new UserKey();

@@ -8,7 +8,7 @@ import io.dataease.base.mapper.WorkspaceMapper;
 import io.dataease.base.mapper.ext.ExtOrganizationMapper;
 import io.dataease.base.mapper.ext.ExtUserRoleMapper;
 import io.dataease.commons.constants.RoleConstants;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.user.SessionUser;
 import io.dataease.commons.utils.SessionUtils;
 import io.dataease.controller.request.OrganizationRequest;
@@ -69,7 +69,7 @@ public class OrganizationService {
 
     private void checkOrganization(Organization organization) {
         if (StringUtils.isBlank(organization.getName())) {
-            MSException.throwException(Translator.get("organization_name_is_null"));
+            DEException.throwException(Translator.get("organization_name_is_null"));
         }
 
         OrganizationExample example = new OrganizationExample();
@@ -80,7 +80,7 @@ public class OrganizationService {
         }
 
         if (organizationMapper.countByExample(example) > 0) {
-            MSException.throwException(Translator.get("organization_name_already_exists"));
+            DEException.throwException(Translator.get("organization_name_already_exists"));
         }
 
     }
@@ -175,7 +175,7 @@ public class OrganizationService {
                 .map(UserRole::getSourceId)
                 .collect(Collectors.toList());
         if (!collect.contains(organizationId)) {
-            MSException.throwException(Translator.get("organization_does_not_belong_to_user"));
+            DEException.throwException(Translator.get("organization_does_not_belong_to_user"));
         }
     }
 }

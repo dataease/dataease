@@ -19,13 +19,13 @@ public class DatasourceController {
     private DatasourceService datasourceService;
 
     @PostMapping("/add")
-    public Datasource addDatasource(@RequestBody Datasource Datasource) {
-        return datasourceService.addDatasource(Datasource);
+    public Datasource addDatasource(@RequestBody Datasource datasource) {
+        return datasourceService.addDatasource(datasource);
     }
 
     @PostMapping("/validate")
-    public void validate(@RequestBody Datasource Datasource) throws Exception{
-        datasourceService.validate(Datasource);
+    public void validate(@RequestBody Datasource datasource) throws Exception{
+        datasourceService.validate(datasource);
     }
 
     @GetMapping("/list")

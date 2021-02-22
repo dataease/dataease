@@ -9,7 +9,7 @@ import io.dataease.base.mapper.ext.ExtOrganizationMapper;
 import io.dataease.base.mapper.ext.ExtUserRoleMapper;
 import io.dataease.base.mapper.ext.ExtWorkspaceMapper;
 import io.dataease.commons.constants.RoleConstants;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.user.SessionUser;
 import io.dataease.commons.utils.SessionUtils;
 import io.dataease.controller.request.WorkspaceRequest;
@@ -51,7 +51,7 @@ public class WorkspaceService {
 
     public Workspace saveWorkspace(Workspace workspace) {
         if (StringUtils.isBlank(workspace.getName())) {
-            MSException.throwException(Translator.get("workspace_name_is_null"));
+            DEException.throwException(Translator.get("workspace_name_is_null"));
         }
         // set organization id
         String currentOrgId = SessionUtils.getCurrentOrganizationId();
@@ -128,7 +128,7 @@ public class WorkspaceService {
                 .andOrganizationIdIn(orgIds)
                 .andIdEqualTo(workspaceId);
         if (workspaceMapper.countByExample(example) == 0) {
-            MSException.throwException(Translator.get("workspace_does_not_belong_to_user"));
+            DEException.throwException(Translator.get("workspace_does_not_belong_to_user"));
         }
     }
 
@@ -154,7 +154,7 @@ public class WorkspaceService {
                 .collect(Collectors.toList());
         boolean contains = wsIds.contains(workspaceId);
         if (size == 0 && !contains) {
-            MSException.throwException(Translator.get("workspace_does_not_belong_to_user"));
+            DEException.throwException(Translator.get("workspace_does_not_belong_to_user"));
         }
     }
 
@@ -162,7 +162,7 @@ public class WorkspaceService {
         WorkspaceExample example = new WorkspaceExample();
         example.createCriteria().andIdEqualTo(workspaceId);
         if (workspaceMapper.countByExample(example) == 0) {
-            MSException.throwException(Translator.get("workspace_not_exists"));
+            DEException.throwException(Translator.get("workspace_not_exists"));
         }
     }
 
@@ -257,10 +257,10 @@ public class WorkspaceService {
 
     private void checkWorkspace(Workspace workspace) {
         if (StringUtils.isBlank(workspace.getName())) {
-            MSException.throwException(Translator.get("workspace_name_is_null"));
+            DEException.throwException(Translator.get("workspace_name_is_null"));
         }
         if (StringUtils.isBlank(workspace.getOrganizationId())) {
-            MSException.throwException(Translator.get("organization_id_is_null"));
+            DEException.throwException(Translator.get("organization_id_is_null"));
         }
 
         WorkspaceExample example = new WorkspaceExample();
@@ -272,7 +272,7 @@ public class WorkspaceService {
         }
 
         if (workspaceMapper.countByExample(example) > 0) {
-            MSException.throwException(Translator.get("workspace_name_already_exists"));
+            DEException.throwException(Translator.get("workspace_name_already_exists"));
         }
 
     }

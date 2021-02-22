@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.collections.CollectionUtils;
 import org.aspectj.util.FileUtil;
@@ -26,7 +26,7 @@ public class FileUtils {
                     FileUtil.copyStream(in, out);
                 } catch (IOException e) {
                     LogUtil.error(e);
-                    MSException.throwException(Translator.get("upload_fail"));
+                    DEException.throwException(Translator.get("upload_fail"));
                 }
             }
         }

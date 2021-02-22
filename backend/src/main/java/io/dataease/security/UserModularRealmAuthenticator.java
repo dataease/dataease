@@ -1,6 +1,6 @@
 package io.dataease.security;
 
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -35,7 +35,7 @@ public class UserModularRealmAuthenticator extends ModularRealmAuthenticator {
         }
 
         if (typeRealms.size() == 0) {
-            MSException.throwException("No realm");
+            DEException.throwException("No realm");
         }
         // 判断是单Realm还是多Realm
         if (typeRealms.size() == 1) {

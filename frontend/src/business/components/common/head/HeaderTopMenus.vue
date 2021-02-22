@@ -14,9 +14,9 @@
     <el-menu-item index="/api" @click="active()" v-permission="['test_manager','test_user','test_viewer']">
       {{ $t('commons.api') }}
     </el-menu-item>
-    <el-menu-item index="/performance" onselectstart="return false"
+    <el-menu-item index="/dataset" onselectstart="return false"
                   v-permission="['test_manager','test_user','test_viewer']">
-      {{ $t('commons.performance') }}
+      {{ $t('commons.dataset') }}
     </el-menu-item>
     <el-menu-item index="/setting" onselectstart="return false">
       {{ $t('commons.system_setting') }}

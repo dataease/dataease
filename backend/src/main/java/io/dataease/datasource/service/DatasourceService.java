@@ -3,10 +3,12 @@ package io.dataease.datasource.service;
 import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
+import io.dataease.commons.exception.DEException;
 import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,11 @@ public class DatasourceService {
     private DatasourceMapper datasourceMapper;
 
     public Datasource addDatasource(Datasource datasource) {
+        DatasourceExample example = new DatasourceExample();
+        example.createCriteria().andNameEqualTo(datasource.getName());
+        if(CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))){
+            DEException.throwException("Exist data connection with the same name ");
+        }
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());
         datasource.setUpdateTime(currentTimeMillis);
@@ -43,7 +50,7 @@ public class DatasourceService {
             criteria.andTypeEqualTo(request.getType());
         }
         example.setOrderByClause("update_time desc");
-        return datasourceMapper.selectByExample(example);
+        return datasourceMapper.selectByExampleWithBLOBs(example);
     }
 
     public void deleteDatasource(String datasourceId) {
@@ -58,7 +65,7 @@ public class DatasourceService {
 
     public void validate(Datasource datasource)throws Exception {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-        datasourceProvider.setDataSourceConfigration(datasource.getConfiguration());
+        datasourceProvider.setDatasource(datasource);
         datasourceProvider.test();
     }
 

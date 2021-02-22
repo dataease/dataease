@@ -3,7 +3,8 @@ import VueRouter from 'vue-router'
 import RouterSidebar from "./RouterSidebar";
 import Setting from "@/business/components/settings/router";
 import API from "@/business/components/api/router";
-import Performance from "@/business/components/performance/router";
+// import Performance from "@/business/components/performance/router";
+import DataSet from "@/business/components/dataset/router";
 import Track from "@/business/components/track/router";
 
 Vue.use(VueRouter);
@@ -19,7 +20,8 @@ const router = new VueRouter({
     },
     Setting,
     API,
-    Performance,
+    // Performance,
+    DataSet,
     Track,
   ]
 });

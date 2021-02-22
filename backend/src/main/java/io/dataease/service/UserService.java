@@ -7,7 +7,7 @@ import io.dataease.base.mapper.ext.ExtUserRoleMapper;
 import io.dataease.commons.constants.RoleConstants;
 import io.dataease.commons.constants.UserSource;
 import io.dataease.commons.constants.UserStatus;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.user.SessionUser;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -69,7 +69,7 @@ public class UserService {
         String id = user.getId();
         User user1 = userMapper.selectByPrimaryKey(id);
         if (user1 != null) {
-            MSException.throwException(Translator.get("user_id_already_exists"));
+            DEException.throwException(Translator.get("user_id_already_exists"));
         } else {
             createUser(user);
         }
@@ -130,15 +130,15 @@ public class UserService {
     private void checkUserParam(User user) {
 
         if (StringUtils.isBlank(user.getId())) {
-            MSException.throwException(Translator.get("user_id_is_null"));
+            DEException.throwException(Translator.get("user_id_is_null"));
         }
 
         if (StringUtils.isBlank(user.getName())) {
-            MSException.throwException(Translator.get("user_name_is_null"));
+            DEException.throwException(Translator.get("user_name_is_null"));
         }
 
         if (StringUtils.isBlank(user.getEmail())) {
-            MSException.throwException(Translator.get("user_email_is_null"));
+            DEException.throwException(Translator.get("user_email_is_null"));
         }
         // password
     }
@@ -182,7 +182,7 @@ public class UserService {
         criteria.andEmailEqualTo(email);
         List<User> userList = userMapper.selectByExample(userExample);
         if (!CollectionUtils.isEmpty(userList)) {
-            MSException.throwException(Translator.get("user_email_already_exists"));
+            DEException.throwException(Translator.get("user_email_already_exists"));
         }
     }
 
@@ -267,7 +267,7 @@ public class UserService {
     public void deleteUser(String userId) {
         SessionUser user = SessionUtils.getUser();
         if (StringUtils.equals(user.getId(), userId)) {
-            MSException.throwException(Translator.get("cannot_delete_current_user"));
+            DEException.throwException(Translator.get("cannot_delete_current_user"));
         }
 
         UserRoleExample example = new UserRoleExample();
@@ -303,7 +303,7 @@ public class UserService {
         criteria.andEmailEqualTo(user.getEmail());
         criteria.andIdNotEqualTo(user.getId());
         if (userMapper.countByExample(example) > 0) {
-            MSException.throwException(Translator.get("user_email_already_exists"));
+            DEException.throwException(Translator.get("user_email_already_exists"));
         }
 
         user.setUpdateTime(System.currentTimeMillis());
@@ -318,7 +318,7 @@ public class UserService {
             criteria.andEmailEqualTo(user.getEmail());
             criteria.andIdNotEqualTo(user.getId());
             if (userMapper.countByExample(example) > 0) {
-                MSException.throwException(Translator.get("user_email_already_exists"));
+                DEException.throwException(Translator.get("user_email_already_exists"));
             }
         }
         user.setPassword(null);
@@ -371,7 +371,7 @@ public class UserService {
                 userRoleExample.createCriteria().andUserIdEqualTo(userId).andSourceIdEqualTo(request.getWorkspaceId());
                 List<UserRole> userRoles = userRoleMapper.selectByExample(userRoleExample);
                 if (userRoles.size() > 0) {
-                    MSException.throwException(Translator.get("user_already_exists"));
+                    DEException.throwException(Translator.get("user_already_exists"));
                 } else {
                     for (String roleId : request.getRoleIds()) {
                         UserRole userRole = new UserRole();
@@ -410,7 +410,7 @@ public class UserService {
                 userRoleExample.createCriteria().andUserIdEqualTo(userId).andSourceIdEqualTo(request.getOrganizationId());
                 List<UserRole> userRoles = userRoleMapper.selectByExample(userRoleExample);
                 if (userRoles.size() > 0) {
-                    MSException.throwException(Translator.get("user_already_exists") + ": " + userId);
+                    DEException.throwException(Translator.get("user_already_exists") + ": " + userId);
                 } else {
                     for (String roleId : request.getRoleIds()) {
                         UserRole userRole = new UserRole();
@@ -451,10 +451,10 @@ public class UserService {
 
     public boolean checkUserPassword(String userId, String password) {
         if (StringUtils.isBlank(userId)) {
-            MSException.throwException(Translator.get("user_name_is_null"));
+            DEException.throwException(Translator.get("user_name_is_null"));
         }
         if (StringUtils.isBlank(password)) {
-            MSException.throwException(Translator.get("password_is_null"));
+            DEException.throwException(Translator.get("password_is_null"));
         }
         UserExample example = new UserExample();
         example.createCriteria().andIdEqualTo(userId).andPasswordEqualTo(CodingUtil.md5(password));
@@ -511,7 +511,7 @@ public class UserService {
             user.setUpdateTime(System.currentTimeMillis());
             return user;
         }
-        MSException.throwException(Translator.get("password_modification_failed"));
+        DEException.throwException(Translator.get("password_modification_failed"));
         return null;
     }
 

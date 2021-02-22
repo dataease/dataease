@@ -6,7 +6,7 @@ import io.dataease.base.mapper.FileMetadataMapper;
 import io.dataease.base.mapper.LoadTestFileMapper;
 import io.dataease.base.mapper.TestCaseFileMapper;
 import io.dataease.commons.constants.FileType;
-import io.dataease.commons.exception.MSException;
+import io.dataease.commons.exception.DEException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -100,7 +100,7 @@ public class FileService {
         try {
             fileContent.setFile(file.getBytes());
         } catch (IOException e) {
-            MSException.throwException(e);
+            DEException.throwException(e);
         }
         fileContentMapper.insert(fileContent);
 
