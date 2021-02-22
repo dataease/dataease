@@ -21,34 +21,6 @@
                            :total="total"/>
     </el-card>
 
-    <!-- dialog of organization member -->
-    <el-dialog :close-on-click-modal="false" :visible.sync="dialogDatasourceMemberVisible" width="70%" :destroy-on-close="true" @close="closeFunc"
-               class="dialog-css">
-      <ms-table-header :condition.sync="dialogCondition" @create="addMember" @search="dialogSearch"
-                       :create-tip="$t('member.create')" :title="$t('commons.member')"/>
-      <!-- organization member table -->
-      <el-table :border="true" class="adjust-table" :data="memberLineData" style="width: 100%;margin-top:5px;">
-        <el-table-column prop="id" label="ID"/>
-        <el-table-column prop="name" :label="$t('commons.username')"/>
-        <el-table-column prop="email" :label="$t('commons.email')"/>
-        <el-table-column prop="phone" :label="$t('commons.phone')"/>
-        <el-table-column :label="$t('commons.role')" width="140">
-          <template v-slot:default="scope">
-            <ms-roles-tag :roles="scope.row.roles"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('commons.operating')">
-          <template v-slot:default="scope">
-            <ms-table-operator :tip2="$t('commons.remove')" @editClick="editMember(scope.row)"
-                               @deleteClick="delMember(scope.row)"/>
-          </template>
-        </el-table-column>
-      </el-table>
-      <ms-table-pagination :change="dialogSearch" :current-page.sync="dialogCurrentPage"
-                           :page-size.sync="dialogPageSize"
-                           :total="dialogTotal"/>
-    </el-dialog>
-
     <!-- add datasource form -->
     <el-dialog :close-on-click-modal="false" :title="$t('datasource.create')" :visible.sync="dialogDatasourceAddVisible" width="30%" @closed="closeFunc"
                :destroy-on-close="true">
@@ -90,7 +62,8 @@
 
       </el-form>
       <template v-slot:footer>
-        <ms-dialog-footer is-show-validate="true"
+        <ms-dialog-footer
+          :isShowValidate="true"
           @cancel="dialogDatasourceAddVisible = false"
           @validate="validaDatasource('createDatasource')"
           @confirm="createDatasource('createDatasource')"/>
@@ -128,7 +101,8 @@
         </el-form-item>
       </el-form>
       <template v-slot:footer>
-        <ms-dialog-footer is-show-validate="true"
+        <ms-dialog-footer
+          :isShowValidate="true"
           @cancel="dialogDatasourceUpdateVisible = false"
           @validate="validaDatasource('updateDatasourceForm')"
           @confirm="updateDatasource('updateDatasourceForm')"/>

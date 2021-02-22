@@ -1,7 +1,9 @@
 package io.dataease.datasource.provider;
 
 import io.dataease.base.domain.Datasource;
+import io.dataease.datasource.dto.TableFiled;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DatasourceProvider {
@@ -30,6 +32,10 @@ public abstract class DatasourceProvider {
     abstract public List<String[]> getData() throws Exception;
 
     abstract public List<String> getTables() throws Exception;
+
+    public List<TableFiled> getTableFileds(String table) throws Exception{
+        return new ArrayList<>();
+    };
 
     public void test() throws Exception {
         getData();

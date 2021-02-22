@@ -3,15 +3,14 @@ package io.dataease.datasource.provider;
 import com.google.gson.Gson;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigrationDTO;
+import io.dataease.datasource.dto.TableFiled;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 import io.dataease.datasource.constants.DatasourceTypes.*;
-import java.util.Properties;
 
 
 @Service("jdbc")
@@ -42,7 +41,9 @@ public class JdbcProvider extends DatasourceProvider{
                 }
                 list.add(row);
             }
-        } catch (Exception e) {
+        } catch (SQLException e){
+            throw new Exception("ERROR:" + e.getMessage(), e);
+        }catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
         }
         return list;
@@ -65,6 +66,39 @@ public class JdbcProvider extends DatasourceProvider{
     }
 
     @Override
+    public List<TableFiled> getTableFileds(String table) throws Exception{
+        List<TableFiled> list = new LinkedList<>();
+        try (
+            Connection connection = getConnection();
+        ) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            ResultSet resultSet = databaseMetaData.getColumns(null, "%", table.toUpperCase(), "%");
+            while (resultSet.next()) {
+                String tableName=resultSet.getString("TABLE_NAME");
+                String database = resultSet.getString("TABLE_CAT");
+                if(tableName.equals(table) && database.equalsIgnoreCase(getDatabase())){
+                    TableFiled tableFiled = new TableFiled();
+                    String colName = resultSet.getString("COLUMN_NAME");
+                    tableFiled.setFieldName(colName);
+                    String remarks = resultSet.getString("REMARKS");
+                    if(remarks == null || remarks.equals("")){
+                        remarks = colName;
+                    }
+                    tableFiled.setRemarks(remarks);
+                    String dbType = resultSet.getString("TYPE_NAME");
+                    tableFiled.setFieldType(dbType);
+                    list.add(tableFiled);
+                }
+            }
+        } catch (SQLException e){
+            throw new Exception("ERROR:" + e.getMessage(), e);
+        }catch (Exception e) {
+            throw new Exception("ERROR:" + e.getMessage(), e);
+        }
+        return list;
+    };
+
+    @Override
     public void test() throws Exception {
         String queryStr = "show tables";
         try (Connection con = getConnection(); Statement ps = con.createStatement()) {
@@ -73,7 +107,6 @@ public class JdbcProvider extends DatasourceProvider{
             throw new Exception("ERROR: " + e.getMessage(), e);
         }
     }
-
 
     private Connection getConnection() throws Exception {
         String username = null;
@@ -101,5 +134,52 @@ public class JdbcProvider extends DatasourceProvider{
         }
         return DriverManager.getConnection(jdbcurl, props);
     }
+
+    private String getDatabase(){
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(getDatasource().getType());
+        switch (datasourceType) {
+            case mysql:
+                MysqlConfigrationDTO mysqlConfigrationDTO = new Gson().fromJson(getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
+                return mysqlConfigrationDTO.getDataBase();
+            default:
+                return null;
+        }
+    }
+
+    private static String getSchema(Connection conn) throws Exception {
+        String schema;
+        schema = conn.getMetaData().getUserName();
+        System.out.println(schema);
+        if ((schema == null) || (schema.length() == 0)) {
+            throw new Exception("ORACLE数据库模式不允许为空");
+        }
+        return schema.toUpperCase().toString();
+    }
+
+    private static String changeDbType(String dbType) {
+        dbType = dbType.toUpperCase();
+        switch(dbType){
+            case "VARCHAR":
+            case "VARCHAR2":
+            case "CHAR":
+                return "1";
+            case "NUMBER":
+            case "DECIMAL":
+                return "4";
+            case "INT":
+            case "SMALLINT":
+            case "INTEGER":
+                return "2";
+            case "BIGINT":
+                return "6";
+            case "DATETIME":
+            case "TIMESTAMP":
+            case "DATE":
+                return "7";
+            default:
+                return "1";
+        }
+    }
+
 
 }

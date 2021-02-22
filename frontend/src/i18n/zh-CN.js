@@ -1558,6 +1558,7 @@ export default {
     please_input_host: '请输入主机',
     please_input_port: '请输入端口',
     modify: '修改组织',
+    validate_success: '校验成功',
     delete: '删除组织',
     delete_confirm: '删除该组织会关联删除该组织下的所有资源(如：相关工作空间，项目，测试用例等），确定要删除吗?',
     input_name: '请输入名称',
