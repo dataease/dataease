@@ -7,10 +7,18 @@
                          :create-tip="$t('organization.create')" :title="$t('commons.organization')"/>
       </template>
       <!-- system menu organization table-->
-      <el-table border class="adjust-table" :data="tableData" style="width: 100%">
-            <el-table-column :selectable="checkboxT" type="selection" width="55" />
+      <el-table border
+      class="adjust-table"
+      :data="tableData"
+      lazy
+      :load="initTableData"
+      style="width: 100%"
+      ref="table"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      row-key="deptId">
+            <!-- <el-table-column :selectable="checkboxT" type="selection" width="55" /> -->
             <el-table-column label="名称" prop="name" />
-            <el-table-column label="排序" prop="deptSort" />
+            <el-table-column label="下属部门数" prop="subCount" />
             <el-table-column label="状态" align="center" prop="enabled">
                 <template slot-scope="scope">
                 <el-switch
@@ -27,78 +35,23 @@
                 <span>{{ scope.row.createTime }}</span>
                 </template>
             </el-table-column>
-            
+
             <el-table-column :label="$t('commons.operating')">
                 <template v-slot:default="scope">
                     <ms-table-operator @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)"/>
                 </template>
             </el-table-column> -->
-        <!-- <el-table-column prop="name" :label="$t('commons.name')"/>
-        <el-table-column prop="description" :label="$t('commons.description')"/>
-        <el-table-column :label="$t('commons.member')">
-          <template v-slot:default="scope">
-            <el-link type="primary" class="member-size" @click="cellClick(scope.row)">
-              {{ scope.row.memberSize }}
-            </el-link>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('commons.operating')">
-          <template v-slot:default="scope">
-            <ms-table-operator @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)"/>
-          </template>
-        </el-table-column> -->
       </el-table>
-    
+
     </el-card>
 
-    <!-- dialog of organization member -->
-    <el-dialog :close-on-click-modal="false" :visible.sync="dialogOrgMemberVisible" width="70%" :destroy-on-close="true" @close="closeFunc"
-               class="dialog-css">
-      <ms-table-header :condition.sync="dialogCondition" @create="addMember" @search="dialogSearch"
-                       :create-tip="$t('member.create')" :title="$t('commons.member')"/>
-      <!-- organization member table -->
-      <el-table 
-      :border="true" 
-      class="adjust-table" 
-      :data="memberLineData" 
-      style="width: 100%;margin-top:5px;"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      row-key="deptId"
-      >
-        <el-table-column prop="id" label="ID"/>
-        <el-table-column prop="name" :label="$t('commons.username')"/>
-        <el-table-column prop="email" :label="$t('commons.email')"/>
-        <el-table-column prop="phone" :label="$t('commons.phone')"/>
-        <el-table-column :label="$t('commons.role')" width="140">
-          <template v-slot:default="scope">
-            <ms-roles-tag :roles="scope.row.roles"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('commons.operating')">
-          <template v-slot:default="scope">
-            <ms-table-operator :tip2="$t('commons.remove')" @editClick="editMember(scope.row)"
-                               @deleteClick="delMember(scope.row)"/>
-          </template>
-        </el-table-column>
-      </el-table>
-      <ms-table-pagination :change="dialogSearch" :current-page.sync="dialogCurrentPage"
-                           :page-size.sync="dialogPageSize"
-                           :total="dialogTotal"/>
-    </el-dialog>
+
 
     <!-- add organization form -->
-    <el-dialog :close-on-click-modal="false" :title="$t('organization.create')" :visible.sync="dialogOrgAddVisible" width="30%" @closed="closeFunc"
+    <el-dialog :close-on-click-modal="false" :title="formType=='add' ? $t('organization.create') : $t('organization.modify')" :visible.sync="dialogOrgAddVisible" width="30%" @closed="closeFunc"
                :destroy-on-close="true">
-      <!-- <el-form :model="form" label-position="right" label-width="100px" size="small" :rules="rule"
-               ref="createOrganization">
-        <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off"/>
-        </el-form-item>
-        <el-form-item :label="$t('commons.description')" prop="description">
-          <el-input v-model="form.description" autocomplete="off" type="textarea"/>
-        </el-form-item>
-      </el-form> -->
-      <el-form ref="form" inline :model="form" :rules="rule" size="small" label-width="80px">
+      <el-form ref="createOrganization" inline :model="form" :rules="rule" size="small" label-width="80px">
+
         <el-form-item label="部门名称" prop="name">
           <el-input v-model="form.name" style="width: 370px;" />
         </el-form-item>
@@ -111,20 +64,26 @@
             style="width: 370px;"
           />
         </el-form-item>
-        <el-form-item label="顶级部门">
-          <el-radio-group v-model="form.isTop" style="width: 140px">
-            <el-radio label="1">是</el-radio>
-            <el-radio label="0">否</el-radio>
+
+        <el-form-item label="顶级部门" prop="top">
+          <el-radio-group v-model="form.top" style="width: 140px">
+            <el-radio :label='true'>是</el-radio>
+            <el-radio :label='false'>否</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="状态" prop="enabled">
-            <el-radio label="1">启用</el-radio>
-            <el-radio label="0">停用</el-radio>
+
+        <el-form-item label="状态" prop="enabled" >
+          <el-radio-group v-model="form.enabled" style="width: 140px">
+            <el-radio :label='true'>启用</el-radio>
+            <el-radio :label='false'>停用</el-radio>
+          </el-radio-group>
+
           <!-- <el-radio v-for="item in dict.dept_status" :key="item.id" v-model="form.enabled" :label="item.value">{{ item.label }}</el-radio> -->
         </el-form-item>
-        <el-form-item v-if="form.isTop === '0'" style="margin-bottom: 0;" label="上级部门" prop="pid">
+        <el-form-item v-if="!form.top" style="margin-bottom: 0;" label="上级部门" prop="pid">
           <treeselect
             v-model="form.pid"
+            :auto-load-root-options="false"
             :load-options="loadDepts"
             :options="depts"
             style="width: 370px;"
@@ -139,102 +98,7 @@
       <template v-slot:footer>
         <ms-dialog-footer
           @cancel="dialogOrgAddVisible = false"
-          @confirm="createOrganization('createOrganization')"/>
-      </template>
-    </el-dialog>
-
-    <!-- update organization form -->
-    <el-dialog :close-on-click-modal="false" :title="$t('organization.modify')" :visible.sync="dialogOrgUpdateVisible" width="30%"
-               :destroy-on-close="true"
-               @close="closeFunc">
-      <el-form :model="form" label-position="right" label-width="100px" size="small" :rules="rule"
-               ref="updateOrganizationForm">
-        <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off"/>
-        </el-form-item>
-        <el-form-item :label="$t('commons.description')" prop="description">
-          <el-input v-model="form.description" autocomplete="off"/>
-        </el-form-item>
-      </el-form>
-      <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogOrgUpdateVisible = false"
-          @confirm="updateOrganization('updateOrganizationForm')"/>
-      </template>
-    </el-dialog>
-
-    <!-- add organization member form -->
-    <el-dialog :close-on-click-modal="false" :title="$t('member.create')" :visible.sync="dialogOrgMemberAddVisible" width="30%"
-               :destroy-on-close="true"
-               @close="closeFunc">
-      <el-form :model="memberForm" ref="form" :rules="orgMemberRule" label-position="right" label-width="100px"
-               size="small">
-        <el-form-item :label="$t('commons.member')" prop="userIds">
-          <el-select filterable v-model="memberForm.userIds" multiple :placeholder="$t('member.please_choose_member')"
-                     class="select-width" :filter-method="dataFilter">
-            <el-option
-              v-for="item in memberForm.userList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-              <span class="org-member-id">{{ item.id }}</span>
-              <span class="org-member-email">{{ item.email }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('commons.role')" prop="roleIds">
-          <el-select filterable v-model="memberForm.roleIds" multiple :placeholder="$t('role.please_choose_role')"
-                     class="select-width">
-            <el-option
-              v-for="item in memberForm.roles"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogOrgMemberAddVisible = false"
-          @confirm="submitForm('form')"/>
-      </template>
-    </el-dialog>
-
-    <!-- update organization member form -->
-    <el-dialog :close-on-click-modal="false" :title="$t('member.modify')" :visible.sync="dialogOrgMemberUpdateVisible" width="30%"
-               :destroy-on-close="true"
-               @close="closeFunc">
-      <el-form :model="memberForm" label-position="right" label-width="100px" size="small" ref="updateUserForm">
-        <el-form-item label="ID" prop="id">
-          <el-input v-model="memberForm.id" autocomplete="off" :disabled="true"/>
-        </el-form-item>
-        <el-form-item :label="$t('commons.username')" prop="name">
-          <el-input v-model="memberForm.name" autocomplete="off" :disabled="true"/>
-        </el-form-item>
-        <el-form-item :label="$t('commons.email')" prop="email">
-          <el-input v-model="memberForm.email" autocomplete="off" :disabled="true"/>
-        </el-form-item>
-        <el-form-item :label="$t('commons.phone')" prop="phone">
-          <el-input v-model="memberForm.phone" autocomplete="off" :disabled="true"/>
-        </el-form-item>
-        <el-form-item :label="$t('commons.role')" prop="roleIds"
-                      :rules="{required: true, message: $t('role.please_choose_role'), trigger: 'change'}">
-          <el-select filterable v-model="memberForm.roleIds" multiple :placeholder="$t('role.please_choose_role')"
-                     class="select-width">
-            <el-option
-              v-for="item in memberForm.allroles"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogOrgMemberUpdateVisible = false"
-          @confirm="updateOrgMember('updateUserForm')"/>
+          @confirm="createDept('createOrganization')"/>
       </template>
     </el-dialog>
 
@@ -246,7 +110,7 @@
 <script>
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { LOAD_CHILDREN_OPTIONS } from '@riophae/vue-treeselect'
+import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import MsCreateBox from "../CreateBox";
 import MsTableHeader from "../../common/components/MsTableHeader";
 import MsRolesTag from "../../common/components/MsRolesTag";
@@ -254,10 +118,7 @@ import MsTableOperator from "../../common/components/MsTableOperator";
 import MsTableOperatorButton from "../../common/components/MsTableOperatorButton";
 import MsDialogFooter from "../../common/components/MsDialogFooter";
 import {
-  getCurrentOrganizationId,
-  getCurrentUser,
   listenGoBack,
-  refreshSessionAndCookies,
   removeGoBackListener
 } from "@/common/js/utils";
 import {DEFAULT, ORGANIZATION} from "@/common/js/constants";
@@ -277,45 +138,22 @@ export default {
   },
   data() {
     return {
-      depts:[],
-      components: [
-        {field: "name", label: "姓名", component: "FuInputComponent", defaultOperator: "eq"},
-        {field: "email", label: "Email", component: "FuInputComponent"},
-        {
-          field: "status",
-          label: "状态",
-          component: "FuSelectComponent",
-          options: [
-            {label: "运行中", value: "Running"},
-            {label: "成功", value: "Success"},
-            {label: "失败", value: "Fail"}
-          ],
-          multiple: true
-        },
-        {field: "create_time", label: "创建时间", component: "FuDateTimeComponent"},
-      ],
-      queryPath: '/api/dept/root',
-      deletePath: '/organization/delete/',
-      createPath: '/organization/add',
-      updatePath: '/organization/update',
+      rootNodeLoaded: false,
+      depts:null,
+      formType:"add",
+
+      queryPath: '/api/dept/childNodes',
+      deletePath: '/api/dept/delete',
+      createPath: '/api/dept/create',
+      updatePath: '/api/dept/update',
+      changeStatusPath: '/api/dept/updateStatus',
       result: {},
       dialogOrgAddVisible: false,
-      dialogOrgUpdateVisible: false,
-      dialogOrgMemberVisible: false,
-      dialogOrgMemberAddVisible: false,
-      dialogOrgMemberUpdateVisible: false,
-      multipleSelection: [],
-      
-      dialogCurrentPage: 1,
-      dialogPageSize: 10,
-      dialogTotal: 0,
-      currentRow: {},
       condition: {},
-      dialogCondition: {},
       tableData: [],
-      memberLineData: [],
+      maps: new Map(),
+      oldPid: null,
       form: {},
-      memberForm: {},
       rule: {
         name: [
           {required: true, message: this.$t('organization.input_name'), trigger: 'blur'},
@@ -324,16 +162,8 @@ export default {
         description: [
           {max: 50, message: this.$t('commons.input_limit', [0, 50]), trigger: 'blur'}
         ]
-      },
-      orgMemberRule: {
-        userIds: [
-          {required: true, message: this.$t('member.please_choose_member'), trigger: ['blur']}
-        ],
-        roleIds: [
-          {required: true, message: this.$t('role.please_choose_role'), trigger: ['blur']}
-        ]
       }
-      
+
     }
   },
   activated() {
@@ -342,90 +172,128 @@ export default {
   methods: {
     create() {
       this.dialogOrgAddVisible = true;
+      this.formType = "add";
       listenGoBack(this.closeFunc);
     },
     search(condition) {
       console.log(condition)
     },
-    addMember() {
-      this.dialogOrgMemberAddVisible = true;
-      this.memberForm = {};
-      this.result = this.$get('/user/list/', response => {
-        this.$set(this.memberForm, "userList", response.data);
-        this.$set(this.memberForm, "copyUserList", response.data);
-      });
-      this.result = this.$get('/role/list/org', response => {
-        this.$set(this.memberForm, "roles", response.data);
-      })
+
+    edit(row) {
+      this.dialogOrgAddVisible = true;
+      this.formType = "modify";
+      this.oldPid = row.pid;
+      this.form = Object.assign({}, row);
+      // this.treeByRow(row);
+      listenGoBack(this.closeFunc);
     },
-    dataFilter(val) {
-      if (val) {
-        this.memberForm.userList = this.memberForm.copyUserList.filter((item) => {
-          if (!!~item.id.indexOf(val) || !!~item.id.toUpperCase().indexOf(val.toUpperCase())) {
-            return true
-          }
-        })
-      } else {
-        this.memberForm.userList = this.memberForm.copyUserList;
+
+    treeByRow(row){
+      !this.depts && (this.depts = [])
+      if (!this.depts.some(node => node.id==row.deptId)) {
+        this.depts.push(this.normalizer(row));
       }
     },
-    edit(row) {
-      this.dialogOrgUpdateVisible = true;
-      this.form = Object.assign({}, row);
-      listenGoBack(this.closeFunc);
-    },
-    editMember(row) {
-      this.dialogOrgMemberUpdateVisible = true;
-      this.memberForm = Object.assign({}, row);
-      let roleIds = this.memberForm.roles.map(r => r.id);
-      this.result = this.$get('/role/list/org', response => {
-        this.$set(this.memberForm, "allroles", response.data);
+
+
+    initTableData(row, treeNode, resolve) {
+      let _self = this;
+      let url = row ? (this.queryPath+"/"+row.deptId) : (this.queryPath+"/0");
+      this.result = this.$post(url , this.condition, (response) => {
+        let data = response.data;
+        data = data.map(obj => {
+            if(obj.subCount > 0){
+                obj.hasChildren = true;
+            }
+            return obj;
+        })
+        if(!row){
+          data.some(node => node.children = null);
+          _self.tableData = data;
+          _self.depts = null;
+
+        }else{
+          this.maps.set(row.deptId, {row, treeNode, resolve})
+          resolve && resolve(data);
+        }
       })
-      // 编辑时填充角色信息
-      this.$set(this.memberForm, 'roleIds', roleIds);
-      listenGoBack(this.closeFunc);
     },
-    cellClick(row) {
-      // 保存当前点击的组织信息到currentRow
-      this.currentRow = row;
-      this.dialogOrgMemberVisible = true;
-      let param = {
-        name: '',
-        organizationId: row.id
-      };
-      let path = "/user/special/org/member/list";
-      this.result = this.$post(path + "/" + this.dialogCurrentPage + "/" + this.dialogPageSize, param, res => {
-        let data = res.data;
-        this.memberLineData = data.listObject;
-        let url = "/userrole/list/org/" + row.id;
-        for (let i = 0; i < this.memberLineData.length; i++) {
-          this.$get(url + "/" + encodeURIComponent(this.memberLineData[i].id), response => {
-            let roles = response.data;
-            this.$set(this.memberLineData[i], "roles", roles);
-          })
-        }
-        this.dialogTotal = data.itemCount;
-      });
-      listenGoBack(this.closeFunc);
+    closeFunc() {
+      this.initTableData();
+      this.form = {};
+      this.oldPid = null;
+      removeGoBackListener(this.closeFunc);
+      this.dialogOrgAddVisible = false;
+
     },
-    dialogSearch() {
-      let row = this.currentRow;
-      this.dialogOrgMemberVisible = true;
-      let param = this.dialogCondition;
-      this.$set(param, 'organizationId', row.id);
-      let path = "/user/special/org/member/list";
-      this.result = this.$post(path + "/" + this.dialogCurrentPage + "/" + this.dialogPageSize, param, res => {
-        let data = res.data;
-        this.memberLineData = data.listObject;
-        let url = "/userrole/list/org/" + row.id;
-        for (let i = 0; i < this.memberLineData.length; i++) {
-          this.$get(url + "/" + encodeURIComponent(this.memberLineData[i].id), response => {
-            let roles = response.data;
-            this.$set(this.memberLineData[i], "roles", roles);
-          })
+
+    // 获取弹窗内部门数据
+    loadDepts({ action, parentNode, callback }) {
+      if (action === LOAD_ROOT_OPTIONS) {
+        let _self = this;
+        !this.depts && this.$post("api/dept/childNodes/0", null, (res) => {
+              _self.depts = res.data.map(node => _self.normalizer(node))
+              callback()
+        })
+      }
+
+      if (action === LOAD_CHILDREN_OPTIONS) {
+        let _self = this;
+        this.$post("api/dept/childNodes/"+parentNode.id, null, (res) => {
+            parentNode.children = res.data.map(function(obj) {
+                return _self.normalizer(obj)
+            })
+            callback()
+        })
+      }
+
+    },
+    normalizer(node) {
+      if(node.hasChildren){
+        node.children = null
+      }
+      return {
+        id: node.deptId,
+        label:node.name,
+        children:node.children
+      }
+    },
+    // 改变状态
+    changeEnabled(data, val) {
+      this.$confirm('此操作将 "停用" ' + data.name + '部门, 是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const param = {deptId: data.deptId, status: data.enabled}
+        this.$post(this.changeStatusPath, param, () => {
+            this.$success(this.$t('commons.modify_success'));
+        });
+      }).catch(() => {
+        data.enabled = !data.enabled
+      })
+    },
+    // checkboxT(row, rowIndex) {
+    //   return row.depId !== 1
+    // },
+    createDept(createOrganizationForm) {
+
+      this.$refs[createOrganizationForm].validate(valid => {
+        if (valid) {
+          let url = this.createPath;
+          this.formType == "modify" && this.form['deptId'] && (url = this.updatePath)
+          this.result = this.$post(url, this.form, () => {
+            this.$success(this.$t('commons.save_success'));
+            this.initTableData();
+            this.oldPid && this.reloadByPid(this.oldPid)
+            this.reloadByPid(this.form['pid'])
+            this.dialogOrgAddVisible = false;
+          });
+        } else {
+          return false;
         }
-        this.dialogTotal = data.itemCount;
-      });
+
+      })
     },
     handleDelete(organization) {
       this.$refs.deleteConfirm.open(organization);
@@ -436,14 +304,12 @@ export default {
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
-        this.result = this.$get(this.deletePath + organization.id, () => {
-          let lastOrganizationId = getCurrentOrganizationId();
-          let sourceId = organization.id;
-          if (lastOrganizationId === sourceId) {
-            refreshSessionAndCookies(DEFAULT, sourceId);
-          }
+        let requests = [{deptId: organization.deptId, pid: organization.pid}]
+        this.$post(this.deletePath, requests, () => {
+        // this.result = this.$get(this.deletePath + organization.id, () => {
           this.$success(this.$t('commons.delete_success'));
           this.initTableData();
+          this.reloadByPid(organization.pid)
         });
       }).catch(() => {
         this.$message({
@@ -452,154 +318,12 @@ export default {
         });
       });
     },
-    delMember(row) {
-      this.$confirm(this.$t('member.remove_member'), '', {
-        confirmButtonText: this.$t('commons.confirm'),
-        cancelButtonText: this.$t('commons.cancel'),
-        type: 'warning'
-      }).then(() => {
-        this.result = this.$get('/user/special/org/member/delete/' + this.currentRow.id + '/' + encodeURIComponent(row.id), () => {
-          let sourceId = this.currentRow.id;
-          let currentUser = getCurrentUser();
-          let userId = row.id;
-          if (currentUser.id === userId) {
-            refreshSessionAndCookies(ORGANIZATION, sourceId);
-          }
-          this.$success(this.$t('commons.remove_success'))
-          this.cellClick(this.currentRow);
-        });
-      }).catch(() => {
-        this.$info(this.$t('commons.remove_cancel'));
-      });
-    },
-    createOrganization(createOrganizationForm) {
-      this.$refs[createOrganizationForm].validate(valid => {
-        if (valid) {
-          this.result = this.$post(this.createPath, this.form, () => {
-            this.$success(this.$t('commons.save_success'));
-            this.initTableData();
-            this.dialogOrgAddVisible = false;
-          });
-        } else {
-          return false;
-        }
-      })
-    },
-    updateOrganization(updateOrganizationForm) {
-      this.$refs[updateOrganizationForm].validate(valid => {
-        if (valid) {
-          this.result = this.$post(this.updatePath, this.form, () => {
-            this.$success(this.$t('commons.modify_success'));
-            this.dialogOrgUpdateVisible = false;
-            this.initTableData();
-          });
-        } else {
-          return false;
-        }
-      })
-    },
-    initTableData() {
-      
-      this.result = this.$post(this.queryPath , this.condition, (response) => {
-        let data = response.data;
-        data = data.map(obj => {
-            if(obj.subCount > 0){
-                obj.hasChildren = true;
-                obj.children = null;
-            }
-            return obj;
-        })
-        this.tableData = data;
-        this.depts = data;
-
-        // for (let i = 0; i < this.tableData.length; i++) {
-        //   let param = {
-        //     name: '',
-        //     organizationId: this.tableData[i].id
-        //   }
-        //   let path = "user/special/org/member/list/all";
-        //   this.$post(path, param, res => {
-        //     let member = res.data;
-        //     this.$set(this.tableData[i], "memberSize", member.length);
-        //   })
-        // }
-        // this.total = data.itemCount;
-      })
-    },
-    closeFunc() {
-      this.memberLineData = [];
-      this.initTableData();
-      this.form = {};
-      removeGoBackListener(this.closeFunc);
-      this.dialogOrgAddVisible = false;
-      this.dialogOrgUpdateVisible = false;
-      this.dialogOrgMemberVisible = false;
-      this.dialogOrgMemberAddVisible = false;
-      this.dialogOrgMemberUpdateVisible = false;
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let param = {
-            userIds: this.memberForm.userIds,
-            roleIds: this.memberForm.roleIds,
-            organizationId: this.currentRow.id
-          };
-          this.result = this.$post("user/special/org/member/add", param, () => {
-            let sign = "other";
-            let sourceId = this.currentRow.id;
-            refreshSessionAndCookies(sign, sourceId);
-            this.cellClick(this.currentRow);
-            this.dialogOrgMemberAddVisible = false;
-          })
-        } else {
-          return false;
-        }
-      });
-    },
-    updateOrgMember(formName) {
-      let param = {
-        id: this.memberForm.id,
-        name: this.memberForm.name,
-        email: this.memberForm.email,
-        phone: this.memberForm.phone,
-        roleIds: this.memberForm.roleIds,
-        organizationId: this.currentRow.id
+    reloadByPid(pid) {
+      if (pid !== 0 && this.maps.get(pid)) {
+        const { row, treeNode, resolve } = this.maps.get(pid);
+        this.$set(this.$refs.table.store.states.lazyTreeNodeMap, pid, []);
+        this.initTableData(row, treeNode, resolve);
       }
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.result = this.$post("/organization/member/update", param, () => {
-            this.$success(this.$t('commons.modify_success'));
-            this.dialogOrgMemberUpdateVisible = false;
-            this.cellClick(this.currentRow);
-          });
-        }
-      });
-    },
-    // 获取弹窗内部门数据
-    loadDepts({ action, parentNode, callback }) {
-      console.log("111");
-      if (action === LOAD_CHILDREN_OPTIONS) {
-        this.$post("api/dept/root", { enabled: true, pid: parentNode.id }, (res) => {
-            parentNode.children = res.content.map(function(obj) {
-                if (obj.hasChildren) {
-                obj.children = null
-                }
-                return obj
-            })
-            setTimeout(() => {
-                callback()
-            }, 100)
-        })    
-      }
-    },
-    changeEnabled(data, val) {
-    },
-    checkboxT(row, rowIndex) {
-      return row.id !== 1
     }
   }
 
@@ -629,5 +353,8 @@ export default {
 .dialog-css >>> .el-dialog__header {
   padding: 0;
 }
+ ::v-deep .el-input-number .el-input__inner {
+    text-align: left;
+  }
 
 </style>
