@@ -1,5 +1,6 @@
-
 const DataSet = () => import('@/business/components/dataset/DataSet');
+const DataSetHome = () => import('@/business/components/dataset/data/DataHome');
+const DataSetAddDB = () => import('@/business/components/dataset/data/AddDB');
 // const PerformanceTestHome = () => import('@/business/components/performance/home/PerformanceTestHome')
 // const EditPerformanceTest = () => import('@/business/components/performance/test/EditPerformanceTest')
 // const PerformanceTestList = () => import('@/business/components/performance/test/PerformanceTestList')
@@ -10,16 +11,21 @@ const DataSet = () => import('@/business/components/dataset/DataSet');
 export default {
   path: "/dataset",
   name: "dataset",
-  // redirect: "/dataset/home",
+  redirect: "/dataset/home",
   components: {
     content: DataSet
   },
   children: [
-    // {
-    //   path: 'home',
-    //   name: 'datasetHome',
-    //   component: PerformanceTestHome,
-    // },
+    {
+      path: 'home',
+      name: 'DataSetHome',
+      component: DataSetHome,
+    },
+    {
+      path: 'add_db',
+      name: 'DataSetAddDB',
+      component: DataSetAddDB,
+    },
     // {
     //   path: 'test/create',
     //   name: "createPerTest",

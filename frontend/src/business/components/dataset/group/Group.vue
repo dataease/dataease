@@ -1,5 +1,6 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
 <el-col>
+  <!-- group -->
   <el-col v-if="!sceneMode">
     <span>
       {{ $t('dataset.datalist') }}
@@ -49,7 +50,7 @@
           </span>
           <span>
             <span @click.stop v-if="data.type ==='group'">
-              <el-dropdown trigger="click" @command="clickAdd">
+              <el-dropdown trigger="click" @command="clickAdd" size="small">
                 <span class="el-dropdown-link">
                   <el-button
                     icon="el-icon-plus"
@@ -68,7 +69,7 @@
               </el-dropdown>
             </span>
             <span @click.stop style="margin-left: 12px;">
-              <el-dropdown trigger="click" @command="clickMore">
+              <el-dropdown trigger="click" @command="clickMore" size="small">
                 <span class="el-dropdown-link">
                   <el-button
                     icon="el-icon-more"
@@ -95,33 +96,50 @@
       </div>
     </el-col>
 
-    <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false">
+    <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
       <el-form :model="groupForm" :rules="groupFormRules" ref="groupForm">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="groupForm.name"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="close()">{{$t('dataset.cancel')}}</el-button>
-        <el-button type="primary" @click="saveGroup(groupForm)">{{$t('dataset.confirm')}}</el-button>
+        <el-button @click="close()" size="mini">{{$t('dataset.cancel')}}</el-button>
+        <el-button type="primary" @click="saveGroup(groupForm)" size="mini">{{$t('dataset.confirm')}}</el-button>
       </div>
     </el-dialog>
   </el-col>
 
+  <!--scene-->
   <el-col v-if="sceneMode">
     <el-row>
       <span>
-        {{ $t('dataset.scene') }}
+        {{currGroup.name}}
       </span>
-      <el-button icon="el-icon-back" size="mini" @click="sceneMode = false" style="float: right">
+      <el-button icon="el-icon-back" size="mini" @click="back" style="float: right">
         {{$t('dataset.back')}}
       </el-button>
     </el-row>
     <el-divider/>
     <el-row>
-      <el-button type="primary" size="mini" plain>
-        {{$t('dataset.add_table')}}
-      </el-button>
+      <el-dropdown style="margin-right: 10px;" size="small" @command="clickAddData">
+        <el-button type="primary" size="mini" plain>
+          {{$t('dataset.add_table')}}
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item :command="beforeClickAddData('db')">
+            {{$t('dataset.db_data')}}
+          </el-dropdown-item>
+          <el-dropdown-item :command="beforeClickAddData('sql')">
+            {{$t('dataset.sql_data')}}
+          </el-dropdown-item>
+          <el-dropdown-item :command="beforeClickAddData('excel')">
+            {{$t('dataset.excel_data')}}
+          </el-dropdown-item>
+          <el-dropdown-item :command="beforeClickAddData('custom')">
+            {{$t('dataset.custom_data')}}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <el-button type="primary" size="mini" plain>
         {{$t('dataset.update')}}
       </el-button>
@@ -200,6 +218,7 @@ export default {
       search: '',
       editGroup: false,
       data: null,
+      currGroup: null,
       expandedArray: [],
       groupForm: {
         name: '',
@@ -346,6 +365,7 @@ export default {
       // console.log(node);
       if (data.type === 'scene') {
         this.sceneMode = true;
+        this.currGroup = data;
       }
       if (node.expanded) {
         this.expandedArray.push(data.id);
@@ -357,6 +377,39 @@ export default {
       }
       // console.log(this.expandedArray);
     },
+
+    back() {
+      this.sceneMode = false;
+      this.$router.push('/dataset/home');
+    },
+
+    clickAddData(param) {
+      console.log(param);
+      switch (param.type) {
+        case 'db':
+          this.addDB();
+          break;
+        case 'sql':
+
+          break;
+        case 'excel':
+
+          break;
+        case 'custom':
+
+          break;
+      }
+    },
+
+    beforeClickAddData(type) {
+      return {
+        'type': type
+      }
+    },
+
+    addDB() {
+      this.$router.push('/dataset/add_db');
+    }
   }
 }
 </script>
