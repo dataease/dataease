@@ -1,204 +1,364 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col>
+<el-col>
+  <el-col v-if="!sceneMode">
     <span>
       {{ $t('dataset.datalist') }}
     </span>
     <el-divider/>
     <el-row>
-      <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="addGroup">{{$t('dataset.add_group')}}
+      <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
+        {{$t('dataset.add_group')}}
       </el-button>
-      <el-button icon="el-icon-document" type="primary" size="mini" @click="addScene">{{$t('dataset.add_scene')}}
+      <el-button icon="el-icon-folder-add" type="primary" size="mini" @click="add('scene')">
+        {{$t('dataset.add_scene')}}
       </el-button>
     </el-row>
 
-    <el-row style="margin: 12px 0">
-      <el-input
-        size="mini"
-        placeholder="Search"
-        prefix-icon="el-icon-search"
-        v-model="search"
-        clearable>
-      </el-input>
+    <el-row>
+      <el-form>
+        <el-form-item class="form-item">
+          <el-input
+            size="mini"
+            :placeholder="$t('dataset.search')"
+            prefix-icon="el-icon-search"
+            v-model="search"
+            clearable>
+          </el-input>
+        </el-form-item>
+      </el-form>
     </el-row>
 
     <el-col class="custom-tree-container">
       <div class="block">
         <el-tree
+          :default-expanded-keys="expandedArray"
           :data="data"
           node-key="id"
           :expand-on-click-node="true"
           @node-click="nodeClick">
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>
-            <span v-if="data.show">
+            <span v-if="data.type === 'scene'">
               <el-button
-                icon="el-icon-document"
+                icon="el-icon-folder"
                 type="text"
                 size="mini">
-            </el-button>
+              </el-button>
             </span>
-            <span>{{ data.label }}</span>
+            <span style="margin-left: 6px">{{ data.label }}</span>
           </span>
           <span>
-            <el-button
-              icon="el-icon-plus"
-              type="text"
-              size="mini"
-              @click.stop="() => append(data)">
-            </el-button>
-            <el-button
-              icon="el-icon-more"
-              type="text"
-              size="mini"
-              @click.stop="() => remove(node, data)">
-            </el-button>
+            <span @click.stop v-if="data.type ==='group'">
+              <el-dropdown trigger="click" @command="clickAdd">
+                <span class="el-dropdown-link">
+                  <el-button
+                    icon="el-icon-plus"
+                    type="text"
+                    size="small">
+                  </el-button>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('group',data,node)">
+                    {{$t('dataset.group')}}
+                  </el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">
+                    {{$t('dataset.scene')}}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </span>
+            <span @click.stop style="margin-left: 12px;">
+              <el-dropdown trigger="click" @command="clickMore">
+                <span class="el-dropdown-link">
+                  <el-button
+                    icon="el-icon-more"
+                    type="text"
+                    size="small">
+                  </el-button>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                    {{$t('dataset.rename')}}
+                  </el-dropdown-item>
+                  <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
+                  <!--                    {{$t('dataset.move_to')}}-->
+                  <!--                  </el-dropdown-item>-->
+                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                    {{$t('dataset.delete')}}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </span>
           </span>
         </span>
         </el-tree>
       </div>
     </el-col>
 
-    <el-dialog :title="$t('dataset.group')" :visible="editGroup" :show-close="false">
+    <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false">
       <el-form :model="groupForm" :rules="groupFormRules" ref="groupForm">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="groupForm.name"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="close()">{{$t('commons.cancel')}}</el-button>
-        <el-button type="primary" @click="saveGroup()">{{$t('commons.confirm')}}</el-button>
+        <el-button @click="close()">{{$t('dataset.cancel')}}</el-button>
+        <el-button type="primary" @click="saveGroup(groupForm)">{{$t('dataset.confirm')}}</el-button>
       </div>
     </el-dialog>
   </el-col>
+
+  <el-col v-if="sceneMode">
+    <el-row>
+      <span>
+        {{ $t('dataset.scene') }}
+      </span>
+      <el-button icon="el-icon-back" size="mini" @click="sceneMode = false" style="float: right">
+        {{$t('dataset.back')}}
+      </el-button>
+    </el-row>
+    <el-divider/>
+    <el-row>
+      <el-button type="primary" size="mini" plain>
+        {{$t('dataset.add_table')}}
+      </el-button>
+      <el-button type="primary" size="mini" plain>
+        {{$t('dataset.update')}}
+      </el-button>
+      <el-button type="primary" size="mini" plain>
+        {{$t('dataset.process')}}
+      </el-button>
+    </el-row>
+    <el-row>
+      <el-form>
+        <el-form-item class="form-item">
+          <el-input
+            size="mini"
+            :placeholder="$t('dataset.search')"
+            prefix-icon="el-icon-search"
+            v-model="search"
+            clearable>
+          </el-input>
+        </el-form-item>
+      </el-form>
+    </el-row>
+
+    <!-- todo el-tree -->
+    <el-tree
+      :data="null"
+      node-key="id"
+      :expand-on-click-node="true"
+      @node-click="nodeClick">
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span>
+            <span v-if="data.type === 'scene'">
+              <el-button
+                icon="el-icon-folder"
+                type="text"
+                size="mini">
+              </el-button>
+            </span>
+            <span style="margin-left: 6px">{{ data.label }}</span>
+          </span>
+          <span>
+            <span @click.stop style="margin-left: 12px;">
+              <el-dropdown trigger="click" @command="clickMore">
+                <span class="el-dropdown-link">
+                  <el-button
+                    icon="el-icon-more"
+                    type="text"
+                    size="small">
+                  </el-button>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                    {{$t('dataset.rename')}}
+                  </el-dropdown-item>
+                  <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
+                  <!--                    {{$t('dataset.move_to')}}-->
+                  <!--                  </el-dropdown-item>-->
+                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                    {{$t('dataset.delete')}}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </span>
+          </span>
+        </span>
+    </el-tree>
+  </el-col>
+</el-col>
 </template>
 
 <script>
-  let id = 1000;
-  export default {
-    name: "Group",
-    data() {
-      const data = [{
-        id: 1,
-        label: '一级 1',
-        children: [{
-          id: 4,
-          label: '二级 1-1',
-          children: [{
-            id: 9,
-            label: '三级 1-1-1'
-          }, {
-            id: 10,
-            label: '三级 1-1-2'
-          }]
-        }]
-      }, {
-        id: 2,
-        label: '一级 2',
-        children: [{
-          id: 5,
-          label: '二级 2-1'
-        }, {
-          id: 6,
-          label: '二级 2-2'
-        }]
-      }, {
-        id: 3,
-        label: '一级 3',
-        children: [{
-          id: 7,
-          label: '二级 3-1'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }]
-      }];
+export default {
+  name: "Group",
+  data() {
+    return {
+      sceneMode: false,
+      dialogTitle: '',
+      search: '',
+      editGroup: false,
+      data: null,
+      expandedArray: [],
+      groupForm: {
+        name: '',
+        pid: null,
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      },
+      groupFormRules: {
+        name: [
+          {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
+        ],
+      }
+    }
+  },
+  mounted() {
+    this.tree(this.groupForm);
+  },
+  activated() {
+    this.tree(this.groupForm);
+  },
+  watch: {
+    // search(val){
+    //   this.groupForm.name = val;
+    //   this.tree(this.groupForm);
+    // }
+  },
+  methods: {
+    clickAdd(param) {
+      // console.log(param);
+      this.add(param.type);
+      this.groupForm.pid = param.data.id;
+      this.groupForm.level = param.data.level + 1;
+    },
 
+    beforeClickAdd(type, data, node) {
       return {
-        search: '',
-        editGroup: false,
-        data: JSON.parse(JSON.stringify(data)),
-        groupForm: {
-          name: '',
-          pid: null,
-          level: 0
-        },
-        groupFormRules: {
-          name: [
-            {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
-          ],
-        }
+        'type': type,
+        'data': data,
+        'node': node
       }
     },
-    mounted() {
 
+    clickMore(param) {
+      // console.log(param);
+      switch (param.type) {
+        case 'rename':
+          this.add(param.data.type);
+          this.groupForm = param.data;
+          break;
+        case 'move':
+
+          break;
+        case 'delete':
+          this.delete(param.data);
+          break;
+      }
     },
-    activated() {
 
+    beforeClickMore(type, data, node) {
+      return {
+        'type': type,
+        'data': data,
+        'node': node
+      }
     },
-    methods: {
-      addGroup() {
-        this.editGroup = true;
 
-      },
+    add(type) {
+      switch (type) {
+        case 'group':
+          this.dialogTitle = this.$t('dataset.group');
+          break;
+        case 'scene':
+          this.dialogTitle = this.$t('dataset.scene');
+          break;
+      }
+      this.groupForm.type = type;
+      this.editGroup = true;
+    },
 
-      saveGroup() {
-        console.log(this.groupForm);
-        this.$refs['groupForm'].validate((valid) => {
-          if (valid) {
-            this.$post("/dataset/group/save", this.groupForm, response => {
-              this.close();
-              this.$message({
-                message: this.$t('commons.save_success'),
-                type: 'success',
-                showClose: true,
-              });
-            })
-          } else {
+    saveGroup(group) {
+      // console.log(group);
+      this.$refs['groupForm'].validate((valid) => {
+        if (valid) {
+          this.$post("/dataset/group/save", group, response => {
+            this.close();
             this.$message({
-              message: this.$t('commons.input_content'),
-              type: 'error',
+              message: this.$t('commons.save_success'),
+              type: 'success',
               showClose: true,
             });
-            return false;
-          }
-        });
-      },
-
-      close() {
-        this.editGroup = false;
-        this.$refs['groupForm'].resetFields();
-      },
-
-      addScene() {
-        this.$message(
-          {
-            message: '添加场景',
-            type: 'success'
-          }
-        )
-      },
-
-      nodeClick(data, node) {
-        console.log(data);
-        console.log(node);
-      },
-
-      append(data) {
-        const newChild = {id: id++, label: 'testtest', children: [], show: true};
-        if (!data.children) {
-          this.$set(data, 'children', []);
+            this.tree(this.groupForm);
+          })
+        } else {
+          this.$message({
+            message: this.$t('commons.input_content'),
+            type: 'error',
+            showClose: true,
+          });
+          return false;
         }
-        data.children.push(newChild);
-      },
+      });
+    },
 
-      remove(node, data) {
-        const parent = node.parent;
-        const children = parent.data.children || parent.data;
-        const index = children.findIndex(d => d.id === data.id);
-        children.splice(index, 1);
-      },
-    }
+    delete(data) {
+      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
+        confirmButtonText: this.$t('dataset.confirm'),
+        cancelButtonText: this.$t('dataset.cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.$post("/dataset/group/delete/" + data.id, null, response => {
+          this.$message({
+            type: 'success',
+            message: this.$t('dataset.delete_success'),
+            showClose: true,
+          });
+          this.tree(this.groupForm);
+        });
+      }).catch(() => {
+      });
+    },
+
+    close() {
+      this.editGroup = false;
+      this.groupForm = {
+        name: '',
+        pid: null,
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      }
+    },
+
+    tree(group) {
+      this.$post("/dataset/group/tree", group, response => {
+        this.data = response.data;
+      })
+    },
+
+    nodeClick(data, node) {
+      // console.log(data);
+      // console.log(node);
+      if (data.type === 'scene') {
+        this.sceneMode = true;
+      }
+      if (node.expanded) {
+        this.expandedArray.push(data.id);
+      } else {
+        let index = this.expandedArray.indexOf(data.id);
+        if (index > -1) {
+          this.expandedArray.splice(index, 1);
+        }
+      }
+      // console.log(this.expandedArray);
+    },
   }
+}
 </script>
 
 <style scoped>
@@ -217,5 +377,17 @@
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
+  }
+
+  .custom-position {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    flex-flow: row nowrap;
+  }
+
+  .form-item {
+    margin-bottom: 0;
   }
 </style>

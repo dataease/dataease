@@ -1526,6 +1526,20 @@ export default {
     datalist:'数据列表',
     add_group:'添加分组',
     add_scene:'添加场景',
-    group:'分组'
+    group:'分组',
+    scene:'场景',
+    delete:'删除',
+    move_to:'移动到',
+    rename:'重命名',
+    tips:'提示',
+    confirm_delete:'确认删除',
+    delete_success:'删除成功',
+    confirm:'确认',
+    cancel:'取消',
+    search:'搜索',
+    back:'返回',
+    add_table:'添加表',
+    process:'进度',
+    update:'更新'
   }
 };

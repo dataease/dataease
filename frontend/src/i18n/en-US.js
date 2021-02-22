@@ -1523,6 +1523,20 @@ export default {
     datalist:'Data List',
     add_group:'Add Group',
     add_scene:'Add Scene',
-    group:'DataSet Group'
+    group:'Group',
+    scene:'Scene',
+    delete:'Delete',
+    move_to:'Move',
+    rename:'Rename',
+    tips:'Tips',
+    confirm_delete:'Confirm Delete',
+    delete_success:'Delete Success',
+    confirm:'Confirm',
+    cancel:'Cancel',
+    search:'Search',
+    back:'Back',
+    add_table:'Add Table',
+    process:'Process',
+    update:'Update'
   }
 };
