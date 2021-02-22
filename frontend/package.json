@@ -15,6 +15,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.12.0",
     "@fortawesome/free-solid-svg-icons": "^5.12.0",
     "@fortawesome/vue-fontawesome": "^0.1.9",
+    "@riophae/vue-treeselect": "0.4.0",
     "axios": "^0.21.1",
     "core-js": "^3.4.3",
     "diffable-html": "^4.0.0",
@@ -46,8 +47,7 @@
     "vuedraggable": "^2.24.3",
     "vuex": "^3.1.2",
     "xml-js": "^1.6.11",
-    "yan-progress": "^1.0.3",
-    "@riophae/vue-treeselect": "0.4.0"
+    "yan-progress": "^1.0.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.0",
