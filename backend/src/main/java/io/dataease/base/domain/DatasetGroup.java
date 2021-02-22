@@ -13,6 +13,8 @@ public class DatasetGroup implements Serializable {
 
     private Integer level;
 
+    private String type;
+
     private String createBy;
 
     private Long createTime;

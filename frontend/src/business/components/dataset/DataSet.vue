@@ -34,8 +34,8 @@
   .ms-aside-container {
     height: calc(100vh - 40px);
     padding: 20px;
-    min-width: 260px;
-    max-width: 460px;
+    min-width: 300px;
+    max-width: 500px;
   }
 
   .ms-main-container {

@@ -1523,6 +1523,21 @@ export default {
   dataset:{
     datalist:'數據列表',
     add_group:'添加分組',
-    add_scene:'添加場景'
+    add_scene:'添加場景',
+    group:'分組',
+    scene:'場景',
+    delete:'刪除',
+    move_to:'移動到',
+    rename:'重命名',
+    tips:'提示',
+    confirm_delete:'確認刪除',
+    delete_success:'刪除成功',
+    confirm:'確認',
+    cancel:'取消',
+    search:'搜索',
+    back:'返回',
+    add_table:'添加表',
+    process:'進度',
+    update:'更新'
   }
 };

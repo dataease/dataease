@@ -6,6 +6,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="pid" jdbcType="VARCHAR" property="pid" />
     <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
   </resultMap>
@@ -68,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, pid, `level`, create_by, create_time
+    id, `name`, pid, `level`, `type`, create_by, create_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetGroupExample" resultMap="BaseResultMap">
     select
@@ -102,11 +103,11 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetGroup">
     insert into dataset_group (id, `name`, pid, 
-      `level`, create_by, create_time
-      )
+      `level`, `type`, create_by, 
+      create_time)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
-      #{level,jdbcType=INTEGER}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}
-      )
+      #{level,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetGroup">
     insert into dataset_group
@@ -122,6 +123,9 @@
       </if>
       <if test="level != null">
         `level`,
+      </if>
+      <if test="type != null">
+        `type`,
       </if>
       <if test="createBy != null">
         create_by,
@@ -142,6 +146,9 @@
       </if>
       <if test="level != null">
         #{level,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
       </if>
       <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
@@ -172,6 +179,9 @@
       <if test="record.level != null">
         `level` = #{record.level,jdbcType=INTEGER},
       </if>
+      <if test="record.type != null">
+        `type` = #{record.type,jdbcType=VARCHAR},
+      </if>
       <if test="record.createBy != null">
         create_by = #{record.createBy,jdbcType=VARCHAR},
       </if>
@@ -189,6 +199,7 @@
       `name` = #{record.name,jdbcType=VARCHAR},
       pid = #{record.pid,jdbcType=VARCHAR},
       `level` = #{record.level,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT}
     <if test="_parameter != null">
@@ -207,6 +218,9 @@
       <if test="level != null">
         `level` = #{level,jdbcType=INTEGER},
       </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=VARCHAR},
+      </if>
       <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
       </if>
@@ -221,6 +235,7 @@
     set `name` = #{name,jdbcType=VARCHAR},
       pid = #{pid,jdbcType=VARCHAR},
       `level` = #{level,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=VARCHAR}
