@@ -6,7 +6,6 @@
     <result column="pid" jdbcType="BIGINT" property="pid" />
     <result column="sub_count" jdbcType="INTEGER" property="subCount" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="level" jdbcType="INTEGER" property="level" />
     <result column="dept_sort" jdbcType="INTEGER" property="deptSort" />
     <result column="enabled" jdbcType="BIT" property="enabled" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
@@ -73,8 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    dept_id, pid, sub_count, `name`, `level`, dept_sort, enabled, create_by, update_by, 
-    create_time, update_time
+    dept_id, pid, sub_count, `name`, dept_sort, enabled, create_by, update_by, create_time, 
+    update_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.SysDeptExample" resultMap="BaseResultMap">
     select
@@ -108,13 +107,13 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.SysDept">
     insert into sys_dept (dept_id, pid, sub_count, 
-      `name`, `level`, dept_sort, 
-      enabled, create_by, update_by, 
-      create_time, update_time)
+      `name`, dept_sort, enabled, 
+      create_by, update_by, create_time, 
+      update_time)
     values (#{deptId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER}, 
-      #{name,jdbcType=VARCHAR}, #{level,jdbcType=INTEGER}, #{deptSort,jdbcType=INTEGER}, 
-      #{enabled,jdbcType=BIT}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+      #{name,jdbcType=VARCHAR}, #{deptSort,jdbcType=INTEGER}, #{enabled,jdbcType=BIT}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.SysDept">
     insert into sys_dept
@@ -130,9 +129,6 @@
       </if>
       <if test="name != null">
         `name`,
-      </if>
-      <if test="level != null">
-        `level`,
       </if>
       <if test="deptSort != null">
         dept_sort,
@@ -165,9 +161,6 @@
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="level != null">
-        #{level,jdbcType=INTEGER},
       </if>
       <if test="deptSort != null">
         #{deptSort,jdbcType=INTEGER},
@@ -210,9 +203,6 @@
       <if test="record.name != null">
         `name` = #{record.name,jdbcType=VARCHAR},
       </if>
-      <if test="record.level != null">
-        `level` = #{record.level,jdbcType=INTEGER},
-      </if>
       <if test="record.deptSort != null">
         dept_sort = #{record.deptSort,jdbcType=INTEGER},
       </if>
@@ -242,7 +232,6 @@
       pid = #{record.pid,jdbcType=BIGINT},
       sub_count = #{record.subCount,jdbcType=INTEGER},
       `name` = #{record.name,jdbcType=VARCHAR},
-      `level` = #{record.level,jdbcType=INTEGER},
       dept_sort = #{record.deptSort,jdbcType=INTEGER},
       enabled = #{record.enabled,jdbcType=BIT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
@@ -264,9 +253,6 @@
       </if>
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="level != null">
-        `level` = #{level,jdbcType=INTEGER},
       </if>
       <if test="deptSort != null">
         dept_sort = #{deptSort,jdbcType=INTEGER},
@@ -294,7 +280,6 @@
     set pid = #{pid,jdbcType=BIGINT},
       sub_count = #{subCount,jdbcType=INTEGER},
       `name` = #{name,jdbcType=VARCHAR},
-      `level` = #{level,jdbcType=INTEGER},
       dept_sort = #{deptSort,jdbcType=INTEGER},
       enabled = #{enabled,jdbcType=BIT},
       create_by = #{createBy,jdbcType=VARCHAR},
