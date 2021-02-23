@@ -87,7 +87,7 @@
             :load-options="loadDepts"
             :options="depts"
             style="width: 370px;"
-            placeholder="选择上级类目"
+            placeholder="选择上级类目"            
           />
         </el-form-item>
       </el-form>
@@ -139,9 +139,8 @@ export default {
   data() {
     return {
       rootNodeLoaded: false,
-      depts:null,
-      formType:"add",
-
+      depts: null,
+      formType: "add",
       queryPath: '/api/dept/childNodes',
       deletePath: '/api/dept/delete',
       createPath: '/api/dept/create',
@@ -184,15 +183,49 @@ export default {
       this.formType = "modify";
       this.oldPid = row.pid;
       this.form = Object.assign({}, row);
-      // this.treeByRow(row);
+      this.treeByRow(row);
       listenGoBack(this.closeFunc);
     },
 
     treeByRow(row){
       !this.depts && (this.depts = [])
-      if (!this.depts.some(node => node.id==row.deptId)) {
-        this.depts.push(this.normalizer(row));
+      if (!this.depts.some(node => node.id==row.pid) && row.pid!=0) {
+        const arr = this.mapToArray();
+        const ids = arr.map(item => item.id);
+        const tempTreeNodes = this.treeByArr(arr);
+        const pnodes = this.tableData.filter(node => (node.pid==0) && (ids.indexOf(node.deptId)==-1)).map(node => this.normalizer(node))
+        const showNodes = tempTreeNodes.concat(pnodes)                  
+        this.depts = this.depts.concat(showNodes);                  
       }
+    },
+
+   mapToArray() {
+      const result = new Array();
+
+      this.maps.forEach((value, key) => {
+        if(value.hasOwnProperty('row')){
+          result.push(this.editNormalizer(value.row))
+        }        
+      })
+      return result;
+    },
+    treeByArr(arr){
+      if(!Array.isArray(arr) || !arr.length) return;
+        let map = {};
+        arr.forEach(item => map[item.id] = item);
+
+        let roots = [];
+        arr.forEach(item => {
+            const parent = map[item.pid];
+            if(parent){
+                (parent.children || (parent.children=[])).push(item);
+            }
+            else{
+                roots.push(item);
+            }
+        })
+        return roots;
+      
     },
 
 
@@ -222,6 +255,7 @@ export default {
       this.initTableData();
       this.form = {};
       this.oldPid = null;
+      this.depts = null;
       removeGoBackListener(this.closeFunc);
       this.dialogOrgAddVisible = false;
 
@@ -256,6 +290,14 @@ export default {
         id: node.deptId,
         label:node.name,
         children:node.children
+      }
+    },
+    editNormalizer(node) {
+      return {
+        id: node.deptId,
+        pid: node.pid,
+        label: node.name,
+        children: node.children
       }
     },
     // 改变状态
@@ -324,7 +366,25 @@ export default {
         this.$set(this.$refs.table.store.states.lazyTreeNodeMap, pid, []);
         this.initTableData(row, treeNode, resolve);
       }
+    },
+    array2Tree(arr){
+        if(!Array.isArray(arr) || !arr.length) return;
+        let map = {};
+        arr.forEach(item => map[item.id] = item);
+
+        let roots = [];
+        arr.forEach(item => {
+            const parent = map[item.pid];
+            if(parent){
+                (parent.children || (parent.children=[])).push(item);
+            }
+            else{
+                roots.push(item);
+            }
+        })
+        return roots;
     }
+    
   }
 
 }
