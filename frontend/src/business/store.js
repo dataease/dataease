@@ -3,6 +3,17 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex);
 
+const Dataset = {
+  state: {
+    sceneData: ""
+  },
+  mutations: {
+    setSceneData(state, sceneData) {
+      state.sceneData = sceneData;
+    }
+  }
+}
+
 const Common = {
   state: {
     projectId: ""
@@ -56,5 +67,6 @@ export default new Vuex.Store({
     common: Common,
     switch: Switch,
     isReadOnly: IsReadOnly,
+    dataset: Dataset
   }
 })

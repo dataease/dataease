@@ -1544,6 +1544,8 @@ export default {
     sql_data: 'SQL數據集',
     excel_data: 'Excel數據集',
     custom_data: '自助數據集',
-    pls_slc_tbl_left:'請從左側選擇表'
+    pls_slc_tbl_left:'請從左側選擇表',
+    add_db_table:'添加數據庫表',
+    pls_slc_data_source:'請選擇數據庫連接'
   }
 };

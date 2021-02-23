@@ -1543,6 +1543,8 @@ export default {
     sql_data: 'SQL Data',
     excel_data: 'Excel Data',
     custom_data: 'Custom Data',
-    pls_slc_tbl_left:'Please select table from left'
+    pls_slc_tbl_left:'Please select table from left',
+    add_db_table:'Add Table',
+    pls_slc_data_source:'Select Data Source'
   }
 };
