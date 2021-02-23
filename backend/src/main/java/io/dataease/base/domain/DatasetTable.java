@@ -19,5 +19,7 @@ public class DatasetTable implements Serializable {
 
     private Long createTime;
 
+    private String info;
+
     private static final long serialVersionUID = 1L;
 }

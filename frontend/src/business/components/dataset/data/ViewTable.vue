@@ -19,7 +19,7 @@
 
     <el-tabs v-model="tabActive">
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
-        <tab-data-preview/>
+        <tab-data-preview :table="table" :fields="fields" :data="data"/>
       </el-tab-pane>
       <el-tab-pane label="tab2" name="tab2">
         tab2
@@ -46,7 +46,9 @@ export default {
       table: {
         name: ''
       },
-      tabActive: 'dataPreview'
+      fields: [],
+      data: [],
+      tabActive: 'dataPreview',
     }
   },
   computed: {
@@ -66,10 +68,32 @@ export default {
   },
   methods: {
     initTable(id) {
+      console.log(id);
       if (id !== null) {
+        this.data = [];
         this.$post('/dataset/table/get/' + id, null, response => {
           this.table = response.data;
+          this.initTableFields();
         })
+      }
+    },
+
+    initTableFields() {
+      if (this.table.id) {
+        this.$post('/dataset/table/getFields', this.table, response => {
+          // console.log(response.data);
+          this.fields = response.data;
+          this.initTableData();
+        });
+      }
+    },
+    initTableData() {
+      if (this.table.id) {
+        this.$post('/dataset/table/getData', this.table, response => {
+          // console.log(response.data);
+          this.data = response.data;
+          console.log(this.data)
+        });
       }
     },
 

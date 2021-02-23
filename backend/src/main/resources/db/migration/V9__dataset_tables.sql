@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table` (
   `scene_id` varchar(50) NOT NULL COMMENT '场景ID',
   `data_source_id` varchar(50) NOT NULL COMMENT '数据源ID',
   `type` varchar(50) COMMENT 'db,sql,excel,custom',
+  `info` longtext COMMENT '表原始信息',
   `create_by` varchar(50)  COMMENT '创建人ID',
   `create_time` bigint(13) COMMENT '创建时间',
   PRIMARY KEY (`id`)

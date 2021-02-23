@@ -2,22 +2,15 @@
 <el-col>
   <el-table
     size="mini"
-    :data="tableData"
+    :data="data"
     border
-    style="width: 100%">
+    style="width: 100%;">
     <el-table-column
-      prop="date"
-      label="日期"
-      width="180">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      label="姓名"
-      width="180">
-    </el-table-column>
-    <el-table-column
-      prop="address"
-      label="地址">
+      width="180px"
+      v-for="field in fields"
+      :key="field.fieldName"
+      :prop="field.fieldName"
+      :label="field.fieldName">
     </el-table-column>
   </el-table>
 </el-col>
@@ -25,6 +18,11 @@
 
 <script>
 export default {
+  props: {
+    table: Object,
+    fields: Array,
+    data: Array
+  },
   name: "TabDataPreview",
   data() {
     return {

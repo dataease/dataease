@@ -2,6 +2,7 @@ package io.dataease.controller.dataset;
 
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.datasource.dto.TableFiled;
 import io.dataease.service.dataset.DataSetTableService;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +42,15 @@ public class DataSetTableController {
     @PostMapping("get/{id}")
     public DatasetTable get(@PathVariable String id) {
         return dataSetTableService.get(id);
+    }
+
+    @PostMapping("getFields")
+    public List<TableFiled> getFields(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getFields(dataSetTableRequest);
+    }
+
+    @PostMapping("getData")
+    public List<Object> getData(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getData(dataSetTableRequest);
     }
 }

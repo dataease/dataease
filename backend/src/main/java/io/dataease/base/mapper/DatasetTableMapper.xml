@@ -10,6 +10,9 @@
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
   </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.DatasetTable">
+    <result column="info" jdbcType="LONGVARCHAR" property="info" />
+  </resultMap>
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -71,6 +74,25 @@
   <sql id="Base_Column_List">
     id, `name`, scene_id, data_source_id, `type`, create_by, create_time
   </sql>
+  <sql id="Blob_Column_List">
+    info
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.DatasetTableExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from dataset_table
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -85,9 +107,11 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from dataset_table
     where id = #{id,jdbcType=VARCHAR}
   </select>
@@ -104,10 +128,10 @@
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTable">
     insert into dataset_table (id, `name`, scene_id, 
       data_source_id, `type`, create_by, 
-      create_time)
+      create_time, info)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
       #{dataSourceId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT})
+      #{createTime,jdbcType=BIGINT}, #{info,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTable">
     insert into dataset_table
@@ -133,6 +157,9 @@
       <if test="createTime != null">
         create_time,
       </if>
+      <if test="info != null">
+        info,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -155,6 +182,9 @@
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -188,7 +218,24 @@
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
       </if>
+      <if test="record.info != null">
+        info = #{record.info,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update dataset_table
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      scene_id = #{record.sceneId,jdbcType=VARCHAR},
+      data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      info = #{record.info,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -227,7 +274,21 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
+      <if test="info != null">
+        info = #{info,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.base.domain.DatasetTable">
+    update dataset_table
+    set `name` = #{name,jdbcType=VARCHAR},
+      scene_id = #{sceneId,jdbcType=VARCHAR},
+      data_source_id = #{dataSourceId,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      info = #{info,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.DatasetTable">
