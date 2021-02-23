@@ -51,7 +51,8 @@
     "yan-progress": "^1.0.3",
     "sass": "^1.26.10",
     "sass-loader": "^7.1.0",
-    "svgo": "1.2.0"
+    "svgo": "1.2.0",
+    "svg-sprite-loader": "4.1.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.0",
