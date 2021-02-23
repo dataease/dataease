@@ -40,3 +40,17 @@ CREATE TABLE IF NOT EXISTS `sys_menu` (
   UNIQUE KEY `uniq_name` (`name`),
   KEY `inx_pid` (`pid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统菜单';
+
+
+CREATE TABLE IF NOT EXISTS `sys_role` (
+  `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(255) NOT NULL COMMENT '名称',
+  `description` varchar(255) DEFAULT NULL COMMENT '描述',
+  `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',
+  `update_by` varchar(255) DEFAULT NULL COMMENT '更新者',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
+  `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`role_id`) USING BTREE,
+  UNIQUE KEY `uniq_name` (`name`),
+  KEY `role_name_index` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
