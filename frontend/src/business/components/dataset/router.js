@@ -18,12 +18,12 @@ export default {
   children: [
     {
       path: 'home',
-      name: 'DataSetHome',
+      name: 'home',
       component: DataSetHome,
     },
     {
       path: 'add_db',
-      name: 'DataSetAddDB',
+      name: 'add_db',
       component: DataSetAddDB,
     },
     // {

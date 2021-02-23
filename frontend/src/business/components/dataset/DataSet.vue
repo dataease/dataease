@@ -33,7 +33,7 @@
 <style scoped>
   .ms-aside-container {
     height: calc(100vh - 40px);
-    padding: 20px;
+    padding: 15px;
     min-width: 300px;
     max-width: 500px;
   }

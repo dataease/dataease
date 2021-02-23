@@ -14,6 +14,7 @@ export default {
     delete_cancelled: '已取消刪除',
     workspace: '工作空間',
     organization: '組織',
+    menu: '菜單',
     setting: '設置',
     project: '項目',
     about_us: '關於',
@@ -1543,6 +1544,8 @@ export default {
     sql_data: 'SQL數據集',
     excel_data: 'Excel數據集',
     custom_data: '自助數據集',
-    pls_slc_tbl_left:'請從左側選擇表'
+    pls_slc_tbl_left:'請從左側選擇表',
+    add_db_table:'添加數據庫表',
+    pls_slc_data_source:'請選擇數據庫連接'
   }
 };

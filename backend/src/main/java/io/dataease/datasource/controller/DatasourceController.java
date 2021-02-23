@@ -24,7 +24,7 @@ public class DatasourceController {
     }
 
     @PostMapping("/validate")
-    public void validate(@RequestBody Datasource datasource) throws Exception{
+    public void validate(@RequestBody Datasource datasource) throws Exception {
         datasourceService.validate(datasource);
     }
 
@@ -34,7 +34,7 @@ public class DatasourceController {
     }
 
     @PostMapping("/list/{goPage}/{pageSize}")
-    public Pager<List<Datasource>> getDatasourceList(@RequestBody Datasource request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception{
+    public Pager<List<Datasource>> getDatasourceList(@RequestBody Datasource request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, datasourceService.getDatasourceList(request));
     }
@@ -47,5 +47,10 @@ public class DatasourceController {
     @PostMapping("/update")
     public void updateDatasource(@RequestBody Datasource Datasource) {
         datasourceService.updateDatasource(Datasource);
+    }
+
+    @PostMapping("/getTables")
+    public List<String> getTables(@RequestBody Datasource datasource) throws Exception {
+        return datasourceService.getTables(datasource);
     }
 }

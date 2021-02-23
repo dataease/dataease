@@ -2,10 +2,13 @@
 <el-col>
   <!-- group -->
   <el-col v-if="!sceneMode">
-    <span>
-      {{ $t('dataset.datalist') }}
-    </span>
+    <el-row class="title-css">
+      <span class="title-text">
+        {{ $t('dataset.datalist') }}
+      </span>
+    </el-row>
     <el-divider/>
+
     <el-row>
       <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
         {{$t('dataset.add_group')}}
@@ -46,7 +49,7 @@
                 size="mini">
               </el-button>
             </span>
-            <span style="margin-left: 6px">{{ data.label }}</span>
+            <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
           <span>
             <span @click.stop v-if="data.type ==='group'">
@@ -111,8 +114,8 @@
 
   <!--scene-->
   <el-col v-if="sceneMode">
-    <el-row>
-      <span>
+    <el-row class="title-css">
+      <span class="title-text">
         {{currGroup.name}}
       </span>
       <el-button icon="el-icon-back" size="mini" @click="back" style="float: right">
@@ -160,13 +163,13 @@
         </el-form-item>
       </el-form>
     </el-row>
-
+    <span v-show="false">{{sceneData}}</span>
     <!-- todo el-tree -->
     <el-tree
       :data="null"
       node-key="id"
       :expand-on-click-node="true"
-      @node-click="nodeClick">
+      @node-click="sceneClick">
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>
             <span v-if="data.type === 'scene'">
@@ -176,7 +179,7 @@
                 size="mini">
               </el-button>
             </span>
-            <span style="margin-left: 6px">{{ data.label }}</span>
+            <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
           <span>
             <span @click.stop style="margin-left: 12px;">
@@ -235,11 +238,19 @@ export default {
       }
     }
   },
+  computed: {
+    sceneData: function () {
+      console.log(this.$store.state.dataset.sceneData + ' do post');
+      return this.$store.state.dataset.sceneData;
+    }
+  },
   mounted() {
     this.tree(this.groupForm);
+    this.$router.push('/dataset');
   },
   activated() {
     this.tree(this.groupForm);
+    this.$router.push('/dataset');
   },
   watch: {
     // search(val){
@@ -384,19 +395,19 @@ export default {
     },
 
     clickAddData(param) {
-      console.log(param);
+      // console.log(param);
       switch (param.type) {
         case 'db':
           this.addDB();
           break;
         case 'sql':
-
+          this.$message(param.type);
           break;
         case 'excel':
-
+          this.$message(param.type);
           break;
         case 'custom':
-
+          this.$message(param.type);
           break;
       }
     },
@@ -407,8 +418,17 @@ export default {
       }
     },
 
+    sceneClick() {
+
+    },
+
     addDB() {
-      this.$router.push('/dataset/add_db');
+      this.$router.push({
+        name: 'add_db',
+        params: {
+          scene: this.currGroup
+        }
+      })
     }
   }
 }
@@ -442,5 +462,13 @@ export default {
 
   .form-item {
     margin-bottom: 0;
+  }
+
+  .title-css {
+    height: 26px;
+  }
+
+  .title-text {
+    line-height: 26px;
   }
 </style>
