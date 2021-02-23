@@ -16,6 +16,7 @@ export const PROJECT_NAME = 'project_name';
 export const REFRESH_SESSION_USER_URL = 'user/refresh';
 export const WORKSPACE = 'workspace';
 export const ORGANIZATION = 'organization';
+export const MENU = 'menu';
 export const DEFAULT = 'default';
 
 export const ZH_CN = 'zh_CN';

@@ -22,6 +22,11 @@ export default {
       component: () => import('@/business/components/settings/sys/dept'),
       meta: {system: true, title: 'commons.organization'}
     },
+    {
+      path: 'menu',
+      component: () => import('@/business/components/settings/sys/menu'),
+      meta: {system: true, title: 'commons.menu'}
+    },
     // {
     //   path: 'systemworkspace',
     //   component: () => import('@/business/components/settings/system/SystemWorkspace'),

@@ -14,6 +14,7 @@ export default {
     delete_cancelled: '已取消刪除',
     workspace: '工作空間',
     organization: '組織',
+    menu: '菜單',
     setting: '設置',
     project: '項目',
     about_us: '關於',

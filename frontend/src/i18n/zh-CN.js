@@ -14,6 +14,7 @@ export default {
     delete_cancelled: '已取消删除',
     workspace: '工作空间',
     organization: '组织',
+    menu: '菜单',
     setting: '设置',
     project: '项目',
     about_us: '关于',
@@ -241,6 +242,11 @@ export default {
     select: '选择工作空间',
     special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
     delete_warning: '删除该工作空间将同步删除该工作空间下所有项目，以及项目中的所有用例、接口测试、性能测试等,确定要删除吗?',
+  },
+  menu: {
+    create: '创建菜单',
+    modify: '修改菜单',
+    delete: '删除菜单',
   },
   organization: {
     create: '创建组织',

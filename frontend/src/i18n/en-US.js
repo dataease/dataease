@@ -13,6 +13,7 @@ export default {
     delete_cancelled: 'Delete cancelled',
     workspace: 'Workspace',
     organization: 'Organization',
+    menu: 'Menu',
     setting: 'Setting',
     project: 'Project',
     about_us: 'About Us',

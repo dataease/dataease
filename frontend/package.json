@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "svgo": "svgo -f src/assets/icons/svg --config=src/assets/icons/svgo.yml"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^18.0.0",
@@ -47,7 +48,10 @@
     "vuedraggable": "^2.24.3",
     "vuex": "^3.1.2",
     "xml-js": "^1.6.11",
-    "yan-progress": "^1.0.3"
+    "yan-progress": "^1.0.3",
+    "sass": "^1.26.10",
+    "sass-loader": "^7.1.0",
+    "svgo": "1.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.0",
