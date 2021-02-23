@@ -8,6 +8,7 @@ import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
+import io.dataease.datasource.request.DatasourceRequest;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -65,8 +66,9 @@ public class DatasourceService {
 
     public void validate(Datasource datasource)throws Exception {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-        datasourceProvider.setDatasource(datasource);
-        datasourceProvider.test();
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(datasource);
+        datasourceProvider.test(datasourceRequest);
     }
 
 

@@ -4,25 +4,22 @@ import com.google.gson.Gson;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.datasource.dto.TableFiled;
+import io.dataease.datasource.request.DatasourceRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
 import java.sql.*;
 import java.util.*;
-
-import io.dataease.datasource.constants.DatasourceTypes.*;
-
 
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider{
 
     @Override
-    public List<String[]> getData() throws Exception {
+    public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         List<String[]> list = new LinkedList<>();
         try (
-            Connection connection = getConnection();
+            Connection connection = getConnection(datasourceRequest);
             Statement stat = connection.createStatement();
-            ResultSet rs = stat.executeQuery(getQuery())
+            ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())
         ) {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -50,11 +47,14 @@ public class JdbcProvider extends DatasourceProvider{
     }
 
     @Override
-    public List<String> getTables() throws Exception {
+    public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
 
         String queryStr = "show tables";
-        try (Connection con = getConnection(); Statement ps = con.createStatement()) {
+        if(StringUtils.isNotEmpty(datasourceRequest.getQuery())){
+            queryStr = datasourceRequest.getQuery();
+        }
+        try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
             ResultSet resultSet = ps.executeQuery(queryStr);
             while (resultSet.next()){
                 tables.add(resultSet.getString(1));
@@ -66,17 +66,17 @@ public class JdbcProvider extends DatasourceProvider{
     }
 
     @Override
-    public List<TableFiled> getTableFileds(String table) throws Exception{
+    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception{
         List<TableFiled> list = new LinkedList<>();
         try (
-            Connection connection = getConnection();
+            Connection connection = getConnection(datasourceRequest);
         ) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet resultSet = databaseMetaData.getColumns(null, "%", table.toUpperCase(), "%");
+            ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable().toUpperCase(), "%");
             while (resultSet.next()) {
                 String tableName=resultSet.getString("TABLE_NAME");
                 String database = resultSet.getString("TABLE_CAT");
-                if(tableName.equals(table) && database.equalsIgnoreCase(getDatabase())){
+                if(tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))){
                     TableFiled tableFiled = new TableFiled();
                     String colName = resultSet.getString("COLUMN_NAME");
                     tableFiled.setFieldName(colName);
@@ -99,24 +99,24 @@ public class JdbcProvider extends DatasourceProvider{
     };
 
     @Override
-    public void test() throws Exception {
+    public void test(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = "show tables";
-        try (Connection con = getConnection(); Statement ps = con.createStatement()) {
+        try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
             ResultSet resultSet = ps.executeQuery(queryStr);
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
         }
     }
 
-    private Connection getConnection() throws Exception {
+    private Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
         String username = null;
         String password = null;
         String driver = null;
         String jdbcurl = null;
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(getDatasource().getType());
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType){
             case mysql:
-                MysqlConfigrationDTO mysqlConfigrationDTO  = new Gson().fromJson(getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
+                MysqlConfigrationDTO mysqlConfigrationDTO  = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
                 username = mysqlConfigrationDTO.getUsername();
                 password = mysqlConfigrationDTO.getPassword();
                 driver = mysqlConfigrationDTO.getDriver();
@@ -135,11 +135,11 @@ public class JdbcProvider extends DatasourceProvider{
         return DriverManager.getConnection(jdbcurl, props);
     }
 
-    private String getDatabase(){
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(getDatasource().getType());
+    private String getDatabase(DatasourceRequest datasourceRequest){
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
-                MysqlConfigrationDTO mysqlConfigrationDTO = new Gson().fromJson(getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
+                MysqlConfigrationDTO mysqlConfigrationDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
                 return mysqlConfigrationDTO.getDataBase();
             default:
                 return null;
