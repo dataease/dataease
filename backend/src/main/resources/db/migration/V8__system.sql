@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS `sys_dept` (
   `enabled` bit(1) NOT NULL COMMENT '状态',
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',
   `update_by` varchar(255) DEFAULT NULL COMMENT '更新者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
+  `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`dept_id`) USING BTREE,
   KEY `inx_pid` (`pid`),
   KEY `inx_enabled` (`enabled`)

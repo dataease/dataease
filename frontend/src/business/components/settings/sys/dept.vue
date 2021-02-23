@@ -31,8 +31,8 @@
                 </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建日期">
-                <template slot-scope="scope">
-                <span>{{ scope.row.createTime }}</span>
+                <template v-slot:default="scope">
+                  <span>{{ scope.row.createTime | timestampFormatDate }}</span>
                 </template>
             </el-table-column>
 

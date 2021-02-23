@@ -50,7 +50,7 @@ public class DeptService {
         if (deptCreateRequest.isTop()){
             sysDept.setPid(DEPT_ROOT_PID);
         }
-        Date now = new Date();
+        long now = System.currentTimeMillis();
         sysDept.setCreateTime(now);
         sysDept.setUpdateTime(now);
         sysDept.setCreateBy(null);
@@ -92,7 +92,7 @@ public class DeptService {
         if (deptCreateRequest.isTop()){
             sysDept.setPid(DEPT_ROOT_PID);
         }
-        sysDept.setUpdateTime(new Date());
+        sysDept.setUpdateTime(System.currentTimeMillis());
         sysDept.setUpdateBy(null);
         Long deptId = sysDept.getDeptId();
         SysDept dept_old = sysDeptMapper.selectByPrimaryKey(deptId);
