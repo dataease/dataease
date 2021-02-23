@@ -81,9 +81,23 @@ export default {
     },
 
     save() {
-      console.log(this.checkTableList);
-      console.log(this.scene);
-      this.$store.commit('setSceneData',new Date().getTime());
+      // console.log(this.checkTableList);
+      // console.log(this.scene);
+      let sceneId = this.scene.id;
+      let dataSourceId = this.dataSource;
+      let tables = [];
+      this.checkTableList.forEach(function (name) {
+        tables.push({
+          name: name,
+          sceneId: sceneId,
+          dataSourceId: dataSourceId,
+          type: 'db'
+        })
+      });
+      this.$post('/dataset/table/batchAdd', tables, response => {
+        this.$store.commit('setSceneData', new Date().getTime());
+        this.cancel();
+      });
     },
 
     cancel() {

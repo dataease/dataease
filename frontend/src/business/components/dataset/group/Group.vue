@@ -164,20 +164,15 @@
       </el-form>
     </el-row>
     <span v-show="false">{{sceneData}}</span>
-    <!-- todo el-tree -->
     <el-tree
-      :data="null"
+      :data="tableData"
       node-key="id"
       :expand-on-click-node="true"
       @node-click="sceneClick">
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>
-            <span v-if="data.type === 'scene'">
-              <el-button
-                icon="el-icon-folder"
-                type="text"
-                size="mini">
-              </el-button>
+            <span>
+              ({{data.type}})
             </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
@@ -192,13 +187,13 @@
                   </el-button>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameTable',data,node)">
                     {{$t('dataset.rename')}}
                   </el-dropdown-item>
                   <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
                   <!--                    {{$t('dataset.move_to')}}-->
                   <!--                  </el-dropdown-item>-->
-                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteTable',data,node)">
                     {{$t('dataset.delete')}}
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -207,6 +202,19 @@
           </span>
         </span>
     </el-tree>
+
+    <el-dialog :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
+      <el-form :model="tableForm" :rules="tableFormRules" ref="tableForm">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="tableForm.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="closeTable()" size="mini">{{$t('dataset.cancel')}}</el-button>
+        <el-button type="primary" @click="saveTable(tableForm)" size="mini">{{$t('dataset.confirm')}}</el-button>
+      </div>
+    </el-dialog>
+
   </el-col>
 </el-col>
 </template>
@@ -220,7 +228,9 @@ export default {
       dialogTitle: '',
       search: '',
       editGroup: false,
-      data: null,
+      editTable: false,
+      data: [],
+      tableData: [],
       currGroup: null,
       expandedArray: [],
       groupForm: {
@@ -231,7 +241,16 @@ export default {
         children: [],
         sort: 'type desc,name asc'
       },
+      tableForm: {
+        name: '',
+        sort: 'type asc,create_time desc,name asc'
+      },
       groupFormRules: {
+        name: [
+          {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
+        ],
+      },
+      tableFormRules: {
         name: [
           {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
         ],
@@ -241,15 +260,18 @@ export default {
   computed: {
     sceneData: function () {
       console.log(this.$store.state.dataset.sceneData + ' do post');
+      this.tableTree();
       return this.$store.state.dataset.sceneData;
     }
   },
   mounted() {
     this.tree(this.groupForm);
+    this.tableTree();
     this.$router.push('/dataset');
   },
   activated() {
     this.tree(this.groupForm);
+    this.tableTree();
     this.$router.push('/dataset');
   },
   watch: {
@@ -275,17 +297,24 @@ export default {
     },
 
     clickMore(param) {
-      // console.log(param);
+      console.log(param);
       switch (param.type) {
         case 'rename':
           this.add(param.data.type);
-          this.groupForm = param.data;
+          this.groupForm = JSON.parse(JSON.stringify(param.data));
           break;
         case 'move':
 
           break;
         case 'delete':
           this.delete(param.data);
+          break;
+        case 'renameTable':
+          this.editTable = true;
+          this.tableForm = JSON.parse(JSON.stringify(param.data));
+          break;
+        case 'deleteTable':
+          this.deleteTable(param.data);
           break;
       }
     },
@@ -335,6 +364,32 @@ export default {
       });
     },
 
+    saveTable(table) {
+      console.log(table);
+      this.$refs['tableForm'].validate((valid) => {
+        if (valid) {
+          this.$post("/dataset/table/update", table, response => {
+            this.closeTable();
+            this.$message({
+              message: this.$t('commons.save_success'),
+              type: 'success',
+              showClose: true,
+            });
+            this.tableTree();
+            this.$router.push('/dataset/home');
+            this.$store.commit('setTable', null);
+          })
+        } else {
+          this.$message({
+            message: this.$t('commons.input_content'),
+            type: 'error',
+            showClose: true,
+          });
+          return false;
+        }
+      });
+    },
+
     delete(data) {
       this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
         confirmButtonText: this.$t('dataset.confirm'),
@@ -353,6 +408,26 @@ export default {
       });
     },
 
+    deleteTable(data) {
+      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
+        confirmButtonText: this.$t('dataset.confirm'),
+        cancelButtonText: this.$t('dataset.cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.$post("/dataset/table/delete/" + data.id, null, response => {
+          this.$message({
+            type: 'success',
+            message: this.$t('dataset.delete_success'),
+            showClose: true,
+          });
+          this.tableTree();
+          this.$router.push('/dataset/home');
+          this.$store.commit('setTable', null);
+        });
+      }).catch(() => {
+      });
+    },
+
     close() {
       this.editGroup = false;
       this.groupForm = {
@@ -365,10 +440,29 @@ export default {
       }
     },
 
+    closeTable() {
+      this.editTable = false;
+      this.tableForm = {
+        name: '',
+      }
+    },
+
     tree(group) {
       this.$post("/dataset/group/tree", group, response => {
         this.data = response.data;
       })
+    },
+
+    tableTree() {
+      this.tableData = [];
+      if (this.currGroup) {
+        this.$post('/dataset/table/list', {
+          sort: 'type asc,create_time desc,name asc',
+          sceneId: this.currGroup.id
+        }, response => {
+          this.tableData = response.data;
+        });
+      }
     },
 
     nodeClick(data, node) {
@@ -418,10 +512,6 @@ export default {
       }
     },
 
-    sceneClick() {
-
-    },
-
     addDB() {
       this.$router.push({
         name: 'add_db',
@@ -429,8 +519,20 @@ export default {
           scene: this.currGroup
         }
       })
-    }
-  }
+    },
+
+    sceneClick(data, node) {
+      // console.log(data);
+      this.$store.commit('setTable', data.id);
+      this.$router.push({
+        name: 'table',
+        params: {
+          table: data
+        }
+      });
+    },
+
+  },
 }
 </script>
 

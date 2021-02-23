@@ -1545,6 +1545,10 @@ export default {
     custom_data: 'Custom Data',
     pls_slc_tbl_left:'Please select table from left',
     add_db_table:'Add Table',
-    pls_slc_data_source:'Select Data Source'
+    pls_slc_data_source:'Select Data Source',
+    table:'Table',
+    edit: 'Edit',
+    create_view: 'Create View',
+    data_preview:'Data Preview'
   }
 };

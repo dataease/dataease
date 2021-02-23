@@ -5,11 +5,15 @@ Vue.use(Vuex);
 
 const Dataset = {
   state: {
-    sceneData: ""
+    sceneData: "",
+    table: ""
   },
   mutations: {
     setSceneData(state, sceneData) {
       state.sceneData = sceneData;
+    },
+    setTable(state, table) {
+      state.table = table;
     }
   }
 }

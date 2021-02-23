@@ -1552,9 +1552,13 @@ export default {
     sql_data: 'SQL数据集',
     excel_data: 'Excel数据集',
     custom_data: '自助数据集',
-    pls_slc_tbl_left:'请从左侧选择表',
-    add_db_table:'添加数据库表',
-    pls_slc_data_source:'请选择数据库连接'
+    pls_slc_tbl_left: '请从左侧选择表',
+    add_db_table: '添加数据库表',
+    pls_slc_data_source: '请选择数据库连接',
+    table: '表',
+    edit: '编辑',
+    create_view: '创建试图',
+    data_preview:'数据预览'
   },
   datasource: {
     create: '新建数据连接',
