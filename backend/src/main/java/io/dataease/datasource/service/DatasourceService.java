@@ -1,12 +1,9 @@
 package io.dataease.datasource.service;
 
-import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.commons.exception.DEException;
-import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.datasource.provider.DatasourceProvider;
-import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import org.apache.commons.collections.CollectionUtils;
@@ -15,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Exception.class)

@@ -4,7 +4,6 @@ import io.dataease.base.domain.Datasource;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 
 @Getter
 @Setter

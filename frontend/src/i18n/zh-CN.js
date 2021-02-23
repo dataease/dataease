@@ -1573,7 +1573,7 @@ export default {
     special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
     none: '无组织',
     select: '选择组织',
-    delete_warning: '删除该组织将同步删除该组织下所有相关工作空间和相关工作空间下的所有项目，以及项目中的所有用例、接口测试、性能测试等,确定要删除吗?',
+    delete_warning: '删除该数据连接将同步删除该数据连接下所有相关的数据集, 确定要删除吗?',
     service_integration: '服务集成',
     defect_manage: '缺陷管理平台',
     message_settings: '消息设置',

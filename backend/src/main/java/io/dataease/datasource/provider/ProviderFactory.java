@@ -19,11 +19,11 @@ public class ProviderFactory implements ApplicationContextAware {
     }
 
     public static DatasourceProvider getProvider(String type){
-        System.out.println(type);
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
-        System.out.println(datasourceType.name());
         switch (datasourceType){
             case mysql:
+                return context.getBean("jdbc", DatasourceProvider.class);
+            case sqlServer:
                 return context.getBean("jdbc", DatasourceProvider.class);
             default:
                 return context.getBean("jdbc", DatasourceProvider.class);
