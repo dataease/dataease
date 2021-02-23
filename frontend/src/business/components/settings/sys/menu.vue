@@ -16,7 +16,7 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       row-key="menuId">
             
-            <el-table-column :show-overflow-tooltip="true" label="菜单标题" width="125px" prop="title" />
+            <el-table-column :show-overflow-tooltip="true" label="菜单标题" width="150px" prop="title" />
             <el-table-column prop="icon" label="图标" align="center" width="60px">
                 <template slot-scope="scope">
                 <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
@@ -43,7 +43,7 @@
                 <span v-else>是</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="创建日期" width="135px">
+            <el-table-column prop="createTime" label="创建日期" width="160px">
                 <template v-slot:default="scope">
                   <span>{{ scope.row.createTime | timestampFormatDate }}</span>
                 </template>
@@ -126,7 +126,7 @@
         </el-form-item>
         <el-form-item label="上级类目" prop="pid">
           <treeselect
-            v-model="form.pid"
+            v-model="form.pid"            
             :options="menus"
             :load-options="loadMenus"
             style="width: 450px;"
@@ -180,7 +180,8 @@ export default {
   },
   data() {
     return {
-      menus: null,
+      menus: [],
+      topMunu: { id: 0, label: '顶级类目', children: null },
       formType: "add",
       queryPath: '/api/menu/childNodes/',
       deletePath: '/api/menu/delete',
@@ -192,6 +193,7 @@ export default {
       tableData: [],
       maps: new Map(),
       oldPid: null,
+      defaultForm: { menuId: null, title: null, menuSort: 999, path: null, component: null, componentName: null, iframe: false, pid: 0, icon: null, cache: false, hidden: false, type: 0, permission: null },
       form: {},
       rule: {
         name: [
@@ -206,7 +208,8 @@ export default {
     }
   },
   activated() {
-    this.initTableData();
+    this.form = Object.assign({}, this.defaultForm)
+    this.initTableData()
   },
   methods: {
     create() {
@@ -219,7 +222,7 @@ export default {
     },
 
     edit(row) {
-      this.dialogOrgAddVisible = true;
+      this.dialogVisible = true;
       this.formType = "modify";
       this.oldPid = row.pid;
       this.form = Object.assign({}, row);
@@ -283,7 +286,8 @@ export default {
         if(!row){
           data.some(node => node.children = null);
           _self.tableData = data;
-          _self.menus = null;
+          _self.menus = [];
+          _self.menus.push(_self.topMunu)
 
         }else{
           this.maps.set(row.menuId, {row, treeNode, resolve})
@@ -293,11 +297,11 @@ export default {
     },
     closeFunc() {
       this.initTableData();
-      this.form = {};
+      this.form = this.defaultForm;
       this.oldPid = null;
       this.menus = null;
       removeGoBackListener(this.closeFunc);
-      this.dialogOrgAddVisible = false;
+      this.dialogVisible = false;
 
     },
 
@@ -328,7 +332,7 @@ export default {
       }
       return {
         id: node.menuId,
-        label:node.name,
+        label:node.title,
         children:node.children
       }
     },
@@ -336,7 +340,7 @@ export default {
       return {
         id: node.menuId,
         pid: node.pid,
-        label: node.name,
+        label: node.title,
         children: node.children
       }
     },
@@ -353,7 +357,7 @@ export default {
             this.initTableData();
             this.oldPid && this.reloadByPid(this.oldPid)
             this.reloadByPid(this.form['pid'])
-            this.dialogOrgAddVisible = false;
+            this.dialogVisible = false;
           });
         } else {
           return false;
@@ -370,8 +374,8 @@ export default {
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
-        let requests = [{menuId: menu.menuId, pid: menu.pid}]
-        this.$post(this.deletePath, requests, () => {
+        let request = {menuId: menu.menuId, pid: menu.pid}
+        this.$post(this.deletePath, request, () => {
           this.$success(this.$t('commons.delete_success'));
           this.initTableData();
           this.reloadByPid(menu.pid)

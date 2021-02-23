@@ -7,7 +7,7 @@
     <el-row>
       <el-col>
         <span>{{$t('commons.delete_confirm')}}</span>
-        <span class="delete-tip"> DELETE-{{record.name}}</span>
+        <span class="delete-tip"> DELETE-{{record.name || record.title}}</span>
         <br/>
       </el-col>
     </el-row>
@@ -61,7 +61,7 @@
           this.record = record;
         },
         confirm() {
-          if (this.value.trim() != 'DELETE-' + this.record.name) {
+          if (this.value.trim() != 'DELETE-' + (this.record.name || this.record.title) ) {
             this.$warning(this.$t('commons.incorrect_input'));
             return;
           }
