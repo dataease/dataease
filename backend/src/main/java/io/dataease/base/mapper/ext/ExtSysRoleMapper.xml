@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.base.mapper.ext.ExtSysRoleMapper">
+
+    <resultMap id="BaseResultMap" type="io.dataease.controller.sys.response.RoleNodeResponse" extends="io.dataease.base.mapper.SysRoleMapper.BaseResultMap">
+        <result column="menuIds"  property="menu_ids"/>
+        <collection property="menuIds" ofType="long">
+            <constructor>
+                <arg column="menu_id"/>
+            </constructor>
+        </collection>
+    </resultMap>
+
+    <select id="query" resultMap="BaseResultMap">
+        select r.*, m.menu_id
+        from sys_role r left join sys_roles_menus m on r.role_id = m.role_id
+        <where>
+            <if test="request.name != null">
+                AND r.name like CONCAT('%', #{request.name},'%')
+            </if>
+        </where>
+        order by r.update_time desc
+    </select>
+
+
+</mapper>

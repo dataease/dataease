@@ -54,3 +54,11 @@ CREATE TABLE IF NOT EXISTS `sys_role` (
   UNIQUE KEY `uniq_name` (`name`),
   KEY `role_name_index` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
+
+
+CREATE TABLE IF NOT EXISTS `sys_roles_menus` (
+  `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  PRIMARY KEY (`menu_id`,`role_id`) USING BTREE,
+  KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色菜单关联';
