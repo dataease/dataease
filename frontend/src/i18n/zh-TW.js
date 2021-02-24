@@ -1550,6 +1550,10 @@ export default {
     table:'表',
     edit: '編輯',
     create_view: '創建試圖',
-    data_preview:'數據預覽'
+    data_preview:'數據預覽',
+    field_type:'字段類型',
+    field_name:'字段名',
+    field_origin_name:'原始名',
+    field_check:'選中'
   }
 };

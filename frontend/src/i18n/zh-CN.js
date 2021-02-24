@@ -1560,7 +1560,11 @@ export default {
     table: '表',
     edit: '编辑',
     create_view: '创建试图',
-    data_preview:'数据预览'
+    data_preview:'数据预览',
+    field_type:'字段类型',
+    field_name:'字段名',
+    field_origin_name:'原始名',
+    field_check:'选中'
   },
   datasource: {
     create: '新建数据连接',

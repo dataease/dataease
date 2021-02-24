@@ -6,22 +6,26 @@ import com.alibaba.nacos.common.util.UuidUtils;
 import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableExample;
+import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
+import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.SessionUtils;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import jnr.ffi.Struct;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author gin
@@ -33,14 +37,16 @@ public class DataSetTableService {
     private DatasetTableMapper datasetTableMapper;
     @Resource
     private DatasourceMapper datasourceMapper;
+    @Resource
+    private DataSetTableFieldsService dataSetTableFieldsService;
 
-    public void batchInsert(List<DatasetTable> datasetTable) {
+    public void batchInsert(List<DatasetTable> datasetTable) throws Exception {
         for (DatasetTable table : datasetTable) {
             save(table);
         }
     }
 
-    public DatasetTable save(DatasetTable datasetTable) {
+    public DatasetTable save(DatasetTable datasetTable) throws Exception {
         if (StringUtils.isEmpty(datasetTable.getId())) {
             datasetTable.setId(UuidUtils.generateUuid());
             datasetTable.setCreateTime(System.currentTimeMillis());
@@ -49,7 +55,11 @@ public class DataSetTableService {
                 dataTableInfoDTO.setTable(datasetTable.getName());
             }
             datasetTable.setInfo(new Gson().toJson(dataTableInfoDTO));
-            datasetTableMapper.insert(datasetTable);
+            int insert = datasetTableMapper.insert(datasetTable);
+            // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
+            if (insert == 1) {
+                saveTableField(datasetTable);
+            }
         } else {
             datasetTableMapper.updateByPrimaryKeyWithBLOBs(datasetTable);
         }
@@ -58,6 +68,7 @@ public class DataSetTableService {
 
     public void delete(String id) {
         datasetTableMapper.deleteByPrimaryKey(id);
+        dataSetTableFieldsService.deleteByTableId(id);
     }
 
     public List<DatasetTable> list(DataSetTableRequest dataSetTableRequest) {
@@ -98,25 +109,58 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
-        datasourceRequest.setTable(table);
-        datasourceRequest.setQuery("SELECT * FROM " + table + " LIMIT 0,10;");
+//        datasourceRequest.setTable(table);
 
-        List<TableFiled> fields = datasourceProvider.getTableFileds(datasourceRequest);
-        List<String[]> data = datasourceProvider.getData(datasourceRequest);
+        DatasetTableField datasetTableField = new DatasetTableField();
+        datasetTableField.setTableId(dataSetTableRequest.getId());
+        datasetTableField.setChecked(Boolean.TRUE);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+
+        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
+        datasourceRequest.setQuery("SELECT " + StringUtils.join(fieldArray, ",") + " FROM " + table + " LIMIT 0,10;");
+
+        List<String[]> data = new ArrayList<>();
+        try {
+            data.addAll(datasourceProvider.getData(datasourceRequest));
+        } catch (Exception e) {
+        }
 
         JSONArray jsonArray = new JSONArray();
-        data.forEach(ele -> {
-            JSONObject jsonObject = new JSONObject();
-            for (int i = 0; i < ele.length; i++) {
-                jsonObject.put(fields.get(i).getFieldName(), ele[i]);
-            }
-            jsonArray.add(jsonObject);
-        });
+        if (CollectionUtils.isNotEmpty(data)) {
+            data.forEach(ele -> {
+                JSONObject jsonObject = new JSONObject();
+                for (int i = 0; i < ele.length; i++) {
+                    jsonObject.put(fieldArray[i], ele[i]);
+                }
+                jsonArray.add(jsonObject);
+            });
+        }
 
         Map<String, Object> map = new HashMap<>();
-        map.put("fields",fields);
-        map.put("data",jsonArray);
+        map.put("fields", fields);
+        map.put("data", jsonArray);
 
         return map;
+    }
+
+    public void saveTableField(DatasetTable datasetTable) throws Exception {
+        DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
+        BeanUtils.copyBean(dataSetTableRequest, datasetTable);
+        List<TableFiled> fields = getFields(dataSetTableRequest);
+        long syncTime = System.currentTimeMillis();
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (int i = 0; i < fields.size(); i++) {
+                TableFiled filed = fields.get(i);
+                DatasetTableField datasetTableField = new DatasetTableField();
+                datasetTableField.setTableId(datasetTable.getId());
+                datasetTableField.setOriginName(filed.getFieldName());
+                datasetTableField.setName(filed.getRemarks());
+                datasetTableField.setType(filed.getFieldType());
+                datasetTableField.setChecked(true);
+                datasetTableField.setColumnIndex(i);
+                datasetTableField.setLastSyncTime(syncTime);
+                dataSetTableFieldsService.save(datasetTableField);
+            }
+        }
     }
 }
