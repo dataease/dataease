@@ -75,8 +75,8 @@
             </el-form-item>
             <el-form-item label="状态">
               <el-radio-group v-model="form.enabled" style="width: 140px">
-                <el-radio :label='true'>启用</el-radio>
-                <el-radio :label='false'>停用</el-radio>
+                <el-radio label='1'>启用</el-radio>
+                <el-radio label='0'>停用</el-radio>
             </el-radio-group>
             </el-form-item>
             <el-form-item  label="部门" prop="dept">
@@ -90,7 +90,7 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 0;" label="角色" prop="roles">
               <el-select
-                v-model="roleDatas"
+                v-model="form.roleIds"
                 style="width: 430px"
                 multiple
                 placeholder="请选择"
@@ -240,7 +240,7 @@ export default {
           }
         ]
       },
-      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: true,  dept: null, phone: null },
+      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: '1',  deptId: null, phone: null },
       depts: null,
       roles: [],
       roleDatas: [],
@@ -398,14 +398,14 @@ export default {
         if (data.id === value) {
           this.userRoles.splice(index, value)
         }
-      })
+      }.bind(this))
     },
     changeRole(value) {
       this.userRoles = []
       value.forEach(function(data, index) {
         const role = { id: data }
         this.userRoles.push(role)
-      })
+      }.bind(this))
     },
     allRoles(){
         this.$post("/api/role/all", null, res => {            
