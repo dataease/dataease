@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.base.mapper.ext.ExtSysUserMapper">
+
+    <resultMap id="BaseResultMap" type="io.dataease.controller.sys.response.SysUserGridResponse" extends="io.dataease.base.mapper.SysUserMapper.BaseResultMap">
+        <result column="roleIds"  property="role_ids"/>
+        <collection property="roleIds" ofType="long">
+            <constructor>
+                <arg column="role_id"/>
+            </constructor>
+        </collection>
+    </resultMap>
+
+    <select id="query" resultMap="BaseResultMap">
+        select u.*, ur.role_id
+        from sys_user u left join sys_users_roles ur on u.user_id = ur.user_id
+        <where>
+            <if test="request.name != null">
+                AND u.name like CONCAT('%', #{request.name},'%')
+            </if>
+        </where>
+        order by u.update_time desc
+    </select>
+
+
+
+
+
+</mapper>

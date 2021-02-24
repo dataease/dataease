@@ -2,7 +2,9 @@ package io.dataease.service.sys;
 
 
 import io.dataease.base.domain.SysRole;
+import io.dataease.base.domain.SysUsersRolesExample;
 import io.dataease.base.mapper.SysRoleMapper;
+import io.dataease.base.mapper.SysUsersRolesMapper;
 import io.dataease.base.mapper.ext.ExtSysRoleMapper;
 import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.request.RoleMenusRequest;
@@ -25,6 +27,9 @@ public class SysRoleService {
     @Resource
     private ExtSysRoleMapper extSysRoleMapper;
 
+    @Resource
+    private SysUsersRolesMapper sysUsersRolesMapper;
+
 
     public int add(SysRole role){
         Long now = System.currentTimeMillis();
@@ -40,7 +45,12 @@ public class SysRoleService {
         return mapper.updateByPrimaryKey(role);
     }
 
+    @Transactional
     public int delete(Long roleId){
+        SysUsersRolesExample example = new SysUsersRolesExample();
+        example.createCriteria().andRoleIdEqualTo(roleId);
+        sysUsersRolesMapper.deleteByExample(example);//删除用户角色关联关系
+        extSysRoleMapper.deleteRoleMenu(roleId);//删除菜单角色关联关系
         return mapper.deleteByPrimaryKey(roleId);
     }
 
