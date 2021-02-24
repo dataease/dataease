@@ -25,3 +25,5 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field`
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+ALTER TABLE `dataset_table_field` ADD INDEX IDX_TABLE_ID (`table_id`);
