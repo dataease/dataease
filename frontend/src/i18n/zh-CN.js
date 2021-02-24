@@ -1559,7 +1559,7 @@ export default {
     pls_slc_data_source: '请选择数据库连接',
     table: '表',
     edit: '编辑',
-    create_view: '创建试图',
+    create_view: '创建视图',
     data_preview:'数据预览',
     field_type:'字段类型',
     field_name:'字段名',
