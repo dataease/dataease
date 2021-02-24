@@ -16,7 +16,7 @@
         <el-table-column :show-overflow-tooltip="true" width="135" prop="email" :label="$t('commons.email')" />
         <el-table-column :show-overflow-tooltip="true" prop="dept" :label="$t('commons.organization')">
             <template slot-scope="scope">
-                <div>{{ scope.row.dept.name }}</div>
+                <div>{{ scope.row.dept.deptName }}</div>
             </template>
         </el-table-column>
         <el-table-column prop="status" :label="$t('commons.status')" width="120">

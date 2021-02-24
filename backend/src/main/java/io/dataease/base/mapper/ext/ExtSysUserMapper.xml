@@ -15,8 +15,16 @@
 
     <resultMap id="BaseResultMap" type="io.dataease.controller.sys.response.SysUserGridResponse" extends="io.dataease.base.mapper.SysUserMapper.BaseResultMap">
         <result property="id" column="id"></result>
+        <association property="dept" javaType="io.dataease.controller.sys.response.SysUserDept">
+            <id column="dept_id" property="deptId"/>
+            <result column="pid" property="pid" />
+            <result column="dept_name" property="deptName" />
+        </association>
         <association property="dept" column="dept_id" javaType="io.dataease.controller.sys.response.SysUserDept" resultMap="sysUserDept"/>
-        <collection property="roles" column="role_id" javaType="io.dataease.controller.sys.response.SysUserRole" resultMap="sysUserRole" />
+        <collection property="roles" ofType="io.dataease.controller.sys.response.SysUserRole" >
+            <id column="role_id" property="roleId" />
+            <result column="role_name" property="roleName"/>
+        </collection>
     </resultMap>
 
     <select id="query" resultMap="BaseResultMap">
