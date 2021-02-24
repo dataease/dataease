@@ -38,7 +38,7 @@
         </el-form-item>
       </el-form>
     </el-row>
-    <el-row>
+    <el-row style="overflow: auto;height: 600px;">
       <el-checkbox-group v-model="checkTableList" size="small">
         <el-checkbox
           border

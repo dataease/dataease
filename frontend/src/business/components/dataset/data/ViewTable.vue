@@ -53,6 +53,7 @@ export default {
   },
   computed: {
     tableId() {
+      console.log(this.$store.state.dataset.table);
       this.initTable(this.$store.state.dataset.table);
       return this.$store.state.dataset.table;
     }
@@ -70,29 +71,33 @@ export default {
     initTable(id) {
       console.log(id);
       if (id !== null) {
+        this.fields = [];
         this.data = [];
         this.$post('/dataset/table/get/' + id, null, response => {
           this.table = response.data;
-          this.initTableFields();
+          this.initPreviewData();
         })
+      }
+    },
+
+    initPreviewData() {
+      if (this.table.id) {
+        this.$post('/dataset/table/getPreviewData', this.table, response => {
+          this.fields = response.data.fields;
+          this.data = response.data.data;
+        });
       }
     },
 
     initTableFields() {
       if (this.table.id) {
         this.$post('/dataset/table/getFields', this.table, response => {
-          // console.log(response.data);
-          this.fields = response.data;
-          this.initTableData();
         });
       }
     },
     initTableData() {
       if (this.table.id) {
         this.$post('/dataset/table/getData', this.table, response => {
-          // console.log(response.data);
-          this.data = response.data;
-          console.log(this.data)
         });
       }
     },

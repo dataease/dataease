@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author gin
@@ -50,7 +51,12 @@ public class DataSetTableController {
     }
 
     @PostMapping("getData")
-    public List<Object> getData(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+    public List<String[]> getData(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getData(dataSetTableRequest);
+    }
+
+    @PostMapping("getPreviewData")
+    public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getPreviewData(dataSetTableRequest);
     }
 }

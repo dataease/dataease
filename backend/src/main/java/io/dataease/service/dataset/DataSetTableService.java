@@ -19,7 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author gin
@@ -80,15 +82,26 @@ public class DataSetTableService {
         return datasourceProvider.getTableFileds(datasourceRequest);
     }
 
-    public List<Object> getData(DataSetTableRequest dataSetTableRequest) throws Exception {
+    public List<String[]> getData(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
-        datasourceRequest.setQuery("SELECT * FROM " + table + " LIMIT 0,100;");
+        datasourceRequest.setQuery("SELECT * FROM " + table + ";");
+        return datasourceProvider.getData(datasourceRequest);
+    }
 
-        List<TableFiled> fields = getFields(dataSetTableRequest);
+    public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
+        datasourceRequest.setTable(table);
+        datasourceRequest.setQuery("SELECT * FROM " + table + " LIMIT 0,10;");
+
+        List<TableFiled> fields = datasourceProvider.getTableFileds(datasourceRequest);
         List<String[]> data = datasourceProvider.getData(datasourceRequest);
 
         JSONArray jsonArray = new JSONArray();
@@ -100,6 +113,10 @@ public class DataSetTableService {
             jsonArray.add(jsonObject);
         });
 
-        return jsonArray;
+        Map<String, Object> map = new HashMap<>();
+        map.put("fields",fields);
+        map.put("data",jsonArray);
+
+        return map;
     }
 }
