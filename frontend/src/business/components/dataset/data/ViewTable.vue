@@ -21,15 +21,15 @@
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview :table="table" :fields="fields" :data="data"/>
       </el-tab-pane>
-      <el-tab-pane label="tab2" name="tab2">
-        tab2
+      <el-tab-pane label="更新信息" name="updateInfo">
+        更新信息
       </el-tab-pane>
-      <el-tab-pane label="tab3" name="tab3">
-        tab3
-      </el-tab-pane>
-      <el-tab-pane label="tab4" name="tab4">
-        tab4
-      </el-tab-pane>
+<!--      <el-tab-pane label="tab3" name="tab3">-->
+<!--        tab3-->
+<!--      </el-tab-pane>-->
+<!--      <el-tab-pane label="tab4" name="tab4">-->
+<!--        tab4-->
+<!--      </el-tab-pane>-->
     </el-tabs>
 
     <el-dialog :title="table.name" :visible.sync="editField" :fullscreen="true" :show-close="false">

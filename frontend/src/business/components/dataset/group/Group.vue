@@ -124,7 +124,7 @@
     </el-row>
     <el-divider/>
     <el-row>
-      <el-dropdown style="margin-right: 10px;" size="small" @command="clickAddData">
+      <el-dropdown style="margin-right: 10px;" size="small" @command="clickAddData" trigger="click">
         <el-button type="primary" size="mini" plain>
           {{$t('dataset.add_table')}}
         </el-button>
