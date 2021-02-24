@@ -36,12 +36,12 @@
       <el-table :data="tableFields" size="mini" max-height="600px">
         <el-table-column property="type" :label="$t('dataset.field_type')" width="100">
         </el-table-column>
-        <el-table-column property="name" :label="$t('dataset.field_name')" width="160">
+        <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
           <template slot-scope="scope">
           <el-input v-model="scope.row.name" size="mini"></el-input>
           </template>
         </el-table-column>
-        <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="160">
+        <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="180">
         </el-table-column>
         <el-table-column property="checked" :label="$t('dataset.field_check')" width="80">
           <template slot-scope="scope">

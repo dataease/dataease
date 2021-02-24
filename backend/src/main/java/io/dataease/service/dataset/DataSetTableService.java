@@ -13,6 +13,7 @@ import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.SessionUtils;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
@@ -21,9 +22,11 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import jnr.ffi.Struct;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.python.apache.xerces.xs.StringList;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -99,7 +102,7 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
-        datasourceRequest.setQuery("SELECT * FROM " + table + ";");
+        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, new String[]{"*"}));
         return datasourceProvider.getData(datasourceRequest);
     }
 
@@ -117,7 +120,8 @@ public class DataSetTableService {
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
 
         String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
-        datasourceRequest.setQuery("SELECT " + StringUtils.join(fieldArray, ",") + " FROM " + table + " LIMIT 0,10;");
+//        datasourceRequest.setQuery("SELECT " + StringUtils.join(fieldArray, ",") + " FROM " + table + " LIMIT 0,10;");
+        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10;");
 
         List<String[]> data = new ArrayList<>();
         try {
@@ -161,6 +165,18 @@ public class DataSetTableService {
                 datasetTableField.setLastSyncTime(syncTime);
                 dataSetTableFieldsService.save(datasetTableField);
             }
+        }
+    }
+
+    public String createQuerySQL(String type, String table, String[] fields) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
+        switch (datasourceType) {
+            case mysql:
+                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+            case sqlServer:
+                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+            default:
+                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
         }
     }
 }
