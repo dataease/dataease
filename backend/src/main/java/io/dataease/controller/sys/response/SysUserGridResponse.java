@@ -13,4 +13,6 @@ public class SysUserGridResponse extends SysUser {
 
     private SysUserDept dept;
 
+    private List<Long> roleIds;
+
 }

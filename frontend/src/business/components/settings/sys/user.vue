@@ -46,7 +46,7 @@
       <ms-table-pagination :change="search" :current-page.sync="currentPage" :page-size.sync="pageSize" :total="total"/>
                            
     </el-card>
-    <el-dialog append-to-body :close-on-click-modal="false" :title="$t('user.create')" :visible.sync="dialogVisible"  width="570px" @closed="handleClose"
+    <el-dialog append-to-body :close-on-click-modal="false" :title="formType=='add' ? $t('user.create') :  $t('user.modify')" :visible.sync="dialogVisible"  width="570px" @closed="handleClose"
                :destroy-on-close="true">
         <el-form ref="createUserForm" :inline="true" :model="form" :rules="rule" size="small" label-width="66px">
     
@@ -63,10 +63,6 @@
               <el-input v-model="form.email" />
             </el-form-item>
             
-            <!-- <el-form-item :label="$t('commons.password')" prop="password" >
-              <el-input v-model="form.password" autocomplete="new-password" show-password
-                    :placeholder="$t('user.input_password')" style="width: 175px;"/>
-            </el-form-item> -->
             <el-form-item label="性别">
               <el-radio-group v-model="form.gender" style="width: 178px">
                 <el-radio label="男">男</el-radio>
@@ -244,7 +240,8 @@ export default {
       depts: null,
       roles: [],
       roleDatas: [],
-      userRoles: []
+      userRoles: [],
+      formType: 'add'
     }
   },
   activated() {
@@ -255,12 +252,14 @@ export default {
   },
   methods: {
     create() {
+      this.formType = 'add'
       this.form = Object.assign({}, this.defaultForm);
       this.dialogVisible = true;
       
       listenGoBack(this.handleClose);
     },
     edit(row) {
+      this.formType = 'modify'
       this.dialogVisible = true;
       this.form = Object.assign({}, row);
       
@@ -288,7 +287,8 @@ export default {
     createUser(createUserForm) {
       this.$refs[createUserForm].validate(valid => {
         if (valid) {
-          this.result = this.$post(this.createPath, this.form, () => {
+          const url = this.formType == 'add' ? this.createPat : this.updatePath
+          this.result = this.$post(url, this.form, () => {
             this.$success(this.$t('commons.save_success'));
             this.search();
             this.dialogVisible = false;
@@ -346,6 +346,7 @@ export default {
       })
     },
     handleClose() {
+      this.formType = 'add'
       this.form = {};
       removeGoBackListener(this.handleClose);
       this.editPasswordVisible = false;

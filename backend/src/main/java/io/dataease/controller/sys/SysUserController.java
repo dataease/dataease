@@ -37,13 +37,13 @@ public class SysUserController {
     }
 
     @ApiOperation("更新用户")
-    @PostMapping("/updat")
+    @PostMapping("/update")
     public void update(@RequestBody SysUserCreateRequest request){
         sysUserService.update(request);
     }
 
     @ApiOperation("更新用户")
-    @PostMapping("/updat/{userId}")
+    @PostMapping("/delete/{userId}")
     public void delete(@PathVariable("userId") Long userId){
         sysUserService.delete(userId);
     }
