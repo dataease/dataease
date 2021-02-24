@@ -23,4 +23,16 @@
     </select>
 
 
+    <delete id="deleteRoleMenu">
+        delete from sys_roles_menus where role_id = #{roleId}
+    </delete>
+
+    <insert id="batchInsertRoleMenu">
+        insert into sys_roles_menus (role_id, menu_id) values
+        <foreach collection="maps" item="map" separator=",">
+            (#{map.roleId},#{map.menuId})
+        </foreach>
+    </insert>
+
+
 </mapper>

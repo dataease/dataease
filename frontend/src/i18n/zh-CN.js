@@ -385,6 +385,8 @@ export default {
     test_user: '测试人员',
     test_viewer: '只读用户',
     add: '添加角色',
+    delete: '删除角色',
+    modify: '修改角色',
   },
   report: {
     api_test_report: '接口测试报告',
