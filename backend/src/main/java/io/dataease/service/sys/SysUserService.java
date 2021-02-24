@@ -14,6 +14,7 @@ import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,11 @@ public class SysUserService {
         user.setCreateTime(now);
         user.setUpdateTime(now);
         user.setIsAdmin(false);
-        user.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        if (ObjectUtils.isEmpty(user.getPassword()) || StringUtils.equals(user.getPassword(), DEFAULT_PWD)){
+            user.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        }else{
+            user.setPassword(CodingUtil.md5(user.getPassword()));
+        }
         int insert = sysUserMapper.insert(user);
         SysUser dbUser = findOne(user);
         saveUserRoles(dbUser.getUserId(), request.getRoleIds());//插入用户角色关联

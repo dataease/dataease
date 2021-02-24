@@ -11,6 +11,11 @@
         </collection>
     </resultMap>
 
+    <resultMap id="roleItemMap" type="io.dataease.controller.sys.response.RoleUserItem">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
     <select id="query" resultMap="BaseResultMap">
         select r.*, m.menu_id
         from sys_role r left join sys_roles_menus m on r.role_id = m.role_id
@@ -33,6 +38,11 @@
             (#{map.roleId},#{map.menuId})
         </foreach>
     </insert>
+
+    <select id="queryAll" resultMap="roleItemMap">
+        select role_id as id, name from sys_role
+    </select>
+
 
 
 </mapper>

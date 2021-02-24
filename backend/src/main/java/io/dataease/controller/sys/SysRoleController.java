@@ -9,6 +9,7 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.request.RoleMenusRequest;
 import io.dataease.controller.sys.response.RoleNodeResponse;
+import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.service.sys.SysRoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,5 +59,11 @@ public class SysRoleController {
     @PostMapping("/saveRolesMenus")
     public void saveRolesMenus(@RequestBody RoleMenusRequest request){
         sysRoleService.batchSaveRolesMenus(request);
+    }
+
+
+    @PostMapping("/all")
+    public List<RoleUserItem> all(){
+        return sysRoleService.allRoles();
     }
 }

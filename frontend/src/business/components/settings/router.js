@@ -32,6 +32,11 @@ export default {
       component: () => import('@/business/components/settings/sys/role'),
       meta: {system: true, title: 'commons.role'}
     },
+    {
+      path: 'sysuser',
+      component: () => import('@/business/components/settings/sys/user'),
+      meta: {system: true, title: 'commons.user'}
+    },
     // {
     //   path: 'systemworkspace',
     //   component: () => import('@/business/components/settings/system/SystemWorkspace'),
