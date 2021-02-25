@@ -62,3 +62,36 @@ CREATE TABLE IF NOT EXISTS `sys_roles_menus` (
   PRIMARY KEY (`menu_id`,`role_id`) USING BTREE,
   KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色菜单关联';
+
+CREATE TABLE IF NOT EXISTS `sys_user` (
+  `user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `dept_id` bigint(20) DEFAULT NULL COMMENT '部门名称',
+  `username` varchar(255) DEFAULT NULL COMMENT '用户名',
+  `nick_name` varchar(255) DEFAULT NULL COMMENT '昵称',
+  `gender` varchar(2) DEFAULT NULL COMMENT '性别',
+  `phone` varchar(255) DEFAULT NULL COMMENT '手机号码',
+  `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
+  `password` varchar(255) DEFAULT NULL COMMENT '密码',
+  `is_admin` bit(1) DEFAULT b'0' COMMENT '是否为admin账号',
+  `enabled` bigint(20) DEFAULT NULL COMMENT '状态：1启用、0禁用',
+  `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',
+  `update_by` varchar(255) DEFAULT NULL COMMENT '更新着',
+  `pwd_reset_time` bigint(13) DEFAULT NULL COMMENT '修改密码的时间',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
+  `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`user_id`) USING BTREE,
+  UNIQUE KEY `UK_kpubos9gc2cvtkb0thktkbkes` (`email`) USING BTREE,
+  UNIQUE KEY `username` (`username`) USING BTREE,
+  UNIQUE KEY `uniq_username` (`username`),
+  UNIQUE KEY `uniq_email` (`email`),
+  KEY `FK5rwmryny6jthaaxkogownknqp` (`dept_id`) USING BTREE,
+  KEY `inx_enabled` (`enabled`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统用户';
+
+
+CREATE TABLE IF NOT EXISTS `sys_users_roles` (
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+  PRIMARY KEY (`user_id`,`role_id`) USING BTREE,
+  KEY `FKq4eq273l04bpu4efj0jd0jb98` (`role_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户角色关联';

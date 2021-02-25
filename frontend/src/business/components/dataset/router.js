@@ -1,7 +1,8 @@
 const DataSet = () => import('@/business/components/dataset/DataSet');
 const DataSetHome = () => import('@/business/components/dataset/data/DataHome');
-const DataSetAddDB = () => import('@/business/components/dataset/data/AddDB');
 const DataSetTable = () => import('@/business/components/dataset/data/ViewTable');
+
+const DataSetAddDB = () => import('@/business/components/dataset/add/AddDB');
 // const PerformanceTestHome = () => import('@/business/components/performance/home/PerformanceTestHome')
 // const EditPerformanceTest = () => import('@/business/components/performance/test/EditPerformanceTest')
 // const PerformanceTestList = () => import('@/business/components/performance/test/PerformanceTestList')

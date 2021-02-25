@@ -1,6 +1,8 @@
 package io.dataease.base.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
+
 import lombok.Data;
 
 @Data
@@ -42,4 +44,30 @@ public class SysMenu implements Serializable {
     private Long updateTime;
 
     private static final long serialVersionUID = 1L;
+
+
+    /**
+     * 由于该类型作为HashSet key所以必须重写以下方法
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SysMenu menu = (SysMenu) o;
+        return Objects.equals(menuId, menu.menuId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(menuId);
+    }
+
+
+
 }

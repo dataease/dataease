@@ -7,11 +7,16 @@ import io.dataease.base.mapper.ext.ExtMenuMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.request.MenuCreateRequest;
 import io.dataease.controller.sys.request.MenuDeleteRequest;
+import io.dataease.controller.sys.response.MenuNodeResponse;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MenuService {
@@ -106,6 +111,33 @@ public class MenuService {
             }
         }
         return sysMenuMapper.updateByPrimaryKeySelective(sysMenu);
+    }
+
+    public List<MenuNodeResponse> childs(Long pid){
+        Set<SysMenu> childs = getChilds(nodesByPid(pid), new HashSet());
+        List<SysMenu> menus = childs.stream().collect(Collectors.toList());
+        List<MenuNodeResponse> responses = convert(menus);
+        return responses;
+    }
+
+    private Set<SysMenu> getChilds(List<SysMenu> lists, Set<SysMenu> sets){
+        lists.forEach(menu -> {
+            sets.add(menu);
+            List<SysMenu> kidMenus = nodesByPid(menu.getMenuId());
+            if (CollectionUtils.isNotEmpty(kidMenus)){
+                getChilds(kidMenus, sets);
+            }
+        });
+        return sets;
+    }
+
+    public List<MenuNodeResponse> convert(List<SysMenu> menus){
+        return menus.stream().map(node -> {
+            MenuNodeResponse menuNodeResponse = BeanUtils.copyBean(new MenuNodeResponse(), node);
+            menuNodeResponse.setHasChildren(node.getSubCount() > 0);
+            menuNodeResponse.setTop(node.getPid() == MENU_ROOT_PID);
+            return menuNodeResponse;
+        }).collect(Collectors.toList());
     }
 
 

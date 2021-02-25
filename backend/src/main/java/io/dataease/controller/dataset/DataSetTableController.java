@@ -21,12 +21,12 @@ public class DataSetTableController {
     private DataSetTableService dataSetTableService;
 
     @PostMapping("batchAdd")
-    public void batchAdd(@RequestBody List<DatasetTable> datasetTable) {
+    public void batchAdd(@RequestBody List<DatasetTable> datasetTable) throws Exception {
         dataSetTableService.batchInsert(datasetTable);
     }
 
     @PostMapping("update")
-    public DatasetTable save(@RequestBody DatasetTable datasetTable) {
+    public DatasetTable save(@RequestBody DatasetTable datasetTable) throws Exception {
         return dataSetTableService.save(datasetTable);
     }
 

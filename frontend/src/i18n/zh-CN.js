@@ -385,6 +385,8 @@ export default {
     test_user: '测试人员',
     test_viewer: '只读用户',
     add: '添加角色',
+    delete: '删除角色',
+    modify: '修改角色',
   },
   report: {
     api_test_report: '接口测试报告',
@@ -1588,8 +1590,14 @@ export default {
     pls_slc_data_source: '请选择数据库连接',
     table: '表',
     edit: '编辑',
-    create_view: '创建试图',
-    data_preview:'数据预览'
+    create_view: '创建视图',
+    data_preview: '数据预览',
+    field_type: '字段类型',
+    field_name: '字段名',
+    field_origin_name: '原始名',
+    field_check: '选中',
+    update_info: '更新信息',
+    join_view: '关联视图'
   },
   datasource: {
     create: '新建数据连接',

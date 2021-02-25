@@ -124,7 +124,7 @@
     </el-row>
     <el-divider/>
     <el-row>
-      <el-dropdown style="margin-right: 10px;" size="small" @command="clickAddData">
+      <el-dropdown style="margin-right: 10px;" size="small" @command="clickAddData" trigger="click">
         <el-button type="primary" size="mini" plain>
           {{$t('dataset.add_table')}}
         </el-button>
@@ -178,7 +178,7 @@
           </span>
           <span>
             <span @click.stop style="margin-left: 12px;">
-              <el-dropdown trigger="click" @command="clickMore">
+              <el-dropdown trigger="click" @command="clickMore" size="small">
                 <span class="el-dropdown-link">
                   <el-button
                     icon="el-icon-more"
@@ -268,11 +268,13 @@ export default {
     this.tree(this.groupForm);
     this.tableTree();
     this.$router.push('/dataset');
+    this.$store.commit('setTable', null);
   },
   activated() {
     this.tree(this.groupForm);
     this.tableTree();
     this.$router.push('/dataset');
+    this.$store.commit('setTable', null);
   },
   watch: {
     // search(val){
@@ -523,6 +525,7 @@ export default {
 
     sceneClick(data, node) {
       // console.log(data);
+      this.$store.commit('setTable', null);
       this.$store.commit('setTable', data.id);
       this.$router.push({
         name: 'table',

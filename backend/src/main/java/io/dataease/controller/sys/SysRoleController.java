@@ -7,7 +7,9 @@ import io.dataease.base.domain.SysRole;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.request.RoleGridRequest;
+import io.dataease.controller.sys.request.RoleMenusRequest;
 import io.dataease.controller.sys.response.RoleNodeResponse;
+import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.service.sys.SysRoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,8 +36,8 @@ public class SysRoleController {
 
 
     @ApiOperation("删除角色")
-    @PostMapping("/delete")
-    public void delete(Long roleId){
+    @PostMapping("/delete/{roleId}")
+    public void delete(@PathVariable("roleId") Long roleId){
         sysRoleService.delete(roleId);
     }
 
@@ -51,5 +53,17 @@ public class SysRoleController {
     public Pager<List<RoleNodeResponse>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody RoleGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, sysRoleService.query(request));
+    }
+
+
+    @PostMapping("/saveRolesMenus")
+    public void saveRolesMenus(@RequestBody RoleMenusRequest request){
+        sysRoleService.batchSaveRolesMenus(request);
+    }
+
+
+    @PostMapping("/all")
+    public List<RoleUserItem> all(){
+        return sysRoleService.allRoles();
     }
 }
