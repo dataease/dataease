@@ -18,6 +18,21 @@ const Dataset = {
   }
 }
 
+const Chart = {
+  state: {
+    chartSceneData: "",
+    chart: ""
+  },
+  mutations: {
+    setChartSceneData(state, chartSceneData) {
+      state.chartSceneData = chartSceneData;
+    },
+    setChart(state, chart) {
+      state.chart = chart;
+    }
+  }
+}
+
 const Common = {
   state: {
     projectId: ""
@@ -71,6 +86,7 @@ export default new Vuex.Store({
     common: Common,
     switch: Switch,
     isReadOnly: IsReadOnly,
-    dataset: Dataset
+    dataset: Dataset,
+    chart: Chart
   }
 })
