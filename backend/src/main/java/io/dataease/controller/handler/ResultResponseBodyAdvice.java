@@ -1,6 +1,6 @@
 package io.dataease.controller.handler;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.handler.annotation.NoResultHolder;
 import org.springframework.core.MethodParameter;
@@ -37,7 +37,7 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
         if (!(o instanceof ResultHolder)) {
             if (o instanceof String) {
-                return JSON.toJSONString(ResultHolder.success(o));
+                return new Gson().toJson(ResultHolder.success(o));
             }
             return ResultHolder.success(o);
         }
