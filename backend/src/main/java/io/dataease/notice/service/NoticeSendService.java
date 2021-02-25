@@ -1,13 +1,12 @@
 package io.dataease.notice.service;
 
-import com.alibaba.nacos.client.utils.StringUtils;
 import io.dataease.commons.constants.NoticeConstants;
 import io.dataease.notice.domain.MessageDetail;
 import io.dataease.notice.sender.NoticeModel;
 import io.dataease.notice.sender.NoticeSender;
-import io.dataease.notice.sender.impl.DingNoticeSender;
 import io.dataease.notice.sender.impl.MailNoticeSender;
 import io.dataease.notice.sender.impl.WeComNoticeSender;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -19,8 +18,7 @@ public class NoticeSendService {
     private MailNoticeSender mailNoticeSender;
     @Resource
     private WeComNoticeSender weComNoticeSender;
-    @Resource
-    private DingNoticeSender dingNoticeSender;
+
     @Resource
     private NoticeService noticeService;
 
@@ -33,9 +31,9 @@ public class NoticeSendService {
             case NoticeConstants.Type.WECHAT_ROBOT:
                 noticeSender = weComNoticeSender;
                 break;
-            case NoticeConstants.Type.NAIL_ROBOT:
-                noticeSender = dingNoticeSender;
-                break;
+//            case NoticeConstants.Type.NAIL_ROBOT:
+//                noticeSender = dingNoticeSender;
+//                break;
             default:
                 break;
         }

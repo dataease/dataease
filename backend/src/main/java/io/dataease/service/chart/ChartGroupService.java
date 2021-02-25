@@ -1,6 +1,5 @@
 package io.dataease.service.chart;
 
-import com.alibaba.nacos.common.util.UuidUtils;
 import io.dataease.base.domain.ChartGroup;
 import io.dataease.base.domain.ChartGroupExample;
 import io.dataease.base.mapper.ChartGroupMapper;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -24,7 +24,7 @@ public class ChartGroupService {
 
     public ChartGroupDTO save(ChartGroup chartGroup) {
         if (StringUtils.isEmpty(chartGroup.getId())) {
-            chartGroup.setId(UuidUtils.generateUuid());
+            chartGroup.setId(UUID.randomUUID().toString());
             chartGroup.setCreateTime(System.currentTimeMillis());
             chartGroupMapper.insert(chartGroup);
         } else {
