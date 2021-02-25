@@ -3,6 +3,7 @@ import ElementUI from 'element-ui';
 import Fit2CloudUI from 'fit2cloud-ui';
 import '../assets/theme/index.css';
 import icon from "../common/js/icon";
+import '../assets/icons' // icon
 import filters from "../common/js/filter";
 import ajax from "../common/js/ajax";
 import App from './App.vue';

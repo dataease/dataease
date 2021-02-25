@@ -1,19 +1,19 @@
 package io.dataease.service.dataset;
 
-import com.alibaba.nacos.common.util.UuidUtils;
 import io.dataease.base.domain.DatasetGroup;
 import io.dataease.base.domain.DatasetGroupExample;
 import io.dataease.base.mapper.DatasetGroupMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +27,7 @@ public class DataSetGroupService {
 
     public DataSetGroupDTO save(DatasetGroup datasetGroup) {
         if (StringUtils.isEmpty(datasetGroup.getId())) {
-            datasetGroup.setId(UuidUtils.generateUuid());
+            datasetGroup.setId(UUID.randomUUID().toString());
             datasetGroup.setCreateTime(System.currentTimeMillis());
             datasetGroupMapper.insert(datasetGroup);
         } else {

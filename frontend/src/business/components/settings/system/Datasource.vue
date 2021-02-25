@@ -34,29 +34,29 @@
           <el-input v-model="form.desc" autocomplete="off"  type="textarea"/>
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type" :rules="{required: true, message: $t('datasource.please_choose_type'), trigger: 'change'}">
-          <el-select v-model="form.type"  :placeholder="$t('datasource.please_choose_type')" class="select-width">
+          <el-select v-model="form.type"  :placeholder="$t('datasource.please_choose_type')" class="select-width"  @change="changeType()">
             <el-option
               v-for="item in allTypes"
-              :key="item"
-              :label="item"
-              :value="item">
+              :key="item.name"
+              :label="item.name"
+              :value="item.name">
             </el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('datasource.data_base')" prop="configuration.dataBase" :rules="{required: true, message: $t('datasource.please_input_data_base'), trigger: 'blur'}" v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.data_base')" prop="configuration.dataBase" :rules="{required: true, message: $t('datasource.please_input_data_base'), trigger: 'blur'}" v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.dataBase" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.user_name')" prop="configuration.username"  v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.user_name')" prop="configuration.username"  v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.password')" prop="configuration.password" :rules="{required: true, message: $t('datasource.please_input_password'), trigger: 'change'}" v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.password')" prop="configuration.password" :rules="{required: true, message: $t('datasource.please_input_password'), trigger: 'change'}" v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.password" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.host')" prop="configuration.host" :rules="{required: true, message: $t('datasource.please_input_host'), trigger: 'change'}"  v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.host')" prop="configuration.host" :rules="{required: true, message: $t('datasource.please_input_host'), trigger: 'change'}"  v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.port')" prop="configuration.port" :rules="{required: true, message: $t('datasource.please_input_port'), trigger: 'change'}" v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.port')" prop="configuration.port" :rules="{required: true, message: $t('datasource.please_input_port'), trigger: 'change'}" v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.port" autocomplete="off" />
         </el-form-item>
 
@@ -84,19 +84,19 @@
             {min: 2, max: 50, message: this.$t('commons.input_limit', [2, 50]), trigger: 'blur'}]">
           <el-input v-model="form.desc" autocomplete="off"/>
         </el-form-item>
-        <el-form-item :label="$t('datasource.data_base')" prop="configuration.dataBase" :rules="{required: true, message: $t('datasource.please_input_data_base'), trigger: 'blur'}" v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.data_base')" prop="configuration.dataBase" :rules="{required: true, message: $t('datasource.please_input_data_base'), trigger: 'blur'}" v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.dataBase" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.user_name')" prop="configuration.username"  v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.user_name')" prop="configuration.username"  v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.password')" prop="configuration.password" :rules="{required: true, message: $t('datasource.please_input_password'), trigger: 'change'}" v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.password')" prop="configuration.password" :rules="{required: true, message: $t('datasource.please_input_password'), trigger: 'change'}" v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.password" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.host')" prop="configuration.host" :rules="{required: true, message: $t('datasource.please_input_host'), trigger: 'change'}"  v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.host')" prop="configuration.host" :rules="{required: true, message: $t('datasource.please_input_host'), trigger: 'change'}"  v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.port')" prop="configuration.port" :rules="{required: true, message: $t('datasource.please_input_port'), trigger: 'change'}" v-show="form.type=='mysql'">
+        <el-form-item :label="$t('datasource.port')" prop="configuration.port" :rules="{required: true, message: $t('datasource.please_input_port'), trigger: 'change'}" v-show="form.configuration.dataSourceType=='jdbc'">
           <el-input v-model="form.configuration.port" autocomplete="off" />
         </el-form-item>
       </el-form>
@@ -169,7 +169,7 @@
         tableData: [],
         memberLineData: [],
         form: {configuration: {}},
-        allTypes: ['mysql', 'oracle'],
+        allTypes: [{name: "mysql", type: "jdbc"}, {name: "sqlServer", type: "jdbc"}],
         memberForm: {},
         rule: {
           name: [
@@ -319,6 +319,13 @@
             return false;
           }
         })
+      },
+      changeType(){
+        for (let i = 0; i < this.allTypes.length; i++) {
+          if(this.allTypes[i].name == this.form.type){
+            this.form.configuration.dataSourceType = this.allTypes[i].type;
+          }
+        }
       },
       initTableData() {
         this.result = this.$post(this.queryPath + "/" + this.currentPage + "/" + this.pageSize, this.condition, response => {

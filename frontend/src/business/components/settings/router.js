@@ -22,6 +22,21 @@ export default {
       component: () => import('@/business/components/settings/sys/dept'),
       meta: {system: true, title: 'commons.organization'}
     },
+    {
+      path: 'menu',
+      component: () => import('@/business/components/settings/sys/menu'),
+      meta: {system: true, title: 'commons.menu'}
+    },
+    {
+      path: 'role',
+      component: () => import('@/business/components/settings/sys/role'),
+      meta: {system: true, title: 'commons.role'}
+    },
+    {
+      path: 'sysuser',
+      component: () => import('@/business/components/settings/sys/user'),
+      meta: {system: true, title: 'commons.user'}
+    },
     // {
     //   path: 'systemworkspace',
     //   component: () => import('@/business/components/settings/system/SystemWorkspace'),

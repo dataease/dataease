@@ -3,6 +3,7 @@ package io.dataease.datasource.provider;
 import com.google.gson.Gson;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigrationDTO;
+import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -13,13 +14,14 @@ import java.util.*;
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider{
 
+
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         List<String[]> list = new LinkedList<>();
         try (
-            Connection connection = getConnection(datasourceRequest);
-            Statement stat = connection.createStatement();
-            ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())
+                Connection connection = getConnection(datasourceRequest);
+                Statement stat = connection.createStatement();
+                ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())
         ) {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -49,11 +51,7 @@ public class JdbcProvider extends DatasourceProvider{
     @Override
     public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
-
-        String queryStr = "show tables";
-        if(StringUtils.isNotEmpty(datasourceRequest.getQuery())){
-            queryStr = datasourceRequest.getQuery();
-        }
+        String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
             ResultSet resultSet = ps.executeQuery(queryStr);
             while (resultSet.next()){
@@ -74,7 +72,7 @@ public class JdbcProvider extends DatasourceProvider{
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable().toUpperCase(), "%");
             while (resultSet.next()) {
-                String tableName=resultSet.getString("TABLE_NAME");
+                String tableName = resultSet.getString("TABLE_NAME");
                 String database = resultSet.getString("TABLE_CAT");
                 if(tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))){
                     TableFiled tableFiled = new TableFiled();
@@ -100,7 +98,7 @@ public class JdbcProvider extends DatasourceProvider{
 
     @Override
     public void test(DatasourceRequest datasourceRequest) throws Exception {
-        String queryStr = "show tables";
+        String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
             ResultSet resultSet = ps.executeQuery(queryStr);
         } catch (Exception e) {
@@ -122,6 +120,13 @@ public class JdbcProvider extends DatasourceProvider{
                 driver = mysqlConfigrationDTO.getDriver();
                 jdbcurl = mysqlConfigrationDTO.getJdbc();
                 break;
+            case sqlServer:
+                SqlServerConfigration sqlServerConfigration= new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                username = sqlServerConfigration.getUsername();
+                password = sqlServerConfigration.getPassword();
+                driver = sqlServerConfigration.getDriver();
+                jdbcurl = sqlServerConfigration.getJdbc();
+                break;
             default:
                 break;
         }
@@ -141,45 +146,23 @@ public class JdbcProvider extends DatasourceProvider{
             case mysql:
                 MysqlConfigrationDTO mysqlConfigrationDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
                 return mysqlConfigrationDTO.getDataBase();
+            case sqlServer:
+                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                return sqlServerConfigration.getDataBase();
             default:
                 return null;
         }
     }
 
-    private static String getSchema(Connection conn) throws Exception {
-        String schema;
-        schema = conn.getMetaData().getUserName();
-        System.out.println(schema);
-        if ((schema == null) || (schema.length() == 0)) {
-            throw new Exception("ORACLE数据库模式不允许为空");
-        }
-        return schema.toUpperCase().toString();
-    }
-
-    private static String changeDbType(String dbType) {
-        dbType = dbType.toUpperCase();
-        switch(dbType){
-            case "VARCHAR":
-            case "VARCHAR2":
-            case "CHAR":
-                return "1";
-            case "NUMBER":
-            case "DECIMAL":
-                return "4";
-            case "INT":
-            case "SMALLINT":
-            case "INTEGER":
-                return "2";
-            case "BIGINT":
-                return "6";
-            case "DATETIME":
-            case "TIMESTAMP":
-            case "DATE":
-                return "7";
+    private String getTablesSql(DatasourceRequest datasourceRequest){
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType){
+            case mysql:
+                return "show tables;";
+            case sqlServer:
+                return "SELECT TABLE_NAME FROM fit2cloud2.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';";
             default:
-                return "1";
+                return "show tables;";
         }
     }
-
-
 }

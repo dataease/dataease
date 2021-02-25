@@ -14,6 +14,7 @@ export default {
     delete_cancelled: 'Delete cancelled',
     workspace: 'Workspace',
     organization: 'Organization',
+    menu: 'Menu',
     setting: 'Setting',
     project: 'Project',
     about_us: 'About Us',
@@ -1552,6 +1553,18 @@ export default {
     sql_data: 'SQL Data',
     excel_data: 'Excel Data',
     custom_data: 'Custom Data',
-    pls_slc_tbl_left:'Please select table from left'
+    pls_slc_tbl_left:'Please select table from left',
+    add_db_table:'Add Table',
+    pls_slc_data_source:'Select Data Source',
+    table:'Table',
+    edit: 'Edit',
+    create_view: 'Create View',
+    data_preview:'Data Preview',
+    field_type:'Field Type',
+    field_name:'Field Name',
+    field_origin_name:'Origin Name',
+    field_check:'Checked',
+    update_info:'Update Info',
+    join_view: 'Relation View'
   }
 };

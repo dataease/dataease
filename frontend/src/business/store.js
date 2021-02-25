@@ -3,6 +3,36 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex);
 
+const Dataset = {
+  state: {
+    sceneData: "",
+    table: ""
+  },
+  mutations: {
+    setSceneData(state, sceneData) {
+      state.sceneData = sceneData;
+    },
+    setTable(state, table) {
+      state.table = table;
+    }
+  }
+}
+
+const Chart = {
+  state: {
+    chartSceneData: "",
+    chart: ""
+  },
+  mutations: {
+    setChartSceneData(state, chartSceneData) {
+      state.chartSceneData = chartSceneData;
+    },
+    setChart(state, chart) {
+      state.chart = chart;
+    }
+  }
+}
+
 const Common = {
   state: {
     projectId: ""
@@ -56,5 +86,7 @@ export default new Vuex.Store({
     common: Common,
     switch: Switch,
     isReadOnly: IsReadOnly,
+    dataset: Dataset,
+    chart: Chart
   }
 })

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.base.mapper.ext.ExtSysRoleMapper">
+
+    <resultMap id="BaseResultMap" type="io.dataease.controller.sys.response.RoleNodeResponse" extends="io.dataease.base.mapper.SysRoleMapper.BaseResultMap">
+        <result column="menuIds"  property="menu_ids"/>
+        <collection property="menuIds" ofType="long">
+            <constructor>
+                <arg column="menu_id"/>
+            </constructor>
+        </collection>
+    </resultMap>
+
+    <resultMap id="roleItemMap" type="io.dataease.controller.sys.response.RoleUserItem">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <select id="query" resultMap="BaseResultMap">
+        select r.*, m.menu_id
+        from sys_role r left join sys_roles_menus m on r.role_id = m.role_id
+        <where>
+            <if test="request.name != null">
+                AND r.name like CONCAT('%', #{request.name},'%')
+            </if>
+        </where>
+        order by r.update_time desc
+    </select>
+
+
+    <delete id="deleteRoleMenu">
+        delete from sys_roles_menus where role_id = #{roleId}
+    </delete>
+
+    <insert id="batchInsertRoleMenu">
+        insert into sys_roles_menus (role_id, menu_id) values
+        <foreach collection="maps" item="map" separator=",">
+            (#{map.roleId},#{map.menuId})
+        </foreach>
+    </insert>
+
+    <select id="queryAll" resultMap="roleItemMap">
+        select role_id as id, name from sys_role
+    </select>
+
+
+
+</mapper>

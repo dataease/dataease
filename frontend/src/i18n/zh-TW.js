@@ -15,6 +15,7 @@ export default {
     delete_cancelled: '已取消刪除',
     workspace: '工作空間',
     organization: '組織',
+    menu: '菜單',
     setting: '設置',
     project: '項目',
     about_us: '關於',
@@ -1553,6 +1554,18 @@ export default {
     sql_data: 'SQL數據集',
     excel_data: 'Excel數據集',
     custom_data: '自助數據集',
-    pls_slc_tbl_left:'請從左側選擇表'
+    pls_slc_tbl_left:'請從左側選擇表',
+    add_db_table:'添加數據庫表',
+    pls_slc_data_source:'請選擇數據庫連接',
+    table:'表',
+    edit: '編輯',
+    create_view: '創建視圖',
+    data_preview:'數據預覽',
+    field_type:'字段類型',
+    field_name:'字段名',
+    field_origin_name:'原始名',
+    field_check:'選中',
+    update_info:'更新信息',
+    join_view: '關聯視圖'
   }
 };
