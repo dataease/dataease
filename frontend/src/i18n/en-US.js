@@ -1553,6 +1553,7 @@ export default {
     field_type:'Field Type',
     field_name:'Field Name',
     field_origin_name:'Origin Name',
-    field_check:'Checked'
+    field_check:'Checked',
+    update_info:'Update Info'
   }
 };

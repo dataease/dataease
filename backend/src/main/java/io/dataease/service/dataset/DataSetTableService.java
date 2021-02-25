@@ -121,7 +121,7 @@ public class DataSetTableService {
 
         String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
 //        datasourceRequest.setQuery("SELECT " + StringUtils.join(fieldArray, ",") + " FROM " + table + " LIMIT 0,10;");
-        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10;");
+        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");
 
         List<String[]> data = new ArrayList<>();
         try {

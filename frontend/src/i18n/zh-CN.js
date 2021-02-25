@@ -1564,7 +1564,8 @@ export default {
     field_type:'字段类型',
     field_name:'字段名',
     field_origin_name:'原始名',
-    field_check:'选中'
+    field_check:'选中',
+    update_info:'更新信息'
   },
   datasource: {
     create: '新建数据连接',

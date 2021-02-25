@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field`
     `checked`        tinyint(1)   NOT NULL DEFAULT true COMMENT '是否选中',
     `column_index`   int(10)      NOT NULL COMMENT '列位置',
     `last_sync_time` bigint(13) COMMENT '同步时间',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `IDX_TABLE_ID` (`table_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
-ALTER TABLE `dataset_table_field` ADD INDEX IDX_TABLE_ID (`table_id`);

@@ -1554,6 +1554,7 @@ export default {
     field_type:'字段類型',
     field_name:'字段名',
     field_origin_name:'原始名',
-    field_check:'選中'
+    field_check:'選中',
+    update_info:'更新信息'
   }
 };
