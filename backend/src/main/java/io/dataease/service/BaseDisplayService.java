@@ -48,15 +48,19 @@ public class BaseDisplayService {
         if (bytes == null) {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
             switch (imageName) {
+                case "favicon":
+                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/favicon.ico")[0].getInputStream());
+                    contentType = MediaType.valueOf("image/vnd.microsoft.icon");
+                    break;
                 case "logo":
-                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-light-MeterSphere.*.svg")[0].getInputStream());
+                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-light-MeterSphere*.svg")[0].getInputStream());
                     contentType = MediaType.valueOf("image/svg+xml");
                     break;
                 case "loginImage":
-                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/info.*.png")[0].getInputStream());
+                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/info*.png")[0].getInputStream());
                     break;
                 case "loginLogo":
-                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-dark-MeterSphere.*.svg")[0].getInputStream());
+                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-dark-MeterSphere*.svg")[0].getInputStream());
                     contentType = MediaType.valueOf("image/svg+xml");
                     break;
                 default:

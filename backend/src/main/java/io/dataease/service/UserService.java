@@ -23,6 +23,7 @@ import io.dataease.controller.request.organization.QueryOrgMemberRequest;
 import io.dataease.dto.UserDTO;
 import io.dataease.dto.UserRoleDTO;
 import io.dataease.i18n.Translator;
+import io.dataease.notice.domain.UserDetail;
 import io.dataease.security.MsUserToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -62,6 +63,15 @@ public class UserService {
     @Lazy
     @Resource
     private WorkspaceService workspaceService;
+
+    public List<UserDetail> queryTypeByIds(List<String> userIds) {
+        return extUserMapper.queryTypeByIds(userIds);
+    }
+
+    public Map<String, User> queryNameByIds(List<String> userIds) {
+        return extUserMapper.queryNameByIds(userIds);
+    }
+
 
     public UserDTO insert(UserRequest user) {
         checkUserParam(user);
