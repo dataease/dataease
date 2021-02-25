@@ -315,7 +315,7 @@ export default {
               type: 'success',
               showClose: true,
             });
-            this.tree(this.groupForm);
+            this.groupTree(this.groupForm);
           })
         } else {
           this.$message({
