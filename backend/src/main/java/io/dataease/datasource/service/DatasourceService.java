@@ -6,7 +6,7 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

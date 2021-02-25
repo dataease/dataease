@@ -1,8 +1,6 @@
 package io.dataease.service.dataset;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.common.util.UuidUtils;
+
 import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableExample;
@@ -11,7 +9,6 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.SessionUtils;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.TableFiled;
@@ -19,12 +16,9 @@ import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import jnr.ffi.Struct;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.python.apache.xerces.xs.StringList;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.*;
@@ -51,7 +45,7 @@ public class DataSetTableService {
 
     public DatasetTable save(DatasetTable datasetTable) throws Exception {
         if (StringUtils.isEmpty(datasetTable.getId())) {
-            datasetTable.setId(UuidUtils.generateUuid());
+            datasetTable.setId(UUID.randomUUID().toString());
             datasetTable.setCreateTime(System.currentTimeMillis());
             DataTableInfoDTO dataTableInfoDTO = new DataTableInfoDTO();
             if (StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
@@ -136,7 +130,8 @@ public class DataSetTableService {
         } catch (Exception e) {
         }
 
-        JSONArray jsonArray = new JSONArray();
+
+        /*JSONArray jsonArray = new JSONArray();
         if (CollectionUtils.isNotEmpty(data)) {
             data.forEach(ele -> {
                 JSONObject jsonObject = new JSONObject();
@@ -145,7 +140,18 @@ public class DataSetTableService {
                 }
                 jsonArray.add(jsonObject);
             });
+        }*/
+        List<Map<String, Object>> jsonArray = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(data)) {
+            jsonArray = data.stream().map(ele -> {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < ele.length; i++) {
+                    map.put(fieldArray[i], ele[i]);
+                }
+                return map;
+            }).collect(Collectors.toList());
         }
+
 
         Map<String, Object> map = new HashMap<>();
         map.put("fields", fields);

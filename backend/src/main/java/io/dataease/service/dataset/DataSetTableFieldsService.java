@@ -1,6 +1,5 @@
 package io.dataease.service.dataset;
 
-import com.alibaba.nacos.common.util.UuidUtils;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author gin
@@ -28,7 +28,7 @@ public class DataSetTableFieldsService {
 
     public DatasetTableField save(DatasetTableField datasetTableField) {
         if (StringUtils.isEmpty(datasetTableField.getId())) {
-            datasetTableField.setId(UuidUtils.generateUuid());
+            datasetTableField.setId(UUID.randomUUID().toString());
             datasetTableFieldMapper.insert(datasetTableField);
         } else {
             datasetTableFieldMapper.updateByPrimaryKey(datasetTableField);
