@@ -1,5 +1,6 @@
 export default {
   commons: {
+    upload:'Upload',
     cover: 'Cover',
     not_cover: 'Not Cover',
     import_mode: 'Import mode',
@@ -35,7 +36,7 @@ export default {
     operating: 'Operating',
     input_limit: 'Within {0} and {1} characters',
     login: 'Sign In',
-    welcome: 'One-stop open source continuous testing platform',
+    welcome: 'One-stop open source data analysis platform',
     username: 'Username',
     password: 'Password',
     input_username: 'Please enter username',
@@ -217,12 +218,21 @@ export default {
     loginImage: 'Picture on the right side of the login page',
     loginTitle: 'Login page prompt information',
     pageTitle: 'Page Title',
+    advice_size:"The recommended image size is ",
+    favicon:"Favicon",
   },
   system_config: {
     base_config: 'Base Config',
     base: {
       url: 'Website URL',
-      url_tip: 'example：http://localhost:8081'
+      url_tip: 'example：http://localhost:8081',
+      logo: "System LOGO (displayed in the LOGO in the upper left corner of the system homepage)",
+      advice_size:"The recommended image size is ",
+      title:"Title (text displayed on browser tab page)",
+      favicon:"Favicon",
+      system_name:"System name (displayed in the system name in the upper left corner of the system home page)",
+      login_image: "Login page image (the image shown on the login page)",
+      login_name:"System name displayed on login page"
     }
   },
   workspace: {

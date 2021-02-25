@@ -1,5 +1,6 @@
 export default {
   commons: {
+    upload:'上传',
     cover: '覆蓋',
     not_cover: '不覆蓋',
     import_mode: '導入模式',
@@ -36,7 +37,7 @@ export default {
     operating: '操作',
     input_limit: '長度在 {0} 到 {1} 個字符',
     login: '登錄',
-    welcome: '壹站式開源持續測試平臺',
+    welcome: '壹站式開源数据分析平臺',
     username: '姓名',
     password: '密碼',
     input_username: '請輸入用戶姓名',
@@ -218,12 +219,21 @@ export default {
     loginImage: '登陸頁面右側圖片',
     loginTitle: '登陸頁面提示信息',
     pageTitle: '頁面 Title',
+    favicon:"Favicon（瀏覽器Tab頁上的小圖標）",
+    advice_size:"建議圖片大小",
   },
   system_config: {
     base_config: '基本配置',
     base: {
       url: '當前站點URL',
-      url_tip: '例如：http://localhost:8081'
+      url_tip: '例如：http://localhost:8081',
+      logo: "系統LOGO（顯示在系統主頁左上角的LOGO）",
+      advice_size:"建議圖片大小",
+      title:"Title（瀏覽器Tab頁上的顯示的文字）",
+      favicon:"Favicon（瀏覽器Tab頁上的小圖標）",
+      system_name:"系統名稱（顯示在系統主頁左上角的系統名稱）",
+      login_image: "登錄頁圖片（登錄頁中顯示的圖片）",
+      login_name:"登錄頁顯示的系統名稱"
     }
   },
   workspace: {

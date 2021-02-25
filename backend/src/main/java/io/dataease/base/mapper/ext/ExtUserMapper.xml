@@ -16,6 +16,18 @@
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
     </resultMap>
 
+    <select id="queryTypeByIds" parameterType="java.lang.String" resultType="io.dataease.notice.domain.UserDetail">
+        SELECT
+        email,phone
+        from user
+        WHERE id IN
+        <foreach collection="list" item="id" index="index"
+                 open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+
+    </select>
+
     <select id="getUserList" resultMap="BaseResultMap">
         select u.id, u.name, u.email, u.phone, u.language, u.status, u.source,
         u.last_organization_id, u.last_workspace_id, u.language, u.create_time, u.update_time

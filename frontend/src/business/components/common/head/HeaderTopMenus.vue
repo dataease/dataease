@@ -11,7 +11,7 @@
     <el-menu-item index="/track" v-permission="['test_manager','test_user','test_viewer']">
       {{ $t('test_track.test_track') }}
     </el-menu-item>
-    <el-menu-item index="/api" @click="active()" v-permission="['test_manager','test_user','test_viewer']">
+    <el-menu-item index="/chart" @click="active()" v-permission="['test_manager','test_user','test_viewer']">
       {{ $t('commons.api') }}
     </el-menu-item>
     <el-menu-item index="/dataset" onselectstart="return false"

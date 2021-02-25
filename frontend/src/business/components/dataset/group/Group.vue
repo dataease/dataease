@@ -525,6 +525,7 @@ export default {
 
     sceneClick(data, node) {
       // console.log(data);
+      this.$store.commit('setTable', null);
       this.$store.commit('setTable', data.id);
       this.$router.push({
         name: 'table',

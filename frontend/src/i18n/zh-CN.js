@@ -1,5 +1,6 @@
 export default {
   commons: {
+    upload:'上传',
     cover: '覆盖',
     not_cover: '不覆盖',
     import_mode: '导入模式',
@@ -36,7 +37,7 @@ export default {
     operating: '操作',
     input_limit: '长度在 {0} 到 {1} 个字符',
     login: '登录',
-    welcome: '一站式开源持续测试平台',
+    welcome: '一站式开源数据分析平台',
     username: '姓名',
     password: '密码',
     input_username: '请输入用户姓名',
@@ -219,12 +220,21 @@ export default {
     loginImage: '登陆页面右侧图片',
     loginTitle: '登陆页面提示信息',
     pageTitle: '页面 Title',
+    favicon:"Favicon（浏览器Tab页上的小图标）",
+    advice_size:"建议图片大小",
   },
   system_config: {
     base_config: '基本配置',
     base: {
       url: '当前站点URL',
-      url_tip: '例如：http://localhost:8081'
+      url_tip: '例如：http://localhost:8081',
+      logo: "系统LOGO（显示在系统主页左上角的LOGO）",
+      advice_size:"建议图片大小",
+      title:"Title（浏览器Tab页上的显示的文字）",
+      favicon:"Favicon（浏览器Tab页上的小图标）",
+      system_name:"系统名称（显示在系统主页左上角的系统名称）",
+      login_image: "登录页图片（登录页中显示的图片）",
+      login_name:"登录页显示的系统名称"
     }
   },
   workspace: {
@@ -1530,6 +1540,37 @@ export default {
     delete_prompt: '此操作会删除认证源，是否继续？',
     title: '认证设置',
     auth_name_valid: '名称不支持特殊字符',
+  },
+  chart: {
+    datalist: '视图列表',
+    add_group: '添加分组',
+    add_scene: '添加场景',
+    group: '分组',
+    scene: '场景',
+    delete: '删除',
+    move_to: '移动到',
+    rename: '重命名',
+    tips: '提示',
+    confirm_delete: '确认删除',
+    delete_success: '删除成功',
+    confirm: '确认',
+    cancel: '取消',
+    search: '搜索',
+    back: '返回',
+    add_table: '添加表',
+    process: '进度',
+    add_chart: '添加视图',
+    db_data: '数据库表',
+    sql_data: 'SQL数据集',
+    excel_data: 'Excel数据集',
+    custom_data: '自助数据集',
+    pls_slc_tbl_left: '请从左侧选视图',
+    add_db_table: '添加数据库表',
+    pls_slc_data_source: '请选择数据库连接',
+    table: '表',
+    edit: '编辑',
+    create_view: '创建试图',
+    data_preview:'数据预览'
   },
   dataset: {
     datalist: '数据列表',
