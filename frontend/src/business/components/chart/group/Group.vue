@@ -122,7 +122,7 @@
     </el-row>
     <el-divider/>
     <el-row>
-      <el-button type="primary" size="mini" plain>
+      <el-button type="primary" size="mini" plain @click="selectTable">
         {{$t('chart.add_chart')}}
       </el-button>
     </el-row>
@@ -187,13 +187,25 @@
       </div>
     </el-dialog>
 
+    <!--dataset table select-->
+    <el-dialog title="select table" :visible="selectTableFlag" :show-close="false" width="70%" class="dialog-css">
+      <table-selector/>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="selectTableFlag = false">{{$t('chart.cancel')}}</el-button>
+        <el-button type="primary" size="mini" @click="selectTableFlag = false">{{$t('chart.confirm')}}</el-button>
+      </div>
+    </el-dialog>
+
   </el-col>
 </el-col>
 </template>
 
 <script>
+import TableSelector from "../view/TableSelector";
+
 export default {
   name: "Group",
+  components: {TableSelector},
   data() {
     return {
       sceneMode: false,
@@ -226,7 +238,8 @@ export default {
         name: [
           {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
         ],
-      }
+      },
+      selectTableFlag: false
     }
   },
   computed: {
@@ -245,8 +258,7 @@ export default {
     this.chartTree();
     this.$router.push('/chart');
   },
-  watch: {
-  },
+  watch: {},
   methods: {
     clickAdd(param) {
       this.add(param.type);
@@ -473,6 +485,9 @@ export default {
       // });
     },
 
+    selectTable() {
+      this.selectTableFlag = true;
+    }
   },
 }
 </script>
@@ -513,5 +528,13 @@ export default {
 
   .title-text {
     line-height: 26px;
+  }
+
+  .dialog-css >>> .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px 20px;
   }
 </style>

@@ -75,7 +75,7 @@
 
 <script>
 import TabDataPreview from "./TabDataPreview";
-import ChartEdit from "../../chart/View/ChartEdit";
+import ChartEdit from "../../chart/view/ChartEdit";
 
 export default {
   name: "ViewTable",
