@@ -21,8 +21,11 @@
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview :table="table" :fields="fields" :data="data"/>
       </el-tab-pane>
+      <el-tab-pane :label="$t('dataset.join_view')" name="joinView">
+        关联视图 TODO
+      </el-tab-pane>
       <el-tab-pane :label="$t('dataset.update_info')" name="updateInfo">
-        更新信息TODO
+        更新信息 TODO
       </el-tab-pane>
       <!--      <el-tab-pane label="tab3" name="tab3">-->
       <!--        tab3-->

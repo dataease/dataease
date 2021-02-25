@@ -1555,6 +1555,7 @@ export default {
     field_name:'字段名',
     field_origin_name:'原始名',
     field_check:'選中',
-    update_info:'更新信息'
+    update_info:'更新信息',
+    join_view: '關聯視圖'
   }
 };

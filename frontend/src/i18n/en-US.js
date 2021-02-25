@@ -1554,6 +1554,7 @@ export default {
     field_name:'Field Name',
     field_origin_name:'Origin Name',
     field_check:'Checked',
-    update_info:'Update Info'
+    update_info:'Update Info',
+    join_view: 'Relation View'
   }
 };

@@ -102,7 +102,14 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
-        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, new String[]{"*"}));
+
+        DatasetTableField datasetTableField = new DatasetTableField();
+        datasetTableField.setTableId(dataSetTableRequest.getId());
+        datasetTableField.setChecked(Boolean.TRUE);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
+        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray));
+
         return datasourceProvider.getData(datasourceRequest);
     }
 
