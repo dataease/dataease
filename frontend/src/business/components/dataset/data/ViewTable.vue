@@ -10,7 +10,7 @@
         <el-button size="mini" @click="edit">
           {{$t('dataset.edit')}}
         </el-button>
-        <el-button size="mini" type="primary">
+        <el-button size="mini" type="primary" @click="createView">
           {{$t('dataset.create_view')}}
         </el-button>
       </el-row>
@@ -38,6 +38,11 @@
     <el-dialog :title="table.name" :visible.sync="editField" :fullscreen="true" :show-close="false">
       <el-table :data="tableFields" size="mini" max-height="600px">
         <el-table-column property="type" :label="$t('dataset.field_type')" width="100">
+          <template slot-scope="scope">
+          <span v-if="scope.row.deType === 0">{{$t('dataset.text')}}</span>
+          <span v-if="scope.row.deType === 1">{{$t('dataset.time')}}</span>
+          <span v-if="scope.row.deType === 2">{{$t('dataset.value')}}</span>
+          </template>
         </el-table-column>
         <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
           <template slot-scope="scope">
@@ -60,18 +65,24 @@
         <el-button type="primary" @click="saveEdit" size="mini">{{$t('dataset.confirm')}}</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="view" :visible.sync="createViewDialog" :fullscreen="true">
+      <chart-edit/>
+    </el-dialog>
   </el-row>
 </el-col>
 </template>
 
 <script>
 import TabDataPreview from "./TabDataPreview";
+import ChartEdit from "../../chart/View/ChartEdit";
 
 export default {
   name: "ViewTable",
-  components: {TabDataPreview},
+  components: {ChartEdit, TabDataPreview},
   data() {
     return {
+      createViewDialog: false,
       editField: false,
       table: {
         name: ''
@@ -129,6 +140,10 @@ export default {
       this.editField = true;
       // 请求当前表的所有字段，进行编辑
       this.initTableFields();
+    },
+
+    createView() {
+      this.createViewDialog = true;
     },
 
     saveEdit() {

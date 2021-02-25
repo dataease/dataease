@@ -21,5 +21,7 @@ public class DatasetTableField implements Serializable {
 
     private Long lastSyncTime;
 
+    private Integer deType;
+
     private static final long serialVersionUID = 1L;
 }

@@ -10,6 +10,7 @@
     <result column="checked" jdbcType="BIT" property="checked" />
     <result column="column_index" jdbcType="INTEGER" property="columnIndex" />
     <result column="last_sync_time" jdbcType="BIGINT" property="lastSyncTime" />
+    <result column="de_type" jdbcType="INTEGER" property="deType" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +71,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, origin_name, `name`, `type`, `checked`, column_index, last_sync_time
+    id, table_id, origin_name, `name`, `type`, `checked`, column_index, last_sync_time, 
+    de_type
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableFieldExample" resultMap="BaseResultMap">
     select
@@ -105,10 +107,10 @@
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTableField">
     insert into dataset_table_field (id, table_id, origin_name, 
       `name`, `type`, `checked`, column_index, 
-      last_sync_time)
+      last_sync_time, de_type)
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR}, 
       #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, 
-      #{lastSyncTime,jdbcType=BIGINT})
+      #{lastSyncTime,jdbcType=BIGINT}, #{deType,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTableField">
     insert into dataset_table_field
@@ -137,6 +139,9 @@
       <if test="lastSyncTime != null">
         last_sync_time,
       </if>
+      <if test="deType != null">
+        de_type,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -162,6 +167,9 @@
       </if>
       <if test="lastSyncTime != null">
         #{lastSyncTime,jdbcType=BIGINT},
+      </if>
+      <if test="deType != null">
+        #{deType,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -198,6 +206,9 @@
       <if test="record.lastSyncTime != null">
         last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT},
       </if>
+      <if test="record.deType != null">
+        de_type = #{record.deType,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -212,7 +223,8 @@
       `type` = #{record.type,jdbcType=VARCHAR},
       `checked` = #{record.checked,jdbcType=BIT},
       column_index = #{record.columnIndex,jdbcType=INTEGER},
-      last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT}
+      last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT},
+      de_type = #{record.deType,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -241,6 +253,9 @@
       <if test="lastSyncTime != null">
         last_sync_time = #{lastSyncTime,jdbcType=BIGINT},
       </if>
+      <if test="deType != null">
+        de_type = #{deType,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -252,7 +267,8 @@
       `type` = #{type,jdbcType=VARCHAR},
       `checked` = #{checked,jdbcType=BIT},
       column_index = #{columnIndex,jdbcType=INTEGER},
-      last_sync_time = #{lastSyncTime,jdbcType=BIGINT}
+      last_sync_time = #{lastSyncTime,jdbcType=BIGINT},
+      de_type = #{deType,jdbcType=INTEGER}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

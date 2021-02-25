@@ -1566,6 +1566,9 @@ export default {
     field_origin_name:'原始名',
     field_check:'選中',
     update_info:'更新信息',
-    join_view: '關聯視圖'
+    join_view: '關聯視圖',
+    text: '文本',
+    time: '時間',
+    value: '數值'
   }
 };

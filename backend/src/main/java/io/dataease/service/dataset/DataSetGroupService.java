@@ -2,9 +2,11 @@ package io.dataease.service.dataset;
 
 import io.dataease.base.domain.DatasetGroup;
 import io.dataease.base.domain.DatasetGroupExample;
+import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.mapper.DatasetGroupMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
+import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 public class DataSetGroupService {
     @Resource
     private DatasetGroupMapper datasetGroupMapper;
+    @Resource
+    private DataSetTableService dataSetTableService;
 
     public DataSetGroupDTO save(DatasetGroup datasetGroup) {
         if (StringUtils.isEmpty(datasetGroup.getId())) {
@@ -48,6 +52,21 @@ public class DataSetGroupService {
         DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
         datasetGroupExample.createCriteria().andIdIn(ids);
         datasetGroupMapper.deleteByExample(datasetGroupExample);
+        // 获取type为scene的id，删除场景下的表和字段
+        deleteTableAndField(tree.stream().filter(ele -> {
+            return StringUtils.equalsIgnoreCase(ele.getType(), "scene");
+        }).map(DatasetGroup::getId).collect(Collectors.toList()));
+    }
+
+    public void deleteTableAndField(List<String> sceneIds) {
+        for (String sceneId : sceneIds) {
+            DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
+            dataSetTableRequest.setSceneId(sceneId);
+            List<DatasetTable> list = dataSetTableService.list(dataSetTableRequest);
+            for (DatasetTable table : list) {
+                dataSetTableService.delete(table.getId());
+            }
+        }
     }
 
     public List<DataSetGroupDTO> tree(DataSetGroupRequest datasetGroup) {

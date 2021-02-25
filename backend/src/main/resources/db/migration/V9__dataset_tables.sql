@@ -18,12 +18,14 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field`
     `table_id`       varchar(50)  NOT NULL COMMENT '表ID',
     `origin_name`    varchar(255) NOT NULL COMMENT '原始名',
     `name`           varchar(255) NOT NULL COMMENT '字段名',
-    `type`           varchar(50)  NOT NULL COMMENT '字段类型',
+    `type`           varchar(50)  NOT NULL COMMENT '原始字段类型',
+    `de_type`        int(10)  NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-数值...',
     `checked`        tinyint(1)   NOT NULL DEFAULT true COMMENT '是否选中',
     `column_index`   int(10)      NOT NULL COMMENT '列位置',
     `last_sync_time` bigint(13) COMMENT '同步时间',
     PRIMARY KEY (`id`),
-    KEY `IDX_TABLE_ID` (`table_id`)
+    KEY `IDX_TABLE_ID` (`table_id`),
+    KEY `IDX_DE_TYPE` (`de_type`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 

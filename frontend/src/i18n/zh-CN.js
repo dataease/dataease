@@ -1,6 +1,6 @@
 export default {
   commons: {
-    upload:'上传',
+    upload: '上传',
     cover: '覆盖',
     not_cover: '不覆盖',
     import_mode: '导入模式',
@@ -220,8 +220,8 @@ export default {
     loginImage: '登陆页面右侧图片',
     loginTitle: '登陆页面提示信息',
     pageTitle: '页面 Title',
-    favicon:"Favicon（浏览器Tab页上的小图标）",
-    advice_size:"建议图片大小",
+    favicon: "Favicon（浏览器Tab页上的小图标）",
+    advice_size: "建议图片大小",
   },
   system_config: {
     base_config: '基本配置',
@@ -229,12 +229,12 @@ export default {
       url: '当前站点URL',
       url_tip: '例如：http://localhost:8081',
       logo: "系统LOGO（显示在系统主页左上角的LOGO）",
-      advice_size:"建议图片大小",
-      title:"Title（浏览器Tab页上的显示的文字）",
-      favicon:"Favicon（浏览器Tab页上的小图标）",
-      system_name:"系统名称（显示在系统主页左上角的系统名称）",
+      advice_size: "建议图片大小",
+      title: "Title（浏览器Tab页上的显示的文字）",
+      favicon: "Favicon（浏览器Tab页上的小图标）",
+      system_name: "系统名称（显示在系统主页左上角的系统名称）",
       login_image: "登录页图片（登录页中显示的图片）",
-      login_name:"登录页显示的系统名称"
+      login_name: "登录页显示的系统名称"
     }
   },
   workspace: {
@@ -1570,7 +1570,7 @@ export default {
     table: '表',
     edit: '编辑',
     create_view: '创建试图',
-    data_preview:'数据预览'
+    data_preview: '数据预览'
   },
   dataset: {
     datalist: '数据列表',
@@ -1607,7 +1607,10 @@ export default {
     field_origin_name: '原始名',
     field_check: '选中',
     update_info: '更新信息',
-    join_view: '关联视图'
+    join_view: '关联视图',
+    text: '文本',
+    time: '时间',
+    value: '数值'
   },
   datasource: {
     create: '新建数据连接',

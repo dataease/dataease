@@ -19,6 +19,7 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.*;
@@ -161,6 +162,7 @@ public class DataSetTableService {
     }
 
     public void saveTableField(DatasetTable datasetTable) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
         BeanUtils.copyBean(dataSetTableRequest, datasetTable);
         List<TableFiled> fields = getFields(dataSetTableRequest);
@@ -173,6 +175,7 @@ public class DataSetTableService {
                 datasetTableField.setOriginName(filed.getFieldName());
                 datasetTableField.setName(filed.getRemarks());
                 datasetTableField.setType(filed.getFieldType());
+                datasetTableField.setDeType(transFieldType(ds.getType(), filed.getFieldType()));
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(syncTime);
@@ -190,6 +193,49 @@ public class DataSetTableService {
                 return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
             default:
                 return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+        }
+    }
+
+    public Integer transFieldType(String type, String field) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
+        switch (datasourceType) {
+            case mysql:
+                return transMysqlField(field);
+            case sqlServer:
+            default:
+                return 0;
+        }
+    }
+
+    public Integer transMysqlField(String field) {
+        switch (field) {
+            case "CHAR":
+            case "VARCHAR":
+            case "TEXT":
+            case "TINYTEXT":
+            case "MEDIUMTEXT":
+            case "LONGTEXT":
+            case "ENUM":
+                return 0;// 文本
+            case "DATE":
+            case "TIME":
+            case "YEAR":
+            case "DATETIME":
+            case "TIMESTAMP":
+                return 1;// 时间
+            case "INT":
+            case "BIT":
+            case "TINYINT":
+            case "SMALLINT":
+            case "MEDIUMINT":
+            case "INTEGER":
+            case "BIGINT":
+            case "FLOAT":
+            case "DOUBLE":
+            case "DECIMAL":
+                return 2;// 数值
+            default:
+                return 0;
         }
     }
 }

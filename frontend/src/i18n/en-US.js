@@ -1565,6 +1565,9 @@ export default {
     field_origin_name:'Origin Name',
     field_check:'Checked',
     update_info:'Update Info',
-    join_view: 'Relation View'
+    join_view: 'Relation View',
+    text: 'Text',
+    time: 'Time',
+    value: 'Value'
   }
 };
