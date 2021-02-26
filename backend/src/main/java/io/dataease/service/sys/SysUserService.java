@@ -120,4 +120,9 @@ public class SysUserService {
         return null;
     }
 
+
+    public List<SysUser> users(List<Long> userIds){
+        return userIds.stream().map(sysUserMapper::selectByPrimaryKey).collect(Collectors.toList());
+    }
+
 }

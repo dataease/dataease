@@ -2,17 +2,16 @@ package io.dataease.notice.service;
 
 import io.dataease.base.domain.MessageTask;
 import io.dataease.base.domain.MessageTaskExample;
+import io.dataease.base.domain.SysUser;
 import io.dataease.base.mapper.MessageTaskMapper;
 import io.dataease.commons.exception.DEException;
-import io.dataease.commons.user.SessionUser;
-import io.dataease.commons.utils.SessionUtils;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.i18n.Translator;
 import io.dataease.notice.domain.MessageDetail;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,13 +23,13 @@ public class NoticeService {
     private MessageTaskMapper messageTaskMapper;
 
     public void saveMessageTask(MessageDetail messageDetail) {
-        MessageTaskExample example = new MessageTaskExample();
+        /*MessageTaskExample example = new MessageTaskExample();
         example.createCriteria().andIdentificationEqualTo(messageDetail.getIdentification());
         List<MessageTask> messageTaskLists = messageTaskMapper.selectByExample(example);
         if (messageTaskLists.size() > 0) {
             delMessage(messageDetail.getIdentification());
         }
-        SessionUser user = SessionUtils.getUser();
+        SysUser user = AuthUtils.getUser();
         String orgId = user.getLastOrganizationId();
         long time = System.currentTimeMillis();
         String identification = messageDetail.getIdentification();
@@ -53,7 +52,7 @@ public class NoticeService {
             messageTask.setCreateTime(time);
             setTemplate(messageDetail, messageTask);
             messageTaskMapper.insert(messageTask);
-        }
+        }*/
     }
 
     private void setTemplate(MessageDetail messageDetail, MessageTask messageTask) {
@@ -102,14 +101,14 @@ public class NoticeService {
     }
 
     public List<MessageDetail> searchMessageByType(String type) {
-        SessionUser user = SessionUtils.getUser();
-        String orgId = user.getLastOrganizationId();
+        SysUser user = AuthUtils.getUser();
+        //String orgId = user.getLastOrganizationId();
         List<MessageDetail> messageDetails = new ArrayList<>();
 
         MessageTaskExample example = new MessageTaskExample();
         example.createCriteria()
-                .andTaskTypeEqualTo(type)
-                .andOrganizationIdEqualTo(orgId);
+                .andTaskTypeEqualTo(type);
+                //.andOrganizationIdEqualTo(orgId);
         List<MessageTask> messageTaskLists = messageTaskMapper.selectByExampleWithBLOBs(example);
 
         Map<String, List<MessageTask>> messageTaskMap = messageTaskLists.stream()

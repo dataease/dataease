@@ -1,10 +1,12 @@
 package io.dataease.notice.sender;
 
+import io.dataease.base.domain.SysUser;
 import io.dataease.commons.constants.NoticeConstants;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.notice.domain.MessageDetail;
 import io.dataease.notice.domain.UserDetail;
-import io.dataease.service.UserService;
+/*import io.dataease.service.UserService;*/
+import io.dataease.service.sys.SysUserService;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractNoticeSender implements NoticeSender {
     @Resource
-    private UserService userService;
+    private SysUserService sysUserService;
 
     protected String getContext(MessageDetail messageDetail, NoticeModel noticeModel) {
         // 如果配置了模版就直接使用模版
@@ -104,7 +106,9 @@ public abstract class AbstractNoticeSender implements NoticeSender {
     }
 
     protected List<String> getUserPhones(List<String> userIds) {
-        List<UserDetail> list = userService.queryTypeByIds(userIds);
+        List<Long> userIdLists = userIds.stream().map(Long::parseLong).collect(Collectors.toList());
+        List<SysUser> list = sysUserService.users(userIdLists);
+        //List<UserDetail> list = userService.queryTypeByIds(userIds);
         List<String> phoneList = new ArrayList<>();
         list.forEach(u -> phoneList.add(u.getPhone()));
         LogUtil.info("收件人地址: " + phoneList);
@@ -112,7 +116,9 @@ public abstract class AbstractNoticeSender implements NoticeSender {
     }
 
     protected List<String> getUserEmails(List<String> userIds) {
-        List<UserDetail> list = userService.queryTypeByIds(userIds);
+        /*List<UserDetail> list = userService.queryTypeByIds(userIds);*/
+        List<Long> userIdLists = userIds.stream().map(Long::parseLong).collect(Collectors.toList());
+        List<SysUser> list = sysUserService.users(userIdLists);
         List<String> phoneList = new ArrayList<>();
         list.forEach(u -> phoneList.add(u.getEmail()));
         LogUtil.info("收件人地址: " + phoneList);
