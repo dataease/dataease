@@ -89,6 +89,10 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   KEY `inx_enabled` (`enabled`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统用户';
 
+BEGIN;
+INSERT INTO `sys_user` VALUES (4, 0, 'admin', '管理员', NULL, NULL, NULL, '123456', b'1', 1, NULL, NULL, NULL, NULL, NULL);
+COMMIT;
+
 
 CREATE TABLE IF NOT EXISTS `sys_users_roles` (
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
