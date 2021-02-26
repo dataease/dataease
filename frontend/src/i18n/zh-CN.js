@@ -1607,7 +1607,10 @@ export default {
     field_origin_name: '原始名',
     field_check: '选中',
     update_info: '更新信息',
-    join_view: '关联视图'
+    join_view: '关联视图',
+    text: '文本',
+    time: '时间',
+    value: '数值'
   },
   datasource: {
     create: '新建数据连接',
