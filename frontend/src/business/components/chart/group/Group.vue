@@ -253,12 +253,10 @@ export default {
   mounted() {
     this.groupTree(this.groupForm);
     this.chartTree();
-    this.$router.push('/chart');
   },
   activated() {
     this.groupTree(this.groupForm);
     this.chartTree();
-    this.$router.push('/chart');
   },
   watch: {},
   methods: {
@@ -494,8 +492,9 @@ export default {
     createChart() {
       console.log(this.table);
       this.selectTableFlag = false;
-      // TODO
-      this.$router.push("/chart");
+      this.$store.commit("setTableId", null);
+      this.$store.commit("setTableId", this.table.id);
+      this.$router.push("/chart/chart-edit");
     },
 
     getTable(table) {

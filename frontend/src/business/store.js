@@ -21,7 +21,8 @@ const Dataset = {
 const Chart = {
   state: {
     chartSceneData: "",
-    chart: ""
+    chart: "",
+    tableId: ""
   },
   mutations: {
     setChartSceneData(state, chartSceneData) {
@@ -29,6 +30,9 @@ const Chart = {
     },
     setChart(state, chart) {
       state.chart = chart;
+    },
+    setTableId(state, tableId) {
+      state.tableId = tableId;
     }
   }
 }

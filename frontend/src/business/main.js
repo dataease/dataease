@@ -23,7 +23,9 @@ import VueFab from 'vue-float-action-button'
 import {left2RightDrag, bottom2TopDrag, right2LeftDrag} from "../common/js/directive";
 import JsonSchemaEditor from './components/common/json-schema/schema/index';
 import JSONPathPicker from 'vue-jsonpath-picker';
+import echarts from 'echarts'
 
+Vue.prototype.$echarts = echarts;
 Vue.use(JsonSchemaEditor);
 import VuePapaParse from 'vue-papa-parse'
 Vue.use(VuePapaParse)

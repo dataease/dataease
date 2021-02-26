@@ -10,9 +10,9 @@
         <el-button size="mini" @click="edit">
           {{$t('dataset.edit')}}
         </el-button>
-        <el-button size="mini" type="primary" @click="createChart">
-          {{$t('dataset.create_view')}}
-        </el-button>
+<!--        <el-button size="mini" type="primary" @click="createChart">-->
+<!--          {{$t('dataset.create_view')}}-->
+<!--        </el-button>-->
       </el-row>
     </el-row>
     <el-divider/>
@@ -142,12 +142,10 @@ export default {
       this.initTableFields();
     },
 
-    createChart() {
-      console.log(this.table);
-      this.createViewDialog = true;
-      // TODO
-      this.$router.push("/chart");
-    },
+    // createChart() {
+    //   console.log(this.table);
+    //   this.createViewDialog = true;
+    // },
 
     saveEdit() {
       console.log(this.tableFields);

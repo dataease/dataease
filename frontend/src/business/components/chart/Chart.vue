@@ -34,12 +34,13 @@
   .ms-aside-container {
     height: calc(100vh - 40px);
     padding: 15px;
-    min-width: 300px;
-    max-width: 500px;
+    min-width: 260px;
+    max-width: 460px;
   }
 
   .ms-main-container {
     height: calc(100vh - 40px);
+    padding: 0px;
   }
 
 </style>
