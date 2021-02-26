@@ -1,16 +1,18 @@
 const path = require('path')
+const defaultSettings = require('./src/settings.js')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
-
+const name = defaultSettings.title // 网址标题
+const port = 8080
 module.exports = {
   productionSourceMap: true,
   devServer: {
-    port: 8080,
+    port: port,
     proxy: {
       ['^(?!/login)']: {
-        target: 'http://localhost:8081',
+        target: process.env.VUE_APP_BASE_API,
         ws: true,
       }
     }
