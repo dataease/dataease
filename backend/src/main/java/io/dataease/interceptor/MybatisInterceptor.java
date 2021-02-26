@@ -2,7 +2,7 @@ package io.dataease.interceptor;
 
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.MybatisInterceptorConfig;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;

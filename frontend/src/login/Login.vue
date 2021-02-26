@@ -15,13 +15,7 @@
         <div class="content">
           <div class="form">
             <el-form :model="form" :rules="rules" ref="form">
-              <el-form-item v-slot:default>
-                <el-radio-group v-model="form.authenticate" @change="redirectAuth(form.authenticate)">
-                  <el-radio label="LDAP" size="mini" v-if="openLdap">LDAP</el-radio>
-                  <el-radio label="LOCAL" size="mini" v-if="openLdap">普通登录</el-radio>
-                  <el-radio :label="auth.id" size="mini" v-for="auth in authSources" :key="auth.id">{{ auth.type }} {{ auth.name }}</el-radio>
-                </el-radio-group>
-              </el-form-item>
+
               <el-form-item prop="username">
                 <el-input v-model="form.username" :placeholder="$t('commons.login_username')" autofocus
                           autocomplete="off"/>
@@ -55,8 +49,9 @@
 </template>
 
 <script>
-import {saveLocalStorage} from '@/common/js/utils';
+import {setUserInfo} from '@/common/js/utils';
 import {DEFAULT_LANGUAGE} from "@/common/js/constants";
+import {setToken, tokenKey} from '@/utils/auth'
 
 const requireComponent = require.context('@/business/components/xpack/', true, /\.vue$/);
 const display = requireComponent.keys().length > 0 ? requireComponent("./display/Display.vue") : {};
@@ -83,44 +78,44 @@ export default {
         ]
       },
       msg: '',
-      ready: false,
+      ready: true,
       openLdap: false,
       loginTitle: this.$t("commons.welcome"),
       authSources: [],
-      loginUrl: 'signin',
+      loginUrl: '/api/auth/login',
     }
   },
-  beforeCreate() {
-    this.result = this.$get("/isLogin").then(response => {
+  // beforeCreate() {
+  //   this.result = this.$get("/api/auth/isLogin").then(response => {
 
-      if (display.default !== undefined) {
-        display.default.showLogin(this);
-      }
+  //     if (display.default !== undefined) {
+  //       display.default.showLogin(this);
+  //     }
 
-      if (auth.default !== undefined) {
-        auth.default.getAuthSources(this);
-      }
+  //     if (auth.default !== undefined) {
+  //       auth.default.getAuthSources(this);
+  //     }
 
-      if (!response.data.success) {
-        this.ready = true;
-      } else {
-        let user = response.data.data;
-        saveLocalStorage(response.data);
-        this.getLanguage(user.language);
-        window.location.href = "/";
-      }
-    });
-    this.$get("/ldap/open", response => {
-      this.openLdap = response.data;
-    })
-  },
+  //     if (!response.data.success) {
+  //       this.ready = true;
+  //     } else {
+  //       let user = response.data.data;
+  //       saveLocalStorage(response.data);
+  //       this.getLanguage(user.language);
+  //       window.location.href = "/";
+  //     }
+  //   });
+  //   this.$get("/ldap/open", response => {
+  //     this.openLdap = response.data;
+  //   })
+  // },
   created: function () {
     // 主页添加键盘事件,注意,不能直接在焦点事件上添加回车
     document.addEventListener("keydown", this.watchEnter);
     //
-    if (license.default) {
-      license.default.valid(this)
-    }
+    // if (license.default) {
+    //   license.default.valid(this)
+    // }
   },
 
   destroyed() {
@@ -140,19 +135,7 @@ export default {
     submit(form) {
       this.$refs[form].validate((valid) => {
         if (valid) {
-          switch (this.form.authenticate) {
-            case "LOCAL":
-              this.loginUrl = "/signin";
-              this.doLogin();
-              break;
-            case "LDAP":
-              this.loginUrl = "/ldap/signin";
-              this.doLogin();
-              break;
-            default:
-              this.loginUrl = "/sso/signin";
-              this.doLogin();
-          }
+          this.doLogin();
         } else {
           return false;
         }
@@ -160,21 +143,26 @@ export default {
     },
     doLogin() {
       this.result = this.$post(this.loginUrl, this.form, response => {
-        saveLocalStorage(response);
+
         sessionStorage.setItem('loginSuccess', 'true');
-        this.getLanguage(response.data.language);
+        this.$post('/api/auth/userInfo', null ,res => {
+          setUserInfo(res.data);
+          this.getLanguage();
+        })
       });
     },
     getLanguage(language) {
-      if (!language) {
-        this.$get("language", response => {
-          language = response.data;
-          localStorage.setItem(DEFAULT_LANGUAGE, language);
-          window.location.href = "/"
-        })
-      } else {
-        window.location.href = "/"
-      }
+      // if (!language) {
+      //   this.$get("language", response => {
+      //     language = response.data;
+      //     localStorage.setItem(DEFAULT_LANGUAGE, language);
+      //     window.location.href = "/"
+      //   })
+      // } else {
+      //   window.location.href = "/"
+      // }
+      localStorage.setItem(DEFAULT_LANGUAGE, 'zh_CN')
+      window.location.href = "/"
     },
     redirectAuth(authId) {
       if (auth.default) {

@@ -30,7 +30,7 @@ import MsUser from "./components/common/head/HeaderUser";
 // import MsHeaderOrgWs from "./components/common/head/HeaderOrgWs";
 import MsLanguageSwitch from "./components/common/head/LanguageSwitch";
 import {saveLocalStorage} from "@/common/js/utils";
-
+import {getToken} from '@/utils/auth'
 const requireComponent = require.context('@/business/components/xpack/', true, /\.vue$/);
 const header = requireComponent.keys().length > 0 ? requireComponent("./license/LicenseMessage.vue") : {};
 const display = requireComponent.keys().length > 0 ? requireComponent("./display/Display.vue") : {};
@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       licenseHeader: null,
-      auth: false,
+      auth: true,
       header: {},
       logoId: '_blank',
     }
@@ -50,30 +50,29 @@ export default {
     if (localStorage.getItem("store")) {
       this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(localStorage.getItem("store"))))
     }
+    this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(localStorage.getItem("store"))))
     window.addEventListener("beforeunload", () => {
       localStorage.setItem("store", JSON.stringify(this.$store.state))
     })
   },
   beforeCreate() {
-    this.$get("/isLogin").then(response => {
-      if (response.data.success) {
-        this.$setLang(response.data.data.language);
-        saveLocalStorage(response.data);
+    if(getToken()){
+      this.$setLang('zh_CN');
+        //saveLocalStorage(response.data);
         this.auth = true;
         // 是否显示校验信息
         if (header.default !== undefined) {
           this.licenseHeader = "LicenseMessage";
         }
-
+        this.licenseHeader = "LicenseMessage";
         if (display.default !== undefined) {
           display.default.showHome(this);
         }
-      } else {
-        window.location.href = "/login"
-      }
-    }).catch(() => {
+        //display.default.showHome(this);
+    }else{
       window.location.href = "/login"
-    });
+    }
+
   },
   components: {
     MsLanguageSwitch,

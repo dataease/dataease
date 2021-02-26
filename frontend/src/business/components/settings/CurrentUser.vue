@@ -1,14 +1,14 @@
 <template>
   <el-row type="flex" align="middle" class="current-user">
     <div class="icon-title">
-      {{ currentUser.name.substring(0, 1) }}
+      {{ currentUser.username }}
     </div>
     <span class="username">{{ currentUser.name }}</span>
   </el-row>
 </template>
 
 <script>
-import {getCurrentUser} from "@/common/js/utils";
+import {getUserInfo} from "@/common/js/utils";
 
 export default {
   name: "MsCurrentUser",
@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     currentUser: () => {
-      return getCurrentUser();
+      return getUserInfo();
     }
   }
 }

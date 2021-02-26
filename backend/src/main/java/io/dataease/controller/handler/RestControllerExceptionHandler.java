@@ -1,3 +1,4 @@
+/*
 package io.dataease.controller.handler;
 
 
@@ -16,14 +17,18 @@ import java.sql.SQLException;
 
 @RestControllerAdvice
 public class RestControllerExceptionHandler {
-    /*=========== Shiro 异常拦截==============*/
+    */
+/*=========== Shiro 异常拦截==============*//*
+
     @ExceptionHandler(ShiroException.class)
     public ResultHolder exceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return ResultHolder.error(exception.getMessage());
     }
 
-    /*=========== Shiro 异常拦截==============*/
+    */
+/*=========== Shiro 异常拦截==============*//*
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResultHolder unauthorizedExceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -43,3 +48,4 @@ public class RestControllerExceptionHandler {
         return ResultHolder.error(e.getMessage());
     }
 }
+*/

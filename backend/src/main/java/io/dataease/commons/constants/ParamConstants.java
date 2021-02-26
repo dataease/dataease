@@ -31,7 +31,6 @@ public interface ParamConstants {
         MAIL("smtp"),
         BASE("base"),
         LDAP("ldap"),
-        UI("ui"),
         REGISTRY("registry");
 
         private String value;

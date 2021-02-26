@@ -216,13 +216,13 @@ export default {
       })
     },
     initTableData() {
-      this.result = this.$get("/user/info/" + encodeURIComponent(this.currentUser().id), response => {
-        let data = response.data;
-        this.isLocalUser = response.data.source === 'LOCAL';
-        let dataList = [];
-        dataList[0] = data;
-        this.tableData = dataList;
-      })
+      // this.result = this.$get("/user/info/" + encodeURIComponent(this.currentUser().id), response => {
+      //   let data = response.data;
+      //   this.isLocalUser = response.data.source === 'LOCAL';
+      //   let dataList = [];
+      //   dataList[0] = data;
+      //   this.tableData = dataList;
+      // })
     },
     handleClose() {
       this.form = {};

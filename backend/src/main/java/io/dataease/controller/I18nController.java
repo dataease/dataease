@@ -6,7 +6,6 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
-import io.dataease.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,8 +27,8 @@ public class I18nController {
     @Value("${run.mode:release}")
     private String runMode;
 
-    @Resource
-    private UserService userService;
+//    @Resource
+//    private UserService userService;
 
     @GetMapping("lang/change/{lang}")
     public void changeLang(@PathVariable String lang, HttpServletRequest request, HttpServletResponse response) {
@@ -39,7 +38,7 @@ public class I18nController {
             LogUtil.error("Invalid parameter: " + lang);
             DEException.throwException(Translator.get("error_lang_invalid"));
         }
-        userService.setLanguage(targetLang.getDesc());
+//        userService.setLanguage(targetLang.getDesc());
         Cookie cookie = new Cookie(I18nConstants.LANG_COOKIE_NAME, targetLang.getDesc());
         cookie.setPath("/");
         cookie.setMaxAge(FOR_EVER);

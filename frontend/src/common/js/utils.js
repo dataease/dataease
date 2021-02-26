@@ -86,16 +86,26 @@ export function getCurrentWorkspaceId() {
 }
 
 export function getCurrentUser() {
-  return JSON.parse(localStorage.getItem(TokenKey));
+  //return JSON.parse(localStorage.getItem(TokenKey));
+  return getUserInfo()
 }
 
 export function getCurrentProjectID() {
   return localStorage.getItem(PROJECT_ID);
 }
 
+// export function saveLocalStorage(response) {
+//   // 登录信息保存 cookie
+//   //localStorage.setItem(TokenKey, JSON.stringify(response.data));
+//   let rolesArray = response.data.roles;
+//   let roles = rolesArray.map(r => r.id);
+//   // 保存角色
+//   localStorage.setItem("roles", roles);
+// }
+
 export function saveLocalStorage(response) {
   // 登录信息保存 cookie
-  localStorage.setItem(TokenKey, JSON.stringify(response.data));
+  //localStorage.setItem(TokenKey, JSON.stringify(response.data));
   let rolesArray = response.data.roles;
   let roles = rolesArray.map(r => r.id);
   // 保存角色
@@ -327,4 +337,16 @@ export function handleCtrlSEvent(event, func) {
     event.returnValue = false;
     return false;
   }
+}
+
+// ---------------- dataEase新增
+export function setUserInfo(userInfo){
+  localStorage.setItem('userInfo', JSON.stringify(userInfo))
+}
+export function getUserInfo(){
+  return JSON.parse(localStorage.getItem('userInfo'))
+}
+export function getRoles(){
+  const uinfo = getUserInfo()
+  return uinfo && uinfo['roles']
 }

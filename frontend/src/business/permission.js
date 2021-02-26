@@ -68,7 +68,7 @@ router.beforeEach(async (to, from, next) => {
   NProgress.start();
 
   // determine whether the user has logged in
-  const user = JSON.parse(localStorage.getItem(TokenKey));
+  const user = JSON.parse(localStorage.getItem('userInfo'));
 
   if (user) {
     if (to.path === '/login') {

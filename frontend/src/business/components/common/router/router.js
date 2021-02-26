@@ -2,8 +2,7 @@ import Vue from "vue";
 import VueRouter from 'vue-router'
 import RouterSidebar from "./RouterSidebar";
 import Setting from "@/business/components/settings/router";
-import Chart from "@/business/components/chart/router";
-// import API from "@/business/components/api/router";
+import API from "@/business/components/api/router";
 // import Performance from "@/business/components/performance/router";
 import DataSet from "@/business/components/dataset/router";
 import Track from "@/business/components/track/router";
@@ -20,7 +19,7 @@ const router = new VueRouter({
       }
     },
     Setting,
-    Chart,
+    API,
     // Performance,
     DataSet,
     Track,
@@ -29,18 +28,9 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
 
-  redirectLoginPath(to.fullPath);
+  //redirectLoginPath(to.fullPath);
 
-  //解决localStorage清空，cookie没失效导致的卡死问题
-  if (!localStorage.getItem('Admin-Token')) {
-    // axios.get("/signout");
-    // console.log("signout");
-    localStorage.setItem('Admin-Token', "{}");
-    window.location.href = "/login";
-    next();
-  } else {
-    next();
-  }
+  next()
 });
 
 //重复点击导航路由报错
@@ -51,16 +41,16 @@ VueRouter.prototype.push = function push(location) {
 
 
 // 登入后跳转至原路径
-function redirectLoginPath(originPath) {
-  let redirectUrl = sessionStorage.getItem('redirectUrl');
-  let loginSuccess = sessionStorage.getItem('loginSuccess');
-  sessionStorage.setItem('redirectUrl', originPath);
-  if (redirectUrl && loginSuccess) {
-    sessionStorage.removeItem('loginSuccess');
-    router.push(redirectUrl);
-  }
-  sessionStorage.removeItem('loginSuccess');
-}
+// function redirectLoginPath(originPath) {
+//   let redirectUrl = sessionStorage.getItem('redirectUrl');
+//   let loginSuccess = sessionStorage.getItem('loginSuccess');
+//   sessionStorage.setItem('redirectUrl', originPath);
+//   if (redirectUrl && loginSuccess) {
+//     sessionStorage.removeItem('loginSuccess');
+//     router.push(redirectUrl);
+//   }
+//   sessionStorage.removeItem('loginSuccess');
+// }
 
 
 export default router

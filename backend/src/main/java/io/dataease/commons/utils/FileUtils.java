@@ -2,7 +2,7 @@ package io.dataease.commons.utils;
 
 import io.dataease.commons.exception.DEException;
 import io.dataease.i18n.Translator;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.aspectj.util.FileUtil;
 import org.springframework.web.multipart.MultipartFile;
 

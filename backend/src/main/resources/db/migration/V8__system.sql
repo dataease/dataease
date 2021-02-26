@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `sys_menu` (
 
 CREATE TABLE IF NOT EXISTS `sys_role` (
   `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `code` varchar(100) NOT NULL COMMENT '代码',
   `name` varchar(255) NOT NULL COMMENT '名称',
   `description` varchar(255) DEFAULT NULL COMMENT '描述',
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',

@@ -1,4 +1,4 @@
-export const TokenKey = 'Admin-Token';
+export const TokenKey = 'Authorization';
 export const LicenseKey = 'License';
 export const DEFAULT_LANGUAGE = 'default_language';
 

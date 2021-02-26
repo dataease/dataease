@@ -1,7 +1,7 @@
 <template>
   <el-dropdown size="medium" @command="handleCommand" class="align-right">
     <span class="dropdown-link">
-        {{ currentUser.name }}<i class="el-icon-caret-bottom el-icon--right"/>
+        {{ currentUser.username }}<i class="el-icon-caret-bottom el-icon--right"/>
     </span>
     <template v-slot:dropdown>
       <el-dropdown-menu>
@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import {getCurrentUser} from "@/common/js/utils";
+import {getUserInfo} from "@/common/js/utils";
 import AboutUs from "./AboutUs";
 import axios from "axios";
-
+import {removeToken} from '@/utils/auth'
 const requireComponent = require.context('@/business/components/xpack/', true, /\.vue$/);
 const auth = requireComponent.keys().length > 0 ? requireComponent("./auth/Auth.vue") : {};
 
@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     currentUser: () => {
-      return getCurrentUser();
+      return getUserInfo();
     }
   },
   methods: {
@@ -49,6 +49,7 @@ export default {
       axios.get("/signout").then(response => {
         if (response.data.success) {
           localStorage.clear();
+          removeToken();
           window.location.href = "/login";
         }
       }).catch(error => {

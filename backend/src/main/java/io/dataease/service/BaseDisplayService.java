@@ -3,7 +3,7 @@ package io.dataease.service;
 import io.dataease.base.domain.SystemParameter;
 import io.dataease.base.domain.SystemParameterExample;
 import io.dataease.base.mapper.SystemParameterMapper;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -48,19 +48,15 @@ public class BaseDisplayService {
         if (bytes == null) {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
             switch (imageName) {
-                case "favicon":
-                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/favicon.ico")[0].getInputStream());
-                    contentType = MediaType.valueOf("image/vnd.microsoft.icon");
-                    break;
                 case "logo":
-                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-light-MeterSphere*.svg")[0].getInputStream());
+                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-light-MeterSphere.*.svg")[0].getInputStream());
                     contentType = MediaType.valueOf("image/svg+xml");
                     break;
                 case "loginImage":
-                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/info*.png")[0].getInputStream());
+                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/info.*.png")[0].getInputStream());
                     break;
                 case "loginLogo":
-                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-dark-MeterSphere*.svg")[0].getInputStream());
+                    bytes = IOUtils.toByteArray(resolver.getResources("/static/img/logo-dark-MeterSphere.*.svg")[0].getInputStream());
                     contentType = MediaType.valueOf("image/svg+xml");
                     break;
                 default:

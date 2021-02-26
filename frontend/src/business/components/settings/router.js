@@ -47,11 +47,11 @@ export default {
     //   component: () => import('@/business/components/settings/system/TestResourcePool'),
     //   meta: {system: true, title: 'commons.test_resource_pool'}
     // },
-    {
-      path: 'systemparametersetting',
-      component: () => import('@/business/components/settings/system/SystemParameterSetting'),
-      meta: {system: true, title: 'commons.system_parameter_setting'}
-    },
+    // {
+    //   path: 'systemparametersetting',
+    //   component: () => import('@/business/components/settings/system/SystemParameterSetting'),
+    //   meta: {system: true, title: 'commons.system_parameter_setting'}
+    // },
     ...requireContext.keys().map(key => requireContext(key).system),
     ...requireContext.keys().map(key => requireContext(key).license),
     {

@@ -1,7 +1,8 @@
 import {Message, MessageBox} from 'element-ui';
 import axios from "axios";
 import i18n from '../../i18n/i18n'
-
+import {getToken, removeToken, tokenKey} from '@/utils/auth'
+import { setToken } from '../../utils/auth';
 
 export default {
   install(Vue) {
@@ -22,7 +23,8 @@ export default {
     let login = function () {
       MessageBox.alert(i18n.t('commons.tips'), i18n.t('commons.prompt'), {
         callback: () => {
-          axios.get("/signout");
+          removeToken();
+          axios.post("/logout");
           localStorage.setItem('Admin-Token', "{}");
           window.location.href = "/login"
         }
@@ -31,7 +33,25 @@ export default {
 
     axios.defaults.withCredentials = true;
 
+    // request拦截器
+    axios.interceptors.request.use(
+      config => {
+        if (getToken()) {
+          config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+        }
+        config.headers['Content-Type'] = 'application/json'
+        return config
+      },
+      error => {
+        Promise.reject(error)
+      }
+    )
+
     axios.interceptors.response.use(response => {
+      const key = tokenKey();
+      if(response.headers[key.toLowerCase()]){
+        setToken(response.headers[key.toLowerCase()])
+      }
       if (response.headers["authentication-status"] === "invalid") {
         login();
       }
