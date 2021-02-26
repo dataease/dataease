@@ -54,7 +54,7 @@
         </el-form>
       </div>
       <div style="height: 30%;overflow:auto">
-        <span>图标类型</span>
+        <span>图表类型</span>
         <el-row>
           <div class="chart-type">
             <el-radio v-model="radio1" label="1">折线图</el-radio>
@@ -62,13 +62,13 @@
           </div>
         </el-row>
       </div>
-      <div style="height: 50%;overflow:auto;border-top: 1px solid #e6e6e6">
+      <div style="height: 40%;overflow:auto;border-top: 1px solid #e6e6e6">
         <el-tabs type="card">
           <el-tab-pane label="图形属性">图形属性</el-tab-pane>
           <el-tab-pane label="组件样式">组件样式</el-tab-pane>
         </el-tabs>
       </div>
-      <div style="height: 50%;overflow:auto;border-top: 1px solid #e6e6e6">
+      <div style="height: 30%;overflow:auto;border-top: 1px solid #e6e6e6">
         <span>结果过滤器</span>
 
       </div>
