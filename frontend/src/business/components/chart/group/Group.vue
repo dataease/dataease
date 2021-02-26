@@ -187,12 +187,13 @@
       </div>
     </el-dialog>
 
-    <!--dataset table select-->
-    <el-dialog title="select table" :visible="selectTableFlag" :show-close="false" width="70%" class="dialog-css">
-      <table-selector/>
+    <!--添加视图-选择数据集-->
+    <el-dialog :title="$t('chart.add_chart')" :visible="selectTableFlag" :show-close="false" width="70%"
+               class="dialog-css">
+      <table-selector @getTable="getTable"/>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="selectTableFlag = false">{{$t('chart.cancel')}}</el-button>
-        <el-button type="primary" size="mini" @click="selectTableFlag = false">{{$t('chart.confirm')}}</el-button>
+        <el-button type="primary" size="mini" @click="createChart">{{$t('chart.confirm')}}</el-button>
       </div>
     </el-dialog>
 
@@ -239,7 +240,8 @@ export default {
           {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
         ],
       },
-      selectTableFlag: false
+      selectTableFlag: false,
+      table: {}
     }
   },
   computed: {
@@ -487,6 +489,17 @@ export default {
 
     selectTable() {
       this.selectTableFlag = true;
+    },
+
+    createChart() {
+      console.log(this.table);
+      this.selectTableFlag = false;
+      // TODO
+      this.$router.push("/chart");
+    },
+
+    getTable(table) {
+      this.table = table;
     }
   },
 }

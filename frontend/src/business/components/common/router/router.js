@@ -2,7 +2,8 @@ import Vue from "vue";
 import VueRouter from 'vue-router'
 import RouterSidebar from "./RouterSidebar";
 import Setting from "@/business/components/settings/router";
-import API from "@/business/components/api/router";
+import Chart from "@/business/components/chart/router";
+// import API from "@/business/components/api/router";
 // import Performance from "@/business/components/performance/router";
 import DataSet from "@/business/components/dataset/router";
 import Track from "@/business/components/track/router";
@@ -19,7 +20,7 @@ const router = new VueRouter({
       }
     },
     Setting,
-    API,
+    Chart,
     // Performance,
     DataSet,
     Track,
