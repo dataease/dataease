@@ -1,11 +1,11 @@
 <template>
 <ms-container>
   <ms-aside-container>
-    <dataset-group-selector/>
+    <dataset-group-selector @getTable="getTable"/>
   </ms-aside-container>
 
   <ms-main-container>
-    <div>1111</div>
+    <dataset-table-data :table="table"/>
   </ms-main-container>
 </ms-container>
 </template>
@@ -17,19 +17,30 @@ import MsAsideContainer from "../../common/components/MsAsideContainer";
 import MsSettingMenu from "../../settings/SettingMenu";
 import MsCurrentUser from "../../settings/CurrentUser";
 import DatasetGroupSelector from "../../dataset/common/DatasetGroupSelector";
+import DatasetTableData from "../../dataset/common/DatasetTableData";
 
 export default {
   name: "TableSelector",
-  components: {MsMainContainer, MsContainer, MsAsideContainer, MsSettingMenu, MsCurrentUser, DatasetGroupSelector},
+  components: {
+    DatasetTableData,
+    MsMainContainer, MsContainer, MsAsideContainer, MsSettingMenu, MsCurrentUser, DatasetGroupSelector
+  },
   data() {
-    return {}
+    return {
+      table: {},
+    }
   },
   computed: {},
   created() {
   },
   mounted() {
   },
-  methods: {}
+  methods: {
+    getTable(table) {
+      this.table = table;
+      this.$emit("getTable", table);
+    },
+  }
 }
 </script>
 

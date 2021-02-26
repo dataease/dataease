@@ -115,8 +115,7 @@ export default {
       },
     }
   },
-  computed: {
-  },
+  computed: {},
   mounted() {
     this.tree(this.groupForm);
     this.tableTree();
@@ -175,6 +174,7 @@ export default {
       if (data.type === 'scene') {
         this.sceneMode = true;
         this.currGroup = data;
+        this.tableTree();
       }
       if (node.expanded) {
         this.expandedArray.push(data.id);
@@ -193,14 +193,7 @@ export default {
 
     sceneClick(data, node) {
       // console.log(data);
-      this.$store.commit('setTable', null);
-      this.$store.commit('setTable', data.id);
-      this.$router.push({
-        name: 'table',
-        params: {
-          table: data
-        }
-      });
+      this.$emit("getTable", data);
     },
   }
 }
