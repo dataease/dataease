@@ -85,9 +85,13 @@ public class FileService {
     }
 
     public FileMetadata saveFile(MultipartFile file) {
+        return saveFile(file,file.getOriginalFilename());
+    }
+
+    public FileMetadata saveFile(MultipartFile file,String fileName) {
         final FileMetadata fileMetadata = new FileMetadata();
         fileMetadata.setId(UUID.randomUUID().toString());
-        fileMetadata.setName(file.getOriginalFilename());
+        fileMetadata.setName(fileName);
         fileMetadata.setSize(file.getSize());
         fileMetadata.setCreateTime(System.currentTimeMillis());
         fileMetadata.setUpdateTime(System.currentTimeMillis());

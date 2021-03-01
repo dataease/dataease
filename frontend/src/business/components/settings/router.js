@@ -37,6 +37,11 @@ export default {
       component: () => import('@/business/components/settings/sys/user'),
       meta: {system: true, title: 'commons.user'}
     },
+    {
+      path: 'systemparametersetting',
+      component: () => import('@/business/components/settings/system/SystemParameterSetting'),
+      meta: {system: true, title: 'commons.system_parameter_setting'}
+    },
     // {
     //   path: 'systemworkspace',
     //   component: () => import('@/business/components/settings/system/SystemWorkspace'),

@@ -86,7 +86,6 @@
     methods: {
       query() {
         this.result = this.$get("/system/base/info", response => {
-          debugger;
           this.systemParams = response.data;
         })
       },

@@ -24,13 +24,13 @@
         select user_id, username, password, enabled from sys_user where username = #{username}
     </select>
 
-    <select id="roleCodes" >
+    <select id="roleCodes" resultType="String">
         select r.code from sys_role r
             left join sys_users_roles sur on sur.role_id = r.role_id
             where sur.user_id = #{userId}
     </select>
 
-    <select id="permissions" >
+    <select id="permissions"  resultType="String">
         select sm.permission
             from sys_menu sm
             left join sys_roles_menus srm on srm.menu_id = sm.menu_id
