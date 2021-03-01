@@ -22,7 +22,9 @@ const Chart = {
   state: {
     chartSceneData: "",
     chart: "",
-    tableId: ""
+    tableId: "",
+    sceneId: "",
+    viewId: ""
   },
   mutations: {
     setChartSceneData(state, chartSceneData) {
@@ -33,6 +35,12 @@ const Chart = {
     },
     setTableId(state, tableId) {
       state.tableId = tableId;
+    },
+    setSceneId(state, sceneId) {
+      state.sceneId = sceneId;
+    },
+    setViewId(state, viewId) {
+      state.viewId = viewId;
     }
   }
 }

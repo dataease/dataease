@@ -54,4 +54,10 @@ public class DataSetTableFieldsService {
         datasetTableFieldExample.createCriteria().andTableIdEqualTo(tableId);
         datasetTableFieldMapper.deleteByExample(datasetTableFieldExample);
     }
+
+    public List<DatasetTableField> getListByIds(List<String> ids) {
+        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+        datasetTableFieldExample.createCriteria().andIdIn(ids);
+        return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+    }
 }

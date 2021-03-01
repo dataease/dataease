@@ -1550,7 +1550,18 @@ export default {
     table: '表',
     edit: '編輯',
     create_view: '創建試圖',
-    data_preview: '數據預覽'
+    data_preview: '數據預覽',
+    dimension: '維度',
+    quota: '指標',
+    title: '標題',
+    show: '顯示',
+    chart_type: '圖表類型',
+    shape_attr: '圖形屬性',
+    module_style: '組件樣式',
+    result_filter: '結果過濾器',
+    x_axis: '橫軸',
+    y_axis: '縱軸',
+    chart:'視圖'
   },
   dataset: {
     datalist: '數據列表',

@@ -139,7 +139,7 @@
         </el-form-item>
       </el-form>
     </el-row>
-    <span>{{sceneData}}</span>
+    <span v-show="false">{{sceneData}}</span>
     <el-tree
       :data="chartData"
       node-key="id"
@@ -152,7 +152,7 @@
           </span>
           <span>
             <span @click.stop style="margin-left: 12px;">
-              <el-dropdown trigger="click" @command="clickMore">
+              <el-dropdown trigger="click" @command="clickMore" size="small">
                 <span class="el-dropdown-link">
                   <el-button
                     icon="el-icon-more"
@@ -175,7 +175,7 @@
     </el-tree>
 
     <!--rename chart-->
-    <el-dialog :title="$t('chart.table')" :visible="editTable" :show-close="false" width="30%">
+    <el-dialog :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
       <el-form :model="tableForm" :rules="tableFormRules" ref="tableForm">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name"></el-input>
@@ -247,7 +247,7 @@ export default {
   computed: {
     sceneData: function () {
       this.chartTree();
-      return this.$store.state.chart.sceneData;
+      return this.$store.state.chart.chartSceneData;
     }
   },
   mounted() {
@@ -340,10 +340,10 @@ export default {
       });
     },
 
-    saveTable(table) {
+    saveTable(view) {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
-          this.$post("/chart/table/update", table, response => {
+          this.$post("/chart/view/save", view, response => {
             this.closeTable();
             this.$message({
               message: this.$t('commons.save_success'),
@@ -389,7 +389,7 @@ export default {
         cancelButtonText: this.$t('chart.cancel'),
         type: 'warning'
       }).then(() => {
-        this.$post("/chart/table/delete/" + data.id, null, response => {
+        this.$post("/chart/view/delete/" + data.id, null, response => {
           this.$message({
             type: 'success',
             message: this.$t('chart.delete_success'),
@@ -431,8 +431,8 @@ export default {
     chartTree() {
       this.chartData = [];
       if (this.currGroup) {
-        this.$post('/chart/table/list', {
-          sort: 'type asc,create_time desc,name asc',
+        this.$post('/chart/view/list', {
+          sort: 'create_time desc,name asc',
           sceneId: this.currGroup.id
         }, response => {
           this.chartData = response.data;
@@ -444,6 +444,7 @@ export default {
       if (data.type === 'scene') {
         this.sceneMode = true;
         this.currGroup = data;
+        this.$store.commit("setSceneId", this.currGroup.id);
       }
       if (node.expanded) {
         this.expandedArray.push(data.id);
@@ -476,13 +477,10 @@ export default {
     },
 
     sceneClick(data, node) {
-      // this.$store.commit('setChart', data.id);
-      // this.$router.push({
-      //   name: 'ChartGroup',
-      //   params: {
-      //     table: data
-      //   }
-      // });
+      this.$store.commit('setViewId', null);
+      this.$store.commit('setViewId', data.id);
+      this.$store.commit('setTableId', data.tableId);
+      this.$router.push("/chart/chart-edit");
     },
 
     selectTable() {
@@ -491,10 +489,18 @@ export default {
 
     createChart() {
       console.log(this.table);
-      this.selectTableFlag = false;
-      this.$store.commit("setTableId", null);
-      this.$store.commit("setTableId", this.table.id);
-      this.$router.push("/chart/chart-edit");
+      let view = {};
+      view.name = this.table.name;
+      view.sceneId = this.currGroup.id;
+      view.tableId = this.table.id;
+      this.$post('/chart/view/save', view, response => {
+        this.selectTableFlag = false;
+        this.$store.commit("setTableId", null);
+        this.$store.commit("setTableId", this.table.id);
+        this.$router.push("/chart/chart-edit");
+        this.$store.commit("setViewId", response.data.id);
+        this.chartTree();
+      })
     },
 
     getTable(table) {

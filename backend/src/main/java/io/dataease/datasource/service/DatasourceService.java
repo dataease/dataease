@@ -74,4 +74,8 @@ public class DatasourceService {
         return datasourceProvider.getTables(datasourceRequest);
     }
 
+    public Datasource get(String id) {
+        return datasourceMapper.selectByPrimaryKey(id);
+    }
+
 }

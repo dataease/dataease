@@ -1,6 +1,7 @@
 package io.dataease.controller.dataset;
 
 import io.dataease.base.domain.DatasetTable;
+import io.dataease.base.domain.DatasetTableField;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.service.dataset.DataSetTableService;
@@ -48,6 +49,11 @@ public class DataSetTableController {
     @PostMapping("getFields")
     public List<TableFiled> getFields(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getFields(dataSetTableRequest);
+    }
+
+    @PostMapping("getFieldsFromDE")
+    public Map<String, List<DatasetTableField>> getFieldsFromDE(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getFieldsFromDE(dataSetTableRequest);
     }
 
     @PostMapping("getData")

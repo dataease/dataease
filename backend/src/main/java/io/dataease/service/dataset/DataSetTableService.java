@@ -91,6 +91,29 @@ public class DataSetTableService {
         return datasourceProvider.getTableFileds(datasourceRequest);
     }
 
+    public Map<String, List<DatasetTableField>> getFieldsFromDE(DataSetTableRequest dataSetTableRequest) throws Exception {
+        DatasetTableField datasetTableField = new DatasetTableField();
+        datasetTableField.setTableId(dataSetTableRequest.getId());
+        datasetTableField.setChecked(Boolean.TRUE);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+
+        List<DatasetTableField> dimension = new ArrayList<>();
+        List<DatasetTableField> quota = new ArrayList<>();
+
+        fields.forEach(field -> {
+            if (field.getDeType() == 2) {
+                quota.add(field);
+            } else {
+                dimension.add(field);
+            }
+        });
+        Map<String, List<DatasetTableField>> map = new HashMap<>();
+        map.put("dimension", dimension);
+        map.put("quota", quota);
+
+        return map;
+    }
+
     public List<String[]> getData(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
