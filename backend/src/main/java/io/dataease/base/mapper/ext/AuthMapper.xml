@@ -21,7 +21,7 @@
 
 
     <select id="findUser" resultMap="baseMap">
-        select user_id, username, password, enabled from sys_user where username = #{username}
+        select user_id, username,nick_name, dept_id, password, enabled,email, phone from sys_user where username = #{username}
     </select>
 
     <select id="roleCodes" resultType="String">
