@@ -33,4 +33,9 @@ public class DataSetGroupController {
     public void tree(@PathVariable String id) {
         dataSetGroupService.delete(id);
     }
+
+    @PostMapping("/getScene/{id}")
+    public DatasetGroup getScene(@PathVariable String id) {
+        return dataSetGroupService.getScene(id);
+    }
 }

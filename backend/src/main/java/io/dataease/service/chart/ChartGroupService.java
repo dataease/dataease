@@ -47,6 +47,10 @@ public class ChartGroupService {
         chartGroupMapper.deleteByExample(ChartGroupExample);
     }
 
+    public ChartGroup getScene(String id) {
+        return chartGroupMapper.selectByPrimaryKey(id);
+    }
+
     public List<ChartGroupDTO> tree(ChartGroupRequest ChartGroup) {
         ChartGroupExample ChartGroupExample = new ChartGroupExample();
         ChartGroupExample.Criteria criteria = ChartGroupExample.createCriteria();

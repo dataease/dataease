@@ -47,7 +47,7 @@
       <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;" class="padding-lr">
         <el-row>
           <span>{{$t('chart.title')}}</span>
-          <el-checkbox v-model="view.show" style="float: right;">{{$t('chart.show')}}</el-checkbox>
+          <!--          <el-checkbox v-model="view.show" style="float: right;">{{$t('chart.show')}}</el-checkbox>-->
         </el-row>
         <el-form>
           <el-form-item class="form-item">
@@ -91,9 +91,9 @@
             <draggable v-model="view.xaxis" @end="end3" group="itxst"
                        animation="300"
                        :move="onMove"
-                       style="width:100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;">
-              <transition-group>
-                <el-tag size="mini" class="item" v-for="(item,index) in view.xaxis" :key="index" closable
+                       style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;">
+              <transition-group style="width: 100%;height: 100%;">
+                <el-tag size="small" class="item" v-for="(item,index) in view.xaxis" :key="index" closable
                         @close="clear1(index)">
                   {{item.name}}
                 </el-tag>
@@ -105,9 +105,9 @@
             <draggable v-model="view.yaxis" @end="end4" group="itxst"
                        animation="300"
                        :move="onMove"
-                       style="width:100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;">
-              <transition-group>
-                <el-tag size="mini" class="item" v-for="(item,index) in view.yaxis" :key="index" closable
+                       style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;">
+              <transition-group style="width:100%;height: 100%;">
+                <el-tag size="small" class="item" v-for="(item,index) in view.yaxis" :key="index" closable
                         @close="clear2(index)">
                   {{item.name}}
                 </el-tag>
@@ -172,16 +172,16 @@ export default {
   },
   computed: {
     tableId() {
-      console.log(this.$store.state.chart.tableId);
+      // console.log(this.$store.state.chart.tableId);
       this.initTableData(this.$store.state.chart.tableId);
       return this.$store.state.chart.tableId;
     },
     sceneId() {
-      console.log(this.$store.state.chart.sceneId);
+      // console.log(this.$store.state.chart.sceneId);
       return this.$store.state.chart.sceneId;
     },
     vId() {
-      console.log(this.$store.state.chart.viewId);
+      // console.log(this.$store.state.chart.viewId);
       this.getData(this.$store.state.chart.viewId);
       return this.$store.state.chart.viewId;
     },

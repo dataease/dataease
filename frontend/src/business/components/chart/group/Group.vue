@@ -216,7 +216,7 @@ export default {
       editTable: false,
       data: [],
       chartData: [],
-      currGroup: null,
+      currGroup: {},
       expandedArray: [],
       groupForm: {
         name: '',
@@ -252,10 +252,7 @@ export default {
   },
   mounted() {
     this.groupTree(this.groupForm);
-    this.chartTree();
-  },
-  activated() {
-    this.groupTree(this.groupForm);
+    this.refresh();
     this.chartTree();
   },
   watch: {},
@@ -430,7 +427,7 @@ export default {
 
     chartTree() {
       this.chartData = [];
-      if (this.currGroup) {
+      if (this.currGroup.id) {
         this.$post('/chart/view/list', {
           sort: 'create_time desc,name asc',
           sceneId: this.currGroup.id
@@ -505,6 +502,17 @@ export default {
 
     getTable(table) {
       this.table = table;
+    },
+
+    refresh() {
+      let path = this.$route.path;
+      if (path === '/chart/chart-edit') {
+        this.sceneMode = true;
+        let sceneId = this.$store.state.chart.sceneId;
+        this.$post('/chart/group/getScene/' + sceneId, null, response => {
+          this.currGroup = response.data;
+        })
+      }
     }
   },
 }

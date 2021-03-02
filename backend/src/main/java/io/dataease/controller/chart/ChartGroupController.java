@@ -1,6 +1,7 @@
 package io.dataease.controller.chart;
 
 import io.dataease.base.domain.ChartGroup;
+import io.dataease.base.domain.DatasetGroup;
 import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
 import io.dataease.service.chart.ChartGroupService;
@@ -28,5 +29,10 @@ public class ChartGroupController {
     @PostMapping("/delete/{id}")
     public void tree(@PathVariable String id) {
         chartGroupService.delete(id);
+    }
+
+    @PostMapping("/getScene/{id}")
+    public ChartGroup getScene(@PathVariable String id) {
+        return chartGroupService.getScene(id);
     }
 }

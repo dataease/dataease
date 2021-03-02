@@ -231,7 +231,7 @@ export default {
       editTable: false,
       data: [],
       tableData: [],
-      currGroup: null,
+      currGroup: {},
       expandedArray: [],
       groupForm: {
         name: '',
@@ -266,15 +266,9 @@ export default {
   },
   mounted() {
     this.tree(this.groupForm);
+    this.refresh();
     this.tableTree();
-    this.$router.push('/dataset');
-    this.$store.commit('setTable', null);
-  },
-  activated() {
-    this.tree(this.groupForm);
-    this.tableTree();
-    this.$router.push('/dataset');
-    this.$store.commit('setTable', null);
+    // this.$router.push('/dataset');
   },
   watch: {
     // search(val){
@@ -457,7 +451,7 @@ export default {
 
     tableTree() {
       this.tableData = [];
-      if (this.currGroup) {
+      if (this.currGroup.id) {
         this.$post('/dataset/table/list', {
           sort: 'type asc,create_time desc,name asc',
           sceneId: this.currGroup.id
@@ -473,6 +467,7 @@ export default {
       if (data.type === 'scene') {
         this.sceneMode = true;
         this.currGroup = data;
+        this.$store.commit("setSceneData", this.currGroup.id);
       }
       if (node.expanded) {
         this.expandedArray.push(data.id);
@@ -535,6 +530,16 @@ export default {
       });
     },
 
+    refresh() {
+      let path = this.$route.path;
+      if (path === '/dataset/table') {
+        this.sceneMode = true;
+        let sceneId = this.$store.state.dataset.sceneData;
+        this.$post('/dataset/group/getScene/' + sceneId, null, response => {
+          this.currGroup = response.data;
+        })
+      }
+    }
   },
 }
 </script>

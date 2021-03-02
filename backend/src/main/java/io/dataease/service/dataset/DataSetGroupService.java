@@ -58,6 +58,10 @@ public class DataSetGroupService {
         }).map(DatasetGroup::getId).collect(Collectors.toList()));
     }
 
+    public DatasetGroup getScene(String id) {
+        return datasetGroupMapper.selectByPrimaryKey(id);
+    }
+
     public void deleteTableAndField(List<String> sceneIds) {
         for (String sceneId : sceneIds) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
