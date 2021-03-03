@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
+import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.service.sys.SysUserService;
@@ -46,5 +47,12 @@ public class SysUserController {
     @PostMapping("/delete/{userId}")
     public void delete(@PathVariable("userId") Long userId){
         sysUserService.delete(userId);
+    }
+
+
+    @ApiOperation("更新用户状态")
+    @PostMapping("/updateStatus")
+    public void updateStatus(@RequestBody SysUserStateRequest request){
+        sysUserService.updateStatus(request);
     }
 }

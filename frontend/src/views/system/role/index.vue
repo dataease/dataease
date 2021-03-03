@@ -258,5 +258,5 @@ export default {
 </script>
 
 <style scoped>
-
+@import "~@/metersphere/common/css/index.css";
 </style>

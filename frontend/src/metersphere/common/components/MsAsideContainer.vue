@@ -1,36 +1,39 @@
 <template>
-  <el-aside :width="width" class="ms-aside-container"
-            :style="{'margin-left': !asideHidden ? 0 : '-' + width}">
+  <el-aside
+    :width="width"
+    class="ms-aside-container"
+    :style="{'margin-left': !asideHidden ? 0 : '-' + width}"
+  >
     <!--<div v-if="enableAsideHidden" class="hiddenBottom" @click="asideHidden = !asideHidden">-->
-      <!--<i v-if="!asideHidden" class="el-icon-arrow-left"/>-->
-      <!--<i v-if="asideHidden" class="el-icon-arrow-right"/>-->
+    <!--<i v-if="!asideHidden" class="el-icon-arrow-left"/>-->
+    <!--<i v-if="asideHidden" class="el-icon-arrow-right"/>-->
     <!--</div>-->
-    <slot></slot>
-    <ms-horizontal-drag-bar/>
+    <slot />
+    <ms-horizontal-drag-bar />
   </el-aside>
 </template>
 
 <script>
-    import MsHorizontalDragBar from "./dragbar/MsLeft2RightDragBar";
-    export default {
-      name: "MsAsideContainer",
-      components: {MsHorizontalDragBar},
-      props: {
-        width: {
-          type: String,
-          default: '300px'
-        },
-        enableAsideHidden: {
-          type: Boolean,
-          default: true
-        },
-      },
-      data() {
-        return {
-          asideHidden: false
-        }
-      }
+import MsHorizontalDragBar from './dragbar/MsLeft2RightDragBar'
+export default {
+  name: 'MsAsideContainer',
+  components: { MsHorizontalDragBar },
+  props: {
+    width: {
+      type: String,
+      default: '300px'
+    },
+    enableAsideHidden: {
+      type: Boolean,
+      default: true
     }
+  },
+  data() {
+    return {
+      asideHidden: false
+    }
+  }
+}
 </script>
 
 <style scoped>

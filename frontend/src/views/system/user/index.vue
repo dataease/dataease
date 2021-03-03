@@ -26,7 +26,7 @@
         </el-table-column>
         <el-table-column prop="status" :label="$t('commons.status')" width="120">
           <template v-slot:default="scope">
-            <el-switch v-model="scope.row.enabled" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
+            <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column prop="createTime" :label="$t('commons.create_time')">
@@ -88,8 +88,8 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.enabled" style="width: 140px">
-            <el-radio label="1">启用</el-radio>
-            <el-radio label="0">停用</el-radio>
+            <el-radio :label="1">启用</el-radio>
+            <el-radio :label="0">停用</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="部门" prop="dept">
@@ -176,9 +176,9 @@ import { PHONE_REGEX } from '@/metersphere/common/js/regex'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { userLists } from '@/api/system/user'
+import { userLists, addUser, editUser, delUser, editPassword, editStatus } from '@/api/system/user'
 import { allRoles } from '@/api/system/role'
-import { getMenusTree } from '@/api/system/menu'
+import { getDeptTree } from '@/api/system/dept'
 export default {
   name: 'MsUser',
   components: {
@@ -268,7 +268,7 @@ export default {
           }
         ]
       },
-      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: '1', deptId: null, phone: null },
+      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null },
       depts: null,
       roles: [],
       roleDatas: [],
@@ -307,7 +307,7 @@ export default {
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
-        this.result = this.$get(this.deletePath + encodeURIComponent(row.userId), () => {
+        delUser(encodeURIComponent(row.userId)).then(res => {
           this.$success(this.$t('commons.delete_success'))
           this.search()
         })
@@ -318,8 +318,8 @@ export default {
     createUser(createUserForm) {
       this.$refs[createUserForm].validate(valid => {
         if (valid) {
-          const url = this.formType === 'add' ? this.createPat : this.updatePath
-          this.result = this.$post(url, this.form, () => {
+          const method = this.formType === 'add' ? addUser : editUser
+          method(this.form).then(res => {
             this.$success(this.$t('commons.save_success'))
             this.search()
             this.dialogVisible = false
@@ -329,23 +329,11 @@ export default {
         }
       })
     },
-    updateUser(updateUserForm) {
-      this.$refs[updateUserForm].validate(valid => {
-        if (valid) {
-          this.result = this.$post(this.updatePath, this.form, () => {
-            this.$success(this.$t('commons.modify_success'))
-            this.dialogVisible = false
-            this.search()
-          })
-        } else {
-          return false
-        }
-      })
-    },
+
     editUserPassword(editPasswordForm) {
       this.$refs[editPasswordForm].validate(valid => {
         if (valid) {
-          this.result = this.$post(this.editPasswordPath, this.ruleForm, () => {
+          editPassword(this.ruleForm).then(res => {
             this.$success(this.$t('commons.modify_success'))
             this.editPasswordVisible = false
             this.search()
@@ -377,13 +365,13 @@ export default {
       this.dialogVisible = false
     },
     changeSwitch(row) {
-      this.$post('/api/user/update_status', row, () => {
+      const { userId, enabled } = row
+      const param = { userId: userId, enabled: enabled }
+      editStatus(param).then(res => {
         this.$success(this.$t('commons.modify_success'))
       })
     },
-    buildPagePath(path) {
-      return path + '/' + this.currentPage + '/' + this.pageSize
-    },
+
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
@@ -391,7 +379,7 @@ export default {
     loadDepts({ action, parentNode, callback }) {
       if (action === LOAD_ROOT_OPTIONS) {
         const _self = this
-        !this.depts && getMenusTree('0').then(res => {
+        !this.depts && getDeptTree('0').then(res => {
           _self.depts = res.data.data.map(node => _self.normalizer(node))
           callback()
         })
@@ -399,7 +387,7 @@ export default {
 
       if (action === LOAD_CHILDREN_OPTIONS) {
         const _self = this
-        getMenusTree(parentNode.id).then(res => {
+        getDeptTree(parentNode.id).then(res => {
           parentNode.children = res.data.data.map(function(obj) {
             return _self.normalizer(obj)
           })
@@ -442,4 +430,5 @@ export default {
 </script>
 
 <style scoped>
+@import "~@/metersphere/common/css/index.css";
 </style>

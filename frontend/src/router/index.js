@@ -64,61 +64,29 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '首页', icon: 'dashboard' }
     }]
+  },
+
+  {
+    path: '/example',
+    component: Layout,
+    redirect: '/example/table',
+    name: 'Example',
+    meta: { title: 'Example', icon: 'example' },
+    children: [
+      {
+        path: 'table',
+        name: 'Table',
+        component: () => import('@/views/table/index'),
+        meta: { title: 'Table', icon: 'table' }
+      },
+      {
+        path: 'tree',
+        name: 'Tree',
+        component: () => import('@/views/tree/index'),
+        meta: { title: 'Tree', icon: 'tree' }
+      }
+    ]
   }
-
-  //   {
-  //     path: '/system',
-  //     component: Layout,
-  //     redirect: '/system/user',
-  //     name: '系统管理',
-  //     meta: {
-  //       title: '系统管理',
-  //       icon: 'system'
-  //     },
-  //     children: [
-  //       {
-  //         path: 'user',
-  //         name: '用户管理',
-  //         meta: {
-  //           title: ' 用户管理',
-  //           icon: 'peoples'
-  //         }
-
-  //       },
-  //       {
-  //         path: 'menu',
-  //         name: '菜单管理',
-  //         meta: {
-  //           title: ' 菜单管理',
-  //           icon: 'menu'
-  //         }
-
-  //       }
-  //     ]
-
-  //   },
-
-  //   {
-  //     path: '/example',
-  //     component: Layout,
-  //     redirect: '/example/table',
-  //     name: 'Example',
-  //     meta: { title: 'Example', icon: 'example' },
-  //     children: [
-  //       {
-  //         path: 'table',
-  //         name: 'Table',
-  //         component: () => import('@/views/table/index'),
-  //         meta: { title: 'Table', icon: 'table' }
-  //       },
-  //       {
-  //         path: 'tree',
-  //         name: 'Tree',
-  //         component: () => import('@/views/tree/index'),
-  //         meta: { title: 'Tree', icon: 'tree' }
-  //       }
-  //     ]
-  //   },
 
   //   {
   //     path: '/form',

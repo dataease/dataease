@@ -12,13 +12,11 @@
 </template>
 
 <script>
-import MsTableButton from './MsTableButton'
 import MsTipButton from './MsTipButton'
-import { checkoutTestManagerOrTestUser, hasRoles } from '@/metersphere/common/js/utils'
-import { ROLE_TEST_MANAGER, ROLE_TEST_USER } from '@/metersphere/common/js/constants'
+import { checkoutTestManagerOrTestUser } from '@/metersphere/common/js/utils'
 export default {
   name: 'MsTableOperatorButton',
-  components: { MsTipButton, MsTableButton },
+  components: { MsTipButton },
   props: {
     icon: {
       type: String,
@@ -29,7 +27,8 @@ export default {
       default: 'primary'
     },
     tip: {
-      type: String
+      type: String,
+      default: ''
     },
     disabled: {
       type: Boolean,

@@ -10,6 +10,7 @@ import io.dataease.base.mapper.ext.ExtSysUserMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
+import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
@@ -72,6 +73,14 @@ public class SysUserService {
         deleteUserRoles(user.getUserId());//先删除用户角色关联
         saveUserRoles(user.getUserId(), request.getRoleIds());//再插入角色关联
         return sysUserMapper.updateByPrimaryKey(user);
+    }
+
+
+    public int updateStatus(SysUserStateRequest request){
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(request.getUserId());
+        sysUser.setEnabled(request.getEnabled());
+        return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
     /**

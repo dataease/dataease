@@ -262,7 +262,10 @@ export default {
     treeByArr(arr) {
       if (!Array.isArray(arr) || !arr.length) return
       const map = {}
-      arr.forEach(item => map[item.id] = item)
+
+      arr.forEach(item => {
+        map[item.id] = item
+      })
 
       const roots = []
       arr.forEach(item => {
@@ -289,7 +292,7 @@ export default {
           return obj
         })
         if (!row) {
-          data.some(node => node.children = null)
+        //   data.some(node => node.children = null)
           _self.tableData = data
           _self.menus = []
           _self.menus.push(_self.topMunu)
@@ -404,7 +407,7 @@ export default {
 </script>
 
 <style scoped>
-
+@import "~@/metersphere/common/css/index.css";
 .member-size {
   text-decoration: underline;
 }

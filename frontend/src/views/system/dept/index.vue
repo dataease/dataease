@@ -395,7 +395,7 @@ export default {
 </script>
 
 <style scoped>
-
+@import "~@/metersphere/common/css/index.css";
 .member-size {
   text-decoration: underline;
 }

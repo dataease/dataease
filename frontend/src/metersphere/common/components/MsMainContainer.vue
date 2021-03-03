@@ -1,13 +1,13 @@
 <template>
   <el-main class="ms-main-container">
-    <slot></slot>
+    <slot />
   </el-main>
 </template>
 
 <script>
-  export default {
-    name: "MsMainContainer"
-  }
+export default {
+  name: 'MsMainContainer'
+}
 </script>
 
 <style scoped>

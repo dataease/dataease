@@ -19,10 +19,11 @@ export default {
   name: 'MsTableSearchBar',
   props: {
     condition: {
-      type: Object
+      type: Object,
+      default: null
     },
     tip: {
-      String,
+      type: String,
       default() {
         return this.$t('commons.search_by_name')
       }

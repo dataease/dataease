@@ -1,15 +1,15 @@
 <template>
 
   <el-container class="ms-container">
-    <slot></slot>
+    <slot />
   </el-container>
 
 </template>
 
 <script>
-    export default {
-      name: "MsContainer"
-    }
+export default {
+  name: 'MsContainer'
+}
 </script>
 
 <style scoped>

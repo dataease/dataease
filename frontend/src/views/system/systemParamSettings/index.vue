@@ -17,9 +17,7 @@
 
 <script>
 import EmailSetting from './EmailSetting'
-import LdapSetting from './LdapSetting'
 import UiSetting from './UiSetting'
-import BaseSetting from './BaseSetting'
 import { hasLicense } from '@/metersphere/common/js/utils'
 
 // const requireComponent = require.context('@/metersphere/common/components/xpack/', true, /\.vue$/)
@@ -29,10 +27,8 @@ import { hasLicense } from '@/metersphere/common/js/utils'
 export default {
   name: 'SystemParameterSetting',
   components: {
-    BaseSetting,
     UiSetting,
-    EmailSetting,
-    LdapSetting,
+    EmailSetting
     // 'MsDisplay': display.default,
     // 'MsAuth': auth.default
   },

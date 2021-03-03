@@ -36,7 +36,7 @@
         <div class="block">
           <el-tree
             :default-expanded-keys="expandedArray"
-            :data="data"
+            :data="tData"
             node-key="id"
             :expand-on-click-node="true"
             @node-click="nodeClick"
@@ -240,7 +240,7 @@ export default {
       search: '',
       editGroup: false,
       editTable: false,
-      data: [],
+      tData: [],
       tableData: [],
       currGroup: {},
       expandedArray: [],
@@ -462,7 +462,7 @@ export default {
 
     tree(group) {
       groupTree(group).then(res => {
-        this.data = res.data.data
+        this.tData = res.data.data
       })
     },
 

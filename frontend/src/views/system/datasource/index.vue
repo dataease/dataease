@@ -159,7 +159,6 @@
 </template>
 
 <script>
-import MsCreateBox from '../CreateBox'
 import MsTablePagination from '@/metersphere/common/pagination/TablePagination'
 import MsTableHeader from '@/metersphere/common/components/MsTableHeader'
 import MsTableOperator from '@/metersphere/common/components/MsTableOperator'
@@ -176,7 +175,6 @@ export default {
   name: 'DEDatasource',
   components: {
     MsDeleteConfirm,
-    MsCreateBox,
     MsTablePagination,
     MsTableHeader,
     MsTableOperator,
@@ -356,7 +354,7 @@ export default {
     },
     changeType() {
       for (let i = 0; i < this.allTypes.length; i++) {
-        if (this.allTypes[i].name == this.form.type) {
+        if (this.allTypes[i].name === this.form.type) {
           this.form.configuration.dataSourceType = this.allTypes[i].type
         }
       }
@@ -388,7 +386,7 @@ export default {
 </script>
 
 <style scoped>
-
+@import "~@/metersphere/common/css/index.css";
   .member-size {
     text-decoration: underline;
   }
