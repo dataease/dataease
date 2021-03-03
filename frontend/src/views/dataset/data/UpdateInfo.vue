@@ -1,56 +1,58 @@
 <template>
-  <el-col>
+<el-col>
+  <el-row>
+    <el-button icon="el-icon-setting" size="mini" @click="showConfig">
+      {{ $t('dataset.update_setting') }}
+    </el-button>
+  </el-row>
+  <el-row style="margin-top: 10px;">
+    <!--TODO-->
+    <el-table
+      size="mini"
+      :data="tableData"
+      border
+      style="width: 100%"
+    >
+      <el-table-column
+        prop="name"
+        label="更新任务名称"
+      />
+      <el-table-column
+        prop="startTime"
+        label="开始时间"
+      />
+      <el-table-column
+        prop="endTime"
+        label="结束时间"
+      />
+      <el-table-column
+        prop="info"
+        label="更新信息"
+      />
+    </el-table>
+  </el-row>
+
+  <el-dialog
+    :title="table.name+' '+$t('dataset.update_setting')"
+    :visible="update_setting"
+    :show-close="false"
+    width="50%"
+    class="dialog-css"
+  >
     <el-row>
-      <el-button icon="el-icon-setting" size="mini" @click="showConfig">
-        {{ $t('dataset.update_setting') }}
+      <el-button icon="el-icon-download" size="mini">
+        {{ $t('dataset.sync_now') }}
+      </el-button>
+      <el-button icon="el-icon-plus" size="mini">
+        {{ $t('dataset.add_task') }}
       </el-button>
     </el-row>
-    <el-row style="margin-top: 10px;">
-      <!--TODO-->
-      <el-table
-        size="mini"
-        :data="tableData"
-        border
-        style="width: 100%"
-      >
-        <el-table-column
-          prop="date"
-          label="日期"
-          width="180"
-        />
-        <el-table-column
-          prop="name"
-          label="姓名"
-          width="180"
-        />
-        <el-table-column
-          prop="address"
-          label="地址"
-        />
-      </el-table>
-    </el-row>
-
-    <el-dialog
-      :title="table.name+' '+$t('dataset.update_setting')"
-      :visible="update_setting"
-      :show-close="false"
-      width="50%"
-      class="dialog-css"
-    >
-      <el-row>
-        <el-button icon="el-icon-download" size="mini">
-          {{ $t('dataset.sync_now') }}
-        </el-button>
-        <el-button icon="el-icon-plus" size="mini">
-          {{ $t('dataset.add_task') }}
-        </el-button>
-      </el-row>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="update_setting = false">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="update_setting = false">{{ $t('dataset.confirm') }}</el-button>
-      </div>
-    </el-dialog>
-  </el-col>
+    <div slot="footer" class="dialog-footer">
+      <el-button size="mini" @click="update_setting = false">{{ $t('dataset.cancel') }}</el-button>
+      <el-button type="primary" size="mini" @click="update_setting = false">{{ $t('dataset.confirm') }}</el-button>
+    </div>
+  </el-dialog>
+</el-col>
 </template>
 
 <script>
@@ -63,21 +65,25 @@ export default {
     return {
       update_setting: false,
       tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
+        startTime: '2016-05-02 00:00:00',
+        endTime: '2016-05-02 00:00:10',
+        name: '每天0点更新',
+        info: '更新成功'
       }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
+        startTime: '2016-05-02 00:00:00',
+        endTime: '2016-05-02 00:00:10',
+        name: '每天0点更新',
+        info: '更新成功'
       }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
+        startTime: '2016-05-02 00:00:00',
+        endTime: '2016-05-02 00:00:10',
+        name: '每天0点更新',
+        info: '更新成功'
       }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
+        startTime: '2016-05-02 00:00:00',
+        endTime: '2016-05-02 00:00:10',
+        name: '每天0点更新',
+        info: '更新成功'
       }]
     }
   },

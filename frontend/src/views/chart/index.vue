@@ -7,7 +7,7 @@
 
     <ms-main-container>
       <!--        <router-view />-->
-      <component :is="component" :param="param" @switchComponent="switchComponent"></component>
+      <component :is="component" :param="param" @switchComponent="switchComponent"/>
     </ms-main-container>
   </ms-container>
 </template>

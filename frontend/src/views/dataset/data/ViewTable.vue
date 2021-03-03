@@ -93,14 +93,8 @@ export default {
     }
   },
   watch: {},
-  created() {
-    this.resetTable()
-  },
   mounted() {
-    this.resetTable()
-  },
-  activated() {
-    this.resetTable()
+    this.initTable(this.$store.state.dataset.table)
   },
   methods: {
     initTable(id) {
@@ -152,12 +146,6 @@ export default {
     closeEdit() {
       this.editField = false
       this.tableFields = []
-    },
-
-    resetTable() {
-      this.table = {
-        name: ''
-      }
     }
   }
 }
