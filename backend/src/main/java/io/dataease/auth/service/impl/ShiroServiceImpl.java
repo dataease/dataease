@@ -21,14 +21,17 @@ public class ShiroServiceImpl implements ShiroService {
         // 放行Swagger2页面，需要放行这些
 
         filterChainDefinitionMap.put("/swagger-ui.html","anon");
+        filterChainDefinitionMap.put("/swagger-ui/**","anon");
+
         filterChainDefinitionMap.put("/swagger/**","anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/swagger-resources/**","anon");
         filterChainDefinitionMap.put("/v2/**","anon");
+        filterChainDefinitionMap.put("/v3/**","anon");
         filterChainDefinitionMap.put("/static/**", "anon");
 
         // 登陆
-        filterChainDefinitionMap.put("/api/auth/**", "anon");
+        filterChainDefinitionMap.put("/api/auth/login", "anon");
         // 退出
         //filterChainDefinitionMap.put("/logout", "anon");
         // 放行未授权接口，重定向使用

@@ -14,7 +14,7 @@ public interface AuthApi {
 
 
     @PostMapping("/login")
-    void login(LoginDto loginDto);
+    Object login(LoginDto loginDto);
 
 
     @PostMapping("/userInfo")

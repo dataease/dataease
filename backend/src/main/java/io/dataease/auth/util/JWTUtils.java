@@ -40,6 +40,7 @@ public class JWTUtils {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("username").asString();
         } catch (JWTDecodeException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -56,6 +57,7 @@ public class JWTUtils {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("exp").asDate();
         } catch (JWTDecodeException e) {
+            e.printStackTrace();
             return null;
         }
     }

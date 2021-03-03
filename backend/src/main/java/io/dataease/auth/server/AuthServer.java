@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +27,7 @@ public class AuthServer implements AuthApi {
 
 
     @Override
-    public void login(@RequestBody LoginDto loginDto) {
+    public Object login(@RequestBody LoginDto loginDto) {
         String username = loginDto.getUsername();
         String password = loginDto.getPassword();
         SysUserEntity user = authUserService.getUser(username);
@@ -48,6 +47,9 @@ public class AuthServer implements AuthApi {
         result.put("token", JWTUtils.sign(username, realPwd));*/
         String token = JWTUtils.sign(username, realPwd);
         ServletUtils.setToken(token);
+        Map<String,Object> result = new HashMap<>();
+        result.put("token", token);
+        return result;
     }
 
     @Override
