@@ -21,7 +21,7 @@ import message from '@/metersphere/common/js/message'
 import { left2RightDrag, bottom2TopDrag, right2LeftDrag } from '@/metersphere/common/js/directive'
 Vue.prototype.$api = api
 
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts
 

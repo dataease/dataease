@@ -280,8 +280,8 @@ export default {
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         this.getData(response.data.id)
-        this.$store.commit('setChartSceneData', null)
-        this.$store.commit('setChartSceneData', this.sceneId)
+        this.$store.dispatch('chart/setChartSceneData', null)
+        this.$store.dispatch('chart/setChartSceneData', this.sceneId)
       })
     },
     getData(id) {

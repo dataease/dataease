@@ -17,8 +17,7 @@
   "dependencies": {
     "@riophae/vue-treeselect": "0.4.0",
     "axios": "0.18.1",
-    "echarts": "^4.6.0",
-    "vue-echarts": "^4.1.0",
+    "echarts": "^5.0.2",
     "element-ui": "2.13.0",
     "fit2cloud-ui": "^0.1.12",
     "js-cookie": "2.2.0",
