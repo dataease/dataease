@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import { post } from '@/api/dataset/dataset'
+
 export default {
   name: 'DatasetTableData',
   props: {
@@ -46,7 +48,7 @@ export default {
     initData() {
       this.resetData()
       if (this.table.id) {
-        this.$post('/dataset/table/getPreviewData', this.table, response => {
+        post('/dataset/table/getPreviewData', this.table).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
         })

@@ -7,7 +7,7 @@
           {{ $t('dataset.datalist') }}
         </span>
       </el-row>
-      <el-divider />
+      <el-divider/>
 
       <el-row>
         <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
@@ -103,12 +103,13 @@
       <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="groupForm.name" />
+            <el-input v-model="groupForm.name"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="close()">{{ $t('dataset.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveGroup(groupForm)">{{ $t('dataset.confirm') }}</el-button>
+          <el-button type="primary" size="mini" @click="saveGroup(groupForm)">{{ $t('dataset.confirm') }}
+          </el-button>
         </div>
       </el-dialog>
     </el-col>
@@ -123,7 +124,7 @@
           {{ $t('dataset.back') }}
         </el-button>
       </el-row>
-      <el-divider />
+      <el-divider/>
       <el-row>
         <el-dropdown style="margin-right: 10px;" size="small" trigger="click" @command="clickAddData">
           <el-button type="primary" size="mini" plain>
@@ -177,8 +178,8 @@
               ({{ data.type }})
             </span>
             <span>
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time" /></span>
+              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation"/></span>
+              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time"/></span>
             </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
@@ -212,7 +213,7 @@
       <el-dialog :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
         <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="tableForm.name" />
+            <el-input v-model="tableForm.name"/>
           </el-form-item>
           <el-form-item :label="$t('dataset.mode')" prop="mode">
             <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>
@@ -221,7 +222,8 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="closeTable()">{{ $t('dataset.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('dataset.confirm') }}</el-button>
+          <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('dataset.confirm') }}
+          </el-button>
         </div>
       </el-dialog>
 
@@ -231,6 +233,7 @@
 
 <script>
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree } from '@/api/dataset/dataset'
+
 export default {
   name: 'Group',
   data() {
@@ -377,7 +380,7 @@ export default {
     },
 
     saveTable(table) {
-    //   console.log(table)
+      //   console.log(table)
       table.mode = parseInt(table.mode)
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
@@ -389,7 +392,8 @@ export default {
               showClose: true
             })
             this.tableTree()
-            this.$router.push('/dataset/home')
+            // this.$router.push('/dataset/home')
+            this.$emit('switchComponent', { name: '' })
             this.$store.dispatch('dataset/setTable', null)
           })
         } else {
@@ -434,7 +438,8 @@ export default {
             showClose: true
           })
           this.tableTree()
-          this.$router.push('/dataset/home')
+          // this.$router.push('/dataset/home')
+          this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('dataset/setTable', null)
         })
       }).catch(() => {
@@ -501,7 +506,9 @@ export default {
       this.sceneMode = false
       //   const route = this.$store.state.permission.currentRoutes
       //   console.log(route)
-      this.$router.push('/dataset/index')
+      // this.$router.push('/dataset/index')
+      this.$store.dispatch('dataset/setSceneData', null)
+      this.$emit('switchComponent', { name: '' })
     },
 
     clickAddData(param) {
@@ -529,24 +536,26 @@ export default {
     },
 
     addDB() {
-      this.$router.push({
-        name: 'add_db',
-        params: {
-          scene: this.currGroup
-        }
-      })
+      // this.$router.push({
+      //   name: 'add_db',
+      //   params: {
+      //     scene: this.currGroup
+      //   }
+      // })
+      this.$emit('switchComponent', { name: 'AddDB', param: this.currGroup })
     },
 
     sceneClick(data, node) {
       // console.log(data);
       this.$store.dispatch('dataset/setTable', null)
       this.$store.dispatch('dataset/setTable', data.id)
-      this.$router.push({
-        name: 'table',
-        params: {
-          table: data
-        }
-      })
+      // this.$router.push({
+      //   name: 'table',
+      //   params: {
+      //     table: data
+      //   }
+      // })
+      this.$emit('switchComponent', { name: 'ViewTable' })
     },
 
     refresh() {
@@ -557,8 +566,6 @@ export default {
         getScene(sceneId).then(res => {
           this.currGroup = res.data
         })
-      } else {
-        this.$router.push('/dataset')
       }
     }
   }

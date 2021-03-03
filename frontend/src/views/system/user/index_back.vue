@@ -105,7 +105,7 @@ export default {
       console.log(condition) // demo只查看搜索条件，没有搜索的实现
       const { currentPage, pageSize } = this.paginationConfig
       userLists(currentPage, pageSize, {}).then(response => {
-        this.data = response.data.data.listObject
+        this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
       })
     }

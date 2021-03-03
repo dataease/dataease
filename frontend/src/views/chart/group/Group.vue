@@ -7,7 +7,7 @@
           {{ $t('chart.datalist') }}
         </span>
       </el-row>
-      <el-divider />
+      <el-divider/>
 
       <el-row>
         <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
@@ -101,7 +101,7 @@
       <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="groupForm.name" />
+            <el-input v-model="groupForm.name"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -121,7 +121,7 @@
           {{ $t('chart.back') }}
         </el-button>
       </el-row>
-      <el-divider />
+      <el-divider/>
       <el-row>
         <el-button type="primary" size="mini" plain @click="selectTable">
           {{ $t('chart.add_chart') }}
@@ -180,7 +180,7 @@
       <el-dialog :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
         <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="tableForm.name" />
+            <el-input v-model="tableForm.name"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -197,7 +197,7 @@
         width="70%"
         class="dialog-css"
       >
-        <table-selector @getTable="getTable" />
+        <table-selector @getTable="getTable"/>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="selectTableFlag = false">{{ $t('chart.cancel') }}</el-button>
           <el-button type="primary" size="mini" @click="createChart">{{ $t('chart.confirm') }}</el-button>
@@ -209,6 +209,7 @@
 </template>
 
 <script>
+import { post } from '@/api/chart/chart'
 import TableSelector from '../view/TableSelector'
 
 export default {
@@ -324,7 +325,7 @@ export default {
     saveGroup(group) {
       this.$refs['groupForm'].validate((valid) => {
         if (valid) {
-          this.$post('/chart/group/save', group, response => {
+          post('/chart/group/save', group).then(response => {
             this.close()
             this.$message({
               message: this.$t('commons.save_success'),
@@ -347,7 +348,7 @@ export default {
     saveTable(view) {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
-          this.$post('/chart/view/save', view, response => {
+          post('/chart/view/save', view).then(response => {
             this.closeTable()
             this.$message({
               message: this.$t('commons.save_success'),
@@ -355,8 +356,9 @@ export default {
               showClose: true
             })
             this.chartTree()
-            this.$router.push('/chart/home')
-            this.$store.commit('setTable', null)
+            // this.$router.push('/chart/home')
+            this.$emit('switchComponent', { name: '' })
+            this.$store.dispatch('chart/setTable', null)
           })
         } else {
           this.$message({
@@ -375,7 +377,7 @@ export default {
         cancelButtonText: this.$t('chart.cancel'),
         type: 'warning'
       }).then(() => {
-        this.$post('/chart/group/delete/' + data.id, null, response => {
+        post('/chart/group/delete/' + data.id, null).then(response => {
           this.$message({
             type: 'success',
             message: this.$t('chart.delete_success'),
@@ -393,15 +395,16 @@ export default {
         cancelButtonText: this.$t('chart.cancel'),
         type: 'warning'
       }).then(() => {
-        this.$post('/chart/view/delete/' + data.id, null, response => {
+        post('/chart/view/delete/' + data.id, null).then(response => {
           this.$message({
             type: 'success',
             message: this.$t('chart.delete_success'),
             showClose: true
           })
           this.chartTree()
-          this.$router.push('/chart/home')
-          this.$store.commit('setTable', null)
+          // this.$router.push('/chart/home')
+          this.$emit('switchComponent', { name: '' })
+          this.$store.dispatch('chart/setTable', null)
         })
       }).catch(() => {
       })
@@ -427,7 +430,7 @@ export default {
     },
 
     groupTree(group) {
-      this.$post('/chart/group/tree', group, response => {
+      post('/chart/group/tree', group).then(response => {
         this.data = response.data
       })
     },
@@ -435,10 +438,10 @@ export default {
     chartTree() {
       this.chartData = []
       if (this.currGroup.id) {
-        this.$post('/chart/view/list', {
+        post('/chart/view/list', {
           sort: 'create_time desc,name asc',
           sceneId: this.currGroup.id
-        }, response => {
+        }).then(response => {
           this.chartData = response.data
         })
       }
@@ -448,7 +451,7 @@ export default {
       if (data.type === 'scene') {
         this.sceneMode = true
         this.currGroup = data
-        this.$store.commit('setSceneId', this.currGroup.id)
+        this.$store.dispatch('chart/setSceneId', this.currGroup.id)
       }
       if (node.expanded) {
         this.expandedArray.push(data.id)
@@ -462,7 +465,8 @@ export default {
 
     back() {
       this.sceneMode = false
-      this.$router.push('/chart/home')
+      // this.$router.push('/chart/home')
+      this.$emit('switchComponent', { name: '' })
     },
 
     beforeClickAddData(type) {
@@ -481,10 +485,11 @@ export default {
     },
 
     sceneClick(data, node) {
-      this.$store.commit('setViewId', null)
-      this.$store.commit('setViewId', data.id)
-      this.$store.commit('setTableId', data.tableId)
-      this.$router.push('/chart/chart-edit')
+      this.$store.dispatch('chart/setViewId', null)
+      this.$store.dispatch('chart/setViewId', data.id)
+      this.$store.dispatch('chart/setTableId', data.tableId)
+      // this.$router.push('/chart/chart-edit')
+      this.$emit('switchComponent', { name: 'ChartEdit' })
     },
 
     selectTable() {
@@ -497,12 +502,13 @@ export default {
       view.name = this.table.name
       view.sceneId = this.currGroup.id
       view.tableId = this.table.id
-      this.$post('/chart/view/save', view, response => {
+      post('/chart/view/save', view).then(response => {
         this.selectTableFlag = false
-        this.$store.commit('setTableId', null)
-        this.$store.commit('setTableId', this.table.id)
-        this.$router.push('/chart/chart-edit')
-        this.$store.commit('setViewId', response.data.id)
+        this.$store.dispatch('chart/setTableId', null)
+        this.$store.dispatch('chart/setTableId', this.table.id)
+        // this.$router.push('/chart/chart-edit')
+        this.$emit('switchComponent', { name: 'ChartEdit' })
+        this.$store.dispatch('chart/setViewId', response.data.id)
         this.chartTree()
       })
     },
@@ -516,11 +522,9 @@ export default {
       if (path === '/chart/chart-edit') {
         this.sceneMode = true
         const sceneId = this.$store.state.chart.sceneId
-        this.$post('/chart/group/getScene/' + sceneId, null, response => {
+        post('/chart/group/getScene/' + sceneId, null).then(response => {
           this.currGroup = response.data
         })
-      } else {
-        this.$router.push('/chart')
       }
     }
   }

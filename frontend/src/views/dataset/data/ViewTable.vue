@@ -10,22 +10,22 @@
           <el-button size="mini" @click="edit">
             {{ $t('dataset.edit') }}
           </el-button>
-        <!--        <el-button size="mini" type="primary" @click="createChart">-->
-        <!--          {{$t('dataset.create_view')}}-->
-        <!--        </el-button>-->
+          <!--        <el-button size="mini" type="primary" @click="createChart">-->
+          <!--          {{$t('dataset.create_view')}}-->
+          <!--        </el-button>-->
         </el-row>
       </el-row>
-      <el-divider />
+      <el-divider/>
 
       <el-tabs v-model="tabActive">
         <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
-          <tab-data-preview :table="table" :fields="fields" :data="data" />
+          <tab-data-preview :table="table" :fields="fields" :data="data"/>
         </el-tab-pane>
         <el-tab-pane :label="$t('dataset.join_view')" name="joinView">
           关联视图 TODO
         </el-tab-pane>
         <el-tab-pane :label="$t('dataset.update_info')" name="updateInfo">
-          <update-info :table="table" />
+          <update-info :table="table"/>
         </el-tab-pane>
       </el-tabs>
 
@@ -40,17 +40,17 @@
           </el-table-column>
           <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.name" size="mini" />
+              <el-input v-model="scope.row.name" size="mini"/>
             </template>
           </el-table-column>
-          <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="180" />
+          <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="180"/>
           <el-table-column property="checked" :label="$t('dataset.field_check')" width="80">
             <template slot-scope="scope">
-              <el-checkbox v-model="scope.row.checked" />
+              <el-checkbox v-model="scope.row.checked"/>
             </template>
           </el-table-column>
           <!--下面这一列占位-->
-          <el-table-column property="" />
+          <el-table-column property=""/>
         </el-table>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="closeEdit">{{ $t('dataset.cancel') }}</el-button>
@@ -58,14 +58,15 @@
         </div>
       </el-dialog>
 
-    <!--    <el-dialog title="view" :visible.sync="createViewDialog" :fullscreen="true">-->
-    <!--      <chart-edit/>-->
-    <!--    </el-dialog>-->
+      <!--    <el-dialog title="view" :visible.sync="createViewDialog" :fullscreen="true">-->
+      <!--      <chart-edit/>-->
+      <!--    </el-dialog>-->
     </el-row>
   </el-col>
 </template>
 
 <script>
+import { getTable, getPreviewData, fieldList, batchEdit } from '@/api/dataset/dataset'
 import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
 
@@ -107,7 +108,7 @@ export default {
       if (id !== null) {
         this.fields = []
         this.data = []
-        this.$post('/dataset/table/get/' + id, null, response => {
+        getTable(id).then(response => {
           this.table = response.data
           this.initPreviewData()
         })
@@ -116,7 +117,7 @@ export default {
 
     initPreviewData() {
       if (this.table.id) {
-        this.$post('/dataset/table/getPreviewData', this.table, response => {
+        getPreviewData(this.table).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
         })
@@ -124,7 +125,7 @@ export default {
     },
 
     initTableFields() {
-      this.$post('/dataset/field/list/' + this.table.id, null, response => {
+      fieldList(this.table.id).then(response => {
         this.tableFields = response.data
       })
     },
@@ -142,7 +143,7 @@ export default {
 
     saveEdit() {
       console.log(this.tableFields)
-      this.$post('/dataset/field/batchEdit', this.tableFields, response => {
+      batchEdit(this.tableFields).then(response => {
         this.closeEdit()
         this.initTable(this.table.id)
       })

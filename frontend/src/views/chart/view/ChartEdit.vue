@@ -57,7 +57,7 @@
         <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;" class="padding-lr">
           <el-row>
             <span>{{ $t('chart.title') }}</span>
-          <!--          <el-checkbox v-model="view.show" style="float: right;">{{$t('chart.show')}}</el-checkbox>-->
+            <!--          <el-checkbox v-model="view.show" style="float: right;">{{$t('chart.show')}}</el-checkbox>-->
           </el-row>
           <el-form>
             <el-form-item class="form-item">
@@ -147,7 +147,7 @@
           </el-row>
 
           <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
-            <div id="echart" style="width: 100%;height: 80vh;" />
+            <div id="echart" style="width: 100%;height: 80vh;"/>
           </div>
         </el-row>
       </el-col>
@@ -156,6 +156,7 @@
 </template>
 
 <script>
+import { post } from '@/api/dataset/dataset'
 import draggable from 'vuedraggable'
 import { BASE_BAR } from '../chart/chart'
 
@@ -219,14 +220,14 @@ export default {
   methods: {
     initTableData(id) {
       if (id != null) {
-        this.$post('/dataset/table/get/' + id, null, response => {
+        post('/dataset/table/get/' + id, null).then(response => {
           this.table = response.data
           this.initTableField(id)
         })
       }
     },
     initTableField(id) {
-      this.$post('/dataset/table/getFieldsFromDE', this.table, response => {
+      post('/dataset/table/getFieldsFromDE', this.table).then(response => {
         this.dimension = response.data.dimension
         this.quota = response.data.quota
       })
@@ -259,7 +260,7 @@ export default {
     },
     get(id) {
       if (id) {
-        this.$post('/chart/view/get/' + id, null, response => {
+        post('/chart/view/get/' + id, null).then(response => {
           this.view = response.data
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
@@ -276,7 +277,7 @@ export default {
       view.tableId = this.$store.state.chart.tableId
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
-      this.$post('/chart/view/save', view, response => {
+      post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         this.getData(response.data.id)
         this.$store.commit('setChartSceneData', null)
@@ -285,7 +286,7 @@ export default {
     },
     getData(id) {
       if (id) {
-        this.$post('/chart/view/getData/' + id, null, response => {
+        post('/chart/view/getData/' + id, null).then(response => {
           this.view = response.data
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
@@ -405,5 +406,9 @@ export default {
 
   .el-form-item {
     margin-bottom: 0;
+  }
+
+  span {
+    font-size: 14px;
   }
 </style>

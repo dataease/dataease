@@ -15,7 +15,9 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
+    "@riophae/vue-treeselect": "0.4.0",
     "axios": "0.18.1",
+    "echarts": "^5.0.2",
     "element-ui": "2.13.0",
     "fit2cloud-ui": "^0.1.12",
     "js-cookie": "2.2.0",
@@ -30,9 +32,8 @@
     "vue": "2.6.10",
     "vue-i18n": "7.3.2",
     "vue-router": "3.0.6",
-    "vuex": "3.1.0",
-    "@riophae/vue-treeselect": "0.4.0",
-    "vuedraggable": "^2.24.3"
+    "vuedraggable": "^2.24.3",
+    "vuex": "3.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.0.0",

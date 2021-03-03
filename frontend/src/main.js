@@ -21,6 +21,10 @@ import message from '@/metersphere/common/js/message'
 import { left2RightDrag, bottom2TopDrag, right2LeftDrag } from '@/metersphere/common/js/directive'
 Vue.prototype.$api = api
 
+import echarts from 'echarts'
+
+Vue.prototype.$echarts = echarts
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

@@ -2,13 +2,12 @@
   <ms-container>
 
     <ms-aside-container>
-      <group />
+      <group @switchComponent="switchComponent"/>
     </ms-aside-container>
 
     <ms-main-container>
-      <keep-alive>
-        <router-view />
-      </keep-alive>
+      <!--        <router-view />-->
+      <component :is="component" :param="param" @switchComponent="switchComponent"></component>
     </ms-main-container>
   </ms-container>
 </template>
@@ -19,11 +18,31 @@ import MsContainer from '@/metersphere/common/components/MsContainer'
 import MsAsideContainer from '@/metersphere/common/components/MsAsideContainer'
 import Group from './group/Group'
 
+import ChartHome from './data/ChartHome'
+import ChartEdit from './view/ChartEdit'
+
 export default {
   name: 'Chart',
-  components: { MsMainContainer, MsContainer, MsAsideContainer, Group },
+  components: { MsMainContainer, MsContainer, MsAsideContainer, Group, ChartHome, ChartEdit },
   data() {
-    return {}
+    return {
+      component: ChartHome,
+      param: {}
+    }
+  },
+  methods: {
+    switchComponent(c) {
+      console.log(c)
+      this.param = c.param
+      switch (c.name) {
+        case 'ChartEdit':
+          this.component = ChartEdit
+          break
+        default:
+          this.component = ChartHome
+          break
+      }
+    }
   }
 }
 </script>

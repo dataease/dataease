@@ -2,13 +2,12 @@
   <ms-container>
 
     <ms-aside-container>
-      <group />
+      <group @switchComponent="switchComponent"/>
     </ms-aside-container>
 
     <ms-main-container>
-      <keep-alive>
-        <router-view />
-      </keep-alive>
+      <!--<router-view/>-->
+      <component :is="component" :param="param" @switchComponent="switchComponent"></component>
     </ms-main-container>
   </ms-container>
 </template>
@@ -19,25 +18,49 @@ import MsContainer from '@/metersphere/common/components/MsContainer'
 import MsAsideContainer from '@/metersphere/common/components/MsAsideContainer'
 import Group from './group/Group'
 
+import DataHome from './data/DataHome'
+import ViewTable from './data/ViewTable'
+import AddDB from './add/AddDB'
+
 export default {
   name: 'DataSet',
-  components: { MsMainContainer, MsContainer, MsAsideContainer, Group },
+  components: { MsMainContainer, MsContainer, MsAsideContainer, Group, DataHome, ViewTable, AddDB },
   data() {
-    return {}
+    return {
+      component: DataHome,
+      param: {}
+    }
+  },
+  methods: {
+    switchComponent(c) {
+      console.log(c)
+      this.param = c.param
+      switch (c.name) {
+        case 'ViewTable':
+          this.component = ViewTable
+          break
+        case 'AddDB':
+          this.component = AddDB
+          break
+        default:
+          this.component = DataHome
+          break
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
   .ms-aside-container {
-    height: calc(100vh - 40px);
+    height: calc(100vh - 56px);
     padding: 15px;
-    min-width: 300px;
-    max-width: 500px;
+    min-width: 260px;
+    max-width: 460px;
   }
 
   .ms-main-container {
-    height: calc(100vh - 40px);
+    height: calc(100vh - 56px);
   }
 
 </style>

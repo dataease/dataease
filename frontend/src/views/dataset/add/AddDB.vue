@@ -14,7 +14,7 @@
           </el-button>
         </el-row>
       </el-row>
-      <el-divider />
+      <el-divider/>
       <el-row>
         <el-form :inline="true">
           <el-form-item class="form-item">
@@ -57,7 +57,12 @@
 </template>
 
 <script>
+import { listDatasource, post } from '@/api/dataset/dataset'
+
 export default {
+  props: {
+    param: Object
+  },
   name: 'AddDB',
   data() {
     return {
@@ -66,31 +71,27 @@ export default {
       dataSource: '',
       tables: [],
       checkTableList: [],
-      scene: null,
       mode: '0'
     }
   },
   watch: {
     dataSource(val) {
       if (val) {
-        this.$post('/datasource/getTables', { id: val }, response => {
+        post('/datasource/getTables', { id: val }).then(response => {
           this.tables = response.data
-        }
-        )
+        })
       }
     }
   },
   mounted() {
     this.initDataSource()
-    this.scene = this.$route.params.scene
   },
   activated() {
     this.initDataSource()
-    this.scene = this.$route.params.scene
   },
   methods: {
     initDataSource() {
-      this.$get('/datasource/list', response => {
+      listDatasource().then(response => {
         this.options = response.data
       })
     },
@@ -98,7 +99,7 @@ export default {
     save() {
       // console.log(this.checkTableList);
       // console.log(this.scene);
-      const sceneId = this.scene.id
+      const sceneId = this.param.id
       const dataSourceId = this.dataSource
       const tables = []
       const mode = this.mode
@@ -111,15 +112,16 @@ export default {
           mode: parseInt(mode)
         })
       })
-      this.$post('/dataset/table/batchAdd', tables, response => {
-        this.$store.commit('setSceneData', new Date().getTime())
+      post('/dataset/table/batchAdd', tables).then(response => {
+        this.$store.dispatch('dataset/setSceneData', new Date().getTime())
         this.cancel()
       })
     },
 
     cancel() {
       this.dataReset()
-      this.$router.push('/dataset/home')
+      // this.$router.push('/dataset/home')
+      this.$emit('switchComponent', { name: '' })
     },
 
     dataReset() {
