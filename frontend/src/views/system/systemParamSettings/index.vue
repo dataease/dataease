@@ -22,9 +22,9 @@ import UiSetting from './UiSetting'
 import BaseSetting from './BaseSetting'
 import { hasLicense } from '@/metersphere/common/js/utils'
 
-const requireComponent = require.context('@/metersphere/common/components/xpack/', true, /\.vue$/)
-const display = requireComponent.keys().length > 0 ? requireComponent('./display/Display.vue') : {}
-const auth = requireComponent.keys().length > 0 ? requireComponent('./auth/Auth.vue') : {}
+// const requireComponent = require.context('@/metersphere/common/components/xpack/', true, /\.vue$/)
+// const display = requireComponent.keys().length > 0 ? requireComponent('./display/Display.vue') : {}
+// const auth = requireComponent.keys().length > 0 ? requireComponent('./auth/Auth.vue') : {}
 
 export default {
   name: 'SystemParameterSetting',
@@ -33,8 +33,8 @@ export default {
     UiSetting,
     EmailSetting,
     LdapSetting,
-    'MsDisplay': display.default,
-    'MsAuth': auth.default
+    // 'MsDisplay': display.default,
+    // 'MsAuth': auth.default
   },
   data() {
     return {
