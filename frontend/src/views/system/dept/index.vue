@@ -218,7 +218,9 @@ export default {
     treeByArr(arr) {
       if (!Array.isArray(arr) || !arr.length) return
       const map = {}
-      arr.forEach(item => map[item.id] = item)
+      arr.forEach(item => {
+        map[item.id] = item
+      })
 
       const roots = []
       arr.forEach(item => {
@@ -236,7 +238,7 @@ export default {
       const _self = this
       const pid = row ? row.deptId : '0'
       getDeptTree(pid).then(response => {
-        let data = response.data.data
+        let data = response.data
         data = data.map(obj => {
           if (obj.subCount > 0) {
             obj.hasChildren = true
@@ -244,7 +246,9 @@ export default {
           return obj
         })
         if (!row) {
-          data.some(node => node.children = null)
+          data.some(node => {
+            node.children = null
+          })
           _self.tableData = data
           _self.depts = null
         } else {
@@ -267,7 +271,7 @@ export default {
       if (action === LOAD_ROOT_OPTIONS) {
         const _self = this
         !this.depts && getDeptTree('0').then(res => {
-          _self.depts = res.data.data.map(node => _self.normalizer(node))
+          _self.depts = res.data.map(node => _self.normalizer(node))
           callback()
         })
       }
@@ -275,7 +279,7 @@ export default {
       if (action === LOAD_CHILDREN_OPTIONS) {
         const _self = this
         getDeptTree(parentNode.id).then(res => {
-          parentNode.children = res.data.data.map(function(obj) {
+          parentNode.children = res.data.map(function(obj) {
             return _self.normalizer(obj)
           })
           callback()
@@ -375,7 +379,9 @@ export default {
     array2Tree(arr) {
       if (!Array.isArray(arr) || !arr.length) return
       const map = {}
-      arr.forEach(item => map[item.id] = item)
+      arr.forEach(item => {
+        map[item.id] = item
+      })
 
       const roots = []
       arr.forEach(item => {

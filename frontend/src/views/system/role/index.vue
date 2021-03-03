@@ -142,7 +142,7 @@ export default {
     },
     search() {
       roleGrid(this.currentPage, this.pageSize, this.condition).then(response => {
-        const data = response.data.data
+        const data = response.data
         this.total = data.itemCount
         this.tableData = data.listObject
       })
@@ -178,7 +178,7 @@ export default {
     getMenuDatas(node, resolve) {
       const pid = node.data.id ? node.data.id : '0'
       getMenusTree(pid).then(res => {
-        const datas = res.data.data
+        const datas = res.data
         const nodes = datas.map(data => this.formatNode(data))
         resolve && resolve(nodes)
       })
@@ -194,7 +194,7 @@ export default {
     },
     menuChange(menu) {
       getChild(menu.id).then(res => {
-        const childIds = res.data.data
+        const childIds = res.data
         if (this.menuIds.indexOf(menu.id) !== -1) {
           for (let i = 0; i < childIds.length; i++) {
             const index = this.menuIds.indexOf(childIds[i])

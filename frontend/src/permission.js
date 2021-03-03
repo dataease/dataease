@@ -37,7 +37,7 @@ router.beforeEach(async(to, from, next) => {
           store.dispatch('user/getInfo').then(() => {
             loadMenus(next, to)
           }).catch(() => {
-            store.dispatch('logout').then(() => {
+            store.dispatch('user/logout').then(() => {
               location.reload() // 为了重新实例化vue-router对象 避免bug
             })
           })
@@ -65,7 +65,7 @@ router.beforeEach(async(to, from, next) => {
 })
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
-    const asyncRouter = filterAsyncRouter(res.data.data)
+    const asyncRouter = filterAsyncRouter(res.data)
     asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)

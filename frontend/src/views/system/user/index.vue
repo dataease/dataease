@@ -346,7 +346,7 @@ export default {
     },
     search() {
       userLists(this.currentPage, this.pageSize, this.condition).then(response => {
-        const data = response.data.data
+        const data = response.data
         this.total = data.itemCount
         this.tableData = data.listObject
       })
@@ -380,7 +380,7 @@ export default {
       if (action === LOAD_ROOT_OPTIONS) {
         const _self = this
         !this.depts && getDeptTree('0').then(res => {
-          _self.depts = res.data.data.map(node => _self.normalizer(node))
+          _self.depts = res.data.map(node => _self.normalizer(node))
           callback()
         })
       }
@@ -388,7 +388,7 @@ export default {
       if (action === LOAD_CHILDREN_OPTIONS) {
         const _self = this
         getDeptTree(parentNode.id).then(res => {
-          parentNode.children = res.data.data.map(function(obj) {
+          parentNode.children = res.data.map(function(obj) {
             return _self.normalizer(obj)
           })
           callback()
@@ -421,7 +421,7 @@ export default {
     },
     allRoles() {
       allRoles().then(res => {
-        this.roles = res.data.data
+        this.roles = res.data
       })
     }
 

@@ -98,7 +98,7 @@ service.interceptors.response.use(
 // 请根据实际需求修改
 service.interceptors.response.use(response => {
   checkAuth(response)
-  return response
+  return response.data
 }, error => {
   let msg
   if (error.response) {

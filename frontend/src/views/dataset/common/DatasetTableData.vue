@@ -23,6 +23,7 @@
 export default {
   name: 'DatasetTableData',
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     table: Object
   },
   data() {

@@ -106,7 +106,7 @@ export default {
       const { currentPage, pageSize } = this.paginationConfig
       userLists(currentPage, pageSize, {}).then(response => {
         this.data = response.data.data.listObject
-        this.paginationConfig.total = response.data.data.itemCount
+        this.paginationConfig.total = response.data.itemCount
       })
     }
   }

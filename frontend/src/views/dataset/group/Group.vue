@@ -462,7 +462,7 @@ export default {
 
     tree(group) {
       groupTree(group).then(res => {
-        this.tData = res.data.data
+        this.tData = res.data
       })
     },
 
@@ -473,7 +473,7 @@ export default {
           sort: 'type asc,create_time desc,name asc',
           sceneId: this.currGroup.id
         }).then(res => {
-          this.tableData = res.data.data
+          this.tableData = res.data
         })
       }
     },
@@ -555,7 +555,7 @@ export default {
         this.sceneMode = true
         const sceneId = this.$store.state.dataset.sceneData
         getScene(sceneId).then(res => {
-          this.currGroup = res.data.data
+          this.currGroup = res.data
         })
       } else {
         this.$router.push('/dataset')

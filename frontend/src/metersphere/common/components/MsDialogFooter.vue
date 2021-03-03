@@ -25,7 +25,10 @@ export default {
       type: Boolean,
       default: false
     },
-    title: String
+    title: {
+      type: String,
+      default: null
+    }
   },
   methods: {
     cancel() {

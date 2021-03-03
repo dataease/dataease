@@ -284,7 +284,7 @@ export default {
       const pid = row ? row.menuId : '0'
 
       getMenusTree(pid).then(response => {
-        let data = response.data.data
+        let data = response.data
         data = data.map(obj => {
           if (obj.subCount > 0) {
             obj.hasChildren = true
@@ -316,7 +316,7 @@ export default {
       if (action === LOAD_ROOT_OPTIONS) {
         const _self = this
         !this.menus && getMenusTree('0').then(res => {
-          _self.menus = res.data.data.map(node => _self.normalizer(node))
+          _self.menus = res.data.map(node => _self.normalizer(node))
           callback()
         })
       }
@@ -324,7 +324,7 @@ export default {
       if (action === LOAD_CHILDREN_OPTIONS) {
         const _self = this
         getMenusTree(parentNode.id).then(res => {
-          parentNode.children = res.data.data.map(function(obj) {
+          parentNode.children = res.data.map(function(obj) {
             return _self.normalizer(obj)
           })
           callback()

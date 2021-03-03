@@ -361,7 +361,7 @@ export default {
     },
     initTableData() {
       dsGrid(this.currentPage, this.pageSize, this.condition).then(response => {
-        const data = response.data.data
+        const data = response.data
         this.tableData = data.listObject
         this.total = data.itemCount
       })
