@@ -17,7 +17,6 @@
 
     <name>dataease</name>
     <modules>
-        <module>frontend</module>
         <module>backend</module>
     </modules>
 
