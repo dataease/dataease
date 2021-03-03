@@ -1,4 +1,5 @@
 -- dataset start
+DROP TABLE IF EXISTS `dataset_group`;
 CREATE TABLE IF NOT EXISTS `dataset_group` (
   `id` varchar(50) NOT NULL COMMENT 'ID',
   `name` varchar(64) NOT NULL COMMENT '名称',

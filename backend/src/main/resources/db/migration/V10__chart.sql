@@ -1,4 +1,5 @@
 -- chart start
+DROP TABLE IF EXISTS `chart_group`;
 CREATE TABLE IF NOT EXISTS `chart_group`
 (
     `id`          varchar(50) NOT NULL COMMENT 'ID',
@@ -12,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `chart_group`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
+DROP TABLE IF EXISTS `chart_view`;
 CREATE TABLE IF NOT EXISTS `chart_view`
 (
     `id`            varchar(50) NOT NULL COMMENT 'ID',

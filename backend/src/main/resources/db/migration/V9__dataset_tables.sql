@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `dataset_table`;
 CREATE TABLE IF NOT EXISTS `dataset_table`
 (
     `id`             varchar(50) NOT NULL COMMENT 'ID',
@@ -13,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
+DROP TABLE IF EXISTS `dataset_table_field`;
 CREATE TABLE IF NOT EXISTS `dataset_table_field`
 (
     `id`             varchar(50)  NOT NULL COMMENT 'ID',
