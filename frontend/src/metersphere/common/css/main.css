@@ -1,0 +1,204 @@
+.container {
+  padding: 15px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.main-content {
+  margin: 0 auto;
+  width: 100%;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* 解决 document.body.clientHeight 为0 */
+html,body {
+  height:100%
+}
+
+.main-content span.title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-wrap: break-word;
+  white-space: nowrap;
+}
+
+/* 解决高度塌陷和边距重叠 */
+.clearfix:before, .clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* 解决富文本框中link显示问题 */
+.ck-rounded-corners .ck.ck-balloon-panel, .ck.ck-balloon-panel.ck-rounded-corners {
+  z-index: 10055 !important;
+}
+
+.table-card > .el-card__body {
+  padding-top: 0;
+}
+
+/* Safari 表格不错位 */
+.el-table__body {
+  width: 100%;
+  table-layout: fixed !important;
+}
+
+/* <-- 表格拖拽表头调整宽度，在 t-bable 上添加 border 属性，并添加 adjust-table 类名 */
+.adjust-table td {
+  border-right: 0;
+}
+
+.adjust-table th {
+  border-right-color: white;
+}
+
+.adjust-table {
+  border-color: white;
+}
+
+.adjust-table:after {
+  background-color: white;
+}
+
+.adjust-table th:not([class*="el-table-column--selection"]):hover:after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  right: 0;
+  height: 50%;
+  width: 2px;
+  background-color: #EBEEF5;
+}
+
+.adjust-table tr:hover td {
+  border-right: 0;
+}
+
+/* 表格拖拽表头调整宽度 --> */
+
+/* <-- 表格 input 编辑效果 */
+.table-edit-input .el-textarea__inner {
+  border-style: hidden;
+}
+
+.table-edit-input.is-disabled .el-textarea__inner {
+  background-color: white;
+  color: #606266;
+}
+
+.el-table .current-row .table-edit-input {
+  border: 1px solid #DCDFE6;
+  border-radius: 5px;
+}
+
+.table-edit-input .el-textarea__inner:focus {
+  border: 1px solid #409EFF;
+}
+
+/* 表格 input 编辑效果 --> */
+
+.ms-border {
+  padding: 10px;
+  border: #DCDFE6 solid 1px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+/* 修复带长度限制的文本框，内容太长造成的无法查看内容的问题 */
+
+.el-input__inner[maxlength] {
+  padding-right: 60px;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar{
+  width: 10px;
+  height: 10px;
+  position: fixed;
+}
+::-webkit-scrollbar-thumb{
+  border-radius: 1em;
+  background-color: rgba(50,50,50,.3);
+  position: fixed;
+}
+::-webkit-scrollbar-track{
+  border-radius: 1em;
+  background-color: transparent;
+  position: fixed;
+}
+
+/* <-- 表格全选样式 */
+.ms-select-all th:first-child.el-table-column--selection {
+  border: 1px solid #DCDFE6;
+  border-radius:5px;
+  padding: 0px;
+  margin-top: 10px;
+  display: inline-block;
+  /*margin-top: 25px;*/
+  width: 50px;
+}
+
+.ms-select-all th:nth-child(2) {
+  overflow: visible;
+}
+
+.ms-select-all th:first-child.el-table-column--selection>.cell {
+  padding: 5px;
+  width: 35px;
+}
+
+.ms-select-all th:nth-child(2)>.cell {
+  overflow: visible;
+}
+
+.ms-select-all th:nth-child(2) .el-icon-arrow-down {
+  position: absolute;
+  display: inline-block;
+  top: -7px;
+  left: -38px;
+  width: 30px;
+}
+/* 表格全选样式 --> */
+
+/* <-- 表格全选样式 (列固定表格样式) */
+.ms-select-all-fixed th:first-child.el-table-column--selection {
+  border: 1px solid #DCDFE6;
+  border-radius:5px;
+  padding: 0px;
+  margin-top: 10px;
+  display: inline-block;
+  /*margin-top: 25px;*/
+  width: 50px;
+}
+
+.ms-select-all-fixed th:nth-child(2) {
+  overflow: visible;
+}
+
+.ms-select-all-fixed th:first-child.el-table-column--selection>.cell {
+  padding: 5px;
+  width: 35px;
+}
+
+.ms-select-all-fixed th:nth-child(2)>.cell {
+  overflow: visible;
+}
+
+.ms-select-all-fixed th:nth-child(2) .el-icon-arrow-down {
+  position: absolute;
+  display: inline-block;
+  top: -9px;
+  left: -30px;
+  width: 30px;
+}
+/* 表格全选样式 --> */

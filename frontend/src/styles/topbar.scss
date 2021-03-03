@@ -1,0 +1,89 @@
+.top-nav {
+    // margin-left: $sideBarWidth;
+    width: 100%;
+    background-color: #304156;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1001;
+    overflow: hidden;
+
+    .log {
+      padding: 0 20px;
+      line-height: 56px;
+      font-size: 24px;
+      font-weight: bold;
+      color: rgb(191, 203, 217);
+      float: left;
+    }
+    .el-menu {
+      float: left;
+      border: none!important;
+      background-color: #304156;
+
+      .nav-item {
+        display: inline-block;
+        .el-menu-item {
+          color: rgb(191, 203, 217);
+          &:hover {
+            background-color: $subMenuHover !important;
+          }
+          &:focus {
+            background-color: $subMenuHover !important;
+            // color: $subMenuActiveText !important;
+          }
+        }
+      }
+    }
+
+    .right-menu {
+      float: right;
+      height: 100%;
+
+      &:focus {
+        outline: none;
+      }
+
+      .right-menu-item {
+        display: inline-block;
+        padding: 10px 8px;
+        height: 100%;
+        font-size: 18px;
+        color: #5a5e66;
+        vertical-align: text-bottom;
+
+        &.hover-effect {
+          cursor: pointer;
+          transition: background .3s;
+
+          &:hover {
+            background: rgba(0, 0, 0, .025)
+          }
+        }
+      }
+
+      .avatar-container {
+        margin-right: 30px;
+
+        .avatar-wrapper {
+          margin-top: 5px;
+          position: relative;
+
+          .user-avatar {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+          }
+
+          .el-icon-caret-bottom {
+            cursor: pointer;
+            position: absolute;
+            right: -20px;
+            top: 25px;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
