@@ -454,6 +454,66 @@ public class DatasetTableExample {
             return (Criteria) this;
         }
 
+        public Criteria andModeIsNull() {
+            addCriterion("`mode` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeIsNotNull() {
+            addCriterion("`mode` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeEqualTo(Integer value) {
+            addCriterion("`mode` =", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotEqualTo(Integer value) {
+            addCriterion("`mode` <>", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeGreaterThan(Integer value) {
+            addCriterion("`mode` >", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("`mode` >=", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeLessThan(Integer value) {
+            addCriterion("`mode` <", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeLessThanOrEqualTo(Integer value) {
+            addCriterion("`mode` <=", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeIn(List<Integer> values) {
+            addCriterion("`mode` in", values, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotIn(List<Integer> values) {
+            addCriterion("`mode` not in", values, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeBetween(Integer value1, Integer value2) {
+            addCriterion("`mode` between", value1, value2, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotBetween(Integer value1, Integer value2) {
+            addCriterion("`mode` not between", value1, value2, "mode");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateByIsNull() {
             addCriterion("create_by is null");
             return (Criteria) this;

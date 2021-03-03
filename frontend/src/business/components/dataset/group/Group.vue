@@ -143,12 +143,12 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-button type="primary" size="mini" plain>
-        {{$t('dataset.update')}}
-      </el-button>
-      <el-button type="primary" size="mini" plain>
-        {{$t('dataset.process')}}
-      </el-button>
+      <!--      <el-button type="primary" size="mini" plain>-->
+      <!--        {{$t('dataset.update')}}-->
+      <!--      </el-button>-->
+      <!--      <el-button type="primary" size="mini" plain>-->
+      <!--        {{$t('dataset.process')}}-->
+      <!--      </el-button>-->
     </el-row>
     <el-row>
       <el-form>
@@ -174,6 +174,10 @@
             <span>
               ({{data.type}})
             </span>
+            <span>
+              <span style="margin-left: 6px" v-if="data.mode === 0"><i class="el-icon-s-operation"></i></span>
+              <span style="margin-left: 6px" v-if="data.mode === 1"><i class="el-icon-time"></i></span>
+            </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
           <span>
@@ -187,8 +191,8 @@
                   </el-button>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameTable',data,node)">
-                    {{$t('dataset.rename')}}
+                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
+                    {{$t('dataset.edit')}}
                   </el-dropdown-item>
                   <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
                   <!--                    {{$t('dataset.move_to')}}-->
@@ -207,6 +211,10 @@
       <el-form :model="tableForm" :rules="tableFormRules" ref="tableForm">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('dataset.mode')" prop="mode">
+          <el-radio v-model="tableForm.mode" label="0">{{$t('dataset.direct_connect')}}</el-radio>
+          <el-radio v-model="tableForm.mode" label="1">{{$t('dataset.sync_data')}}</el-radio>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -243,6 +251,7 @@ export default {
       },
       tableForm: {
         name: '',
+        mode: '',
         sort: 'type asc,create_time desc,name asc'
       },
       groupFormRules: {
@@ -252,6 +261,9 @@ export default {
       },
       tableFormRules: {
         name: [
+          {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
+        ],
+        mode: [
           {required: true, message: this.$t('commons.input_content'), trigger: 'blur'},
         ],
       }
@@ -305,9 +317,10 @@ export default {
         case 'delete':
           this.delete(param.data);
           break;
-        case 'renameTable':
+        case 'editTable':
           this.editTable = true;
           this.tableForm = JSON.parse(JSON.stringify(param.data));
+          this.tableForm.mode = this.tableForm.mode + '';
           break;
         case 'deleteTable':
           this.deleteTable(param.data);
@@ -362,6 +375,7 @@ export default {
 
     saveTable(table) {
       console.log(table);
+      table.mode = parseInt(table.mode);
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
           this.$post("/dataset/table/update", table, response => {
@@ -538,6 +552,8 @@ export default {
         this.$post('/dataset/group/getScene/' + sceneId, null, response => {
           this.currGroup = response.data;
         })
+      } else {
+        this.$router.push('/dataset');
       }
     }
   },

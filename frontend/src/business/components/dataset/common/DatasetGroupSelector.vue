@@ -82,6 +82,10 @@
             <span>
               ({{data.type}})
             </span>
+            <span>
+              <span style="margin-left: 6px" v-if="data.mode === 0"><i class="el-icon-s-operation"></i></span>
+              <span style="margin-left: 6px" v-if="data.mode === 1"><i class="el-icon-time"></i></span>
+            </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
         </span>

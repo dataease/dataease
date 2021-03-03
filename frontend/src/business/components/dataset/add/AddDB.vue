@@ -27,6 +27,10 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item class="form-item">
+          <el-radio v-model="mode" label="0">{{$t('dataset.direct_connect')}}</el-radio>
+          <el-radio v-model="mode" label="1">{{$t('dataset.sync_data')}}</el-radio>
+        </el-form-item>
         <el-form-item class="form-item" style="float: right;">
           <el-input
             size="mini"
@@ -62,7 +66,8 @@ export default {
       dataSource: '',
       tables: [],
       checkTableList: [],
-      scene: null
+      scene: null,
+      mode: '0'
     }
   },
   mounted() {
@@ -86,12 +91,14 @@ export default {
       let sceneId = this.scene.id;
       let dataSourceId = this.dataSource;
       let tables = [];
+      let mode = this.mode;
       this.checkTableList.forEach(function (name) {
         tables.push({
           name: name,
           sceneId: sceneId,
           dataSourceId: dataSourceId,
-          type: 'db'
+          type: 'db',
+          mode: parseInt(mode)
         })
       });
       this.$post('/dataset/table/batchAdd', tables, response => {

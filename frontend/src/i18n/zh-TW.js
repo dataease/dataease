@@ -1601,6 +1601,12 @@ export default {
     join_view: '關聯視圖',
     text: '文本',
     time: '時間',
-    value: '數值'
+    value: '數值',
+    mode:'模式',
+    direct_connect:'直連',
+    sync_data:'定時同步',
+    update_setting:'更新設置',
+    sync_now:'立即更新',
+    add_task:'添加任務'
   }
 };

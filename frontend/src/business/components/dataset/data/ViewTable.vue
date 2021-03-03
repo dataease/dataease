@@ -10,9 +10,9 @@
         <el-button size="mini" @click="edit">
           {{$t('dataset.edit')}}
         </el-button>
-<!--        <el-button size="mini" type="primary" @click="createChart">-->
-<!--          {{$t('dataset.create_view')}}-->
-<!--        </el-button>-->
+        <!--        <el-button size="mini" type="primary" @click="createChart">-->
+        <!--          {{$t('dataset.create_view')}}-->
+        <!--        </el-button>-->
       </el-row>
     </el-row>
     <el-divider/>
@@ -25,14 +25,8 @@
         关联视图 TODO
       </el-tab-pane>
       <el-tab-pane :label="$t('dataset.update_info')" name="updateInfo">
-        更新信息 TODO
+        <update-info :table="table"/>
       </el-tab-pane>
-      <!--      <el-tab-pane label="tab3" name="tab3">-->
-      <!--        tab3-->
-      <!--      </el-tab-pane>-->
-      <!--      <el-tab-pane label="tab4" name="tab4">-->
-      <!--        tab4-->
-      <!--      </el-tab-pane>-->
     </el-tabs>
 
     <el-dialog :title="table.name" :visible.sync="editField" :fullscreen="true" :show-close="false">
@@ -66,20 +60,20 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="view" :visible.sync="createViewDialog" :fullscreen="true">
-      <chart-edit/>
-    </el-dialog>
+    <!--    <el-dialog title="view" :visible.sync="createViewDialog" :fullscreen="true">-->
+    <!--      <chart-edit/>-->
+    <!--    </el-dialog>-->
   </el-row>
 </el-col>
 </template>
 
 <script>
 import TabDataPreview from "./TabDataPreview";
-import ChartEdit from "../../chart/view/ChartEdit";
+import UpdateInfo from "./UpdateInfo";
 
 export default {
   name: "ViewTable",
-  components: {ChartEdit, TabDataPreview},
+  components: {UpdateInfo, TabDataPreview},
   data() {
     return {
       createViewDialog: false,

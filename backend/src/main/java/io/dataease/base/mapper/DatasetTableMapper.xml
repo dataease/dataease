@@ -7,6 +7,7 @@
     <result column="scene_id" jdbcType="VARCHAR" property="sceneId" />
     <result column="data_source_id" jdbcType="VARCHAR" property="dataSourceId" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="mode" jdbcType="INTEGER" property="mode" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
   </resultMap>
@@ -72,7 +73,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, scene_id, data_source_id, `type`, create_by, create_time
+    id, `name`, scene_id, data_source_id, `type`, `mode`, create_by, create_time
   </sql>
   <sql id="Blob_Column_List">
     info
@@ -127,11 +128,13 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTable">
     insert into dataset_table (id, `name`, scene_id, 
-      data_source_id, `type`, create_by, 
-      create_time, info)
+      data_source_id, `type`, `mode`, 
+      create_by, create_time, info
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
-      #{dataSourceId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{info,jdbcType=LONGVARCHAR})
+      #{dataSourceId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{mode,jdbcType=INTEGER}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{info,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTable">
     insert into dataset_table
@@ -150,6 +153,9 @@
       </if>
       <if test="type != null">
         `type`,
+      </if>
+      <if test="mode != null">
+        `mode`,
       </if>
       <if test="createBy != null">
         create_by,
@@ -176,6 +182,9 @@
       </if>
       <if test="type != null">
         #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="mode != null">
+        #{mode,jdbcType=INTEGER},
       </if>
       <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
@@ -212,6 +221,9 @@
       <if test="record.type != null">
         `type` = #{record.type,jdbcType=VARCHAR},
       </if>
+      <if test="record.mode != null">
+        `mode` = #{record.mode,jdbcType=INTEGER},
+      </if>
       <if test="record.createBy != null">
         create_by = #{record.createBy,jdbcType=VARCHAR},
       </if>
@@ -233,6 +245,7 @@
       scene_id = #{record.sceneId,jdbcType=VARCHAR},
       data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      `mode` = #{record.mode,jdbcType=INTEGER},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       info = #{record.info,jdbcType=LONGVARCHAR}
@@ -247,6 +260,7 @@
       scene_id = #{record.sceneId,jdbcType=VARCHAR},
       data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      `mode` = #{record.mode,jdbcType=INTEGER},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT}
     <if test="_parameter != null">
@@ -268,6 +282,9 @@
       <if test="type != null">
         `type` = #{type,jdbcType=VARCHAR},
       </if>
+      <if test="mode != null">
+        `mode` = #{mode,jdbcType=INTEGER},
+      </if>
       <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
       </if>
@@ -286,6 +303,7 @@
       scene_id = #{sceneId,jdbcType=VARCHAR},
       data_source_id = #{dataSourceId,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      `mode` = #{mode,jdbcType=INTEGER},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       info = #{info,jdbcType=LONGVARCHAR}
@@ -297,6 +315,7 @@
       scene_id = #{sceneId,jdbcType=VARCHAR},
       data_source_id = #{dataSourceId,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      `mode` = #{mode,jdbcType=INTEGER},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=VARCHAR}

@@ -1621,7 +1621,13 @@ export default {
     join_view: '关联视图',
     text: '文本',
     time: '时间',
-    value: '数值'
+    value: '数值',
+    mode:'模式',
+    direct_connect:'直连',
+    sync_data:'定时同步',
+    update_setting:'更新设置',
+    sync_now:'立即更新',
+    add_task:'添加任务'
   },
   datasource: {
     create: '新建数据连接',

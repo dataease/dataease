@@ -1600,6 +1600,12 @@ export default {
     join_view: 'Relation View',
     text: 'Text',
     time: 'Time',
-    value: 'Value'
+    value: 'Value',
+    mode:'Mode',
+    direct_connect:'Direct',
+    sync_data:'Sync',
+    update_setting:'Config',
+    sync_now:'Sync Now',
+    add_task:'Add Task'
   }
 };
