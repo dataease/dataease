@@ -103,7 +103,7 @@
                 group="itxst"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;"
                 @end="end3"
               >
                 <transition-group style="width: 100%;height: 100%;">
@@ -127,7 +127,7 @@
                 group="itxst"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;"
                 @end="end4"
               >
                 <transition-group style="width:100%;height: 100%;">
@@ -409,6 +409,6 @@ export default {
   }
 
   span {
-    font-size: 14px;
+    font-size: 12px;
   }
 </style>
