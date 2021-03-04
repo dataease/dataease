@@ -14,6 +14,8 @@ const getters = {
   addRouters: state => state.permission.addRouters,
   errorLogs: state => state.errorLog.logs,
   sceneData: state => state.dataset.sceneData,
-  table: state => state.dataset.table
+  table: state => state.dataset.table,
+  loadingMap: state => state.request.loadingMap,
+  currentPath: state => state.permission.currentPath
 }
 export default getters

@@ -31,6 +31,7 @@ router.beforeEach(async(to, from, next) => {
       const hasGetUserInfo = store.getters.name
       if (hasGetUserInfo) {
         next()
+        store.dispatch('permission/setCurrentPath', to.path)
       } else {
         if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
           // get user info

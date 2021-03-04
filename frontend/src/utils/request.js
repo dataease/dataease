@@ -5,6 +5,9 @@ import { $alert, $error } from './message'
 import { getToken } from '@/utils/auth'
 import Config from '@/settings'
 
+import { tryShowLoading, tryHideLoading } from './loading'
+// import router from '@/router'
+
 const TokenKey = Config.TokenKey
 // create an axios instance
 const service = axios.create({
@@ -24,6 +27,10 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers[TokenKey] = getToken()
     }
+    // 增加loading
+
+    config.loading && tryShowLoading(store.getters.currentPath)
+
     return config
   },
   error => {
@@ -97,6 +104,7 @@ service.interceptors.response.use(
 */
 // 请根据实际需求修改
 service.interceptors.response.use(response => {
+  response.config.loading && tryHideLoading(store.getters.currentPath)
   checkAuth(response)
   return response.data
 }, error => {

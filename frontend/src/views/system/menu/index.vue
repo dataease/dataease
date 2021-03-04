@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="result.loading">
+  <div v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <el-card class="table-card">
       <template v-slot:header>

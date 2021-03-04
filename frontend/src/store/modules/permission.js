@@ -2,6 +2,7 @@ import { constantRoutes } from '@/router'
 import Layout from '@/layout/index'
 
 const state = {
+  currentPath: null,
   routes: [],
   addRoutes: [],
   currentRoutes: {}
@@ -14,12 +15,18 @@ const mutations = {
   },
   SET_CURRENT_ROUTES: (state, routes) => {
     state.currentRoutes = routes
+  },
+  SET_CURRENT_PATH: (state, path) => {
+    state.currentPath = path
   }
 }
 
 const actions = {
   GenerateRoutes({ commit }, asyncRouter) {
     commit('SET_ROUTERS', asyncRouter)
+  },
+  setCurrentPath({ commit }, path) {
+    commit('SET_CURRENT_PATH', path)
   }
 }
 

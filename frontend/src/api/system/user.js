@@ -11,7 +11,8 @@ export function userLists(page, size, data) {
   return request({
     url: pathMap.queryPath + page + '/' + size,
     method: 'post',
-    data
+    data,
+    loading: true
   })
 }
 

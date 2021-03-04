@@ -106,6 +106,7 @@ export default {
       'permission_routes'
     ])
   },
+
   mounted() {
     this.initCurrentRoutes()
   },
@@ -190,6 +191,7 @@ export default {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
+
   }
 }
 </script>

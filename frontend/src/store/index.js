@@ -7,7 +7,7 @@ import user from './modules/user'
 import permission from './modules/permission'
 import dataset from './modules/dataset'
 import chart from './modules/chart'
-
+import request from './modules/request'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -17,7 +17,8 @@ const store = new Vuex.Store({
     user,
     permission,
     dataset,
-    chart
+    chart,
+    request
   },
   getters
 })

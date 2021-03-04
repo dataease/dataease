@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="result.loading">
+  <div v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <el-card class="table-card">
       <template v-slot:header>
@@ -181,6 +181,7 @@ import { allRoles } from '@/api/system/role'
 import { getDeptTree } from '@/api/system/dept'
 export default {
   name: 'MsUser',
+
   components: {
     // MsCreateBox,
     MsTablePagination,
@@ -276,11 +277,13 @@ export default {
       formType: 'add'
     }
   },
+
   activated() {
     // this.form = Object.assign({}, this.defaultForm);
     this.allRoles()
     this.search()
   },
+
   methods: {
     create() {
       this.formType = 'add'
