@@ -1,5 +1,5 @@
 <template>
-  <ms-container>
+  <ms-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <ms-aside-container>
       <group @switchComponent="switchComponent"/>

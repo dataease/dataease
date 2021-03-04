@@ -96,8 +96,8 @@
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <el-row style="margin-top: 10px;">
-            <el-row style="display:flex;height: 30px;">
-              <span style="line-height: 30px;width: 60px;text-align: right;">{{ $t('chart.x_axis') }}</span>
+            <el-row style="display:flex;height: 32px;">
+              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.x_axis') }}</span>
               <draggable
                 v-model="view.xaxis"
                 group="itxst"
@@ -120,8 +120,8 @@
                 </transition-group>
               </draggable>
             </el-row>
-            <el-row style="display:flex;height: 30px;margin-top: 10px;">
-              <span style="line-height: 30px;width: 60px;text-align: right;">{{ $t('chart.y_axis') }}</span>
+            <el-row style="display:flex;height: 32px;margin-top: 10px;">
+              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.y_axis') }}</span>
               <draggable
                 v-model="view.yaxis"
                 group="itxst"

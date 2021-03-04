@@ -4,6 +4,7 @@ export function post(url, data) {
   return request({
     url: url,
     method: 'post',
+    loading: true,
     data
   })
 }

@@ -32,3 +32,36 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
+DROP TABLE IF EXISTS `dataset_table_task`;
+CREATE TABLE IF NOT EXISTS `dataset_table_task`
+(
+    `id`          varchar(50)  NOT NULL COMMENT 'ID',
+    `table_id`    varchar(50)  NOT NULL COMMENT '表ID',
+    `name`        varchar(255) NOT NULL COMMENT '任务名称',
+    `type`        varchar(50)  NOT NULL COMMENT '更新方式：0-全量更新 1-增量更新',
+    `start_time`  bigint(13) COMMENT '开始时间',
+    `rate`        varchar(50)  NOT NULL COMMENT '执行频率',
+    `cron`        varchar(255) COMMENT 'cron表达式',
+    `end`         varchar(50)  NOT NULL COMMENT '结束限制',
+    `end_time`    bigint(13) COMMENT '结束时间',
+    `create_time` bigint(13) COMMENT '创建时间',
+    PRIMARY KEY (`id`),
+    KEY `IDX_TABLE_ID` (`table_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+DROP TABLE IF EXISTS `dataset_table_task_log`;
+CREATE TABLE IF NOT EXISTS `dataset_table_task_log`
+(
+    `id`          varchar(50) NOT NULL COMMENT 'ID',
+    `table_id`    varchar(50)  NOT NULL COMMENT '表ID',
+    `task_id`     varchar(50) NOT NULL COMMENT '任务ID',
+    `start_time`  bigint(13) COMMENT '开始时间',
+    `end_time`    bigint(13) COMMENT '结束时间',
+    `status`      varchar(50) NOT NULL COMMENT '执行状态',
+    `info`        varchar(255) COMMENT '执行内容',
+    `create_time` bigint(13) COMMENT '创建时间',
+    PRIMARY KEY (`id`),
+    KEY `IDX_TABLE_ID` (`task_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;

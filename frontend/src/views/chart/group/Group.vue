@@ -240,12 +240,12 @@ export default {
       },
       groupFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
         ]
       },
       tableFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
         ]
       },
       selectTableFlag: false,
@@ -328,7 +328,7 @@ export default {
           post('/chart/group/save', group).then(response => {
             this.close()
             this.$message({
-              message: this.$t('commons.save_success'),
+              message: this.$t('dataset.save_success'),
               type: 'success',
               showClose: true
             })
@@ -351,7 +351,7 @@ export default {
           post('/chart/view/save', view).then(response => {
             this.closeTable()
             this.$message({
-              message: this.$t('commons.save_success'),
+              message: this.$t('dataset.save_success'),
               type: 'success',
               showClose: true
             })
