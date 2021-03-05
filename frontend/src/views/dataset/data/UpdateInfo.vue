@@ -90,7 +90,7 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="taskForm.rate === '1'" label="">
-              <el-input v-model="taskForm.cron" size="mini" style="width: 50%"/>
+              <el-input v-model="taskForm.cron" size="mini" style="width: 50%" />
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
               <el-select v-model="taskForm.end" size="mini" :disabled="taskForm.rate === '0'">
@@ -157,13 +157,15 @@
                 type="primary"
                 icon="el-icon-edit"
                 circle
-                @click="addTask(scope.row)"/>
+                @click="addTask(scope.row)"
+              />
               <el-button
                 size="mini"
                 type="danger"
                 icon="el-icon-delete"
                 circle
-                @click="deleteTask(scope.row)"/>
+                @click="deleteTask(scope.row)"
+              />
             </template>
           </el-table-column>
         </el-table>
@@ -184,7 +186,10 @@ import { post } from '@/api/dataset/dataset'
 export default {
   name: 'UpdateInfo',
   props: {
-    table: Object
+    table: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {
