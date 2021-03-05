@@ -78,7 +78,7 @@
               />
             </el-form-item>
             <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
-              <el-select v-model="taskForm.rate" size="mini">
+              <el-select v-model="taskForm.rate" size="mini" @change="onRateChange">
                 <el-option
                   :label="$t('dataset.execute_once')"
                   value="0"
@@ -93,7 +93,7 @@
               <el-input v-model="taskForm.cron" size="mini" style="width: 50%"/>
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
-              <el-select v-model="taskForm.end" size="mini">
+              <el-select v-model="taskForm.end" size="mini" :disabled="taskForm.rate === '0'">
                 <el-option
                   :label="$t('dataset.no_limit')"
                   value="0"
@@ -306,6 +306,11 @@ export default {
     closeTask() {
       this.update_task = false
       this.resetTaskForm()
+    },
+    onRateChange() {
+      if (this.taskForm.rate === '0') {
+        this.taskForm.end = '0'
+      }
     },
     resetTaskForm() {
       this.taskForm = {

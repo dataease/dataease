@@ -18,7 +18,7 @@ public class DataSetTableTaskController {
     private DataSetTableTaskService dataSetTableTaskService;
 
     @PostMapping("save")
-    public DatasetTableTask save(@RequestBody DatasetTableTask datasetTableTask) {
+    public DatasetTableTask save(@RequestBody DatasetTableTask datasetTableTask) throws Exception {
         return dataSetTableTaskService.save(datasetTableTask);
     }
 

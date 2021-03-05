@@ -5,6 +5,7 @@ import org.quartz.*;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class ScheduleManager {
      * @param cron
      * @param jobDataMap
      */
-    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, JobDataMap jobDataMap) {
+    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime, JobDataMap jobDataMap) {
         try {
 
             LogUtil.info("addCronJob: " + triggerKey.getName() + "," + triggerKey.getGroup());
@@ -72,7 +73,11 @@ public class ScheduleManager {
 
             triggerBuilder.withIdentity(triggerKey);
 
-            triggerBuilder.startNow();
+            triggerBuilder.startAt(startTime);
+
+            if (endTime != null) {
+                triggerBuilder.endAt(endTime);
+            }
 
             triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cron));
 
@@ -86,8 +91,38 @@ public class ScheduleManager {
         }
     }
 
-    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron) {
-        addCronJob(jobKey, triggerKey, jobClass, cron, null);
+    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime) {
+        addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, null);
+    }
+
+    public void addSingleJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, Date date, JobDataMap jobDataMap) {
+        try {
+            LogUtil.info("addSingleJob: " + triggerKey.getName() + "," + triggerKey.getGroup());
+
+            JobBuilder jobBuilder = JobBuilder.newJob(jobClass).withIdentity(jobKey);
+            if (jobDataMap != null) {
+                jobBuilder.usingJobData(jobDataMap);
+            }
+            JobDetail jobDetail = jobBuilder.build();
+
+            TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();
+
+            triggerBuilder.withIdentity(triggerKey);
+
+            triggerBuilder.startAt(date);
+
+            Trigger trigger = triggerBuilder.build();
+
+            scheduler.scheduleJob(jobDetail, trigger);
+
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addSingleJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, Date date) {
+        addSingleJob(jobKey, triggerKey, jobClass, date, null);
     }
 
     /**
@@ -97,7 +132,7 @@ public class ScheduleManager {
      * @param cron
      * @throws SchedulerException
      */
-    public void modifyCronJobTime(TriggerKey triggerKey, String cron) throws SchedulerException {
+    public void modifyCronJobTime(TriggerKey triggerKey, String cron, Date startTime, Date endTime) throws SchedulerException {
 
         LogUtil.info("modifyCronJobTime: " + triggerKey.getName() + "," + triggerKey.getGroup());
 
@@ -108,31 +143,31 @@ public class ScheduleManager {
                 return;
             }
 
-            String oldTime = trigger.getCronExpression();
 
-            if (!oldTime.equalsIgnoreCase(cron)) {
+            /** 方式一 ：调用 rescheduleJob 开始 */
+            TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();// 触发器
 
-                /** 方式一 ：调用 rescheduleJob 开始 */
-                TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();// 触发器
+            triggerBuilder.withIdentity(triggerKey);// 触发器名,触发器组
 
-                triggerBuilder.withIdentity(triggerKey);// 触发器名,触发器组
+            triggerBuilder.startAt(startTime);
 
-                triggerBuilder.startNow();// 立即执行
-
-                triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cron));// 触发器时间设定
-
-                trigger = (CronTrigger) triggerBuilder.build();// 创建Trigger对象
-
-                scheduler.rescheduleJob(triggerKey, trigger);// 修改一个任务的触发时间
-                /** 方式一 ：调用 rescheduleJob 结束 */
-
-                /** 方式二：先删除，然后在创建一个新的Job */
-                // JobDetail jobDetail = sched.getJobDetail(JobKey.jobKey(jobName, jobGroupName));
-                // Class<? extends Job> jobClass = jobDetail.getJobClass();
-                // removeJob(jobName, jobGroupName, triggerName, triggerGroupName);
-                // addJob(jobName, jobGroupName, triggerName, triggerGroupName, jobClass, cron);
-                /** 方式二 ：先删除，然后在创建一个新的Job */
+            if (endTime != null) {
+                triggerBuilder.endAt(endTime);
             }
+
+            triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cron));// 触发器时间设定
+
+            trigger = (CronTrigger) triggerBuilder.build();// 创建Trigger对象
+
+            scheduler.rescheduleJob(triggerKey, trigger);// 修改一个任务的触发时间
+            /** 方式一 ：调用 rescheduleJob 结束 */
+
+            /** 方式二：先删除，然后在创建一个新的Job */
+            // JobDetail jobDetail = sched.getJobDetail(JobKey.jobKey(jobName, jobGroupName));
+            // Class<? extends Job> jobClass = jobDetail.getJobClass();
+            // removeJob(jobName, jobGroupName, triggerName, triggerGroupName);
+            // addJob(jobName, jobGroupName, triggerName, triggerGroupName, jobClass, cron);
+            /** 方式二 ：先删除，然后在创建一个新的Job */
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -184,6 +219,38 @@ public class ScheduleManager {
                 /** 方式二 ：先删除，然后在创建一个新的Job */
             }
 
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void modifySingleJobTime(TriggerKey triggerKey, Date date) throws SchedulerException {
+
+        try {
+
+            LogUtil.info("modifySingleJobTime: " + triggerKey.getName() + "," + triggerKey.getGroup());
+
+            Trigger trigger = scheduler.getTrigger(triggerKey);
+
+            if (trigger == null) {
+                return;
+            }
+
+            Date oldTime = trigger.getStartTime();
+
+            if (oldTime.getTime() != date.getTime()) {
+
+                TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();// 触发器builder
+
+                triggerBuilder.withIdentity(triggerKey);// 触发器名,触发器组
+
+                triggerBuilder.startAt(date);
+
+                trigger = triggerBuilder.build();// 创建Trigger对象
+
+                scheduler.rescheduleJob(triggerKey, trigger);// 修改一个任务的触发时间
+            }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             throw new RuntimeException(e);
@@ -257,6 +324,21 @@ public class ScheduleManager {
 
     }
 
+    public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
+                                     Date date, JobDataMap jobDataMap) throws SchedulerException {
+        if (scheduler.checkExists(triggerKey)) {
+            modifySingleJobTime(triggerKey, date);
+        } else {
+            addSingleJob(jobKey, triggerKey, clz, date, jobDataMap);
+        }
+
+    }
+
+    public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
+                                     Date date) throws SchedulerException {
+        addOrUpdateSingleJob(jobKey, triggerKey, clz, date, null);
+    }
+
     public void addOrUpdateSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class clz, int intervalTime) throws SchedulerException {
         addOrUpdateSimpleJob(jobKey, triggerKey, clz, intervalTime, null);
     }
@@ -272,19 +354,19 @@ public class ScheduleManager {
      * @param jobDataMap
      * @throws SchedulerException
      */
-    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, JobDataMap jobDataMap) throws SchedulerException {
+    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime, JobDataMap jobDataMap) throws SchedulerException {
 
         LogUtil.info("AddOrUpdateCronJob: " + jobKey.getName() + "," + triggerKey.getGroup());
 
         if (scheduler.checkExists(triggerKey)) {
-            modifyCronJobTime(triggerKey, cron);
+            modifyCronJobTime(triggerKey, cron, startTime, endTime);
         } else {
-            addCronJob(jobKey, triggerKey, jobClass, cron, jobDataMap);
+            addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, jobDataMap);
         }
     }
 
-    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron) throws SchedulerException {
-        addOrUpdateCronJob(jobKey, triggerKey, jobClass, cron, null);
+    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime) throws SchedulerException {
+        addOrUpdateCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, null);
     }
 
     public JobDataMap getDefaultJobDataMap(String resourceId, String expression, String userId) {
@@ -295,7 +377,7 @@ public class ScheduleManager {
         return jobDataMap;
     }
 
-    public Object getCurrentlyExecutingJobs(){
+    public Object getCurrentlyExecutingJobs() {
         Map<String, String> returnMap = new HashMap<>();
         try {
             List<JobExecutionContext> currentJobs = scheduler.getCurrentlyExecutingJobs();
@@ -306,7 +388,7 @@ public class ScheduleManager {
                 returnMap.put("jobName", jobName);
                 returnMap.put("groupName", groupName);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
