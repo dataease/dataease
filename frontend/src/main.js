@@ -14,11 +14,12 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-
 import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import message from '@/metersphere/common/js/message'
 import { left2RightDrag, bottom2TopDrag, right2LeftDrag } from '@/metersphere/common/js/directive'
+import directives from './directive'
+
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'
@@ -50,11 +51,13 @@ Vue.use(Fit2CloudUI, {
 })
 Vue.use(filter)
 Vue.use(message)
+Vue.use(directives)
 Vue.config.productionTip = false
 // 支持左右拖拽
 Vue.directive('left-to-right-drag', left2RightDrag)
 Vue.directive('right-to-left-drag', right2LeftDrag)
 Vue.directive('bottom-to-top-drag', bottom2TopDrag)
+
 new Vue({
   el: '#app',
   router,

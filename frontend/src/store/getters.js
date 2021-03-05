@@ -16,6 +16,7 @@ const getters = {
   sceneData: state => state.dataset.sceneData,
   table: state => state.dataset.table,
   loadingMap: state => state.request.loadingMap,
-  currentPath: state => state.permission.currentPath
+  currentPath: state => state.permission.currentPath,
+  permissions: state => state.user.permissions
 }
 export default getters

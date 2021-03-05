@@ -21,6 +21,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
     @Override
     public List<DynamicMenuDto> load(String userId) {
         SysMenuExample sysMenuExample = new SysMenuExample();
+        sysMenuExample.createCriteria().andTypeLessThanOrEqualTo(1);
         sysMenuExample.setOrderByClause(" menu_sort ");
         List<SysMenu> sysMenus = sysMenuMapper.selectByExample(sysMenuExample);
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
@@ -40,6 +41,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         menuMeta.setTitle(sysMenu.getTitle());
         menuMeta.setIcon(sysMenu.getIcon());
         dynamicMenuDto.setMeta(menuMeta);
+        dynamicMenuDto.setPermission(sysMenu.getPermission());
         return dynamicMenuDto;
     }
 

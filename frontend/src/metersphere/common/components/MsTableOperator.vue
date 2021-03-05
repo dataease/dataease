@@ -1,9 +1,9 @@
 <template>
   <span>
     <slot name="front" />
-    <ms-table-operator-button :is-tester-permission="isTesterPermission" :tip="tip1" icon="el-icon-edit" @exec="editClick" @click.stop="editClickStop" />
+    <ms-table-operator-button v-permission="permission.edit" :is-tester-permission="isTesterPermission" :tip="tip1" icon="el-icon-edit" @exec="editClick" @click.stop="editClickStop" />
     <slot name="middle" />
-    <ms-table-operator-button :is-tester-permission="isTesterPermission" :tip="tip2" icon="el-icon-delete" type="danger" @exec="deleteClick" @click.stop="deleteClickStop" />
+    <ms-table-operator-button v-permission="permission.del" :is-tester-permission="isTesterPermission" :tip="tip2" icon="el-icon-delete" type="danger" @exec="deleteClick" @click.stop="deleteClickStop" />
     <slot name="behind" />
   </span>
 
@@ -30,6 +30,16 @@ export default {
     isTesterPermission: {
       type: Boolean,
       default: false
+    },
+    permission: {
+      type: Object,
+      default() {
+        return {
+
+          edit: [],
+          del: []
+        }
+      }
     }
   },
   methods: {

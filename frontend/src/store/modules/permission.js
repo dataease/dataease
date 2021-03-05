@@ -47,7 +47,7 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
   }).map(router => {
     router.hasOwnProperty('id') && delete router.id
     router.hasOwnProperty('pid') && delete router.pid
-    router.hasOwnProperty('children') && !router['children'] && delete router.children
+    router.hasOwnProperty('children') && (!router['children'] || !router['children'].length) && delete router.children
     router.hasOwnProperty('redirect') && !router['redirect'] && delete router.redirect
     return router
   })

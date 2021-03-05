@@ -10,7 +10,9 @@ const getDefaultState = () => {
     roles: [],
     avatar: '',
     // 第一次加载菜单时用到
-    loadMenus: false
+    loadMenus: false,
+    // 当前用户拥有哪些资源权限
+    permissions: []
   }
 }
 
@@ -37,6 +39,9 @@ const mutations = {
   },
   SET_LOAD_MENUS: (state, loadMenus) => {
     state.loadMenus = loadMenus
+  },
+  SET_PERMISSIONS: (state, permissions) => {
+    state.permissions = permissions
   }
 }
 
@@ -68,12 +73,13 @@ const actions = {
         const currentUser = data
         commit('SET_USER', currentUser)
 
-        const roles = data.roles
+        const { roles, nickName, permissions } = data
         commit('SET_ROLES', roles)
 
-        const { nickName } = data
         commit('SET_NAME', nickName)
         // commit('SET_AVATAR', avatar)
+
+        commit('SET_PERMISSIONS', permissions)
         resolve(data)
       }).catch(error => {
         reject(error)

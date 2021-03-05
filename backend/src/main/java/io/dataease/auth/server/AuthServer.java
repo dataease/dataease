@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +58,9 @@ public class AuthServer implements AuthApi {
         SysUserEntity user = authUserService.getUser(username);
         CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
         List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
+        List<String> permissions = authUserService.permissions(user.getUserId());
         currentUserDto.setRoles(currentRoleDtos);
+        currentUserDto.setPermissions(permissions);
         return currentUserDto;
     }
 

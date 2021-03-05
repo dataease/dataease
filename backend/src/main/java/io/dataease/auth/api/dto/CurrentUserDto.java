@@ -12,4 +12,6 @@ import java.util.List;
 public class CurrentUserDto extends SysUserEntity implements Serializable {
 
     private List<CurrentRoleDto> roles;
+
+    private List<String> permissions;
 }

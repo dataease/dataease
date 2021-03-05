@@ -4,6 +4,7 @@
     <el-card class="table-card">
       <template v-slot:header>
         <ms-table-header
+          :permission="permission"
           :condition.sync="condition"
           :create-tip="$t('menu.create')"
           :title="$t('commons.menu')"
@@ -58,9 +59,9 @@
 
         <el-table-column :label="$t('commons.operating')">
           <template v-slot:default="scope">
-            <ms-table-operator @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
+            <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
 
     </el-card>
@@ -210,6 +211,11 @@ export default {
         description: [
           { max: 50, message: this.$t('commons.input_limit', [0, 50]), trigger: 'blur' }
         ]
+      },
+      permission: {
+        add: ['menu:add'],
+        edit: ['menu:edit'],
+        del: ['menu:del']
       }
 
     }
@@ -220,6 +226,7 @@ export default {
   },
   methods: {
     create() {
+      this.form = Object.assign({}, this.defaultForm)
       this.dialogVisible = true
       this.formType = 'add'
       listenGoBack(this.closeFunc)

@@ -4,6 +4,7 @@
     <el-card class="table-card">
       <template v-slot:header>
         <ms-table-header
+          :permission="permission"
           :condition.sync="condition"
           :create-tip="$t('user.create')"
           :title="$t('commons.user')"
@@ -38,7 +39,7 @@
         <!-- <el-table-column prop="source" :label="$t('user.source')"/> -->
         <el-table-column :label="$t('commons.operating')" min-width="120px">
           <template v-slot:default="scope">
-            <ms-table-operator @editClick="edit(scope.row)" @deleteClick="del(scope.row)">
+            <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="del(scope.row)">
               <template v-slot:behind>
                 <ms-table-operator-button
                   v-if="scope.row.isLocalUser"
@@ -274,7 +275,12 @@ export default {
       roles: [],
       roleDatas: [],
       userRoles: [],
-      formType: 'add'
+      formType: 'add',
+      permission: {
+        add: ['user:add'],
+        edit: ['user:edit'],
+        del: ['user:del']
+      }
     }
   },
 

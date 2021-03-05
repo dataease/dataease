@@ -10,6 +10,7 @@
       <span class="operate-button">
         <ms-table-button
           v-if="showCreate"
+          v-permission="permission.add"
           :is-tester-permission="isTesterPermission"
           icon="el-icon-circle-plus-outline"
           :content="createTip"
@@ -67,7 +68,8 @@ export default {
       default: false
     },
     condition: {
-      type: Object
+      type: Object,
+      default: null
     },
     createTip: {
       type: String,
@@ -76,7 +78,8 @@ export default {
       }
     },
     runTip: {
-      type: String
+      type: String,
+      default: null
 
     },
 
@@ -85,9 +88,17 @@ export default {
       default: false
     },
     tip: {
-      String,
+      type: String,
       default() {
         return this.$t('commons.search_by_name')
+      }
+    },
+    permission: {
+      type: Object,
+      default() {
+        return {
+          add: []
+        }
       }
     }
   },

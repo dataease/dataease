@@ -4,7 +4,7 @@
       <el-aside width="70%" style="border: 1px solid #eee">
         <el-card class="table-card">
           <template v-slot:header>
-            <ms-table-header :condition.sync="condition" :create-tip="$t('role.add')" :title="$t('commons.role')" @search="search" @create="create" />
+            <ms-table-header :permission="permission" :condition.sync="condition" :create-tip="$t('role.add')" :title="$t('commons.role')" @search="search" @create="create" />
           </template>
           <el-table border highlight-current-row class="adjust-table" :data="tableData" style="width: 100%;" @row-click="rowClick">
 
@@ -16,7 +16,7 @@
             </el-table-column>
             <el-table-column :label="$t('commons.operating')">
               <template v-slot:default="scope">
-                <ms-table-operator @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
+                <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
               </template>
             </el-table-column>
           </el-table>
@@ -121,7 +121,12 @@ export default {
           { required: true, message: '请输入名称', trigger: 'blur' }
         ]
       },
-      currentRow: null
+      currentRow: null,
+      permission: {
+        add: ['role:add'],
+        edit: ['role:edit'],
+        del: ['role:del']
+      }
     }
   },
   watch: {

@@ -4,6 +4,7 @@
     <el-card class="table-card">
       <template v-slot:header>
         <ms-table-header
+          :permission="permission"
           :condition.sync="condition"
           :create-tip="$t('organization.create')"
           :title="$t('commons.organization')"
@@ -45,7 +46,7 @@
 
         <el-table-column :label="$t('commons.operating')">
           <template v-slot:default="scope">
-            <ms-table-operator @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
+            <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
           </template>
         </el-table-column> -->
       </el-table>
@@ -167,6 +168,11 @@ export default {
         description: [
           { max: 50, message: this.$t('commons.input_limit', [0, 50]), trigger: 'blur' }
         ]
+      },
+      permission: {
+        add: ['dept:add'],
+        edit: ['dept:edit'],
+        del: ['dept:del']
       }
 
     }

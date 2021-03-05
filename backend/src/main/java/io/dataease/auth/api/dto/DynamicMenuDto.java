@@ -23,6 +23,8 @@ public class DynamicMenuDto implements Serializable {
 
     private Long id;
 
+    private String permission;
+
     private List<DynamicMenuDto> children;
 
 }
