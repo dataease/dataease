@@ -3,15 +3,11 @@ package io.dataease.service.dataset;
 import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskExample;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
-import io.dataease.job.sechedule.ScheduleManager;
-import io.dataease.job.sechedule.TestJob;
+import io.dataease.service.ScheduleService;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.JobKey;
-import org.quartz.TriggerKey;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +21,7 @@ public class DataSetTableTaskService {
     private DatasetTableTaskMapper datasetTableTaskMapper;
 
     @Resource
-    private ScheduleManager scheduleManager;
+    private ScheduleService scheduleService;
 
     public DatasetTableTask save(DatasetTableTask datasetTableTask) throws Exception {
         if (StringUtils.isEmpty(datasetTableTask.getId())) {
@@ -35,32 +31,14 @@ public class DataSetTableTaskService {
         } else {
             datasetTableTaskMapper.updateByPrimaryKey(datasetTableTask);
         }
-
-        if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), "0")) {
-            scheduleManager.addOrUpdateSingleJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
-                    new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
-                    TestJob.class,
-                    new Date(datasetTableTask.getStartTime()));
-        } else if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), "1")) {
-            Date endTime;
-            if (datasetTableTask.getEndTime() == null || datasetTableTask.getEndTime() == 0) {
-                endTime = null;
-            } else {
-                endTime = new Date(datasetTableTask.getEndTime());
-            }
-
-            scheduleManager.addOrUpdateCronJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
-                    new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
-                    TestJob.class,
-                    datasetTableTask.getCron(), new Date(datasetTableTask.getStartTime()), endTime);
-        }
+        scheduleService.addSchedule(datasetTableTask);
         return datasetTableTask;
     }
 
     public void delete(String id) {
         DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(id);
         datasetTableTaskMapper.deleteByPrimaryKey(id);
-        scheduleManager.removeJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()), new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()));
+        scheduleService.deleteSchedule(datasetTableTask);
     }
 
     public List<DatasetTableTask> list(DatasetTableTask datasetTableTask) {
