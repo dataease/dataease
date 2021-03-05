@@ -9,6 +9,7 @@
           <el-table border highlight-current-row class="adjust-table" :data="tableData" style="width: 100%;" @row-click="rowClick">
 
             <el-table-column prop="name" label="名称" />
+            <el-table-column prop="code" label="代码" />
             <el-table-column :show-overflow-tooltip="true" prop="createTime" label="创建日期">
               <template v-slot:default="scope">
                 <span>{{ scope.row.createTime | timestampFormatDate }}</span>
@@ -58,6 +59,10 @@
           <el-input v-model="form.name" style="width: 380px;" />
         </el-form-item>
 
+        <el-form-item label="角色代码" prop="code">
+          <el-input v-model="form.code" style="width: 380px;" />
+        </el-form-item>
+
         <el-form-item label="描述信息" prop="description">
           <el-input v-model="form.description" style="width: 380px;" rows="5" type="textarea" />
         </el-form-item>
@@ -83,7 +88,7 @@ import {
   listenGoBack,
   removeGoBackListener
 } from '@/metersphere/common/js/utils'
-import { addRole, editRole, delRole, roleGrid, addRoleMenus } from '@/api/system/role'
+import { addRole, editRole, delRole, roleGrid, addRoleMenus, menuIds } from '@/api/system/role'
 
 import { getMenusTree, getChild } from '@/api/system/menu'
 export default {
@@ -230,7 +235,11 @@ export default {
       })
     },
     rowClick(row, column, event) {
-      this.currentRow = row
+      menuIds(row.roleId).then(res => {
+        const menuIds = res.data
+        row.menuIds = menuIds
+        this.currentRow = row
+      })
     },
     currentRowChange(newVal, oldVal) {
       if (newVal === oldVal) {

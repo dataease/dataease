@@ -7,6 +7,8 @@ import lombok.Data;
 public class SysRole implements Serializable {
     private Long roleId;
 
+    private String code;
+
     private String name;
 
     private String description;

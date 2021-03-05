@@ -8,7 +8,6 @@ import io.dataease.base.mapper.SysUsersRolesMapper;
 import io.dataease.base.mapper.ext.ExtSysRoleMapper;
 import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.request.RoleMenusRequest;
-import io.dataease.controller.sys.response.RoleNodeResponse;
 import io.dataease.controller.sys.response.RoleUserItem;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +29,7 @@ public class SysRoleService {
 
     @Resource
     private SysUsersRolesMapper sysUsersRolesMapper;
+
 
 
     public int add(SysRole role){
@@ -56,10 +56,14 @@ public class SysRoleService {
     }
 
 
-    public List<RoleNodeResponse> query(RoleGridRequest request){
-        List<RoleNodeResponse> result = extSysRoleMapper.query(request);
+    public List<SysRole> query(RoleGridRequest request){
+        List<SysRole> result = extSysRoleMapper.query(request);
 
         return result;
+    }
+
+    public List<Long> menuIds(Long roleId){
+        return extSysRoleMapper.menuIds(roleId);
     }
 
 

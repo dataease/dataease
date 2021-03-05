@@ -45,4 +45,11 @@ export function addRoleMenus(data) {
     data
   })
 }
-export default { addRole, editRole, delRole, roleGrid, allRoles, addRoleMenus }
+
+export function menuIds(roleId) {
+  return request({
+    url: '/api/role/menuIds/' + roleId,
+    method: 'post'
+  })
+}
+export default { addRole, editRole, delRole, roleGrid, allRoles, addRoleMenus, menuIds }

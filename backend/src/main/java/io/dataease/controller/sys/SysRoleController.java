@@ -8,7 +8,6 @@ import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.request.RoleMenusRequest;
-import io.dataease.controller.sys.response.RoleNodeResponse;
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.service.sys.SysRoleService;
 import io.swagger.annotations.Api;
@@ -50,9 +49,16 @@ public class SysRoleController {
 
     @ApiOperation("查询角色")
     @PostMapping("/roleGrid/{goPage}/{pageSize}")
-    public Pager<List<RoleNodeResponse>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody RoleGridRequest request) {
+    public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody RoleGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        return PageUtils.setPageInfo(page, sysRoleService.query(request));
+        Pager<List<SysRole>> listPager = PageUtils.setPageInfo(page, sysRoleService.query(request));
+        return listPager;
+    }
+
+    @ApiOperation("查询角色对应的菜单ID")
+    @PostMapping("/menuIds/{roleId}")
+    public List<Long> menuIdsByRoleId(@PathVariable("roleId") Long roleId){
+        return sysRoleService.menuIds(roleId);
     }
 
 
