@@ -113,7 +113,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../styles/element-variables";
+@import "../../styles/variables";
 
 @mixin login-center {
   display: flex;

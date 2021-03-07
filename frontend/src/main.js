@@ -4,8 +4,8 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
 import Fit2CloudUI from 'fit2cloud-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import './styles/element-variables.scss'
+// import 'element-ui/lib/theme-chalk/index.css'
+// import './styles/variables.scss'
 import i18n from './lang' // internationalization
 
 import App from './App'

@@ -64,7 +64,7 @@ export default {
 
 <style lang="scss">
 @import "~@/styles/mixin.scss";
-@import "~@/styles/element-variables.scss";
+@import "~@/styles/variables.scss";
 .complex-table {
   .complex-table__header {
     @include flex-row(flex-start, center);

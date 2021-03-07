@@ -10,11 +10,11 @@
   width: 100%;
 }
 
-body {
+/* body {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
   font-size: 14px;
   margin: 0;
-}
+} */
 
 /* 解决 document.body.clientHeight 为0 */
 html,body {

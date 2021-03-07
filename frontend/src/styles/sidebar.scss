@@ -25,6 +25,7 @@
     left: 0;
     z-index: 1001;
     overflow: hidden;
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
 
     // reset element-ui css
     .horizontal-collapse-transition {
@@ -67,6 +68,10 @@
       border: none;
       height: 100%;
       width: 100% !important;
+      
+      .is-active {
+        background-color: $menuHover;
+      }
     }
 
     // menu hover

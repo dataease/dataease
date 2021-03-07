@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "~@/styles/element-variables";
+@import "~@/styles/variables";
 
 .content-container {
   transition: 0.3s;
