@@ -1,8 +1,26 @@
 import request from '@/utils/request'
 
+export function defaultTree(data) {
+  return request({
+    url: '/panel/group/defaultTree',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function groupTree(data) {
+  return request({
+    url: '/panel/group/tree',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function loadTable(data) {
   return request({
-    url: '/dataset/table/list',
+    url: '/panel/table/list',
     method: 'post',
     data
   })
@@ -10,14 +28,14 @@ export function loadTable(data) {
 
 export function getScene(sceneId) {
   return request({
-    url: '/dataset/group/getScene/' + sceneId,
+    url: '/panel/group/getScene/' + sceneId,
     method: 'post'
   })
 }
 
 export function addGroup(data) {
   return request({
-    url: '/dataset/group/save',
+    url: '/panel/group/save',
     method: 'post',
     data
   })
@@ -25,14 +43,14 @@ export function addGroup(data) {
 
 export function delGroup(groupId) {
   return request({
-    url: '/dataset/group/delete/' + groupId,
+    url: '/panel/group/deleteCircle/' + groupId,
     method: 'post'
   })
 }
 
 export function addTable(data) {
   return request({
-    url: '/dataset/table/update',
+    url: '/panel/table/update',
     method: 'post',
     data
   })
@@ -40,16 +58,8 @@ export function addTable(data) {
 
 export function delTable(tableId) {
   return request({
-    url: '/dataset/table/delete/' + tableId,
+    url: '/panel/table/delete/' + tableId,
     method: 'post'
-  })
-}
-
-export function groupTree(data) {
-  return request({
-    url: '/dataset/group/tree',
-    method: 'post',
-    data
   })
 }
 
@@ -62,14 +72,14 @@ export function listDatasource() {
 
 export function getTable(id) {
   return request({
-    url: '/dataset/table/get/' + id,
+    url: '/panel/table/get/' + id,
     method: 'post'
   })
 }
 
 export function getPreviewData(data) {
   return request({
-    url: '/dataset/table/getPreviewData',
+    url: '/panel/table/getPreviewData',
     method: 'post',
     data
   })
@@ -77,14 +87,14 @@ export function getPreviewData(data) {
 
 export function fieldList(id) {
   return request({
-    url: '/dataset/field/list/' + id,
+    url: '/panel/field/list/' + id,
     method: 'post'
   })
 }
 
 export function batchEdit(data) {
   return request({
-    url: '/dataset/field/batchEdit',
+    url: '/panel/field/batchEdit',
     method: 'post',
     data
   })
@@ -98,4 +108,4 @@ export function post(url, data) {
   })
 }
 
-export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree }
+export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree,defaultTree }

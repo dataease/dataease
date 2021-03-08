@@ -34,13 +34,13 @@
   import MsMainContainer from '@/metersphere/common/components/MsMainContainer'
   import MsContainer from '@/metersphere/common/components/MsContainer'
   import MsAsideContainer from '@/metersphere/common/components/MsAsideContainer'
-  import Group from './group/Group'
+  // import Group from './group/Group'
   import PanelList from './list/PanelList'
   import PanelView from './list/PanelView'
 
   export default {
     name: 'Panel',
-    components: {MsMainContainer, MsContainer, MsAsideContainer, Group, PanelList,PanelView},
+    components: {MsMainContainer, MsContainer, MsAsideContainer, PanelList,PanelView},
     data() {
       return {
         component: PanelView,

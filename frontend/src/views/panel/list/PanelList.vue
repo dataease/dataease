@@ -1,13 +1,13 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col>
-    <!-- group -->
-    <el-col v-if="!sceneMode">
+    <!-- panel list -->
+    <el-col>
       <el-row>
         <span class="header-title">默认仪表盘</span>
         <div class="block">
           <el-tree
             :default-expanded-keys="expandedArray"
-            :data="tData"
+            :data="defaultData"
             node-key="id"
             :expand-on-click-node="true"
             @node-click="panelDefaultClick"
@@ -41,17 +41,16 @@
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <span>
-                <span v-if="data.type === 'scene'">
+                <span v-if="data.nodeType === 'panel'">
                   <el-button
-                    icon="el-icon-folder"
+                    icon="el-icon-picture-outline"
                     type="text"
-                    size="mini"
                   />
                 </span>
                 <span style="margin-left: 6px">{{ data.name }}</span>
               </span>
               <span>
-                <span v-if="data.type ==='group'" @click.stop>
+                <span v-if="data.nodeType ==='folder'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickAdd">
                     <span class="el-dropdown-link">
                       <el-button
@@ -61,11 +60,11 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('group',data,node)">
-                        {{ $t('dataset.group') }}
+                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('folder',data,node)">
+                        {{ $t('panel.groupAdd') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">
-                        {{ $t('dataset.scene') }}
+                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('panel',data,node)">
+                        {{ $t('panel.panelAdd') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -81,13 +80,10 @@
                     </span>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
-                        {{ $t('dataset.rename') }}
+                        {{ $t('panel.rename') }}
                       </el-dropdown-item>
-                      <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
-                      <!--                    {{$t('dataset.move_to')}}-->
-                      <!--                  </el-dropdown-item>-->
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
-                        {{ $t('dataset.delete') }}
+                        {{ $t('panel.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -105,138 +101,23 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="close()">{{ $t('dataset.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveGroup(groupForm)">{{ $t('dataset.confirm') }}
+          <el-button size="mini" @click="close()">{{ $t('panel.cancel') }}</el-button>
+          <el-button type="primary" size="mini" @click="saveGroup(groupForm)">{{ $t('panel.confirm') }}
           </el-button>
         </div>
       </el-dialog>
-    </el-col>
-
-    <!--scene-->
-    <el-col v-if="sceneMode">
-      <el-row class="title-css">
-        <span class="title-text">
-          {{ currGroup.name }}
-        </span>
-        <el-button icon="el-icon-back" size="mini" style="float: right" @click="back">
-          {{ $t('dataset.back') }}
-        </el-button>
-      </el-row>
-      <el-divider/>
-      <el-row>
-        <el-dropdown style="margin-right: 10px;" size="small" trigger="click" @command="clickAddData">
-          <el-button type="primary" size="mini" plain>
-            {{ $t('dataset.add_table') }}
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item :command="beforeClickAddData('db')">
-              {{ $t('dataset.db_data') }}
-            </el-dropdown-item>
-            <el-dropdown-item :command="beforeClickAddData('sql')">
-              {{ $t('dataset.sql_data') }}
-            </el-dropdown-item>
-            <el-dropdown-item :command="beforeClickAddData('excel')">
-              {{ $t('dataset.excel_data') }}
-            </el-dropdown-item>
-            <el-dropdown-item :command="beforeClickAddData('custom')">
-              {{ $t('dataset.custom_data') }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <!-- <el-button type="primary" size="mini" plain>
-          {{ $t('dataset.update') }}
-        </el-button>
-        <el-button type="primary" size="mini" plain>
-          {{ $t('dataset.process') }}
-        </el-button> -->
-      </el-row>
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('dataset.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <span v-show="false">{{ sceneData }}</span>
-      <el-tree
-        :data="tableData"
-        node-key="id"
-        :expand-on-click-node="true"
-        @node-click="sceneClick"
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
-          <span>
-            <span>
-              ({{ data.type }})
-            </span>
-            <span>
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation"/></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time"/></span>
-            </span>
-            <span style="margin-left: 6px">{{ data.name }}</span>
-          </span>
-          <span>
-            <span style="margin-left: 12px;" @click.stop>
-              <el-dropdown trigger="click" size="small" @command="clickMore">
-                <span class="el-dropdown-link">
-                  <el-button
-                    icon="el-icon-more"
-                    type="text"
-                    size="small"
-                  />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
-                    {{ $t('dataset.edit') }}
-                  </el-dropdown-item>
-                  <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
-                  <!--                    {{$t('dataset.move_to')}}-->
-                  <!--                  </el-dropdown-item>-->
-                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteTable',data,node)">
-                    {{ $t('dataset.delete') }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-          </span>
-        </span>
-      </el-tree>
-
-      <el-dialog :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
-        <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
-          <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="tableForm.name"/>
-          </el-form-item>
-          <el-form-item :label="$t('dataset.mode')" prop="mode">
-            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>
-            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="closeTable()">{{ $t('dataset.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('dataset.confirm') }}
-          </el-button>
-        </div>
-      </el-dialog>
-
     </el-col>
   </el-col>
 </template>
 
 <script>
-  import {loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree} from '@/api/dataset/dataset'
+  import {loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree,defaultTree} from '@/api/panel/panel'
 
   export default {
     name: 'PanelList',
     data() {
       return {
-        sceneMode: false,
+        defaultData:[],
         dialogTitle: '',
         search: '',
         editGroup: false,
@@ -246,17 +127,17 @@
         currGroup: {},
         expandedArray: [],
         groupForm: {
-          name: '',
+          name: null,
           pid: null,
           level: 0,
-          type: '',
+          nodeType: null,
           children: [],
-          sort: 'type desc,name asc'
+          sort: 'node_type desc,name asc'
         },
         tableForm: {
           name: '',
           mode: '',
-          sort: 'type asc,create_time desc,name asc'
+          sort: 'node_type asc,create_time desc,name asc'
         },
         groupFormRules: {
           name: [
@@ -274,11 +155,6 @@
       }
     },
     computed: {
-      sceneData: function () {
-        console.log(this.$store.state.dataset.sceneData + ' do post')
-        this.tableTree()
-        return this.$store.state.dataset.sceneData
-      }
     },
     watch: {
       // search(val){
@@ -287,6 +163,7 @@
       // }
     },
     mounted() {
+      this.defaultTree()
       this.tree(this.groupForm)
       this.refresh()
       this.tableTree()
@@ -312,7 +189,7 @@
         console.log(param)
         switch (param.type) {
           case 'rename':
-            this.add(param.data.type)
+            this.add(param.data.nodeType)
             this.groupForm = JSON.parse(JSON.stringify(param.data))
             break
           case 'move':
@@ -340,16 +217,16 @@
         }
       },
 
-      add(type) {
-        switch (type) {
-          case 'group':
-            this.dialogTitle = this.$t('dataset.group')
+      add(nodeType) {
+        switch (nodeType) {
+          case 'folder':
+            this.dialogTitle = this.$t('panel.groupAdd')
             break
-          case 'scene':
-            this.dialogTitle = this.$t('dataset.scene')
+          case 'panel':
+            this.dialogTitle = this.$t('panel.panelAdd')
             break
         }
-        this.groupForm.type = type
+        this.groupForm.nodeType = nodeType
         this.editGroup = true
       },
 
@@ -406,15 +283,15 @@
       },
 
       delete(data) {
-        this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
-          confirmButtonText: this.$t('dataset.confirm'),
-          cancelButtonText: this.$t('dataset.cancel'),
+        this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
+          confirmButtonText: this.$t('panel.confirm'),
+          cancelButtonText: this.$t('panel.cancel'),
           type: 'warning'
         }).then(() => {
           delGroup(data.id).then(response => {
             this.$message({
               type: 'success',
-              message: this.$t('dataset.delete_success'),
+              message: this.$t('panel.delete_success'),
               showClose: true
             })
             this.tree(this.groupForm)
@@ -424,15 +301,15 @@
       },
 
       deleteTable(data) {
-        this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
-          confirmButtonText: this.$t('dataset.confirm'),
-          cancelButtonText: this.$t('dataset.cancel'),
+        this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
+          confirmButtonText: this.$t('panel.confirm'),
+          cancelButtonText: this.$t('panel.cancel'),
           type: 'warning'
         }).then(() => {
           delTable(data.id).then(response => {
             this.$message({
               type: 'success',
-              message: this.$t('dataset.delete_success'),
+              message: this.$t('panel.delete_success'),
               showClose: true
             })
             this.tableTree()
@@ -447,12 +324,12 @@
       close() {
         this.editGroup = false
         this.groupForm = {
-          name: '',
+          name: null,
           pid: null,
           level: 0,
-          type: '',
+          nodeType: null,
           children: [],
-          sort: 'type desc,name asc'
+          sort: 'node_type desc,name asc'
         }
       },
 
@@ -466,6 +343,14 @@
       tree(group) {
         groupTree(group).then(res => {
           this.tData = res.data
+        })
+      },
+      defaultTree() {
+        let requestInfo ={
+          panelType: 'system'
+        }
+        defaultTree(requestInfo).then(res => {
+          this.defaultData = res.data
         })
       },
 
@@ -484,7 +369,7 @@
       nodeClick(data, node) {
         // console.log(data);
         // console.log(node);
-        if (data.type === 'scene') {
+        if (data.nodeType === 'panel') {
           this.sceneMode = true
           this.currGroup = data
           this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
@@ -538,6 +423,8 @@
         //   name: 'add_db',
         //   params: {
         //     scene: this.currGroup
+
+
         //   }
         // })
         this.$emit('switchComponent', {name: 'AddDB', param: this.currGroup})
@@ -567,7 +454,6 @@
         }
       },
       panelDefaultClick(data, node) {
-        debugger
         console.log(data);
         console.log(node);
         this.$store.dispatch('panel/setPanelName', data.name)

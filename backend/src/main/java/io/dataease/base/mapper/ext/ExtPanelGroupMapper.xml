@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtPanelGroupMapper">
+
+  <resultMap id="BaseResultMapDTO" type="io.dataease.dto.panel.PanelGroupDTO" extends="io.dataease.base.mapper.PanelGroupMapper.BaseResultMap">
+    <result column="label" jdbcType="VARCHAR" property="label"/>
+  </resultMap>
+
+  <select id="panelGroupList" resultMap="BaseResultMapDTO">
+        select panel_group.*,panel_group.name as label from panel_group
+        <where>
+          <if test="name != null">
+            and panel_group.name  like CONCAT('%', #{name},'%')
+          </if>
+          <if test="nodeType != null">
+            and panel_group.node_type = #{nodeType}
+          </if>
+          <if test="panelType != null">
+            and panel_group.panel_type = #{panelType}
+          </if>
+          <if test="id != null">
+            and panel_group.id  = #{id}
+          </if>
+          <if test="pid != null">
+            and panel_group.pid = #{pid}
+          </if>
+          <if test="level != null">
+            and panel_group.level = #{level}
+          </if>
+        </where>
+    <if test="sort != null">
+      order by ${sort}
+    </if>
+    </select>
+
+  <delete id="deleteCircle">
+        delete from panel_group where FIND_IN_SET(panel_group.id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+    </delete>
+</mapper>
