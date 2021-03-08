@@ -29,6 +29,17 @@
           :label="$t('dataset.status')"
         />
       </el-table>
+      <el-row style="margin-top: 10px;text-align: right;">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[100, 200, 300, 400]"
+          :page-size="100"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="1000">
+        </el-pagination>
+      </el-row>
     </el-row>
 
     <el-dialog
@@ -195,6 +206,7 @@ export default {
     return {
       update_setting: false,
       update_task: false,
+      currentPage: 1,
       taskForm: {
         name: '',
         type: '0',
@@ -322,7 +334,15 @@ export default {
     onRateChange() {
       if (this.taskForm.rate === '0') {
         this.taskForm.end = '0'
+        this.taskForm.endTime = ''
+        this.taskForm.cron = ''
       }
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
     },
     resetTaskForm() {
       this.taskForm = {

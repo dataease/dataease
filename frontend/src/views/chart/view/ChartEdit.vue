@@ -30,7 +30,7 @@
             @end="end1"
           >
             <transition-group>
-              <div v-for="item in dimension" :key="item.id" class="item" @click="click1(item)">{{ item.name }}</div>
+              <span v-for="item in dimension" :key="item.id" class="item" @click="click1(item)">{{ item.name }}</span>
             </transition-group>
           </draggable>
         </div>
@@ -45,7 +45,7 @@
             @end="end2"
           >
             <transition-group>
-              <div v-for="item in quota" :key="item.id" class="item" @click="click2(item)">{{ item.name }}</div>
+              <span v-for="item in quota" :key="item.id" class="item" @click="click2(item)">{{ item.name }}</span>
             </transition-group>
           </draggable>
         </div>
@@ -111,7 +111,7 @@
                     v-for="(item,index) in view.xaxis"
                     :key="index"
                     size="small"
-                    class="item"
+                    class="item-axis"
                     closable
                     @close="clear1(index)"
                   >
@@ -135,7 +135,7 @@
                     v-for="(item,index) in view.yaxis"
                     :key="index"
                     size="small"
-                    class="item"
+                    class="item-axis"
                     closable
                     @close="clear2(index)"
                   >
@@ -354,7 +354,7 @@ export default {
       // 基于准备好的dom，初始化echarts实例
       var myChart = this.$echarts.init(document.getElementById('echart'))
       // 指定图表的配置项和数据
-      myChart.setOption(option, true)
+      setTimeout(myChart.setOption(option, true), 500)
       window.onresize = function() {
         myChart.resize()
       }
@@ -392,6 +392,7 @@ export default {
     border: solid 1px #eee;
     background-color: #f1f1f1;
     text-align: left;
+    display: block;
   }
 
   .item + .item {
@@ -400,6 +401,19 @@ export default {
   }
 
   .item:hover {
+    background-color: #fdfdfd;
+    cursor: pointer;
+  }
+
+  .item-axis {
+    padding: 2px 12px;
+    margin: 3px 3px 0 3px;
+    border: solid 1px #eee;
+    background-color: #f1f1f1;
+    text-align: left;
+  }
+
+  .item-axis:hover {
     background-color: #fdfdfd;
     cursor: pointer;
   }
