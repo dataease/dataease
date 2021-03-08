@@ -28,9 +28,9 @@
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
+        <!-- <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip> -->
 
         <lang-select class="right-menu-item hover-effect" />
       </template>
@@ -64,14 +64,14 @@ import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
 import Doc from '@/components/Doc'
 import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
+// import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 export default {
   name: 'Topbar',
   components: {
     AppLink,
     Screenfull,
-    SizeSelect,
+    // SizeSelect,
     LangSelect,
     Doc
   },
