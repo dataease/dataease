@@ -8,6 +8,7 @@ import permission from './modules/permission'
 import dataset from './modules/dataset'
 import chart from './modules/chart'
 import request from './modules/request'
+import panel from './modules/panel'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -18,7 +19,8 @@ const store = new Vuex.Store({
     permission,
     dataset,
     chart,
-    request
+    request,
+    panel
   },
   getters
 })
