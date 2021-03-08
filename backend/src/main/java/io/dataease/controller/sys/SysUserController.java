@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
+import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
@@ -54,5 +55,12 @@ public class SysUserController {
     @PostMapping("/updateStatus")
     public void updateStatus(@RequestBody SysUserStateRequest request){
         sysUserService.updateStatus(request);
+    }
+
+    @ApiOperation("更新用户密码")
+    @PostMapping("/updatePwd")
+    public void updatePwd(@RequestBody SysUserPwdRequest request){
+
+        sysUserService.updatePwd(request);
     }
 }

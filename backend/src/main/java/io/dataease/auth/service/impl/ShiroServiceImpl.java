@@ -30,10 +30,14 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/v3/**","anon");
         filterChainDefinitionMap.put("/static/**", "anon");
 
+
+        // filterChainDefinitionMap.put("/401", "anon");
+        // filterChainDefinitionMap.put("/404", "anon");
         // 登陆
+        // filterChainDefinitionMap.put("/api/auth/logout", "anon");
         filterChainDefinitionMap.put("/api/auth/login", "anon");
         // 退出
-        //filterChainDefinitionMap.put("/logout", "anon");
+
         // 放行未授权接口，重定向使用
         filterChainDefinitionMap.put("/unauth", "anon");
         filterChainDefinitionMap.put("/display/**", "anon");
@@ -43,7 +47,6 @@ public class ShiroServiceImpl implements ShiroService {
         // 被挤下线
         filterChainDefinitionMap.put("/downline", "anon");
         // 放行 end ----------------------------------------------------------
-        filterChainDefinitionMap.put("/logout", "logout");
 
         /*List<ExtPermissionBean> extPermissionBeans = extUserMapper.getPermissions();
 
@@ -53,7 +56,7 @@ public class ShiroServiceImpl implements ShiroService {
             filterChainDefinitionMap.put(item.getPath(), "jwt," + f2cPerms);
         });
 */
-
+        filterChainDefinitionMap.put("/api/auth/logout", "logout");
         filterChainDefinitionMap.put("/**", "jwt");
         return filterChainDefinitionMap;
     }

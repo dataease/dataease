@@ -15,11 +15,12 @@ public interface AuthMapper {
     List<String> roleCodes(@Param("userId") Long userId);
 
 
-
     List<String> permissions(@Param("userId") Long userId);
 
 
-    SysUserEntity findUser(@Param("username") String username);
+    SysUserEntity findUser(@Param("userId") Long userId);
+
+    SysUserEntity findUserByName(@Param("username") String username);
 
 
     List<CurrentRoleDto> roles(@Param("userId") Long userId);

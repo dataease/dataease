@@ -22,6 +22,7 @@ public class ShiroConfig {
 
 
 
+
     @Bean("securityManager")
     public DefaultWebSecurityManager getManager(F2CRealm f2cRealm) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
@@ -49,6 +50,7 @@ public class ShiroConfig {
         filterMap.put("f2cPerms", new F2CPermissionsFilter());
         //filterMap.put("f2cRoles", new F2CRolesFilter());
         filterMap.put("jwt", new JWTFilter());
+        /*filterMap.put("jwt", jwtFilter);*/
         filterMap.put("logout", new F2CLogoutFilter());
         factoryBean.setSecurityManager(securityManager);
         factoryBean.setUnauthorizedUrl("/permissionMiss");

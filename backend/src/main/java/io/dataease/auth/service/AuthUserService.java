@@ -9,7 +9,9 @@ public interface AuthUserService {
 
 
 
-    SysUserEntity getUser(String username);
+    SysUserEntity getUserById(Long userId);
+
+    SysUserEntity getUserByName(String username);
 
     List<String> roles(Long userId);
 

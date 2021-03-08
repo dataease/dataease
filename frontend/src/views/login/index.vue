@@ -50,7 +50,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-
+import { encrypt } from '@/utils/rsaEncrypt'
 export default {
   name: 'Login',
   data() {
@@ -96,7 +96,12 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          const user = {
+            username: this.loginForm.username,
+            password: this.loginForm.password
+          }
+          user.password = encrypt(user.password)
+          this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {

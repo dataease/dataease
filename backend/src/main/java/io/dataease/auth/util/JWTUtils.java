@@ -5,15 +5,19 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import io.dataease.auth.entity.TokenInfo;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
 public class JWTUtils {
 
 
-    // 过期时间5分钟
-    private static final long EXPIRE_TIME = 5*60*1000;
-
+    // token过期时间5分钟 (过期会自动刷新续命 目的是避免一直都是同一个token )
+    private static final long EXPIRE_TIME = 1*60*1000;
+    // 登录间隔时间 超过这个时间强制重新登录
+    private static final long Login_Interval = 2*60*1000;
 
 
     /**
@@ -22,10 +26,12 @@ public class JWTUtils {
      * @param secret 用户的密码
      * @return 是否正确
      */
-    public static boolean verify(String token, String username, String secret) {
+    public static boolean verify(String token, TokenInfo tokenInfo, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier = JWT.require(algorithm)
-                .withClaim("username", username)
+                .withClaim("lastLoginTime", tokenInfo.getLastLoginTime())
+                .withClaim("username", tokenInfo.getUsername())
+                .withClaim("userId", tokenInfo.getUserId())
                 .build();
         verifier.verify(token);
         return true;
@@ -35,15 +41,19 @@ public class JWTUtils {
      * 获得token中的信息无需secret解密也能获得
      * @return token中包含的用户名
      */
-    public static String getUsername(String token) {
-        try {
-            DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("username").asString();
-        } catch (JWTDecodeException e) {
-            e.printStackTrace();
-            return null;
+    public static TokenInfo tokenInfoByToken(String token) {
+        DecodedJWT jwt = JWT.decode(token);
+        String username = jwt.getClaim("username").asString();
+        Long userId = jwt.getClaim("userId").asLong();
+        Long lastLoginTime = jwt.getClaim("lastLoginTime").asLong();
+        if (StringUtils.isEmpty(username) || ObjectUtils.isEmpty(userId) || ObjectUtils.isEmpty(lastLoginTime)){
+            throw new RuntimeException("token格式错误！");
         }
+        TokenInfo tokenInfo = TokenInfo.builder().username(username).userId(userId).lastLoginTime(lastLoginTime).build();
+        return tokenInfo;
     }
+
+
 
 
 
@@ -64,17 +74,19 @@ public class JWTUtils {
 
     /**
      * 生成签名,5min后过期
-     * @param username 用户名
+     * @param tokenInfo 用户信息
      * @param secret 用户的密码
      * @return 加密的token
      */
-    public static String sign(String username, String secret) {
+    public static String sign(TokenInfo tokenInfo, String secret) {
         try {
             Date date = new Date(System.currentTimeMillis()+EXPIRE_TIME);
             Algorithm algorithm = Algorithm.HMAC256(secret);
             // 附带username信息
             return JWT.create()
-                    .withClaim("username", username)
+                    .withClaim("lastLoginTime", tokenInfo.getLastLoginTime())
+                    .withClaim("username", tokenInfo.getUsername())
+                    .withClaim("userId", tokenInfo.getUserId())
                     .withClaim("exp", date)
                     .withExpiresAt(date)
                     .sign(algorithm);

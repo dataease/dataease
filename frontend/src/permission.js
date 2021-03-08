@@ -10,7 +10,7 @@ import { filterAsyncRouter } from '@/store/modules/permission'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login'] // no redirect whitelist
+const whiteList = ['/login', '/401', '/404'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar

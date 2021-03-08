@@ -10,6 +10,7 @@ import io.dataease.base.mapper.ext.ExtSysUserMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
+import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
@@ -17,6 +18,7 @@ import io.dataease.controller.sys.response.SysUserRole;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 @Service
 public class SysUserService {
 
+    private final static String USER_CACHE_NAME = "users_info";
     private final static String DEFAULT_PWD = "DataEase123..";
 
     @Resource
@@ -84,6 +87,33 @@ public class SysUserService {
     }
 
     /**
+     * 修改用户密码清楚缓存
+     * @param request
+     * @return
+     */
+    @CacheEvict(value = USER_CACHE_NAME, key = "'user' + #request.userId")
+    public int updatePwd(SysUserPwdRequest request) {
+        if (!StringUtils.equals(request.getPassword(), request.getRepeatPassword())){
+            throw new RuntimeException("两次密码不一致");
+        }
+        SysUser temp = new SysUser();
+        temp.setUserId(request.getUserId());
+        SysUser user = findOne(temp);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new RuntimeException("用户不存在");
+        }
+        if (!StringUtils.equals(request.getPassword(), user.getPassword())){
+            throw new RuntimeException("密码错误");
+        }
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(request.getUserId());
+        sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
+        return sysUserMapper.updateByPrimaryKeySelective(sysUser);
+    }
+
+
+
+    /**
      * 删除用户角色关联
      * @param userId
      * @return
@@ -108,6 +138,7 @@ public class SysUserService {
         });
     }
 
+    @CacheEvict(value = USER_CACHE_NAME, key = "'user' + #userId")
     @Transactional
     public int delete(Long userId){
         deleteUserRoles(userId);

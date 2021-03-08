@@ -4,7 +4,7 @@ const pathMap = {
   deletePath: '/api/user/delete/',
   createPath: '/api/user/create',
   updatePath: '/api/user/update',
-  editPasswordPath: '/api/user/password',
+  editPasswordPath: '/api/user/updatePwd',
   editStatusPath: '/api/user/updateStatus'
 }
 export function userLists(page, size, data) {
