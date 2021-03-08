@@ -1,10 +1,11 @@
 <template>
-  <div class="top-nav">
+  <div class="top-nav" :style="{'background-color': theme}">
     <div class="log">DATA_EASE</div>
     <el-menu
-      :active-text-color="variables.menuActiveText"
+      :active-text-color="variables.topMenuActiveText"
       :default-active="activeMenu"
       mode="horizontal"
+      :style="{'background-color': theme}"
       @select="handleSelect"
     >
       <div v-for="item in permission_routes" :key="item.path" class="nav-item">
@@ -80,6 +81,9 @@ export default {
     }
   },
   computed: {
+    theme() {
+      return this.$store.state.settings.theme
+    },
     activeMenu() {
       const route = this.$route
       const { meta, path } = route

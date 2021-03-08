@@ -2,7 +2,7 @@
     // margin-left: $sideBarWidth;
     width: 100%;
     // background-color: #304156;
-    background-color: $--color-primary;
+    // background-color: $--color-primary;
     position: fixed;
     top: 0;
     left: 0;
@@ -22,7 +22,7 @@
       float: left;
       border: none!important;
       // background-color: #304156;
-      background-color: $--color-primary;
+    //   background-color: $--color-primary;
 
       .nav-item {
         display: inline-block;
@@ -31,11 +31,17 @@
           color: rgba(255,255,255,0.87);
           &:hover {
             background-color: $subMenuHover !important;
+            color: $subMenuActiveText !important;
           }
           &:focus {
             background-color: $subMenuHover !important;
-            // color: $subMenuActiveText !important;
+            color: $subMenuActiveText !important;
           }
+          
+        }
+        .is-active {
+            background-color: $subMenuHover !important;
+            color: $subMenuActiveText !important;
         }
       }
     }

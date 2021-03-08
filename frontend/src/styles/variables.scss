@@ -28,6 +28,7 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 // sidebar
 $menuText:#bfcbd9;
 $menuActiveText:#409EFF;
+$topMenuActiveText:#f4f4f5;
 $subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
 
 // $menuBg:#304156;
@@ -36,7 +37,8 @@ $menuBg:#ffffff;
 $menuHover: rgba(158, 158, 158, 0.2);
 
 $subMenuBg:#1f2d3d;
-$subMenuHover:#001528;
+// $subMenuHover:#001528;
+$subMenuHover:#1682e6;
 
 $sideBarWidth: 210px;
 $topBarHeight: 56px;
@@ -48,6 +50,7 @@ $contentHeight: calc(100vh - 56px);
   theme: $--color-primary;
   menuText: $menuText;
   menuActiveText: $menuActiveText;
+  topMenuActiveText: $topMenuActiveText;
   subMenuActiveText: $subMenuActiveText;
   menuBg: $menuBg;
   menuHover: $menuHover;
