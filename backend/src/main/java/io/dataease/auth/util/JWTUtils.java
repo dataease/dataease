@@ -6,18 +6,20 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.entity.TokenInfo;
+import io.dataease.commons.utils.ServletUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+
 
 public class JWTUtils {
 
 
-    // token过期时间5分钟 (过期会自动刷新续命 目的是避免一直都是同一个token )
+    // token过期时间5min (过期会自动刷新续命 目的是避免一直都是同一个token )
     private static final long EXPIRE_TIME = 1*60*1000;
-    // 登录间隔时间 超过这个时间强制重新登录
-    private static final long Login_Interval = 2*60*1000;
+    // 登录间隔时间10min 超过这个时间强制重新登录
+    private static final long Login_Interval = 10*60*1000;
 
 
     /**
@@ -33,7 +35,17 @@ public class JWTUtils {
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("userId", tokenInfo.getUserId())
                 .build();
-        verifier.verify(token);
+        DecodedJWT jwt = verifier.verify(token);
+        Long lastLoginTime = jwt.getClaim("lastLoginTime").asLong();
+        long now = System.currentTimeMillis();
+        if (now - lastLoginTime > Login_Interval){
+            // 登录超时
+            HttpServletResponse response = ServletUtils.response();
+            response.addHeader("Access-Control-Expose-Headers", "authentication-status");
+            response.setHeader("authentication-status", "login_expire");
+            // 前端拦截 登录超时状态 直接logout
+            return false;
+        }
         return true;
     }
 

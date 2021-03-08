@@ -97,7 +97,7 @@
       <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="groupForm.name"/>
+            <el-input v-model="groupForm.name" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -111,359 +111,356 @@
 </template>
 
 <script>
-  import {loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree,defaultTree} from '@/api/panel/panel'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree } from '@/api/panel/panel'
 
-  export default {
-    name: 'PanelList',
-    data() {
+export default {
+  name: 'PanelList',
+  data() {
+    return {
+      defaultData: [],
+      dialogTitle: '',
+      search: '',
+      editGroup: false,
+      editTable: false,
+      tData: [],
+      tableData: [],
+      currGroup: {},
+      expandedArray: [],
+      groupForm: {
+        name: null,
+        pid: null,
+        level: 0,
+        nodeType: null,
+        children: [],
+        sort: 'node_type desc,name asc'
+      },
+      tableForm: {
+        name: '',
+        mode: '',
+        sort: 'node_type asc,create_time desc,name asc'
+      },
+      groupFormRules: {
+        name: [
+          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+        ]
+      },
+      tableFormRules: {
+        name: [
+          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+        ],
+        mode: [
+          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  computed: {
+  },
+  watch: {
+    // search(val){
+    //   this.groupForm.name = val;
+    //   this.tree(this.groupForm);
+    // }
+  },
+  mounted() {
+    this.defaultTree()
+    this.tree(this.groupForm)
+    this.refresh()
+    this.tableTree()
+    // this.$router.push('/dataset');
+  },
+  methods: {
+    clickAdd(param) {
+      // console.log(param);
+      this.add(param.type)
+      this.groupForm.pid = param.data.id
+      this.groupForm.level = param.data.level + 1
+    },
+
+    beforeClickAdd(type, data, node) {
       return {
-        defaultData:[],
-        dialogTitle: '',
-        search: '',
-        editGroup: false,
-        editTable: false,
-        tData: [],
-        tableData: [],
-        currGroup: {},
-        expandedArray: [],
-        groupForm: {
-          name: null,
-          pid: null,
-          level: 0,
-          nodeType: null,
-          children: [],
-          sort: 'node_type desc,name asc'
-        },
-        tableForm: {
-          name: '',
-          mode: '',
-          sort: 'node_type asc,create_time desc,name asc'
-        },
-        groupFormRules: {
-          name: [
-            {required: true, message: this.$t('commons.input_content'), trigger: 'blur'}
-          ]
-        },
-        tableFormRules: {
-          name: [
-            {required: true, message: this.$t('commons.input_content'), trigger: 'blur'}
-          ],
-          mode: [
-            {required: true, message: this.$t('commons.input_content'), trigger: 'blur'}
-          ]
-        }
+        'type': type,
+        'data': data,
+        'node': node
       }
     },
-    computed: {
+
+    clickMore(param) {
+      console.log(param)
+      switch (param.type) {
+        case 'rename':
+          this.add(param.data.nodeType)
+          this.groupForm = JSON.parse(JSON.stringify(param.data))
+          break
+        case 'move':
+
+          break
+        case 'delete':
+          this.delete(param.data)
+          break
+        case 'editTable':
+          this.editTable = true
+          this.tableForm = JSON.parse(JSON.stringify(param.data))
+          this.tableForm.mode = this.tableForm.mode + ''
+          break
+        case 'deleteTable':
+          this.deleteTable(param.data)
+          break
+      }
     },
-    watch: {
-      // search(val){
-      //   this.groupForm.name = val;
-      //   this.tree(this.groupForm);
-      // }
+
+    beforeClickMore(type, data, node) {
+      return {
+        'type': type,
+        'data': data,
+        'node': node
+      }
     },
-    mounted() {
-      this.defaultTree()
-      this.tree(this.groupForm)
-      this.refresh()
-      this.tableTree()
-      // this.$router.push('/dataset');
+
+    add(nodeType) {
+      switch (nodeType) {
+        case 'folder':
+          this.dialogTitle = this.$t('panel.groupAdd')
+          break
+        case 'panel':
+          this.dialogTitle = this.$t('panel.panelAdd')
+          break
+      }
+      this.groupForm.nodeType = nodeType
+      this.editGroup = true
     },
-    methods: {
-      clickAdd(param) {
-        // console.log(param);
-        this.add(param.type)
-        this.groupForm.pid = param.data.id
-        this.groupForm.level = param.data.level + 1
-      },
 
-      beforeClickAdd(type, data, node) {
-        return {
-          'type': type,
-          'data': data,
-          'node': node
-        }
-      },
-
-      clickMore(param) {
-        console.log(param)
-        switch (param.type) {
-          case 'rename':
-            this.add(param.data.nodeType)
-            this.groupForm = JSON.parse(JSON.stringify(param.data))
-            break
-          case 'move':
-
-            break
-          case 'delete':
-            this.delete(param.data)
-            break
-          case 'editTable':
-            this.editTable = true
-            this.tableForm = JSON.parse(JSON.stringify(param.data))
-            this.tableForm.mode = this.tableForm.mode + ''
-            break
-          case 'deleteTable':
-            this.deleteTable(param.data)
-            break
-        }
-      },
-
-      beforeClickMore(type, data, node) {
-        return {
-          'type': type,
-          'data': data,
-          'node': node
-        }
-      },
-
-      add(nodeType) {
-        switch (nodeType) {
-          case 'folder':
-            this.dialogTitle = this.$t('panel.groupAdd')
-            break
-          case 'panel':
-            this.dialogTitle = this.$t('panel.panelAdd')
-            break
-        }
-        this.groupForm.nodeType = nodeType
-        this.editGroup = true
-      },
-
-      saveGroup(group) {
-        // console.log(group);
-        this.$refs['groupForm'].validate((valid) => {
-          if (valid) {
-            addGroup(group).then(res => {
-              this.close()
-              this.$message({
-                message: this.$t('commons.save_success'),
-                type: 'success',
-                showClose: true
-              })
-              this.tree(this.groupForm)
-            })
-          } else {
+    saveGroup(group) {
+      // console.log(group);
+      this.$refs['groupForm'].validate((valid) => {
+        if (valid) {
+          addGroup(group).then(res => {
+            this.close()
             this.$message({
-              message: this.$t('commons.input_content'),
-              type: 'error',
-              showClose: true
-            })
-            return false
-          }
-        })
-      },
-
-      saveTable(table) {
-        //   console.log(table)
-        table.mode = parseInt(table.mode)
-        this.$refs['tableForm'].validate((valid) => {
-          if (valid) {
-            addTable(table).then(response => {
-              this.closeTable()
-              this.$message({
-                message: this.$t('commons.save_success'),
-                type: 'success',
-                showClose: true
-              })
-              this.tableTree()
-              // this.$router.push('/dataset/home')
-              this.$emit('switchComponent', {name: ''})
-              this.$store.dispatch('dataset/setTable', null)
-            })
-          } else {
-            this.$message({
-              message: this.$t('commons.input_content'),
-              type: 'error',
-              showClose: true
-            })
-            return false
-          }
-        })
-      },
-
-      delete(data) {
-        this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
-          confirmButtonText: this.$t('panel.confirm'),
-          cancelButtonText: this.$t('panel.cancel'),
-          type: 'warning'
-        }).then(() => {
-          delGroup(data.id).then(response => {
-            this.$message({
+              message: this.$t('commons.save_success'),
               type: 'success',
-              message: this.$t('panel.delete_success'),
               showClose: true
             })
             this.tree(this.groupForm)
           })
-        }).catch(() => {
-        })
-      },
+        } else {
+          this.$message({
+            message: this.$t('commons.input_content'),
+            type: 'error',
+            showClose: true
+          })
+          return false
+        }
+      })
+    },
 
-      deleteTable(data) {
-        this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
-          confirmButtonText: this.$t('panel.confirm'),
-          cancelButtonText: this.$t('panel.cancel'),
-          type: 'warning'
-        }).then(() => {
-          delTable(data.id).then(response => {
+    saveTable(table) {
+      //   console.log(table)
+      table.mode = parseInt(table.mode)
+      this.$refs['tableForm'].validate((valid) => {
+        if (valid) {
+          addTable(table).then(response => {
+            this.closeTable()
             this.$message({
+              message: this.$t('commons.save_success'),
               type: 'success',
-              message: this.$t('panel.delete_success'),
               showClose: true
             })
             this.tableTree()
             // this.$router.push('/dataset/home')
-            this.$emit('switchComponent', {name: ''})
+            this.$emit('switchComponent', { name: '' })
             this.$store.dispatch('dataset/setTable', null)
           })
-        }).catch(() => {
-        })
-      },
-
-      close() {
-        this.editGroup = false
-        this.groupForm = {
-          name: null,
-          pid: null,
-          level: 0,
-          nodeType: null,
-          children: [],
-          sort: 'node_type desc,name asc'
-        }
-      },
-
-      closeTable() {
-        this.editTable = false
-        this.tableForm = {
-          name: ''
-        }
-      },
-
-      tree(group) {
-        groupTree(group).then(res => {
-          this.tData = res.data
-        })
-      },
-      defaultTree() {
-        let requestInfo ={
-          panelType: 'system'
-        }
-        defaultTree(requestInfo).then(res => {
-          this.defaultData = res.data
-        })
-      },
-
-      tableTree() {
-        this.tableData = []
-        if (this.currGroup.id) {
-          loadTable({
-            sort: 'type asc,create_time desc,name asc',
-            sceneId: this.currGroup.id
-          }).then(res => {
-            this.tableData = res.data
-          })
-        }
-      },
-
-      nodeClick(data, node) {
-        // console.log(data);
-        // console.log(node);
-        if (data.nodeType === 'panel') {
-          this.sceneMode = true
-          this.currGroup = data
-          this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
-        }
-        if (node.expanded) {
-          this.expandedArray.push(data.id)
         } else {
-          const index = this.expandedArray.indexOf(data.id)
-          if (index > -1) {
-            this.expandedArray.splice(index, 1)
-          }
-        }
-        // console.log(this.expandedArray);
-      },
-
-      back() {
-        this.sceneMode = false
-        //   const route = this.$store.state.permission.currentRoutes
-        //   console.log(route)
-        // this.$router.push('/dataset/index')
-        this.$store.dispatch('dataset/setSceneData', null)
-        this.$emit('switchComponent', {name: ''})
-      },
-
-      clickAddData(param) {
-        // console.log(param);
-        switch (param.type) {
-          case 'db':
-            this.addDB()
-            break
-          case 'sql':
-            this.$message(param.type)
-            break
-          case 'excel':
-            this.$message(param.type)
-            break
-          case 'custom':
-            this.$message(param.type)
-            break
-        }
-      },
-
-      beforeClickAddData(type) {
-        return {
-          'type': type
-        }
-      },
-
-      addDB() {
-        // this.$router.push({
-        //   name: 'add_db',
-        //   params: {
-        //     scene: this.currGroup
-
-
-        //   }
-        // })
-        this.$emit('switchComponent', {name: 'AddDB', param: this.currGroup})
-      },
-
-      sceneClick(data, node) {
-        // console.log(data);
-        this.$store.dispatch('dataset/setTable', null)
-        this.$store.dispatch('dataset/setTable', data.id)
-        // this.$router.push({
-        //   name: 'table',
-        //   params: {
-        //     table: data
-        //   }
-        // })
-        this.$emit('switchComponent', {name: 'ViewTable'})
-      },
-
-      refresh() {
-        const path = this.$route.path
-        if (path === '/dataset/table') {
-          this.sceneMode = true
-          const sceneId = this.$store.state.dataset.sceneData
-          getScene(sceneId).then(res => {
-            this.currGroup = res.data
+          this.$message({
+            message: this.$t('commons.input_content'),
+            type: 'error',
+            showClose: true
           })
+          return false
         }
-      },
-      panelDefaultClick(data, node) {
-        console.log(data);
-        console.log(node);
-        this.$store.dispatch('panel/setPanelName', data.name)
-        //切换view
-        this.$emit('switchComponent', {name: 'PanelView'})
+      })
+    },
 
+    delete(data) {
+      this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
+        confirmButtonText: this.$t('panel.confirm'),
+        cancelButtonText: this.$t('panel.cancel'),
+        type: 'warning'
+      }).then(() => {
+        delGroup(data.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: this.$t('panel.delete_success'),
+            showClose: true
+          })
+          this.tree(this.groupForm)
+        })
+      }).catch(() => {
+      })
+    },
 
-      },
+    deleteTable(data) {
+      this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
+        confirmButtonText: this.$t('panel.confirm'),
+        cancelButtonText: this.$t('panel.cancel'),
+        type: 'warning'
+      }).then(() => {
+        delTable(data.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: this.$t('panel.delete_success'),
+            showClose: true
+          })
+          this.tableTree()
+          // this.$router.push('/dataset/home')
+          this.$emit('switchComponent', { name: '' })
+          this.$store.dispatch('dataset/setTable', null)
+        })
+      }).catch(() => {
+      })
+    },
+
+    close() {
+      this.editGroup = false
+      this.groupForm = {
+        name: null,
+        pid: null,
+        level: 0,
+        nodeType: null,
+        children: [],
+        sort: 'node_type desc,name asc'
+      }
+    },
+
+    closeTable() {
+      this.editTable = false
+      this.tableForm = {
+        name: ''
+      }
+    },
+
+    tree(group) {
+      groupTree(group).then(res => {
+        this.tData = res.data
+      })
+    },
+    defaultTree() {
+      const requestInfo = {
+        panelType: 'system'
+      }
+      defaultTree(requestInfo).then(res => {
+        this.defaultData = res.data
+      })
+    },
+
+    tableTree() {
+      this.tableData = []
+      if (this.currGroup.id) {
+        loadTable({
+          sort: 'type asc,create_time desc,name asc',
+          sceneId: this.currGroup.id
+        }).then(res => {
+          this.tableData = res.data
+        })
+      }
+    },
+
+    nodeClick(data, node) {
+      // console.log(data);
+      // console.log(node);
+      if (data.nodeType === 'panel') {
+        this.sceneMode = true
+        this.currGroup = data
+        this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
+      }
+      if (node.expanded) {
+        this.expandedArray.push(data.id)
+      } else {
+        const index = this.expandedArray.indexOf(data.id)
+        if (index > -1) {
+          this.expandedArray.splice(index, 1)
+        }
+      }
+      // console.log(this.expandedArray);
+    },
+
+    back() {
+      this.sceneMode = false
+      //   const route = this.$store.state.permission.currentRoutes
+      //   console.log(route)
+      // this.$router.push('/dataset/index')
+      this.$store.dispatch('dataset/setSceneData', null)
+      this.$emit('switchComponent', { name: '' })
+    },
+
+    clickAddData(param) {
+      // console.log(param);
+      switch (param.type) {
+        case 'db':
+          this.addDB()
+          break
+        case 'sql':
+          this.$message(param.type)
+          break
+        case 'excel':
+          this.$message(param.type)
+          break
+        case 'custom':
+          this.$message(param.type)
+          break
+      }
+    },
+
+    beforeClickAddData(type) {
+      return {
+        'type': type
+      }
+    },
+
+    addDB() {
+      // this.$router.push({
+      //   name: 'add_db',
+      //   params: {
+      //     scene: this.currGroup
+
+      //   }
+      // })
+      this.$emit('switchComponent', { name: 'AddDB', param: this.currGroup })
+    },
+
+    sceneClick(data, node) {
+      // console.log(data);
+      this.$store.dispatch('dataset/setTable', null)
+      this.$store.dispatch('dataset/setTable', data.id)
+      // this.$router.push({
+      //   name: 'table',
+      //   params: {
+      //     table: data
+      //   }
+      // })
+      this.$emit('switchComponent', { name: 'ViewTable' })
+    },
+
+    refresh() {
+      const path = this.$route.path
+      if (path === '/dataset/table') {
+        this.sceneMode = true
+        const sceneId = this.$store.state.dataset.sceneData
+        getScene(sceneId).then(res => {
+          this.currGroup = res.data
+        })
+      }
+    },
+    panelDefaultClick(data, node) {
+      console.log(data)
+      console.log(node)
+      this.$store.dispatch('panel/setPanelName', data.name)
+      // 切换view
+      this.$emit('switchComponent', { name: 'PanelView' })
     }
   }
+}
 </script>
 
 <style scoped>

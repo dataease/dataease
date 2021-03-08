@@ -52,6 +52,14 @@ const checkAuth = response => {
       })
     })
   }
+  if (response.headers['authentication-status'] === 'login_expire') {
+    const message = this.$t('login.expires')
+    $alert(message, () => {
+      store.dispatch('user/logout').then(() => {
+        location.reload()
+      })
+    })
+  }
   // token到期后自动续命 刷新token
   if (response.headers[RefreshTokenKey]) {
     const refreshToken = response.headers[RefreshTokenKey]

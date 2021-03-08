@@ -46,6 +46,7 @@ public class F2CRealm extends AuthorizingRealm {
     }
 
     //验证登录权限
+
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
         String token = (String) auth.getCredentials();
@@ -63,7 +64,6 @@ public class F2CRealm extends AuthorizingRealm {
         }
         String pass = null;
         try {
-            /*pass = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, userBean.getPassword());*/
             pass = user.getPassword();
         } catch (Exception e) {
             e.printStackTrace();

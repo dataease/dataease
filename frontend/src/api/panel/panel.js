@@ -108,4 +108,4 @@ export function post(url, data) {
   })
 }
 
-export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree,defaultTree }
+export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree }
