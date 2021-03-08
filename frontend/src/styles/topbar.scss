@@ -59,7 +59,8 @@
         padding: 10px 8px;
         height: 100%;
         font-size: 18px;
-        color: #5a5e66;
+        // color: #5a5e66;
+        color: $menuText;
         vertical-align: text-bottom;
 
         &.hover-effect {
@@ -67,7 +68,7 @@
           transition: background .3s;
 
           &:hover {
-            background: rgba(0, 0, 0, .025)
+            background-color: rgba(0, 0, 0, .025)
           }
         }
       }

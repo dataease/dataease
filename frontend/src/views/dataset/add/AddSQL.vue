@@ -14,7 +14,7 @@
           </el-button>
         </el-row>
       </el-row>
-      <el-divider/>
+      <el-divider />
       <el-row>
         <el-form :inline="true">
           <el-form-item class="form-item">
@@ -47,10 +47,10 @@ export default {
       options: []
     }
   },
+  watch: {},
   mounted() {
     this.initDataSource()
   },
-  watch: {},
   methods: {
     initDataSource() {
       listDatasource().then(response => {

@@ -21,7 +21,7 @@
     <div class="right-menu">
       <template>
         <el-tooltip content="项目文档" effect="dark" placement="bottom">
-          <Doc class="right-menu-item hover-effect" />
+          <doc class="right-menu-item hover-effect" />
         </el-tooltip>
 
         <el-tooltip content="全屏缩放" effect="dark" placement="bottom">

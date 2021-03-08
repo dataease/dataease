@@ -31,14 +31,14 @@
       </el-table>
       <el-row style="margin-top: 10px;text-align: right;">
         <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
           :current-page="currentPage"
           :page-sizes="[100, 200, 300, 400]"
           :page-size="100"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="1000">
-        </el-pagination>
+          :total="1000"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </el-row>
     </el-row>
 
@@ -101,7 +101,7 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="taskForm.rate === '1'" label="">
-              <el-input v-model="taskForm.cron" size="mini" style="width: 50%"/>
+              <el-input v-model="taskForm.cron" size="mini" style="width: 50%" />
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
               <el-select v-model="taskForm.end" size="mini" :disabled="taskForm.rate === '0'">
