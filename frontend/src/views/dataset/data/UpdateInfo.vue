@@ -90,7 +90,7 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="taskForm.rate === '1'" label="">
-              <el-input v-model="taskForm.cron" size="mini" style="width: 50%" />
+              <el-input v-model="taskForm.cron" size="mini" style="width: 50%"/>
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
               <el-select v-model="taskForm.end" size="mini" :disabled="taskForm.rate === '0'">
@@ -298,14 +298,21 @@ export default {
       // })
     },
     deleteTask(task) {
-      post('/dataset/task/delete/' + task.id, null).then(response => {
-        this.$message({
-          message: this.$t('dataset.delete_success'),
-          type: 'success',
-          showClose: true
+      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
+        confirmButtonText: this.$t('dataset.confirm'),
+        cancelButtonText: this.$t('dataset.cancel'),
+        type: 'warning'
+      }).then(() => {
+        post('/dataset/task/delete/' + task.id, null).then(response => {
+          this.$message({
+            message: this.$t('dataset.delete_success'),
+            type: 'success',
+            showClose: true
+          })
+          this.resetTaskForm()
+          this.listTask()
         })
-        this.resetTaskForm()
-        this.listTask()
+      }).catch(() => {
       })
     },
     closeTask() {
