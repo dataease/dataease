@@ -311,7 +311,7 @@ export default {
     },
 
     clickMore(param) {
-      console.log(param)
+      // console.log(param)
       switch (param.type) {
         case 'rename':
           this.add(param.data.type)
@@ -515,10 +515,10 @@ export default {
       // console.log(param);
       switch (param.type) {
         case 'db':
-          this.addDB()
+          this.addData('AddDB')
           break
         case 'sql':
-          this.$message(param.type)
+          this.addData('AddSQL')
           break
         case 'excel':
           this.$message(param.type)
@@ -535,14 +535,8 @@ export default {
       }
     },
 
-    addDB() {
-      // this.$router.push({
-      //   name: 'add_db',
-      //   params: {
-      //     scene: this.currGroup
-      //   }
-      // })
-      this.$emit('switchComponent', { name: 'AddDB', param: this.currGroup })
+    addData(name) {
+      this.$emit('switchComponent', { name: name, param: this.currGroup })
     },
 
     sceneClick(data, node) {

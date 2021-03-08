@@ -5,6 +5,7 @@ import io.dataease.base.domain.DatasetTableTaskExample;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.service.ScheduleService;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.CronExpression;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,6 +25,12 @@ public class DataSetTableTaskService {
     private ScheduleService scheduleService;
 
     public DatasetTableTask save(DatasetTableTask datasetTableTask) throws Exception {
+        // check
+        if (StringUtils.isNotEmpty(datasetTableTask.getCron())) {
+            if (!CronExpression.isValidExpression(datasetTableTask.getCron())) {
+                throw new RuntimeException("cron expression error.");
+            }
+        }
         if (StringUtils.isEmpty(datasetTableTask.getId())) {
             datasetTableTask.setId(UUID.randomUUID().toString());
             datasetTableTask.setCreateTime(System.currentTimeMillis());

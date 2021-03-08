@@ -21,10 +21,11 @@ import Group from './group/Group'
 import DataHome from './data/DataHome'
 import ViewTable from './data/ViewTable'
 import AddDB from './add/AddDB'
+import AddSQL from './add/AddSQL'
 
 export default {
   name: 'DataSet',
-  components: { MsMainContainer, MsContainer, MsAsideContainer, Group, DataHome, ViewTable, AddDB },
+  components: { MsMainContainer, MsContainer, MsAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL },
   data() {
     return {
       component: DataHome,
@@ -41,6 +42,9 @@ export default {
           break
         case 'AddDB':
           this.component = AddDB
+          break
+        case 'AddSQL':
+          this.component = AddSQL
           break
         default:
           this.component = DataHome

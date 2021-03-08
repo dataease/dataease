@@ -628,7 +628,8 @@ export default {
     save_success: '保存成功',
     close: '关闭',
     required: '必填',
-    input_content: '请输入内容'
+    input_content: '请输入内容',
+    add_sql_table: '添加SQL'
   },
   datasource: {
     create: '新建数据连接',
