@@ -9,6 +9,7 @@ import { tryShowLoading, tryHideLoading } from './loading'
 // import router from '@/router'
 
 const TokenKey = Config.TokenKey
+const RefreshTokenKey = Config.RefreshTokenKey
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -34,6 +35,7 @@ service.interceptors.request.use(
     return config
   },
   error => {
+    error.config.loading && tryHideLoading(store.getters.currentPath)
     // do something with request error
     console.log(error) // for debug
     return Promise.reject(error)
@@ -50,12 +52,20 @@ const checkAuth = response => {
       })
     })
   }
+  // token到期后自动续命 刷新token
+  if (response.headers[RefreshTokenKey]) {
+    const refreshToken = response.headers[RefreshTokenKey]
+    store.dispatch('user/refreshToken', refreshToken)
+  }
 }
 
 const checkPermission = response => {
   // 请根据实际需求修改
-  if (response.status === 403) {
-    location.href = '/403'
+  if (response.status === 404) {
+    location.href = '/404'
+  }
+  if (response.status === 401) {
+    location.href = '/401'
   }
 }
 

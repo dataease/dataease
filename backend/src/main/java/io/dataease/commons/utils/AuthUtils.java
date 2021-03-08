@@ -1,5 +1,6 @@
 package io.dataease.commons.utils;
 
+import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.base.domain.SysUser;
 import io.dataease.service.sys.SysUserService;
@@ -18,9 +19,9 @@ public class AuthUtils {
 
     public static SysUser getUser(){
         String token = ServletUtils.getToken();
-        String username = JWTUtils.getUsername(token);
+        TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
         SysUser sysUser = new SysUser();
-        sysUser.setUsername(username);
+        sysUser.setUserId(tokenInfo.getUserId());
         SysUser user = sysUserService.findOne(sysUser);
         return user;
     }

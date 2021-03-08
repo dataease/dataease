@@ -2,6 +2,7 @@ package io.dataease.auth.config;
 
 import io.dataease.auth.entity.JWTToken;
 import io.dataease.auth.entity.SysUserEntity;
+import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -34,9 +35,8 @@ public class F2CRealm extends AuthorizingRealm {
     //验证资源权限
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String username = JWTUtils.getUsername(principals.toString());
-        SysUserEntity user = authUserService.getUser(username);
-        Long userId = user.getUserId();
+        Long userId = JWTUtils.tokenInfoByToken(principals.toString()).getUserId();
+        //SysUserEntity user = authUserService.getUserById(userId);
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         Set<String> role = authUserService.roles(userId).stream().collect(Collectors.toSet());
         simpleAuthorizationInfo.addRoles(role);
@@ -50,12 +50,14 @@ public class F2CRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
         String token = (String) auth.getCredentials();
         // 解密获得username，用于和数据库进行对比
-        String username = JWTUtils.getUsername(token);
+        TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
+        Long userId = tokenInfo.getUserId();
+        String username = tokenInfo.getUsername();
         if (username == null) {
             throw new AuthenticationException("token invalid");
         }
 
-        SysUserEntity user = authUserService.getUser(username);
+        SysUserEntity user = authUserService.getUserById(userId);
         if (user == null) {
             throw new AuthenticationException("User didn't existed!");
         }
@@ -66,7 +68,7 @@ public class F2CRealm extends AuthorizingRealm {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (! JWTUtils.verify(token, username, pass)) {
+        if (! JWTUtils.verify(token, tokenInfo, pass)) {
             throw new AuthenticationException("Username or password error");
         }
         return new SimpleAuthenticationInfo(token, token, "f2cReam");

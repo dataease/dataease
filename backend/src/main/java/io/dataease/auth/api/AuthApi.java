@@ -14,7 +14,7 @@ public interface AuthApi {
 
 
     @PostMapping("/login")
-    Object login(LoginDto loginDto);
+    Object login(LoginDto loginDto) throws Exception;
 
 
     @PostMapping("/userInfo")
@@ -22,6 +22,9 @@ public interface AuthApi {
 
     @GetMapping("/isLogin")
     Boolean isLogin();
+
+    @PostMapping("/logout")
+    String logout();
 
 
     @GetMapping("/test")

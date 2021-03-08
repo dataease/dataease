@@ -53,6 +53,11 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
+  {
+    path: '/401',
+    component: (resolve) => require(['@/views/401'], resolve),
+    hidden: true
+  },
 
   {
     path: '/',

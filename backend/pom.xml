@@ -314,7 +314,17 @@
             <artifactId>json-schema-validator</artifactId>
             <version>2.2.6</version>
         </dependency>-->
-
+        <!--开启 cache 缓存 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!-- ehcache 缓存 -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>2.9.1</version>
+        </dependency>
     </dependencies>
 
     <build>

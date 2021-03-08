@@ -1,5 +1,6 @@
 module.exports = {
   TokenKey: 'Authorization',
+  RefreshTokenKey: 'refreshauthorization',
   title: 'DATA_EASE',
 
   /**

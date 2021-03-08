@@ -19,6 +19,7 @@
     "element-ui": "2.13.0",
     "fit2cloud-ui": "^0.1.12",
     "js-cookie": "2.2.0",
+    "jsencrypt": "^3.0.0-rc.1",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "screenfull": "4.2.0",
