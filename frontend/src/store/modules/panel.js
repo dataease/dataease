@@ -1,7 +1,7 @@
 
 const getDefaultState = () => {
   return {
-    panelName: ""
+    panelName: ''
   }
 }
 

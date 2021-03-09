@@ -1,9 +1,11 @@
+@import '~normalize.css/normalize.css';
 @import './variables.scss';
 @import './mixin.scss';
 @import './transition.scss';
 @import './element-ui.scss';
 @import './sidebar.scss';
 @import './topbar.scss';
+@import "~fit2cloud-ui/src/styles/index.scss";
 
 // @import '../metersphere/common/css/index.css';
 

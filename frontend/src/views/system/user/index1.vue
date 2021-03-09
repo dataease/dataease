@@ -4,25 +4,36 @@
       :data="data"
       :columns="columns"
       :buttons="buttons"
+      :header="header"
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"
       @search="search"
     >
+      <template #buttons>
+        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="add" />
+      </template>
+
       <el-table-column type="selection" fix />
-      <el-table-column label="ID" min-width="100" prop="id" fix />
-      <el-table-column label="姓名" min-width="100" prop="name" fix />
-      <el-table-column label="Email" min-width="100" prop="email" />
-      <el-table-column label="角色" min-width="100" prop="roles" />
-      <el-table-column label="语言" min-width="100">
-        <template v-slot:default="{row}">
-          <el-tag v-if="row.language === 'zh-CN'" type="danger" size="small">中文</el-tag>
-          <el-tag v-if="row.language === 'en-US'" size="small">English</el-tag>
+      <el-table-column prop="username" label="ID" />
+      <el-table-column prop="nickName" :label="$t('commons.name')" width="200" />
+      <el-table-column prop="gender" label="性别" />
+
+      <el-table-column :show-overflow-tooltip="true" prop="phone" width="100" label="电话" />
+      <el-table-column :show-overflow-tooltip="true" width="135" prop="email" :label="$t('commons.email')" />
+      <el-table-column :show-overflow-tooltip="true" prop="dept" :label="$t('commons.organization')">
+        <template slot-scope="scope">
+          <div>{{ scope.row.dept.deptName }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" :show="false">
-        <template v-slot:default="{row}">
-          {{ row.createTime | datetimeFormat }}
+      <el-table-column prop="status" :label="$t('commons.status')" width="120">
+        <template v-slot:default="scope">
+          <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" :label="$t('commons.create_time')">
+        <template v-slot:default="scope">
+          <span>{{ scope.row.createTime | timestampFormatDate }}</span>
         </template>
       </el-table-column>
       <fu-table-operations :buttons="buttons" label="操作" fix />
@@ -35,6 +46,7 @@ import LayoutContent from '@/components/business/LayoutContent'
 import { userLists } from '@/api/system/user'
 import ComplexTable from '@/components/business/complex-table'
 import CustomCondition from './CustomCondtion'
+// import { GridButton } from '@/components/GridButton'
 // import { checkPermission } from '@/utils/permisstion'
 
 const buttonClick = function(row) {
@@ -46,6 +58,7 @@ export default {
   components: { ComplexTable, LayoutContent },
   data() {
     return {
+      header: '',
       columns: [],
       buttons: [
         {
@@ -100,6 +113,9 @@ export default {
     },
     edit(row) {
       console.log('编辑: ', row)
+    },
+    add() {
+
     },
     search(condition) {
       console.log(condition) // demo只查看搜索条件，没有搜索的实现

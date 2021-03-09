@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Cookies from 'js-cookie'
-import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
 import Fit2CloudUI from 'fit2cloud-ui'

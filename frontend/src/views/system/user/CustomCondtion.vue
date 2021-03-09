@@ -10,9 +10,13 @@ import { ComplexCondition } from 'fit2cloud-ui/src/components/search-bar/model'
 export default {
   name: 'CustomCondition',
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     field: String,
+    // eslint-disable-next-line vue/require-default-prop
     label: String,
+    // eslint-disable-next-line vue/require-default-prop
     defaultOperator: String,
+    // eslint-disable-next-line vue/require-default-prop
     options: Array
   },
   data() {

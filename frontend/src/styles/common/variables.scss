@@ -1,0 +1,54 @@
+/* Element 变量 */
+$--color-primary: #447DF7;
+$--color-success: #87CB16;
+$--color-warning: #FFA534;
+$--color-danger: #FB404B;
+
+$--box-shadow-light: 0 1px 4px 0 rgb(0 0 0 / 14%);
+
+$--color-text-primary: #3c4858;
+
+/* layout */
+$layout-bg-color: #F2F2F2;
+
+/* sidebar */
+$sidebar-open-width: 260px;
+$sidebar-close-width: 60px;
+$sidebar-bg-color: #30373d;
+$sidebar-bg-gradient: linear-gradient(to bottom right, #30373D, #3E3E3D);
+
+/* menu */
+$menu-height: 50px; // 菜单项高度
+$menu-bg-color: transparent; // 菜单项背景
+$menu-bg-color-hover: mix($sidebar-bg-color, #000, 90%); // 菜单项hover背景
+$menu-color: #B6C0CD; // 菜单项字体颜色
+$menu-open-bg-color: #252B2F; // 菜单项展开背景
+$menu-active-color: #FFF; // 菜单项激活时颜色
+$menu-active-bg-color: transparent; // 菜单项激活时背景
+
+$submenu-height: 40px; // 子菜单项高度
+$submenu-bg-color-hover: mix($menu-open-bg-color, #000, 80%); // 子菜单项hover背景
+$submenu-active-color: $menu-active-color; // 子菜单项激活时颜色
+$submenu-active-bg-color: transparent; // 子菜单项激活时背景
+
+$menu-active-prefix-color: $--color-primary; // 菜单激活前缀颜色
+$menu-active-prefix-width: 4px; // 菜单激活前缀宽度
+
+/* logo */
+$logo-height: 40px;
+$logo-bg-color: #4E5051;
+
+/* header */
+$header-height: 60px;
+$header-padding: 30px;
+
+/* main */
+$view-padding: 15px;
+
+/* fit2cloud-ui的variables加载了element-ui的变量 */
+@import "~fit2cloud-ui/src/styles/common/variables";
+
+:export {
+  theme: $--color-primary;
+}
+
