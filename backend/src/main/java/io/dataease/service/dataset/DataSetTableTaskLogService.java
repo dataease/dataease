@@ -1,11 +1,15 @@
 package io.dataease.service.dataset;
 
 import io.dataease.base.domain.DatasetTableTaskLog;
+import io.dataease.base.domain.DatasetTableTaskLogExample;
 import io.dataease.base.mapper.DatasetTableTaskLogMapper;
+import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
+import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -16,6 +20,8 @@ import java.util.UUID;
 public class DataSetTableTaskLogService {
     @Resource
     private DatasetTableTaskLogMapper datasetTableTaskLogMapper;
+    @Resource
+    private ExtDataSetTaskMapper extDataSetTaskMapper;
 
     public DatasetTableTaskLog save(DatasetTableTaskLog datasetTableTaskLog) {
         if (StringUtils.isEmpty(datasetTableTaskLog.getId())) {
@@ -32,5 +38,14 @@ public class DataSetTableTaskLogService {
         datasetTableTaskLogMapper.deleteByPrimaryKey(id);
     }
 
+    public List<DataSetTaskLogDTO> list(DatasetTableTaskLog request) {
+        DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
+        DatasetTableTaskLogExample.Criteria criteria = datasetTableTaskLogExample.createCriteria();
+        if (StringUtils.isNotEmpty(request.getTableId())) {
+            criteria.andTableIdEqualTo(request.getTableId());
+        }
+        datasetTableTaskLogExample.setOrderByClause("create_time desc");
+        return extDataSetTaskMapper.list(request);
+    }
 
 }

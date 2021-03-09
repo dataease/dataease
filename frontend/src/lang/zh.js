@@ -548,7 +548,7 @@ export default {
     auth_name_valid: '名称不支持特殊字符'
   },
   chart: {
-    datalist: '视图列表',
+    datalist: '视图',
     add_group: '添加分组',
     add_scene: '添加场景',
     group: '分组',
@@ -590,7 +590,7 @@ export default {
     chart: '视图'
   },
   dataset: {
-    datalist: '数据列表',
+    datalist: '数据集',
     add_group: '添加分组',
     add_scene: '添加场景',
     group: '分组',

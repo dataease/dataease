@@ -8,7 +8,7 @@
     <el-row style="margin-top: 10px;">
       <el-table
         size="mini"
-        :data="tableData"
+        :data="taskLogData"
         border
         style="width: 100%"
       >
@@ -19,11 +19,19 @@
         <el-table-column
           prop="startTime"
           :label="$t('dataset.start_time')"
-        />
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.startTime | timestampFormatDate }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="endTime"
           :label="$t('dataset.end_time')"
-        />
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.endTime | timestampFormatDate }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="status"
           :label="$t('dataset.status')"
@@ -31,11 +39,11 @@
       </el-table>
       <el-row style="margin-top: 10px;text-align: right;">
         <el-pagination
-          :current-page="currentPage"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
+          :current-page="page.currentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="page.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="1000"
+          :total="page.total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -101,7 +109,7 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="taskForm.rate === '1'" label="">
-              <el-input v-model="taskForm.cron" size="mini" style="width: 50%" />
+              <el-input v-model="taskForm.cron" size="mini" style="width: 50%"/>
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
               <el-select v-model="taskForm.end" size="mini" :disabled="taskForm.rate === '0'">
@@ -206,7 +214,6 @@ export default {
     return {
       update_setting: false,
       update_task: false,
-      currentPage: 1,
       taskForm: {
         name: '',
         type: '0',
@@ -216,27 +223,12 @@ export default {
         endTime: '',
         end: '0'
       },
-      tableData: [{
-        startTime: '2016-05-02 00:00:00',
-        endTime: '2016-05-02 00:00:10',
-        name: '每天0点更新',
-        status: '更新成功'
-      }, {
-        startTime: '2016-05-02 00:00:00',
-        endTime: '2016-05-02 00:00:10',
-        name: '手动更新',
-        status: '更新成功'
-      }, {
-        startTime: '2016-05-02 00:00:00',
-        endTime: '2016-05-02 00:00:10',
-        name: '每天0点更新',
-        status: '更新成功'
-      }, {
-        startTime: '2016-05-02 00:00:00',
-        endTime: '2016-05-02 00:00:10',
-        name: '每天0点更新',
-        status: '更新成功'
-      }],
+      page: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      taskLogData: [],
       taskData: [],
       taskFormRules: {
         name: [
@@ -260,6 +252,7 @@ export default {
   watch: {
     table() {
       this.listTask()
+      this.listTaskLog()
     }
   },
   methods: {
@@ -338,11 +331,17 @@ export default {
         this.taskForm.cron = ''
       }
     },
+    listTaskLog() {
+      post('/dataset/taskLog/list/' + this.page.currentPage + '/' + this.page.pageSize, { tableId: this.table.id }).then(response => {
+        this.taskLogData = response.data.listObject
+        this.page.total = response.data.itemCount
+      })
+    },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.listTaskLog()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.listTaskLog()
     },
     resetTaskForm() {
       this.taskForm = {

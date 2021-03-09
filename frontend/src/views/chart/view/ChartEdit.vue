@@ -253,10 +253,10 @@ export default {
       }
     },
     clear1(index) {
-      this.view.xaxis.splice(this.view.xaxis.indexOf(index), 1)
+      this.view.xaxis.splice(index, 1)
     },
     clear2(index) {
-      this.view.yaxis.splice(this.view.yaxis.indexOf(index), 1)
+      this.view.yaxis.splice(index, 1)
     },
     get(id) {
       if (id) {
