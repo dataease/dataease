@@ -86,6 +86,7 @@ INSERT INTO `sys_menu` VALUES (24, 11, 0, 2, '创建连接', NULL, NULL, 999, NU
 INSERT INTO `sys_menu` VALUES (25, 11, 0, 2, '删除连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:del', NULL, NULL, 1614931205899, 1614931205899);
 INSERT INTO `sys_menu` VALUES (26, 11, 0, 2, '编辑连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:edit', NULL, NULL, 1614931234105, 1614931234105);
 INSERT INTO `sys_menu` VALUES (27, 11, 0, 2, '校验连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:validate', NULL, NULL, 1614931268578, 1614931268578);
+INSERT INTO `sys_menu` VALUES (28, 2, 0, 2, '修改密码', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:editPwd', NULL, NULL, 1615275128262, 1615275128262);
 COMMIT;
 
 DROP TABLE IF EXISTS `sys_role`;
@@ -151,6 +152,7 @@ INSERT INTO `sys_roles_menus` VALUES (24, 3);
 INSERT INTO `sys_roles_menus` VALUES (25, 3);
 INSERT INTO `sys_roles_menus` VALUES (26, 3);
 INSERT INTO `sys_roles_menus` VALUES (27, 3);
+INSERT INTO `sys_roles_menus` VALUES (28, 3);
 INSERT INTO `sys_roles_menus` VALUES (1, 4);
 INSERT INTO `sys_roles_menus` VALUES (2, 4);
 INSERT INTO `sys_roles_menus` VALUES (3, 4);

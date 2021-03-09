@@ -44,7 +44,7 @@ router.beforeEach(async(to, from, next) => {
           })
         } else if (store.getters.loadMenus) {
           // 修改成false，防止死循环
-          store.dispatch('updateLoadMenus')
+          store.dispatch('user/updateLoadMenus')
           loadMenus(next, to)
         } else {
           next()

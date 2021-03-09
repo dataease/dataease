@@ -57,10 +57,15 @@ public class SysUserController {
         sysUserService.updateStatus(request);
     }
 
-    @ApiOperation("更新用户密码")
+    @ApiOperation("用户更新密码")
     @PostMapping("/updatePwd")
     public void updatePwd(@RequestBody SysUserPwdRequest request){
 
         sysUserService.updatePwd(request);
+    }
+    @ApiOperation("管理员更新密码")
+    @PostMapping("/adminUpdatePwd")
+    public void adminUpdatePwd(@RequestBody SysUserPwdRequest request){
+        sysUserService.adminUpdatePwd(request);
     }
 }

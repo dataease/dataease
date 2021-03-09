@@ -42,7 +42,7 @@
             <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="del(scope.row)">
               <template v-slot:behind>
                 <ms-table-operator-button
-                  v-if="scope.row.isLocalUser"
+                  v-permission="permission.editPwd"
                   :tip="$t('member.edit_password')"
                   icon="el-icon-s-tools"
                   type="success"
@@ -143,15 +143,14 @@
         :model="ruleForm"
         label-position="right"
         label-width="120px"
-        size="small"
         :rules="rule"
         class="demo-ruleForm"
       >
         <el-form-item :label="$t('member.new_password')" prop="newpassword">
-          <el-input v-model="ruleForm.newpassword" type="password" autocomplete="off" show-password />
+          <el-input v-model="ruleForm.newPassword" type="password" autocomplete="off" show-password />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="ruleForm.id" autocomplete="off" :disabled="true" style="display:none" />
+          <el-input v-model="ruleForm.userId" autocomplete="off" :disabled="true" style="display:none" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -260,7 +259,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        newpassword: [
+        newPassword: [
           { required: true, message: this.$t('user.input_password'), trigger: 'blur' },
           {
             required: true,
@@ -279,7 +278,8 @@ export default {
       permission: {
         add: ['user:add'],
         edit: ['user:edit'],
-        del: ['user:del']
+        del: ['user:del'],
+        editPwd: ['user:editPwd']
       }
     }
   },
@@ -307,7 +307,8 @@ export default {
     },
     editPassword(row) {
       this.editPasswordVisible = true
-      this.ruleForm = Object.assign({}, row)
+      const tempForm = Object.assign({}, row)
+      this.ruleForm = { userId: tempForm.userId }
       listenGoBack(this.handleClose)
     },
     del(row) {

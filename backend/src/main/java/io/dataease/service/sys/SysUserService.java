@@ -111,6 +111,13 @@ public class SysUserService {
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
+    public int adminUpdatePwd(SysUserPwdRequest request){
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(request.getUserId());
+        sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
+        return sysUserMapper.updateByPrimaryKeySelective(sysUser);
+    }
+
 
 
     /**
