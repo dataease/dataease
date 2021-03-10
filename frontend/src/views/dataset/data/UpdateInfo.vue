@@ -109,7 +109,7 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="taskForm.rate === '1'" label="">
-              <el-input v-model="taskForm.cron" size="mini" style="width: 50%"/>
+              <el-input v-model="taskForm.cron" size="mini" style="width: 50%" />
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
               <el-select v-model="taskForm.end" size="mini" :disabled="taskForm.rate === '0'">

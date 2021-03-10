@@ -109,7 +109,7 @@
                 <transition-group style="width: 100%;height: 100%;">
                   <el-tag
                     v-for="(item,index) in view.xaxis"
-                    :key="index"
+                    :key="item.id"
                     size="small"
                     class="item-axis"
                     closable
@@ -133,7 +133,7 @@
                 <transition-group style="width:100%;height: 100%;">
                   <el-tag
                     v-for="(item,index) in view.yaxis"
-                    :key="index"
+                    :key="item.id"
                     size="small"
                     class="item-axis"
                     closable
@@ -147,7 +147,7 @@
           </el-row>
 
           <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
-            <div id="echart" style="width: 100%;height: 80vh;"/>
+            <div id="echart" style="width: 100%;height: 80vh;" />
           </div>
         </el-row>
       </el-col>
