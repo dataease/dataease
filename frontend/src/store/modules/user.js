@@ -42,6 +42,9 @@ const mutations = {
   },
   SET_PERMISSIONS: (state, permissions) => {
     state.permissions = permissions
+  },
+  SET_LOGIN_MSG: (state, msg) => {
+    state.loginMsg = msg
   }
 }
 
@@ -53,6 +56,7 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
+        commit('SET_LOGIN_MSG', null)
         setToken(data.token)
         resolve()
       }).catch(error => {
@@ -117,6 +121,9 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
+  },
+  setLoginMsg({ commit, msg }) {
+    commit('SET_LOGIN_MSG', msg)
   }
 }
 

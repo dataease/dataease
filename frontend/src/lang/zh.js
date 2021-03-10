@@ -80,7 +80,9 @@ export default {
     password: '密码',
     any: '随便填',
     thirdparty: '第三方登录',
-    thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！'
+    thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
+    expires: '登录token过期，请重新登录',
+    tokenError: 'token错误，请重新登录'
   },
   commons: {
     upload: '上传',

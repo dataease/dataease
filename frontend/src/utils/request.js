@@ -4,7 +4,7 @@ import store from '@/store'
 import { $alert, $error } from './message'
 import { getToken } from '@/utils/auth'
 import Config from '@/settings'
-
+import i18n from '@/lang'
 import { tryShowLoading, tryHideLoading } from './loading'
 // import router from '@/router'
 
@@ -44,16 +44,19 @@ service.interceptors.request.use(
 
 const checkAuth = response => {
   // 请根据实际需求修改
-  if (response.headers['authentication-status'] === 'invalid' || response.status === 401) {
-    const message = this.$t('login.expires')
+
+  if (response.headers['authentication-status'] === 'login_expire') {
+    const message = i18n.t('login.expires')
+    store.dispatch('user/setLoginMsg', message)
     $alert(message, () => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
     })
   }
-  if (response.headers['authentication-status'] === 'login_expire') {
-    const message = this.$t('login.expires')
+
+  if (response.headers['authentication-status'] === 'invalid' || response.status === 401) {
+    const message = i18n.t('login.tokenError')
     $alert(message, () => {
       store.dispatch('user/logout').then(() => {
         location.reload()

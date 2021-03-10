@@ -79,8 +79,12 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined,
-      msg: null
+      redirect: undefined
+    }
+  },
+  computed: {
+    msg() {
+      return this.$store.state.user.loginMsg
     }
   },
   watch: {
