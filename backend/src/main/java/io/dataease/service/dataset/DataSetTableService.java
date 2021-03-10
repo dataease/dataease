@@ -71,7 +71,9 @@ public class DataSetTableService {
 
     public List<DatasetTable> list(DataSetTableRequest dataSetTableRequest) {
         DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andSceneIdEqualTo(dataSetTableRequest.getSceneId());
+        if(StringUtils.isNotEmpty(dataSetTableRequest.getSceneId())){
+            datasetTableExample.createCriteria().andSceneIdEqualTo(dataSetTableRequest.getSceneId());
+        }
         if (StringUtils.isNotEmpty(dataSetTableRequest.getSort())) {
             datasetTableExample.setOrderByClause(dataSetTableRequest.getSort());
         }
@@ -92,7 +94,7 @@ public class DataSetTableService {
     }
 
     public Map<String, List<DatasetTableField>> getFieldsFromDE(DataSetTableRequest dataSetTableRequest) throws Exception {
-        DatasetTableField datasetTableField = new DatasetTableField();
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
@@ -121,7 +123,7 @@ public class DataSetTableService {
         datasourceRequest.setDatasource(ds);
         String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
 
-        DatasetTableField datasetTableField = new DatasetTableField();
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
@@ -137,15 +139,13 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
-//        datasourceRequest.setTable(table);
 
-        DatasetTableField datasetTableField = new DatasetTableField();
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
 
         String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
-//        datasourceRequest.setQuery("SELECT " + StringUtils.join(fieldArray, ",") + " FROM " + table + " LIMIT 0,10;");
         datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");
 
         List<String[]> data = new ArrayList<>();
@@ -154,17 +154,6 @@ public class DataSetTableService {
         } catch (Exception e) {
         }
 
-
-        /*JSONArray jsonArray = new JSONArray();
-        if (CollectionUtils.isNotEmpty(data)) {
-            data.forEach(ele -> {
-                JSONObject jsonObject = new JSONObject();
-                for (int i = 0; i < ele.length; i++) {
-                    jsonObject.put(fieldArray[i], ele[i]);
-                }
-                jsonArray.add(jsonObject);
-            });
-        }*/
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
@@ -184,6 +173,53 @@ public class DataSetTableService {
         return map;
     }
 
+    public List<String[]> getDataSetData(String datasourceId, String table, List<DatasetTableField> fields){
+        List<String[]> data = new ArrayList<>();
+        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
+        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0, 10");
+        try {
+            data.addAll(datasourceProvider.getData(datasourceRequest));
+        } catch (Exception e) {
+        }
+        return data;
+    }
+
+    public Long getDataSetTotalData(String datasourceId, String table){
+        List<String[]> data = new ArrayList<>();
+        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        datasourceRequest.setQuery("select count(*) from " + table);
+        try {
+            return datasourceProvider.count(datasourceRequest);
+        } catch (Exception e) {
+
+        }
+        return 0l;
+    }
+
+    public List<String[]> getDataSetPageData(String datasourceId, String table, List<DatasetTableField> fields, Long startPage, Long pageSize){
+        List<String[]> data = new ArrayList<>();
+        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
+        datasourceRequest.setPageSize(pageSize);
+        datasourceRequest.setStartPage(startPage);
+        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray));
+        try {
+            return datasourceProvider.getData(datasourceRequest);
+        } catch (Exception e) {
+        }
+        return data;
+    }
+
     public void saveTableField(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
@@ -193,7 +229,7 @@ public class DataSetTableService {
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
-                DatasetTableField datasetTableField = new DatasetTableField();
+                DatasetTableField datasetTableField = DatasetTableField.builder().build();
                 datasetTableField.setTableId(datasetTable.getId());
                 datasetTableField.setOriginName(filed.getFieldName());
                 datasetTableField.setName(filed.getRemarks());

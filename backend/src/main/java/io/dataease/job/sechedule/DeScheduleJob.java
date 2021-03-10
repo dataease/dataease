@@ -1,22 +1,25 @@
 package io.dataease.job.sechedule;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import io.dataease.commons.utils.LogUtil;
+import org.quartz.*;
 
 public abstract class DeScheduleJob implements Job {
 
+    protected String datasetTableId;
+    protected String expression;
+    protected String taskId;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        JobKey jobKey = context.getTrigger().getJobKey();
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        this.datasetTableId = jobDataMap.getString("datasetTableId");
+        this.expression = jobDataMap.getString("expression");
+        this.taskId = jobDataMap.getString("taskId");
 
-//        JobKey jobKey = context.getTrigger().getJobKey();
-//        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-//        this.resourceId = jobDataMap.getString("resourceId");
-//        this.userId = jobDataMap.getString("userId");
-//        this.expression = jobDataMap.getString("expression");
-//
-//        LogUtil.info(jobKey.getGroup() + " Running: " + resourceId);
-//        LogUtil.info("CronExpression: " + expression);
+        LogUtil.info(jobKey.getGroup() + " Running: " + datasetTableId);
+        LogUtil.info(jobKey.getName() + " Running: " + datasetTableId);
+        LogUtil.info("CronExpression: " + expression);
         businessExecute(context);
     }
 

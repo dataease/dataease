@@ -48,4 +48,11 @@ public class DataSetTableTaskLogService {
         return extDataSetTaskMapper.list(request);
     }
 
+    public void deleteByTaskId(String taskId){
+        DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
+        DatasetTableTaskLogExample.Criteria criteria = datasetTableTaskLogExample.createCriteria();
+        criteria.andTaskIdEqualTo(taskId);
+        datasetTableTaskLogMapper.deleteByExample(datasetTableTaskLogExample);
+    }
+
 }
