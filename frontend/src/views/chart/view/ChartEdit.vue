@@ -28,6 +28,7 @@
             :move="onMove"
             style="height: 90%;overflow:auto"
             @end="end1"
+            @start="start1"
           >
             <transition-group>
               <span v-for="item in dimension" :key="item.id" class="item" @click="click1(item)">{{ item.name }}</span>
@@ -42,7 +43,8 @@
             animation="300"
             :move="onMove"
             style="height: 90%;overflow:auto"
-            @end="end2"
+            @end="end1"
+            @start="start1"
           >
             <transition-group>
               <span v-for="item in quota" :key="item.id" class="item" @click="click2(item)">{{ item.name }}</span>
@@ -103,20 +105,28 @@
                 group="itxst"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;"
-                @end="end3"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
+                @end="end2"
               >
-                <transition-group style="width: 100%;height: 100%;">
-                  <el-tag
-                    v-for="(item,index) in view.xaxis"
-                    :key="item.id"
-                    size="small"
-                    class="item-axis"
-                    closable
-                    @close="clear1(index)"
-                  >
-                    {{ item.name }}
-                  </el-tag>
+                <transition-group class="draggable-group">
+                  <el-dropdown v-for="(item) in view.xaxis" :key="item.id" trigger="click" size="small">
+                    <span class="el-dropdown-link">
+                      <span
+                        class="item-axis"
+                      >
+                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"></i>
+                        <span/>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item icon="el-icon-edit-outline">
+                            item1
+                          </el-dropdown-item>
+                          <el-dropdown-item icon="el-icon-delete">
+                            item2
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </span>
+                    </span>
+                  </el-dropdown>
                 </transition-group>
               </draggable>
             </el-row>
@@ -127,27 +137,35 @@
                 group="itxst"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;"
-                @end="end4"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
+                @end="end2"
               >
-                <transition-group style="width:100%;height: 100%;">
-                  <el-tag
-                    v-for="(item,index) in view.yaxis"
-                    :key="item.id"
-                    size="small"
-                    class="item-axis"
-                    closable
-                    @close="clear2(index)"
-                  >
-                    {{ item.name }}
-                  </el-tag>
+                <transition-group class="draggable-group">
+                  <el-dropdown v-for="(item) in view.yaxis" :key="item.id" trigger="click" size="small">
+                    <span class="el-dropdown-link">
+                      <span
+                        class="item-axis"
+                      >
+                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"></i>
+                        <span/>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item icon="el-icon-edit-outline">
+                            item3
+                          </el-dropdown-item>
+                          <el-dropdown-item icon="el-icon-delete">
+                            item4
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </span>
+                    </span>
+                  </el-dropdown>
                 </transition-group>
               </draggable>
             </el-row>
           </el-row>
 
           <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
-            <div id="echart" style="width: 100%;height: 80vh;" />
+            <div id="echart" style="width: 100%;height: 80vh;"/>
           </div>
         </el-row>
       </el-col>
@@ -252,12 +270,6 @@ export default {
         this.view.yaxis.push(item)
       }
     },
-    clear1(index) {
-      this.view.xaxis.splice(index, 1)
-    },
-    clear2(index) {
-      this.view.yaxis.splice(index, 1)
-    },
     get(id) {
       if (id) {
         post('/chart/view/get/' + id, null).then(response => {
@@ -311,37 +323,60 @@ export default {
     },
 
     // 左边往右边拖动时的事件
+    start1(e) {
+      console.log(e)
+      e.clone.className = 'item-on-move'
+      e.item.className = 'item-on-move'
+    },
     end1(e) {
-      // console.log(e)
-      // var that = this;
-      // var items = this.arr2.filter(function (m) {
-      //   return m.id == that.moveId
-      // })
-      // //如果左边
-      // if (items.length < 2) return;
-      // this.arr2.splice(e.newDraggableIndex, 1)
+      console.log(e)
+      e.clone.className = 'item'
+      e.item.className = 'item'
+      this.refuseMove(e)
+    },
+    start2(e) {
+      console.log(e)
     },
     // 右边往左边拖动时的事件
     end2(e) {
-      // console.log(e)
-      // var that = this;
-      // var items = this.yAxisData.filter(function (m) {
-      //   return m.id == that.moveId
-      // })
-      // //如果左边
-      // if (items.length < 2) return;
-      // this.yAxisData.splice(e.newDraggableIndex, 1)
+      console.log(e)
+      this.removeDuplicateKey(e)
     },
-    end3(e) {
-
+    refuseMove(e) {
+      // TODO 最后逻辑再思考下...
+      const that = this
+      const xItems = this.dimension.filter(function(m) {
+        return m.id === that.moveId
+      })
+      const yItems = this.quota.filter(function(m) {
+        return m.id === that.moveId
+      })
+      if (xItems && xItems.length > 0) {
+        this.dimension.splice(e.oldDraggableIndex, 0)
+      }
+      if (yItems && yItems.length > 0) {
+        this.quota.splice(e.oldDraggableIndex, 0)
+      }
     },
-    end4(e) {
-
+    removeDuplicateKey(e) {
+      const that = this
+      const xItems = this.dimension.filter(function(m) {
+        return m.id === that.moveId
+      })
+      const yItems = this.quota.filter(function(m) {
+        return m.id === that.moveId
+      })
+      if (xItems && xItems.length > 0) {
+        this.dimension.splice(e.newDraggableIndex, 1)
+      }
+      if (yItems && yItems.length > 0) {
+        this.quota.splice(e.newDraggableIndex, 1)
+      }
     },
     // move回调方法
     onMove(e, originalEvent) {
       console.log(e)
-      // this.moveId = e.relatedContext.element.id;
+      this.moveId = e.draggedContext.element.id
       // //不允许停靠
       // if (e.relatedContext.element.id == 1) return false;
       // //不允许拖拽
@@ -387,30 +422,46 @@ export default {
   }
 
   .item {
-    padding: 2px 12px;
+    padding: 3px 10px;
     margin: 3px 3px 0 3px;
     border: solid 1px #eee;
-    background-color: #f1f1f1;
     text-align: left;
+    color: #606266;
     display: block;
   }
 
+  .item-on-move {
+    padding: 3px 10px;
+    margin: 3px 3px 0 3px;
+    border: solid 1px #eee;
+    text-align: left;
+    color: #606266;
+  }
+
   .item + .item {
-    border-top: none;
     margin-top: 3px;
   }
 
   .item:hover {
-    background-color: #fdfdfd;
+    color: #1890ff;
+    background: #e8f4ff;
+    border-color: #a3d3ff;
     cursor: pointer;
   }
 
   .item-axis {
-    padding: 2px 12px;
-    margin: 3px 3px 0 3px;
+    padding: 1px 8px;
+    margin: 0 3px;
     border: solid 1px #eee;
     background-color: #f1f1f1;
     text-align: left;
+    height: 24px;
+    line-height: 22px;
+    display: inline-block;
+    color: #1890ff;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
   }
 
   .item-axis:hover {
@@ -424,5 +475,11 @@ export default {
 
   span {
     font-size: 12px;
+  }
+
+  .draggable-group {
+    display: inline-block;
+    width: 100%;
+    height: calc(100% - 6px);
   }
 </style>
