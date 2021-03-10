@@ -589,7 +589,8 @@ export default {
     result_filter: '结果过滤器',
     x_axis: '横轴',
     y_axis: '纵轴',
-    chart: '视图'
+    chart: '视图',
+    close: '关闭'
   },
   dataset: {
     datalist: '数据集',

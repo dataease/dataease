@@ -7,12 +7,12 @@
     <el-row style="height: 40px;" class="padding-lr">
       <span style="line-height: 40px;">{{ view.name }}</span>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini">
-          {{ $t('chart.cancel') }}
+        <el-button size="mini" @click="closeEdit">
+          {{ $t('chart.close') }}
         </el-button>
-        <el-button type="primary" size="mini" @click="save">
-          {{ $t('chart.confirm') }}
-        </el-button>
+        <!--        <el-button type="primary" size="mini" @click="save">-->
+        <!--          {{ $t('chart.confirm') }}-->
+        <!--        </el-button>-->
       </span>
     </el-row>
     <el-row style="display: flex;height: 100%">
@@ -69,6 +69,7 @@
                 :placeholder="$t('chart.title')"
                 prefix-icon="el-icon-search"
                 clearable
+                @blur="save"
               />
             </el-form-item>
           </el-form>
@@ -109,12 +110,12 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <el-dropdown v-for="(item) in view.xaxis" :key="item.id" trigger="click" size="small">
+                  <el-dropdown v-for="(item) in view.xaxis" :key="item.id" trigger="click" size="mini">
                     <span class="el-dropdown-link">
                       <span
                         class="item-axis"
                       >
-                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"></i>
+                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"/>
                         <span/>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item icon="el-icon-edit-outline">
@@ -141,16 +142,23 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <el-dropdown v-for="(item) in view.yaxis" :key="item.id" trigger="click" size="small">
+                  <el-dropdown v-for="(item) in view.yaxis" :key="item.id" trigger="click" size="mini">
                     <span class="el-dropdown-link">
                       <span
                         class="item-axis"
                       >
-                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"></i>
+                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"/>
                         <span/>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item icon="el-icon-edit-outline">
-                            item3
+                            <el-dropdown placement="right-start" size="mini">
+                              <span class="el-dropdown-link">
+                                item3<i class="el-icon-arrow-right el-icon--right"/>
+                              </span>
+                              <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item>sub1</el-dropdown-item>
+                              </el-dropdown-menu>
+                            </el-dropdown>
                           </el-dropdown-item>
                           <el-dropdown-item icon="el-icon-delete">
                             item4
@@ -224,7 +232,13 @@ export default {
     }
 
   },
-  watch: {},
+  watch: {
+    'view.type': {
+      handler: function() {
+        this.save()
+      }
+    }
+  },
   created() {
     // this.get(this.$store.state.chart.viewId);
   },
@@ -296,6 +310,9 @@ export default {
         this.$store.dispatch('chart/setChartSceneData', this.sceneId)
       })
     },
+    closeEdit() {
+      this.$emit('switchComponent', { name: '' })
+    },
     getData(id) {
       if (id) {
         post('/chart/view/getData/' + id, null).then(response => {
@@ -333,6 +350,8 @@ export default {
       e.clone.className = 'item'
       e.item.className = 'item'
       this.refuseMove(e)
+      this.removeCheckedKey(e)
+      this.save()
     },
     start2(e) {
       console.log(e)
@@ -341,9 +360,24 @@ export default {
     end2(e) {
       console.log(e)
       this.removeDuplicateKey(e)
+      this.save()
+    },
+    removeCheckedKey(e) {
+      const that = this
+      const xItems = this.view.xaxis.filter(function(m) {
+        return m.id === that.moveId
+      })
+      const yItems = this.view.yaxis.filter(function(m) {
+        return m.id === that.moveId
+      })
+      if (xItems && xItems.length > 1) {
+        this.view.xaxis.splice(e.newDraggableIndex, 1)
+      }
+      if (yItems && yItems.length > 1) {
+        this.view.yaxis.splice(e.newDraggableIndex, 1)
+      }
     },
     refuseMove(e) {
-      // TODO 最后逻辑再思考下...
       const that = this
       const xItems = this.dimension.filter(function(m) {
         return m.id === that.moveId
@@ -351,11 +385,11 @@ export default {
       const yItems = this.quota.filter(function(m) {
         return m.id === that.moveId
       })
-      if (xItems && xItems.length > 0) {
-        this.dimension.splice(e.oldDraggableIndex, 0)
+      if (xItems && xItems.length > 1) {
+        this.dimension.splice(e.newDraggableIndex, 1)
       }
-      if (yItems && yItems.length > 0) {
-        this.quota.splice(e.oldDraggableIndex, 0)
+      if (yItems && yItems.length > 1) {
+        this.quota.splice(e.newDraggableIndex, 1)
       }
     },
     removeDuplicateKey(e) {
@@ -451,7 +485,7 @@ export default {
 
   .item-axis {
     padding: 1px 8px;
-    margin: 0 3px;
+    margin: 0 3px 2px 3px;
     border: solid 1px #eee;
     background-color: #f1f1f1;
     text-align: left;
