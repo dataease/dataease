@@ -45,8 +45,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String authorization = httpServletRequest.getHeader("Authorization");
-
-        if (JWTUtils.needRefresh(authorization)){
+        // 当没有出现登录超时 且需要刷新token 则执行刷新token
+        if (!JWTUtils.loginExpire(authorization) && JWTUtils.needRefresh(authorization)){
             authorization = refreshToken(request, response);
         }
         JWTToken token = new JWTToken(authorization);
@@ -81,7 +81,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         AuthUserService authUserService = CommonBeanFactory.getBean(AuthUserService.class);
         SysUserEntity user = authUserService.getUserById(tokenInfo.getUserId());
         String password = user.getPassword();
+
+        // 删除老token操作时间
+        JWTUtils.removeTokenExpire(token);
         String newToken = JWTUtils.sign(tokenInfo, password);
+        // 记录新token操作时间
+        JWTUtils.addTokenExpire(newToken);
+
         JWTToken jwtToken = new JWTToken(newToken);
         this.getSubject(request, response).login(jwtToken);
         // 设置响应的Header头新Token

@@ -6,9 +6,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.entity.TokenInfo;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.ServletUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
@@ -19,7 +22,7 @@ public class JWTUtils {
     // token过期时间5min (过期会自动刷新续命 目的是避免一直都是同一个token )
     private static final long EXPIRE_TIME = 1*60*1000;
     // 登录间隔时间10min 超过这个时间强制重新登录
-    private static final long Login_Interval = 10*60*1000;
+    private static final long Login_Interval = 2*60*1000;
 
 
     /**
@@ -36,9 +39,10 @@ public class JWTUtils {
                 .withClaim("userId", tokenInfo.getUserId())
                 .build();
         DecodedJWT jwt = verifier.verify(token);
-        Long lastLoginTime = jwt.getClaim("lastLoginTime").asLong();
+        //Long lastLoginTime = jwt.getClaim("lastLoginTime").asLong();
+        Long lastOperateTime = tokenLastOperateTime(token);
         long now = System.currentTimeMillis();
-        if (now - lastLoginTime > Login_Interval){
+        if (now - lastOperateTime > Login_Interval){
             // 登录超时
             HttpServletResponse response = ServletUtils.response();
             response.addHeader("Access-Control-Expose-Headers", "authentication-status");
@@ -74,6 +78,17 @@ public class JWTUtils {
         return new Date().getTime() >= exp.getTime();
     }
 
+    /**
+     * 当前token是否登录超时
+     * @param token
+     * @return
+     */
+    public static boolean loginExpire(String token){
+        Long now = System.currentTimeMillis();
+        Long lastOperateTime = tokenLastOperateTime(token);
+        return now - lastOperateTime > Login_Interval;
+    }
+
     public static Date getExp(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
@@ -105,5 +120,29 @@ public class JWTUtils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * 获取当前token上次操作时间
+     * @param token
+     * @return
+     */
+    public static Long tokenLastOperateTime(String token){
+        CacheManager cacheManager = CommonBeanFactory.getBean(CacheManager.class);
+        Cache tokens_expire = cacheManager.getCache("tokens_expire");
+        Long expTime = tokens_expire.get(token, Long.class);
+        return expTime;
+    }
+
+    public static void removeTokenExpire(String token){
+        CacheManager cacheManager = CommonBeanFactory.getBean(CacheManager.class);
+        Cache tokens_expire = cacheManager.getCache("tokens_expire");
+        tokens_expire.evict(token);
+    }
+
+    public static void addTokenExpire(String token){
+        CacheManager cacheManager = CommonBeanFactory.getBean(CacheManager.class);
+        Cache tokens_expire = cacheManager.getCache("tokens_expire");
+        tokens_expire.put(token, System.currentTimeMillis());
     }
 }

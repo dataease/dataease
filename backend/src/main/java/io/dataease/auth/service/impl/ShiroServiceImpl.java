@@ -35,6 +35,7 @@ public class ShiroServiceImpl implements ShiroService {
         // filterChainDefinitionMap.put("/404", "anon");
         // 登陆
         // filterChainDefinitionMap.put("/api/auth/logout", "anon");
+        filterChainDefinitionMap.put("/api/auth/test", "anon");
         filterChainDefinitionMap.put("/api/auth/login", "anon");
         // 退出
 

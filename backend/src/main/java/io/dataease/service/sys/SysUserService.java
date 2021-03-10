@@ -111,6 +111,7 @@ public class SysUserService {
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
+    @CacheEvict(value = USER_CACHE_NAME, key = "'user' + #request.userId")
     public int adminUpdatePwd(SysUserPwdRequest request){
         SysUser sysUser = new SysUser();
         sysUser.setUserId(request.getUserId());
