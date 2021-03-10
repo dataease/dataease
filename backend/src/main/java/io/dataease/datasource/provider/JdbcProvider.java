@@ -9,6 +9,7 @@ import io.dataease.datasource.request.DatasourceRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.sql.*;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service("jdbc")
@@ -23,27 +24,51 @@ public class JdbcProvider extends DatasourceProvider{
                 Statement stat = connection.createStatement();
                 ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())
         ) {
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            while (rs.next()) {
-                String[] row = new String[columnCount];
-                for (int j = 0; j < columnCount; j++) {
-                    int columType = metaData.getColumnType(j + 1);
-                    switch (columType) {
-                        case java.sql.Types.DATE:
-                            row[j] = rs.getDate(j + 1).toString();
-                            break;
-                        default:
-                            row[j] = rs.getString(j + 1);
-                            break;
-                    }
-                }
-                list.add(row);
-            }
+            list = fetchResult(rs);
         } catch (SQLException e){
             throw new Exception("ERROR:" + e.getMessage(), e);
         }catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
+        }
+        return list;
+    }
+
+    @Override
+    public List<String[]> getPageData(DatasourceRequest datasourceRequest) throws Exception {
+        List<String[]> list = new LinkedList<>();
+        try (
+                Connection connection = getConnection(datasourceRequest);
+                Statement stat = connection.createStatement();
+                ResultSet rs = stat.executeQuery(datasourceRequest.getQuery() + MessageFormat.format(" LIMIT {0}, {1}", (datasourceRequest.getStartPage() -1)*datasourceRequest.getPageSize(), datasourceRequest.getPageSize()))
+        ) {
+            list = fetchResult(rs);
+        } catch (SQLException e){
+            throw new Exception("ERROR:" + e.getMessage(), e);
+        }catch (Exception e) {
+            throw new Exception("ERROR:" + e.getMessage(), e);
+        }
+        return list;
+    }
+
+
+    private List<String[]> fetchResult( ResultSet rs) throws Exception{
+        List<String[]> list = new LinkedList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        while (rs.next()) {
+            String[] row = new String[columnCount];
+            for (int j = 0; j < columnCount; j++) {
+                int columType = metaData.getColumnType(j + 1);
+                switch (columType) {
+                    case java.sql.Types.DATE:
+                        row[j] = rs.getDate(j + 1).toString();
+                        break;
+                    default:
+                        row[j] = rs.getString(j + 1);
+                        break;
+                }
+            }
+            list.add(row);
         }
         return list;
     }
@@ -104,6 +129,19 @@ public class JdbcProvider extends DatasourceProvider{
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
         }
+    }
+
+
+    public Long count(DatasourceRequest datasourceRequest)throws Exception{
+        try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
+            ResultSet resultSet = ps.executeQuery(datasourceRequest.getQuery());
+            while (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+        } catch (Exception e) {
+            throw new Exception("ERROR: " + e.getMessage(), e);
+        }
+        return 0L;
     }
 
     private Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {

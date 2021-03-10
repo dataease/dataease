@@ -369,11 +369,11 @@ public class ScheduleManager {
         addOrUpdateCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, null);
     }
 
-    public JobDataMap getDefaultJobDataMap(String resourceId, String expression, String userId) {
+    public JobDataMap getDefaultJobDataMap(String resourceId, String expression, String taskId) {
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("resourceId", resourceId);
+        jobDataMap.put("datasetTableId", resourceId);
+        jobDataMap.put("taskId", taskId);
         jobDataMap.put("expression", expression);
-        jobDataMap.put("userId", userId);
         return jobDataMap;
     }
 

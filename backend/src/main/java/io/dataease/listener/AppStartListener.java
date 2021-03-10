@@ -20,13 +20,7 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        System.out.println("================= 应用启动 =================");
-        /* cron schedule */
-//        scheduleManager.addCronJob(new JobKey("abc", "def"), new TriggerKey("abc", "def"), TestJob.class, "*/10 * * * * ?");
-        /* single schedule*/
-//        long timestamp = System.currentTimeMillis() + 90 * 1000;
-//        Date date = new Date(timestamp);
-//        scheduleManager.addSingleJob(new JobKey("abc", "def"), new TriggerKey("abc", "def"), TestJob.class, date);
+        System.out.println("================= Application start =================");
         // 项目启动，从数据库读取任务加入到Quartz
         List<DatasetTableTask> list = dataSetTableTaskService.list(new DatasetTableTask());
         for (DatasetTableTask task : list) {

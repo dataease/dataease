@@ -20,7 +20,8 @@ import java.util.UUID;
 public class DataSetTableTaskService {
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
-
+    @Resource
+    private DataSetTableTaskLogService dataSetTableTaskLogService;
     @Resource
     private ScheduleService scheduleService;
 
@@ -46,6 +47,11 @@ public class DataSetTableTaskService {
         DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(id);
         datasetTableTaskMapper.deleteByPrimaryKey(id);
         scheduleService.deleteSchedule(datasetTableTask);
+        dataSetTableTaskLogService.deleteByTaskId(id);
+    }
+
+    public DatasetTableTask get(String id) {
+        return datasetTableTaskMapper.selectByPrimaryKey(id);
     }
 
     public List<DatasetTableTask> list(DatasetTableTask datasetTableTask) {

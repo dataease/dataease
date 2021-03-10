@@ -1,8 +1,8 @@
 package io.dataease.service;
 
 import io.dataease.base.domain.DatasetTableTask;
+import io.dataease.job.sechedule.ExtractDataJob;
 import io.dataease.job.sechedule.ScheduleManager;
-import io.dataease.job.sechedule.TestJob;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
@@ -24,8 +24,8 @@ public class ScheduleService {
         if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), "0")) {
             scheduleManager.addOrUpdateSingleJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
                     new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
-                    TestJob.class,//TODO
-                    new Date(datasetTableTask.getStartTime()));
+                    ExtractDataJob.class,
+                    new Date(datasetTableTask.getStartTime()), scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId()));
         } else if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), "1")) {
             Date endTime;
             if (datasetTableTask.getEndTime() == null || datasetTableTask.getEndTime() == 0) {
@@ -36,8 +36,9 @@ public class ScheduleService {
 
             scheduleManager.addOrUpdateCronJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
                     new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
-                    TestJob.class,// TODO
-                    datasetTableTask.getCron(), new Date(datasetTableTask.getStartTime()), endTime);
+                    ExtractDataJob.class,
+                    datasetTableTask.getCron(), new Date(datasetTableTask.getStartTime()), endTime,
+                    scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId()));
         }
     }
 
