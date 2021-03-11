@@ -4,16 +4,20 @@ import io.dataease.base.domain.SysDept;
 import io.dataease.base.domain.SysDeptExample;
 import io.dataease.base.mapper.SysDeptMapper;
 import io.dataease.base.mapper.ext.ExtDeptMapper;
+import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.DeptCreateRequest;
 import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
+import io.dataease.controller.sys.request.SimpleTreeNode;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,11 +27,11 @@ public class DeptService {
     private final static Integer DEFAULT_SUBCOUNT = 0;
     public final static Long DEPT_ROOT_PID = 0L;
 
-    @Resource
+    @Autowired(required = false)
     private SysDeptMapper sysDeptMapper;
 
 
-    @Resource
+    @Autowired(required = false)
     private ExtDeptMapper extDeptMapper;
 
     public List<SysDept> nodesByPid(Long pid){
@@ -119,5 +123,60 @@ public class DeptService {
         sysDept.setEnabled(status);
         return sysDeptMapper.updateByPrimaryKeySelective(sysDept);
     }
+
+
+
+    public List<SysDept> nodesTreeByCondition(BaseGridRequest request){
+        //DeptService proxy = proxy();
+        List<SimpleTreeNode> allNodes = allNodes();
+        List<SimpleTreeNode> targetNodes = nodeByCondition(request);
+        List<Long> ids = upTree(allNodes, targetNodes);
+        SysDeptExample example = new SysDeptExample();
+        SysDeptExample.Criteria criteria = example.createCriteria();
+        criteria.andDeptIdIn(ids);
+        example.setOrderByClause("dept_sort");
+        List<SysDept> sysDepts = sysDeptMapper.selectByExample(example);
+        return sysDepts;
+    }
+
+    private DeptService proxy(){
+        return CommonBeanFactory.getBean(DeptService.class);
+    }
+
+
+    private List<SimpleTreeNode> allNodes(){
+        List<SimpleTreeNode> simpleTreeNodes = extDeptMapper.allNodes();
+        return simpleTreeNodes;
+    }
+
+    private List<SimpleTreeNode> nodeByCondition(BaseGridRequest request){
+        GridExample gridExample = request.convertExample();
+        List<SimpleTreeNode> simpleTreeNodes = extDeptMapper.nodesByExample(gridExample);
+        return simpleTreeNodes;
+    }
+
+    /**
+     * 找出目标节点所在路径上的所有节点 向上找
+     * @param allNodes 所有节点
+     * @param targetNodes 目标节点
+     * @return
+     */
+    private List<Long> upTree(List<SimpleTreeNode> allNodes, List<SimpleTreeNode> targetNodes){
+        final Map<Long, SimpleTreeNode> map = targetNodes.stream().collect(Collectors.toMap(SimpleTreeNode::getId, node -> node));
+        List<Long> results = targetNodes.parallelStream().flatMap(targetNode -> {
+            //向上逐级找爹
+            List<Long> ids = new ArrayList<>();
+            SimpleTreeNode node = targetNode;
+            while (node != null) {
+                ids.add(node.getId());
+                Long pid = node.getPid();
+                node = map.get(pid);
+            }
+            return ids.stream();
+        }).distinct().collect(Collectors.toList());
+        return results;
+    }
+
+
 
 }

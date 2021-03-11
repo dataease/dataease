@@ -137,16 +137,28 @@ export function param2Obj(url) {
   )
 }
 
+// export function formatCondition(param) {
+//   if (!param) {
+//     return null
+//   }
+//   const condition = {}
+//   for (const key in param) {
+//     if (Object.hasOwnProperty.call(param, key)) {
+//       const element = param[key]
+//       condition[element.field] = element.value
+//     }
+//   }
+//   return condition
+// }
+
 export function formatCondition(param) {
   if (!param) {
     return null
   }
-  const condition = {}
-  for (const key in param) {
-    if (Object.hasOwnProperty.call(param, key)) {
-      const element = param[key]
-      condition[element.field] = element.value
-    }
+  const result = { conditions: [] }
+  for (const [key, value] of Object.entries(param)) {
+    console.log(`${key}`)
+    result.conditions.push(value)
   }
-  return condition
+  return result
 }

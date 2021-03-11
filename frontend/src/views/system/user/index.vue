@@ -177,13 +177,14 @@ export default {
         }
       ],
       searchConfig: {
+        useQuickSearch: false,
         quickPlaceholder: '按姓名搜索',
         components: [
         //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
-          { field: 'name', label: '姓名', component: 'FuComplexInput' },
+          { field: 'nick_name', label: '姓名', component: 'FuComplexInput' },
 
           {
-            field: 'enabled',
+            field: 'u.enabled',
             label: '状态',
             component: 'FuComplexSelect',
             options: [
@@ -295,13 +296,15 @@ export default {
 
     search(condition) {
       console.log(condition) // demo只查看搜索条件，没有搜索的实现
-      const param = formatCondition(condition)
+      const temp = formatCondition(condition)
+      const param = temp || {}
       const { currentPage, pageSize } = this.paginationConfig
-      userLists(currentPage, pageSize, param || {}).then(response => {
+      userLists(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
       })
     },
+
     create() {
       this.formType = 'add'
       this.form = Object.assign({}, this.defaultForm)

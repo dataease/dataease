@@ -8,6 +8,15 @@ export function getDeptTree(pid) {
   })
 }
 
+export function loadTable(data) {
+  return request({
+    url: 'api/dept/search',
+    method: 'post',
+    data,
+    loading: true
+  })
+}
+
 export function addDept(data) {
   return request({
     url: '/api/dept/create',
@@ -32,4 +41,4 @@ export function editDept(data) {
   })
 }
 
-export default { addDept, delDept, editDept, getDeptTree }
+export default { addDept, delDept, editDept, getDeptTree, loadTable }

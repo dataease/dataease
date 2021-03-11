@@ -1,6 +1,7 @@
 package io.dataease.base.mapper.ext;
 
 import io.dataease.base.domain.SysRole;
+import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.response.RoleUserItem;
 import org.apache.ibatis.annotations.Param;
@@ -12,7 +13,7 @@ import java.util.Map;
 public interface ExtSysRoleMapper {
 
 
-    List<SysRole> query(@Param("request")RoleGridRequest request);
+    List<SysRole> query(GridExample example);
 
     int deleteRoleMenu(@Param("roleId") Long roleId);
 

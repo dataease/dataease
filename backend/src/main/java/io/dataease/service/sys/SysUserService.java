@@ -7,8 +7,10 @@ import io.dataease.base.domain.SysUsersRolesKey;
 import io.dataease.base.mapper.SysUserMapper;
 import io.dataease.base.mapper.SysUsersRolesMapper;
 import io.dataease.base.mapper.ext.ExtSysUserMapper;
+import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
 import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
@@ -40,8 +42,10 @@ public class SysUserService {
     @Resource
     private ExtSysUserMapper extSysUserMapper;
 
-    public List<SysUserGridResponse> query(UserGridRequest request){
-        List<SysUserGridResponse> lists = extSysUserMapper.query(request);
+
+    public List<SysUserGridResponse> query(BaseGridRequest request){
+        GridExample gridExample = request.convertExample();
+        List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
         lists.forEach(item -> {
             List<SysUserRole> roles = item.getRoles();
             List<Long> roleIds = roles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());

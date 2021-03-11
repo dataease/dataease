@@ -83,6 +83,7 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
+import { formatCondition } from '@/utils/index'
 import { addRole, editRole, delRole, roleGrid, addRoleMenus, menuIds } from '@/api/system/role'
 
 import { getMenusTree, getChild } from '@/api/system/menu'
@@ -124,21 +125,13 @@ export default {
         }
       ],
       searchConfig: {
+        useQuickSearch: false,
         quickPlaceholder: '按名称搜索',
         components: [
         //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
-          { field: 'name', label: '名称', component: 'FuComplexInput' },
+          { field: 'name', label: '角色名称', component: 'FuComplexInput' },
 
-          {
-            field: 'enabled',
-            label: '状态',
-            component: 'FuComplexSelect',
-            options: [
-              { label: '启用', value: '1' },
-              { label: '禁用', value: '0' }
-            ],
-            multiple: false
-          }
+          { field: 'code', label: '角色代码', component: 'FuComplexInput', defaultOperator: 'eq' }
         //   { field: 'deptId', label: '组织', component: conditionTable }
         ]
       },
@@ -164,8 +157,10 @@ export default {
       this.formType = 'add'
       this.dialogVisible = true
     },
-    search() {
-      roleGrid(this.paginationConfig.currentPage, this.paginationConfig.pageSize, {}).then(response => {
+    search(condition) {
+      const temp = formatCondition(condition)
+      const param = temp || {}
+      roleGrid(this.paginationConfig.currentPage, this.paginationConfig.pageSize, param).then(response => {
         const data = response.data
         this.total = data.itemCount
         this.tableData = data.listObject

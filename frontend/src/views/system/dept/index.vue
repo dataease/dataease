@@ -5,7 +5,7 @@
       ref="table"
       :data="tableData"
       lazy
-      :load="initTableData"
+      :load="loadExpandDatas"
       :columns="columns"
       :buttons="buttons"
       :header="header"
@@ -13,7 +13,7 @@
       :pagination-config="paginationConfig"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       row-key="deptId"
-      @search="initTableData"
+      @search="search"
     >
       <template #buttons>
         <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" />
@@ -107,10 +107,11 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 import Treeselect from '@riophae/vue-treeselect'
+import { formatCondition } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 
-import { getDeptTree, addDept, editDept, delDept } from '@/api/system/dept'
+import { getDeptTree, addDept, editDept, delDept, loadTable } from '@/api/system/dept'
 
 export default {
   name: 'MsOrganization',
@@ -131,7 +132,6 @@ export default {
       changeStatusPath: '/api/dept/updateStatus',
       result: {},
       dialogOrgAddVisible: false,
-      condition: {},
       tableData: [],
       maps: new Map(),
       oldPid: null,
@@ -160,9 +160,9 @@ export default {
         }
       ],
       searchConfig: {
-        useQuickSearch: false,
+        useQuickSearch: true,
         useComplexSearch: false,
-        quickPlaceholder: '按姓名搜索',
+        quickPlaceholder: '按名称搜索',
         components: [
 
         ]
@@ -171,22 +171,23 @@ export default {
         currentPage: 1,
         pageSize: 10,
         total: 0
+      },
+      defaultCondition: {
+        field: 'pid',
+        operator: 'eq',
+        value: 0
       }
 
     }
   },
   activated() {
-    this.initTableData()
+    this.search()
   },
   methods: {
     create() {
       this.dialogOrgAddVisible = true
       this.formType = 'add'
     },
-    search(condition) {
-      console.log(condition)
-    },
-
     edit(row) {
       this.dialogOrgAddVisible = true
       this.formType = 'modify'
@@ -236,31 +237,87 @@ export default {
       return roots
     },
 
-    initTableData(row, treeNode, resolve) {
-      const _self = this
-      const pid = (row && row.deptId) ? row.deptId : '0'
-      getDeptTree(pid).then(response => {
-        let data = response.data
+    quick_condition(condition) {
+      const result = {}
+      if (condition && condition.quick) {
+        for (const [key, value] of Object.entries(condition)) {
+          // console.log(`${key}`)
+          if (`${key}` === 'quick') {
+            const v_new = Object.assign({}, value)
+            v_new['field'] = 'name'
+            result['name'] = v_new
+          } else {
+            result[`${key}`] = value
+          }
+        }
+        return result
+      }
+      return Object.assign({}, condition)
+    },
+    // 加载表格数据
+    search(condition) {
+      let param = {}
+      if (condition && condition.quick) {
+        const con = this.quick_condition(condition)
+        param = formatCondition(con)
+      } else {
+        param = { conditions: [this.defaultCondition] }
+      }
+
+      // param.conditions.push(this.defaultCondition)
+      loadTable(param).then(res => {
+        let data = res.data
         data = data.map(obj => {
           if (obj.subCount > 0) {
             obj.hasChildren = true
           }
           return obj
         })
-        if (!row) {
-          data.some(node => {
-            node.children = null
-          })
-          _self.tableData = data
-          _self.depts = null
-        } else {
-          this.maps.set(row.deptId, { row, treeNode, resolve })
-          resolve && resolve(data)
-        }
+        this.tableData = data
+        this.depts = null
       })
     },
+
+    // 加载下一级子节点数据
+    loadExpandDatas(row, treeNode, resolve) {
+      getDeptTree(row.deptId).then(res => {
+        let data = res.data
+        data = data.map(obj => {
+          if (obj.subCount > 0) {
+            obj.hasChildren = true
+          }
+          return obj
+        })
+        this.maps.set(row.deptId, { row, treeNode, resolve })
+        resolve && resolve(data)
+      })
+    },
+
+    // initTableData(row, treeNode, resolve) {
+    //   const _self = this
+    //   const pid = (row && row.deptId) ? row.deptId : '0'
+    //   getDeptTree(pid).then(response => {
+    //     let data = response.data
+    //     data = data.map(obj => {
+    //       if (obj.subCount > 0) {
+    //         obj.hasChildren = true
+    //       }
+    //       return obj
+    //     })
+    //     if (!row) {
+    //       data.some(node => {
+    //         node.children = null
+    //       })
+    //       _self.tableData = data
+    //       _self.depts = null
+    //     } else {
+    //       this.maps.set(row.deptId, { row, treeNode, resolve })
+    //       resolve && resolve(data)
+    //     }
+    //   })
+    // },
     closeFunc() {
-      this.initTableData()
+      this.search()
       this.form = {}
       this.oldPid = null
       this.depts = null
@@ -329,7 +386,7 @@ export default {
           if (this.formType !== 'modify') {
             addDept(this.form).then(res => {
               this.$success(this.$t('commons.save_success'))
-              this.initTableData()
+              this.search()
               this.oldPid && this.reloadByPid(this.oldPid)
               this.reloadByPid(this.form['pid'])
               this.dialogOrgAddVisible = false
@@ -337,7 +394,7 @@ export default {
           } else {
             editDept(this.form).then(res => {
               this.$success(this.$t('commons.save_success'))
-              this.initTableData()
+              this.search()
               this.oldPid && this.reloadByPid(this.oldPid)
               this.reloadByPid(this.form['pid'])
               this.dialogOrgAddVisible = false
@@ -358,7 +415,7 @@ export default {
         const requests = [{ deptId: organization.deptId, pid: organization.pid }]
         delDept(requests).then(res => {
           this.$success(this.$t('commons.delete_success'))
-          this.initTableData()
+          this.search()
           this.reloadByPid(organization.pid)
         })
       }).catch(() => {
@@ -372,7 +429,7 @@ export default {
       if (pid !== 0 && this.maps.get(pid)) {
         const { row, treeNode, resolve } = this.maps.get(pid)
         this.$set(this.$refs.table.store.states.lazyTreeNodeMap, pid, [])
-        this.initTableData(row, treeNode, resolve)
+        this.loadExpandDatas(row, treeNode, resolve)
       }
     },
     array2Tree(arr) {

@@ -1,9 +1,8 @@
 package io.dataease.base.mapper.ext;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
+import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.controller.sys.request.SimpleTreeNode;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -22,4 +21,9 @@ public interface ExtDeptMapper {
             "        <foreach collection='ids' item='id' open='(' separator=',' close=')'>#{id}</foreach> " +
             "</script>")
     int batchDelete(@Param("ids") List<Long> ids);
+
+
+    List<SimpleTreeNode> allNodes();
+
+    List<SimpleTreeNode> nodesByExample(GridExample example);
 }

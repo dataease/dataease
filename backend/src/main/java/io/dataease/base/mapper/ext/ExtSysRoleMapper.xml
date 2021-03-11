@@ -9,15 +9,19 @@
         <result property="name" column="name"/>
     </resultMap>
 
-    <select id="query" resultMap="io.dataease.base.mapper.SysRoleMapper.BaseResultMap">
+    <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="io.dataease.base.mapper.SysRoleMapper.BaseResultMap">
         select r.*
         from sys_role r
-        <where>
-            <if test="request.name != null">
-                AND r.name like CONCAT('%', #{request.name},'%')
-            </if>
-        </where>
-        order by r.update_time desc
+        <if test="_parameter != null">
+            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by r.update_time desc
+        </if>
+
     </select>
 
 
