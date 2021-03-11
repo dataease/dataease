@@ -592,7 +592,15 @@ export default {
     x_axis: '横轴',
     y_axis: '纵轴',
     chart: '视图',
-    close: '关闭'
+    close: '关闭',
+    summary: '汇总方式',
+    fast_calc: '快速计算',
+    sum: '求和',
+    avg: '平均',
+    max: '最大值',
+    min: '最小值',
+    std: '标准差',
+    var_samp: '方差'
   },
   dataset: {
     datalist: '数据集',

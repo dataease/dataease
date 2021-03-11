@@ -23,7 +23,7 @@
           <span>{{ $t('chart.dimension') }}</span>
           <draggable
             v-model="dimension"
-            :options="{group:{name: 'itxst',pull:'clone'},sort: true}"
+            :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
             style="height: 90%;overflow:auto"
@@ -39,7 +39,7 @@
           <span>{{ $t('chart.quota') }}</span>
           <draggable
             v-model="quota"
-            :options="{group:{name: 'itxst',pull:'clone'},sort: true}"
+            :options="{group:{name: 'quota',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
             style="height: 90%;overflow:auto"
@@ -100,73 +100,32 @@
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <el-row style="margin-top: 10px;">
             <el-row style="display:flex;height: 32px;">
-              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.x_axis') }}</span>
+              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.dimension') }}</span>
               <draggable
                 v-model="view.xaxis"
-                group="itxst"
+                group="dimension"
                 animation="300"
                 :move="onMove"
                 style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <el-dropdown v-for="(item) in view.xaxis" :key="item.id" trigger="click" size="mini">
-                    <span class="el-dropdown-link">
-                      <span
-                        class="item-axis"
-                      >
-                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
-                        <span />
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item icon="el-icon-edit-outline">
-                            item1
-                          </el-dropdown-item>
-                          <el-dropdown-item icon="el-icon-delete">
-                            item2
-                          </el-dropdown-item>
-                        </el-dropdown-menu>
-                      </span>
-                    </span>
-                  </el-dropdown>
+                  <dimension-item v-for="(item) in view.xaxis" :key="item.id" :item="item" />
                 </transition-group>
               </draggable>
             </el-row>
             <el-row style="display:flex;height: 32px;margin-top: 10px;">
-              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.y_axis') }}</span>
+              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.quota') }}</span>
               <draggable
                 v-model="view.yaxis"
-                group="itxst"
+                group="quota"
                 animation="300"
                 :move="onMove"
                 style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <el-dropdown v-for="(item) in view.yaxis" :key="item.id" trigger="click" size="mini">
-                    <span class="el-dropdown-link">
-                      <span
-                        class="item-axis"
-                      >
-                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
-                        <span />
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item icon="el-icon-edit-outline">
-                            <el-dropdown placement="right-start" size="mini">
-                              <span class="el-dropdown-link">
-                                item3<i class="el-icon-arrow-right el-icon--right" />
-                              </span>
-                              <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item>sub1</el-dropdown-item>
-                              </el-dropdown-menu>
-                            </el-dropdown>
-                          </el-dropdown-item>
-                          <el-dropdown-item icon="el-icon-delete">
-                            item4
-                          </el-dropdown-item>
-                        </el-dropdown-menu>
-                      </span>
-                    </span>
-                  </el-dropdown>
+                  <quota-item v-for="(item) in view.yaxis" :key="item.id" :item="item" @onQuotaSummaryChange="quotaSummaryChange" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -185,10 +144,12 @@
 import { post } from '@/api/dataset/dataset'
 import draggable from 'vuedraggable'
 import { BASE_BAR } from '../chart/chart'
+import DimensionItem from '../components/DimensionItem'
+import QuotaItem from '../components/QuotaItem'
 
 export default {
   name: 'ChartEdit',
-  components: { draggable },
+  components: { QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -301,6 +262,16 @@ export default {
       view.sceneId = this.sceneId
       view.name = this.table.name
       view.tableId = this.$store.state.chart.tableId
+      view.xaxis.forEach(function(ele) {
+        if (!ele.summary || ele.summary === '') {
+          ele.summary = 'sum'
+        }
+      })
+      view.yaxis.forEach(function(ele) {
+        if (!ele.summary || ele.summary === '') {
+          ele.summary = 'sum'
+        }
+      })
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
       post('/chart/view/save', view).then(response => {
@@ -419,6 +390,17 @@ export default {
       return true
     },
 
+    quotaSummaryChange(item) {
+      console.log(item)
+      // 更新item
+      this.view.yaxis.forEach(function(ele) {
+        if (ele.id === item.id) {
+          ele.summary = item.summary
+        }
+      })
+      this.save()
+    },
+
     myEcharts(option) {
       // 基于准备好的dom，初始化echarts实例
       var myChart = this.$echarts.init(document.getElementById('echart'))
@@ -480,26 +462,6 @@ export default {
     color: #1890ff;
     background: #e8f4ff;
     border-color: #a3d3ff;
-    cursor: pointer;
-  }
-
-  .item-axis {
-    padding: 1px 8px;
-    margin: 0 3px 2px 3px;
-    border: solid 1px #eee;
-    background-color: #f1f1f1;
-    text-align: left;
-    height: 24px;
-    line-height: 22px;
-    display: inline-block;
-    color: #1890ff;
-    border-radius: 4px;
-    box-sizing: border-box;
-    white-space: nowrap;
-  }
-
-  .item-axis:hover {
-    background-color: #fdfdfd;
     cursor: pointer;
   }
 
