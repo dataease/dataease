@@ -448,7 +448,8 @@ export default {
   menu: {
     create: '创建菜单',
     modify: '修改菜单',
-    delete: '删除菜单'
+    delete: '删除菜单',
+    delete_confirm: '确定删除菜单吗'
   },
   organization: {
     create: '创建组织',

@@ -1,57 +1,46 @@
 <template>
-  <div v-loading="result.loading">
+  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
-    <el-card class="table-card">
-      <template v-slot:header>
-        <ms-table-header
-          :permission="permission"
-          :condition.sync="condition"
-          :create-tip="$t('organization.create')"
-          :title="$t('commons.organization')"
-          @search="initTableData"
-          @create="create"
-        />
+    <complex-table
+      ref="table"
+      :data="tableData"
+      lazy
+      :load="initTableData"
+      :columns="columns"
+      :buttons="buttons"
+      :header="header"
+      :search-config="searchConfig"
+      :pagination-config="paginationConfig"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      row-key="deptId"
+      @search="initTableData"
+    >
+      <template #buttons>
+        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" />
       </template>
-      <!-- system menu organization table-->
-      <el-table
-        ref="table"
-        border
-        class="adjust-table"
-        :data="tableData"
-        lazy
-        :load="initTableData"
-        style="width: 100%"
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-        row-key="deptId"
-      >
-        <!-- <el-table-column :selectable="checkboxT" type="selection" width="55" /> -->
-        <el-table-column label="名称" prop="name" />
-        <el-table-column label="下属部门数" prop="subCount" />
-        <el-table-column label="状态" align="center" prop="enabled">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.enabled"
-              :disabled="scope.row.id === 1"
-              active-color="#409EFF"
-              inactive-color="#F56C6C"
-              @change="changeEnabled(scope.row, scope.row.enabled,)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建日期">
-          <template v-slot:default="scope">
-            <span>{{ scope.row.createTime | timestampFormatDate }}</span>
-          </template>
-        </el-table-column>
 
-        <el-table-column :label="$t('commons.operating')">
-          <template v-slot:default="scope">
-            <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
-          </template>
-        </el-table-column> -->
-      </el-table>
+      <!-- <el-table-column type="selection" fix /> -->
+      <el-table-column label="名称" prop="name" />
+      <el-table-column label="下属组织数" prop="subCount" />
+      <el-table-column label="状态" align="center" prop="enabled">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.enabled"
+            :disabled="scope.row.id === 1"
+            active-color="#409EFF"
+            inactive-color="#F56C6C"
+            @change="changeEnabled(scope.row, scope.row.enabled,)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建日期">
+        <template v-slot:default="scope">
+          <span>{{ scope.row.createTime | timestampFormatDate }}</span>
+        </template>
+      </el-table-column>
 
-    </el-card>
+      <fu-table-operations :buttons="buttons" label="操作" fix />
+    </complex-table>
 
     <!-- add organization form -->
     <el-dialog
@@ -64,10 +53,10 @@
     >
       <el-form ref="createOrganization" inline :model="form" :rules="rule" size="small" label-width="80px">
 
-        <el-form-item label="部门名称" prop="name">
+        <el-form-item label="组织名称" prop="name">
           <el-input v-model="form.name" style="width: 370px;" />
         </el-form-item>
-        <el-form-item label="部门排序" prop="deptSort">
+        <el-form-item label="组织排序" prop="deptSort">
           <el-input-number
             v-model.number="form.deptSort"
             :min="0"
@@ -77,7 +66,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="顶级部门" prop="top">
+        <el-form-item label="顶级组织" prop="top">
           <el-radio-group v-model="form.top" style="width: 140px">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
@@ -92,7 +81,7 @@
 
           <!-- <el-radio v-for="item in dict.dept_status" :key="item.id" v-model="form.enabled" :label="item.value">{{ item.label }}</el-radio> -->
         </el-form-item>
-        <el-form-item v-if="!form.top" style="margin-bottom: 0;" label="上级部门" prop="pid">
+        <el-form-item v-if="!form.top" style="margin-bottom: 0;" label="上级组织" prop="pid">
           <treeselect
             v-model="form.pid"
             :auto-load-root-options="false"
@@ -103,44 +92,31 @@
           />
         </el-form-item>
       </el-form>
-      <!-- <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="crud.cancelCU">取消</el-button>
-        <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
-      </div> -->
-      <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogOrgAddVisible = false"
-          @confirm="createDept('createOrganization')"
-        />
-      </template>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="dialogOrgAddVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="createDept('createOrganization')">确认</el-button>
+      </div>
+
     </el-dialog>
 
-    <ms-delete-confirm ref="deleteConfirm" :title="$t('organization.delete')" @delete="_handleDelete" />
-
-  </div>
+  </layout-content>
 </template>
 
 <script>
+import LayoutContent from '@/components/business/LayoutContent'
+import ComplexTable from '@/components/business/complex-table'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
-import MsTableHeader from '@/metersphere/common/components/MsTableHeader'
-import MsTableOperator from '@/metersphere/common/components/MsTableOperator'
-import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
-import {
-  listenGoBack,
-  removeGoBackListener
-} from '@/metersphere/common/js/utils'
-import MsDeleteConfirm from '@/metersphere/common/components/MsDeleteConfirm'
+
 import { getDeptTree, addDept, editDept, delDept } from '@/api/system/dept'
 
 export default {
   name: 'MsOrganization',
   components: {
-    MsDeleteConfirm,
-    MsTableHeader,
-    MsTableOperator,
-    MsDialogFooter,
+    LayoutContent,
+    ComplexTable,
     Treeselect
   },
   data() {
@@ -173,6 +149,28 @@ export default {
         add: ['dept:add'],
         edit: ['dept:edit'],
         del: ['dept:del']
+      },
+      header: '',
+      columns: [],
+      buttons: [
+        {
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+        }, {
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete
+        }
+      ],
+      searchConfig: {
+        useQuickSearch: false,
+        useComplexSearch: false,
+        quickPlaceholder: '按姓名搜索',
+        components: [
+
+        ]
+      },
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
       }
 
     }
@@ -184,7 +182,6 @@ export default {
     create() {
       this.dialogOrgAddVisible = true
       this.formType = 'add'
-      listenGoBack(this.closeFunc)
     },
     search(condition) {
       console.log(condition)
@@ -196,7 +193,6 @@ export default {
       this.oldPid = row.pid
       this.form = Object.assign({}, row)
       this.treeByRow(row)
-      listenGoBack(this.closeFunc)
     },
 
     treeByRow(row) {
@@ -242,7 +238,7 @@ export default {
 
     initTableData(row, treeNode, resolve) {
       const _self = this
-      const pid = row ? row.deptId : '0'
+      const pid = (row && row.deptId) ? row.deptId : '0'
       getDeptTree(pid).then(response => {
         let data = response.data
         data = data.map(obj => {
@@ -268,7 +264,6 @@ export default {
       this.form = {}
       this.oldPid = null
       this.depts = null
-      removeGoBackListener(this.closeFunc)
       this.dialogOrgAddVisible = false
     },
 
@@ -312,7 +307,7 @@ export default {
     },
     // 改变状态
     changeEnabled(data, val) {
-      this.$confirm('此操作将 "停用" ' + data.name + '部门, 是否继续？', '提示', {
+      this.$confirm('此操作将 "停用" ' + data.name + '组织, 是否继续？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -353,9 +348,7 @@ export default {
         }
       })
     },
-    handleDelete(organization) {
-      this.$refs.deleteConfirm.open(organization)
-    },
+
     _handleDelete(organization) {
       this.$confirm(this.$t('organization.delete_confirm'), '', {
         confirmButtonText: this.$t('commons.confirm'),
@@ -407,7 +400,6 @@ export default {
 </script>
 
 <style scoped>
-@import "~@/metersphere/common/css/index.css";
 .member-size {
   text-decoration: underline;
 }

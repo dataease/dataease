@@ -1,70 +1,59 @@
 <template>
-  <div v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-
-    <el-card class="table-card">
-      <template v-slot:header>
-        <ms-table-header
-          :permission="permission"
-          :condition.sync="condition"
-          :create-tip="$t('menu.create')"
-          :title="$t('commons.menu')"
-          @search="initTableData"
-          @create="create"
-        />
+  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <complex-table
+      ref="table"
+      :data="tableData"
+      lazy
+      :load="initTableData"
+      :columns="columns"
+      :buttons="buttons"
+      :header="header"
+      :search-config="searchConfig"
+      :pagination-config="paginationConfig"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      row-key="menuId"
+      @search="initTableData"
+    >
+      <template #buttons>
+        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('menu.create')" @click="create" />
       </template>
-      <el-table
-        ref="table"
-        border
-        class="adjust-table"
-        :data="tableData"
-        lazy
-        :load="initTableData"
-        style="width: 100%"
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-        row-key="menuId"
-      >
 
-        <el-table-column :show-overflow-tooltip="true" label="菜单标题" width="150px" prop="title" />
-        <el-table-column prop="icon" label="图标" align="center" width="60px">
-          <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
-          </template>
-        </el-table-column>
+      <!-- <el-table-column type="selection" fix /> -->
+      <el-table-column :show-overflow-tooltip="true" label="菜单标题" width="150px" prop="title" />
+      <el-table-column prop="icon" label="图标" align="center" width="60px">
+        <template slot-scope="scope">
+          <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
+        </template>
+      </el-table-column>
 
-        <el-table-column :show-overflow-tooltip="true" prop="permission" label="权限标识" />
-        <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" />
-        <el-table-column prop="iframe" label="外链" width="75px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.iframe">是</span>
-            <span v-else>否</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="cache" label="缓存" width="75px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.cache">是</span>
-            <span v-else>否</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="hidden" label="可见" width="75px">
-          <template slot-scope="scope">
-            <span v-if="scope.row.hidden">否</span>
-            <span v-else>是</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建日期" width="160px">
-          <template v-slot:default="scope">
-            <span>{{ scope.row.createTime | timestampFormatDate }}</span>
-          </template>
-        </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" prop="permission" label="权限标识" />
+      <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" />
+      <!-- <el-table-column prop="iframe" label="外链" width="75px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.iframe">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="cache" label="缓存" width="75px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.cache">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="hidden" label="可见" width="75px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.hidden">否</span>
+          <span v-else>是</span>
+        </template>
+      </el-table-column> -->
+      <el-table-column prop="createTime" label="创建日期" width="160px">
+        <template v-slot:default="scope">
+          <span>{{ scope.row.createTime | timestampFormatDate }}</span>
+        </template>
+      </el-table-column>
 
-        <el-table-column :label="$t('commons.operating')">
-          <template v-slot:default="scope">
-            <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
-          </template>
-        </el-table-column>
-      </el-table>
-
-    </el-card>
+      <fu-table-operations :buttons="buttons" label="操作" fix />
+    </complex-table>
 
     <el-dialog
       :close-on-click-modal="false"
@@ -97,7 +86,7 @@
             </el-input>
           </el-popover>
         </el-form-item>
-        <el-form-item v-show="form.type !== '2'" label="外链菜单" prop="iframe">
+        <!-- <el-form-item v-show="form.type !== '2'" label="外链菜单" prop="iframe">
           <el-radio-group v-model="form.iframe" size="mini">
             <el-radio-button label="true">是</el-radio-button>
             <el-radio-button label="false">否</el-radio-button>
@@ -114,7 +103,7 @@
             <el-radio-button label="false">是</el-radio-button>
             <el-radio-button label="true">否</el-radio-button>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item v-if="form.type !== '2'" label="菜单标题" prop="title">
           <el-input v-model="form.title" :style=" form.type === '0' ? 'width: 450px' : 'width: 179px'" placeholder="菜单标题" />
         </el-form-item>
@@ -146,43 +135,37 @@
           />
         </el-form-item>
       </el-form>
-
-      <template v-slot:footer>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="createMenu('menuForm')">确认</el-button>
+      </div>
+      <!-- <template v-slot:footer>
         <ms-dialog-footer
           @cancel="dialogVisible = false"
           @confirm="createMenu('menuForm')"
         />
-      </template>
+      </template> -->
     </el-dialog>
 
-    <ms-delete-confirm ref="deleteConfirm" :title="$t('menu.delete')" @delete="_handleDelete" />
-
-  </div>
+  </layout-content>
 </template>
 
 <script>
+import LayoutContent from '@/components/business/LayoutContent'
+import ComplexTable from '@/components/business/complex-table'
+// import { checkPermission } from '@/utils/permission'
 import IconSelect from '@/components/IconSelect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
-import MsTableHeader from '@/metersphere/common/components/MsTableHeader'
-import MsTableOperator from '@/metersphere/common/components/MsTableOperator'
-import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
-import {
-  listenGoBack,
-  removeGoBackListener
-} from '@/metersphere/common/js/utils'
-import MsDeleteConfirm from '@/metersphere/common/components/MsDeleteConfirm'
 
 import { addMenu, editMenu, delMenu, getMenusTree } from '@/api/system/menu'
 
 export default {
   name: 'MsMenu',
   components: {
-    MsDeleteConfirm,
-    MsTableHeader,
-    MsTableOperator,
-    MsDialogFooter,
+    ComplexTable,
+    LayoutContent,
     Treeselect,
     IconSelect
   },
@@ -191,11 +174,6 @@ export default {
       menus: [],
       topMunu: { id: 0, label: '顶级类目', children: null },
       formType: 'add',
-      queryPath: '/api/menu/childNodes/',
-      deletePath: '/api/menu/delete',
-      createPath: '/api/menu/create',
-      updatePath: '/api/menu/update',
-      result: {},
       dialogVisible: false,
       condition: {},
       tableData: [],
@@ -216,6 +194,41 @@ export default {
         add: ['menu:add'],
         edit: ['menu:edit'],
         del: ['menu:del']
+      },
+
+      header: '',
+      columns: [],
+      buttons: [
+        {
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+        }, {
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete
+        }
+      ],
+      searchConfig: {
+        useQuickSearch: false,
+        useComplexSearch: false,
+        quickPlaceholder: '按姓名搜索',
+        components: [
+
+          //   { field: 'name', label: '姓名', component: 'FuComplexInput' },
+
+        //   {
+        //     field: 'enabled',
+        //     label: '状态',
+        //     component: 'FuComplexSelect',
+        //     options: [
+        //       { label: '启用', value: '1' },
+        //       { label: '禁用', value: '0' }
+        //     ],
+        //     multiple: false
+        //   }
+        ]
+      },
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
       }
 
     }
@@ -229,7 +242,6 @@ export default {
       this.form = Object.assign({}, this.defaultForm)
       this.dialogVisible = true
       this.formType = 'add'
-      listenGoBack(this.closeFunc)
     },
     search(condition) {
       console.log(condition)
@@ -241,7 +253,6 @@ export default {
       this.oldPid = row.pid
       this.form = Object.assign({}, row)
       this.treeByRow(row)
-      listenGoBack(this.closeFunc)
     },
 
     treeByRow(row) {
@@ -288,7 +299,7 @@ export default {
 
     initTableData(row, treeNode, resolve) {
       const _self = this
-      const pid = row ? row.menuId : '0'
+      const pid = (row && row.menuId) ? row.menuId : '0'
 
       getMenusTree(pid).then(response => {
         let data = response.data
@@ -314,7 +325,6 @@ export default {
       this.form = this.defaultForm
       this.oldPid = null
       this.menus = null
-      removeGoBackListener(this.closeFunc)
       this.dialogVisible = false
     },
 
@@ -374,9 +384,7 @@ export default {
         }
       })
     },
-    handleDelete(menu) {
-      this.$refs.deleteConfirm.open(menu)
-    },
+
     _handleDelete(menu) {
       this.$confirm(this.$t('menu.delete_confirm'), '', {
         confirmButtonText: this.$t('commons.confirm'),
@@ -414,7 +422,6 @@ export default {
 </script>
 
 <style scoped>
-@import "~@/metersphere/common/css/index.css";
 .member-size {
   text-decoration: underline;
 }

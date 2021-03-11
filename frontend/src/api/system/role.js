@@ -3,7 +3,8 @@ import request from '@/utils/request'
 export function allRoles() {
   return request({
     url: '/api/role/all',
-    method: 'post'
+    method: 'post',
+    loading: true
   })
 }
 
@@ -11,7 +12,8 @@ export function roleGrid(pageIndex, pageSize, data) {
   return request({
     url: '/api/role/roleGrid/' + pageIndex + '/' + pageSize,
     method: 'post',
-    data
+    data,
+    loading: true
   })
 }
 

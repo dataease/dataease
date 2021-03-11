@@ -3,7 +3,8 @@ import request from '@/utils/request'
 export function getDeptTree(pid) {
   return request({
     url: 'api/dept/childNodes/' + pid,
-    method: 'post'
+    method: 'post',
+    loading: true
   })
 }
 

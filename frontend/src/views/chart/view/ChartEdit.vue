@@ -115,8 +115,8 @@
                       <span
                         class="item-axis"
                       >
-                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"/>
-                        <span/>
+                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
+                        <span />
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item icon="el-icon-edit-outline">
                             item1
@@ -147,13 +147,13 @@
                       <span
                         class="item-axis"
                       >
-                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right"/>
-                        <span/>
+                        {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
+                        <span />
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item icon="el-icon-edit-outline">
                             <el-dropdown placement="right-start" size="mini">
                               <span class="el-dropdown-link">
-                                item3<i class="el-icon-arrow-right el-icon--right"/>
+                                item3<i class="el-icon-arrow-right el-icon--right" />
                               </span>
                               <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item>sub1</el-dropdown-item>
@@ -173,7 +173,7 @@
           </el-row>
 
           <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
-            <div id="echart" style="width: 100%;height: 80vh;"/>
+            <div id="echart" style="width: 100%;height: 80vh;" />
           </div>
         </el-row>
       </el-col>
