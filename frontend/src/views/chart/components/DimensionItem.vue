@@ -14,8 +14,7 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </span>
-    </el-dropdown></span>
-  </el-dropdown>
+    </el-dropdown>
   </span>
 </template>
 
