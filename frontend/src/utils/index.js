@@ -136,3 +136,17 @@ export function param2Obj(url) {
       '"}'
   )
 }
+
+export function formatCondition(param) {
+  if (!param) {
+    return null
+  }
+  const condition = {}
+  for (const key in param) {
+    if (Object.hasOwnProperty.call(param, key)) {
+      const element = param[key]
+      condition[element.field] = element.value
+    }
+  }
+  return condition
+}

@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie'
 import Config from '@/settings'
+
 const TokenKey = Config.TokenKey
 
 export function getToken() {
@@ -13,3 +14,4 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+

@@ -33,8 +33,17 @@
         left join sys_role r on r.role_id = ur.role_id
         left join sys_dept d on d.dept_id = u.dept_id
         <where>
+            <if test="request.quick != null and request.name == null">
+                AND u.nick_name like CONCAT('%', #{request.quick},'%')
+            </if>
             <if test="request.name != null">
-                AND u.name like CONCAT('%', #{request.name},'%')
+                AND u.nick_name like CONCAT('%', #{request.name},'%')
+            </if>
+            <if test="request.enabled != null">
+                AND u.enabled = #{request.enabled}
+            </if>
+            <if test="request.deptId != null">
+                AND u.dept_id = #{request.deptId}
             </if>
         </where>
         order by u.update_time desc
