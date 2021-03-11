@@ -30,12 +30,19 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/v3/**","anon");
         filterChainDefinitionMap.put("/static/**", "anon");
 
+        filterChainDefinitionMap.put("/css/**", "anon");
+        filterChainDefinitionMap.put("/js/**", "anon");
+        filterChainDefinitionMap.put("/img/**", "anon");
+        filterChainDefinitionMap.put("/fonts/**", "anon");
+        filterChainDefinitionMap.put("/favicon.ico", "anon");
+        filterChainDefinitionMap.put("/", "anon");
+        filterChainDefinitionMap.put("/index.html", "anon");
+
 
         // filterChainDefinitionMap.put("/401", "anon");
         // filterChainDefinitionMap.put("/404", "anon");
         // 登陆
         // filterChainDefinitionMap.put("/api/auth/logout", "anon");
-        filterChainDefinitionMap.put("/api/auth/test", "anon");
         filterChainDefinitionMap.put("/api/auth/login", "anon");
         // 退出
 
