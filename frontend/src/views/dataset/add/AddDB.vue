@@ -14,7 +14,7 @@
           </el-button>
         </el-row>
       </el-row>
-      <el-divider/>
+      <el-divider />
       <el-row>
         <el-form :inline="true">
           <el-form-item class="form-item">
@@ -60,10 +60,10 @@
 import { listDatasource, post } from '@/api/dataset/dataset'
 
 export default {
+  name: 'AddDB',
   props: {
     param: Object
   },
-  name: 'AddDB',
   data() {
     return {
       searchTable: '',
