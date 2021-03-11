@@ -53,9 +53,10 @@ export default {
     },
     myEcharts(option) {
       // 指定图表的配置项和数据
-      setTimeout(this.myChart.setOption(option, true), 500)
+      const chart = this.myChart
+      setTimeout(chart.setOption(option, true), 500)
       window.onresize = function() {
-        this.myChart.resize()
+        chart.resize()
       }
     }
   }
