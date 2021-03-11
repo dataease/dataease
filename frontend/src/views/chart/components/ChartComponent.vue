@@ -16,7 +16,9 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      myChart: {}
+    }
   },
   watch: {
     chart() {
@@ -24,6 +26,8 @@ export default {
     }
   },
   mounted() {
+    // 基于准备好的dom，初始化echarts实例
+    this.myChart = this.$echarts.init(document.getElementById('echart'))
   },
   methods: {
     drawEcharts() {
@@ -48,12 +52,10 @@ export default {
       this.myEcharts(chart_option)
     },
     myEcharts(option) {
-      // 基于准备好的dom，初始化echarts实例
-      var myChart = this.$echarts.init(document.getElementById('echart'))
       // 指定图表的配置项和数据
-      setTimeout(myChart.setOption(option, true), 500)
+      setTimeout(this.myChart.setOption(option, true), 500)
       window.onresize = function() {
-        myChart.resize()
+        this.myChart.resize()
       }
     }
   }
