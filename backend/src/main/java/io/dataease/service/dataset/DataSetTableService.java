@@ -37,6 +37,8 @@ public class DataSetTableService {
     private DatasourceMapper datasourceMapper;
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
+    @Resource
+    private DataSetTableTaskService dataSetTableTaskService;
 
     public void batchInsert(List<DatasetTable> datasetTable) throws Exception {
         for (DatasetTable table : datasetTable) {
@@ -67,11 +69,13 @@ public class DataSetTableService {
     public void delete(String id) {
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
+        // 删除同步任务
+        dataSetTableTaskService.deleteByTableId(id);
     }
 
     public List<DatasetTable> list(DataSetTableRequest dataSetTableRequest) {
         DatasetTableExample datasetTableExample = new DatasetTableExample();
-        if(StringUtils.isNotEmpty(dataSetTableRequest.getSceneId())){
+        if (StringUtils.isNotEmpty(dataSetTableRequest.getSceneId())) {
             datasetTableExample.createCriteria().andSceneIdEqualTo(dataSetTableRequest.getSceneId());
         }
         if (StringUtils.isNotEmpty(dataSetTableRequest.getSort())) {
@@ -173,7 +177,7 @@ public class DataSetTableService {
         return map;
     }
 
-    public List<String[]> getDataSetData(String datasourceId, String table, List<DatasetTableField> fields){
+    public List<String[]> getDataSetData(String datasourceId, String table, List<DatasetTableField> fields) {
         List<String[]> data = new ArrayList<>();
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
@@ -188,7 +192,7 @@ public class DataSetTableService {
         return data;
     }
 
-    public Long getDataSetTotalData(String datasourceId, String table){
+    public Long getDataSetTotalData(String datasourceId, String table) {
         List<String[]> data = new ArrayList<>();
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
@@ -203,7 +207,7 @@ public class DataSetTableService {
         return 0l;
     }
 
-    public List<String[]> getDataSetPageData(String datasourceId, String table, List<DatasetTableField> fields, Long startPage, Long pageSize){
+    public List<String[]> getDataSetPageData(String datasourceId, String table, List<DatasetTableField> fields, Long startPage, Long pageSize) {
         List<String[]> data = new ArrayList<>();
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());

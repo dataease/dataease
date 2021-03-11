@@ -215,10 +215,10 @@
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="tableForm.name"/>
           </el-form-item>
-          <el-form-item :label="$t('dataset.mode')" prop="mode">
-            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>
-            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>
-          </el-form-item>
+<!--          <el-form-item :label="$t('dataset.mode')" prop="mode">-->
+<!--            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>-->
+<!--            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>-->
+<!--          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="closeTable()">{{ $t('dataset.cancel') }}</el-button>

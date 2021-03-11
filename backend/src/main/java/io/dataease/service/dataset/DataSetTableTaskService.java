@@ -7,6 +7,7 @@ import io.dataease.service.ScheduleService;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * @Date 2021/3/4 1:26 下午
  */
 @Service
+@Transactional
 public class DataSetTableTaskService {
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
@@ -48,6 +50,20 @@ public class DataSetTableTaskService {
         datasetTableTaskMapper.deleteByPrimaryKey(id);
         scheduleService.deleteSchedule(datasetTableTask);
         dataSetTableTaskLogService.deleteByTaskId(id);
+    }
+
+    public void delete(DatasetTableTask task) {
+        datasetTableTaskMapper.deleteByPrimaryKey(task.getId());
+        scheduleService.deleteSchedule(task);
+        dataSetTableTaskLogService.deleteByTaskId(task.getId());
+    }
+
+    public void deleteByTableId(String id) {
+        DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+        DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
+        criteria.andTableIdEqualTo(id);
+        List<DatasetTableTask> datasetTableTasks = datasetTableTaskMapper.selectByExample(datasetTableTaskExample);
+        datasetTableTasks.forEach(this::delete);
     }
 
     public DatasetTableTask get(String id) {
