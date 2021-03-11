@@ -17,6 +17,7 @@
   "dependencies": {
     "@riophae/vue-treeselect": "0.4.0",
     "axios": "0.18.1",
+    "core-js": "^3.9.1",
     "echarts": "^5.0.2",
     "element-ui": "2.13.0",
     "fit2cloud-ui": "^0.1.12",
