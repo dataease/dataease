@@ -5,7 +5,7 @@
         <span
           class="item-axis"
         >
-          {{ item.name }}<span class="summary-span">({{ $t('chart.'+item.summary) }})</span><i class="el-icon-arrow-down el-icon--right" />
+          {{ item.name }}<span class="summary-span">{{ $t('chart.'+item.summary) }}</span><i class="el-icon-arrow-down el-icon--right" />
           <span />
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item icon="el-icon-notebook-2">
@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     summary(param) {
-      console.log(param)
+      // console.log(param)
       this.item.summary = param.type
       this.$emit('onQuotaSummaryChange', this.item)
     },

@@ -31,7 +31,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in dimension" :key="item.id" class="item" @click="click1(item)">{{ item.name }}</span>
+              <span v-for="item in dimension" :key="item.id" class="item">{{ item.name }}</span>
             </transition-group>
           </draggable>
         </div>
@@ -47,7 +47,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in quota" :key="item.id" class="item" @click="click2(item)">{{ item.name }}</span>
+              <span v-for="item in quota" :key="item.id" class="item">{{ item.name }}</span>
             </transition-group>
           </draggable>
         </div>
@@ -131,9 +131,7 @@
             </el-row>
           </el-row>
 
-          <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
-            <div id="echart" style="width: 100%;height: 80vh;" />
-          </div>
+          <chart-component :chart="chart" />
         </el-row>
       </el-col>
     </el-row>
@@ -143,13 +141,13 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import draggable from 'vuedraggable'
-import { BASE_BAR } from '../chart/chart'
 import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
+import ChartComponent from '../components/ChartComponent'
 
 export default {
   name: 'ChartEdit',
-  components: { QuotaItem, DimensionItem, draggable },
+  components: { ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -173,7 +171,8 @@ export default {
       arr2: [
         { id: 11, name: '容量' }
       ],
-      moveId: -1
+      moveId: -1,
+      chart: {}
     }
   },
   computed: {
@@ -225,26 +224,6 @@ export default {
         this.quota = response.data.quota
       })
     },
-    click1(item) {
-      // console.log(item);
-      const c = this.view.xaxis.filter(function(ele) {
-        return ele.id === item.id
-      })
-      // console.log(c);
-      if (c && c.length === 0) {
-        this.view.xaxis.push(item)
-      }
-    },
-    click2(item) {
-      // console.log(item);
-      const c = this.view.yaxis.filter(function(ele) {
-        return ele.id === item.id
-      })
-      // console.log(c);
-      if (c && c.length === 0) {
-        this.view.yaxis.push(item)
-      }
-    },
     get(id) {
       if (id) {
         post('/chart/view/get/' + id, null).then(response => {
@@ -290,20 +269,8 @@ export default {
           this.view = response.data
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
-
-          const chart = response.data
-          const chart_option = JSON.parse(JSON.stringify(BASE_BAR))
-          // console.log(chart_option);
-          if (chart.data) {
-            chart_option.title.text = chart.title
-            chart_option.xAxis.data = chart.data.x
-            chart.data.series.forEach(function(y) {
-              chart_option.legend.data.push(y.name)
-              chart_option.series.push(y)
-            })
-          }
-          // console.log(chart_option);
-          this.myEcharts(chart_option)
+          // 将视图传入echart组件
+          this.chart = response.data
         })
       } else {
         this.view = {}
@@ -391,7 +358,6 @@ export default {
     },
 
     quotaSummaryChange(item) {
-      console.log(item)
       // 更新item
       this.view.yaxis.forEach(function(ele) {
         if (ele.id === item.id) {
@@ -399,16 +365,6 @@ export default {
         }
       })
       this.save()
-    },
-
-    myEcharts(option) {
-      // 基于准备好的dom，初始化echarts实例
-      var myChart = this.$echarts.init(document.getElementById('echart'))
-      // 指定图表的配置项和数据
-      setTimeout(myChart.setOption(option, true), 500)
-      window.onresize = function() {
-        myChart.resize()
-      }
     }
   }
 }
