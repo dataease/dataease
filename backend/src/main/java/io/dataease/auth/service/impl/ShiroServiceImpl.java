@@ -1,17 +1,22 @@
 package io.dataease.auth.service.impl;
 
+import io.dataease.auth.config.WhitelistConfig;
 import io.dataease.auth.service.ShiroService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 @Service
 public class ShiroServiceImpl implements ShiroService {
+    
+    private final static String ANON = "anon";
+
+    @Autowired
+    private WhitelistConfig whitelistConfig;
 
     @Override
     public Map<String, String> loadFilterChainDefinitionMap() {
@@ -20,54 +25,38 @@ public class ShiroServiceImpl implements ShiroService {
         // 配置过滤:不会被拦截的链接 -> 放行 start ----------------------------------------------------------
         // 放行Swagger2页面，需要放行这些
 
-        filterChainDefinitionMap.put("/swagger-ui.html","anon");
-        filterChainDefinitionMap.put("/swagger-ui/**","anon");
-
-        filterChainDefinitionMap.put("/swagger/**","anon");
-        filterChainDefinitionMap.put("/webjars/**", "anon");
-        filterChainDefinitionMap.put("/swagger-resources/**","anon");
-        filterChainDefinitionMap.put("/v2/**","anon");
-        filterChainDefinitionMap.put("/v3/**","anon");
-        filterChainDefinitionMap.put("/static/**", "anon");
-
-        filterChainDefinitionMap.put("/css/**", "anon");
-        filterChainDefinitionMap.put("/js/**", "anon");
-        filterChainDefinitionMap.put("/img/**", "anon");
-        filterChainDefinitionMap.put("/fonts/**", "anon");
-        filterChainDefinitionMap.put("/favicon.ico", "anon");
-        filterChainDefinitionMap.put("/", "anon");
-        filterChainDefinitionMap.put("/index.html", "anon");
-
-
-        // filterChainDefinitionMap.put("/401", "anon");
-        // filterChainDefinitionMap.put("/404", "anon");
-        // 登陆
-        // filterChainDefinitionMap.put("/api/auth/logout", "anon");
-        filterChainDefinitionMap.put("/api/auth/login", "anon");
-        // 退出
-
-        // 放行未授权接口，重定向使用
-        filterChainDefinitionMap.put("/unauth", "anon");
-        filterChainDefinitionMap.put("/display/**", "anon");
-
-        // token过期接口
-        filterChainDefinitionMap.put("/tokenExpired", "anon");
-        // 被挤下线
-        filterChainDefinitionMap.put("/downline", "anon");
-        // 放行 end ----------------------------------------------------------
-
-        /*List<ExtPermissionBean> extPermissionBeans = extUserMapper.getPermissions();
-
-        extPermissionBeans.forEach(item -> {
-            StringJoiner f2cPerms = new StringJoiner(",", "f2cPerms[", "]");
-            f2cPerms.add(item.getPermission());
-            filterChainDefinitionMap.put(item.getPath(), "jwt," + f2cPerms);
+        filterChainDefinitionMap.put("/swagger-ui.html",ANON);
+        filterChainDefinitionMap.put("/swagger-ui/**",ANON);
+        filterChainDefinitionMap.put("/swagger/**",ANON);
+        filterChainDefinitionMap.put("/webjars/**", ANON);
+        filterChainDefinitionMap.put("/swagger-resources/**",ANON);
+        filterChainDefinitionMap.put("/v2/**",ANON);
+        filterChainDefinitionMap.put("/v3/**",ANON);
+        filterChainDefinitionMap.put("/static/**", ANON);
+        filterChainDefinitionMap.put("/css/**", ANON);
+        filterChainDefinitionMap.put("/js/**", ANON);
+        filterChainDefinitionMap.put("/img/**", ANON);
+        filterChainDefinitionMap.put("/fonts/**", ANON);
+        filterChainDefinitionMap.put("/favicon.ico", ANON);
+        filterChainDefinitionMap.put("/", ANON);
+        filterChainDefinitionMap.put("/index.html", ANON);
+        filterChainDefinitionMap.put("/api/auth/login", ANON);
+        filterChainDefinitionMap.put("/unauth", ANON);
+        filterChainDefinitionMap.put("/display/**", ANON);
+        filterChainDefinitionMap.put("/tokenExpired", ANON);
+        filterChainDefinitionMap.put("/downline", ANON);
+        List<String> whitelist = whitelistConfig.getWhitelist();
+        if (CollectionUtils.isNotEmpty(whitelist))
+        whitelist.forEach(path -> {
+            filterChainDefinitionMap.put(path, ANON);
         });
-*/
+
         filterChainDefinitionMap.put("/api/auth/logout", "logout");
         filterChainDefinitionMap.put("/**", "jwt");
         return filterChainDefinitionMap;
     }
+    
+   
 
     @Override
     public void updatePermission(ShiroFilterFactoryBean shiroFilterFactoryBean, Integer roleId, Boolean isRemoveSession) {
