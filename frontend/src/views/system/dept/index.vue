@@ -4,7 +4,7 @@
     <complex-table
       ref="table"
       :data="tableData"
-      lazy
+      :lazy="isLazy"
       :load="loadExpandDatas"
       :columns="columns"
       :buttons="buttons"
@@ -12,6 +12,7 @@
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :default-expand-all="isTableExpand"
       row-key="deptId"
       @search="search"
     >
@@ -22,7 +23,7 @@
       <!-- <el-table-column type="selection" fix /> -->
       <el-table-column label="名称" prop="name" />
       <el-table-column label="下属组织数" prop="subCount" />
-      <el-table-column label="状态" align="center" prop="enabled">
+      <!-- <el-table-column label="状态" align="center" prop="enabled">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.enabled"
@@ -32,7 +33,7 @@
             @change="changeEnabled(scope.row, scope.row.enabled,)"
           />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column prop="createTime" label="创建日期">
         <template v-slot:default="scope">
           <span>{{ scope.row.createTime | timestampFormatDate }}</span>
@@ -47,7 +48,7 @@
       :close-on-click-modal="false"
       :title="formType=='add' ? $t('organization.create') : $t('organization.modify')"
       :visible.sync="dialogOrgAddVisible"
-      width="30%"
+      width="500px"
       :destroy-on-close="true"
       @closed="closeFunc"
     >
@@ -74,7 +75,7 @@
         </el-form-item>
 
         <el-form-item label="状态" prop="enabled">
-          <el-radio-group v-model="form.enabled" style="width: 140px">
+          <el-radio-group v-model="form.enabled" style="width: 140px" disabled>
             <el-radio :label="true">启用</el-radio>
             <el-radio :label="false">停用</el-radio>
           </el-radio-group>
@@ -176,15 +177,19 @@ export default {
         field: 'pid',
         operator: 'eq',
         value: 0
-      }
-
+      },
+      defaultForm: { deptId: null, top: true, enabled: true, pid: null },
+      isTableExpand: false,
+      isLazy: true
     }
   },
   activated() {
+    this.form = Object.assign({}, this.defaultForm)
     this.search()
   },
   methods: {
     create() {
+      this.form = Object.assign({}, this.defaultForm)
       this.dialogOrgAddVisible = true
       this.formType = 'add'
     },
@@ -254,8 +259,20 @@ export default {
       }
       return Object.assign({}, condition)
     },
+
+    setTableAttr(isSearch) {
+      if (isSearch) {
+        this.lazy = false
+        this.isTableExpand = true
+      } else {
+        this.lazy = true
+        this.isTableExpand = false
+      }
+    },
     // 加载表格数据
     search(condition) {
+      this.setTableAttr()
+      this.tableData = []
       let param = {}
       if (condition && condition.quick) {
         const con = this.quick_condition(condition)
@@ -273,9 +290,34 @@ export default {
           }
           return obj
         })
+
+        if (condition && condition.quick) {
+          data = this.buildTree(data)
+          this.setTableAttr(true)
+        }
         this.tableData = data
         this.depts = null
       })
+    },
+
+    buildTree(arrs) {
+      const idMapping = arrs.reduce((acc, el, i) => {
+        acc[el.deptId] = i
+        return acc
+      }, {})
+      const roots = []
+      arrs.forEach(el => {
+        // 判断根节点
+        if (el.pid === null || el.pid === 0) {
+          roots.push(el)
+          return
+        }
+        // 用映射表找到父元素
+        const parentEl = arrs[idMapping[el.pid]]
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el]
+      })
+      return roots
     },
 
     // 加载下一级子节点数据
@@ -359,7 +401,7 @@ export default {
         id: node.deptId,
         pid: node.pid,
         label: node.name,
-        children: node.children
+        children: node.children || null
       }
     },
     // 改变状态

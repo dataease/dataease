@@ -162,7 +162,7 @@ public class DeptService {
      * @return
      */
     private List<Long> upTree(List<SimpleTreeNode> allNodes, List<SimpleTreeNode> targetNodes){
-        final Map<Long, SimpleTreeNode> map = targetNodes.stream().collect(Collectors.toMap(SimpleTreeNode::getId, node -> node));
+        final Map<Long, SimpleTreeNode> map = allNodes.stream().collect(Collectors.toMap(SimpleTreeNode::getId, node -> node));
         List<Long> results = targetNodes.parallelStream().flatMap(targetNode -> {
             //向上逐级找爹
             List<Long> ids = new ArrayList<>();
