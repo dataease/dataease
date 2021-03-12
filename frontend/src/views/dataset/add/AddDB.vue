@@ -45,7 +45,7 @@
       <el-row style="overflow: auto;height: 600px;">
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-checkbox
-            v-for="t in tables"
+            v-for="t in tableData"
             :key="t"
             border
             :label="t"
@@ -71,7 +71,8 @@ export default {
       dataSource: '',
       tables: [],
       checkTableList: [],
-      mode: '0'
+      mode: '0',
+      tableData: []
     }
   },
   watch: {
@@ -79,7 +80,15 @@ export default {
       if (val) {
         post('/datasource/getTables', { id: val }).then(response => {
           this.tables = response.data
+          this.tableData = JSON.parse(JSON.stringify(this.tables))
         })
+      }
+    },
+    searchTable(val) {
+      if (val && val !== '') {
+        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.includes(val) })))
+      } else {
+        this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
     }
   },
