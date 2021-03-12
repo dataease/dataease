@@ -1,13 +1,9 @@
 package io.dataease.auth.service.impl;
 
-import io.dataease.auth.config.WhitelistConfig;
 import io.dataease.auth.service.ShiroService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -15,8 +11,7 @@ public class ShiroServiceImpl implements ShiroService {
     
     private final static String ANON = "anon";
 
-    @Autowired
-    private WhitelistConfig whitelistConfig;
+
 
     @Override
     public Map<String, String> loadFilterChainDefinitionMap() {
@@ -47,11 +42,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/downline", ANON);
         filterChainDefinitionMap.put("/common-files/**", ANON);
 
-        List<String> whitelist = whitelistConfig.getWhitelist();
-        if (CollectionUtils.isNotEmpty(whitelist))
-        whitelist.forEach(path -> {
-            filterChainDefinitionMap.put(path, ANON);
-        });
+
 
         filterChainDefinitionMap.put("/api/auth/logout", "logout");
         filterChainDefinitionMap.put("/**", "jwt");
