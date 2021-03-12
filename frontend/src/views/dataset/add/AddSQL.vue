@@ -33,7 +33,7 @@
         </el-form>
       </el-row>
       <el-row>
-        <el-col style="width:35vh;min-width: 200px;">
+        <el-col style="min-width: 200px;">
           <codemirror
             ref="myCm"
             v-model="sql"
@@ -55,11 +55,8 @@ import { codemirror } from 'vue-codemirror'
 // 核心样式
 import 'codemirror/lib/codemirror.css'
 // 引入主题后还需要在 options 中指定主题才会生效
-import 'codemirror/theme/rubyblue.css'
-import 'codemirror/mode/python/python.js'
+import 'codemirror/theme/solarized.css'
 import 'codemirror/mode/sql/sql.js'
-// theme css
-import 'codemirror/theme/3024-day.css'
 // require active-line.js
 import 'codemirror/addon/selection/active-line.js'
 // closebrackets
@@ -94,10 +91,10 @@ export default {
         styleActiveLine: true,
         lineNumbers: true,
         line: true,
-        mode: 'text/x-mysql',
-        theme: '3024-day',
+        mode: 'text/x-sql',
+        theme: 'solarized',
         hintOptions: {
-          completeSingle: true // 当匹配只有一项的时候是否自动补全
+          completeSingle: true
         }
       }
     }
@@ -160,13 +157,11 @@ export default {
   }
 
   .codemirror {
-    height: 40vh;
-    min-height: 300px;
-    width: 100%;
-    min-width: 200px;
+    height: auto;
+    min-height: 100px;
   }
   .codemirror >>> .CodeMirror-scroll {
-    height: 40vh;
-    min-height: 300px;
+    height: auto;
+    min-height: 100px;
   }
 </style>
