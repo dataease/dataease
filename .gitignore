@@ -48,5 +48,9 @@ pnpm-debug.log*
 *.sln
 *.sw?
 *.lock
+*.classpath
+*.project
+.settings/
+
 
 package-lock.json
