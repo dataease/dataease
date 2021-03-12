@@ -1,62 +1,44 @@
 <template>
-  <div v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-
-    <el-card class="table-card">
-      <template v-slot:header>
-        <ms-table-header
-          :permission="permission"
-          :condition.sync="condition"
-          :create-tip="$t('user.create')"
-          :title="$t('commons.user')"
-          @search="search"
-          @create="create"
-        />
+  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <complex-table
+      :data="data"
+      :columns="columns"
+      :buttons="buttons"
+      :header="header"
+      :search-config="searchConfig"
+      :pagination-config="paginationConfig"
+      @select="select"
+      @search="search"
+    >
+      <template #buttons>
+        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" />
       </template>
 
-      <el-table border class="adjust-table" :data="tableData" style="width: 100%">
-        <el-table-column prop="username" label="ID" />
-        <el-table-column prop="nickName" :label="$t('commons.name')" width="200" />
-        <el-table-column prop="gender" label="性别" />
+      <el-table-column type="selection" fix />
+      <el-table-column prop="username" label="ID" width="80" />
+      <el-table-column prop="nickName" :label="$t('commons.name')" width="140" />
+      <el-table-column prop="gender" label="性别" width="50" />
 
-        <el-table-column :show-overflow-tooltip="true" prop="phone" width="100" label="电话" />
-        <el-table-column :show-overflow-tooltip="true" width="135" prop="email" :label="$t('commons.email')" />
-        <el-table-column :show-overflow-tooltip="true" prop="dept" :label="$t('commons.organization')">
-          <template slot-scope="scope">
-            <div>{{ scope.row.dept.deptName }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" :label="$t('commons.status')" width="120">
-          <template v-slot:default="scope">
-            <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" :label="$t('commons.create_time')">
-          <template v-slot:default="scope">
-            <span>{{ scope.row.createTime | timestampFormatDate }}</span>
-          </template>
-        </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" prop="phone" width="200" label="电话" />
+      <el-table-column :show-overflow-tooltip="true" width="200" prop="email" :label="$t('commons.email')" />
+      <el-table-column :show-overflow-tooltip="true" prop="dept" :label="$t('commons.organization')">
+        <template slot-scope="scope">
+          <div>{{ scope.row.dept.deptName }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="status" :label="$t('commons.status')" width="60">
+        <template v-slot:default="scope">
+          <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" :label="$t('commons.create_time')" width="160">
+        <template v-slot:default="scope">
+          <span>{{ scope.row.createTime | timestampFormatDate }}</span>
+        </template>
+      </el-table-column>
+      <fu-table-operations :buttons="buttons" label="操作" fix />
+    </complex-table>
 
-        <!-- <el-table-column prop="source" :label="$t('user.source')"/> -->
-        <el-table-column :label="$t('commons.operating')" min-width="120px">
-          <template v-slot:default="scope">
-            <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="del(scope.row)">
-              <template v-slot:behind>
-                <ms-table-operator-button
-                  v-permission="permission.editPwd"
-                  :tip="$t('member.edit_password')"
-                  icon="el-icon-s-tools"
-                  type="success"
-                  @exec="editPassword(scope.row)"
-                />
-              </template>
-            </ms-table-operator>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <ms-table-pagination :change="search" :current-page.sync="currentPage" :page-size.sync="pageSize" :total="total" />
-
-    </el-card>
     <el-dialog
       append-to-body
       :close-on-click-modal="false"
@@ -72,7 +54,7 @@
           <el-input v-model="form.username" />
         </el-form-item>
         <el-form-item label="电话" prop="phone">
-          <el-input v-model.number="form.phone" />
+          <el-input v-model="form.phone" />
         </el-form-item>
         <el-form-item label="昵称" prop="nickName">
           <el-input v-model="form.nickName" />
@@ -102,11 +84,12 @@
             placeholder="选择部门"
           />
         </el-form-item>
-        <el-form-item style="margin-bottom: 0;" label="角色" prop="roles">
+        <el-form-item style="margin-bottom: 0;" label="角色" prop="roleIds">
           <el-select
             v-model="form.roleIds"
             style="width: 430px"
             multiple
+            required="true"
             placeholder="请选择"
             @remove-tag="deleteTag"
             @change="changeRole"
@@ -120,12 +103,10 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogVisible = false"
-          @confirm="createUser('createUserForm')"
-        />
-      </template>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="createUser('createUserForm')">确认</el-button>
+      </div>
     </el-dialog>
 
     <!--Changing user password in system settings-->
@@ -153,60 +134,77 @@
           <el-input v-model="ruleForm.userId" autocomplete="off" :disabled="true" style="display:none" />
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <ms-dialog-footer
-          @cancel="editPasswordVisible = false"
-          @confirm="editUserPassword('editPasswordForm')"
-        />
-      </span>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="editPasswordVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="editUserPassword('editPasswordForm')">确认</el-button>
+      </div>
     </el-dialog>
-
-  </div>
+  </layout-content>
 </template>
 
 <script>
-// import MsCreateBox from '@/metersphere/common/components/CreateBox'
-import MsTablePagination from '@/metersphere/common/pagination/TablePagination'
-import MsTableHeader from '@/metersphere/common/components/MsTableHeader'
-import MsTableOperator from '@/metersphere/common/components/MsTableOperator'
-import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
-import MsTableOperatorButton from '@/metersphere/common/components/MsTableOperatorButton'
-import { listenGoBack, removeGoBackListener } from '@/metersphere/common/js/utils'
-import { PHONE_REGEX } from '@/metersphere/common/js/regex'
+import LayoutContent from '@/components/business/LayoutContent'
+import ComplexTable from '@/components/business/complex-table'
+// import conditionTable from '@/components/business/condition-table'
+// import CustomCondition from './CustomCondtion'
+// import { GridButton } from '@/components/GridButton'
+import { checkPermission } from '@/utils/permission'
+import { formatCondition } from '@/utils/index'
+import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
 import { userLists, addUser, editUser, delUser, editPassword, editStatus } from '@/api/system/user'
 import { allRoles } from '@/api/system/role'
 import { getDeptTree } from '@/api/system/dept'
-export default {
-  name: 'MsUser',
 
-  components: {
-    // MsCreateBox,
-    MsTablePagination,
-    MsTableHeader,
-    MsTableOperator,
-    MsDialogFooter,
-    MsTableOperatorButton,
-    Treeselect
-  },
+export default {
+
+  components: { ComplexTable, LayoutContent, Treeselect },
   data() {
     return {
-      queryPath: '/api/user/userGrid',
-      deletePath: '/api/user/delete/',
-      createPath: '/api/user/create',
-      updatePath: '/api/user/update',
-      editPasswordPath: '/api/user/password',
-      result: {},
+      header: '',
+      columns: [],
+      buttons: [
+        {
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+        }, {
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del
+        }, {
+          label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'danger', click: this.editPassword,
+          show: checkPermission(['user:editPwd'])
+        }
+      ],
+      searchConfig: {
+        useQuickSearch: false,
+        quickPlaceholder: '按姓名搜索',
+        components: [
+        //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
+          { field: 'nick_name', label: '姓名', component: 'FuComplexInput' },
+
+          {
+            field: 'u.enabled',
+            label: '状态',
+            component: 'FuComplexSelect',
+            options: [
+              { label: '启用', value: '1' },
+              { label: '禁用', value: '0' }
+            ],
+            multiple: false
+          }
+        //   { field: 'deptId', label: '组织', component: conditionTable }
+        ]
+      },
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      data: [],
+
       dialogVisible: false,
       editPasswordVisible: false,
-      multipleSelection: [],
-      currentPage: 1,
-      pageSize: 10,
-      total: 0,
-      condition: {},
-      tableData: [],
       form: {
         roles: [{
           id: ''
@@ -215,7 +213,7 @@ export default {
       checkPasswordForm: {},
       ruleForm: {},
       rule: {
-        id: [
+        username: [
           { required: true, message: this.$t('user.input_id'), trigger: 'blur' },
           { min: 1, max: 50, message: this.$t('commons.input_limit', [1, 50]), trigger: 'blur' },
           {
@@ -225,7 +223,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        name: [
+        nickName: [
           { required: true, message: this.$t('user.input_name'), trigger: 'blur' },
           { min: 2, max: 50, message: this.$t('commons.input_limit', [2, 50]), trigger: 'blur' },
           {
@@ -267,7 +265,9 @@ export default {
             message: this.$t('member.password_format_is_incorrect'),
             trigger: 'blur'
           }
-        ]
+        ],
+        roleIds: [{ required: true, message: this.$t('user.input_roles'), trigger: 'blur' }]
+
       },
       defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null },
       depts: null,
@@ -283,7 +283,6 @@ export default {
       }
     }
   },
-
   activated() {
     // this.form = Object.assign({}, this.defaultForm);
     this.allRoles()
@@ -291,25 +290,35 @@ export default {
   },
 
   methods: {
+    select(selection) {
+      console.log(selection)
+    },
+
+    search(condition) {
+      console.log(condition) // demo只查看搜索条件，没有搜索的实现
+      const temp = formatCondition(condition)
+      const param = temp || {}
+      const { currentPage, pageSize } = this.paginationConfig
+      userLists(currentPage, pageSize, param).then(response => {
+        this.data = response.data.listObject
+        this.paginationConfig.total = response.data.itemCount
+      })
+    },
+
     create() {
       this.formType = 'add'
       this.form = Object.assign({}, this.defaultForm)
       this.dialogVisible = true
-
-      listenGoBack(this.handleClose)
     },
     edit(row) {
       this.formType = 'modify'
       this.dialogVisible = true
       this.form = Object.assign({}, row)
-
-      listenGoBack(this.handleClose)
     },
     editPassword(row) {
       this.editPasswordVisible = true
       const tempForm = Object.assign({}, row)
       this.ruleForm = { userId: tempForm.userId }
-      listenGoBack(this.handleClose)
     },
     del(row) {
       this.$confirm(this.$t('user.delete_confirm'), '', {
@@ -354,23 +363,9 @@ export default {
         }
       })
     },
-    search() {
-      userLists(this.currentPage, this.pageSize, this.condition).then(response => {
-        const data = response.data
-        this.total = data.itemCount
-        this.tableData = data.listObject
-      })
-      //   this.result = this.$post(this.buildPagePath(this.queryPath), this.condition, response => {
-      //     const data = response.data
-      //     this.total = data.itemCount
-      //     this.tableData = data.listObject
-
-    //   })
-    },
     handleClose() {
       this.formType = 'add'
       this.form = {}
-      removeGoBackListener(this.handleClose)
       this.editPasswordVisible = false
       this.dialogVisible = false
     },
@@ -380,10 +375,6 @@ export default {
       editStatus(param).then(res => {
         this.$success(this.$t('commons.modify_success'))
       })
-    },
-
-    handleSelectionChange(val) {
-      this.multipleSelection = val
     },
     // 获取弹窗内部门数据
     loadDepts({ action, parentNode, callback }) {
@@ -434,11 +425,10 @@ export default {
         this.roles = res.data
       })
     }
-
   }
 }
 </script>
 
 <style scoped>
-@import "~@/metersphere/common/css/index.css";
+
 </style>

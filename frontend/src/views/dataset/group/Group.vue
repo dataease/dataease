@@ -7,7 +7,7 @@
           {{ $t('dataset.datalist') }}
         </span>
       </el-row>
-      <el-divider/>
+      <el-divider />
 
       <el-row>
         <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
@@ -103,7 +103,7 @@
       <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="groupForm.name"/>
+            <el-input v-model="groupForm.name" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -124,7 +124,7 @@
           {{ $t('dataset.back') }}
         </el-button>
       </el-row>
-      <el-divider/>
+      <el-divider />
       <el-row>
         <el-dropdown style="margin-right: 10px;" size="small" trigger="click" @command="clickAddData">
           <el-button type="primary" size="mini" plain>
@@ -178,8 +178,8 @@
               ({{ data.type }})
             </span>
             <span>
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation"/></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time"/></span>
+              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time" /></span>
             </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
@@ -213,12 +213,12 @@
       <el-dialog :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
         <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="tableForm.name"/>
+            <el-input v-model="tableForm.name" />
           </el-form-item>
-          <el-form-item :label="$t('dataset.mode')" prop="mode">
-            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>
-            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>
-          </el-form-item>
+          <!--          <el-form-item :label="$t('dataset.mode')" prop="mode">-->
+          <!--            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>-->
+          <!--            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>-->
+          <!--          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="closeTable()">{{ $t('dataset.cancel') }}</el-button>

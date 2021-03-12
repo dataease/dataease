@@ -7,12 +7,12 @@
     <el-row style="height: 40px;" class="padding-lr">
       <span style="line-height: 40px;">{{ view.name }}</span>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini">
-          {{ $t('chart.cancel') }}
+        <el-button size="mini" @click="closeEdit">
+          {{ $t('chart.close') }}
         </el-button>
-        <el-button type="primary" size="mini" @click="save">
-          {{ $t('chart.confirm') }}
-        </el-button>
+        <!--        <el-button type="primary" size="mini" @click="save">-->
+        <!--          {{ $t('chart.confirm') }}-->
+        <!--        </el-button>-->
       </span>
     </el-row>
     <el-row style="display: flex;height: 100%">
@@ -23,14 +23,15 @@
           <span>{{ $t('chart.dimension') }}</span>
           <draggable
             v-model="dimension"
-            :options="{group:{name: 'itxst',pull:'clone'},sort: true}"
+            :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
             style="height: 90%;overflow:auto"
             @end="end1"
+            @start="start1"
           >
             <transition-group>
-              <span v-for="item in dimension" :key="item.id" class="item" @click="click1(item)">{{ item.name }}</span>
+              <span v-for="item in dimension" :key="item.id" class="item">{{ item.name }}</span>
             </transition-group>
           </draggable>
         </div>
@@ -38,14 +39,15 @@
           <span>{{ $t('chart.quota') }}</span>
           <draggable
             v-model="quota"
-            :options="{group:{name: 'itxst',pull:'clone'},sort: true}"
+            :options="{group:{name: 'quota',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
             style="height: 90%;overflow:auto"
-            @end="end2"
+            @end="end1"
+            @start="start1"
           >
             <transition-group>
-              <span v-for="item in quota" :key="item.id" class="item" @click="click2(item)">{{ item.name }}</span>
+              <span v-for="item in quota" :key="item.id" class="item">{{ item.name }}</span>
             </transition-group>
           </draggable>
         </div>
@@ -67,6 +69,7 @@
                 :placeholder="$t('chart.title')"
                 prefix-icon="el-icon-search"
                 clearable
+                @blur="save"
               />
             </el-form-item>
           </el-form>
@@ -97,58 +100,38 @@
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <el-row style="margin-top: 10px;">
             <el-row style="display:flex;height: 32px;">
-              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.x_axis') }}</span>
+              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.dimension') }}</span>
               <draggable
                 v-model="view.xaxis"
-                group="itxst"
+                group="dimension"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;"
-                @end="end3"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
+                @end="end2"
               >
-                <transition-group style="width: 100%;height: 100%;">
-                  <el-tag
-                    v-for="(item,index) in view.xaxis"
-                    :key="index"
-                    size="small"
-                    class="item-axis"
-                    closable
-                    @close="clear1(index)"
-                  >
-                    {{ item.name }}
-                  </el-tag>
+                <transition-group class="draggable-group">
+                  <dimension-item v-for="(item) in view.xaxis" :key="item.id" :item="item" />
                 </transition-group>
               </draggable>
             </el-row>
             <el-row style="display:flex;height: 32px;margin-top: 10px;">
-              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.y_axis') }}</span>
+              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.quota') }}</span>
               <draggable
                 v-model="view.yaxis"
-                group="itxst"
+                group="quota"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;"
-                @end="end4"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
+                @end="end2"
               >
-                <transition-group style="width:100%;height: 100%;">
-                  <el-tag
-                    v-for="(item,index) in view.yaxis"
-                    :key="index"
-                    size="small"
-                    class="item-axis"
-                    closable
-                    @close="clear2(index)"
-                  >
-                    {{ item.name }}
-                  </el-tag>
+                <transition-group class="draggable-group">
+                  <quota-item v-for="(item) in view.yaxis" :key="item.id" :item="item" @onQuotaSummaryChange="quotaSummaryChange" />
                 </transition-group>
               </draggable>
             </el-row>
           </el-row>
 
-          <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
-            <div id="echart" style="width: 100%;height: 80vh;"/>
-          </div>
+          <chart-component :chart="chart" />
         </el-row>
       </el-col>
     </el-row>
@@ -158,11 +141,13 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import draggable from 'vuedraggable'
-import { BASE_BAR } from '../chart/chart'
+import DimensionItem from '../components/DimensionItem'
+import QuotaItem from '../components/QuotaItem'
+import ChartComponent from '../components/ChartComponent'
 
 export default {
   name: 'ChartEdit',
-  components: { draggable },
+  components: { ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -186,7 +171,8 @@ export default {
       arr2: [
         { id: 11, name: '容量' }
       ],
-      moveId: -1
+      moveId: -1,
+      chart: {}
     }
   },
   computed: {
@@ -206,7 +192,13 @@ export default {
     }
 
   },
-  watch: {},
+  watch: {
+    'view.type': {
+      handler: function() {
+        this.save()
+      }
+    }
+  },
   created() {
     // this.get(this.$store.state.chart.viewId);
   },
@@ -232,32 +224,6 @@ export default {
         this.quota = response.data.quota
       })
     },
-    click1(item) {
-      // console.log(item);
-      const c = this.view.xaxis.filter(function(ele) {
-        return ele.id === item.id
-      })
-      // console.log(c);
-      if (c && c.length === 0) {
-        this.view.xaxis.push(item)
-      }
-    },
-    click2(item) {
-      // console.log(item);
-      const c = this.view.yaxis.filter(function(ele) {
-        return ele.id === item.id
-      })
-      // console.log(c);
-      if (c && c.length === 0) {
-        this.view.yaxis.push(item)
-      }
-    },
-    clear1(index) {
-      this.view.xaxis.splice(index, 1)
-    },
-    clear2(index) {
-      this.view.yaxis.splice(index, 1)
-    },
     get(id) {
       if (id) {
         post('/chart/view/get/' + id, null).then(response => {
@@ -275,6 +241,16 @@ export default {
       view.sceneId = this.sceneId
       view.name = this.table.name
       view.tableId = this.$store.state.chart.tableId
+      view.xaxis.forEach(function(ele) {
+        if (!ele.summary || ele.summary === '') {
+          ele.summary = 'sum'
+        }
+      })
+      view.yaxis.forEach(function(ele) {
+        if (!ele.summary || ele.summary === '') {
+          ele.summary = 'sum'
+        }
+      })
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
       post('/chart/view/save', view).then(response => {
@@ -284,26 +260,17 @@ export default {
         this.$store.dispatch('chart/setChartSceneData', this.sceneId)
       })
     },
+    closeEdit() {
+      this.$emit('switchComponent', { name: '' })
+    },
     getData(id) {
       if (id) {
         post('/chart/view/getData/' + id, null).then(response => {
           this.view = response.data
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
-
-          const chart = response.data
-          const chart_option = JSON.parse(JSON.stringify(BASE_BAR))
-          // console.log(chart_option);
-          if (chart.data) {
-            chart_option.title.text = chart.title
-            chart_option.xAxis.data = chart.data.x
-            chart.data.series.forEach(function(y) {
-              chart_option.legend.data.push(y.name)
-              chart_option.series.push(y)
-            })
-          }
-          // console.log(chart_option);
-          this.myEcharts(chart_option)
+          // 将视图传入echart组件
+          this.chart = response.data
         })
       } else {
         this.view = {}
@@ -311,37 +278,77 @@ export default {
     },
 
     // 左边往右边拖动时的事件
+    start1(e) {
+      console.log(e)
+      e.clone.className = 'item-on-move'
+      e.item.className = 'item-on-move'
+    },
     end1(e) {
-      // console.log(e)
-      // var that = this;
-      // var items = this.arr2.filter(function (m) {
-      //   return m.id == that.moveId
-      // })
-      // //如果左边
-      // if (items.length < 2) return;
-      // this.arr2.splice(e.newDraggableIndex, 1)
+      console.log(e)
+      e.clone.className = 'item'
+      e.item.className = 'item'
+      this.refuseMove(e)
+      this.removeCheckedKey(e)
+      this.save()
+    },
+    start2(e) {
+      console.log(e)
     },
     // 右边往左边拖动时的事件
     end2(e) {
-      // console.log(e)
-      // var that = this;
-      // var items = this.yAxisData.filter(function (m) {
-      //   return m.id == that.moveId
-      // })
-      // //如果左边
-      // if (items.length < 2) return;
-      // this.yAxisData.splice(e.newDraggableIndex, 1)
+      console.log(e)
+      this.removeDuplicateKey(e)
+      this.save()
     },
-    end3(e) {
-
+    removeCheckedKey(e) {
+      const that = this
+      const xItems = this.view.xaxis.filter(function(m) {
+        return m.id === that.moveId
+      })
+      const yItems = this.view.yaxis.filter(function(m) {
+        return m.id === that.moveId
+      })
+      if (xItems && xItems.length > 1) {
+        this.view.xaxis.splice(e.newDraggableIndex, 1)
+      }
+      if (yItems && yItems.length > 1) {
+        this.view.yaxis.splice(e.newDraggableIndex, 1)
+      }
     },
-    end4(e) {
-
+    refuseMove(e) {
+      const that = this
+      const xItems = this.dimension.filter(function(m) {
+        return m.id === that.moveId
+      })
+      const yItems = this.quota.filter(function(m) {
+        return m.id === that.moveId
+      })
+      if (xItems && xItems.length > 1) {
+        this.dimension.splice(e.newDraggableIndex, 1)
+      }
+      if (yItems && yItems.length > 1) {
+        this.quota.splice(e.newDraggableIndex, 1)
+      }
+    },
+    removeDuplicateKey(e) {
+      const that = this
+      const xItems = this.dimension.filter(function(m) {
+        return m.id === that.moveId
+      })
+      const yItems = this.quota.filter(function(m) {
+        return m.id === that.moveId
+      })
+      if (xItems && xItems.length > 0) {
+        this.dimension.splice(e.newDraggableIndex, 1)
+      }
+      if (yItems && yItems.length > 0) {
+        this.quota.splice(e.newDraggableIndex, 1)
+      }
     },
     // move回调方法
     onMove(e, originalEvent) {
       console.log(e)
-      // this.moveId = e.relatedContext.element.id;
+      this.moveId = e.draggedContext.element.id
       // //不允许停靠
       // if (e.relatedContext.element.id == 1) return false;
       // //不允许拖拽
@@ -350,14 +357,14 @@ export default {
       return true
     },
 
-    myEcharts(option) {
-      // 基于准备好的dom，初始化echarts实例
-      var myChart = this.$echarts.init(document.getElementById('echart'))
-      // 指定图表的配置项和数据
-      setTimeout(myChart.setOption(option, true), 500)
-      window.onresize = function() {
-        myChart.resize()
-      }
+    quotaSummaryChange(item) {
+      // 更新item
+      this.view.yaxis.forEach(function(ele) {
+        if (ele.id === item.id) {
+          ele.summary = item.summary
+        }
+      })
+      this.save()
     }
   }
 }
@@ -387,34 +394,30 @@ export default {
   }
 
   .item {
-    padding: 2px 12px;
+    padding: 3px 10px;
     margin: 3px 3px 0 3px;
     border: solid 1px #eee;
-    background-color: #f1f1f1;
     text-align: left;
+    color: #606266;
     display: block;
   }
 
+  .item-on-move {
+    padding: 3px 10px;
+    margin: 3px 3px 0 3px;
+    border: solid 1px #eee;
+    text-align: left;
+    color: #606266;
+  }
+
   .item + .item {
-    border-top: none;
     margin-top: 3px;
   }
 
   .item:hover {
-    background-color: #fdfdfd;
-    cursor: pointer;
-  }
-
-  .item-axis {
-    padding: 2px 12px;
-    margin: 3px 3px 0 3px;
-    border: solid 1px #eee;
-    background-color: #f1f1f1;
-    text-align: left;
-  }
-
-  .item-axis:hover {
-    background-color: #fdfdfd;
+    color: #1890ff;
+    background: #e8f4ff;
+    border-color: #a3d3ff;
     cursor: pointer;
   }
 
@@ -424,5 +427,11 @@ export default {
 
   span {
     font-size: 12px;
+  }
+
+  .draggable-group {
+    display: inline-block;
+    width: 100%;
+    height: calc(100% - 6px);
   }
 </style>

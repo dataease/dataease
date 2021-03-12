@@ -6,6 +6,9 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.ServletUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.slf4j.Logger;
@@ -22,6 +25,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
 
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+    public final static String expireMessage = "login token is expire";
 
     /*@Autowired
     private AuthUserService authUserService;*/
@@ -45,7 +50,10 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String authorization = httpServletRequest.getHeader("Authorization");
-
+        // 当没有出现登录超时 且需要刷新token 则执行刷新token
+        if (JWTUtils.loginExpire(authorization)){
+            throw  new AuthenticationException(expireMessage);
+        }
         if (JWTUtils.needRefresh(authorization)){
             authorization = refreshToken(request, response);
         }
@@ -67,7 +75,12 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 boolean loginSuccess = executeLogin(request, response);
                 return loginSuccess;
             } catch (Exception e) {
-                response401(request, response);
+                if (e instanceof AuthenticationException && StringUtils.equals(e.getMessage(), expireMessage)){
+                    responseExpire(request, response);
+                }else {
+                    response401(request, response);
+                }
+
             }
         }
         return false;
@@ -81,7 +94,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         AuthUserService authUserService = CommonBeanFactory.getBean(AuthUserService.class);
         SysUserEntity user = authUserService.getUserById(tokenInfo.getUserId());
         String password = user.getPassword();
+
+        // 删除老token操作时间
+        JWTUtils.removeTokenExpire(token);
         String newToken = JWTUtils.sign(tokenInfo, password);
+        // 记录新token操作时间
+        JWTUtils.addTokenExpire(newToken);
+
         JWTToken jwtToken = new JWTToken(newToken);
         this.getSubject(request, response).login(jwtToken);
         // 设置响应的Header头新Token
@@ -123,4 +142,16 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             LOGGER.error(e.getMessage());
         }
     }
+
+    private void responseExpire(ServletRequest req, ServletResponse resp) {
+        try {
+            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+            httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
+            httpServletResponse.setHeader("authentication-status", "login_expire");
+            httpServletResponse.setStatus(401);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
 }

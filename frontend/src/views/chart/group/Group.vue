@@ -7,7 +7,7 @@
           {{ $t('chart.datalist') }}
         </span>
       </el-row>
-      <el-divider/>
+      <el-divider />
 
       <el-row>
         <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
@@ -101,7 +101,7 @@
       <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="groupForm.name"/>
+            <el-input v-model="groupForm.name" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -121,7 +121,7 @@
           {{ $t('chart.back') }}
         </el-button>
       </el-row>
-      <el-divider/>
+      <el-divider />
       <el-row>
         <el-button type="primary" size="mini" plain @click="selectTable">
           {{ $t('chart.add_chart') }}
@@ -180,7 +180,7 @@
       <el-dialog :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
         <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="tableForm.name"/>
+            <el-input v-model="tableForm.name" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -197,7 +197,7 @@
         width="70%"
         class="dialog-css"
       >
-        <table-selector @getTable="getTable"/>
+        <table-selector @getTable="getTable" />
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="selectTableFlag = false">{{ $t('chart.cancel') }}</el-button>
           <el-button type="primary" size="mini" @click="createChart">{{ $t('chart.confirm') }}</el-button>

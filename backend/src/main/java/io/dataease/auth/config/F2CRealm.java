@@ -13,8 +13,9 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,8 @@ import java.util.stream.Collectors;
 @Component
 public class F2CRealm extends AuthorizingRealm {
 
-    @Resource
+    @Autowired
+    @Lazy //shiro组件加载过早 让authUserService等一等再注入 否则 注入的可能不是代理对象
     private AuthUserService authUserService;
 
 
@@ -36,7 +38,6 @@ public class F2CRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         Long userId = JWTUtils.tokenInfoByToken(principals.toString()).getUserId();
-        //SysUserEntity user = authUserService.getUserById(userId);
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         Set<String> role = authUserService.roles(userId).stream().collect(Collectors.toSet());
         simpleAuthorizationInfo.addRoles(role);

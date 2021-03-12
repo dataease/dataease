@@ -3,6 +3,7 @@ package io.dataease.controller.sys;
 import io.dataease.base.domain.SysDept;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.DeptCreateRequest;
 import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
@@ -30,6 +31,19 @@ public class SysDeptController extends ResultHolder {
     @PostMapping("/childNodes/{pid}")
     public List<DeptNodeResponse> childNodes(@PathVariable("pid") Long pid){
         List<SysDept> nodes = deptService.nodesByPid(pid);
+        List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
+            DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
+            deptNodeResponse.setHasChildren(node.getSubCount() > 0);
+            deptNodeResponse.setTop(node.getPid() == deptService.DEPT_ROOT_PID);
+            return deptNodeResponse;
+        }).collect(Collectors.toList());
+        return nodeResponses;
+    }
+
+    @PostMapping("/search")
+    public List<DeptNodeResponse> search(@RequestBody BaseGridRequest request){
+        List<SysDept> nodes = deptService.nodesTreeByCondition(request);
+        //List<SysDept> nodes = deptService.nodesByPid(pid);
         List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
             deptNodeResponse.setHasChildren(node.getSubCount() > 0);

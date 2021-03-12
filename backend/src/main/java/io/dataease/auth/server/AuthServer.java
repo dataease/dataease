@@ -49,6 +49,8 @@ public class AuthServer implements AuthApi {
         Map<String,Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).lastLoginTime(System.currentTimeMillis()).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
+        // 记录token操作时间
+        JWTUtils.addTokenExpire(token);
         result.put("token", token);
         ServletUtils.setToken(token);
         return result;
@@ -79,6 +81,9 @@ public class AuthServer implements AuthApi {
 
     @Override
     public String test() {
+        SysUserEntity userById = authUserService.getUserById(4L);
+        String nickName = userById.getNickName();
+        System.out.println(nickName);
         return "apple";
     }
 }

@@ -1,73 +1,63 @@
 <template>
-  <div v-loading="result.loading">
+  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
-    <el-card class="table-card">
-      <template v-slot:header>
-        <ms-table-header
-          :permission="permission"
-          :condition.sync="condition"
-          :create-tip="$t('organization.create')"
-          :title="$t('commons.organization')"
-          @search="initTableData"
-          @create="create"
-        />
+    <complex-table
+      ref="table"
+      :data="tableData"
+      :lazy="isLazy"
+      :load="loadExpandDatas"
+      :columns="columns"
+      :buttons="buttons"
+      :header="header"
+      :search-config="searchConfig"
+      :pagination-config="paginationConfig"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :default-expand-all="isTableExpand"
+      row-key="deptId"
+      @search="search"
+    >
+      <template #buttons>
+        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" />
       </template>
-      <!-- system menu organization table-->
-      <el-table
-        ref="table"
-        border
-        class="adjust-table"
-        :data="tableData"
-        lazy
-        :load="initTableData"
-        style="width: 100%"
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-        row-key="deptId"
-      >
-        <!-- <el-table-column :selectable="checkboxT" type="selection" width="55" /> -->
-        <el-table-column label="名称" prop="name" />
-        <el-table-column label="下属部门数" prop="subCount" />
-        <el-table-column label="状态" align="center" prop="enabled">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.enabled"
-              :disabled="scope.row.id === 1"
-              active-color="#409EFF"
-              inactive-color="#F56C6C"
-              @change="changeEnabled(scope.row, scope.row.enabled,)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建日期">
-          <template v-slot:default="scope">
-            <span>{{ scope.row.createTime | timestampFormatDate }}</span>
-          </template>
-        </el-table-column>
 
-        <el-table-column :label="$t('commons.operating')">
-          <template v-slot:default="scope">
-            <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
-          </template>
-        </el-table-column> -->
-      </el-table>
+      <!-- <el-table-column type="selection" fix /> -->
+      <el-table-column label="名称" prop="name" />
+      <el-table-column label="下属组织数" prop="subCount" />
+      <!-- <el-table-column label="状态" align="center" prop="enabled">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.enabled"
+            :disabled="scope.row.id === 1"
+            active-color="#409EFF"
+            inactive-color="#F56C6C"
+            @change="changeEnabled(scope.row, scope.row.enabled,)"
+          />
+        </template>
+      </el-table-column> -->
+      <el-table-column prop="createTime" label="创建日期">
+        <template v-slot:default="scope">
+          <span>{{ scope.row.createTime | timestampFormatDate }}</span>
+        </template>
+      </el-table-column>
 
-    </el-card>
+      <fu-table-operations :buttons="buttons" label="操作" fix />
+    </complex-table>
 
     <!-- add organization form -->
     <el-dialog
       :close-on-click-modal="false"
       :title="formType=='add' ? $t('organization.create') : $t('organization.modify')"
       :visible.sync="dialogOrgAddVisible"
-      width="30%"
+      width="500px"
       :destroy-on-close="true"
       @closed="closeFunc"
     >
       <el-form ref="createOrganization" inline :model="form" :rules="rule" size="small" label-width="80px">
 
-        <el-form-item label="部门名称" prop="name">
+        <el-form-item label="组织名称" prop="name">
           <el-input v-model="form.name" style="width: 370px;" />
         </el-form-item>
-        <el-form-item label="部门排序" prop="deptSort">
+        <el-form-item label="组织排序" prop="deptSort">
           <el-input-number
             v-model.number="form.deptSort"
             :min="0"
@@ -77,7 +67,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="顶级部门" prop="top">
+        <el-form-item label="顶级组织" prop="top">
           <el-radio-group v-model="form.top" style="width: 140px">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
@@ -85,14 +75,14 @@
         </el-form-item>
 
         <el-form-item label="状态" prop="enabled">
-          <el-radio-group v-model="form.enabled" style="width: 140px">
+          <el-radio-group v-model="form.enabled" style="width: 140px" disabled>
             <el-radio :label="true">启用</el-radio>
             <el-radio :label="false">停用</el-radio>
           </el-radio-group>
 
           <!-- <el-radio v-for="item in dict.dept_status" :key="item.id" v-model="form.enabled" :label="item.value">{{ item.label }}</el-radio> -->
         </el-form-item>
-        <el-form-item v-if="!form.top" style="margin-bottom: 0;" label="上级部门" prop="pid">
+        <el-form-item v-if="!form.top" style="margin-bottom: 0;" label="上级组织" prop="pid">
           <treeselect
             v-model="form.pid"
             :auto-load-root-options="false"
@@ -103,44 +93,32 @@
           />
         </el-form-item>
       </el-form>
-      <!-- <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="crud.cancelCU">取消</el-button>
-        <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
-      </div> -->
-      <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogOrgAddVisible = false"
-          @confirm="createDept('createOrganization')"
-        />
-      </template>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="dialogOrgAddVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="createDept('createOrganization')">确认</el-button>
+      </div>
+
     </el-dialog>
 
-    <ms-delete-confirm ref="deleteConfirm" :title="$t('organization.delete')" @delete="_handleDelete" />
-
-  </div>
+  </layout-content>
 </template>
 
 <script>
+import LayoutContent from '@/components/business/LayoutContent'
+import ComplexTable from '@/components/business/complex-table'
 import Treeselect from '@riophae/vue-treeselect'
+import { formatCondition } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
-import MsTableHeader from '@/metersphere/common/components/MsTableHeader'
-import MsTableOperator from '@/metersphere/common/components/MsTableOperator'
-import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
-import {
-  listenGoBack,
-  removeGoBackListener
-} from '@/metersphere/common/js/utils'
-import MsDeleteConfirm from '@/metersphere/common/components/MsDeleteConfirm'
-import { getDeptTree, addDept, editDept, delDept } from '@/api/system/dept'
+
+import { getDeptTree, addDept, editDept, delDept, loadTable } from '@/api/system/dept'
 
 export default {
   name: 'MsOrganization',
   components: {
-    MsDeleteConfirm,
-    MsTableHeader,
-    MsTableOperator,
-    MsDialogFooter,
+    LayoutContent,
+    ComplexTable,
     Treeselect
   },
   data() {
@@ -155,7 +133,6 @@ export default {
       changeStatusPath: '/api/dept/updateStatus',
       result: {},
       dialogOrgAddVisible: false,
-      condition: {},
       tableData: [],
       maps: new Map(),
       oldPid: null,
@@ -173,30 +150,55 @@ export default {
         add: ['dept:add'],
         edit: ['dept:edit'],
         del: ['dept:del']
-      }
+      },
+      header: '',
+      columns: [],
+      buttons: [
+        {
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+        }, {
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete
+        }
+      ],
+      searchConfig: {
+        useQuickSearch: true,
+        useComplexSearch: false,
+        quickPlaceholder: '按名称搜索',
+        components: [
 
+        ]
+      },
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      defaultCondition: {
+        field: 'pid',
+        operator: 'eq',
+        value: 0
+      },
+      defaultForm: { deptId: null, top: true, enabled: true, pid: null },
+      isTableExpand: false,
+      isLazy: true
     }
   },
   activated() {
-    this.initTableData()
+    this.form = Object.assign({}, this.defaultForm)
+    this.search()
   },
   methods: {
     create() {
+      this.form = Object.assign({}, this.defaultForm)
       this.dialogOrgAddVisible = true
       this.formType = 'add'
-      listenGoBack(this.closeFunc)
     },
-    search(condition) {
-      console.log(condition)
-    },
-
     edit(row) {
       this.dialogOrgAddVisible = true
       this.formType = 'modify'
       this.oldPid = row.pid
       this.form = Object.assign({}, row)
       this.treeByRow(row)
-      listenGoBack(this.closeFunc)
     },
 
     treeByRow(row) {
@@ -240,35 +242,127 @@ export default {
       return roots
     },
 
-    initTableData(row, treeNode, resolve) {
-      const _self = this
-      const pid = row ? row.deptId : '0'
-      getDeptTree(pid).then(response => {
-        let data = response.data
+    quick_condition(condition) {
+      const result = {}
+      if (condition && condition.quick) {
+        for (const [key, value] of Object.entries(condition)) {
+          // console.log(`${key}`)
+          if (`${key}` === 'quick') {
+            const v_new = Object.assign({}, value)
+            v_new['field'] = 'name'
+            result['name'] = v_new
+          } else {
+            result[`${key}`] = value
+          }
+        }
+        return result
+      }
+      return Object.assign({}, condition)
+    },
+
+    setTableAttr(isSearch) {
+      if (isSearch) {
+        this.lazy = false
+        this.isTableExpand = true
+      } else {
+        this.lazy = true
+        this.isTableExpand = false
+      }
+    },
+    // 加载表格数据
+    search(condition) {
+      this.setTableAttr()
+      this.tableData = []
+      let param = {}
+      if (condition && condition.quick) {
+        const con = this.quick_condition(condition)
+        param = formatCondition(con)
+      } else {
+        param = { conditions: [this.defaultCondition] }
+      }
+
+      // param.conditions.push(this.defaultCondition)
+      loadTable(param).then(res => {
+        let data = res.data
         data = data.map(obj => {
           if (obj.subCount > 0) {
             obj.hasChildren = true
           }
           return obj
         })
-        if (!row) {
-          data.some(node => {
-            node.children = null
-          })
-          _self.tableData = data
-          _self.depts = null
-        } else {
-          this.maps.set(row.deptId, { row, treeNode, resolve })
-          resolve && resolve(data)
+
+        if (condition && condition.quick) {
+          data = this.buildTree(data)
+          this.setTableAttr(true)
         }
+        this.tableData = data
+        this.depts = null
       })
     },
+
+    buildTree(arrs) {
+      const idMapping = arrs.reduce((acc, el, i) => {
+        acc[el.deptId] = i
+        return acc
+      }, {})
+      const roots = []
+      arrs.forEach(el => {
+        // 判断根节点
+        if (el.pid === null || el.pid === 0) {
+          roots.push(el)
+          return
+        }
+        // 用映射表找到父元素
+        const parentEl = arrs[idMapping[el.pid]]
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el]
+      })
+      return roots
+    },
+
+    // 加载下一级子节点数据
+    loadExpandDatas(row, treeNode, resolve) {
+      getDeptTree(row.deptId).then(res => {
+        let data = res.data
+        data = data.map(obj => {
+          if (obj.subCount > 0) {
+            obj.hasChildren = true
+          }
+          return obj
+        })
+        this.maps.set(row.deptId, { row, treeNode, resolve })
+        resolve && resolve(data)
+      })
+    },
+
+    // initTableData(row, treeNode, resolve) {
+    //   const _self = this
+    //   const pid = (row && row.deptId) ? row.deptId : '0'
+    //   getDeptTree(pid).then(response => {
+    //     let data = response.data
+    //     data = data.map(obj => {
+    //       if (obj.subCount > 0) {
+    //         obj.hasChildren = true
+    //       }
+    //       return obj
+    //     })
+    //     if (!row) {
+    //       data.some(node => {
+    //         node.children = null
+    //       })
+    //       _self.tableData = data
+    //       _self.depts = null
+    //     } else {
+    //       this.maps.set(row.deptId, { row, treeNode, resolve })
+    //       resolve && resolve(data)
+    //     }
+    //   })
+    // },
     closeFunc() {
-      this.initTableData()
+      this.search()
       this.form = {}
       this.oldPid = null
       this.depts = null
-      removeGoBackListener(this.closeFunc)
       this.dialogOrgAddVisible = false
     },
 
@@ -307,12 +401,12 @@ export default {
         id: node.deptId,
         pid: node.pid,
         label: node.name,
-        children: node.children
+        children: node.children || null
       }
     },
     // 改变状态
     changeEnabled(data, val) {
-      this.$confirm('此操作将 "停用" ' + data.name + '部门, 是否继续？', '提示', {
+      this.$confirm('此操作将 "停用" ' + data.name + '组织, 是否继续？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -334,7 +428,7 @@ export default {
           if (this.formType !== 'modify') {
             addDept(this.form).then(res => {
               this.$success(this.$t('commons.save_success'))
-              this.initTableData()
+              this.search()
               this.oldPid && this.reloadByPid(this.oldPid)
               this.reloadByPid(this.form['pid'])
               this.dialogOrgAddVisible = false
@@ -342,7 +436,7 @@ export default {
           } else {
             editDept(this.form).then(res => {
               this.$success(this.$t('commons.save_success'))
-              this.initTableData()
+              this.search()
               this.oldPid && this.reloadByPid(this.oldPid)
               this.reloadByPid(this.form['pid'])
               this.dialogOrgAddVisible = false
@@ -353,9 +447,7 @@ export default {
         }
       })
     },
-    handleDelete(organization) {
-      this.$refs.deleteConfirm.open(organization)
-    },
+
     _handleDelete(organization) {
       this.$confirm(this.$t('organization.delete_confirm'), '', {
         confirmButtonText: this.$t('commons.confirm'),
@@ -365,7 +457,7 @@ export default {
         const requests = [{ deptId: organization.deptId, pid: organization.pid }]
         delDept(requests).then(res => {
           this.$success(this.$t('commons.delete_success'))
-          this.initTableData()
+          this.search()
           this.reloadByPid(organization.pid)
         })
       }).catch(() => {
@@ -379,7 +471,7 @@ export default {
       if (pid !== 0 && this.maps.get(pid)) {
         const { row, treeNode, resolve } = this.maps.get(pid)
         this.$set(this.$refs.table.store.states.lazyTreeNodeMap, pid, [])
-        this.initTableData(row, treeNode, resolve)
+        this.loadExpandDatas(row, treeNode, resolve)
       }
     },
     array2Tree(arr) {
@@ -407,7 +499,6 @@ export default {
 </script>
 
 <style scoped>
-@import "~@/metersphere/common/css/index.css";
 .member-size {
   text-decoration: underline;
 }

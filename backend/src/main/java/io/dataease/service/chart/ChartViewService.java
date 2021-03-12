@@ -12,6 +12,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.chart.Series;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.service.dataset.DataSetTableFieldsService;
@@ -76,9 +77,9 @@ public class ChartViewService {
 
     public ChartViewDTO getData(String id) throws Exception {
         ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
-        List<DatasetTableField> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<DatasetTableField>>() {
+        List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
-        List<DatasetTableField> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<DatasetTableField>>() {
+        List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
 
         List<String> x = new ArrayList<>();
@@ -88,25 +89,25 @@ public class ChartViewService {
             BeanUtils.copyBean(dto, view);
             return dto;
         }
-        List<String> xIds = xAxis.stream().map(DatasetTableField::getId).collect(Collectors.toList());
-        List<String> yIds = yAxis.stream().map(DatasetTableField::getId).collect(Collectors.toList());
-        List<DatasetTableField> xList = dataSetTableFieldsService.getListByIds(xIds);
-        List<DatasetTableField> yList = dataSetTableFieldsService.getListByIds(yIds);
+//        List<String> xIds = xAxis.stream().map(DatasetTableField::getId).collect(Collectors.toList());
+//        List<String> yIds = yAxis.stream().map(DatasetTableField::getId).collect(Collectors.toList());
+//        List<DatasetTableField> xList = dataSetTableFieldsService.getListByIds(xIds);
+//        List<DatasetTableField> yList = dataSetTableFieldsService.getListByIds(yIds);
 
-        // 获取数据源
+        // 获取数据集
         DatasetTable table = dataSetTableService.get(view.getTableId());
+        // todo 判断连接方式，直连或者定时抽取 table.mode
         Datasource ds = datasourceService.get(table.getDataSourceId());
-
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
         datasourceRequest.setTable(dataTableInfoDTO.getTable());
-        datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xList, yList));
+        datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xAxis, yAxis));
         List<String[]> data = datasourceProvider.getData(datasourceRequest);
 
         // todo 处理结果,目前做一个单系列图表，后期图表组件再扩展
-        for (DatasetTableField y : yList) {
+        for (ChartViewFieldDTO y : yAxis) {
             Series series1 = new Series();
             series1.setName(y.getName());
             series1.setType(view.getType());
@@ -116,16 +117,16 @@ public class ChartViewService {
         for (String[] d : data) {
             StringBuilder a = new StringBuilder();
             BigDecimal b = new BigDecimal("0");
-            for (int i = 0; i < xList.size(); i++) {
-                if (i == xList.size() - 1) {
+            for (int i = 0; i < xAxis.size(); i++) {
+                if (i == xAxis.size() - 1) {
                     a.append(d[i]);
                 } else {
                     a.append(d[i]).append("\n");
                 }
             }
             x.add(a.toString());
-            for (int i = xList.size(); i < xList.size() + yList.size(); i++) {
-                int j = i - xList.size();
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                int j = i - xAxis.size();
                 series.get(j).getData().add(new BigDecimal(d[i]));
             }
         }
@@ -139,7 +140,7 @@ public class ChartViewService {
         return dto;
     }
 
-    public String getSQL(String type, String table, List<DatasetTableField> xAxis, List<DatasetTableField> yAxis) {
+    public String getSQL(String type, String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
@@ -150,10 +151,10 @@ public class ChartViewService {
         }
     }
 
-    public String transMysqlSQL(String table, List<DatasetTableField> xAxis, List<DatasetTableField> yAxis) {
-        // TODO 此处sum后期由用户前端传入
-        String[] field = yAxis.stream().map(y -> "sum(" + y.getOriginName() + ")").toArray(String[]::new);
-        String[] group = xAxis.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
+    public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis) {
+        // TODO 字段汇总 排序等
+        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2))").toArray(String[]::new);
+        String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
         return MessageFormat.format("SELECT {0},{1} FROM {2} GROUP BY {3}", StringUtils.join(group, ","), StringUtils.join(field, ","), table, StringUtils.join(group, ","));
     }
 }

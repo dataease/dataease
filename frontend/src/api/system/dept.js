@@ -3,7 +3,17 @@ import request from '@/utils/request'
 export function getDeptTree(pid) {
   return request({
     url: 'api/dept/childNodes/' + pid,
-    method: 'post'
+    method: 'post',
+    loading: true
+  })
+}
+
+export function loadTable(data) {
+  return request({
+    url: 'api/dept/search',
+    method: 'post',
+    data,
+    loading: true
   })
 }
 
@@ -31,4 +41,4 @@ export function editDept(data) {
   })
 }
 
-export default { addDept, delDept, editDept, getDeptTree }
+export default { addDept, delDept, editDept, getDeptTree, loadTable }

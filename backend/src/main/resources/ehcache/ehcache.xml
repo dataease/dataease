@@ -7,10 +7,10 @@
         user.dir - 用户当前工作目录
         java.io.tmpdir - 默认临时文件路径
     -->
-<!--    <diskStore path="D:/home/Tmp_Ehcache"/>-->
+    <diskStore path="/opt/dataease/data/ehcache"/>
     <!--
         name:缓存名称。
-        maxElementsInMemory:缓存最大数目
+        maxElementsInMemory:jvm缓存最大数目
         maxElementsOnDisk：硬盘最大缓存个数。
         eternal:对象是否永久有效，一但设置了，timeout将不起作用。
         overflowToDisk:是否保存到磁盘，当系统宕机时
@@ -39,10 +39,23 @@
             name="users_info"
             eternal="false"
             maxElementsInMemory="100"
-            overflowToDisk="false"
-            diskPersistent="false"
-            timeToIdleSeconds="0"
-            timeToLiveSeconds="300"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+
+    <cache
+            name="tokens_expire"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
             memoryStoreEvictionPolicy="LRU"
     />
 

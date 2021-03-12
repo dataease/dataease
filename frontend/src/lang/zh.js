@@ -80,7 +80,9 @@ export default {
     password: '密码',
     any: '随便填',
     thirdparty: '第三方登录',
-    thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！'
+    thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
+    expires: '登录token过期，请重新登录',
+    tokenError: 'token错误，请重新登录'
   },
   commons: {
     upload: '上传',
@@ -422,6 +424,7 @@ export default {
     input_email: '请输入邮箱',
     input_password: '请输入密码',
     input_phone: '请输入电话号码',
+    input_roles: '请选择角色',
     special_characters_are_not_supported: '不支持特殊字符',
     mobile_number_format_is_incorrect: '手机号码格式不正确',
     email_format_is_incorrect: '邮箱格式不正确',
@@ -445,7 +448,8 @@ export default {
   menu: {
     create: '创建菜单',
     modify: '修改菜单',
-    delete: '删除菜单'
+    delete: '删除菜单',
+    delete_confirm: '确定删除菜单吗'
   },
   organization: {
     create: '创建组织',
@@ -587,7 +591,16 @@ export default {
     result_filter: '结果过滤器',
     x_axis: '横轴',
     y_axis: '纵轴',
-    chart: '视图'
+    chart: '视图',
+    close: '关闭',
+    summary: '汇总方式',
+    fast_calc: '快速计算',
+    sum: '求和',
+    avg: '平均',
+    max: '最大值',
+    min: '最小值',
+    std: '标准差',
+    var_samp: '方差'
   },
   dataset: {
     datalist: '数据集',

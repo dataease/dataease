@@ -2,12 +2,12 @@
   <ms-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <ms-aside-container>
-      <group @switchComponent="switchComponent"/>
+      <group @switchComponent="switchComponent" />
     </ms-aside-container>
 
     <ms-main-container>
       <!--        <router-view />-->
-      <component :is="component" :param="param" @switchComponent="switchComponent"/>
+      <component :is="component" :param="param" @switchComponent="switchComponent" />
     </ms-main-container>
   </ms-container>
 </template>

@@ -27,17 +27,24 @@
         </collection>
     </resultMap>
 
-    <select id="query" resultMap="BaseResultMap">
+
+
+    <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="BaseResultMap">
         select u.*,u.user_id as id, r.role_id,r.name as role_name , d.pid, d.name as dept_name
         from sys_user u left join sys_users_roles ur on u.user_id = ur.user_id
         left join sys_role r on r.role_id = ur.role_id
         left join sys_dept d on d.dept_id = u.dept_id
-        <where>
-            <if test="request.name != null">
-                AND u.name like CONCAT('%', #{request.name},'%')
-            </if>
-        </where>
-        order by u.update_time desc
+
+        <if test="_parameter != null">
+            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by u.update_time desc
+        </if>
+
     </select>
 
 

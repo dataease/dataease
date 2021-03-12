@@ -3,7 +3,8 @@ import request from '@/utils/request'
 export function getMenusTree(pid) {
   return request({
     url: 'api/menu/childNodes/' + pid,
-    method: 'post'
+    method: 'post',
+    loading: true
   })
 }
 

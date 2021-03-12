@@ -1,0 +1,30 @@
+package io.dataease.dto.chart;
+
+import lombok.Data;
+
+/**
+ * @Author gin
+ * @Date 2021/3/11 1:18 下午
+ */
+@Data
+public class ChartViewFieldDTO {
+    private String id;
+
+    private String tableId;
+
+    private String originName;
+
+    private String name;
+
+    private String type;
+
+    private Boolean checked;
+
+    private Integer columnIndex;
+
+    private Long lastSyncTime;
+
+    private Integer deType;
+
+    private String summary;
+}

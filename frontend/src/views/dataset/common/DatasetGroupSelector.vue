@@ -7,7 +7,7 @@
           {{ $t('dataset.datalist') }}
         </span>
       </el-row>
-      <el-divider/>
+      <el-divider />
 
       <el-row>
         <el-form>
@@ -59,7 +59,7 @@
           {{ $t('dataset.back') }}
         </el-button>
       </el-row>
-      <el-divider/>
+      <el-divider />
       <el-row>
         <el-form>
           <el-form-item class="form-item">
@@ -85,8 +85,8 @@
               ({{ data.type }})
             </span>
             <span>
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation"/></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time"/></span>
+              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time" /></span>
             </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>

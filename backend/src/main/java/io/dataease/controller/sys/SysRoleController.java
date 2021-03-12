@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import io.dataease.base.domain.SysRole;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.request.RoleMenusRequest;
 import io.dataease.controller.sys.response.RoleUserItem;
@@ -49,7 +50,7 @@ public class SysRoleController {
 
     @ApiOperation("查询角色")
     @PostMapping("/roleGrid/{goPage}/{pageSize}")
-    public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody RoleGridRequest request) {
+    public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         Pager<List<SysRole>> listPager = PageUtils.setPageInfo(page, sysRoleService.query(request));
         return listPager;

@@ -1,31 +1,34 @@
 <template>
-  <div v-loading="result.loading" style="height: 100%">
-    <el-container style="width: 100%; height: 100%;border: 1px solid #eee">
-      <el-aside width="70%" style="border: 1px solid #eee">
-        <el-card class="table-card">
-          <template v-slot:header>
-            <ms-table-header :permission="permission" :condition.sync="condition" :create-tip="$t('role.add')" :title="$t('commons.role')" @search="search" @create="create" />
+  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <!-- <div v-loading="result.loading" style="height: 100%"> -->
+    <el-container style="width: 100%; height: 100%;">
+      <el-aside width="70%">
+        <complex-table
+          highlight-current-row
+          :data="tableData"
+          :columns="columns"
+          :buttons="buttons"
+          :header="header"
+          :search-config="searchConfig"
+          :pagination-config="paginationConfig"
+          @search="search"
+          @row-click="rowClick"
+        >
+          <template #buttons>
+            <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" />
           </template>
-          <el-table border highlight-current-row class="adjust-table" :data="tableData" style="width: 100%;" @row-click="rowClick">
 
-            <el-table-column prop="name" label="名称" />
-            <el-table-column prop="code" label="代码" />
-            <el-table-column :show-overflow-tooltip="true" prop="createTime" label="创建日期">
-              <template v-slot:default="scope">
-                <span>{{ scope.row.createTime | timestampFormatDate }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column :label="$t('commons.operating')">
-              <template v-slot:default="scope">
-                <ms-table-operator :permission="permission" @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
-              </template>
-            </el-table-column>
-          </el-table>
-          <ms-table-pagination :change="search" :current-page.sync="currentPage" :page-size.sync="pageSize" :total="total" />
-
-        </el-card>
+          <el-table-column prop="name" label="名称" />
+          <el-table-column prop="code" label="代码" />
+          <el-table-column :show-overflow-tooltip="true" prop="createTime" label="创建日期">
+            <template v-slot:default="scope">
+              <span>{{ scope.row.createTime | timestampFormatDate }}</span>
+            </template>
+          </el-table-column>
+          <fu-table-operations :buttons="buttons" label="操作" fix />
+        </complex-table>
       </el-aside>
-      <el-main style="">
+      <el-main style="padding: 8px 20px;">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="菜单授权" name="first">
             <el-tree
@@ -67,52 +70,32 @@
           <el-input v-model="form.description" style="width: 380px;" rows="5" type="textarea" />
         </el-form-item>
       </el-form>
-
-      <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogVisible = false"
-          @confirm="saveRole('roleForm')"
-        />
-      </template>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="saveRole('roleForm')">确认</el-button>
+      </div>
     </el-dialog>
 
-  </div>
+  </layout-content>
 
 </template>
 <script>
-import MsTablePagination from '@/metersphere/common/pagination/TablePagination'
-import MsTableHeader from '@/metersphere/common/components/MsTableHeader'
-import MsTableOperator from '@/metersphere/common/components/MsTableOperator'
-import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
-import {
-  listenGoBack,
-  removeGoBackListener
-} from '@/metersphere/common/js/utils'
+
+import LayoutContent from '@/components/business/LayoutContent'
+import ComplexTable from '@/components/business/complex-table'
+import { formatCondition } from '@/utils/index'
 import { addRole, editRole, delRole, roleGrid, addRoleMenus, menuIds } from '@/api/system/role'
 
 import { getMenusTree, getChild } from '@/api/system/menu'
 export default {
   name: 'Role',
   components: {
-    MsTablePagination,
-    MsTableHeader,
-    MsTableOperator,
-    MsDialogFooter
+    LayoutContent,
+    ComplexTable
   },
   data() {
     return {
-      result: {},
-      queryPath: '/api/role/roleGrid',
-      deletePath: '/api/role/delete/',
-      createPath: '/api/role/create',
-      updatePath: '/api/role/update',
-      queryMenusPath: '/api/menu/childNodes/',
-      childMenusPath: '/api/menu/childMenus/',
-      saveRoleMenusPath: '/api/role/saveRolesMenus',
-      currentPage: 1,
-      pageSize: 10,
-      total: 0,
-      condition: {},
+
       tableData: [],
       menus: [],
       menuIds: [],
@@ -131,6 +114,31 @@ export default {
         add: ['role:add'],
         edit: ['role:edit'],
         del: ['role:del']
+      },
+      header: '',
+      columns: [],
+      buttons: [
+        {
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+        }, {
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.handleDelete
+        }
+      ],
+      searchConfig: {
+        useQuickSearch: false,
+        quickPlaceholder: '按名称搜索',
+        components: [
+        //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
+          { field: 'name', label: '角色名称', component: 'FuComplexInput' },
+
+          { field: 'code', label: '角色代码', component: 'FuComplexInput', defaultOperator: 'eq' }
+        //   { field: 'deptId', label: '组织', component: conditionTable }
+        ]
+      },
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
       }
     }
   },
@@ -148,10 +156,11 @@ export default {
       this.form = {}
       this.formType = 'add'
       this.dialogVisible = true
-      listenGoBack(this.closeFunc)
     },
-    search() {
-      roleGrid(this.currentPage, this.pageSize, this.condition).then(response => {
+    search(condition) {
+      const temp = formatCondition(condition)
+      const param = temp || {}
+      roleGrid(this.paginationConfig.currentPage, this.paginationConfig.pageSize, param).then(response => {
         const data = response.data
         this.total = data.itemCount
         this.tableData = data.listObject
@@ -162,7 +171,6 @@ export default {
       this.formType = 'modify'
       this.dialogVisible = true
       this.form = Object.assign({}, row)
-      listenGoBack(this.closeFunc)
     },
 
     saveRole(roleForm) {
@@ -182,7 +190,6 @@ export default {
 
     closeFunc() {
       this.dialogVisible = false
-      removeGoBackListener(this.closeFunc)
     },
 
     getMenuDatas(node, resolve) {
@@ -272,5 +279,4 @@ export default {
 </script>
 
 <style scoped>
-@import "~@/metersphere/common/css/index.css";
 </style>

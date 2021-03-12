@@ -19,7 +19,7 @@ public class DataSetTableFieldController {
 
     @PostMapping("list/{tableId}")
     public List<DatasetTableField> list(@PathVariable String tableId) {
-        DatasetTableField datasetTableField = new DatasetTableField();
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
         return dataSetTableFieldsService.list(datasetTableField);
     }

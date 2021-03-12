@@ -11,17 +11,22 @@ import zhLocale from './zh'
 import twLocale from './tw'
 import esLocale from './es'
 import jaLocale from './ja'
+import fuZh from 'fit2cloud-ui/src/locale/lang/zh-CN' // 加载fit2cloud的内容
+
+import fuEn from 'fit2cloud-ui/src/locale/lang/en_US' // 加载fit2cloud的内容
 
 Vue.use(VueI18n)
 
 const messages = {
   en: {
     ...enLocale,
-    ...elementEnLocale
+    ...elementEnLocale,
+    ...fuEn
   },
   zh: {
     ...zhLocale,
-    ...elementZhLocale
+    ...elementZhLocale,
+    ...fuZh
   },
   tw: {
     ...twLocale,

@@ -23,4 +23,8 @@ public abstract class DatasourceProvider {
         getData(datasourceRequest);
     }
 
+    abstract public Long count(DatasourceRequest datasourceRequest)throws Exception;
+
+    abstract public List<String[]> getPageData(DatasourceRequest datasourceRequest) throws Exception;
+
 }
