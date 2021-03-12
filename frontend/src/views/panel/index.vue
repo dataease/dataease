@@ -37,13 +37,14 @@ import MsAsideContainer from '@/metersphere/common/components/MsAsideContainer'
 // import Group from './group/Group'
 import PanelList from './list/PanelList'
 import PanelView from './list/PanelView'
+import PanelViewShow from './list/PanelViewShow'
 
 export default {
   name: 'Panel',
-  components: { MsMainContainer, MsContainer, MsAsideContainer, PanelList, PanelView },
+  components: { MsMainContainer, MsContainer, MsAsideContainer, PanelList, PanelView ,PanelViewShow},
   data() {
     return {
-      component: PanelView,
+      component: PanelViewShow,
       param: {},
       activeName: 'PanelList'
     }
@@ -56,8 +57,8 @@ export default {
       console.log(c)
       this.param = c.param
       switch (c.name) {
-        case 'PanelView':
-          this.component = PanelView
+        case 'PanelViewShow':
+          this.component = PanelViewShow
           break
       }
     }

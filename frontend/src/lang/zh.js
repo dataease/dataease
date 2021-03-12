@@ -720,7 +720,7 @@ export default {
     confirm: '确认',
     cancel: '取消',
     search: '搜索',
-    back: '返回'
-
+    back: '返回',
+    view: '视图'
   }
 }

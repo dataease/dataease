@@ -1,10 +1,7 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col>
-    <el-row>
+    <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
       <span>仪表盘名称：{{panelName}}</span>
-
     </el-row>
-  </el-col>
 </template>
 
 <script>

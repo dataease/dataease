@@ -19,6 +19,9 @@ import message from '@/metersphere/common/js/message'
 import { left2RightDrag, bottom2TopDrag, right2LeftDrag } from '@/metersphere/common/js/directive'
 import directives from './directive'
 
+import vdrr from './components/vue-drag-resize-rotate'
+Vue.component('vdrr', vdrr)
+
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'

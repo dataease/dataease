@@ -29,6 +29,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/v2/**","anon");
         filterChainDefinitionMap.put("/v3/**","anon");
         filterChainDefinitionMap.put("/static/**", "anon");
+        filterChainDefinitionMap.put("/common-files/**", "anon");
 
 
         // filterChainDefinitionMap.put("/401", "anon");

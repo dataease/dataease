@@ -14,6 +14,12 @@ module.exports = {
   // 使用mock-server
   devServer: {
     port: port,
+    proxy: {
+      ['^(?!/login)']: {
+        target: 'http://localhost:8081/',
+        ws: false,
+      }
+    },
     open: true,
     overlay: {
       warnings: false,
