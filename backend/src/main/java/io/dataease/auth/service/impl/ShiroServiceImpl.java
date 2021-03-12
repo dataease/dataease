@@ -45,6 +45,8 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/display/**", ANON);
         filterChainDefinitionMap.put("/tokenExpired", ANON);
         filterChainDefinitionMap.put("/downline", ANON);
+        filterChainDefinitionMap.put("/common-files/**", ANON);
+
         List<String> whitelist = whitelistConfig.getWhitelist();
         if (CollectionUtils.isNotEmpty(whitelist))
         whitelist.forEach(path -> {
