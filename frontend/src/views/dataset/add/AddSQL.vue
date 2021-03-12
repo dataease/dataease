@@ -27,7 +27,23 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item class="form-item">
+            <el-input v-model="name" size="mini" placeholder="名称" />
+          </el-form-item>
         </el-form>
+      </el-row>
+      <el-row>
+        <el-col style="width:35vh;min-width: 200px;">
+          <codemirror
+            ref="myCm"
+            v-model="sql"
+            class="codemirror"
+            :options="sqlOption"
+            @ready="onCmReady"
+            @focus="onCmFocus"
+            @input="onCmCodeChange"
+          />
+        </el-col>
       </el-row>
     </el-row>
   </el-col>
@@ -35,16 +51,60 @@
 
 <script>
 import { post, listDatasource } from '@/api/dataset/dataset'
+import { codemirror } from 'vue-codemirror'
+// 核心样式
+import 'codemirror/lib/codemirror.css'
+// 引入主题后还需要在 options 中指定主题才会生效
+import 'codemirror/theme/rubyblue.css'
+import 'codemirror/mode/python/python.js'
+import 'codemirror/mode/sql/sql.js'
+// theme css
+import 'codemirror/theme/3024-day.css'
+// require active-line.js
+import 'codemirror/addon/selection/active-line.js'
+// closebrackets
+import 'codemirror/addon/edit/closebrackets.js'
+// keyMap
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/emacs.js'
 
 export default {
   name: 'AddSQL',
+  components: { codemirror },
   props: {
-    param: Object
+    param: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
       dataSource: '',
-      options: []
+      options: [],
+      name: '',
+      sql: '',
+      sqlOption: {
+        tabSize: 2,
+        styleActiveLine: true,
+        lineNumbers: true,
+        line: true,
+        mode: 'text/x-mysql',
+        theme: '3024-day',
+        hintOptions: {
+          completeSingle: true // 当匹配只有一项的时候是否自动补全
+        }
+      }
+    }
+  },
+  computed: {
+    codemirror() {
+      return this.$refs.myCm.codemirror
     }
   },
   watch: {},
@@ -56,6 +116,21 @@ export default {
       listDatasource().then(response => {
         this.options = response.data
       })
+    },
+
+    showSQL(val) {
+      this.sql = val || ''
+    },
+    onCmReady(cm) {
+      this.codemirror.setSize('-webkit-fill-available', 'auto')
+    },
+    onCmFocus(cm) {
+      // console.log('the editor is focus!', cm)
+    },
+    onCmCodeChange(newCode) {
+      console.log(newCode)
+      this.sql = newCode
+      this.$emit('codeChange', this.sql)
     },
     cancel() {
       // this.dataReset()
@@ -82,5 +157,16 @@ export default {
 
   .el-checkbox.is-bordered + .el-checkbox.is-bordered {
     margin-left: 0;
+  }
+
+  .codemirror {
+    height: 40vh;
+    min-height: 300px;
+    width: 100%;
+    min-width: 200px;
+  }
+  .codemirror >>> .CodeMirror-scroll {
+    height: 40vh;
+    min-height: 300px;
   }
 </style>

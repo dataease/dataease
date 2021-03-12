@@ -291,10 +291,10 @@ export default {
       this.removeCheckedKey(e)
       this.save()
     },
+    // 右边往左边拖动时的事件
     start2(e) {
       console.log(e)
     },
-    // 右边往左边拖动时的事件
     end2(e) {
       console.log(e)
       this.removeDuplicateKey(e)
