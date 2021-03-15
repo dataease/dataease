@@ -53,7 +53,8 @@ public class ShiroConfig {
         /*filterMap.put("jwt", jwtFilter);*/
         filterMap.put("logout", new F2CLogoutFilter());
         factoryBean.setSecurityManager(securityManager);
-        factoryBean.setUnauthorizedUrl("/permissionMiss");
+        factoryBean.setLoginUrl("/index.html");
+        factoryBean.setUnauthorizedUrl("/index.html");
         factoryBean.setFilterChainDefinitionMap(shiroService.loadFilterChainDefinitionMap());
         factoryBean.setFilters(filterMap);
         return factoryBean;

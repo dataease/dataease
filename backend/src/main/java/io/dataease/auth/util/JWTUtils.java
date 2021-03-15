@@ -20,9 +20,9 @@ public class JWTUtils {
 
 
     // token过期时间1min (过期会自动刷新续命 目的是避免一直都是同一个token )
-    private static final long EXPIRE_TIME = 1*60*1000/2;
+    private static final long EXPIRE_TIME = 5*60*1000;
     // 登录间隔时间10min 超过这个时间强制重新登录
-    private static final long Login_Interval = 20*60*1000;
+    private static final long Login_Interval = 30*60*1000;
 
 
     /**
@@ -81,6 +81,7 @@ public class JWTUtils {
     public static boolean loginExpire(String token){
         Long now = System.currentTimeMillis();
         Long lastOperateTime = tokenLastOperateTime(token);
+        if (lastOperateTime == null) return true;
         return now - lastOperateTime > Login_Interval;
     }
 
