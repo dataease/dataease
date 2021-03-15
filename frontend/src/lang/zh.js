@@ -666,7 +666,8 @@ export default {
     close: '关闭',
     required: '必填',
     input_content: '请输入内容',
-    add_sql_table: '添加SQL'
+    add_sql_table: '添加SQL',
+    preview: '预览'
   },
   datasource: {
     create: '新建数据连接',

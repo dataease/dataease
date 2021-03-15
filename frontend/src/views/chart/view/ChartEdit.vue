@@ -394,8 +394,8 @@ export default {
   }
 
   .item {
-    padding: 3px 10px;
-    margin: 3px 3px 0 3px;
+    padding: 2px 10px;
+    margin: 2px 2px 0 2px;
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
@@ -403,15 +403,15 @@ export default {
   }
 
   .item-on-move {
-    padding: 3px 10px;
-    margin: 3px 3px 0 3px;
+    padding: 2px 10px;
+    margin: 2px 2px 0 2px;
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
   }
 
   .item + .item {
-    margin-top: 3px;
+    margin-top: 2px;
   }
 
   .item:hover {

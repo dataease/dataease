@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -150,7 +151,7 @@ public class DataSetTableService {
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
 
         String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
-        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");
+        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");// todo limit
 
         List<String[]> data = new ArrayList<>();
         try {
@@ -169,6 +170,35 @@ public class DataSetTableService {
             }).collect(Collectors.toList());
         }
 
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("fields", fields);
+        map.put("data", jsonArray);
+
+        return map;
+    }
+
+    public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
+        datasourceRequest.setQuery(sql);
+        ResultSet dataResultSet = datasourceProvider.getDataResultSet(datasourceRequest);
+        List<String[]> data = datasourceProvider.fetchResult(dataResultSet);
+        List<String> fields = datasourceProvider.fetchResultField(dataResultSet);
+
+        List<Map<String, Object>> jsonArray = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(data)) {
+            jsonArray = data.stream().map(ele -> {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < ele.length; i++) {
+                    map.put(fields.get(i), ele[i]);
+                }
+                return map;
+            }).collect(Collectors.toList());
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("fields", fields);

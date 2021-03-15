@@ -28,7 +28,11 @@
             </el-select>
           </el-form-item>
           <el-form-item class="form-item">
-            <el-input v-model="name" size="mini" placeholder="名称" />
+            <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
+          </el-form-item>
+          <el-form-item class="form-item">
+            <el-radio v-model="mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>
+            <el-radio v-model="mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>
           </el-form-item>
         </el-form>
       </el-row>
@@ -45,12 +49,38 @@
           />
         </el-col>
       </el-row>
+      <el-row style="margin-top: 10px;">
+        <el-card class="box-card dataPreview" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>{{ $t('dataset.data_preview') }}</span>
+            <el-button style="float: right; padding: 3px 0" type="text" size="mini" @click="getSQLPreview">{{ $t('dataset.preview') }}</el-button>
+          </div>
+          <div class="text item">
+            <ux-grid
+              ref="plxTable"
+              size="mini"
+              style="width: 100%;"
+              :height="500"
+              :checkbox-config="{highlight: true}"
+            >
+              <ux-table-column
+                v-for="field in fields"
+                :key="field"
+                min-width="200px"
+                :field="field"
+                :title="field"
+                :resizable="true"
+              />
+            </ux-grid>
+          </div>
+        </el-card>
+      </el-row>
     </el-row>
   </el-col>
 </template>
 
 <script>
-import { listDatasource } from '@/api/dataset/dataset'
+import { post, listDatasource } from '@/api/dataset/dataset'
 import { codemirror } from 'vue-codemirror'
 // 核心样式
 import 'codemirror/lib/codemirror.css'
@@ -96,7 +126,10 @@ export default {
         hintOptions: {
           completeSingle: true
         }
-      }
+      },
+      data: [],
+      fields: [],
+      mode: '0'
     }
   },
   computed: {
@@ -115,6 +148,32 @@ export default {
       })
     },
 
+    getSQLPreview() {
+      if (!this.dataSource || this.datasource === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_slc_data_source'),
+          type: 'error'
+        })
+        return
+      }
+      post('/dataset/table/sqlPreview', {
+        dataSourceId: this.dataSource,
+        type: 'sql',
+        info: '{"sql":"' + this.sql + '"}'
+      }).then(response => {
+        this.fields = response.data.fields
+        this.data = response.data.data
+        const datas = this.data
+        this.$refs.plxTable.reloadData(datas)
+      })
+    },
+
+    cancel() {
+      // this.dataReset()
+      this.$emit('switchComponent', { name: '' })
+    },
+
     showSQL(val) {
       this.sql = val || ''
     },
@@ -125,13 +184,9 @@ export default {
       // console.log('the editor is focus!', cm)
     },
     onCmCodeChange(newCode) {
-      console.log(newCode)
+      // console.log(newCode)
       this.sql = newCode
       this.$emit('codeChange', this.sql)
-    },
-    cancel() {
-      // this.dataReset()
-      this.$emit('switchComponent', { name: '' })
     }
   }
 }
@@ -157,11 +212,23 @@ export default {
   }
 
   .codemirror {
-    height: auto;
-    min-height: 100px;
+    height: 160px;
+    overflow-y: auto;
   }
   .codemirror >>> .CodeMirror-scroll {
-    height: auto;
-    min-height: 100px;
+    height: 160px;
+    overflow-y: auto;
+  }
+
+  .dataPreview>>>.el-card__header{
+    padding: 6px 8px;
+  }
+
+  .dataPreview>>>.el-card__body{
+    padding:10px;
+  }
+
+  span{
+    font-size: 14px;
   }
 </style>

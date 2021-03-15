@@ -1,19 +1,21 @@
 <template>
   <el-col>
-    <el-table
+    <ux-grid
+      ref="plxTable"
       size="mini"
-      :data="data"
-      border
       style="width: 100%;"
+      :height="500"
+      :checkbox-config="{highlight: true}"
     >
-      <el-table-column
+      <ux-table-column
         v-for="field in fields"
         :key="field.originName"
         min-width="200px"
-        :prop="field.originName"
-        :label="field.name"
+        :field="field.originName"
+        :title="field.name"
+        :resizable="true"
       />
-    </el-table>
+    </ux-grid>
   </el-col>
 </template>
 
@@ -29,8 +31,14 @@ export default {
     return {
     }
   },
-  computed: {},
-  watch: {},
+  computed: {
+  },
+  watch: {
+    data() {
+      const datas = this.data
+      this.$refs.plxTable.reloadData(datas)
+    }
+  },
   created() {
   },
   mounted() {
