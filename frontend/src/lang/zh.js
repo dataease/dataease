@@ -667,7 +667,8 @@ export default {
     required: '必填',
     input_content: '请输入内容',
     add_sql_table: '添加SQL',
-    preview: '预览'
+    preview: '预览',
+    pls_input_name: '请输入名称'
   },
   datasource: {
     create: '新建数据连接',

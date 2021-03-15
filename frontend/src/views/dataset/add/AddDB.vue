@@ -42,7 +42,7 @@
           </el-form-item>
         </el-form>
       </el-row>
-      <el-row style="overflow: auto;height: 600px;">
+      <el-row style="overflow: auto;height: 60vh;">
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-checkbox
             v-for="t in tableData"

@@ -4,7 +4,7 @@
       ref="plxTable"
       size="mini"
       style="width: 100%;"
-      :height="500"
+      :height="height"
       :checkbox-config="{highlight: true}"
     >
       <ux-table-column
@@ -23,12 +23,22 @@
 export default {
   name: 'TabDataPreview',
   props: {
-    table: Object,
-    fields: Array,
-    data: Array
+    table: {
+      type: Object,
+      required: true
+    },
+    fields: {
+      type: Array,
+      required: true
+    },
+    data: {
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {
+      height: 500
     }
   },
   computed: {
@@ -39,9 +49,13 @@ export default {
       this.$refs.plxTable.reloadData(datas)
     }
   },
-  created() {
-  },
   mounted() {
+    window.onresize = () => {
+      return (() => {
+        this.height = window.innerHeight / 2
+      })()
+    }
+    this.height = window.innerHeight / 2
   },
   activated() {
   },

@@ -1,6 +1,7 @@
 package io.dataease.datasource.provider;
 
 import com.google.gson.Gson;
+import io.dataease.base.domain.DatasetTableField;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.datasource.dto.SqlServerConfigration;
@@ -90,12 +91,19 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public List<String> fetchResultField(ResultSet rs) throws Exception {
-        List<String> fieldList = new ArrayList<>();
+    public List<TableFiled> fetchResultField(ResultSet rs) throws Exception {
+        List<TableFiled> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
         for (int j = 0; j < columnCount; j++) {
-            fieldList.add(metaData.getColumnName(j + 1));
+            String f = metaData.getColumnName(j + 1);
+            String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
+            String t = metaData.getColumnTypeName(j + 1);
+            TableFiled field = new TableFiled();
+            field.setFieldName(l);
+            field.setRemarks(l);
+            field.setFieldType(t);
+            fieldList.add(field);
         }
         return fieldList;
     }
