@@ -1,5 +1,6 @@
 package io.dataease.datasource.provider;
 
+import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -32,6 +33,6 @@ public abstract class DatasourceProvider {
 
     abstract public List<String[]> fetchResult(ResultSet rs) throws Exception;
 
-    abstract public List<String> fetchResultField(ResultSet rs) throws Exception;
+    abstract public List<TableFiled> fetchResultField(ResultSet rs) throws Exception;
 
 }

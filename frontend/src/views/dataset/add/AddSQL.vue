@@ -9,7 +9,7 @@
           <el-button size="mini" @click="cancel">
             {{ $t('dataset.cancel') }}
           </el-button>
-          <el-button size="mini" type="primary">
+          <el-button size="mini" type="primary" @click="save">
             {{ $t('dataset.confirm') }}
           </el-button>
         </el-row>
@@ -65,10 +65,10 @@
             >
               <ux-table-column
                 v-for="field in fields"
-                :key="field"
+                :key="field.fieldName"
                 min-width="200px"
-                :field="field"
-                :title="field"
+                :field="field.fieldName"
+                :title="field.remarks"
                 :resizable="true"
               />
             </ux-grid>
@@ -100,6 +100,10 @@ import 'codemirror/addon/dialog/dialog.css'
 import 'codemirror/addon/search/searchcursor.js'
 import 'codemirror/addon/search/search.js'
 import 'codemirror/keymap/emacs.js'
+// 引入代码自动提示插件
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/sql-hint'
+import 'codemirror/addon/hint/show-hint'
 
 export default {
   name: 'AddSQL',
@@ -123,8 +127,8 @@ export default {
         line: true,
         mode: 'text/x-sql',
         theme: 'solarized',
-        hintOptions: {
-          completeSingle: true
+        hintOptions: { // 自定义提示选项
+          completeSingle: false // 当匹配只有一项的时候是否自动补全
         }
       },
       data: [],
@@ -140,6 +144,9 @@ export default {
   watch: {},
   mounted() {
     this.initDataSource()
+    this.$refs.myCm.codemirror.on('keypress', () => {
+      this.$refs.myCm.codemirror.showHint()
+    })
   },
   methods: {
     initDataSource() {
@@ -166,6 +173,37 @@ export default {
         this.data = response.data.data
         const datas = this.data
         this.$refs.plxTable.reloadData(datas)
+      })
+    },
+
+    save() {
+      if (!this.dataSource || this.datasource === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_slc_data_source'),
+          type: 'error'
+        })
+        return
+      }
+      if (!this.name || this.name === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_input_name'),
+          type: 'error'
+        })
+        return
+      }
+      const table = {
+        name: this.name,
+        sceneId: this.param.id,
+        dataSourceId: this.dataSource,
+        type: 'sql',
+        mode: parseInt(this.mode),
+        info: '{"sql":"' + this.sql + '"}'
+      }
+      post('/dataset/table/update', table).then(response => {
+        this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        this.cancel()
       })
     },
 
