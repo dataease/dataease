@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { post, listDatasource } from '@/api/dataset/dataset'
+import { listDatasource } from '@/api/dataset/dataset'
 import { codemirror } from 'vue-codemirror'
 // 核心样式
 import 'codemirror/lib/codemirror.css'
