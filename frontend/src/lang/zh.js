@@ -682,7 +682,7 @@ export default {
     please_input_password: '请输入密码',
     please_input_host: '请输入主机',
     please_input_port: '请输入端口',
-    modify: '修改组织',
+    modify: '编辑数据连接',
     validate_success: '校验成功',
     delete: '删除组织',
     delete_confirm: '删除该组织会关联删除该组织下的所有资源(如：相关工作空间，项目，测试用例等），确定要删除吗?',

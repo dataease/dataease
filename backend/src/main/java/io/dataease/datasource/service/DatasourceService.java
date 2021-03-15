@@ -2,7 +2,10 @@ package io.dataease.datasource.service;
 
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
+import io.dataease.base.mapper.ext.ExtDataSourceMapper;
+import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.exception.DEException;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -21,6 +24,9 @@ public class DatasourceService {
 
     @Resource
     private DatasourceMapper datasourceMapper;
+
+    @Resource
+    private ExtDataSourceMapper extDataSourceMapper;
 
     public Datasource addDatasource(Datasource datasource) {
         DatasourceExample example = new DatasourceExample();
@@ -47,6 +53,11 @@ public class DatasourceService {
         }
         example.setOrderByClause("update_time desc");
         return datasourceMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public List<Datasource> gridQuery(BaseGridRequest request){
+        GridExample gridExample = request.convertExample();
+        return extDataSourceMapper.query(gridExample);
     }
 
     public void deleteDatasource(String datasourceId) {
