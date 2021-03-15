@@ -6,6 +6,7 @@ import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.TableName;
@@ -76,6 +77,9 @@ public class ExtractDataService {
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         }catch (Exception e){
+            e.printStackTrace();
+            LogUtil.error("ExtractData error, dataaset: " + datasetTableId);
+            LogUtil.error(e.getMessage(), e);
             datasetTableTaskLog.setStatus(JobStatus.Error.name());
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
