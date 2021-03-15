@@ -157,7 +157,7 @@ public class DataSetTableService {
             datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");// todo limit
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
             String sql = dataTableInfoDTO.getSql();
-            datasourceRequest.setQuery(sql);// todo 因为编辑可能取消某些字段展示，这里sql看看怎么处理
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray));// todo 因为编辑可能取消某些字段展示，这里sql看看怎么处理
         }
 
         List<String[]> data = new ArrayList<>();

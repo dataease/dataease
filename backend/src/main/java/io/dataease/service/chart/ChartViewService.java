@@ -102,8 +102,13 @@ public class ChartViewService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
-        datasourceRequest.setTable(dataTableInfoDTO.getTable());
-        datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xAxis, yAxis));
+        if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
+            datasourceRequest.setTable(dataTableInfoDTO.getTable());
+            datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xAxis, yAxis));
+        } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
+            datasourceRequest.setQuery(getSQL(ds.getType(), " (" + dataTableInfoDTO.getSql() + ") AS tmp ", xAxis, yAxis));
+        }
+
         List<String[]> data = datasourceProvider.getData(datasourceRequest);
 
         // todo 处理结果,目前做一个单系列图表，后期图表组件再扩展
