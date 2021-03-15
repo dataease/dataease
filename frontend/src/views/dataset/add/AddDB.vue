@@ -62,7 +62,10 @@ import { listDatasource, post } from '@/api/dataset/dataset'
 export default {
   name: 'AddDB',
   props: {
-    param: Object
+    param: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {
