@@ -7,8 +7,8 @@
       :search-config="searchConfig"
       @search="initTableData"
     >
-      <template #buttons>
-        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('menu.create')" @click="create" />
+      <template v-permission="['menu:add']" #buttons>
+        <fu-table-button v-permission="['menu:add']" icon="el-icon-circle-plus-outline" :label="$t('menu.create')" @click="create" />
       </template>
 
       <el-table
@@ -124,7 +124,7 @@ import IconSelect from '@/components/IconSelect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
-
+import { checkPermission } from '@/utils/permission'
 import { addMenu, editMenu, delMenu, getMenusTree } from '@/api/system/menu'
 
 export default {
@@ -137,7 +137,7 @@ export default {
   data() {
     return {
       menus: [],
-      topMunu: { id: 0, label: '顶级类目', children: null },
+      topMunu: { id: 0, label: '顶级目录', children: null },
       formType: 'add',
       dialogVisible: false,
       condition: {},
@@ -165,9 +165,11 @@ export default {
       columns: [],
       buttons: [
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit,
+          show: checkPermission(['menu:edit'])
         }, {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete,
+          show: checkPermission(['menu:del'])
         }
       ],
       searchConfig: {

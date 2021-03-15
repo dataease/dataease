@@ -8,10 +8,12 @@ import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.controller.sys.request.DeptCreateRequest;
 import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
 import io.dataease.controller.sys.request.SimpleTreeNode;
+import io.dataease.controller.sys.response.DeptTreeNode;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -137,6 +139,33 @@ public class DeptService {
         example.setOrderByClause("dept_sort");
         List<SysDept> sysDepts = sysDeptMapper.selectByExample(example);
         return sysDepts;
+    }
+
+    public List<DeptTreeNode> searchTree(Long deptId){
+        List<SysDept> roots = nodesByPid(0L);
+        if (deptId == DEPT_ROOT_PID) return roots.stream().map(this::format).collect(Collectors.toList());
+        SysDept sysDept = sysDeptMapper.selectByPrimaryKey(deptId);
+        if (roots.stream().anyMatch(node -> node.getDeptId() == deptId)) return roots.stream().map(this::format).collect(Collectors.toList());
+        SysDept current = sysDept;
+        DeptTreeNode currentNode = format(sysDept);
+        while (current.getPid() != DEPT_ROOT_PID){
+            SysDept parent = sysDeptMapper.selectByPrimaryKey(current.getPid()); //pid上有索引 所以效率不会太差
+            DeptTreeNode parentNode = format(parent);
+            parentNode.setChildren(currentNode.toList());
+            current = parent;
+            currentNode = parentNode;
+        }
+
+        DeptTreeNode targetRootNode = currentNode;
+        return roots.stream().map(node -> node.getDeptId() == targetRootNode.getId() ? targetRootNode : format(node)).collect(Collectors.toList());
+    }
+
+    private DeptTreeNode format(SysDept sysDept){
+        DeptTreeNode deptTreeNode = new DeptTreeNode();
+        deptTreeNode.setId(sysDept.getDeptId());
+        deptTreeNode.setLabel(sysDept.getName());
+        deptTreeNode.setHasChildren(sysDept.getSubCount() > 0);
+        return deptTreeNode;
     }
 
     private DeptService proxy(){

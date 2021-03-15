@@ -11,7 +11,7 @@
       @search="search"
     >
       <template #buttons>
-        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" />
+        <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" />
       </template>
 
       <el-table-column type="selection" fix />
@@ -157,7 +157,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 import { userLists, addUser, editUser, delUser, editPassword, editStatus } from '@/api/system/user'
 import { allRoles } from '@/api/system/role'
-import { getDeptTree } from '@/api/system/dept'
+import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 
 export default {
 
@@ -168,9 +168,11 @@ export default {
       columns: [],
       buttons: [
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit,
+          show: checkPermission(['user:edit'])
         }, {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+          show: checkPermission(['user:del'])
         }, {
           label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'danger', click: this.editPassword,
           show: checkPermission(['user:editPwd'])
@@ -306,14 +308,20 @@ export default {
     },
 
     create() {
+      this.depts = null
       this.formType = 'add'
       this.form = Object.assign({}, this.defaultForm)
       this.dialogVisible = true
     },
     edit(row) {
+      this.depts = null
       this.formType = 'modify'
       this.dialogVisible = true
       this.form = Object.assign({}, row)
+      if (this.form.deptId === 0) {
+        this.form.deptId = null
+      }
+      this.initDeptTree()
     },
     editPassword(row) {
       this.editPasswordVisible = true
@@ -364,6 +372,7 @@ export default {
       })
     },
     handleClose() {
+      this.depts = null
       this.formType = 'add'
       this.form = {}
       this.editPasswordVisible = false
@@ -376,12 +385,30 @@ export default {
         this.$success(this.$t('commons.modify_success'))
       })
     },
+
+    initDeptTree() {
+      treeByDeptId(this.form.deptId || 0).then(res => {
+        const results = res.data.map(node => {
+          if (node.hasChildren && !node.children) {
+            node.children = null
+          }
+          return node
+        })
+        this.depts = results
+      })
+    },
     // 获取弹窗内部门数据
     loadDepts({ action, parentNode, callback }) {
-      if (action === LOAD_ROOT_OPTIONS) {
+      if (action === LOAD_ROOT_OPTIONS && !this.form.deptId) {
         const _self = this
-        !this.depts && getDeptTree('0').then(res => {
-          _self.depts = res.data.map(node => _self.normalizer(node))
+        treeByDeptId(0).then(res => {
+          const results = res.data.map(node => {
+            if (node.hasChildren && !node.children) {
+              node.children = null
+            }
+            return node
+          })
+          _self.depts = results
           callback()
         })
       }

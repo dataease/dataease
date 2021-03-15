@@ -41,4 +41,11 @@ export function editDept(data) {
   })
 }
 
-export default { addDept, delDept, editDept, getDeptTree, loadTable }
+export function treeByDeptId(deptId) {
+  return request({
+    url: '/api/dept/nodesByDeptId/' + deptId,
+    method: 'post'
+  })
+}
+
+export default { addDept, delDept, editDept, getDeptTree, loadTable, treeByDeptId }
