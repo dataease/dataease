@@ -1,21 +1,22 @@
 <template>
   <el-col>
     <span>{{ table.name }}</span>
-    <el-table
+    <ux-grid
+      ref="plxTable"
       size="mini"
-      :data="data"
-      height="40vh"
-      border
-      style="width: 100%;margin-top: 6px;"
+      style="width: 100%;"
+      :height="height"
+      :checkbox-config="{highlight: true}"
     >
-      <el-table-column
+      <ux-table-column
         v-for="field in fields"
         :key="field.originName"
         min-width="200px"
-        :prop="field.originName"
-        :label="field.name"
+        :field="field.originName"
+        :title="field.name"
+        :resizable="true"
       />
-    </el-table>
+    </ux-grid>
   </el-col>
 </template>
 
@@ -25,13 +26,16 @@ import { post } from '@/api/dataset/dataset'
 export default {
   name: 'DatasetTableData',
   props: {
-    // eslint-disable-next-line vue/require-default-prop
-    table: Object
+    table: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
       fields: [],
-      data: []
+      data: [],
+      height: 500
     }
   },
   watch: {
@@ -39,10 +43,14 @@ export default {
       this.initData()
     }
   },
-  created() {
-    this.initData()
-  },
   mounted() {
+    window.onresize = () => {
+      return (() => {
+        this.height = window.innerHeight / 3
+      })()
+    }
+    this.height = window.innerHeight / 3
+    this.initData()
   },
   methods: {
     initData() {
@@ -51,6 +59,8 @@ export default {
         post('/dataset/table/getPreviewData', this.table).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
+          const datas = this.data
+          this.$refs.plxTable.reloadData(datas)
         })
       }
     },

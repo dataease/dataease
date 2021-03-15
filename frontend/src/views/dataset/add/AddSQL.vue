@@ -60,7 +60,7 @@
               ref="plxTable"
               size="mini"
               style="width: 100%;"
-              :height="500"
+              :height="height"
               :checkbox-config="{highlight: true}"
             >
               <ux-table-column
@@ -133,7 +133,8 @@ export default {
       },
       data: [],
       fields: [],
-      mode: '0'
+      mode: '0',
+      height: 500
     }
   },
   computed: {
@@ -143,6 +144,12 @@ export default {
   },
   watch: {},
   mounted() {
+    window.onresize = () => {
+      return (() => {
+        this.height = window.innerHeight / 2
+      })()
+    }
+    this.height = window.innerHeight / 2
     this.initDataSource()
     this.$refs.myCm.codemirror.on('keypress', () => {
       this.$refs.myCm.codemirror.showHint()
