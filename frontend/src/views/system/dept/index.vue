@@ -1,7 +1,7 @@
 <template>
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
-    <complex-table
+    <!-- <complex-table
       ref="table"
       :data="tableData"
       :lazy="isLazy"
@@ -15,15 +15,31 @@
       :default-expand-all="isTableExpand"
       row-key="deptId"
       @search="search"
+    > -->
+    <tree-table
+      :columns="columns"
+      :buttons="buttons"
+      :header="header"
+      :search-config="searchConfig"
+      @search="search"
     >
       <template #buttons>
         <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" />
       </template>
+      <el-table
+        ref="table"
+        :data="tableData"
+        lazy
+        :load="loadExpandDatas"
+        style="width: 100%"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+        row-key="deptId"
+      >
 
-      <!-- <el-table-column type="selection" fix /> -->
-      <el-table-column label="名称" prop="name" />
-      <el-table-column label="下属组织数" prop="subCount" />
-      <!-- <el-table-column label="状态" align="center" prop="enabled">
+        <!-- <el-table-column type="selection" fix /> -->
+        <el-table-column label="名称" prop="name" />
+        <el-table-column label="下属组织数" prop="subCount" />
+        <!-- <el-table-column label="状态" align="center" prop="enabled">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.enabled"
@@ -34,14 +50,16 @@
           />
         </template>
       </el-table-column> -->
-      <el-table-column prop="createTime" label="创建日期">
-        <template v-slot:default="scope">
-          <span>{{ scope.row.createTime | timestampFormatDate }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column prop="createTime" label="创建日期">
+          <template v-slot:default="scope">
+            <span>{{ scope.row.createTime | timestampFormatDate }}</span>
+          </template>
+        </el-table-column>
 
-      <fu-table-operations :buttons="buttons" label="操作" fix />
-    </complex-table>
+        <fu-table-operations :buttons="buttons" label="操作" fix />
+      </el-table>
+    </tree-table>
+    <!-- </complex-table> -->
 
     <!-- add organization form -->
     <el-dialog
@@ -106,7 +124,7 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import ComplexTable from '@/components/business/complex-table'
+import TreeTable from '@/components/business/tree-table'
 import Treeselect from '@riophae/vue-treeselect'
 import { formatCondition } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -118,7 +136,7 @@ export default {
   name: 'MsOrganization',
   components: {
     LayoutContent,
-    ComplexTable,
+    TreeTable,
     Treeselect
   },
   data() {
@@ -168,11 +186,7 @@ export default {
 
         ]
       },
-      paginationConfig: {
-        currentPage: 1,
-        pageSize: 10,
-        total: 0
-      },
+
       defaultCondition: {
         field: 'pid',
         operator: 'eq',
@@ -271,7 +285,7 @@ export default {
     },
     // 加载表格数据
     search(condition) {
-      this.setTableAttr()
+      // this.setTableAttr()
       this.tableData = []
       let param = {}
       if (condition && condition.quick) {
@@ -293,7 +307,7 @@ export default {
 
         if (condition && condition.quick) {
           data = this.buildTree(data)
-          this.setTableAttr(true)
+          // this.setTableAttr(true)
         }
         this.tableData = data
         this.depts = null
