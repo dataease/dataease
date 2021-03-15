@@ -100,7 +100,7 @@ public class JdbcProvider extends DatasourceProvider {
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
             String t = metaData.getColumnTypeName(j + 1);
             TableFiled field = new TableFiled();
-            field.setFieldName(f);
+            field.setFieldName(l);
             field.setRemarks(l);
             field.setFieldType(t);
             fieldList.add(field);
