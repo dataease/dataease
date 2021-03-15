@@ -163,4 +163,8 @@ export default {
   .el-checkbox.is-bordered + .el-checkbox.is-bordered {
     margin-left: 0;
   }
+
+  span{
+    font-size: 14px;
+  }
 </style>
