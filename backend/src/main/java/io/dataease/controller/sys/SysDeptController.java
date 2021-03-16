@@ -8,6 +8,7 @@ import io.dataease.controller.sys.request.DeptCreateRequest;
 import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
 import io.dataease.controller.sys.response.DeptNodeResponse;
+import io.dataease.controller.sys.response.DeptTreeNode;
 import io.dataease.service.sys.DeptService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -80,6 +81,11 @@ public class SysDeptController extends ResultHolder {
     @PostMapping("/updateStatus")
     public void updateStatus(@RequestBody DeptStatusRequest request){
         deptService.updateStatus(request);
+    }
+
+    @PostMapping("/nodesByDeptId/{deptId}")
+    public List<DeptTreeNode> nodesByDeptId(@PathVariable("deptId") Long deptId){
+        return deptService.searchTree(deptId);
     }
 
 }

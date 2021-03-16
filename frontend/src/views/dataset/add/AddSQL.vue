@@ -9,7 +9,7 @@
           <el-button size="mini" @click="cancel">
             {{ $t('dataset.cancel') }}
           </el-button>
-          <el-button size="mini" type="primary">
+          <el-button size="mini" type="primary" @click="save">
             {{ $t('dataset.confirm') }}
           </el-button>
         </el-row>
@@ -27,7 +27,53 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item class="form-item">
+            <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
+          </el-form-item>
+          <el-form-item class="form-item">
+            <el-radio v-model="mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>
+            <el-radio v-model="mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>
+          </el-form-item>
         </el-form>
+      </el-row>
+      <el-row>
+        <el-col style="min-width: 200px;">
+          <codemirror
+            ref="myCm"
+            v-model="sql"
+            class="codemirror"
+            :options="sqlOption"
+            @ready="onCmReady"
+            @focus="onCmFocus"
+            @input="onCmCodeChange"
+          />
+        </el-col>
+      </el-row>
+      <el-row style="margin-top: 10px;">
+        <el-card class="box-card dataPreview" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>{{ $t('dataset.data_preview') }}</span>
+            <el-button style="float: right; padding: 3px 0" type="text" size="mini" @click="getSQLPreview">{{ $t('dataset.preview') }}</el-button>
+          </div>
+          <div class="text item">
+            <ux-grid
+              ref="plxTable"
+              size="mini"
+              style="width: 100%;"
+              :height="height"
+              :checkbox-config="{highlight: true}"
+            >
+              <ux-table-column
+                v-for="field in fields"
+                :key="field.fieldName"
+                min-width="200px"
+                :field="field.fieldName"
+                :title="field.remarks"
+                :resizable="true"
+              />
+            </ux-grid>
+          </div>
+        </el-card>
       </el-row>
     </el-row>
   </el-col>
@@ -35,21 +81,79 @@
 
 <script>
 import { post, listDatasource } from '@/api/dataset/dataset'
+import { codemirror } from 'vue-codemirror'
+// 核心样式
+import 'codemirror/lib/codemirror.css'
+// 引入主题后还需要在 options 中指定主题才会生效
+import 'codemirror/theme/solarized.css'
+import 'codemirror/mode/sql/sql.js'
+// require active-line.js
+import 'codemirror/addon/selection/active-line.js'
+// closebrackets
+import 'codemirror/addon/edit/closebrackets.js'
+// keyMap
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/emacs.js'
+// 引入代码自动提示插件
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/sql-hint'
+import 'codemirror/addon/hint/show-hint'
 
 export default {
   name: 'AddSQL',
+  components: { codemirror },
   props: {
-    param: Object
+    param: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
       dataSource: '',
-      options: []
+      options: [],
+      name: '',
+      sql: '',
+      sqlOption: {
+        tabSize: 2,
+        styleActiveLine: true,
+        lineNumbers: true,
+        line: true,
+        mode: 'text/x-sql',
+        theme: 'solarized',
+        hintOptions: { // 自定义提示选项
+          completeSingle: false // 当匹配只有一项的时候是否自动补全
+        }
+      },
+      data: [],
+      fields: [],
+      mode: '0',
+      height: 500
+    }
+  },
+  computed: {
+    codemirror() {
+      return this.$refs.myCm.codemirror
     }
   },
   watch: {},
   mounted() {
+    window.onresize = () => {
+      return (() => {
+        this.height = window.innerHeight / 2
+      })()
+    }
+    this.height = window.innerHeight / 2
     this.initDataSource()
+    this.$refs.myCm.codemirror.on('keypress', () => {
+      this.$refs.myCm.codemirror.showHint()
+    })
   },
   methods: {
     initDataSource() {
@@ -57,9 +161,77 @@ export default {
         this.options = response.data
       })
     },
+
+    getSQLPreview() {
+      if (!this.dataSource || this.datasource === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_slc_data_source'),
+          type: 'error'
+        })
+        return
+      }
+      post('/dataset/table/sqlPreview', {
+        dataSourceId: this.dataSource,
+        type: 'sql',
+        info: '{"sql":"' + this.sql + '"}'
+      }).then(response => {
+        this.fields = response.data.fields
+        this.data = response.data.data
+        const datas = this.data
+        this.$refs.plxTable.reloadData(datas)
+      })
+    },
+
+    save() {
+      if (!this.dataSource || this.datasource === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_slc_data_source'),
+          type: 'error'
+        })
+        return
+      }
+      if (!this.name || this.name === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_input_name'),
+          type: 'error'
+        })
+        return
+      }
+      const table = {
+        name: this.name,
+        sceneId: this.param.id,
+        dataSourceId: this.dataSource,
+        type: 'sql',
+        mode: parseInt(this.mode),
+        info: '{"sql":"' + this.sql + '"}'
+      }
+      post('/dataset/table/update', table).then(response => {
+        this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        this.cancel()
+      })
+    },
+
     cancel() {
       // this.dataReset()
       this.$emit('switchComponent', { name: '' })
+    },
+
+    showSQL(val) {
+      this.sql = val || ''
+    },
+    onCmReady(cm) {
+      this.codemirror.setSize('-webkit-fill-available', 'auto')
+    },
+    onCmFocus(cm) {
+      // console.log('the editor is focus!', cm)
+    },
+    onCmCodeChange(newCode) {
+      // console.log(newCode)
+      this.sql = newCode
+      this.$emit('codeChange', this.sql)
     }
   }
 }
@@ -82,5 +254,26 @@ export default {
 
   .el-checkbox.is-bordered + .el-checkbox.is-bordered {
     margin-left: 0;
+  }
+
+  .codemirror {
+    height: 160px;
+    overflow-y: auto;
+  }
+  .codemirror >>> .CodeMirror-scroll {
+    height: 160px;
+    overflow-y: auto;
+  }
+
+  .dataPreview>>>.el-card__header{
+    padding: 6px 8px;
+  }
+
+  .dataPreview>>>.el-card__body{
+    padding:10px;
+  }
+
+  span{
+    font-size: 14px;
   }
 </style>

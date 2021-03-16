@@ -12,7 +12,7 @@
     </select>
 
 
-    <select id="nodesByExample" resultType="io.dataease.base.mapper.ext.query.GridExample" resultMap="simpleNode">
+    <select id="nodesByExample" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="simpleNode">
         select dept_id as id, pid from sys_dept
         <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
     </select>

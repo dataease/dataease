@@ -31,6 +31,10 @@ import * as echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts
 
+import UmyUi from 'umy-ui'
+import 'umy-ui/lib/theme-chalk/index.css'// 引入样式
+Vue.use(UmyUi)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

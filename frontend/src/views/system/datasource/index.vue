@@ -1,40 +1,32 @@
 <template>
-  <div v-loading="result.loading">
-
-    <el-card class="table-card">
-      <template v-slot:header>
-        <ms-table-header
-          :condition.sync="condition"
-          :create-tip="$t('datasource.create')"
-          :title="$t('commons.datasource')"
-          @search="initTableData"
-          @create="create"
-        />
+  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <complex-table
+      :data="data"
+      :columns="columns"
+      :buttons="buttons"
+      :header="header"
+      :search-config="searchConfig"
+      :pagination-config="paginationConfig"
+      @select="select"
+      @search="search"
+    >
+      <template #buttons>
+        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('datasource.create')" @click="create" />
       </template>
-      <!-- system menu datasource table-->
-      <el-table border class="adjust-table" :data="tableData" style="width: 100%">
-        <el-table-column prop="name" :label="$t('commons.name')" />
-        <el-table-column prop="desc" :label="$t('commons.description')" />
-        <el-table-column prop="type" :label="$t('datasource.type')" />
-        <el-table-column :label="$t('commons.operating')">
-          <template v-slot:default="scope">
-            <ms-table-operator @editClick="edit(scope.row)" @deleteClick="handleDelete(scope.row)" />
-          </template>
-        </el-table-column>
-      </el-table>
-      <ms-table-pagination
-        :change="initTableData"
-        :current-page.sync="currentPage"
-        :page-size.sync="pageSize"
-        :total="total"
-      />
-    </el-card>
+
+      <!-- <el-table-column type="selection" fix /> -->
+      <el-table-column prop="name" :label="$t('commons.name')" />
+      <el-table-column prop="desc" :label="$t('commons.description')" />
+      <el-table-column prop="type" :label="$t('datasource.type')" />
+      <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
+
+    </complex-table>
 
     <!-- add datasource form -->
     <el-dialog
       :close-on-click-modal="false"
-      :title="$t('datasource.create')"
-      :visible.sync="dialogDatasourceAddVisible"
+      :title="formType=='add' ? $t('datasource.create') : $t('datasource.modify')"
+      :visible.sync="dialogVisible"
       width="30%"
       :destroy-on-close="true"
       @closed="closeFunc"
@@ -84,130 +76,37 @@
         </el-form-item>
 
       </el-form>
-      <template v-slot:footer>
-        <ms-dialog-footer
-          :is-show-validate="true"
-          @cancel="dialogDatasourceAddVisible = false"
-          @validate="validaDatasource('createDatasource')"
-          @confirm="createDatasource('createDatasource')"
-        />
-      </template>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="saveDatasource('createDatasource')">确认</el-button>
+      </div>
     </el-dialog>
 
-    <!-- update datasource form -->
-    <el-dialog
-      :close-on-click-modal="false"
-      :title="$t('datasource.modify')"
-      :visible.sync="dialogDatasourceUpdateVisible"
-      width="30%"
-      :destroy-on-close="true"
-      @close="closeFunc"
-    >
-      <el-form
-        ref="updateDatasourceForm"
-        :model="form"
-        label-position="right"
-        label-width="100px"
-        size="small"
-        :rules="rule"
-      >
-        <el-form-item
-          :label="$t('commons.name')"
-          prop="name"
-          :rules="[{required: true, message: this.$t('datasource.input_name'), trigger: 'blur'},
-                   {min: 2, max: 25, message: this.$t('commons.input_limit', [2, 25]), trigger: 'blur'}]"
-        >
-          <el-input v-model="form.name" autocomplete="off" />
-        </el-form-item>
-        <el-form-item
-          :label="$t('commons.description')"
-          prop="desc"
-          :rules="[{required: true, message: this.$t('datasource.input_desc'), trigger: 'blur'},
-                   {min: 2, max: 50, message: this.$t('commons.input_limit', [2, 50]), trigger: 'blur'}]"
-        >
-          <el-input v-model="form.desc" autocomplete="off" />
-        </el-form-item>
-        <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase" :rules="{required: true, message: $t('datasource.please_input_data_base'), trigger: 'blur'}">
-          <el-input v-model="form.configuration.dataBase" autocomplete="off" />
-        </el-form-item>
-        <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')" prop="configuration.username">
-          <el-input v-model="form.configuration.username" autocomplete="off" />
-        </el-form-item>
-        <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')" prop="configuration.password" :rules="{required: true, message: $t('datasource.please_input_password'), trigger: 'change'}">
-          <el-input v-model="form.configuration.password" autocomplete="off" />
-        </el-form-item>
-        <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host" :rules="{required: true, message: $t('datasource.please_input_host'), trigger: 'change'}">
-          <el-input v-model="form.configuration.host" autocomplete="off" />
-        </el-form-item>
-        <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port" :rules="{required: true, message: $t('datasource.please_input_port'), trigger: 'change'}">
-          <el-input v-model="form.configuration.port" autocomplete="off" />
-        </el-form-item>
-      </el-form>
-      <template v-slot:footer>
-        <ms-dialog-footer
-          :is-show-validate="true"
-          @cancel="dialogDatasourceUpdateVisible = false"
-          @validate="validaDatasource('updateDatasourceForm')"
-          @confirm="updateDatasource('updateDatasourceForm')"
-        />
-      </template>
-    </el-dialog>
-
-    <ms-delete-confirm ref="deleteConfirm" :title="$t('datasource.delete')" @delete="_handleDelete" />
-
-  </div>
+  </layout-content>
 </template>
 
 <script>
-import MsTablePagination from '@/metersphere/common/pagination/TablePagination'
-import MsTableHeader from '@/metersphere/common/components/MsTableHeader'
-import MsTableOperator from '@/metersphere/common/components/MsTableOperator'
-import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
-import {
-  listenGoBack,
-  removeGoBackListener
-} from '@/metersphere/common/js/utils'
-import MsDeleteConfirm from '@/metersphere/common/components/MsDeleteConfirm'
 
+import LayoutContent from '@/components/business/LayoutContent'
+import ComplexTable from '@/components/business/complex-table'
+import { checkPermission } from '@/utils/permission'
+import { formatCondition } from '@/utils/index'
 import { dsGrid, addDs, editDs, delDs, validateDs } from '@/api/system/datasource'
 
 export default {
   name: 'DEDatasource',
   components: {
-    MsDeleteConfirm,
-    MsTablePagination,
-    MsTableHeader,
-    MsTableOperator,
-    MsDialogFooter
+    LayoutContent,
+    ComplexTable
   },
   data() {
     return {
-      queryPath: '/datasource/list',
-      deletePath: '/datasource/delete/',
-      createPath: '/datasource/add',
-      updatePath: '/datasource/update',
-      validatePath: '/datasource/validate',
-      result: {},
-      dialogDatasourceAddVisible: false,
-      dialogDatasourceUpdateVisible: false,
-      dialogDatasourceMemberVisible: false,
-      dialogDatasourceMemberAddVisible: false,
-      dialogDatasourceMemberUpdateVisible: false,
-      multipleSelection: [],
-      currentPage: 1,
-      pageSize: 10,
-      total: 0,
-      dialogCurrentPage: 1,
-      dialogPageSize: 10,
-      dialogTotal: 0,
-      currentRow: {},
-      condition: {},
-      dialogCondition: {},
-      tableData: [],
-      memberLineData: [],
+      formType: 'add',
+      dialogVisible: false,
+      data: [],
       form: { configuration: {}},
       allTypes: [{ name: 'mysql', type: 'jdbc' }, { name: 'sqlServer', type: 'jdbc' }],
-      memberForm: {},
       rule: {
         name: [
           { required: true, message: this.$t('organization.input_name'), trigger: 'blur' },
@@ -217,79 +116,62 @@ export default {
           { required: true, message: this.$t('organization.input_name'), trigger: 'blur' },
           { max: 50, message: this.$t('commons.input_limit', [0, 50]), trigger: 'blur' }
         ]
+      },
+      header: '',
+      columns: [],
+      buttons: [
+        {
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit,
+          show: checkPermission(['datasource:edit'])
+        }, {
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+          show: checkPermission(['datasource:del'])
+        }
+      ],
+      searchConfig: {
+        useQuickSearch: true,
+        quickPlaceholder: '按名称搜索',
+        combine: false,
+        components: [
+        //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
+          { field: 'name', label: '名称', component: 'FuComplexInput' },
+
+          {
+            field: 'type',
+            label: '类型',
+            component: 'FuComplexSelect',
+            options: [{ label: 'mysql', value: 'mysql' }, { label: 'sqlServer', value: 'sqlServer' }],
+            multiple: false
+          }
+        //   { field: 'deptId', label: '组织', component: conditionTable }
+        ]
+      },
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
       }
     }
   },
   activated() {
-    this.initTableData()
+    this.search()
   },
   methods: {
+    select(selection) {
+      console.log(selection)
+    },
     create() {
-      this.dialogDatasourceAddVisible = true
-      listenGoBack(this.closeFunc)
+      this.formType = 'add'
+      this.dialogVisible = true
     },
-    dataFilter(val) {
-      if (val) {
-        this.memberForm.userList = this.memberForm.copyUserList.filter((item) => {
-          if (!!~item.id.indexOf(val) || !!~item.id.toUpperCase().indexOf(val.toUpperCase())) {
-            return true
-          }
-        })
-      } else {
-        this.memberForm.userList = this.memberForm.copyUserList
-      }
-    },
+
     edit(row) {
-      this.dialogDatasourceUpdateVisible = true
+      this.formType = 'modify'
+      this.dialogVisible = true
       this.form = Object.assign({}, row)
       this.form.configuration = JSON.parse(this.form.configuration)
-      listenGoBack(this.closeFunc)
     },
-    cellClick(row) {
-      // 保存当前点击的组织信息到currentRow
-      this.currentRow = row
-      this.dialogDatasourceMemberVisible = true
-      const param = {
-        name: '',
-        organizationId: row.id
-      }
-      const path = '/user/special/org/member/list'
-      this.result = this.$post(path + '/' + this.dialogCurrentPage + '/' + this.dialogPageSize, param, res => {
-        const data = res.data
-        this.memberLineData = data.listObject
-        const url = '/userrole/list/org/' + row.id
-        for (let i = 0; i < this.memberLineData.length; i++) {
-          this.$get(url + '/' + encodeURIComponent(this.memberLineData[i].id), response => {
-            const roles = response.data
-            this.$set(this.memberLineData[i], 'roles', roles)
-          })
-        }
-        this.dialogTotal = data.itemCount
-      })
-      listenGoBack(this.closeFunc)
-    },
-    dialogSearch() {
-      const row = this.currentRow
-      this.dialogDatasourceMemberVisible = true
-      const param = this.dialogCondition
-      this.$set(param, 'organizationId', row.id)
-      const path = '/user/special/org/member/list'
-      this.result = this.$post(path + '/' + this.dialogCurrentPage + '/' + this.dialogPageSize, param, res => {
-        const data = res.data
-        this.memberLineData = data.listObject
-        const url = '/userrole/list/org/' + row.id
-        for (let i = 0; i < this.memberLineData.length; i++) {
-          this.$get(url + '/' + encodeURIComponent(this.memberLineData[i].id), response => {
-            const roles = response.data
-            this.$set(this.memberLineData[i], 'roles', roles)
-          })
-        }
-        this.dialogTotal = data.itemCount
-      })
-    },
-    handleDelete(datasource) {
-      this.$refs.deleteConfirm.open(datasource)
-    },
+
     _handleDelete(datasource) {
       this.$confirm(this.$t('datasource.delete_confirm'), '', {
         confirmButtonText: this.$t('commons.confirm'),
@@ -298,7 +180,7 @@ export default {
       }).then(() => {
         delDs(datasource.id).then(res => {
           this.$success(this.$t('commons.delete_success'))
-          this.initTableData()
+          this.search()
         })
       }).catch(() => {
         this.$message({
@@ -307,37 +189,22 @@ export default {
         })
       })
     },
-    createDatasource(createDatasourceForm) {
+    saveDatasource(createDatasourceForm) {
       this.$refs[createDatasourceForm].validate(valid => {
         if (valid) {
+          const method = this.formType === 'add' ? addDs : editDs
           this.form.configuration = JSON.stringify(this.form.configuration)
-          addDs(this.form).then(res => {
+          method(this.form).then(res => {
             this.$success(this.$t('commons.save_success'))
-            this.initTableData()
-            this.dialogDatasourceAddVisible = false
-          })
-
-          this.dialogDatasourceAddVisible = false
-        } else {
-          return false
-        }
-      })
-    },
-    updateDatasource(updateDatasourceForm) {
-      this.$refs[updateDatasourceForm].validate(valid => {
-        if (valid) {
-          this.form.configuration = JSON.stringify(this.form.configuration)
-
-          editDs(this.form).then(res => {
-            this.$success(this.$t('commons.modify_success'))
-            this.dialogDatasourceUpdateVisible = false
-            this.initTableData()
+            this.search()
+            this.dialogVisible = false
           })
         } else {
           return false
         }
       })
     },
+
     validaDatasource(datasourceForm) {
       this.$refs[datasourceForm].validate(valid => {
         if (valid) {
@@ -359,54 +226,46 @@ export default {
         }
       }
     },
-    initTableData() {
-      dsGrid(this.currentPage, this.pageSize, this.condition).then(response => {
-        const data = response.data
-        this.tableData = data.listObject
-        this.total = data.itemCount
+    quick_condition(condition) {
+      const result = {}
+      if (condition && condition.quick) {
+        for (const [key, value] of Object.entries(condition)) {
+          // console.log(`${key}`)
+          if (`${key}` === 'quick') {
+            const v_new = Object.assign({}, value)
+            v_new['field'] = 'name'
+            result['name'] = v_new
+          } else {
+            result[`${key}`] = value
+          }
+        }
+        return result
+      }
+      return Object.assign({}, condition)
+    },
+    search(condition) {
+      const temp_param = this.quick_condition(condition)
+      const temp = formatCondition(temp_param)
+      const param = temp || {}
+      const { currentPage, pageSize } = this.paginationConfig
+      dsGrid(currentPage, pageSize, param).then(response => {
+        this.data = response.data.listObject
+        this.paginationConfig.total = response.data.itemCount
       })
     },
+
     closeFunc() {
-      this.memberLineData = []
-      this.initTableData()
+      this.formType = 'add'
+      // this.search()
       this.form = { configuration: {}}
-      removeGoBackListener(this.closeFunc)
-      this.dialogDatasourceAddVisible = false
-      this.dialogDatasourceUpdateVisible = false
-      this.dialogDatasourceMemberVisible = false
-      this.dialogDatasourceMemberAddVisible = false
-      this.dialogDatasourceMemberUpdateVisible = false
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val
+      this.dialogVisible = false
     }
+
   }
 
 }
 </script>
 
 <style scoped>
-@import "~@/metersphere/common/css/index.css";
-  .member-size {
-    text-decoration: underline;
-  }
-
-  .org-member-id {
-    float: left;
-  }
-
-  .org-member-email {
-    float: right;
-    color: #8492a6;
-    font-size: 13px;
-  }
-
-  .select-width {
-    width: 100%;
-  }
-
-  .dialog-css >>> .el-dialog__header {
-    padding: 0;
-  }
 
 </style>

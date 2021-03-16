@@ -1,19 +1,21 @@
 <template>
   <el-col>
-    <el-table
+    <ux-grid
+      ref="plxTable"
       size="mini"
-      :data="data"
-      border
       style="width: 100%;"
+      :height="height"
+      :checkbox-config="{highlight: true}"
     >
-      <el-table-column
+      <ux-table-column
         v-for="field in fields"
         :key="field.originName"
         min-width="200px"
-        :prop="field.originName"
-        :label="field.name"
+        :field="field.originName"
+        :title="field.name"
+        :resizable="true"
       />
-    </el-table>
+    </ux-grid>
   </el-col>
 </template>
 
@@ -21,19 +23,39 @@
 export default {
   name: 'TabDataPreview',
   props: {
-    table: Object,
-    fields: Array,
-    data: Array
+    table: {
+      type: Object,
+      required: true
+    },
+    fields: {
+      type: Array,
+      required: true
+    },
+    data: {
+      type: Array,
+      required: true
+    }
   },
   data() {
     return {
+      height: 500
     }
   },
-  computed: {},
-  watch: {},
-  created() {
+  computed: {
+  },
+  watch: {
+    data() {
+      const datas = this.data
+      this.$refs.plxTable.reloadData(datas)
+    }
   },
   mounted() {
+    window.onresize = () => {
+      return (() => {
+        this.height = window.innerHeight / 2
+      })()
+    }
+    this.height = window.innerHeight / 2
   },
   activated() {
   },

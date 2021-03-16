@@ -69,10 +69,6 @@ export default {
   replace: true,
   name: 'vue-drag-resize-rotate',
   props: {
-    viewId: {
-      type: String,
-      default: ''
-    },
     className: {
       type: String,
       default: 'vdr'
@@ -399,11 +395,6 @@ export default {
   },
 
   methods: {
-    removeView(){
-      debugger
-      console.log(this.viewId);
-      this.$emit('removeView',this.viewId)
-    },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {
       this.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 }
@@ -1320,15 +1311,13 @@ export default {
       }
     },
     style() {
-      let newStyle ={
+      return {
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
         height: this.computedHeight,
         zIndex: this.zIndex,
         ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
       };
-      this.$emit('newStyle', this.viewId,newStyle);
-      return newStyle;
     },
     // 控制柄显示与否
     actualHandles() {
@@ -1515,11 +1504,4 @@ export default {
   height: 7px;
   background-color: #666;
 }
-
-.close {
-  float: right;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
 </style>

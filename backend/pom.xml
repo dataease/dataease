@@ -17,6 +17,7 @@
         <java.version>1.8</java.version>
         <graalvm.version>20.1.0</graalvm.version>
         <jwt.version>3.12.1</jwt.version>
+        <spark.version>3.1.1</spark.version>
     </properties>
 
     <dependencies>
@@ -333,6 +334,36 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.12</artifactId>
+            <version>${spark.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_2.12</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.12</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -439,33 +470,33 @@
                 </dependencies>
             </plugin>
 
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-antrun-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>main-class-placement</id>-->
-<!--                        <phase>generate-resources</phase>-->
-<!--                        <configuration>-->
-<!--                            <target>-->
-<!--                                <move todir="src/main/resources/static">-->
-<!--                                    <fileset dir="../frontend/dist">-->
-<!--                                        <exclude name="*.html"/>-->
-<!--                                    </fileset>-->
-<!--                                </move>-->
-<!--                                <move todir="src/main/resources/templates">-->
-<!--                                    <fileset dir="../frontend/dist">-->
-<!--                                        <include name="*.html"/>-->
-<!--                                    </fileset>-->
-<!--                                </move>-->
-<!--                            </target>-->
-<!--                        </configuration>-->
-<!--                        <goals>-->
-<!--                            <goal>run</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>main-class-placement</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target>
+                                <move todir="src/main/resources/static">
+                                    <fileset dir="../frontend/dist">
+                                        <exclude name="*.html"/>
+                                    </fileset>
+                                </move>
+                                <move todir="src/main/resources/templates">
+                                    <fileset dir="../frontend/dist">
+                                        <include name="*.html"/>
+                                    </fileset>
+                                </move>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

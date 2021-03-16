@@ -42,7 +42,7 @@
           </el-form-item>
         </el-form>
       </el-row>
-      <el-row style="overflow: auto;height: 600px;">
+      <el-row style="overflow: auto;height: 60vh;">
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-checkbox
             v-for="t in tableData"
@@ -62,7 +62,10 @@ import { listDatasource, post } from '@/api/dataset/dataset'
 export default {
   name: 'AddDB',
   props: {
-    param: Object
+    param: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {
@@ -162,5 +165,9 @@ export default {
 
   .el-checkbox.is-bordered + .el-checkbox.is-bordered {
     margin-left: 0;
+  }
+
+  span{
+    font-size: 14px;
   }
 </style>

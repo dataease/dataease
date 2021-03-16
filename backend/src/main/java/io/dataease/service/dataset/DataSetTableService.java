@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,8 +54,8 @@ public class DataSetTableService {
             DataTableInfoDTO dataTableInfoDTO = new DataTableInfoDTO();
             if (StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
                 dataTableInfoDTO.setTable(datasetTable.getName());
+                datasetTable.setInfo(new Gson().toJson(dataTableInfoDTO));
             }
-            datasetTable.setInfo(new Gson().toJson(dataTableInfoDTO));
             int insert = datasetTableMapper.insert(datasetTable);
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
@@ -142,15 +143,22 @@ public class DataSetTableService {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
 
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-
         String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
-        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");
+
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
+            String table = dataTableInfoDTO.getTable();
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");// todo limit
+        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
+            String sql = dataTableInfoDTO.getSql();
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray));// todo 因为编辑可能取消某些字段展示，这里sql看看怎么处理
+        }
 
         List<String[]> data = new ArrayList<>();
         try {
@@ -169,6 +177,35 @@ public class DataSetTableService {
             }).collect(Collectors.toList());
         }
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("fields", fields);
+        map.put("data", jsonArray);
+
+        return map;
+    }
+
+    public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
+        datasourceRequest.setQuery(sql);
+        ResultSet dataResultSet = datasourceProvider.getDataResultSet(datasourceRequest);
+        List<String[]> data = datasourceProvider.fetchResult(dataResultSet);
+        List<TableFiled> fields = datasourceProvider.fetchResultField(dataResultSet);
+        String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
+
+        List<Map<String, Object>> jsonArray = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(data)) {
+            jsonArray = data.stream().map(ele -> {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < ele.length; i++) {
+                    map.put(fieldArray[i], ele[i]);
+                }
+                return map;
+            }).collect(Collectors.toList());
+        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("fields", fields);
@@ -228,8 +265,19 @@ public class DataSetTableService {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
         BeanUtils.copyBean(dataSetTableRequest, datasetTable);
-        List<TableFiled> fields = getFields(dataSetTableRequest);
+
+        List<TableFiled> fields = new ArrayList<>();
         long syncTime = System.currentTimeMillis();
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
+            fields = getFields(dataSetTableRequest);
+        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            datasourceRequest.setQuery(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql());
+            ResultSet dataResultSet = datasourceProvider.getDataResultSet(datasourceRequest);
+            fields = datasourceProvider.fetchResultField(dataResultSet);
+        }
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);

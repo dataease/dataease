@@ -1,59 +1,46 @@
 <template>
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-    <complex-table
-      ref="table"
-      :data="tableData"
-      lazy
-      :load="initTableData"
+    <tree-table
       :columns="columns"
       :buttons="buttons"
       :header="header"
       :search-config="searchConfig"
-      :pagination-config="paginationConfig"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      row-key="menuId"
       @search="initTableData"
     >
-      <template #buttons>
-        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('menu.create')" @click="create" />
+      <template v-permission="['menu:add']" #buttons>
+        <fu-table-button v-permission="['menu:add']" icon="el-icon-circle-plus-outline" :label="$t('menu.create')" @click="create" />
       </template>
 
-      <!-- <el-table-column type="selection" fix /> -->
-      <el-table-column :show-overflow-tooltip="true" label="菜单标题" width="150px" prop="title" />
-      <el-table-column prop="icon" label="图标" align="center" width="60px">
-        <template slot-scope="scope">
-          <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
-        </template>
-      </el-table-column>
+      <el-table
+        ref="table"
+        :data="tableData"
+        lazy
+        :load="initTableData"
+        style="width: 100%"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+        row-key="menuId"
+      >
 
-      <el-table-column :show-overflow-tooltip="true" prop="permission" label="权限标识" />
-      <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" />
-      <!-- <el-table-column prop="iframe" label="外链" width="75px">
-        <template slot-scope="scope">
-          <span v-if="scope.row.iframe">是</span>
-          <span v-else>否</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="cache" label="缓存" width="75px">
-        <template slot-scope="scope">
-          <span v-if="scope.row.cache">是</span>
-          <span v-else>否</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="hidden" label="可见" width="75px">
-        <template slot-scope="scope">
-          <span v-if="scope.row.hidden">否</span>
-          <span v-else>是</span>
-        </template>
-      </el-table-column> -->
-      <el-table-column prop="createTime" label="创建日期" width="160px">
-        <template v-slot:default="scope">
-          <span>{{ scope.row.createTime | timestampFormatDate }}</span>
-        </template>
-      </el-table-column>
+        <!-- <el-table-column type="selection" fix /> -->
+        <el-table-column :show-overflow-tooltip="true" label="菜单标题" width="150px" prop="title" />
+        <el-table-column prop="icon" label="图标" align="center" width="60px">
+          <template slot-scope="scope">
+            <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
+          </template>
+        </el-table-column>
 
-      <fu-table-operations :buttons="buttons" label="操作" fix />
-    </complex-table>
+        <el-table-column :show-overflow-tooltip="true" prop="permission" label="权限标识" />
+        <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" />
+
+        <el-table-column prop="createTime" label="创建日期" width="160px">
+          <template v-slot:default="scope">
+            <span>{{ scope.row.createTime | timestampFormatDate }}</span>
+          </template>
+        </el-table-column>
+
+        <fu-table-operations :buttons="buttons" label="操作" fix />
+      </el-table>
+    </tree-table>
 
     <el-dialog
       :close-on-click-modal="false"
@@ -66,13 +53,13 @@
       <el-form ref="menuForm" inline :model="form" :rules="rule" size="small" label-width="80px">
 
         <el-form-item label="菜单类型" prop="type">
-          <el-radio-group v-model="form.type" size="mini" style="width: 179px">
+          <el-radio-group v-model="form.type" size="mini" :disabled="formType!=='add'" style="width: 179px">
             <el-radio-button label="0">目录</el-radio-button>
             <el-radio-button label="1">菜单</el-radio-button>
             <el-radio-button label="2">按钮</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-show="form.type!== '2'" label="菜单图标" prop="icon">
+        <el-form-item v-show="form.type!== 2" label="菜单图标" prop="icon">
           <el-popover
             placement="bottom-start"
             width="425"
@@ -86,48 +73,32 @@
             </el-input>
           </el-popover>
         </el-form-item>
-        <!-- <el-form-item v-show="form.type !== '2'" label="外链菜单" prop="iframe">
-          <el-radio-group v-model="form.iframe" size="mini">
-            <el-radio-button label="true">是</el-radio-button>
-            <el-radio-button label="false">否</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item v-show="form.type=== '1'" label="菜单缓存" prop="cache">
-          <el-radio-group v-model="form.cache" size="mini">
-            <el-radio-button label="true">是</el-radio-button>
-            <el-radio-button label="false">否</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item v-show="form.type !== '2'" label="菜单可见" prop="hidden">
-          <el-radio-group v-model="form.hidden" size="mini">
-            <el-radio-button label="false">是</el-radio-button>
-            <el-radio-button label="true">否</el-radio-button>
-          </el-radio-group>
-        </el-form-item> -->
-        <el-form-item v-if="form.type !== '2'" label="菜单标题" prop="title">
+
+        <el-form-item v-if="form.type !== 2" label="菜单标题" prop="title">
           <el-input v-model="form.title" :style=" form.type === '0' ? 'width: 450px' : 'width: 179px'" placeholder="菜单标题" />
         </el-form-item>
-        <el-form-item v-if="form.type === '2'" label="按钮名称" prop="title">
+        <el-form-item v-if="form.type === 2" label="按钮名称" prop="title">
           <el-input v-model="form.title" placeholder="按钮名称" style="width: 179px;" />
         </el-form-item>
-        <el-form-item v-show="form.type !== '0'" label="权限标识" prop="permission">
-          <el-input v-model="form.permission" :disabled="form.iframe" placeholder="权限标识" style="width: 179px;" />
+        <el-form-item v-show="form.type !== 0" label="权限标识" prop="permission">
+          <el-input v-model="form.permission" :disabled="form.iframe || formType!=='add'" placeholder="权限标识" style="width: 179px;" />
         </el-form-item>
-        <el-form-item v-if="form.type !== '2'" label="路由地址" prop="path">
-          <el-input v-model="form.path" placeholder="路由地址" style="width: 179px;" />
+        <el-form-item v-if="form.type !== 2" label="路由地址" prop="path">
+          <el-input v-model="form.path" placeholder="路由地址" :disabled="formType!=='add'" style="width: 179px;" />
         </el-form-item>
         <el-form-item label="菜单排序" prop="menuSort">
           <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" style="width: 179px;" />
         </el-form-item>
-        <el-form-item v-show="!form.iframe && form.type === '1'" label="组件名称" prop="componentName">
-          <el-input v-model="form.componentName" style="width: 179px;" placeholder="匹配组件内Name字段" />
+        <el-form-item v-show="!form.iframe && form.type === 1" label="组件名称" prop="componentName">
+          <el-input v-model="form.componentName" :disabled="formType!=='add'" style="width: 179px;" placeholder="匹配组件内Name字段" />
         </el-form-item>
-        <el-form-item v-show="!form.iframe && form.type === '1'" label="组件路径" prop="component">
-          <el-input v-model="form.component" style="width: 179px;" placeholder="组件路径" />
+        <el-form-item v-show="!form.iframe && form.type === 1" label="组件路径" prop="component">
+          <el-input v-model="form.component" :disabled="formType!=='add'" style="width: 179px;" placeholder="组件路径" />
         </el-form-item>
         <el-form-item label="上级类目" prop="pid">
           <treeselect
             v-model="form.pid"
+            :disabled="formType!=='add'"
             :options="menus"
             :load-options="loadMenus"
             style="width: 450px;"
@@ -139,12 +110,7 @@
         <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
         <el-button type="primary" @click="createMenu('menuForm')">确认</el-button>
       </div>
-      <!-- <template v-slot:footer>
-        <ms-dialog-footer
-          @cancel="dialogVisible = false"
-          @confirm="createMenu('menuForm')"
-        />
-      </template> -->
+
     </el-dialog>
 
   </layout-content>
@@ -152,19 +118,18 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import ComplexTable from '@/components/business/complex-table'
+import TreeTable from '@/components/business/tree-table'
 // import { checkPermission } from '@/utils/permission'
 import IconSelect from '@/components/IconSelect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
-
+import { checkPermission } from '@/utils/permission'
 import { addMenu, editMenu, delMenu, getMenusTree } from '@/api/system/menu'
 
 export default {
-  name: 'MsMenu',
   components: {
-    ComplexTable,
+    TreeTable,
     LayoutContent,
     Treeselect,
     IconSelect
@@ -172,7 +137,7 @@ export default {
   data() {
     return {
       menus: [],
-      topMunu: { id: 0, label: '顶级类目', children: null },
+      topMunu: { id: 0, label: '顶级目录', children: null },
       formType: 'add',
       dialogVisible: false,
       condition: {},
@@ -200,9 +165,11 @@ export default {
       columns: [],
       buttons: [
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit,
+          show: checkPermission(['menu:edit'])
         }, {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete,
+          show: checkPermission(['menu:del'])
         }
       ],
       searchConfig: {
@@ -224,11 +191,6 @@ export default {
         //     multiple: false
         //   }
         ]
-      },
-      paginationConfig: {
-        currentPage: 1,
-        pageSize: 10,
-        total: 0
       }
 
     }
@@ -374,7 +336,7 @@ export default {
           this.formType === 'modify' && this.form['menuId'] && (method = editMenu)
           method(this.form).then(res => {
             this.$success(this.$t('commons.save_success'))
-            this.initTableData()
+            // this.initTableData()
             this.oldPid && this.reloadByPid(this.oldPid)
             this.reloadByPid(this.form['pid'])
             this.dialogVisible = false
@@ -407,7 +369,8 @@ export default {
     reloadByPid(pid) {
       if (pid !== 0 && this.maps.get(pid)) {
         const { row, treeNode, resolve } = this.maps.get(pid)
-        this.$set(this.$refs.table.store.states.lazyTreeNodeMap, pid, [])
+        const sto = this.$refs.table['store']
+        this.$set(sto.states.lazyTreeNodeMap, pid, [])
         this.initTableData(row, treeNode, resolve)
       }
     },

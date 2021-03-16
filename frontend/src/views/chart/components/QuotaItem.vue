@@ -3,7 +3,7 @@
     <el-dropdown trigger="click" size="small">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
-          {{ item.name }}<span class="summary-span">{{ $t('chart.'+item.summary) }}</span><i class="el-icon-arrow-down el-icon--right" />
+          {{ item.name }}<span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span><i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item icon="el-icon-notebook-2">

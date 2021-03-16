@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.datasource.service.DatasourceService;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +35,10 @@ public class DatasourceController {
     }
 
     @PostMapping("/list/{goPage}/{pageSize}")
-    public Pager<List<Datasource>> getDatasourceList(@RequestBody Datasource request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception {
+    public Pager<List<Datasource>> getDatasourceList(@RequestBody BaseGridRequest request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        return PageUtils.setPageInfo(page, datasourceService.getDatasourceList(request));
+        // return PageUtils.setPageInfo(page, datasourceService.getDatasourceList(request));
+        return PageUtils.setPageInfo(page, datasourceService.gridQuery(request));
     }
 
     @GetMapping("/delete/{datasourceID}")

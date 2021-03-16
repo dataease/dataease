@@ -4,6 +4,7 @@ export function dsGrid(pageIndex, pageSize, data) {
   return request({
     url: 'datasource/list/' + pageIndex + '/' + pageSize,
     method: 'post',
+    loading: true,
     data
   })
 }
