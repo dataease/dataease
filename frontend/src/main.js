@@ -3,10 +3,8 @@ import Cookies from 'js-cookie'
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
 import Fit2CloudUI from 'fit2cloud-ui'
-// import 'element-ui/lib/theme-chalk/index.css'
-// import './styles/variables.scss'
-import i18n from './lang' // internationalization
 
+import i18n from './lang' // internationalization
 import App from './App'
 import store from './store'
 import router from './router'
@@ -15,8 +13,6 @@ import '@/icons' // icon
 import '@/permission' // permission control
 import api from '@/api/index.js'
 import filter from '@/filter/filter'
-import message from '@/metersphere/common/js/message'
-import { left2RightDrag, bottom2TopDrag, right2LeftDrag } from '@/metersphere/common/js/directive'
 import directives from './directive'
 
 import './styles/vdrr/common-temp.scss'
@@ -58,13 +54,8 @@ Vue.use(Fit2CloudUI, {
   i18n: (key, value) => i18n.t(key, value)
 })
 Vue.use(filter)
-Vue.use(message)
 Vue.use(directives)
 Vue.config.productionTip = false
-// 支持左右拖拽
-Vue.directive('left-to-right-drag', left2RightDrag)
-Vue.directive('right-to-left-drag', right2LeftDrag)
-Vue.directive('bottom-to-top-drag', bottom2TopDrag)
 
 new Vue({
   el: '#app',

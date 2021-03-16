@@ -1,7 +1,7 @@
 <template>
-  <ms-container>
+  <de-container>
 
-    <ms-aside-container>
+    <de-aside-container>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />列表</span>
@@ -21,19 +21,19 @@
         <!--        </el-tab-pane>-->
       </el-tabs>
 
-    </ms-aside-container>
+    </de-aside-container>
 
-    <ms-main-container>
+    <de-main-container>
       <!--<router-view/>-->
       <component :is="component" :param="param" @switchComponent="switchComponent" />
-    </ms-main-container>
-  </ms-container>
+    </de-main-container>
+  </de-container>
 </template>
 
 <script>
-import MsMainContainer from '@/metersphere/common/components/MsMainContainer'
-import MsContainer from '@/metersphere/common/components/MsContainer'
-import MsAsideContainer from '@/metersphere/common/components/MsAsideContainer'
+import DeMainContainer from '@/components/dataease/DeMainContainer'
+import DeContainer from '@/components/dataease/DeContainer'
+import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 // import Group from './group/Group'
 import PanelList from './list/PanelList'
 import PanelView from './list/PanelView'
@@ -41,7 +41,7 @@ import PanelViewShow from './list/PanelViewShow'
 
 export default {
   name: 'Panel',
-  components: { MsMainContainer, MsContainer, MsAsideContainer, PanelList, PanelView ,PanelViewShow},
+  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelView, PanelViewShow },
   data() {
     return {
       component: PanelViewShow,

@@ -18,7 +18,7 @@
 <script>
 import EmailSetting from './EmailSetting'
 import UiSetting from './UiSetting'
-import { hasLicense } from '@/metersphere/common/js/utils'
+// import { hasLicense } from '@/metersphere/common/js/utils'
 
 // const requireComponent = require.context('@/metersphere/common/components/xpack/', true, /\.vue$/)
 // const display = requireComponent.keys().length > 0 ? requireComponent('./display/Display.vue') : {}
@@ -38,7 +38,7 @@ export default {
     }
   },
   methods: {
-    hasLicense
+    // hasLicense
   }
 }
 </script>

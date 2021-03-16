@@ -1,19 +1,19 @@
 <template>
-  <ms-container>
-    <ms-aside-container>
+  <de-container>
+    <de-aside-container>
       <dataset-group-selector @getTable="getTable" />
-    </ms-aside-container>
+    </de-aside-container>
 
-    <ms-main-container>
+    <de-main-container>
       <dataset-table-data :table="table" />
-    </ms-main-container>
-  </ms-container>
+    </de-main-container>
+  </de-container>
 </template>
 
 <script>
-import MsMainContainer from '@/metersphere/common/components/MsMainContainer'
-import MsContainer from '@/metersphere/common/components/MsContainer'
-import MsAsideContainer from '@/metersphere/common/components/MsAsideContainer'
+import DeMainContainer from '@/components/dataease/DeMainContainer'
+import DeContainer from '@/components/dataease/DeContainer'
+import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 
 import DatasetGroupSelector from '../../dataset/common/DatasetGroupSelector'
 import DatasetTableData from '../../dataset/common/DatasetTableData'
@@ -22,7 +22,7 @@ export default {
   name: 'TableSelector',
   components: {
     DatasetTableData,
-    MsMainContainer, MsContainer, MsAsideContainer, DatasetGroupSelector
+    DeMainContainer, DeContainer, DeAsideContainer, DatasetGroupSelector
   },
   data() {
     return {

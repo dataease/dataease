@@ -62,25 +62,24 @@
           />
         </el-form-item>
       </el-form>
-      <span slot="footer">
-        <ms-dialog-footer
-          @cancel="loginVisible = false"
-          @confirm="login('loginForm')"
-        />
-      </span>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="loginVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="login('loginForm')">确认</el-button>
+      </div>
+
     </el-dialog>
 
   </div>
 </template>
 
 <script>
-import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
-import { listenGoBack, removeGoBackListener } from '@/metersphere/common/js/utils'
+// import MsDialogFooter from '@/metersphere/common/components/MsDialogFooter'
+// import { listenGoBack, removeGoBackListener } from '@/metersphere/common/js/utils'
 
 export default {
   name: 'LdapSetting',
   components: {
-    MsDialogFooter
+
   },
   data() {
     return {
@@ -134,7 +133,6 @@ export default {
       this.init()
     },
     close() {
-      removeGoBackListener(this.close)
       this.loginVisible = false
     },
     testConnection() {
@@ -170,7 +168,6 @@ export default {
 
       this.loginForm = {}
       this.loginVisible = true
-      listenGoBack(this.close)
     },
     checkParam() {
       if (!this.form.url) {

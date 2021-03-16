@@ -1,21 +1,21 @@
 <template>
-  <ms-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
-    <ms-aside-container>
+    <de-aside-container>
       <group @switchComponent="switchComponent" />
-    </ms-aside-container>
+    </de-aside-container>
 
-    <ms-main-container>
+    <de-main-container>
       <!--        <router-view />-->
       <component :is="component" :param="param" @switchComponent="switchComponent" />
-    </ms-main-container>
-  </ms-container>
+    </de-main-container>
+  </de-container>
 </template>
 
 <script>
-import MsMainContainer from '@/metersphere/common/components/MsMainContainer'
-import MsContainer from '@/metersphere/common/components/MsContainer'
-import MsAsideContainer from '@/metersphere/common/components/MsAsideContainer'
+import DeMainContainer from '@/components/dataease/DeMainContainer'
+import DeContainer from '@/components/dataease/DeContainer'
+import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import Group from './group/Group'
 
 import ChartHome from './data/ChartHome'
@@ -23,7 +23,7 @@ import ChartEdit from './view/ChartEdit'
 
 export default {
   name: 'Chart',
-  components: { MsMainContainer, MsContainer, MsAsideContainer, Group, ChartHome, ChartEdit },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, Group, ChartHome, ChartEdit },
   data() {
     return {
       component: ChartHome,
