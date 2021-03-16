@@ -1,6 +1,6 @@
 <template>
   <span>
-    <el-dropdown trigger="click" size="small">
+    <el-dropdown trigger="click" size="small" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
           {{ item.name }}<span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span><i class="el-icon-arrow-down el-icon--right" />
@@ -21,12 +21,34 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-delete">
-            item4
+          <el-dropdown-item icon="el-icon-s-grid">
+            <el-dropdown placement="right-start" size="small" @command="quickCalc">
+              <span class="el-dropdown-link">
+                {{ $t('chart.quick_calc') }}<span class="summary-span">(test)</span><i class="el-icon-arrow-right el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeQuickCalc('none')">test</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
+            <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </span>
     </el-dropdown>
+
+    <el-dialog :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
+      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="itemForm.name" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeRename()">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveRename(itemForm)">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </span>
 </template>
 
@@ -40,7 +62,17 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      renameItem: false,
+      itemForm: {
+        name: ''
+      },
+      itemFormRules: {
+        name: [
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+        ]
+      }
+    }
   },
   mounted() {
 
@@ -49,11 +81,54 @@ export default {
     summary(param) {
       // console.log(param)
       this.item.summary = param.type
-      this.$emit('onQuotaSummaryChange', this.item)
+      this.$emit('onQuotaItemChange', this.item)
     },
     beforeSummary(type) {
       return {
         type: type
+      }
+    },
+    quickCalc(param) {
+
+    },
+    beforeQuickCalc(type) {
+      return {
+        type: type
+      }
+    },
+    clickItem(param) {
+      if (!param) {
+        return
+      }
+      switch (param.type) {
+        case 'rename':
+          this.showRename()
+          break
+        default:
+          break
+      }
+    },
+    beforeClickItem(type) {
+      return {
+        type: type
+      }
+    },
+    showRename() {
+      this.itemForm.name = this.item.name
+      this.renameItem = true
+    },
+    closeRename() {
+      this.renameItem = false
+      this.resetRename()
+    },
+    saveRename(param) {
+      this.item.name = param.name
+      this.$emit('onQuotaItemChange', this.item)
+      this.closeRename()
+    },
+    resetRename() {
+      this.itemForm = {
+        name: ''
       }
     }
   }
