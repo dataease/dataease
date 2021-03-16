@@ -1,6 +1,6 @@
 <template>
   <span>
-    <el-dropdown trigger="click" size="small">
+    <el-dropdown trigger="click" size="mini">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />

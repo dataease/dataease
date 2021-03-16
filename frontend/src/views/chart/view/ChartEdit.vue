@@ -79,8 +79,8 @@
           <el-row>
             <div class="chart-type">
               <!--TODO 这里要替换好看点的图标-->
+              <el-radio v-model="view.type" label="bar"><i class="el-icon-platform-eleme" style="font-size: 20px"/></el-radio>
               <el-radio v-model="view.type" label="line">折线图</el-radio>
-              <el-radio v-model="view.type" label="bar">柱状图</el-radio>
             </div>
           </el-row>
         </div>

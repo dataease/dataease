@@ -1,13 +1,13 @@
 <template>
   <span>
-    <el-dropdown trigger="click" size="small" @command="clickItem">
+    <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
           {{ item.name }}<span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span><i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item icon="el-icon-notebook-2">
-            <el-dropdown placement="right-start" size="small" @command="summary">
+            <el-dropdown placement="right-start" size="mini" @command="summary">
               <span class="el-dropdown-link">
                 {{ $t('chart.summary') }}<span class="summary-span">({{ $t('chart.'+item.summary) }})</span><i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -22,7 +22,7 @@
             </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-s-grid">
-            <el-dropdown placement="right-start" size="small" @command="quickCalc">
+            <el-dropdown placement="right-start" size="mini" @command="quickCalc">
               <span class="el-dropdown-link">
                 {{ $t('chart.quick_calc') }}<span class="summary-span">(test)</span><i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -41,7 +41,7 @@
     <el-dialog :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
       <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
         <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="itemForm.name" />
+          <el-input v-model="itemForm.name" size="mini"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
