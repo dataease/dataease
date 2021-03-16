@@ -670,7 +670,8 @@ export default {
     input_content: '请输入内容',
     add_sql_table: '添加SQL',
     preview: '预览',
-    pls_input_name: '请输入名称'
+    pls_input_name: '请输入名称',
+    connect_mode: '连接模式'
   },
   datasource: {
     create: '新建数据连接',

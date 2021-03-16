@@ -28,8 +28,10 @@
             </el-select>
           </el-form-item>
           <el-form-item class="form-item">
-            <el-radio v-model="mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>
-            <el-radio v-model="mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>
+            <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
+              <el-option :label="$t('dataset.direct_connect')" value="0" />
+              <el-option :label="$t('dataset.sync_data')" value="1" />
+            </el-select>
           </el-form-item>
           <el-form-item class="form-item" style="float: right;">
             <el-input
