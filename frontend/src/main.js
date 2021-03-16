@@ -21,7 +21,6 @@ import directives from './directive'
 
 import './styles/vdrr/common-temp.scss'
 
-
 import vdrr from './components/vue-drag-resize-rotate'
 Vue.component('vdrr', vdrr)
 
