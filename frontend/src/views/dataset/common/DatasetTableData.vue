@@ -7,6 +7,7 @@
       style="width: 100%;"
       :height="height"
       :checkbox-config="{highlight: true}"
+      :width-resize="true"
     >
       <ux-table-column
         v-for="field in fields"

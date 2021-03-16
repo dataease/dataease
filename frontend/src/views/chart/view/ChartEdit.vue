@@ -85,7 +85,7 @@
           </el-row>
         </div>
         <div style="height: 45%;overflow:auto;border-top: 1px solid #e6e6e6">
-          <el-tabs type="card">
+          <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">TODO</el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">TODO</el-tab-pane>
           </el-tabs>
@@ -429,9 +429,17 @@ export default {
     font-size: 12px;
   }
 
+  .tab-header>>>.el-tabs__item{
+    font-size: 12px;
+  }
+
   .draggable-group {
     display: inline-block;
     width: 100%;
     height: calc(100% - 6px);
+  }
+
+  .chart-type>>>.el-radio__input{
+    display: none;
   }
 </style>
