@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.base.mapper.ext.ExtPanelShareMapper">
+
+    <resultMap id="treeNodeMap" type="io.dataease.dto.panel.PanelShareDto">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="pid" property="pid" />
+    </resultMap>
+
+    <insert id="batchInsert" parameterType="io.dataease.base.domain.PanelStore">
+        INSERT INTO panel_store (panel_group_id,user_id,create_time)
+        VALUES 
+        <foreach collection="list" item="store" separator=",">
+            (#{store.panelGroupId}, #{store.userId}, #{store.createTime})
+        </foreach>
+    </insert>
+
+    <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
+        select s.panel_group_id as id, g.create_by as pid, g.name
+        from panel_share s
+        left join panel_group g on g.id = s.panel_group_id
+        <if test="_parameter != null">
+            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by s.create_time desc
+        </if>
+
+    </select>
+
+
+
+
+
+</mapper>

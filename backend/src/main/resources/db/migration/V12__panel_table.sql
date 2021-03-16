@@ -53,3 +53,46 @@ BEGIN
     RETURN oTemp;
 END $$
 DELIMITER ;
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for panel_store
+-- ----------------------------
+DROP TABLE IF EXISTS `panel_store`;
+CREATE TABLE `panel_store` (
+  `store_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `panel_group_id` varchar(50) NOT NULL COMMENT '仪表板ID',
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
+  PRIMARY KEY (`store_id`) USING BTREE,
+  UNIQUE KEY `UK_store_user_id` (`user_id`) USING BTREE
+
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板收藏';
+
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for panel_share
+-- ----------------------------
+DROP TABLE IF EXISTS `panel_share`;
+CREATE TABLE `panel_share` (
+  `share_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '分享ID',
+  `panel_group_id` varchar(50) DEFAULT NULL COMMENT '仪表板ID',
+  `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
+  PRIMARY KEY (`share_id`) USING BTREE,
+  UNIQUE KEY `UK_share_user_id` (`user_id`) USING BTREE,
+  UNIQUE KEY `UK_share_panel_group_id` (`panel_group_id`) USING BTREE,
+
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板分享';
+
+
+SET FOREIGN_KEY_CHECKS = 1;
