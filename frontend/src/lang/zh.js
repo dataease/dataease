@@ -600,7 +600,9 @@ export default {
     max: '最大值',
     min: '最小值',
     std: '标准差',
-    var_samp: '方差'
+    var_samp: '方差',
+    quick_calc: '快速计算',
+    show_name_set: '显示名设置'
   },
   dataset: {
     datalist: '数据集',

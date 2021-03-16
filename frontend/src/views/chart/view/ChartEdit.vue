@@ -125,7 +125,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <quota-item v-for="(item) in view.yaxis" :key="item.id" :item="item" @onQuotaSummaryChange="quotaSummaryChange" />
+                  <quota-item v-for="(item) in view.yaxis" :key="item.id" :item="item" @onQuotaItemChange="quotaItemChange" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -357,13 +357,13 @@ export default {
       return true
     },
 
-    quotaSummaryChange(item) {
+    quotaItemChange(item) {
       // 更新item
-      this.view.yaxis.forEach(function(ele) {
-        if (ele.id === item.id) {
-          ele.summary = item.summary
-        }
-      })
+      // this.view.yaxis.forEach(function(ele) {
+      //   if (ele.id === item.id) {
+      //     ele.summary = item.summary
+      //   }
+      // })
       this.save()
     }
   }
