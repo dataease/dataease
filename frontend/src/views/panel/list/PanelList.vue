@@ -12,7 +12,7 @@
             :expand-on-click-node="true"
             @node-click="panelDefaultClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span slot-scope="{ data }" class="custom-tree-node">
               <span>
                 <span>
                   <el-button
@@ -85,6 +85,9 @@
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
                         {{ $t('panel.delete') }}
                       </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
+                        {{ $t('panel.share') }}
+                      </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
@@ -106,6 +109,21 @@
           </el-button>
         </div>
       </el-dialog>
+
+      <el-dialog
+        :title="$t('panel.share')"
+        :visible.sync="authVisible"
+        :show-close="false"
+        top="10vh"
+        width="30%"
+        :before-close="handleClose"
+      >
+        <span>分享授权</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="authVisible = false">取 消</el-button>
+          <el-button type="primary" @click="authVisible = false">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-col>
   </el-col>
 </template>
@@ -117,6 +135,7 @@ export default {
   name: 'PanelList',
   data() {
     return {
+      authVisible: false,
       defaultData: [],
       dialogTitle: '',
       search: '',
@@ -205,6 +224,9 @@ export default {
           break
         case 'deleteTable':
           this.deleteTable(param.data)
+          break
+        case 'share':
+          this.share(param.data)
           break
       }
     },
@@ -458,6 +480,13 @@ export default {
       this.$store.dispatch('panel/setPanelName', data.name)
       // 切换view
       this.$emit('switchComponent', { name: 'PanelView' })
+    },
+    share(data) {
+      console.log(data)
+      this.authVisible = true
+    },
+    handleClose(done) {
+      this.handleClose = false
     }
   }
 }

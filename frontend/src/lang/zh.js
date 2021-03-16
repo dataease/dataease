@@ -724,6 +724,7 @@ export default {
     }
   },
   panel: {
+    share: '分享',
     datalist: '视图列表',
     group: '目录',
     panel: '仪表盘',
