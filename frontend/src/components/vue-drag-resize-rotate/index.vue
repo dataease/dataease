@@ -26,6 +26,7 @@
     >
       <slot :name="handle"></slot>
     </div>
+    <i class="el-icon-circle-close" @click.stop="removeView()"></i>
     <slot></slot>
   </div>
 </template>
@@ -68,6 +69,10 @@ export default {
   replace: true,
   name: 'vue-drag-resize-rotate',
   props: {
+    viewId: {
+      type: String,
+      default: ''
+    },
     className: {
       type: String,
       default: 'vdr'
@@ -141,7 +146,7 @@ export default {
       type: Boolean,
       default: false
     },
-    // 新增 外部传入纵横比 w/h 
+    // 新增 外部传入纵横比 w/h
     outsideAspectRatio: {
       type: [Number, String],
       default: 0
@@ -394,6 +399,11 @@ export default {
   },
 
   methods: {
+    removeView(){
+      debugger
+      console.log(this.viewId);
+      this.$emit('removeView',this.viewId)
+    },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {
       this.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 }
@@ -1310,13 +1320,15 @@ export default {
       }
     },
     style() {
-      return {
+      let newStyle ={
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
         height: this.computedHeight,
         zIndex: this.zIndex,
         ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
       };
+      this.$emit('newStyle', this.viewId,newStyle);
+      return newStyle;
     },
     // 控制柄显示与否
     actualHandles() {
@@ -1503,4 +1515,11 @@ export default {
   height: 7px;
   background-color: #666;
 }
+
+.close {
+  float: right;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 </style>
