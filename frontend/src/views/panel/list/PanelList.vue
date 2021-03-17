@@ -393,12 +393,9 @@ export default {
     },
 
     nodeClick(data, node) {
-      // console.log(data);
-      // console.log(node);
       if (data.nodeType === 'panel') {
-        this.sceneMode = true
         this.currGroup = data
-        this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
+        this.$store.dispatch('panel/setPanelInfo', data)
       }
       if (node.expanded) {
         this.expandedArray.push(data.id)
@@ -481,7 +478,7 @@ export default {
     panelDefaultClick(data, node) {
       console.log(data)
       console.log(node)
-      this.$store.dispatch('panel/setPanelName', data.name)
+      this.$store.dispatch('panel/setPanelInfo', data)
       // 切换view
       this.$emit('switchComponent', { name: 'PanelView' })
     },

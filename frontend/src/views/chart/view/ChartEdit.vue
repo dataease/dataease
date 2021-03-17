@@ -79,14 +79,16 @@
           <el-row>
             <div class="chart-type">
               <!--TODO 这里要替换好看点的图标-->
-              <el-radio v-model="view.type" label="bar"><i class="el-icon-platform-eleme" style="font-size: 20px"/></el-radio>
+              <el-radio v-model="view.type" label="bar"><i class="el-icon-platform-eleme" style="font-size: 20px" /></el-radio>
               <el-radio v-model="view.type" label="line">折线图</el-radio>
             </div>
           </el-row>
         </div>
         <div style="height: 45%;overflow:auto;border-top: 1px solid #e6e6e6">
           <el-tabs type="card" :stretch="true" class="tab-header">
-            <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">TODO</el-tab-pane>
+            <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
+              <color-selector :chart="chart" @onColorChange="onColorChange" />
+            </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">TODO</el-tab-pane>
           </el-tabs>
         </div>
@@ -144,10 +146,13 @@ import draggable from 'vuedraggable'
 import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
 import ChartComponent from '../components/ChartComponent'
+// shape attr
+import { DEFAULT_COLOR_CASE } from '../chart/chart'
+import ColorSelector from '../components/ColorSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -158,7 +163,10 @@ export default {
         yaxis: [],
         show: true,
         type: 'bar',
-        title: ''
+        title: '',
+        customAttr: {
+          color: DEFAULT_COLOR_CASE
+        }
       },
       // 定义要被拖拽对象的数组
       arr1: [
@@ -224,17 +232,6 @@ export default {
         this.quota = response.data.quota
       })
     },
-    get(id) {
-      if (id) {
-        post('/chart/view/get/' + id, null).then(response => {
-          this.view = response.data
-          this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
-          this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
-        })
-      } else {
-        this.view = {}
-      }
-    },
     save() {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
@@ -253,6 +250,7 @@ export default {
       })
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
+      view.customAttr = JSON.stringify(view.customAttr)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         this.getData(response.data.id)
@@ -269,6 +267,7 @@ export default {
           this.view = response.data
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           // 将视图传入echart组件
           this.chart = response.data
         })
@@ -365,6 +364,11 @@ export default {
       //   }
       // })
       this.save()
+    },
+
+    onColorChange(val) {
+      this.view.customAttr.color = val
+      this.save()
     }
   }
 }
@@ -399,6 +403,7 @@ export default {
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
+    background-color: rgba(35,46,64,.05);
     display: block;
   }
 
@@ -408,6 +413,7 @@ export default {
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
+    background-color: rgba(35,46,64,.05);
   }
 
   .item + .item {
