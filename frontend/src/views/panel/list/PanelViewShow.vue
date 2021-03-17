@@ -34,7 +34,7 @@
       <el-col class="panel-design">
         <!--TODO 仪表盘设计公共设置区域-->
         <el-row class="panel-design-head">
-          <span style="float: left;line-height: 40px; color: gray">名称：{{panelInfo.name}}</span>
+          <span style="float: left;line-height: 40px; color: gray">名称：{{ panelInfo.name }}</span>
           <span style="float: right;line-height: 40px;">
             <el-button size="mini">
               背景图

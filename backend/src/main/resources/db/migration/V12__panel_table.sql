@@ -88,9 +88,12 @@ CREATE TABLE `panel_share` (
   `panel_group_id` varchar(50) DEFAULT NULL COMMENT '仪表板ID',
   `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
+  `type` int(8) DEFAULT NULL COMMENT '类型',
   PRIMARY KEY (`share_id`) USING BTREE,
   UNIQUE KEY `UK_share_user_id` (`user_id`) USING BTREE,
-  UNIQUE KEY `UK_share_panel_group_id` (`panel_group_id`) USING BTREE
+  UNIQUE KEY `UK_share_panel_group_id` (`panel_group_id`) USING BTREE,
+  UNIQUE KEY `UK_share_type` (`type`) USING BTREE
+
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板分享';
 
 

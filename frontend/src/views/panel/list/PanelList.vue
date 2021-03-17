@@ -114,8 +114,7 @@
         :title="authTitle"
         :visible.sync="authVisible"
         :show-close="false"
-        width="30%"
-        custom-class="authDialog"
+        custom-class="de-dialog"
         :before-close="handleClose"
       >
         <grant-auth :resource-id="authResourceId" />
@@ -484,10 +483,11 @@ export default {
     },
     share(data) {
       this.authResourceId = data.id
-      this.authTitle = '把仪表板[' + data.label + ']分享给'
+      this.authTitle = '把[' + data.label + ']分享给'
       this.authVisible = true
     },
     handleClose(done) {
+      this.authResourceId = null
       this.handleClose = false
     }
   }
@@ -540,8 +540,4 @@ export default {
     line-height: 26px;
   }
 
-  /* .el-dialog authDialog >>> div {
-    padding: 5px !important;
-    padding-bottom:5px !important;
-  } */
 </style>

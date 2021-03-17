@@ -600,10 +600,10 @@ export default {
   },
 
   methods: {
-    removeView(){
+    removeView() {
       debugger
-      console.log(this.viewId);
-      this.$emit('removeView',this.viewId)
+      console.log(this.viewId)
+      this.$emit('removeView', this.viewId)
     },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {

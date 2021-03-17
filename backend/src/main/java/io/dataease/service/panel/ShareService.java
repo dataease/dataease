@@ -90,5 +90,10 @@ public class ShareService {
         return map.entrySet().stream().map(entry -> PanelShareDto.builder().name(entry.getKey()).children(entry.getValue()).build()).collect(Collectors.toList());
     }
 
+    public List<PanelShare> queryWithResource(BaseGridRequest request){
+        GridExample example = request.convertExample();
+        return extPanelShareMapper.queryWithResource(example);
+    }
+
 
 }

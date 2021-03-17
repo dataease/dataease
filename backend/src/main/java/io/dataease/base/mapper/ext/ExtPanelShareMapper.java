@@ -11,4 +11,6 @@ public interface ExtPanelShareMapper {
     int batchInsert(List<PanelShare> shares);
 
     List<PanelShareDto> query(GridExample example);
+
+    List<PanelShare> queryWithResource(GridExample example);
 }

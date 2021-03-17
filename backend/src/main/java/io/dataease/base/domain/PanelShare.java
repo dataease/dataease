@@ -13,5 +13,7 @@ public class PanelShare implements Serializable {
 
     private Long createTime;
 
+    private Integer type;
+
     private static final long serialVersionUID = 1L;
 }

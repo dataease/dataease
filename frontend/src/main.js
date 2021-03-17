@@ -8,14 +8,12 @@ import i18n from './lang' // internationalization
 import App from './App'
 import store from './store'
 import router from './router'
-
+import message from './utils/message'
 import '@/icons' // icon
 import '@/permission' // permission control
 import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import directives from './directive'
-
-import './styles/vdrr/common-temp.scss'
 
 import vdrr from './components/vue-drag-resize-rotate'
 Vue.component('vdrr', vdrr)
@@ -27,7 +25,7 @@ import * as echarts from 'echarts'
 Vue.prototype.$echarts = echarts
 
 import UmyUi from 'umy-ui'
-import 'umy-ui/lib/theme-chalk/index.css'// 引入样式
+
 Vue.use(UmyUi)
 
 /**
@@ -55,6 +53,7 @@ Vue.use(Fit2CloudUI, {
 })
 Vue.use(filter)
 Vue.use(directives)
+Vue.use(message)
 Vue.config.productionTip = false
 
 new Vue({

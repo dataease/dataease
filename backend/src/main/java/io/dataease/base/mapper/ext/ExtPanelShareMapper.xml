@@ -32,6 +32,18 @@
 
     </select>
 
+    <select id="queryWithResource" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="io.dataease.base.mapper.PanelShareMapper.BaseResultMap">
+        select from panel_share
+        <if test="_parameter != null">
+            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+
+
+    </select>
+
 
 
 
