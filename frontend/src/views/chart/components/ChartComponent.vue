@@ -40,6 +40,7 @@ export default {
         chart_option = JSON.parse(JSON.stringify(BASE_LINE))
       }
       // console.log(chart_option);
+      // 处理data
       if (chart.data) {
         chart_option.title.text = chart.title
         chart_option.xAxis.data = chart.data.x
@@ -49,6 +50,12 @@ export default {
         })
       }
       // console.log(chart_option);
+      // 处理shape attr
+      if (chart.customAttr) {
+        if (chart.customAttr.color) {
+          chart_option.color = chart.customAttr.color.colors
+        }
+      }
       this.myEcharts(chart_option)
     },
     myEcharts(option) {
