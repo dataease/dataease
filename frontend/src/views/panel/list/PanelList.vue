@@ -111,14 +111,14 @@
       </el-dialog>
 
       <el-dialog
-        :title="$t('panel.share')"
+        :title="authTitle"
         :visible.sync="authVisible"
         :show-close="false"
-        top="10vh"
         width="30%"
+        custom-class="authDialog"
         :before-close="handleClose"
       >
-        <span>分享授权</span>
+        <grant-auth :resource-id="authResourceId" />
         <span slot="footer" class="dialog-footer">
           <el-button @click="authVisible = false">取 消</el-button>
           <el-button type="primary" @click="authVisible = false">确 定</el-button>
@@ -129,12 +129,16 @@
 </template>
 
 <script>
+import GrantAuth from '../GrantAuth'
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree } from '@/api/panel/panel'
 
 export default {
   name: 'PanelList',
+  components: { GrantAuth },
   data() {
     return {
+      authTitle: null,
+      authResourceId: null,
       authVisible: false,
       defaultData: [],
       dialogTitle: '',
@@ -482,7 +486,8 @@ export default {
       this.$emit('switchComponent', { name: 'PanelView' })
     },
     share(data) {
-      console.log(data)
+      this.authResourceId = data.id
+      this.authTitle = '把仪表板[' + data.label + ']分享给'
       this.authVisible = true
     },
     handleClose(done) {
@@ -537,4 +542,9 @@ export default {
   .title-text {
     line-height: 26px;
   }
+
+  /* .el-dialog authDialog >>> div {
+    padding: 5px !important;
+    padding-bottom:5px !important;
+  } */
 </style>
