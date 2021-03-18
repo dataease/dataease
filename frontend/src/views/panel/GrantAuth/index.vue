@@ -8,10 +8,16 @@
     </div>
 
     <el-tabs v-model="activeName" :class="{'de-search-header': showSearchInput}" @tab-click="handleClick">
-      <el-tab-pane :lazy="true" class="de-tab" label="部门" name="1"><grant-dept :resource-id="resourceId" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" label="角色" name="2"><grant-role :resource-id="resourceId" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" label="用户" name="3"><grant-user :resource-id="resourceId" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" label="部门" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" label="角色" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" label="用户" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
     </el-tabs>
+    <div class="auth-root-class">
+      <span slot="footer">
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="save">确 定</el-button>
+      </span>
+    </div>
   </div>
 
 </template>
@@ -31,10 +37,14 @@ export default {
   },
   data() {
     return {
-      activeName: '1',
+      tabNames: ['grantDept', 'grantRole', 'grantUser'],
+      activeName: null,
       showSearchInput: false,
-      key: null
+      key: ''
     }
+  },
+  created() {
+    this.activeName = this.tabNames[0]
   },
 
   methods: {
@@ -45,7 +55,16 @@ export default {
       this.showSearchInput = true
     },
     closeSearchWidget() {
+      this.key = ''
       this.showSearchInput = false
+    },
+    save() {
+      this.$refs[this.activeName].save()
+      this.$emit('close-grant', 0)
+    },
+    cancel() {
+      this.$refs[this.activeName].cancel()
+      this.$emit('close-grant', 0)
     }
   }
 }
@@ -69,6 +88,11 @@ export default {
 }
 .el-input__inner{
     border-right: none;
+}
+
+.auth-root-class {
+    margin: 15px 0px 5px;
+    text-align: right;
 }
 
 // ::-webkit-scrollbar {

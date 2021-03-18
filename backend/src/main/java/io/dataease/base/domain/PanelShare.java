@@ -9,7 +9,7 @@ public class PanelShare implements Serializable {
 
     private String panelGroupId;
 
-    private Long userId;
+    private Long targetId;
 
     private Long createTime;
 

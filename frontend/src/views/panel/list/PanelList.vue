@@ -113,15 +113,13 @@
       <el-dialog
         :title="authTitle"
         :visible.sync="authVisible"
-        :show-close="false"
         custom-class="de-dialog"
-        :before-close="handleClose"
       >
-        <grant-auth :resource-id="authResourceId" />
-        <span slot="footer" class="dialog-footer">
+        <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
+        <!-- <span slot="footer" class="dialog-footer">
           <el-button @click="authVisible = false">取 消</el-button>
           <el-button type="primary" @click="authVisible = false">确 定</el-button>
-        </span>
+        </span> -->
       </el-dialog>
     </el-col>
   </el-col>
@@ -486,9 +484,9 @@ export default {
       this.authTitle = '把[' + data.label + ']分享给'
       this.authVisible = true
     },
-    handleClose(done) {
+    closeGrant() {
       this.authResourceId = null
-      this.handleClose = false
+      this.authVisible = false
     }
   }
 }

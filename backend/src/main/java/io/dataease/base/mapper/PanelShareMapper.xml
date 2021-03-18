@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.PanelShare">
     <id column="share_id" jdbcType="BIGINT" property="shareId" />
     <result column="panel_group_id" jdbcType="VARCHAR" property="panelGroupId" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="target_id" jdbcType="BIGINT" property="targetId" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
@@ -67,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    share_id, panel_group_id, user_id, create_time, `type`
+    share_id, panel_group_id, target_id, create_time, `type`
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelShareExample" resultMap="BaseResultMap">
     select
@@ -100,9 +100,9 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.PanelShare">
-    insert into panel_share (share_id, panel_group_id, user_id, 
+    insert into panel_share (share_id, panel_group_id, target_id, 
       create_time, `type`)
-    values (#{shareId,jdbcType=BIGINT}, #{panelGroupId,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, 
+    values (#{shareId,jdbcType=BIGINT}, #{panelGroupId,jdbcType=VARCHAR}, #{targetId,jdbcType=BIGINT}, 
       #{createTime,jdbcType=BIGINT}, #{type,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelShare">
@@ -114,8 +114,8 @@
       <if test="panelGroupId != null">
         panel_group_id,
       </if>
-      <if test="userId != null">
-        user_id,
+      <if test="targetId != null">
+        target_id,
       </if>
       <if test="createTime != null">
         create_time,
@@ -131,8 +131,8 @@
       <if test="panelGroupId != null">
         #{panelGroupId,jdbcType=VARCHAR},
       </if>
-      <if test="userId != null">
-        #{userId,jdbcType=BIGINT},
+      <if test="targetId != null">
+        #{targetId,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
@@ -157,8 +157,8 @@
       <if test="record.panelGroupId != null">
         panel_group_id = #{record.panelGroupId,jdbcType=VARCHAR},
       </if>
-      <if test="record.userId != null">
-        user_id = #{record.userId,jdbcType=BIGINT},
+      <if test="record.targetId != null">
+        target_id = #{record.targetId,jdbcType=BIGINT},
       </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
@@ -175,7 +175,7 @@
     update panel_share
     set share_id = #{record.shareId,jdbcType=BIGINT},
       panel_group_id = #{record.panelGroupId,jdbcType=VARCHAR},
-      user_id = #{record.userId,jdbcType=BIGINT},
+      target_id = #{record.targetId,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=BIGINT},
       `type` = #{record.type,jdbcType=INTEGER}
     <if test="_parameter != null">
@@ -188,8 +188,8 @@
       <if test="panelGroupId != null">
         panel_group_id = #{panelGroupId,jdbcType=VARCHAR},
       </if>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=BIGINT},
+      <if test="targetId != null">
+        target_id = #{targetId,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
@@ -203,7 +203,7 @@
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelShare">
     update panel_share
     set panel_group_id = #{panelGroupId,jdbcType=VARCHAR},
-      user_id = #{userId,jdbcType=BIGINT},
+      target_id = #{targetId,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=BIGINT},
       `type` = #{type,jdbcType=INTEGER}
     where share_id = #{shareId,jdbcType=BIGINT}
