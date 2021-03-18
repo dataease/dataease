@@ -2,7 +2,7 @@
   <de-container>
 
     <de-aside-container>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tabs v-model="activeName" :lazy="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />列表</span>
           <PanelList @switchComponent="switchComponent" />
@@ -13,7 +13,7 @@
         </el-tab-pane>
         <el-tab-pane name="panels_share">
           <span slot="label"><i class="el-icon-share" />分享</span>
-          开发中...
+          <share-tree />
         </el-tab-pane>
         <!--        <el-tab-pane name="example">-->
         <!--          <span slot="label"><i class="el-icon-star-on"></i>示例</span>-->
@@ -38,10 +38,11 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import PanelList from './list/PanelList'
 import PanelView from './list/PanelView'
 import PanelViewShow from './list/PanelViewShow'
+import ShareTree from './GrantAuth/shareTree'
 
 export default {
   name: 'Panel',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelView, PanelViewShow },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelView, PanelViewShow, ShareTree },
   data() {
     return {
       component: PanelViewShow,

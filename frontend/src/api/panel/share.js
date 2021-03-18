@@ -18,3 +18,12 @@ export function loadShares(data) {
   })
 }
 
+export function loadTree(data) {
+  return request({
+    url: '/api/share/treeList',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+

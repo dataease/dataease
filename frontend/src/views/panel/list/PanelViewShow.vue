@@ -232,29 +232,29 @@ export default {
       })
     },
     getData(id) {
-      if (id) {
-        post('/chart/view/getData/' + id, null).then(response => {
-          this.view = response.data
-          this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
-          this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+    //   if (id) {
+    //     post('/chart/view/getData/' + id, null).then(response => {
+    //       this.view = response.data
+    //       this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
+    //       this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
 
-          const chart = response.data
-          const chart_option = JSON.parse(JSON.stringify(BASE_BAR))
-          // console.log(chart_option);
-          if (chart.data) {
-            chart_option.title.text = chart.title
-            chart_option.xAxis.data = chart.data.x
-            chart.data.series.forEach(function(y) {
-              chart_option.legend.data.push(y.name)
-              chart_option.series.push(y)
-            })
-          }
-          // console.log(chart_option);
-          this.myEcharts(chart_option)
-        })
-      } else {
-        this.view = {}
-      }
+    //       const chart = response.data
+    //       const chart_option = JSON.parse(JSON.stringify(BASE_BAR))
+    //       // console.log(chart_option);
+    //       if (chart.data) {
+    //         chart_option.title.text = chart.title
+    //         chart_option.xAxis.data = chart.data.x
+    //         chart.data.series.forEach(function(y) {
+    //           chart_option.legend.data.push(y.name)
+    //           chart_option.series.push(y)
+    //         })
+    //       }
+    //       // console.log(chart_option);
+    //       this.myEcharts(chart_option)
+    //     })
+    //   } else {
+    //     this.view = {}
+    //   }
     },
 
     // 左边往右边拖动时的事件

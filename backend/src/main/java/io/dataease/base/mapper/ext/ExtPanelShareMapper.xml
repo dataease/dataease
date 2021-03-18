@@ -2,11 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.dataease.base.mapper.ext.ExtPanelShareMapper">
 
-    <resultMap id="treeNodeMap" type="io.dataease.dto.panel.PanelShareDto">
+    <resultMap id="treeNodeMap" type="io.dataease.dto.panel.PanelSharePo">
         <id column="id" property="id" />
         <result column="name" property="name" />
-        <result column="pid" property="pid" />
-        <result column="creator" property="create_by" />
+        <result column="creator" property="creator" />
     </resultMap>
 
     <insert id="batchInsert" parameterType="io.dataease.base.domain.PanelShare">
@@ -18,7 +17,7 @@
     </insert>
 
     <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
-        select s.panel_group_id as id, g.create_by as pid, g.name
+        select s.panel_group_id as id, g.create_by as creator, g.name
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
         <if test="_parameter != null">

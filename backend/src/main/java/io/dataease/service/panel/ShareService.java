@@ -7,11 +7,13 @@ import io.dataease.base.mapper.PanelShareMapper;
 import io.dataease.base.mapper.ext.ExtPanelShareMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.panel.PanelShareDto;
+import io.dataease.dto.panel.PanelSharePo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,14 +98,20 @@ public class ShareService {
         request.setConditions(new ArrayList<ConditionEntity>(){{add(condition);}});
 
         GridExample example = request.convertExample();
-        List<PanelShareDto> datas = extPanelShareMapper.query(example);
-        return convertTree(datas);
+        List<PanelSharePo> datas = extPanelShareMapper.query(example);
+        List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po)).collect(Collectors.toList());
+        return convertTree(dtoLists);
     }
 
     //List构建Tree
     private List<PanelShareDto> convertTree(List<PanelShareDto> datas){
         Map<String, List<PanelShareDto>> map = datas.stream().collect(Collectors.groupingBy(PanelShareDto::getCreator));
-        return map.entrySet().stream().map(entry -> PanelShareDto.builder().name(entry.getKey()).children(entry.getValue()).build()).collect(Collectors.toList());
+        return map.entrySet().stream().map(entry -> {
+            PanelShareDto panelShareDto = new PanelShareDto();
+            panelShareDto.setName(entry.getKey());
+            panelShareDto.setChildren(entry.getValue());
+            return panelShareDto;
+        }).collect(Collectors.toList());
     }
 
     public List<PanelShare> queryWithResource(BaseGridRequest request){
