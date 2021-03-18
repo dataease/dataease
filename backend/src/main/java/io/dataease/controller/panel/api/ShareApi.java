@@ -1,5 +1,6 @@
 package io.dataease.controller.panel.api;
 
+import io.dataease.base.domain.PanelShare;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
@@ -24,6 +25,11 @@ public interface ShareApi {
     @ApiOperation("查询分享")
     @PostMapping("/treeList")
     List<PanelShareDto> treeList(BaseGridRequest request);
+
+
+    @ApiOperation("根据资源查询分享")
+    @PostMapping("/queryWithResourceId")
+    List<PanelShare> queryWithResourceId(BaseGridRequest request);
 
     
 }

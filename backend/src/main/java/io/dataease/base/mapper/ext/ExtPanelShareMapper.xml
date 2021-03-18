@@ -6,13 +6,14 @@
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="pid" property="pid" />
+        <result column="creator" property="create_by" />
     </resultMap>
 
-    <insert id="batchInsert" parameterType="io.dataease.base.domain.PanelStore">
-        INSERT INTO panel_store (panel_group_id,user_id,create_time)
+    <insert id="batchInsert" parameterType="io.dataease.base.domain.PanelShare">
+        INSERT INTO panel_share (panel_group_id,target_id,create_time,type)
         VALUES 
-        <foreach collection="list" item="store" separator=",">
-            (#{store.panelGroupId}, #{store.userId}, #{store.createTime})
+        <foreach collection="shares" item="share" separator=",">
+            (#{share.panelGroupId}, #{share.targetId}, #{share.createTime}, #{share.type})
         </foreach>
     </insert>
 
@@ -29,6 +30,18 @@
         <if test="orderByClause == null">
             order by s.create_time desc
         </if>
+
+    </select>
+
+    <select id="queryWithResource" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="io.dataease.base.mapper.PanelShareMapper.BaseResultMap">
+        select * from panel_share
+        <if test="_parameter != null">
+            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+
 
     </select>
 

@@ -6,6 +6,8 @@
 @import './sidebar.scss';
 @import './topbar.scss';
 @import "~fit2cloud-ui/src/styles/index.scss";
+@import './vdrr/common-temp.scss';
+@import '~umy-ui/lib/theme-chalk/index.css';// 引入样式
 
 // @import '../metersphere/common/css/index.css';
 
@@ -68,4 +70,43 @@ div:focus {
 // main-container global css
 .app-container {
   padding: 20px;
+}
+
+.de-dialog {
+    width: 30% !important;
+
+    .el-dialog__header{
+        background-color: #f4f4f5;
+        padding: 10px 20px !important;
+    }
+    .el-dialog__body{
+        padding: 1px 20px !important;
+
+    }
+}
+
+.de-search-header {
+    .el-tabs__header{
+        display: none !important;;
+    }
+}
+
+.de-input{
+    margin-bottom: 14px;
+    margin-top: 10px;
+    .el-input{
+        .el-input__inner {
+            line-height: 30px !important;
+            height: 30px !important;
+            border-right: none;
+
+        }
+    }
+    .el-input__inner:focus{
+        border-color: #E6E6E6 !important;
+    }
+    .el-input-group__append {
+        background-color: #ffffff;
+    }
+
 }

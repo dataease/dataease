@@ -67,7 +67,7 @@ CREATE TABLE `panel_store` (
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
   PRIMARY KEY (`store_id`) USING BTREE,
-  UNIQUE KEY `UK_store_user_id` (`user_id`) USING BTREE
+  KEY `UK_store_user_id` (`user_id`)
 
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板收藏';
 
@@ -86,11 +86,14 @@ DROP TABLE IF EXISTS `panel_share`;
 CREATE TABLE `panel_share` (
   `share_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '分享ID',
   `panel_group_id` varchar(50) DEFAULT NULL COMMENT '仪表板ID',
-  `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
+  `target_id` bigint(20) DEFAULT NULL COMMENT '目标ID',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
+  `type` int(8) DEFAULT NULL COMMENT '类型0:user,1:role,2dept',
   PRIMARY KEY (`share_id`) USING BTREE,
-  UNIQUE KEY `UK_share_user_id` (`user_id`) USING BTREE,
-  UNIQUE KEY `UK_share_panel_group_id` (`panel_group_id`) USING BTREE
+  KEY `UK_share_arget_id` (`target_id`) ,
+  KEY `UK_share_panel_group_id` (`panel_group_id`) ,
+  KEY `UK_share_type` (`type`)
+
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板分享';
 
 

@@ -79,14 +79,21 @@
           <el-row>
             <div class="chart-type">
               <!--TODO 这里要替换好看点的图标-->
-              <el-radio v-model="view.type" label="bar"><i class="el-icon-platform-eleme" style="font-size: 20px"/></el-radio>
-              <el-radio v-model="view.type" label="line">折线图</el-radio>
+              <el-radio v-model="view.type" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
             </div>
           </el-row>
         </div>
         <div style="height: 45%;overflow:auto;border-top: 1px solid #e6e6e6">
           <el-tabs type="card" :stretch="true" class="tab-header">
-            <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">TODO</el-tab-pane>
+            <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
+              <color-selector :chart="chart" @onColorChange="onColorChange" />
+            </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">TODO</el-tab-pane>
           </el-tabs>
         </div>
@@ -144,10 +151,13 @@ import draggable from 'vuedraggable'
 import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
 import ChartComponent from '../components/ChartComponent'
+// shape attr
+import { DEFAULT_COLOR_CASE } from '../chart/chart'
+import ColorSelector from '../components/ColorSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -158,7 +168,10 @@ export default {
         yaxis: [],
         show: true,
         type: 'bar',
-        title: ''
+        title: '',
+        customAttr: {
+          color: DEFAULT_COLOR_CASE
+        }
       },
       // 定义要被拖拽对象的数组
       arr1: [
@@ -224,17 +237,6 @@ export default {
         this.quota = response.data.quota
       })
     },
-    get(id) {
-      if (id) {
-        post('/chart/view/get/' + id, null).then(response => {
-          this.view = response.data
-          this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
-          this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
-        })
-      } else {
-        this.view = {}
-      }
-    },
     save() {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
@@ -251,8 +253,14 @@ export default {
           ele.summary = 'sum'
         }
       })
+      if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
+        if (view.yaxis.length > 1) {
+          view.yaxis.splice(1, view.yaxis.length)
+        }
+      }
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
+      view.customAttr = JSON.stringify(view.customAttr)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         this.getData(response.data.id)
@@ -266,9 +274,10 @@ export default {
     getData(id) {
       if (id) {
         post('/chart/view/getData/' + id, null).then(response => {
-          this.view = response.data
+          this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           // 将视图传入echart组件
           this.chart = response.data
         })
@@ -365,12 +374,17 @@ export default {
       //   }
       // })
       this.save()
+    },
+
+    onColorChange(val) {
+      this.view.customAttr.color = val
+      this.save()
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .padding-lr {
     padding: 0 6px;
   }
@@ -399,6 +413,7 @@ export default {
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
+    background-color: rgba(35,46,64,.05);
     display: block;
   }
 
@@ -408,6 +423,7 @@ export default {
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
+    background-color: rgba(35,46,64,.05);
   }
 
   .item + .item {
@@ -439,7 +455,27 @@ export default {
     height: calc(100% - 6px);
   }
 
+  .chart-type{
+    padding: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .chart-icon{
+    width: 20px;
+    height: 20px;
+  }
+
   .chart-type>>>.el-radio__input{
     display: none;
+  }
+
+  .el-radio{
+    margin:6px;
+  }
+
+  .el-radio>>>.el-radio__label{
+    padding-left: 0;
   }
 </style>

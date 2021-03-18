@@ -69,6 +69,10 @@ export default {
   replace: true,
   name: 'VueDragResizeRotate',
   props: {
+    viewId: {
+      type: String,
+      default: ''
+    },
     className: {
       type: String,
       default: 'vdr'
@@ -596,6 +600,11 @@ export default {
   },
 
   methods: {
+    removeView() {
+      debugger
+      console.log(this.viewId)
+      this.$emit('removeView', this.viewId)
+    },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {
       this.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 }

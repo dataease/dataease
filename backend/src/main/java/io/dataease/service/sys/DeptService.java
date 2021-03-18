@@ -14,6 +14,7 @@ import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
 import io.dataease.controller.sys.request.SimpleTreeNode;
 import io.dataease.controller.sys.response.DeptTreeNode;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -134,8 +135,10 @@ public class DeptService {
         List<SimpleTreeNode> targetNodes = nodeByCondition(request);
         List<Long> ids = upTree(allNodes, targetNodes);
         SysDeptExample example = new SysDeptExample();
-        SysDeptExample.Criteria criteria = example.createCriteria();
-        criteria.andDeptIdIn(ids);
+        if (CollectionUtils.isNotEmpty(ids)){
+            SysDeptExample.Criteria criteria = example.createCriteria();
+            criteria.andDeptIdIn(ids);
+        }
         example.setOrderByClause("dept_sort");
         List<SysDept> sysDepts = sysDeptMapper.selectByExample(example);
         return sysDepts;

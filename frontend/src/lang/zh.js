@@ -602,7 +602,20 @@ export default {
     std: '标准差',
     var_samp: '方差',
     quick_calc: '快速计算',
-    show_name_set: '显示名设置'
+    show_name_set: '显示名设置',
+    color: '颜色',
+    color_case: '配色方案',
+    pls_slc_color_case: '请选择配色方案',
+    color_default: '默认',
+    color_retro: '复古',
+    color_future: '未来',
+    color_gradual: '渐变',
+    color_business: '商务',
+    color_gentle: '柔和',
+    color_elegant: '淡雅',
+    color_technology: '科技',
+    color_simple: '简洁',
+    not_alpha: '不透明度'
   },
   dataset: {
     datalist: '数据集',

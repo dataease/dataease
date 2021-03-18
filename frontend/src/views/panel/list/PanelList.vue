@@ -111,30 +111,31 @@
       </el-dialog>
 
       <el-dialog
-        :title="$t('panel.share')"
+        :title="authTitle"
         :visible.sync="authVisible"
-        :show-close="false"
-        top="10vh"
-        width="30%"
-        :before-close="handleClose"
+        custom-class="de-dialog"
       >
-        <span>分享授权</span>
-        <span slot="footer" class="dialog-footer">
+        <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
+        <!-- <span slot="footer" class="dialog-footer">
           <el-button @click="authVisible = false">取 消</el-button>
           <el-button type="primary" @click="authVisible = false">确 定</el-button>
-        </span>
+        </span> -->
       </el-dialog>
     </el-col>
   </el-col>
 </template>
 
 <script>
+import GrantAuth from '../GrantAuth'
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree } from '@/api/panel/panel'
 
 export default {
   name: 'PanelList',
+  components: { GrantAuth },
   data() {
     return {
+      authTitle: null,
+      authResourceId: null,
       authVisible: false,
       defaultData: [],
       dialogTitle: '',
@@ -389,12 +390,9 @@ export default {
     },
 
     nodeClick(data, node) {
-      // console.log(data);
-      // console.log(node);
       if (data.nodeType === 'panel') {
-        this.sceneMode = true
         this.currGroup = data
-        this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
+        this.$store.dispatch('panel/setPanelInfo', data)
       }
       if (node.expanded) {
         this.expandedArray.push(data.id)
@@ -477,16 +475,18 @@ export default {
     panelDefaultClick(data, node) {
       console.log(data)
       console.log(node)
-      this.$store.dispatch('panel/setPanelName', data.name)
+      this.$store.dispatch('panel/setPanelInfo', data)
       // 切换view
       this.$emit('switchComponent', { name: 'PanelView' })
     },
     share(data) {
-      console.log(data)
+      this.authResourceId = data.id
+      this.authTitle = '把[' + data.label + ']分享给'
       this.authVisible = true
     },
-    handleClose(done) {
-      this.handleClose = false
+    closeGrant() {
+      this.authResourceId = null
+      this.authVisible = false
     }
   }
 }
@@ -537,4 +537,5 @@ export default {
   .title-text {
     line-height: 26px;
   }
+
 </style>

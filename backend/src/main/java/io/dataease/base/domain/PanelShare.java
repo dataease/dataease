@@ -9,9 +9,11 @@ public class PanelShare implements Serializable {
 
     private String panelGroupId;
 
-    private Long userId;
+    private Long targetId;
 
     private Long createTime;
+
+    private Integer type;
 
     private static final long serialVersionUID = 1L;
 }

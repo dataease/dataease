@@ -34,6 +34,7 @@
       <el-col class="panel-design">
         <!--TODO 仪表盘设计公共设置区域-->
         <el-row class="panel-design-head">
+          <span style="float: left;line-height: 40px; color: gray">名称：{{ panelInfo.name }}</span>
           <span style="float: right;line-height: 40px;">
             <el-button size="mini">
               背景图
@@ -126,19 +127,8 @@ export default {
     }
   },
   computed: {
-    tableId() {
-      // console.log(this.$store.state.chart.tableId);
-      this.initTableData(this.$store.state.chart.tableId)
-      return this.$store.state.chart.tableId
-    },
-    sceneId() {
-      // console.log(this.$store.state.chart.sceneId);
-      return this.$store.state.chart.sceneId
-    },
-    vId() {
-      // console.log(this.$store.state.chart.viewId);
-      this.getData(this.$store.state.chart.viewId)
-      return this.$store.state.chart.viewId
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
 
   },
