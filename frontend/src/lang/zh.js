@@ -671,7 +671,12 @@ export default {
     add_sql_table: '添加SQL',
     preview: '预览',
     pls_input_name: '请输入名称',
-    connect_mode: '连接模式'
+    connect_mode: '连接模式',
+    incremental_update_type: '增量更新方式:',
+    incremental_add: '增量添加:',
+    incremental_delete: '增量删除:',
+    last_update_time: '上次更新时间:',
+    current_update_time: '当前更新时间:'
   },
   datasource: {
     create: '新建数据连接',
@@ -689,6 +694,7 @@ export default {
     please_input_port: '请输入端口',
     modify: '编辑数据连接',
     validate_success: '校验成功',
+    validate: '校验',
     delete: '删除组织',
     delete_confirm: '删除该组织会关联删除该组织下的所有资源(如：相关工作空间，项目，测试用例等），确定要删除吗?',
     input_name: '请输入名称',

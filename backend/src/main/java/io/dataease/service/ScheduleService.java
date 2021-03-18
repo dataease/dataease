@@ -1,6 +1,7 @@
 package io.dataease.service;
 
 import io.dataease.base.domain.DatasetTableTask;
+import io.dataease.commons.constants.ScheduleType;
 import io.dataease.job.sechedule.ExtractDataJob;
 import io.dataease.job.sechedule.ScheduleManager;
 import org.apache.commons.lang3.StringUtils;
@@ -21,12 +22,13 @@ public class ScheduleService {
     private ScheduleManager scheduleManager;
 
     public void addSchedule(DatasetTableTask datasetTableTask) throws Exception {
-        if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), "0")) {
+        if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), ScheduleType.SIMPLE.toString())) {
             scheduleManager.addOrUpdateSingleJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
                     new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
                     ExtractDataJob.class,
-                    new Date(datasetTableTask.getStartTime()), scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId()));
-        } else if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), "1")) {
+                    new Date(datasetTableTask.getStartTime()),
+                    scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId(), datasetTableTask.getType()));
+        } else if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), ScheduleType.CRON.toString())) {
             Date endTime;
             if (datasetTableTask.getEndTime() == null || datasetTableTask.getEndTime() == 0) {
                 endTime = null;
@@ -38,7 +40,7 @@ public class ScheduleService {
                     new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
                     ExtractDataJob.class,
                     datasetTableTask.getCron(), new Date(datasetTableTask.getStartTime()), endTime,
-                    scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId()));
+                    scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId(), datasetTableTask.getType()));
         }
     }
 

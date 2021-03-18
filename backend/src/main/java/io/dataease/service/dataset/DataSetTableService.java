@@ -2,10 +2,8 @@ package io.dataease.service.dataset;
 
 
 import com.google.gson.Gson;
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.base.domain.DatasetTableExample;
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.Datasource;
+import io.dataease.base.domain.*;
+import io.dataease.base.mapper.DatasetTableIncrementalConfigMapper;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.utils.BeanUtils;
@@ -40,6 +38,8 @@ public class DataSetTableService {
     private DataSetTableFieldsService dataSetTableFieldsService;
     @Resource
     private DataSetTableTaskService dataSetTableTaskService;
+    @Resource
+    private DatasetTableIncrementalConfigMapper datasetTableIncrementalConfigMapper;
 
     public void batchInsert(List<DatasetTable> datasetTable) throws Exception {
         for (DatasetTable table : datasetTable) {
@@ -261,6 +261,20 @@ public class DataSetTableService {
         return data;
     }
 
+    public List<String[]> getDataSetDataBySql(String datasourceId, String table, String sql) {
+        List<String[]> data = new ArrayList<>();
+        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        datasourceRequest.setQuery(sql);
+        try {
+            return datasourceProvider.getData(datasourceRequest);
+        } catch (Exception e) {
+        }
+        return data;
+    }
+
     public void saveTableField(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
@@ -349,4 +363,35 @@ public class DataSetTableService {
                 return 0;
         }
     }
+
+    public DatasetTableIncrementalConfig incrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig){
+        if(StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())){return new DatasetTableIncrementalConfig();}
+        DatasetTableIncrementalConfigExample example = new DatasetTableIncrementalConfigExample();
+        example.createCriteria().andTableIdEqualTo(datasetTableIncrementalConfig.getTableId());
+        List<DatasetTableIncrementalConfig> configs = datasetTableIncrementalConfigMapper.selectByExample(example);
+        if(CollectionUtils.isNotEmpty(configs)){
+            return configs.get(0);
+        }else {
+            return new DatasetTableIncrementalConfig();
+        }
+    }
+
+    public DatasetTableIncrementalConfig incrementalConfig(String datasetTableId){
+        DatasetTableIncrementalConfig datasetTableIncrementalConfig = new DatasetTableIncrementalConfig();
+        datasetTableIncrementalConfig.setTableId(datasetTableId);
+        return incrementalConfig(datasetTableIncrementalConfig);
+    }
+
+
+    public void saveIncrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig){
+        if(StringUtils.isEmpty(datasetTableIncrementalConfig.getId())){
+            datasetTableIncrementalConfig.setId(UUID.randomUUID().toString());
+            datasetTableIncrementalConfigMapper.insertSelective(datasetTableIncrementalConfig);
+        }else{
+            DatasetTableIncrementalConfigExample example = new DatasetTableIncrementalConfigExample();
+            example.createCriteria().andTableIdEqualTo(datasetTableIncrementalConfig.getTableId());
+            datasetTableIncrementalConfigMapper.updateByExample(datasetTableIncrementalConfig, example);
+        }
+    }
+
 }
