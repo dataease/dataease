@@ -79,8 +79,13 @@
           <el-row>
             <div class="chart-type">
               <!--TODO 这里要替换好看点的图标-->
-              <el-radio v-model="view.type" label="bar"><i class="el-icon-platform-eleme" style="font-size: 20px" /></el-radio>
-              <el-radio v-model="view.type" label="line">折线图</el-radio>
+              <el-radio v-model="view.type" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
+              <el-radio v-model="view.type" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
             </div>
           </el-row>
         </div>
@@ -248,6 +253,11 @@ export default {
           ele.summary = 'sum'
         }
       })
+      if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
+        if (view.yaxis.length > 1) {
+          view.yaxis.splice(1, view.yaxis.length)
+        }
+      }
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
       view.customAttr = JSON.stringify(view.customAttr)
@@ -374,7 +384,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .padding-lr {
     padding: 0 6px;
   }
@@ -445,7 +455,27 @@ export default {
     height: calc(100% - 6px);
   }
 
+  .chart-type{
+    padding: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .chart-icon{
+    width: 20px;
+    height: 20px;
+  }
+
   .chart-type>>>.el-radio__input{
     display: none;
+  }
+
+  .el-radio{
+    margin:6px;
+  }
+
+  .el-radio>>>.el-radio__label{
+    padding-left: 0;
   }
 </style>

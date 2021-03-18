@@ -18,6 +18,9 @@
                 </el-option>
               </el-select>
             </el-form-item>
+            <el-form-item :label="$t('chart.not_alpha')" class="form-item">
+              <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
+            </el-form-item>
           </el-form>
         </el-col>
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.color') }}<i class="el-icon-setting el-icon--right" /></el-button>
@@ -86,7 +89,8 @@ export default {
         }
       ],
       colorForm: {
-        colorCase: 'default'
+        colorCase: 'default',
+        alpha: 100
       }
     }
   },
@@ -98,6 +102,7 @@ export default {
           const customAttr = JSON.parse(chart.customAttr)
           if (customAttr.color) {
             this.colorForm.colorCase = customAttr.color.value
+            this.colorForm.alpha = customAttr.color.alpha
           }
         }
       }
@@ -113,7 +118,8 @@ export default {
       })
       this.$emit('onColorChange', {
         value: items[0].value,
-        colors: items[0].colors
+        colors: items[0].colors,
+        alpha: this.colorForm.alpha
       })
     }
   }

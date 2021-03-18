@@ -24,10 +24,10 @@
           <el-dropdown-item icon="el-icon-s-grid">
             <el-dropdown placement="right-start" size="mini" @command="quickCalc">
               <span class="el-dropdown-link">
-                {{ $t('chart.quick_calc') }}<span class="summary-span">(test)</span><i class="el-icon-arrow-right el-icon--right" />
+                {{ $t('chart.quick_calc') }}<span class="summary-span">(无)</span><i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="beforeQuickCalc('none')">test</el-dropdown-item>
+                <el-dropdown-item :command="beforeQuickCalc('none')">无</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>

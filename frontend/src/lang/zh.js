@@ -614,7 +614,8 @@ export default {
     color_gentle: '柔和',
     color_elegant: '淡雅',
     color_technology: '科技',
-    color_simple: '简洁'
+    color_simple: '简洁',
+    not_alpha: '不透明度'
   },
   dataset: {
     datalist: '数据集',

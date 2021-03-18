@@ -5,9 +5,11 @@
 </template>
 
 <script>
-import { BASE_BAR, BASE_LINE } from '../chart/chart'
-import { baseBarOption } from '../chart/bar/baseBar'
-import { baseLineOption } from '../chart/line/baseLine'
+import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL } from '../chart/chart'
+import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
+import { baseLineOption } from '../chart/line/line'
+import { basePieOption } from '../chart/pie/pie'
+import { baseFunnelOption } from '../chart/funnel/funnel'
 
 export default {
   name: 'ChartComponent',
@@ -38,8 +40,18 @@ export default {
       // todo type
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+      } else if (chart.type === 'bar-stack') {
+        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+      } else if (chart.type === 'bar-horizontal') {
+        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
+      } else if (chart.type === 'bar-horizontal-stack') {
+        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
       } else if (chart.type === 'line') {
         chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
+      } else if (chart.type === 'pie') {
+        chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+      } else if (chart.type === 'funnel') {
+        chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
       }
       // console.log(chart_option);
       this.myEcharts(chart_option)
