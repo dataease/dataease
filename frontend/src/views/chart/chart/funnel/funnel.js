@@ -15,6 +15,7 @@ export function baseFunnelOption(chart_option, chart) {
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
       const valueArr = chart.data.series[0].data
+      chart_option.series[0].max = Math.max.apply(Math, valueArr)
       for (let i = 0; i < valueArr.length; i++) {
         const y = {
           name: chart.data.x[i],

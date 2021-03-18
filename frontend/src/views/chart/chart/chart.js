@@ -94,7 +94,7 @@ export const BASE_FUNNEL = {
     {
       name: '',
       type: 'funnel',
-      left: '10%',
+      left: 'center',
       top: 60,
       bottom: 60,
       width: '80%',

@@ -53,7 +53,7 @@ export default {
       } else if (chart.type === 'funnel') {
         chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
       }
-      // console.log(chart_option);
+      console.log(chart_option)
       this.myEcharts(chart_option)
     },
     myEcharts(option) {
