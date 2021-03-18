@@ -264,7 +264,7 @@ export default {
     getData(id) {
       if (id) {
         post('/chart/view/getData/' + id, null).then(response => {
-          this.view = response.data
+          this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}

@@ -94,7 +94,12 @@ export default {
     'chart': {
       handler: function() {
         const chart = JSON.parse(JSON.stringify(this.chart))
-        this.colorForm.colorCase = chart.customAttr.color.value
+        if (chart.customAttr) {
+          const customAttr = JSON.parse(chart.customAttr)
+          if (customAttr.color) {
+            this.colorForm.colorCase = customAttr.color.value
+          }
+        }
       }
     }
   },

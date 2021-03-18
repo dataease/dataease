@@ -52,8 +52,9 @@ export default {
       // console.log(chart_option);
       // 处理shape attr
       if (chart.customAttr) {
-        if (chart.customAttr.color) {
-          chart_option.color = chart.customAttr.color.colors
+        const customAttr = JSON.parse(chart.customAttr)
+        if (customAttr.color) {
+          chart_option.color = customAttr.color.colors
         }
       }
       this.myEcharts(chart_option)
