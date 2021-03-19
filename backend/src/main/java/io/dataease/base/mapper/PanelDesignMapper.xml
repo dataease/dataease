@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.PanelDesignMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.base.domain.PanelDesign">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="panel_id" jdbcType="VARCHAR" property="panelId" />
+    <result column="component_id" jdbcType="VARCHAR" property="componentId" />
+    <result column="component_style" jdbcType="VARCHAR" property="componentStyle" />
+    <result column="component_type" jdbcType="VARCHAR" property="componentType" />
+    <result column="component_details" jdbcType="VARCHAR" property="componentDetails" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+    <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
+    <result column="update_persion" jdbcType="VARCHAR" property="updatePersion" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, panel_id, component_id, component_style, component_type, component_details, create_time, 
+    update_time, create_persion, update_persion
+  </sql>
+  <select id="selectByExample" parameterType="io.dataease.base.domain.PanelDesignExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from panel_design
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from panel_design
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from panel_design
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.base.domain.PanelDesignExample">
+    delete from panel_design
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.base.domain.PanelDesign">
+    insert into panel_design (id, panel_id, component_id, 
+      component_style, component_type, component_details, 
+      create_time, update_time, create_persion, 
+      update_persion)
+    values (#{id,jdbcType=VARCHAR}, #{panelId,jdbcType=VARCHAR}, #{componentId,jdbcType=VARCHAR}, 
+      #{componentStyle,jdbcType=VARCHAR}, #{componentType,jdbcType=VARCHAR}, #{componentDetails,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, #{createPersion,jdbcType=VARCHAR}, 
+      #{updatePersion,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelDesign">
+    insert into panel_design
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="panelId != null">
+        panel_id,
+      </if>
+      <if test="componentId != null">
+        component_id,
+      </if>
+      <if test="componentStyle != null">
+        component_style,
+      </if>
+      <if test="componentType != null">
+        component_type,
+      </if>
+      <if test="componentDetails != null">
+        component_details,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createPersion != null">
+        create_persion,
+      </if>
+      <if test="updatePersion != null">
+        update_persion,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="panelId != null">
+        #{panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="componentId != null">
+        #{componentId,jdbcType=VARCHAR},
+      </if>
+      <if test="componentStyle != null">
+        #{componentStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="componentType != null">
+        #{componentType,jdbcType=VARCHAR},
+      </if>
+      <if test="componentDetails != null">
+        #{componentDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
+      </if>
+      <if test="createPersion != null">
+        #{createPersion,jdbcType=VARCHAR},
+      </if>
+      <if test="updatePersion != null">
+        #{updatePersion,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.base.domain.PanelDesignExample" resultType="java.lang.Long">
+    select count(*) from panel_design
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update panel_design
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.panelId != null">
+        panel_id = #{record.panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.componentId != null">
+        component_id = #{record.componentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.componentStyle != null">
+        component_style = #{record.componentStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.componentType != null">
+        component_type = #{record.componentType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.componentDetails != null">
+        component_details = #{record.componentDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.createPersion != null">
+        create_persion = #{record.createPersion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatePersion != null">
+        update_persion = #{record.updatePersion,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update panel_design
+    set id = #{record.id,jdbcType=VARCHAR},
+      panel_id = #{record.panelId,jdbcType=VARCHAR},
+      component_id = #{record.componentId,jdbcType=VARCHAR},
+      component_style = #{record.componentStyle,jdbcType=VARCHAR},
+      component_type = #{record.componentType,jdbcType=VARCHAR},
+      component_details = #{record.componentDetails,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      update_time = #{record.updateTime,jdbcType=BIGINT},
+      create_persion = #{record.createPersion,jdbcType=VARCHAR},
+      update_persion = #{record.updatePersion,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.PanelDesign">
+    update panel_design
+    <set>
+      <if test="panelId != null">
+        panel_id = #{panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="componentId != null">
+        component_id = #{componentId,jdbcType=VARCHAR},
+      </if>
+      <if test="componentStyle != null">
+        component_style = #{componentStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="componentType != null">
+        component_type = #{componentType,jdbcType=VARCHAR},
+      </if>
+      <if test="componentDetails != null">
+        component_details = #{componentDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=BIGINT},
+      </if>
+      <if test="createPersion != null">
+        create_persion = #{createPersion,jdbcType=VARCHAR},
+      </if>
+      <if test="updatePersion != null">
+        update_persion = #{updatePersion,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelDesign">
+    update panel_design
+    set panel_id = #{panelId,jdbcType=VARCHAR},
+      component_id = #{componentId,jdbcType=VARCHAR},
+      component_style = #{componentStyle,jdbcType=VARCHAR},
+      component_type = #{componentType,jdbcType=VARCHAR},
+      component_details = #{componentDetails,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=BIGINT},
+      create_persion = #{createPersion,jdbcType=VARCHAR},
+      update_persion = #{updatePersion,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

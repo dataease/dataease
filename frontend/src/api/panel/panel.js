@@ -108,4 +108,11 @@ export function post(url, data) {
   })
 }
 
-export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree }
+export function get(url) {
+  return request({
+    url: url,
+    method: 'get'
+  })
+}
+
+export default {post,get,groupTree, defaultTree }

@@ -1,6 +1,6 @@
 <template>
   <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
-    <div :id="chartId" style="width: 100%;height: 100%;" />
+    <div id="echart" style="width: 100%;height: 80vh;" />
   </div>
 </template>
 
@@ -13,10 +13,6 @@ export default {
     chart: {
       type: Object,
       required: true
-    },
-    chartId: {
-      type: String,
-      required: false
     }
   },
   data() {
@@ -28,15 +24,11 @@ export default {
     chart() {
       debugger
       this.drawEcharts()
-    },
-    resize() {
-      this.drawEcharts()
     }
   },
   mounted() {
     // 基于准备好的dom，初始化echarts实例
-    this.myChart = this.$echarts.init(document.getElementById(this.chartId))
-    this.drawEcharts()
+    this.myChart = this.$echarts.init(document.getElementById('echart'))
   },
   methods: {
     drawEcharts() {
@@ -75,11 +67,6 @@ export default {
       window.onresize = function() {
         chart.resize()
       }
-    },
-    chartResize() {
-      // 指定图表的配置项和数据
-      const chart = this.myChart
-      chart.resize()
     }
   }
 }

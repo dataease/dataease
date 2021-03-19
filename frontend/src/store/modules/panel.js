@@ -3,6 +3,7 @@ const getDefaultState = () => {
   return {
     panelName: '',
     panelInfo:{
+      id:null,
       name:''
     }
   }
@@ -15,7 +16,6 @@ const mutations = {
     state.panelName = panelName
   },
   setPanelInfo: (state, panelInfo) => {
-    debugger
     state.panelInfo = panelInfo
   }
 }
@@ -25,7 +25,6 @@ const actions = {
     commit('setPanelName', panelName)
   },
   setPanelInfo({ commit }, panelInfo) {
-    debugger
     commit('setPanelInfo', panelInfo)
   }
 }

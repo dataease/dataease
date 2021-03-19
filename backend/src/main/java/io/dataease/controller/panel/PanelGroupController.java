@@ -45,4 +45,10 @@ public class PanelGroupController {
     public void deleteCircle(@PathVariable String id) {
         panelGroupService.deleteCircle(id);
     }
+
+    @GetMapping("/findOne/{id}")
+    public PanelGroupDTO findOne(@PathVariable String id) throws Exception {
+        return panelGroupService.findOne(id);
+    }
+
 }

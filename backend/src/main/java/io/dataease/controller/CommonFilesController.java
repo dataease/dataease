@@ -17,6 +17,11 @@ public class CommonFilesController {
 
     @GetMapping("/images/{imageId}")
     public ResponseEntity<byte[]> image(@PathVariable("imageId") String imageId) {
-        return commonFilesService.getImageById(imageId);
+        return commonFilesService.getImageById(imageId,null);
+    }
+
+    @GetMapping("/images/{imageId}/{defaultImage}")
+    public ResponseEntity<byte[]> image(@PathVariable("imageId") String imageId,@PathVariable("defaultImage") String defaultImage) {
+        return commonFilesService.getImageById(imageId,defaultImage);
     }
 }

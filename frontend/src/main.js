@@ -30,6 +30,10 @@ import UmyUi from 'umy-ui'
 import 'umy-ui/lib/theme-chalk/index.css'// 引入样式
 Vue.use(UmyUi)
 
+// 引入vue-UUID组件
+import UUID from 'vue-uuid'
+Vue.use(UUID)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

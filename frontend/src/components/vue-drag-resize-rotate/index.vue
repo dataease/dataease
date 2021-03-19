@@ -69,7 +69,11 @@ export default {
   replace: true,
   name: 'VueDragResizeRotate',
   props: {
-    viewId: {
+    preStyle: {
+      type: Object,
+      default: null
+    },
+    panelDesignId: {
       type: String,
       default: ''
     },
@@ -308,6 +312,8 @@ export default {
 
   data: function() {
     return {
+      styleInit:true,
+      styleCatch:{},
       left: this.x,
       top: this.y,
       right: null,
@@ -408,13 +414,21 @@ export default {
       }
     },
     style() {
-      return {
-        transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
-        width: this.computedWidth,
-        height: this.computedHeight,
-        zIndex: this.zIndex,
-        ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
+      let newStyle ={};
+      if(this.styleInit && this.preStyle){
+        newStyle = this.preStyle;
+      }else{
+        newStyle ={
+          transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
+          width: this.computedWidth,
+          height: this.computedHeight,
+          zIndex: this.zIndex,
+          ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
+        };
       }
+      this.styleInit = false;
+      this.$emit('newStyle', this.panelDesignId,newStyle);
+      return newStyle;
     },
     // 控制柄显示与否
     actualHandles() {
@@ -566,6 +580,14 @@ export default {
     this.resetBoundsAndMouseState()
   },
   mounted: function() {
+    //f2c 页面初始化后对样式重新赋值
+    if(this.preStyle){
+
+
+
+    }
+
+
     if (!this.enableNativeDrag) {
       this.$el.ondragstart = () => false
     }
@@ -601,9 +623,8 @@ export default {
 
   methods: {
     removeView(){
-      debugger
-      console.log(this.viewId);
-      this.$emit('removeView',this.viewId)
+      // console.log(this.panelDesignId);
+      this.$emit('removeView',this.panelDesignId)
     },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {
