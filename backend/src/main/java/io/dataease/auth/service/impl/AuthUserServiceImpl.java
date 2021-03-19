@@ -4,8 +4,11 @@ import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
+import io.dataease.commons.constants.AuthConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 public class AuthUserServiceImpl implements AuthUserService {
 
-    private final String USER_CACHE_NAME = "users_info";
 
     @Resource
     private AuthMapper authMapper;
@@ -26,7 +28,7 @@ public class AuthUserServiceImpl implements AuthUserService {
      * @param userId
      * @return
      */
-    @Cacheable(value = USER_CACHE_NAME,  key = "'user' + #userId" )
+    @Cacheable(value = AuthConstants.USER_CACHE_NAME,  key = "'user' + #userId" )
     @Override
     public SysUserEntity getUserById(Long userId){
         return authMapper.findUser(userId);
@@ -41,14 +43,42 @@ public class AuthUserServiceImpl implements AuthUserService {
     public List<String> roles(Long userId){
         return authMapper.roleCodes(userId);
     }
+
+    /**
+     * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
+     * @param userId
+     * @return
+     */
+    @Cacheable(value = AuthConstants.USER_PERMISSION_CACHE_NAME,  key = "'user' + #userId" )
     @Override
     public List<String> permissions(Long userId){
         List<String> permissions = authMapper.permissions(userId);
         return permissions.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
     }
 
+    /**
+     * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
+     * @param userId
+     * @return
+     */
+    @Cacheable(value = AuthConstants.USER_ROLE_CACHE_NAME,  key = "'user' + #userId" )
     @Override
     public List<CurrentRoleDto> roleInfos(Long userId) {
         return authMapper.roles(userId);
+    }
+
+
+    /**
+     * 一波清除3个缓存
+     * @param userId
+     */
+    @Caching(evict = {
+            @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId"),
+            @CacheEvict(value = AuthConstants.USER_ROLE_CACHE_NAME, key = "'user' + #userId"),
+            @CacheEvict(value = AuthConstants.USER_PERMISSION_CACHE_NAME, key = "'user' + #userId")
+    })
+    @Override
+    public void clearCache(Long userId) {
+
     }
 }

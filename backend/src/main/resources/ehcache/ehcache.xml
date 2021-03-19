@@ -46,6 +46,28 @@
             timeToLiveSeconds="3600"
             memoryStoreEvictionPolicy="LRU"
     />
+    <cache
+            name="users_roles_info"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <cache
+            name="users_permissions_info"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
 
     <cache
             name="tokens_expire"

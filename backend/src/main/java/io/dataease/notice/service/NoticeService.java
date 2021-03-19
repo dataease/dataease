@@ -1,5 +1,6 @@
 package io.dataease.notice.service;
 
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.base.domain.MessageTask;
 import io.dataease.base.domain.MessageTaskExample;
 import io.dataease.base.domain.SysUser;
@@ -101,7 +102,7 @@ public class NoticeService {
     }
 
     public List<MessageDetail> searchMessageByType(String type) {
-        SysUser user = AuthUtils.getUser();
+        CurrentUserDto user = AuthUtils.getUser();
         //String orgId = user.getLastOrganizationId();
         List<MessageDetail> messageDetails = new ArrayList<>();
 

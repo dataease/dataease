@@ -1,10 +1,13 @@
 package io.dataease.auth.config;
 
+import io.dataease.auth.api.dto.CurrentRoleDto;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.entity.JWTToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
+import io.dataease.commons.utils.BeanUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -16,6 +19,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -58,7 +63,7 @@ public class F2CRealm extends AuthorizingRealm {
         if (username == null) {
             throw new AuthenticationException("token invalid");
         }
-
+        // 使用缓存
         SysUserEntity user = authUserService.getUserById(userId);
         if (user == null) {
             throw new AuthenticationException("User didn't existed!");
@@ -72,6 +77,13 @@ public class F2CRealm extends AuthorizingRealm {
         if (! JWTUtils.verify(token, tokenInfo, pass)) {
             throw new AuthenticationException("Username or password error");
         }
-        return new SimpleAuthenticationInfo(token, token, "f2cReam");
+        // 使用缓存
+        List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
+        // 使用缓存
+        List<String> permissions = authUserService.permissions(user.getUserId());
+        CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
+        currentUserDto.setRoles(currentRoleDtos);
+        currentUserDto.setPermissions(permissions);
+        return new SimpleAuthenticationInfo(currentUserDto, token, "f2cReam");
     }
 }

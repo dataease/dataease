@@ -1,5 +1,7 @@
 package io.dataease.service.panel;
 
+import io.dataease.auth.api.dto.CurrentRoleDto;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.base.domain.PanelShare;
 import io.dataease.base.domain.PanelShareExample;
 import io.dataease.base.domain.SysUser;
@@ -80,10 +82,10 @@ public class ShareService {
 
 
     public List<PanelShareDto> queryTree(BaseGridRequest request){
-        SysUser user = AuthUtils.getUser();
+        CurrentUserDto user = AuthUtils.getUser();
         Long userId = user.getUserId();
         Long deptId = user.getDeptId();
-        List<Long> roleIds = new ArrayList<>();
+        List<Long> roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
 
         List<Long> targetIds = new ArrayList<>();
         targetIds.add(userId);

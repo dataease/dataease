@@ -49,7 +49,7 @@ public class SysUserController {
         sysUserService.update(request);
     }
 
-    @ApiOperation("更新用户")
+    @ApiOperation("删除用户")
     @PostMapping("/delete/{userId}")
     public void delete(@PathVariable("userId") Long userId){
         sysUserService.delete(userId);
