@@ -637,7 +637,8 @@ export default {
     line_symbol_none: '无',
     pie_inner_radius: '内径',
     pie_outer_radius: '外径',
-    funnel_width: '宽度'
+    funnel_width: '宽度',
+    line_smooth: '平滑折线'
   },
   dataset: {
     datalist: '数据集',

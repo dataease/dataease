@@ -27,6 +27,7 @@ export function baseLineOption(chart_option, chart) {
           width: customAttr.size.lineWidth,
           type: customAttr.size.lineType
         }
+        y.smooth = customAttr.size.lineSmooth
       }
       y.type = 'line'
       chart_option.legend.data.push(y.name)

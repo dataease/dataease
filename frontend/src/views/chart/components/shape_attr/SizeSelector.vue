@@ -42,6 +42,9 @@
             <el-form-item :label="$t('chart.line_symbol_size')" class="form-item form-item-slider">
               <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
             </el-form-item>
+            <el-form-item :label="$t('chart.line_smooth')" class="form-item">
+              <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase">{{ $t('chart.line_smooth') }}</el-checkbox>
+            </el-form-item>
           </el-form>
 
           <el-form v-if="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">

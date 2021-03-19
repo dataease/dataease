@@ -11,6 +11,7 @@ export const DEFAULT_SIZE = {
   lineType: 'solid',
   lineSymbol: 'emptyCircle',
   lineSymbolSize: 4,
+  lineSmooth: false,
   pieInnerRadius: 0,
   pieOuterRadius: 60,
   funnelWidth: 80
