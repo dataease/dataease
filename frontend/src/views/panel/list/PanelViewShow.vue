@@ -25,7 +25,7 @@
 
           <!--通用组件操作-->
           <el-tab-pane name="PublicTools">
-            <span slot="label"><i class="el-icon-s-grid"/>组件</span>
+            <span slot="label"><i class="el-icon-s-grid" />组件</span>
             开发中...
           </el-tab-pane>
         </el-tabs>
@@ -34,7 +34,7 @@
       <el-col class="panel-design">
         <!--TODO 仪表盘设计公共设置区域-->
         <el-row class="panel-design-head">
-          <span style="float: left;line-height: 40px; color: gray">名称：{{panelInfo.name}}</span>
+          <span style="float: left;line-height: 40px; color: gray">名称：{{ panelInfo.name }}</span>
           <span style="float: right;line-height: 40px;">
             <el-button size="mini">
               背景图
@@ -46,12 +46,17 @@
         </el-row>
         <el-row class="panel-design-show">
           <div class="container" :style="panelDetails.gridStyle">
-            <vue-drag-resize-rotate v-for="panelDesign in panelDetails.panelDesigns" v-show="panelDesign.keepFlag"
-                                    :key="panelDesign.id"
-                                    :panel-design-id="panelDesign.id" :parent="true" @newStyle="newStyle"
-                                    @removeView="removeView">
+            <vue-drag-resize-rotate
+              v-for="panelDesign in panelDetails.panelDesigns"
+              v-show="panelDesign.keepFlag"
+              :key="panelDesign.id"
+              :panel-design-id="panelDesign.id"
+              :parent="true"
+              @newStyle="newStyle"
+              @removeView="removeView"
+            >
               <!--视图显示 panelDesign.componentType==='view'-->
-              <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView"/>
+              <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView" />
 
               <!--组件显示（待开发）-->
 
@@ -65,124 +70,123 @@
 </template>
 
 <script>
-  import {post, get} from '@/api/panel/panel'
-  import draggable from 'vuedraggable'
-  import ChartComponent from '../../chart/components/ChartComponent'
-  import VueDragResizeRotate from '@/components/vue-drag-resize-rotate'
-  import { uuid } from 'vue-uuid';
+import { get } from '@/api/panel/panel'
+import draggable from 'vuedraggable'
+import ChartComponent from '../../chart/components/ChartComponent'
+import VueDragResizeRotate from '@/components/vue-drag-resize-rotate'
+import { uuid } from 'vue-uuid'
 
-  export default {
-    name: 'PanelViewShow',
-    components: {draggable, ChartComponent, VueDragResizeRotate},
-    data() {
-      return {
-        panelDetails: {
-          viewsUsable: [],
-          panelDesigns: [],
-          gridStyle: null
-        },
-        gridStyleDefault: {
-          position: 'relative',
-          height: '100%',
-          width: '100%',
-          backgroundColor: '#808080',
-          background: 'linear-gradient(-90deg, rgba(0, 0, 0, .1) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px)',
-          backgroundSize: '20px 20px, 20px 20px'
-        },
-        ViewActiveName: 'Views'
-      }
-    },
-    computed: {
-      panelInfo() {
-        return this.$store.state.panel.panelInfo
-      }
-    },
-    watch: {
-      panelInfo(newVal, oldVal) {
-        this.panelDesign(newVal.id);
-      }
-    },
-    created() {
-      // this.get(this.$store.state.chart.viewId);
-    },
-    mounted() {
-      let panelId = this.$store.state.panel.panelInfo.id;
-      if (panelId) {
-        this.panelDesign(panelId);
-      }
-    },
-    activated() {
-    },
-    methods: {
-      //加载公共组件
+export default {
+  name: 'PanelViewShow',
+  components: { draggable, ChartComponent, VueDragResizeRotate },
+  data() {
+    return {
+      panelDetails: {
+        viewsUsable: [],
+        panelDesigns: [],
+        gridStyle: null
+      },
+      gridStyleDefault: {
+        position: 'relative',
+        height: '100%',
+        width: '100%',
+        backgroundColor: '#808080',
+        background: 'linear-gradient(-90deg, rgba(0, 0, 0, .1) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px)',
+        backgroundSize: '20px 20px, 20px 20px'
+      },
+      ViewActiveName: 'Views'
+    }
+  },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    }
+  },
+  watch: {
+    panelInfo(newVal, oldVal) {
+      this.panelDesign(newVal.id)
+    }
+  },
+  created() {
+    // this.get(this.$store.state.chart.viewId);
+  },
+  mounted() {
+    const panelId = this.$store.state.panel.panelInfo.id
+    if (panelId) {
+      this.panelDesign(panelId)
+    }
+  },
+  activated() {
+  },
+  methods: {
+    // 加载公共组件
 
-      //加载panel design
-      panelDesign(panelId) {
-        get('panel/group/findOne/' + panelId).then(res => {
-          let panelDetailsInfo = res.data;
-          if (panelDetailsInfo) {
-            this.panelDetails = panelDetailsInfo;
+    // 加载panel design
+    panelDesign(panelId) {
+      get('panel/group/findOne/' + panelId).then(res => {
+        const panelDetailsInfo = res.data
+        if (panelDetailsInfo) {
+          this.panelDetails = panelDetailsInfo
+        }
+        if (!panelDetailsInfo.gridStyle) {
+          this.panelDetails.gridStyle = this.gridStyleDefault
+        }
+      })
+    },
+    panelViewAdd(view) {
+      const panelDesigns = this.panelDetails.panelDesigns
+      this.panelDetails.viewsUsable.forEach(function(item, index) {
+        if (item.id === view.id) {
+          const newComponent = {
+            id: uuid.v1(),
+            keepFlag: true,
+            chartView: item,
+            componentType: 'view'
           }
-          if (!panelDetailsInfo.gridStyle) {
-            this.panelDetails.gridStyle = this.gridStyleDefault;
-          }
-        });
+          panelDesigns.push(newComponent)
+        }
+      })
+    },
+    removeView(panelDesignId) {
+      this.panelDetails.panelDesigns.forEach(function(panelDesign, index) {
+        if (panelDesign.id === panelDesignId) {
+          panelDesign.keepFlag = false
+        }
+      })
+    },
+    newStyle(viewId, newStyleInfo) {
+      this.$nextTick(() => {
+        this.$refs[viewId][0].chartResize()
+      })
 
-      },
-      panelViewAdd(view) {
-        let panelDesigns = this.panelDetails.panelDesigns;
-        this.panelDetails.viewsUsable.forEach(function (item, index) {
-          if (item.id === view.id) {
-            let newComponent = {
-              id: uuid.v1(),
-              keepFlag : true,
-              chartView: item,
-              componentType: 'view'
-            }
-            panelDesigns.push(newComponent)
-          }
-        });
-      },
-      removeView(panelDesignId) {
-        this.panelDetails.panelDesigns.forEach(function (panelDesign, index) {
-          if (panelDesign.id === panelDesignId) {
-            panelDesign.keepFlag = false
-          }
-        })
-      },
-      newStyle(viewId, newStyleInfo) {
-        this.$nextTick(() => {
-          this.$refs[viewId][0].chartResize()
-        })
+      console.log(viewId)
+      console.log(JSON.stringify(newStyleInfo))
+    },
 
-        console.log(viewId)
-        console.log(JSON.stringify(newStyleInfo))
-      },
+    // 左边往右边拖动时的事件
+    start1(e) {
+      console.log(e)
+    },
+    end1(e) {
+      console.log(e)
+    },
+    // 右边往左边拖动时的事件
+    start2(e) {
+      console.log(e)
+    },
+    end2(e) {
+      console.log(e)
+    },
+    // move回调方法
+    onMove(e, originalEvent) {
+      console.log(e)
+      return true
+    },
+    preViewShow() {
 
-      // 左边往右边拖动时的事件
-      start1(e) {
-        console.log(e)
-      },
-      end1(e) {
-        console.log(e)
-      },
-      // 右边往左边拖动时的事件
-      start2(e) {
-        console.log(e)
-      },
-      end2(e) {
-        console.log(e)
-      },
-      // move回调方法
-      onMove(e, originalEvent) {
-        console.log(e)
-        return true
-      },
-      preViewShow(){
-
-      }
     }
   }
+}
 </script>
 
 <style scoped>
