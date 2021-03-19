@@ -19,7 +19,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
-              <el-slider v-model="colorForm.alpha" show-input input-size="mini" @change="changeColorCase" />
+              <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
             </el-form-item>
           </el-form>
         </el-col>

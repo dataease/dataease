@@ -12,16 +12,16 @@
               <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.bar_width')" class="form-item form-item-slider">
-              <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input input-size="mini" :min="0" :max="80" @change="changeBarSizeCase" />
+              <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
             </el-form-item>
             <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
-              <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+              <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
             </el-form-item>
           </el-form>
 
           <el-form v-if="chart.type && chart.type.includes('line')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
-              <el-slider v-model="sizeForm.lineWidth" show-input input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />
+              <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />
             </el-form-item>
             <el-form-item :label="$t('chart.line_type')" class="form-item">
               <el-radio-group v-model="sizeForm.lineType" @change="changeBarSizeCase">
@@ -40,22 +40,22 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.line_symbol_size')" class="form-item form-item-slider">
-              <el-slider v-model="sizeForm.lineSymbolSize" show-input input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+              <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
             </el-form-item>
           </el-form>
 
           <el-form v-if="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
-              <el-slider v-model="sizeForm.pieInnerRadius" show-input input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+              <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
             <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
-              <el-slider v-model="sizeForm.pieOuterRadius" show-input input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+              <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
           </el-form>
 
           <el-form v-if="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">
-              <el-slider v-model="sizeForm.funnelWidth" show-input input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+              <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
           </el-form>
         </el-col>
