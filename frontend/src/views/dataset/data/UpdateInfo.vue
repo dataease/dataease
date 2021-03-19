@@ -522,7 +522,7 @@ export default {
     overflow-y: auto;
   }
   .codemirror >>> .CodeMirror-scroll {
-    height: 160px;
+    height: 100px;
     overflow-y: auto;
   }
 </style>
