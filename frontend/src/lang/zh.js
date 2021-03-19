@@ -707,11 +707,12 @@ export default {
     preview: '预览',
     pls_input_name: '请输入名称',
     connect_mode: '连接模式',
-    incremental_update_type: '增量更新方式:',
-    incremental_add: '增量添加:',
-    incremental_delete: '增量删除:',
-    last_update_time: '上次更新时间:',
-    current_update_time: '当前更新时间:'
+    incremental_update_type: '增量更新方式',
+    incremental_add: '增量添加',
+    incremental_delete: '增量删除',
+    last_update_time: '上次更新时间',
+    current_update_time: '当前更新时间',
+    param: '参数'
   },
   datasource: {
     create: '新建数据连接',

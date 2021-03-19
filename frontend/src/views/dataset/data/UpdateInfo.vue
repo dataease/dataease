@@ -66,7 +66,7 @@
         append-to-body
       >
         <el-col>
-          <el-form :form="taskForm" label-width="80px">
+          <el-form :form="taskForm" label-width="80px" size="mini">
             <el-form-item :label="$t('dataset.task_name')" prop="name">
               <el-input
                 v-model="taskForm.name"
@@ -96,7 +96,7 @@
               />
             </el-form-item>
             <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
-              <el-select v-model="taskForm.rate"  @change="onRateChange">
+              <el-select v-model="taskForm.rate" size="mini" @change="onRateChange">
                 <el-option
                   :label="$t('dataset.execute_once')"
                   value="SIMPLE"
@@ -151,7 +151,7 @@
           size="mini"
           :data="taskData"
           style="width: 100%"
-          height="300"
+          height="240"
         >
           <el-table-column
             prop="name"
@@ -195,11 +195,11 @@
 
       <el-row style="height: 26px;">
         <el-row>
-          <el-col :span="6"><div>{{ $t('dataset.incremental_update_type') }}</div></el-col>
+          <el-col :span="6"><div>{{ $t('dataset.incremental_update_type') }}:</div></el-col>
           <el-col :span="18">
             <el-radio-group v-model="incrementalUpdateType" size="small" @change="incrementalUpdateTypeChange">
-              <el-radio label="incrementalAdd"  >{{ $t('dataset.incremental_add') }}</el-radio>
-              <el-radio label="incrementalDelete"  >{{ $t('incremental_delete.incremental_update_type') }}</el-radio>
+              <el-radio label="incrementalAdd">{{ $t('dataset.incremental_add') }}</el-radio>
+              <el-radio label="incrementalDelete">{{ $t('dataset.incremental_delete') }}</el-radio>
             </el-radio-group>
           </el-col>
         </el-row>
@@ -207,10 +207,10 @@
 
       <el-row style="height: 26px;">
         <el-row>
-          <el-col :span="6" style="height: 26px;"><div style="height: 26px;">参数:</div></el-col>
+          <el-col :span="6" style="height: 26px;"><div style="height: 26px;">{{ $t('dataset.param') }}:</div></el-col>
           <el-col :span="18">
-            <el-button type="text">{{ $t('dataset.last_update_time') }}</el-button>
-            <el-button type="text">{{ $t('dataset.current_update_time') }}</el-button>
+            <el-button type="text" @click="insertParamToCodeMirror('${__last_update_time__}')">{{ $t('dataset.last_update_time') }}</el-button>
+            <el-button type="text" @click="insertParamToCodeMirror('${__current_update_time__}')">{{ $t('dataset.current_update_time') }}</el-button>
           </el-col>
         </el-row>
       </el-row>
@@ -229,11 +229,9 @@
         </el-col>
       </el-row>
 
-
-
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="update_setting = false">{{ $t('dataset.close') }}</el-button>
-        <el-button size="mini" @click="saveIncrementalConfig">{{ $t('dataset.confirm') }}</el-button>
+        <el-button size="mini" type="primary" @click="saveIncrementalConfig">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-dialog>
   </el-col>
@@ -327,15 +325,15 @@ export default {
       incrementalConfig: {}
     }
   },
+  computed: {
+    codemirror() {
+      return this.$refs.myCm.codemirror
+    }
+  },
   watch: {
     table() {
       this.listTask()
       this.listTaskLog()
-    }
-  },
-  computed: {
-    codemirror() {
-      return this.$refs.myCm.codemirror
     }
   },
   mounted() {
@@ -345,29 +343,27 @@ export default {
       })()
     }
     this.height = window.innerHeight / 2
-
   },
   methods: {
-    incrementalUpdateTypeChange: function (){
-
-      if(this.incrementalUpdateType === 'incrementalAdd'){
-        if(this.sql){
+    incrementalUpdateTypeChange: function() {
+      if (this.incrementalUpdateType === 'incrementalAdd') {
+        if (this.sql) {
           this.incrementalConfig.incrementalDelete = this.sql
         }
-        if(this.incrementalConfig.incrementalAdd){
+        if (this.incrementalConfig.incrementalAdd) {
           this.sql = this.incrementalConfig.incrementalAdd
-        }else {
+        } else {
           this.sql = ''
         }
       }
 
-      if(this.incrementalUpdateType === 'incrementalDelete'){
-        if(this.sql){
+      if (this.incrementalUpdateType === 'incrementalDelete') {
+        if (this.sql) {
           this.incrementalConfig.incrementalAdd = this.sql
         }
-        if(this.incrementalConfig.incrementalDelete){
-           this.sql = this.incrementalConfig.incrementalDelete
-        }else {
+        if (this.incrementalConfig.incrementalDelete) {
+          this.sql = this.incrementalConfig.incrementalDelete
+        } else {
           this.sql = ''
         }
       }
@@ -396,16 +392,16 @@ export default {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
         this.incrementalUpdateType = 'incrementalAdd'
-        if(this.incrementalConfig.incrementalAdd){
+        if (this.incrementalConfig.incrementalAdd) {
           this.sql = this.incrementalConfig.incrementalAdd
         }
       })
     },
     saveIncrementalConfig() {
       this.update_setting = false
-      if(this.incrementalUpdateType === 'incrementalAdd'){
+      if (this.incrementalUpdateType === 'incrementalAdd') {
         this.incrementalConfig.incrementalAdd = this.sql
-      }else {
+      } else {
         this.incrementalConfig.incrementalDelete = this.sql
       }
       this.incrementalConfig.tableId = this.table.id
@@ -483,6 +479,9 @@ export default {
         end: '0'
       }
     },
+    showSQL(val) {
+      this.sql = val || ''
+    },
     onCmReady(cm) {
       this.codemirror.setSize('-webkit-fill-available', 'auto')
     },
@@ -490,11 +489,17 @@ export default {
       // console.log('the editor is focus!', cm)
     },
     onCmCodeChange(newCode) {
-      console.log(newCode)
+      // console.log(newCode)
       this.sql = newCode
       this.$emit('codeChange', this.sql)
+    },
+    insertParamToCodeMirror(param) {
+      const pos1 = this.$refs.myCm.codemirror.getCursor()
+      const pos2 = {}
+      pos2.line = pos1.line
+      pos2.ch = pos1.ch
+      this.$refs.myCm.codemirror.replaceRange(param, pos2)
     }
-
   }
 }
 </script>
@@ -513,7 +518,7 @@ export default {
   }
 
   .codemirror {
-    height: 160px;
+    height: 100px;
     overflow-y: auto;
   }
   .codemirror >>> .CodeMirror-scroll {

@@ -141,7 +141,7 @@
             </el-row>
           </el-row>
 
-          <chart-component-view :chart="chart" style="height: 80%" />
+          <chart-component :chart-id="chart.id" :chart="chart" style="height: 80%" />
         </el-row>
       </el-col>
     </el-row>
@@ -153,7 +153,7 @@ import { post } from '@/api/dataset/dataset'
 import draggable from 'vuedraggable'
 import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
-import ChartComponentView from '../components/ChartComponentView'
+import ChartComponent from '../components/ChartComponent'
 // shape attr
 import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '../chart/chart'
 import ColorSelector from '../components/shape_attr/ColorSelector'
@@ -161,7 +161,7 @@ import SizeSelector from '../components/shape_attr/SizeSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { SizeSelector, ColorSelector, ChartComponentView, QuotaItem, DimensionItem, draggable },
+  components: { SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -190,7 +190,9 @@ export default {
         { id: 11, name: '容量' }
       ],
       moveId: -1,
-      chart: {}
+      chart: {
+        id: 'echart'
+      }
     }
   },
   computed: {

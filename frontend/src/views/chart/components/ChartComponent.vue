@@ -30,7 +30,6 @@ export default {
   },
   watch: {
     chart() {
-      debugger
       this.drawEcharts()
     },
     resize() {
@@ -44,7 +43,6 @@ export default {
   },
   methods: {
     drawEcharts() {
-      debugger
       const chart = this.chart
       let chart_option = {}
       // todo type
