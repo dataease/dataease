@@ -3,6 +3,18 @@ export const DEFAULT_COLOR_CASE = {
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100
 }
+export const DEFAULT_SIZE = {
+  barDefault: true,
+  barWidth: 40,
+  barGap: 0.4,
+  lineWidth: 1,
+  lineType: 'solid',
+  lineSymbol: 'emptyCircle',
+  lineSymbolSize: 4,
+  pieInnerRadius: 0,
+  pieOuterRadius: 60,
+  funnelWidth: 80
+}
 export const BASE_BAR = {
   title: {
     text: ''

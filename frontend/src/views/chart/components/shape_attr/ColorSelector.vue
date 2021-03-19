@@ -18,11 +18,12 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('chart.not_alpha')" class="form-item">
-              <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
+            <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
+              <el-slider v-model="colorForm.alpha" show-input input-size="mini" @change="changeColorCase" />
             </el-form-item>
           </el-form>
         </el-col>
+
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.color') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
       <!--todo other color attr-->
@@ -131,11 +132,20 @@ export default {
   padding: 6px;
   border: none;
 }
+.form-item-slider>>>.el-form-item__label{
+  font-size: 12px;
+  line-height: 38px;
+}
 .form-item>>>.el-form-item__label{
   font-size: 12px;
 }
 .el-select-dropdown__item{
   padding: 0 20px;
 }
-  span{font-size: 12px}
+  span{
+    font-size: 12px
+  }
+  .el-form-item{
+    margin-bottom: 6px;
+  }
 </style>

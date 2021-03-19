@@ -15,8 +15,18 @@ export function baseLineOption(chart_option, chart) {
     chart_option.xAxis.data = chart.data.x
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
+      // color
       y.itemStyle = {
         color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+      }
+      // size
+      if (customAttr.size) {
+        y.symbol = customAttr.size.lineSymbol
+        y.symbolSize = customAttr.size.lineSymbolSize
+        y.lineStyle = {
+          width: customAttr.size.lineWidth,
+          type: customAttr.size.lineType
+        }
       }
       y.type = 'line'
       chart_option.legend.data.push(y.name)
