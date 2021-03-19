@@ -17,7 +17,7 @@
     </insert>
 
     <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
-        select s.panel_group_id as id, g.create_by as creator, g.name
+        select distinct s.panel_group_id as id, g.create_by as creator, g.name
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
         <if test="_parameter != null">
