@@ -60,6 +60,19 @@ export const constantRoutes = [
   },
 
   {
+    path: '/panelEdit',
+    component: Layout,
+    redirect: '/panelEdit/edit',
+    hidden: true,
+    children: [
+      {
+        path: 'edit',
+        component: () => import('@/views/panel/new/edit')
+      }
+    ]
+  },
+
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
