@@ -2,7 +2,7 @@
   <de-container>
 
     <de-aside-container>
-      <el-tabs v-model="activeName" :lazy="true" @tab-click="handleClick">
+      <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />列表</span>
           <PanelList @switchComponent="switchComponent" />
@@ -11,9 +11,9 @@
           <span slot="label"><i class="el-icon-star-off" />收藏</span>
           开发中...
         </el-tab-pane>
-        <el-tab-pane name="panels_share">
+        <el-tab-pane name="panels_share" :lazy="true">
           <span slot="label"><i class="el-icon-share" />分享</span>
-          <share-tree />
+          <share-tree v-if="showShare" />
         </el-tab-pane>
         <!--        <el-tab-pane name="example">-->
         <!--          <span slot="label"><i class="el-icon-star-on"></i>示例</span>-->
@@ -47,12 +47,16 @@ export default {
     return {
       component: PanelViewShow,
       param: {},
-      activeName: 'PanelList'
+      activeName: 'PanelList',
+      showShare: false
     }
   },
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event)
+      // 点击分析面板需要刷新分享内容
+      if (tab.name === 'panels_share') {
+        this.refreshShare()
+      }
     },
     switchComponent(c) {
       console.log(c)
@@ -62,6 +66,10 @@ export default {
           this.component = PanelViewShow
           break
       }
+    },
+    refreshShare() {
+      this.showShare = false
+      this.$nextTick(() => (this.showShare = true))
     }
   }
 }

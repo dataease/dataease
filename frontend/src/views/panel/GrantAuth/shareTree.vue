@@ -1,7 +1,19 @@
 <template>
   <div>
 
-    <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
+    <el-tree :data="datas" :props="defaultProps" @node-click="handleNodeClick">
+      <span slot-scope="{ data }" class="custom-tree-node">
+        <span>
+          <span v-if="!!data.id">
+            <el-button
+              icon="el-icon-picture-outline"
+              type="text"
+            />
+          </span>
+          <span style="margin-left: 6px">{{ data.name }}</span>
+        </span>
+      </span>
+    </el-tree>
   </div>
 </template>
 
@@ -11,7 +23,7 @@ export default {
   name: 'ShareTree',
   data() {
     return {
-      data: [],
+      datas: [],
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -25,7 +37,7 @@ export default {
     initData() {
       const param = {}
       loadTree(param).then(res => {
-        this.data = res.data
+        this.datas = res.data
       })
     },
     handleNodeClick(data) {
