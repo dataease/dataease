@@ -15,9 +15,6 @@ import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import directives from './directive'
 
-import vdrr from './components/vue-drag-resize-rotate'
-Vue.component('vdrr', vdrr)
-
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'
@@ -27,10 +24,6 @@ Vue.prototype.$echarts = echarts
 import UmyUi from 'umy-ui'
 
 Vue.use(UmyUi)
-
-// 引入vue-UUID组件
-import UUID from 'vue-uuid'
-Vue.use(UUID)
 
 /**
  * If you don't want to use mock-server
