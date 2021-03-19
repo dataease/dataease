@@ -1,16 +1,21 @@
 package io.dataease.service.panel;
 
+import io.dataease.auth.api.dto.CurrentRoleDto;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.base.domain.PanelShare;
 import io.dataease.base.domain.PanelShareExample;
+import io.dataease.base.domain.SysUser;
 import io.dataease.base.mapper.PanelShareMapper;
 import io.dataease.base.mapper.ext.ExtPanelShareMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.panel.PanelShareDto;
+import io.dataease.dto.panel.PanelSharePo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,21 +41,26 @@ public class ShareService {
     public void save(PanelShareRequest request){
 
         //1.先根据仪表板删除所有已经分享的
+        Integer type = request.getType();
         List<String> panelIds = request.getPanelIds();
-        List<Long> userIds = request.getUserIds();
+        List<Long> targetIds = request.getTargetIds();
         // 使用原生对象会导致事物失效 所以这里需要使用spring代理对象
         if (CollectionUtils.isNotEmpty(panelIds)){
             ShareService proxy = CommonBeanFactory.getBean(ShareService.class);
-            panelIds.forEach(proxy::delete);
+            panelIds.forEach(panelId -> {
+                proxy.delete(panelId, type);
+            });
         }
-        if (CollectionUtils.isEmpty(userIds)) return;
+        if (CollectionUtils.isEmpty(targetIds)) return;
+
         long now = System.currentTimeMillis();
         List<PanelShare> shares = panelIds.stream().flatMap(panelId ->
-            userIds.stream().map(userId -> {
+                targetIds.stream().map(targetId -> {
                 PanelShare share = new PanelShare();
                 share.setCreateTime(now);
                 share.setPanelGroupId(panelId);
-                share.setUserId(userId);
+                share.setTargetId(targetId);
+                share.setType(type);
                 return share;
             })
         ).collect(Collectors.toList());
@@ -64,30 +74,51 @@ public class ShareService {
      * @param panel_group_id
      */
     @Transactional
-    public void delete(String panel_group_id){
+    public void delete(String panel_group_id, Integer type){
         PanelShareExample example = new PanelShareExample();
-        example.createCriteria().andPanelGroupIdEqualTo(panel_group_id);
+        example.createCriteria().andPanelGroupIdEqualTo(panel_group_id).andTypeEqualTo(type);
         mapper.deleteByExample(example);
     }
 
 
     public List<PanelShareDto> queryTree(BaseGridRequest request){
-        Long userId = AuthUtils.getUser().getUserId();
+        CurrentUserDto user = AuthUtils.getUser();
+        Long userId = user.getUserId();
+        Long deptId = user.getDeptId();
+        List<Long> roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
+
+        List<Long> targetIds = new ArrayList<>();
+        targetIds.add(userId);
+        targetIds.add(deptId);
+        targetIds.addAll(roleIds);
+
         ConditionEntity condition = new ConditionEntity();
-        condition.setField("s.user_id");
-        condition.setOperator("eq");
-        condition.setValue(userId);
+        condition.setField("s.target_id");
+        condition.setOperator("in");
+        condition.setValue(targetIds);
+
         request.setConditions(new ArrayList<ConditionEntity>(){{add(condition);}});
+
         GridExample example = request.convertExample();
-        List<PanelShareDto> datas = extPanelShareMapper.query(example);
-        return convertTree(datas);
+        List<PanelSharePo> datas = extPanelShareMapper.query(example);
+        List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po)).collect(Collectors.toList());
+        return convertTree(dtoLists);
     }
 
     //List构建Tree
     private List<PanelShareDto> convertTree(List<PanelShareDto> datas){
         Map<String, List<PanelShareDto>> map = datas.stream().collect(Collectors.groupingBy(PanelShareDto::getCreator));
-        List<PanelShareDto> roots = new ArrayList<>();
-        return map.entrySet().stream().map(entry -> PanelShareDto.builder().name(entry.getKey()).children(entry.getValue()).build()).collect(Collectors.toList());
+        return map.entrySet().stream().map(entry -> {
+            PanelShareDto panelShareDto = new PanelShareDto();
+            panelShareDto.setName(entry.getKey());
+            panelShareDto.setChildren(entry.getValue());
+            return panelShareDto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<PanelShare> queryWithResource(BaseGridRequest request){
+        GridExample example = request.convertExample();
+        return extPanelShareMapper.queryWithResource(example);
     }
 
 

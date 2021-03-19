@@ -19,6 +19,8 @@ public interface AuthUserService {
 
     List<CurrentRoleDto> roleInfos(Long userId);
 
+    void clearCache(Long userId);
+
 
 
 }

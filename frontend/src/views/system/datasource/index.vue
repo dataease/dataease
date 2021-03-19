@@ -11,7 +11,7 @@
       @search="search"
     >
       <template #buttons>
-        <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('datasource.create')" @click="create" />
+        <fu-table-button v-permission="['datasource:add']" icon="el-icon-circle-plus-outline" :label="$t('datasource.create')" @click="create" />
       </template>
 
       <!-- <el-table-column type="selection" fix /> -->
@@ -62,7 +62,7 @@
         <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase" :rules="{required: true, message: $t('datasource.please_input_data_base'), trigger: 'blur'}">
           <el-input v-model="form.configuration.dataBase" autocomplete="off" />
         </el-form-item>
-        <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')" prop="configuration.username">
+        <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')" prop="configuration.username" :rules="{required: true, message: $t('datasource.please_input_user_name'), trigger: 'blur'}">
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
         <el-form-item v-show="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')" prop="configuration.password" :rules="{required: true, message: $t('datasource.please_input_password'), trigger: 'change'}">
@@ -79,7 +79,8 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="saveDatasource('createDatasource')">确认</el-button>
+        <el-button type="primary" @click="validaDatasource('createDatasource')">{{ $t('commons.validate') }}</el-button>
+        <el-button type="primary" @click="saveDatasource('createDatasource')">{{ $t('commons.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -198,13 +199,12 @@ export default {
             this.$success(this.$t('commons.save_success'))
             this.search()
             this.dialogVisible = false
-          })
+          });
         } else {
           return false
         }
       })
     },
-
     validaDatasource(datasourceForm) {
       this.$refs[datasourceForm].validate(valid => {
         if (valid) {
@@ -230,7 +230,6 @@ export default {
       const result = {}
       if (condition && condition.quick) {
         for (const [key, value] of Object.entries(condition)) {
-          // console.log(`${key}`)
           if (`${key}` === 'quick') {
             const v_new = Object.assign({}, value)
             v_new['field'] = 'name'

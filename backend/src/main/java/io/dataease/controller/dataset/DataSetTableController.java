@@ -2,6 +2,7 @@ package io.dataease.controller.dataset;
 
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.DatasetTableIncrementalConfig;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.service.dataset.DataSetTableService;
@@ -70,4 +71,15 @@ public class DataSetTableController {
     public Map<String, Object> getSQLPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getSQLPreview(dataSetTableRequest);
     }
+
+    @PostMapping("incrementalConfig")
+    public DatasetTableIncrementalConfig incrementalConfig(@RequestBody DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
+        return dataSetTableService.incrementalConfig(datasetTableIncrementalConfig);
+    }
+
+    @PostMapping("save/incrementalConfig")
+    public void saveIncrementalConfig(@RequestBody DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
+        dataSetTableService.saveIncrementalConfig(datasetTableIncrementalConfig);
+    }
+
 }

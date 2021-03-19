@@ -211,7 +211,7 @@
 <script>
 import { post } from '@/api/chart/chart'
 import TableSelector from '../view/TableSelector'
-import { DEFAULT_COLOR_CASE } from '../chart/chart'
+import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '../chart/chart'
 
 export default {
   name: 'Group',
@@ -506,7 +506,8 @@ export default {
       view.tableId = this.table.id
       view.type = 'bar'
       view.customAttr = JSON.stringify({
-        color: DEFAULT_COLOR_CASE
+        color: DEFAULT_COLOR_CASE,
+        size: DEFAULT_SIZE
       })
       post('/chart/view/save', view).then(response => {
         this.selectTableFlag = false

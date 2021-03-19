@@ -326,6 +326,11 @@
             <artifactId>hbase-common</artifactId>
             <version>2.4.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-mapreduce</artifactId>
+            <version>2.4.1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
@@ -346,6 +351,10 @@
                 <exclusion>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.objenesis</groupId>
+                    <artifactId>objenesis</artifactId>
                 </exclusion>
             </exclusions>
             <scope>provided</scope>

@@ -79,12 +79,11 @@
               <el-select v-model="taskForm.type" size="mini">
                 <el-option
                   :label="$t('dataset.all_scope')"
-                  value="0"
+                  value="all_scope"
                 />
                 <el-option
                   :label="$t('dataset.add_scope')"
-                  value="1"
-                  :disabled="true"
+                  value="add_scope"
                 />
               </el-select>
             </el-form-item>
@@ -97,22 +96,22 @@
               />
             </el-form-item>
             <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
-              <el-select v-model="taskForm.rate" size="mini" @change="onRateChange">
+              <el-select v-model="taskForm.rate"  @change="onRateChange">
                 <el-option
                   :label="$t('dataset.execute_once')"
-                  value="0"
+                  value="SIMPLE"
                 />
                 <el-option
                   :label="$t('dataset.cron_config')"
-                  value="1"
+                  value="CRON"
                 />
               </el-select>
             </el-form-item>
-            <el-form-item v-if="taskForm.rate === '1'" label="">
+            <el-form-item v-if="taskForm.rate === 'CRON'" label="">
               <el-input v-model="taskForm.cron" size="mini" style="width: 50%" />
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
-              <el-select v-model="taskForm.end" size="mini" :disabled="taskForm.rate === '0'">
+              <el-select v-model="taskForm.end" size="mini">
                 <el-option
                   :label="$t('dataset.no_limit')"
                   value="0"
@@ -163,8 +162,9 @@
             :label="$t('dataset.execute_rate')"
           >
             <template slot-scope="scope">
-              <span v-if="scope.row.rate === '0'">{{ $t('dataset.execute_once') }}</span>
-              <span v-if="scope.row.rate === '1'">{{ $t('dataset.cron_config') }}</span>
+              <span v-if="scope.row.rate === 'SIMPLE'">{{ $t('dataset.execute_once') }}</span>
+              <span v-if="scope.row.rate === 'SIMPLE_COMPLETE'">{{ $t('dataset.execute_once') }}</span>
+              <span v-if="scope.row.rate === 'CRON'">{{ $t('dataset.cron_config') }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -176,6 +176,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 circle
+                :disabled="scope.row.rate === 'SIMPLE_COMPLETE'"
                 @click="addTask(scope.row)"
               />
               <el-button
@@ -190,10 +191,49 @@
         </el-table>
       </el-row>
 
+      <el-divider />
+
+      <el-row style="height: 26px;">
+        <el-row>
+          <el-col :span="6"><div>{{ $t('dataset.incremental_update_type') }}</div></el-col>
+          <el-col :span="18">
+            <el-radio-group v-model="incrementalUpdateType" size="small" @change="incrementalUpdateTypeChange">
+              <el-radio label="incrementalAdd"  >{{ $t('dataset.incremental_add') }}</el-radio>
+              <el-radio label="incrementalDelete"  >{{ $t('incremental_delete.incremental_update_type') }}</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+      </el-row>
+
+      <el-row style="height: 26px;">
+        <el-row>
+          <el-col :span="6" style="height: 26px;"><div style="height: 26px;">参数:</div></el-col>
+          <el-col :span="18">
+            <el-button type="text">{{ $t('dataset.last_update_time') }}</el-button>
+            <el-button type="text">{{ $t('dataset.current_update_time') }}</el-button>
+          </el-col>
+        </el-row>
+      </el-row>
+
+      <el-row>
+        <el-col style="min-width: 200px;">
+          <codemirror
+            ref="myCm"
+            v-model="sql"
+            class="codemirror"
+            :options="sqlOption"
+            @ready="onCmReady"
+            @focus="onCmFocus"
+            @input="onCmCodeChange"
+          />
+        </el-col>
+      </el-row>
+
+
+
       <div slot="footer" class="dialog-footer">
-        <!--        <el-button size="mini" @click="update_setting = false">{{ $t('dataset.cancel') }}</el-button>-->
-        <!--        <el-button type="primary" size="mini" @click="update_setting = false">{{ $t('dataset.confirm') }}</el-button>-->
         <el-button size="mini" @click="update_setting = false">{{ $t('dataset.close') }}</el-button>
+        <el-button size="mini" @click="saveIncrementalConfig">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-dialog>
   </el-col>
@@ -201,9 +241,33 @@
 
 <script>
 import { post } from '@/api/dataset/dataset'
+import { codemirror } from 'vue-codemirror'
+// 核心样式
+import 'codemirror/lib/codemirror.css'
+// 引入主题后还需要在 options 中指定主题才会生效
+import 'codemirror/theme/solarized.css'
+import 'codemirror/mode/sql/sql.js'
+// require active-line.js
+import 'codemirror/addon/selection/active-line.js'
+// closebrackets
+import 'codemirror/addon/edit/closebrackets.js'
+// keyMap
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/emacs.js'
+// 引入代码自动提示插件
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/sql-hint'
+import 'codemirror/addon/hint/show-hint'
 
 export default {
   name: 'UpdateInfo',
+  components: { codemirror },
   props: {
     table: {
       type: Object,
@@ -216,9 +280,9 @@ export default {
       update_task: false,
       taskForm: {
         name: '',
-        type: '0',
+        type: 'all_scope',
         startTime: '',
-        rate: '0',
+        rate: 'SIMPLE',
         cron: '',
         endTime: '',
         end: '0'
@@ -246,7 +310,21 @@ export default {
         end: [
           { required: true, message: this.$t('dataset.required'), trigger: 'change' }
         ]
-      }
+      },
+      sqlOption: {
+        tabSize: 2,
+        styleActiveLine: true,
+        lineNumbers: true,
+        line: true,
+        mode: 'text/x-sql',
+        theme: 'solarized',
+        hintOptions: { // 自定义提示选项
+          completeSingle: false // 当匹配只有一项的时候是否自动补全
+        }
+      },
+      incrementalUpdateType: 'incrementalAdd',
+      sql: '',
+      incrementalConfig: {}
     }
   },
   watch: {
@@ -255,10 +333,49 @@ export default {
       this.listTaskLog()
     }
   },
+  computed: {
+    codemirror() {
+      return this.$refs.myCm.codemirror
+    }
+  },
+  mounted() {
+    window.onresize = () => {
+      return (() => {
+        this.height = window.innerHeight / 2
+      })()
+    }
+    this.height = window.innerHeight / 2
+
+  },
   methods: {
+    incrementalUpdateTypeChange: function (){
+
+      if(this.incrementalUpdateType === 'incrementalAdd'){
+        if(this.sql){
+          this.incrementalConfig.incrementalDelete = this.sql
+        }
+        if(this.incrementalConfig.incrementalAdd){
+          this.sql = this.incrementalConfig.incrementalAdd
+        }else {
+          this.sql = ''
+        }
+      }
+
+      if(this.incrementalUpdateType === 'incrementalDelete'){
+        if(this.sql){
+          this.incrementalConfig.incrementalAdd = this.sql
+        }
+        if(this.incrementalConfig.incrementalDelete){
+           this.sql = this.incrementalConfig.incrementalDelete
+        }else {
+          this.sql = ''
+        }
+      }
+    },
     showConfig() {
       this.update_setting = true
       this.listTask()
+      this.getIncrementalConfig()
     },
     addTask(task) {
       if (!task) {
@@ -275,6 +392,31 @@ export default {
         this.taskData = response.data
       })
     },
+    getIncrementalConfig() {
+      post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
+        this.incrementalConfig = response.data
+        this.incrementalUpdateType = 'incrementalAdd'
+        if(this.incrementalConfig.incrementalAdd){
+          this.sql = this.incrementalConfig.incrementalAdd
+        }
+      })
+    },
+    saveIncrementalConfig() {
+      this.update_setting = false
+      if(this.incrementalUpdateType === 'incrementalAdd'){
+        this.incrementalConfig.incrementalAdd = this.sql
+      }else {
+        this.incrementalConfig.incrementalDelete = this.sql
+      }
+      this.incrementalConfig.tableId = this.table.id
+      post('/dataset/table/save/incrementalConfig', this.incrementalConfig).then(response => {
+        this.$message({
+          message: this.$t('dataset.save_success'),
+          type: 'success',
+          showClose: true
+        })
+      })
+    },
     saveTask(task) {
       task.startTime = new Date(task.startTime).getTime()
       task.endTime = new Date(task.endTime).getTime()
@@ -289,18 +431,6 @@ export default {
         this.resetTaskForm()
         this.listTask()
       })
-      // this.$refs['taskForm'].validate((valid) => {
-      //   if (valid) {
-      //
-      //   } else {
-      //     this.$message({
-      //       message: this.$t('dataset.input_content'),
-      //       type: 'error',
-      //       showClose: true
-      //     })
-      //     return false
-      //   }
-      // })
     },
     deleteTask(task) {
       this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
@@ -325,7 +455,7 @@ export default {
       this.resetTaskForm()
     },
     onRateChange() {
-      if (this.taskForm.rate === '0') {
+      if (this.taskForm.rate === 'SIMPLE') {
         this.taskForm.end = '0'
         this.taskForm.endTime = ''
         this.taskForm.cron = ''
@@ -346,13 +476,25 @@ export default {
     resetTaskForm() {
       this.taskForm = {
         name: '',
-        type: '0',
+        type: 'all_scope',
         startTime: '',
-        rate: '0',
+        rate: 'SIMPLE',
         endTime: '',
         end: '0'
       }
+    },
+    onCmReady(cm) {
+      this.codemirror.setSize('-webkit-fill-available', 'auto')
+    },
+    onCmFocus(cm) {
+      // console.log('the editor is focus!', cm)
+    },
+    onCmCodeChange(newCode) {
+      console.log(newCode)
+      this.sql = newCode
+      this.$emit('codeChange', this.sql)
     }
+
   }
 }
 </script>
@@ -368,5 +510,14 @@ export default {
 
   .el-form-item {
     margin-bottom: 10px;
+  }
+
+  .codemirror {
+    height: 160px;
+    overflow-y: auto;
+  }
+  .codemirror >>> .CodeMirror-scroll {
+    height: 160px;
+    overflow-y: auto;
   }
 </style>

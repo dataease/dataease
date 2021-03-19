@@ -78,16 +78,24 @@
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
             <div class="chart-type">
-              <!--TODO 这里要替换好看点的图标-->
-              <el-radio v-model="view.type" label="bar"><i class="el-icon-platform-eleme" style="font-size: 20px" /></el-radio>
-              <el-radio v-model="view.type" label="line">折线图</el-radio>
+              <!--TODO 这里要替换好看点的图标，UI标签可以重新定义-->
+              <el-radio-group v-model="view.type" @change="save">
+                <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
+                <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
+                <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
+                <el-radio value="bar-horizontal-stack" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
+                <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
+                <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
+                <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
+              </el-radio-group>
             </div>
           </el-row>
         </div>
         <div style="height: 45%;overflow:auto;border-top: 1px solid #e6e6e6">
           <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
-              <color-selector :chart="chart" @onColorChange="onColorChange" />
+              <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+              <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">TODO</el-tab-pane>
           </el-tabs>
@@ -133,7 +141,7 @@
             </el-row>
           </el-row>
 
-          <chart-component :chart="chart" />
+          <chart-component-view :chart="chart" style="height: 80%" />
         </el-row>
       </el-col>
     </el-row>
@@ -145,14 +153,15 @@ import { post } from '@/api/dataset/dataset'
 import draggable from 'vuedraggable'
 import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
-import ChartComponent from '../components/ChartComponent'
+import ChartComponentView from '../components/ChartComponentView'
 // shape attr
-import { DEFAULT_COLOR_CASE } from '../chart/chart'
-import ColorSelector from '../components/ColorSelector'
+import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '../chart/chart'
+import ColorSelector from '../components/shape_attr/ColorSelector'
+import SizeSelector from '../components/shape_attr/SizeSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { SizeSelector, ColorSelector, ChartComponentView, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -165,7 +174,8 @@ export default {
         type: 'bar',
         title: '',
         customAttr: {
-          color: DEFAULT_COLOR_CASE
+          color: DEFAULT_COLOR_CASE,
+          size: DEFAULT_SIZE
         }
       },
       // 定义要被拖拽对象的数组
@@ -201,11 +211,6 @@ export default {
 
   },
   watch: {
-    'view.type': {
-      handler: function() {
-        this.save()
-      }
-    }
   },
   created() {
     // this.get(this.$store.state.chart.viewId);
@@ -248,6 +253,11 @@ export default {
           ele.summary = 'sum'
         }
       })
+      if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
+        if (view.yaxis.length > 1) {
+          view.yaxis.splice(1, view.yaxis.length)
+        }
+      }
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
       view.customAttr = JSON.stringify(view.customAttr)
@@ -264,7 +274,7 @@ export default {
     getData(id) {
       if (id) {
         post('/chart/view/getData/' + id, null).then(response => {
-          this.view = response.data
+          this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
@@ -369,12 +379,17 @@ export default {
     onColorChange(val) {
       this.view.customAttr.color = val
       this.save()
+    },
+
+    onSizeChange(val) {
+      this.view.customAttr.size = val
+      this.save()
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .padding-lr {
     padding: 0 6px;
   }
@@ -445,7 +460,31 @@ export default {
     height: calc(100% - 6px);
   }
 
+  .chart-type{
+    padding: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .chart-icon{
+    width: 20px;
+    height: 20px;
+  }
+
   .chart-type>>>.el-radio__input{
     display: none;
+  }
+
+  .el-radio{
+    margin:6px;
+  }
+
+  .el-radio>>>.el-radio__label{
+    padding-left: 0;
+  }
+
+  .attr-selector{
+    margin: 2px 0;
   }
 </style>

@@ -15,6 +15,7 @@ import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,19 +59,26 @@ public class AuthServer implements AuthApi {
 
     @Override
     public CurrentUserDto userInfo() {
-        String token = ServletUtils.getToken();
-        Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
-        SysUserEntity user = authUserService.getUserById(userId);
-        CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
-        List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
-        List<String> permissions = authUserService.permissions(user.getUserId());
-        currentUserDto.setRoles(currentRoleDtos);
-        currentUserDto.setPermissions(permissions);
-        return currentUserDto;
+        CurrentUserDto userDto = (CurrentUserDto)SecurityUtils.getSubject().getPrincipal();
+        if (ObjectUtils.isEmpty(userDto)) {
+            String token = ServletUtils.getToken();
+            Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+            SysUserEntity user = authUserService.getUserById(userId);
+            CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
+            List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
+            List<String> permissions = authUserService.permissions(user.getUserId());
+            currentUserDto.setRoles(currentRoleDtos);
+            currentUserDto.setPermissions(permissions);
+            return currentUserDto;
+        }
+        return userDto;
     }
 
     @Override
     public String logout(){
+        String token = ServletUtils.getToken();
+        Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+        authUserService.clearCache(userId);
         return "success";
     }
 

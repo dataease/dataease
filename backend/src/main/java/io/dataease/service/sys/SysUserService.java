@@ -8,6 +8,7 @@ import io.dataease.base.mapper.SysUserMapper;
 import io.dataease.base.mapper.SysUsersRolesMapper;
 import io.dataease.base.mapper.ext.ExtSysUserMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -30,7 +31,6 @@ import java.util.stream.Collectors;
 @Service
 public class SysUserService {
 
-    private final static String USER_CACHE_NAME = "users_info";
     private final static String DEFAULT_PWD = "DataEase123..";
 
     @Resource
@@ -72,6 +72,12 @@ public class SysUserService {
         return insert;
     }
 
+    /**
+     * 修改用户密码清楚缓存
+     * @param request
+     * @return
+     */
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @Transactional
     public int update(SysUserCreateRequest request){
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
@@ -95,7 +101,7 @@ public class SysUserService {
      * @param request
      * @return
      */
-    @CacheEvict(value = USER_CACHE_NAME, key = "'user' + #request.userId")
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     public int updatePwd(SysUserPwdRequest request) {
         if (!StringUtils.equals(request.getPassword(), request.getRepeatPassword())){
             throw new RuntimeException("两次密码不一致");
@@ -115,7 +121,7 @@ public class SysUserService {
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
-    @CacheEvict(value = USER_CACHE_NAME, key = "'user' + #request.userId")
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     public int adminUpdatePwd(SysUserPwdRequest request){
         SysUser sysUser = new SysUser();
         sysUser.setUserId(request.getUserId());
@@ -150,7 +156,7 @@ public class SysUserService {
         });
     }
 
-    @CacheEvict(value = USER_CACHE_NAME, key = "'user' + #userId")
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
     @Transactional
     public int delete(Long userId){
         deleteUserRoles(userId);

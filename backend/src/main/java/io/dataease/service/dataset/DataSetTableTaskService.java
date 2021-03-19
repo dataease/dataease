@@ -70,6 +70,10 @@ public class DataSetTableTaskService {
         return datasetTableTaskMapper.selectByPrimaryKey(id);
     }
 
+    public void update(DatasetTableTask datasetTableTask) {
+        datasetTableTaskMapper.updateByPrimaryKey(datasetTableTask);
+    }
+
     public List<DatasetTableTask> list(DatasetTableTask datasetTableTask) {
         DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
         DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();

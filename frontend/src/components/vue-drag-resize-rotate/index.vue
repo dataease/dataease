@@ -312,8 +312,6 @@ export default {
 
   data: function() {
     return {
-      styleInit:true,
-      styleCatch:{},
       left: this.x,
       top: this.y,
       right: null,

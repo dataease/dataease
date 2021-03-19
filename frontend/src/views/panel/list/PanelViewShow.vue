@@ -5,7 +5,7 @@
         <el-tabs v-model="ViewActiveName">
           <!--视图展示操作-->
           <el-tab-pane name="Views" class="view-list-thumbnails-outline">
-            <span slot="label"><i class="el-icon-s-data"/>视图</span>
+            <span slot="label"><i class="el-icon-s-data" />视图</span>
             <draggable
               v-model="panelDetails.viewsUsable"
               :options="{group:{name: 'itxst',pull:'clone'},sort: true}"

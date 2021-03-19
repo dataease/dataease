@@ -37,11 +37,11 @@
         </commentGenerator>
 
         <!-- jdbc连接信息 --> <!-- EduLoanManage EduTestDataBase -->
-        <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.20.180:3306/fit2cloud"-->
-        <!--userId="root" password="Fit2cloud2015!" />-->
-        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="${spring.datasource.url}&amp;nullCatalogMeansCurrent=true"
-                        userId="${spring.datasource.username}" password="${spring.datasource.password}"/>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://62.234.205.170:3306/dataease"
+        userId="root" password="Password123@mysql" />
+<!--        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"-->
+<!--                        connectionURL="${spring.datasource.url}&amp;nullCatalogMeansCurrent=true"-->
+<!--                        userId="${spring.datasource.username}" password="${spring.datasource.password}"/>-->
 
         <!-- javaTypeResolver式类型转换的信息 -->
         <javaTypeResolver>
@@ -64,8 +64,13 @@
 
         <!--要生成的数据库表 -->
 
-<!--        <table tableName="datasource"/>-->
-        <table tableName="panel_group"/>
+        <table  tableName="dataset_table_incremental_config" >
+
+            <!--以下为添加内容 -->
+            <columnOverride column="incremental_delete" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="incremental_add" javaType="java.lang.String" jdbcType="VARCHAR" />
+
+        </table>
 
 
     </context>

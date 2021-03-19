@@ -5,7 +5,11 @@
 </template>
 
 <script>
-import { BASE_BAR, BASE_LINE } from '../chart/chart'
+import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL } from '../chart/chart'
+import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
+import { baseLineOption } from '../chart/line/line'
+import { basePieOption } from '../chart/pie/pie'
+import { baseFunnelOption } from '../chart/funnel/funnel'
 
 export default {
   name: 'ChartComponent',
@@ -45,27 +49,21 @@ export default {
       let chart_option = {}
       // todo type
       if (chart.type === 'bar') {
-        chart_option = JSON.parse(JSON.stringify(BASE_BAR))
+        chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+      } else if (chart.type === 'bar-stack') {
+        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+      } else if (chart.type === 'bar-horizontal') {
+        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
+      } else if (chart.type === 'bar-horizontal-stack') {
+        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
       } else if (chart.type === 'line') {
-        chart_option = JSON.parse(JSON.stringify(BASE_LINE))
+        chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
+      } else if (chart.type === 'pie') {
+        chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+      } else if (chart.type === 'funnel') {
+        chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
       }
-      // console.log(chart_option);
-      // 处理data
-      if (chart.data) {
-        chart_option.title.text = chart.title
-        chart_option.xAxis.data = chart.data.x
-        chart.data.series.forEach(function(y) {
-          chart_option.legend.data.push(y.name)
-          chart_option.series.push(y)
-        })
-      }
-      // console.log(chart_option);
-      // 处理shape attr
-      if (chart.customAttr) {
-        if (chart.customAttr.color) {
-          chart_option.color = chart.customAttr.color.colors
-        }
-      }
+      console.log(chart_option)
       this.myEcharts(chart_option)
     },
     myEcharts(option) {
