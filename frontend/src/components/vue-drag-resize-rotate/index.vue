@@ -409,7 +409,6 @@ export default {
     },
     style() {
       if (!this.panelDesign.styleInit && this.panelDesign.componentPosition) {
-        debugger
         // 设置定位
         const componentPosition = JSON.parse(this.panelDesign.componentPosition)
         this.left = componentPosition.left
@@ -636,7 +635,6 @@ export default {
 
   methods: {
     removeView() {
-      debugger
       this.panelDesign.keepFlag = false
       // console.log(this.panelDesignId);
       // this.$emit('removeView', this.panelDesign.id)

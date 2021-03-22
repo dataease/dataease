@@ -110,3 +110,15 @@ div:focus {
     }
 
 }
+
+.filter-card-class {
+    width: 100%;
+    .el-card__header {
+        padding: 5px 0 !important;
+        border-bottom: none !important;
+    }
+
+    .el-card__body {
+        padding: 10px;
+    }
+}

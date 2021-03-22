@@ -5,7 +5,7 @@
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />列表</span>
-          <PanelList @switchComponent="switchComponent" />
+          <PanelList />
         </el-tab-pane>
         <el-tab-pane name="panels_star">
           <span slot="label"><i class="el-icon-star-off" />收藏</span>
@@ -15,17 +15,14 @@
           <span slot="label"><i class="el-icon-share" />分享</span>
           <share-tree v-if="showShare" />
         </el-tab-pane>
-        <!--        <el-tab-pane name="example">-->
-        <!--          <span slot="label"><i class="el-icon-star-on"></i>示例</span>-->
-        <!--          <group @switchComponent="switchComponent"/>-->
-        <!--        </el-tab-pane>-->
+
       </el-tabs>
 
     </de-aside-container>
 
     <de-main-container>
       <!--<router-view/>-->
-      <component :is="component" :param="param" @switchComponent="switchComponent" />
+      <component :is="component" :param="param" />
     </de-main-container>
   </de-container>
 </template>
@@ -58,15 +55,15 @@ export default {
         this.refreshShare()
       }
     },
-    switchComponent(c) {
-      console.log(c)
-      this.param = c.param
-      switch (c.name) {
-        case 'PanelViewShow':
-          this.component = PanelViewShow
-          break
-      }
-    },
+    // switchComponent(c) {
+    //   console.log(c)
+    //   this.param = c.param
+    //   switch (c.name) {
+    //     case 'PanelViewShow':
+    //       this.component = PanelViewShow
+    //       break
+    //   }
+    // },
     refreshShare() {
       this.showShare = false
       this.$nextTick(() => (this.showShare = true))

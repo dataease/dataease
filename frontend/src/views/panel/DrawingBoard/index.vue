@@ -1,56 +1,27 @@
 <template>
-  <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <el-row style="display: flex;height: 100%">
+  <el-row class="panel-design-show">
+    <div class="container" :style="panelDetails.gridStyle">
+      <vue-drag-resize-rotate
+        v-for="panelDesign in panelDetails.panelDesigns"
+        v-show="panelDesign.keepFlag"
+        :key="panelDesign.id"
+        :panel-design="panelDesign"
+        :parent="true"
+        @newStyle="newStyle"
+      >
+        <!--视图显示 panelDesign.componentType==='view'-->
+        <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView" />
 
-      <el-col class="panel-design">
-        <!--TODO 仪表盘设计公共设置区域-->
-        <el-row class="panel-design-head">
-          <span style="float: left;line-height: 40px; color: gray">
+        <!--组件显示（待开发）-->
 
-            <span>名称：{{ panelInfo.name || '测试仪表板' }}</span>
+      </vue-drag-resize-rotate>
+    </div>
 
-          </span>
-          <span style="float: right;line-height: 40px;">
-
-            <el-tooltip content="返回目录">
-              <el-button class="el-icon-refresh-left" size="mini" circle />
-            </el-tooltip>
-
-            <el-tooltip content="背景图">
-              <el-button class="el-icon-full-screen" size="mini" circle />
-            </el-tooltip>
-
-            <el-tooltip content="预览">
-              <el-button class="el-icon-view" size="mini" circle @click="save" />
-            </el-tooltip>
-
-          </span>
-        </el-row>
-        <el-row class="panel-design-show">
-          <div class="container" :style="panelDetails.gridStyle">
-            <vue-drag-resize-rotate
-              v-for="panelDesign in panelDetails.panelDesigns"
-              v-show="panelDesign.keepFlag"
-              :key="panelDesign.id"
-              :panel-design="panelDesign"
-              :parent="true"
-              @newStyle="newStyle"
-            >
-              <!--视图显示 panelDesign.componentType==='view'-->
-              <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView" />
-
-              <!--组件显示（待开发）-->
-
-            </vue-drag-resize-rotate>
-          </div>
-
-        </el-row></el-col>
-    </el-row>
   </el-row>
 </template>
 <script>
 import { post, get } from '@/api/panel/panel'
-import ChartComponent from '../../chart/components/ChartComponent'
+import ChartComponent from '@/views/chart/components/ChartComponent'
 import VueDragResizeRotate from '@/components/vue-drag-resize-rotate'
 import { uuid } from 'vue-uuid'
 
@@ -168,9 +139,6 @@ export default {
       post('panel/group/saveGroupWithDesign', this.panelDetails, () => {
       })
       this.$success(this.$t('commons.save_success'))
-    },
-    save() {
-
     }
   }
 }

@@ -88,6 +88,9 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
                         {{ $t('panel.share') }}
                       </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
+                        {{ $t('panel.edit') }}
+                      </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
@@ -228,6 +231,9 @@ export default {
           break
         case 'share':
           this.share(param.data)
+          break
+        case 'edit':
+          this.edit(param.data)
           break
       }
     },
@@ -487,6 +493,9 @@ export default {
     closeGrant() {
       this.authResourceId = null
       this.authVisible = false
+    },
+    edit(data) {
+      this.$router.replace('/panelEdit')
     }
   }
 }

@@ -67,7 +67,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'edit',
-        component: () => import('@/views/panel/new/edit')
+        component: () => import('@/views/panel/edit')
       }
     ]
   },
