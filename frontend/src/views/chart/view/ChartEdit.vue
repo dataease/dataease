@@ -85,8 +85,10 @@
                 <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
                 <el-radio value="bar-horizontal-stack" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
                 <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
+                <el-radio value="line-stack" label="line-stack"><svg-icon icon-class="line-stack" class="chart-icon" /></el-radio>
                 <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
                 <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
+                <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
               </el-radio-group>
             </div>
           </el-row>

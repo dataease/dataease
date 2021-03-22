@@ -12,9 +12,11 @@ export const DEFAULT_SIZE = {
   lineSymbol: 'emptyCircle',
   lineSymbolSize: 4,
   lineSmooth: false,
+  lineArea: false,
   pieInnerRadius: 0,
   pieOuterRadius: 60,
-  funnelWidth: 80
+  funnelWidth: 80,
+  radarShape: 'polygon'
 }
 export const DEFAULT_TITLE_STYLE = {
   show: true,
@@ -88,6 +90,7 @@ export const BASE_LINE = {
     data: []
   },
   xAxis: {
+    boundaryGap: false,
     data: []
   },
   yAxis: {
@@ -179,4 +182,31 @@ export const BASE_FUNNEL = {
       data: []
     }
   ]
+}
+
+export const BASE_RADAR = {
+  title: {
+    text: ''
+  },
+  tooltip: {},
+  legend: {
+    data: []
+  },
+  radar: {
+    shape: 'polygon',
+    name: {
+      textStyle: {
+        color: '#000000'
+        // backgroundColor: '#999',
+        // borderRadius: 3,
+        // padding: [3, 5]
+      }
+    },
+    indicator: []
+  },
+  series: [{
+    type: 'radar',
+    // areaStyle: {normal: {}},
+    data: []
+  }]
 }

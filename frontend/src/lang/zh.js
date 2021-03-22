@@ -635,6 +635,7 @@ export default {
     line_symbol_pin: '钉子',
     line_symbol_arrow: '箭头',
     line_symbol_none: '无',
+    line_area: '面积',
     pie_inner_radius: '内径',
     pie_outer_radius: '外径',
     funnel_width: '宽度',
@@ -654,7 +655,10 @@ export default {
     orient: '方向',
     horizontal: '水平',
     vertical: '垂直',
-    legend: '图例'
+    legend: '图例',
+    shape: '形状',
+    polygon: '多边形',
+    circle: '圆形'
   },
   dataset: {
     datalist: '数据集',
