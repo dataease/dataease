@@ -2,6 +2,7 @@ export function componentStyle(chart_option, chart) {
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
     if (customStyle.text) {
+      chart_option.title.show = customStyle.text.show
       chart_option.title.left = customStyle.text.hPosition
       chart_option.title.top = customStyle.text.vPosition
       const style = chart_option.title.textStyle ? chart_option.title.textStyle : {}

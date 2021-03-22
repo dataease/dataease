@@ -8,6 +8,9 @@
       >
         <el-col>
           <el-form ref="titleForm" :model="titleForm" label-width="80px" size="mini">
+            <el-form-item :label="$t('chart.show')" class="form-item">
+              <el-checkbox v-model="titleForm.show" @change="changeTitleStyle">{{ $t('chart.show') }}</el-checkbox>
+            </el-form-item>
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
               <el-select v-model="titleForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTitleStyle">
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />

@@ -17,6 +17,7 @@ export const DEFAULT_SIZE = {
   funnelWidth: 80
 }
 export const DEFAULT_TITLE_STYLE = {
+  show: true,
   fontSize: '18',
   color: '#000000',
   hPosition: 'center',
