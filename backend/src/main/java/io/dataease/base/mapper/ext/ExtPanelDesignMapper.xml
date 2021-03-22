@@ -6,4 +6,8 @@
 
   </resultMap>
 
+  <delete id="deleteByPanelId">
+      delete from panel_design where panel_id =#{panelId}
+  </delete>
+
 </mapper>

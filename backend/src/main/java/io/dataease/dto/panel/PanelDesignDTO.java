@@ -15,6 +15,9 @@ public class PanelDesignDTO extends PanelDesign {
     //当前视图是否在仪表盘中显示
     private boolean keepFlag = false;
 
+    //当前视图是否已经进行样式初始化
+    private boolean styleInit = false;
+
     private ChartViewDTO chartView;
 
     private Object systemComponent;

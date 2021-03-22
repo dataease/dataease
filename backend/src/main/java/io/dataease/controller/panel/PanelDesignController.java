@@ -25,4 +25,10 @@ public class PanelDesignController {
 //        panelGroupService.deleteCircle(id);
 //    }
 
+    @PostMapping("/saveDesign/{id}")
+    public void deleteCircle(@PathVariable String id) {
+        panelGroupService.deleteCircle(id);
+    }
+
+
 }

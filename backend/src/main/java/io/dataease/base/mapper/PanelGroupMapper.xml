@@ -10,6 +10,7 @@
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="panel_type" jdbcType="VARCHAR" property="panelType" />
+    <result column="panel_style" jdbcType="VARCHAR" property="panelStyle" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, pid, `level`, node_type, create_by, create_time, panel_type
+    id, `name`, pid, `level`, node_type, create_by, create_time, panel_type, panel_style
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelGroupExample" resultMap="BaseResultMap">
     select
@@ -105,10 +106,12 @@
   <insert id="insert" parameterType="io.dataease.base.domain.PanelGroup">
     insert into panel_group (id, `name`, pid, 
       `level`, node_type, create_by, 
-      create_time, panel_type)
+      create_time, panel_type, panel_style
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
       #{level,jdbcType=INTEGER}, #{nodeType,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{panelType,jdbcType=VARCHAR})
+      #{createTime,jdbcType=BIGINT}, #{panelType,jdbcType=VARCHAR}, #{panelStyle,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelGroup">
     insert into panel_group
@@ -137,6 +140,9 @@
       <if test="panelType != null">
         panel_type,
       </if>
+      <if test="panelStyle != null">
+        panel_style,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -162,6 +168,9 @@
       </if>
       <if test="panelType != null">
         #{panelType,jdbcType=VARCHAR},
+      </if>
+      <if test="panelStyle != null">
+        #{panelStyle,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -198,6 +207,9 @@
       <if test="record.panelType != null">
         panel_type = #{record.panelType,jdbcType=VARCHAR},
       </if>
+      <if test="record.panelStyle != null">
+        panel_style = #{record.panelStyle,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -212,7 +224,8 @@
       node_type = #{record.nodeType,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
-      panel_type = #{record.panelType,jdbcType=VARCHAR}
+      panel_type = #{record.panelType,jdbcType=VARCHAR},
+      panel_style = #{record.panelStyle,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -241,6 +254,9 @@
       <if test="panelType != null">
         panel_type = #{panelType,jdbcType=VARCHAR},
       </if>
+      <if test="panelStyle != null">
+        panel_style = #{panelStyle,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -252,7 +268,8 @@
       node_type = #{nodeType,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
-      panel_type = #{panelType,jdbcType=VARCHAR}
+      panel_type = #{panelType,jdbcType=VARCHAR},
+      panel_style = #{panelStyle,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

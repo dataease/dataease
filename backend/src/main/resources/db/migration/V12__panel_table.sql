@@ -1,17 +1,20 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for panel_design
+-- ----------------------------
 DROP TABLE IF EXISTS `panel_design`;
 CREATE TABLE `panel_design` (
   `id` varchar(100) NOT NULL,
   `panel_id` varchar(100) DEFAULT NULL COMMENT 'panel id',
   `component_id` varchar(100) DEFAULT NULL COMMENT '组件 id',
   `component_style` varchar(2000) DEFAULT NULL COMMENT '组件样式 样式',
+  `component_position` varchar(2000) DEFAULT NULL COMMENT '组件样式 样式定位',
   `component_type` varchar(255) DEFAULT NULL COMMENT '组件 类型 view 视图 public 公共组件',
   `component_details` varchar(2000) DEFAULT NULL COMMENT '组件明细',
-  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   `update_time` bigint(13) DEFAULT NULL COMMENT '修改时间',
-  `create_persion` varchar(255) DEFAULT NULL COMMENT '创建人',
-  `update_persion` varchar(255) DEFAULT NULL COMMENT '修改人',
+  `update_person` varchar(255) DEFAULT NULL COMMENT '修改人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='仪表盘和组件的关联关系 组件分为普通视图和系统组件';
 
@@ -28,6 +31,7 @@ CREATE TABLE `panel_group` (
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   `panel_type` varchar(255) DEFAULT NULL COMMENT '仪表盘类型 system 系统内置 self 用户自建 ',
+  `panel_style` varchar(2000) DEFAULT NULL COMMENT 'panel 样式',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -35,11 +39,12 @@ CREATE TABLE `panel_group` (
 -- Records of panel_group
 -- ----------------------------
 BEGIN;
-INSERT INTO `panel_group` VALUES ('1001', '飞致云', NULL, 0, 'folder', NULL, NULL, 'self');
-INSERT INTO `panel_group` VALUES ('1c78bc65-ea38-40bc-ad73-738a9b386379', '测试仪表盘1', '1001', 1, 'panel', NULL, 1615961778552, NULL);
-INSERT INTO `panel_group` VALUES ('2003', '默认仪表盘1', NULL, NULL, 'panel', NULL, NULL, 'system');
-INSERT INTO `panel_group` VALUES ('2004', '默认仪表盘2', NULL, NULL, 'panel', NULL, NULL, 'system');
-INSERT INTO `panel_group` VALUES ('8ff64eb1-a96a-4218-85cd-01b437d21f2e', '测试仪表盘2', '1001', 1, 'panel', NULL, 1615200099827, NULL);
+INSERT INTO `panel_group` VALUES ('1001', '飞致云', NULL, 0, 'folder', NULL, NULL, 'self', NULL);
+INSERT INTO `panel_group` VALUES ('1c78bc65-ea38-40bc-ad73-738a9b386379', '测试仪表盘1', '1001', 1, 'panel', NULL, 1615961778552, NULL, NULL);
+INSERT INTO `panel_group` VALUES ('2003', '默认仪表盘1', NULL, NULL, 'panel', NULL, NULL, 'system', NULL);
+INSERT INTO `panel_group` VALUES ('2004', '默认仪表盘2', NULL, NULL, 'panel', NULL, NULL, 'system', NULL);
+INSERT INTO `panel_group` VALUES ('8ff64eb1-a96a-4218-85cd-01b437d21f2e', '测试仪表盘2', '1001', 1, 'panel', NULL, 1615200099827, NULL, NULL);
+INSERT INTO `panel_group` VALUES ('d15f816d-46b7-4859-8ec8-2b19918dc772', 'TSEE', '1001', 1, 'folder', NULL, 1616403978419, NULL, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -56,7 +61,6 @@ CREATE TABLE `panel_view` (
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 SET FOREIGN_KEY_CHECKS = 1;
 
 

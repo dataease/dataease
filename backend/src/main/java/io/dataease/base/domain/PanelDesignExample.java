@@ -384,6 +384,76 @@ public class PanelDesignExample {
             return (Criteria) this;
         }
 
+        public Criteria andComponentPositionIsNull() {
+            addCriterion("component_position is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionIsNotNull() {
+            addCriterion("component_position is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionEqualTo(String value) {
+            addCriterion("component_position =", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionNotEqualTo(String value) {
+            addCriterion("component_position <>", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionGreaterThan(String value) {
+            addCriterion("component_position >", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionGreaterThanOrEqualTo(String value) {
+            addCriterion("component_position >=", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionLessThan(String value) {
+            addCriterion("component_position <", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionLessThanOrEqualTo(String value) {
+            addCriterion("component_position <=", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionLike(String value) {
+            addCriterion("component_position like", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionNotLike(String value) {
+            addCriterion("component_position not like", value, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionIn(List<String> values) {
+            addCriterion("component_position in", values, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionNotIn(List<String> values) {
+            addCriterion("component_position not in", values, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionBetween(String value1, String value2) {
+            addCriterion("component_position between", value1, value2, "componentPosition");
+            return (Criteria) this;
+        }
+
+        public Criteria andComponentPositionNotBetween(String value1, String value2) {
+            addCriterion("component_position not between", value1, value2, "componentPosition");
+            return (Criteria) this;
+        }
+
         public Criteria andComponentTypeIsNull() {
             addCriterion("component_type is null");
             return (Criteria) this;
@@ -524,66 +594,6 @@ public class PanelDesignExample {
             return (Criteria) this;
         }
 
-        public Criteria andCreateTimeIsNull() {
-            addCriterion("create_time is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeIsNotNull() {
-            addCriterion("create_time is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeEqualTo(Long value) {
-            addCriterion("create_time =", value, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeNotEqualTo(Long value) {
-            addCriterion("create_time <>", value, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeGreaterThan(Long value) {
-            addCriterion("create_time >", value, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeGreaterThanOrEqualTo(Long value) {
-            addCriterion("create_time >=", value, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeLessThan(Long value) {
-            addCriterion("create_time <", value, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeLessThanOrEqualTo(Long value) {
-            addCriterion("create_time <=", value, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeIn(List<Long> values) {
-            addCriterion("create_time in", values, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeNotIn(List<Long> values) {
-            addCriterion("create_time not in", values, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeBetween(Long value1, Long value2) {
-            addCriterion("create_time between", value1, value2, "createTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateTimeNotBetween(Long value1, Long value2) {
-            addCriterion("create_time not between", value1, value2, "createTime");
-            return (Criteria) this;
-        }
-
         public Criteria andUpdateTimeIsNull() {
             addCriterion("update_time is null");
             return (Criteria) this;
@@ -644,143 +654,73 @@ public class PanelDesignExample {
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionIsNull() {
-            addCriterion("create_persion is null");
+        public Criteria andUpdatePersonIsNull() {
+            addCriterion("update_person is null");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionIsNotNull() {
-            addCriterion("create_persion is not null");
+        public Criteria andUpdatePersonIsNotNull() {
+            addCriterion("update_person is not null");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionEqualTo(String value) {
-            addCriterion("create_persion =", value, "createPersion");
+        public Criteria andUpdatePersonEqualTo(String value) {
+            addCriterion("update_person =", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionNotEqualTo(String value) {
-            addCriterion("create_persion <>", value, "createPersion");
+        public Criteria andUpdatePersonNotEqualTo(String value) {
+            addCriterion("update_person <>", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionGreaterThan(String value) {
-            addCriterion("create_persion >", value, "createPersion");
+        public Criteria andUpdatePersonGreaterThan(String value) {
+            addCriterion("update_person >", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionGreaterThanOrEqualTo(String value) {
-            addCriterion("create_persion >=", value, "createPersion");
+        public Criteria andUpdatePersonGreaterThanOrEqualTo(String value) {
+            addCriterion("update_person >=", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionLessThan(String value) {
-            addCriterion("create_persion <", value, "createPersion");
+        public Criteria andUpdatePersonLessThan(String value) {
+            addCriterion("update_person <", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionLessThanOrEqualTo(String value) {
-            addCriterion("create_persion <=", value, "createPersion");
+        public Criteria andUpdatePersonLessThanOrEqualTo(String value) {
+            addCriterion("update_person <=", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionLike(String value) {
-            addCriterion("create_persion like", value, "createPersion");
+        public Criteria andUpdatePersonLike(String value) {
+            addCriterion("update_person like", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionNotLike(String value) {
-            addCriterion("create_persion not like", value, "createPersion");
+        public Criteria andUpdatePersonNotLike(String value) {
+            addCriterion("update_person not like", value, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionIn(List<String> values) {
-            addCriterion("create_persion in", values, "createPersion");
+        public Criteria andUpdatePersonIn(List<String> values) {
+            addCriterion("update_person in", values, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionNotIn(List<String> values) {
-            addCriterion("create_persion not in", values, "createPersion");
+        public Criteria andUpdatePersonNotIn(List<String> values) {
+            addCriterion("update_person not in", values, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionBetween(String value1, String value2) {
-            addCriterion("create_persion between", value1, value2, "createPersion");
+        public Criteria andUpdatePersonBetween(String value1, String value2) {
+            addCriterion("update_person between", value1, value2, "updatePerson");
             return (Criteria) this;
         }
 
-        public Criteria andCreatePersionNotBetween(String value1, String value2) {
-            addCriterion("create_persion not between", value1, value2, "createPersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionIsNull() {
-            addCriterion("update_persion is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionIsNotNull() {
-            addCriterion("update_persion is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionEqualTo(String value) {
-            addCriterion("update_persion =", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionNotEqualTo(String value) {
-            addCriterion("update_persion <>", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionGreaterThan(String value) {
-            addCriterion("update_persion >", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionGreaterThanOrEqualTo(String value) {
-            addCriterion("update_persion >=", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionLessThan(String value) {
-            addCriterion("update_persion <", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionLessThanOrEqualTo(String value) {
-            addCriterion("update_persion <=", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionLike(String value) {
-            addCriterion("update_persion like", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionNotLike(String value) {
-            addCriterion("update_persion not like", value, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionIn(List<String> values) {
-            addCriterion("update_persion in", values, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionNotIn(List<String> values) {
-            addCriterion("update_persion not in", values, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionBetween(String value1, String value2) {
-            addCriterion("update_persion between", value1, value2, "updatePersion");
-            return (Criteria) this;
-        }
-
-        public Criteria andUpdatePersionNotBetween(String value1, String value2) {
-            addCriterion("update_persion not between", value1, value2, "updatePersion");
+        public Criteria andUpdatePersonNotBetween(String value1, String value2) {
+            addCriterion("update_person not between", value1, value2, "updatePerson");
             return (Criteria) this;
         }
     }

@@ -4,7 +4,9 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.PanelDesignMapper;
 import io.dataease.base.mapper.PanelGroupMapper;
+import io.dataease.base.mapper.ext.ExtPanelDesignMapper;
 import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
+import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.chart.ChartViewDTO;
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Author: wangjiahao
@@ -45,6 +49,8 @@ public class PanelGroupService {
     private ChartViewService chartViewService;
     @Resource
     private ChartViewMapper chartViewMapper;
+    @Resource
+    private ExtPanelDesignMapper extPanelDesignMapper;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(panelGroupRequest);
@@ -126,4 +132,38 @@ public class PanelGroupService {
         return chartViewDTOList;
     }
 
+
+    @Transactional
+    public void saveGroupWithDesign(PanelGroupRequest request) {
+        //TODO 更新panelGroup 信息
+        if (StringUtils.isEmpty(request.getId())) {
+            request.setId(UUID.randomUUID().toString());
+            request.setCreateTime(System.currentTimeMillis());
+            panelGroupMapper.insert(request);
+        } else {
+            panelGroupMapper.updateByPrimaryKey(request);
+        }
+
+        //TODO 更新panelDesign 信息
+        String panelId = request.getId();
+        Assert.notNull(panelId,"panelId should not be null");
+        //清理原有design
+        extPanelDesignMapper.deleteByPanelId(panelId);
+        //保存view 或者component design
+        Optional.ofNullable(request.getPanelDesigns()).orElse(new ArrayList<>()).stream().forEach(panelDesignDTO -> {
+           if(panelDesignDTO.isKeepFlag()) {
+               String componentId = "";
+               if(StringUtils.equals(PanelConstants.COMPONENT_TYPE_VIEW,panelDesignDTO.getComponentType())){
+                   componentId = panelDesignDTO.getChartView().getId();
+               }else{
+                   //预留 公共组件id获取
+                   componentId = "";
+               }
+               panelDesignDTO.setPanelId(panelId);
+               panelDesignDTO.setComponentId(componentId);
+               panelDesignDTO.setUpdateTime(System.currentTimeMillis());
+               panelDesignMapper.insertSelective(panelDesignDTO);
+           }
+        });
+    }
 }

@@ -2,9 +2,10 @@
 const getDefaultState = () => {
   return {
     panelName: '',
-    panelInfo:{
-      id:null,
-      name:''
+    panelInfo: {
+      id: null,
+      name: '',
+      preStyle: null
     }
   }
 }

@@ -643,6 +643,76 @@ public class PanelGroupExample {
             addCriterion("panel_type not between", value1, value2, "panelType");
             return (Criteria) this;
         }
+
+        public Criteria andPanelStyleIsNull() {
+            addCriterion("panel_style is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleIsNotNull() {
+            addCriterion("panel_style is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleEqualTo(String value) {
+            addCriterion("panel_style =", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleNotEqualTo(String value) {
+            addCriterion("panel_style <>", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleGreaterThan(String value) {
+            addCriterion("panel_style >", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleGreaterThanOrEqualTo(String value) {
+            addCriterion("panel_style >=", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleLessThan(String value) {
+            addCriterion("panel_style <", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleLessThanOrEqualTo(String value) {
+            addCriterion("panel_style <=", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleLike(String value) {
+            addCriterion("panel_style like", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleNotLike(String value) {
+            addCriterion("panel_style not like", value, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleIn(List<String> values) {
+            addCriterion("panel_style in", values, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleNotIn(List<String> values) {
+            addCriterion("panel_style not in", values, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleBetween(String value1, String value2) {
+            addCriterion("panel_style between", value1, value2, "panelStyle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPanelStyleNotBetween(String value1, String value2) {
+            addCriterion("panel_style not between", value1, value2, "panelStyle");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

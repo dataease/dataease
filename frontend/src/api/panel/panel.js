@@ -115,4 +115,4 @@ export function get(url) {
   })
 }
 
-export default {post,get,groupTree, defaultTree }
+export default { post, get, groupTree, defaultTree }

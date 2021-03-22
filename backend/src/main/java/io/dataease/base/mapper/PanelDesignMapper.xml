@@ -6,12 +6,11 @@
     <result column="panel_id" jdbcType="VARCHAR" property="panelId" />
     <result column="component_id" jdbcType="VARCHAR" property="componentId" />
     <result column="component_style" jdbcType="VARCHAR" property="componentStyle" />
+    <result column="component_position" jdbcType="VARCHAR" property="componentPosition" />
     <result column="component_type" jdbcType="VARCHAR" property="componentType" />
     <result column="component_details" jdbcType="VARCHAR" property="componentDetails" />
-    <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
-    <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
-    <result column="update_persion" jdbcType="VARCHAR" property="updatePersion" />
+    <result column="update_person" jdbcType="VARCHAR" property="updatePerson" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -72,8 +71,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, panel_id, component_id, component_style, component_type, component_details, create_time, 
-    update_time, create_persion, update_persion
+    id, panel_id, component_id, component_style, component_position, component_type, 
+    component_details, update_time, update_person
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelDesignExample" resultMap="BaseResultMap">
     select
@@ -107,13 +106,13 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.PanelDesign">
     insert into panel_design (id, panel_id, component_id, 
-      component_style, component_type, component_details, 
-      create_time, update_time, create_persion, 
-      update_persion)
+      component_style, component_position, component_type, 
+      component_details, update_time, update_person
+      )
     values (#{id,jdbcType=VARCHAR}, #{panelId,jdbcType=VARCHAR}, #{componentId,jdbcType=VARCHAR}, 
-      #{componentStyle,jdbcType=VARCHAR}, #{componentType,jdbcType=VARCHAR}, #{componentDetails,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, #{createPersion,jdbcType=VARCHAR}, 
-      #{updatePersion,jdbcType=VARCHAR})
+      #{componentStyle,jdbcType=VARCHAR}, #{componentPosition,jdbcType=VARCHAR}, #{componentType,jdbcType=VARCHAR}, 
+      #{componentDetails,jdbcType=VARCHAR}, #{updateTime,jdbcType=BIGINT}, #{updatePerson,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelDesign">
     insert into panel_design
@@ -130,23 +129,20 @@
       <if test="componentStyle != null">
         component_style,
       </if>
+      <if test="componentPosition != null">
+        component_position,
+      </if>
       <if test="componentType != null">
         component_type,
       </if>
       <if test="componentDetails != null">
         component_details,
       </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
       <if test="updateTime != null">
         update_time,
       </if>
-      <if test="createPersion != null">
-        create_persion,
-      </if>
-      <if test="updatePersion != null">
-        update_persion,
+      <if test="updatePerson != null">
+        update_person,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -162,23 +158,20 @@
       <if test="componentStyle != null">
         #{componentStyle,jdbcType=VARCHAR},
       </if>
+      <if test="componentPosition != null">
+        #{componentPosition,jdbcType=VARCHAR},
+      </if>
       <if test="componentType != null">
         #{componentType,jdbcType=VARCHAR},
       </if>
       <if test="componentDetails != null">
         #{componentDetails,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
-      </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=BIGINT},
       </if>
-      <if test="createPersion != null">
-        #{createPersion,jdbcType=VARCHAR},
-      </if>
-      <if test="updatePersion != null">
-        #{updatePersion,jdbcType=VARCHAR},
+      <if test="updatePerson != null">
+        #{updatePerson,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -203,23 +196,20 @@
       <if test="record.componentStyle != null">
         component_style = #{record.componentStyle,jdbcType=VARCHAR},
       </if>
+      <if test="record.componentPosition != null">
+        component_position = #{record.componentPosition,jdbcType=VARCHAR},
+      </if>
       <if test="record.componentType != null">
         component_type = #{record.componentType,jdbcType=VARCHAR},
       </if>
       <if test="record.componentDetails != null">
         component_details = #{record.componentDetails,jdbcType=VARCHAR},
       </if>
-      <if test="record.createTime != null">
-        create_time = #{record.createTime,jdbcType=BIGINT},
-      </if>
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=BIGINT},
       </if>
-      <if test="record.createPersion != null">
-        create_persion = #{record.createPersion,jdbcType=VARCHAR},
-      </if>
-      <if test="record.updatePersion != null">
-        update_persion = #{record.updatePersion,jdbcType=VARCHAR},
+      <if test="record.updatePerson != null">
+        update_person = #{record.updatePerson,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -232,12 +222,11 @@
       panel_id = #{record.panelId,jdbcType=VARCHAR},
       component_id = #{record.componentId,jdbcType=VARCHAR},
       component_style = #{record.componentStyle,jdbcType=VARCHAR},
+      component_position = #{record.componentPosition,jdbcType=VARCHAR},
       component_type = #{record.componentType,jdbcType=VARCHAR},
       component_details = #{record.componentDetails,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
-      create_persion = #{record.createPersion,jdbcType=VARCHAR},
-      update_persion = #{record.updatePersion,jdbcType=VARCHAR}
+      update_person = #{record.updatePerson,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -254,23 +243,20 @@
       <if test="componentStyle != null">
         component_style = #{componentStyle,jdbcType=VARCHAR},
       </if>
+      <if test="componentPosition != null">
+        component_position = #{componentPosition,jdbcType=VARCHAR},
+      </if>
       <if test="componentType != null">
         component_type = #{componentType,jdbcType=VARCHAR},
       </if>
       <if test="componentDetails != null">
         component_details = #{componentDetails,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=BIGINT},
-      </if>
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=BIGINT},
       </if>
-      <if test="createPersion != null">
-        create_persion = #{createPersion,jdbcType=VARCHAR},
-      </if>
-      <if test="updatePersion != null">
-        update_persion = #{updatePersion,jdbcType=VARCHAR},
+      <if test="updatePerson != null">
+        update_person = #{updatePerson,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
@@ -280,12 +266,11 @@
     set panel_id = #{panelId,jdbcType=VARCHAR},
       component_id = #{componentId,jdbcType=VARCHAR},
       component_style = #{componentStyle,jdbcType=VARCHAR},
+      component_position = #{componentPosition,jdbcType=VARCHAR},
       component_type = #{componentType,jdbcType=VARCHAR},
       component_details = #{componentDetails,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
-      create_persion = #{createPersion,jdbcType=VARCHAR},
-      update_persion = #{updatePersion,jdbcType=VARCHAR}
+      update_person = #{updatePerson,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

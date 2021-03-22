@@ -69,13 +69,9 @@ export default {
   replace: true,
   name: 'VueDragResizeRotate',
   props: {
-    preStyle: {
+    panelDesign: {
       type: Object,
       default: null
-    },
-    panelDesignId: {
-      type: String,
-      default: ''
     },
     className: {
       type: String,
@@ -412,21 +408,48 @@ export default {
       }
     },
     style() {
-      let newStyle ={};
-      if(this.styleInit && this.preStyle){
-        newStyle = this.preStyle;
-      }else{
-        newStyle ={
-          transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
-          width: this.computedWidth,
-          height: this.computedHeight,
-          zIndex: this.zIndex,
-          ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
-        };
+      if (!this.panelDesign.styleInit && this.panelDesign.componentPosition) {
+        debugger
+        // 设置定位
+        const componentPosition = JSON.parse(this.panelDesign.componentPosition)
+        this.left = componentPosition.left
+        this.top = componentPosition.top
+        this.width = componentPosition.width
+        this.height = componentPosition.height
+        this.w = componentPosition.width
+        this.h = componentPosition.height
+        this.zIndex = componentPosition.zIndex
+        this.dragging = componentPosition.dragging
+        this.disableUserSelect = componentPosition.disableUserSelect
       }
-      this.styleInit = false;
-      this.$emit('newStyle', this.panelDesignId,newStyle);
-      return newStyle;
+
+      const newStyle = {
+        transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
+        width: this.computedWidth,
+        height: this.computedHeight,
+        zIndex: this.zIndex,
+        ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
+      }
+
+      this.panelDesign.styleInit = true
+      this.panelDesign.componentStyle = JSON.stringify(newStyle)
+
+      // 回收定位
+      const newComponentPosition = {
+        left: this.left,
+        top: this.top,
+        width: this.width,
+        height: this.height,
+        w: this.width,
+        h: this.height,
+        zIndex: this.zIndex,
+        dragging: this.dragging,
+        disableUserSelect: this.disableUserSelect
+      }
+      this.panelDesign.componentPosition = JSON.stringify(newComponentPosition)
+
+      this.$emit('newStyle', this.panelDesign.id, newStyle)
+      return newStyle
     },
     // 控制柄显示与否
     actualHandles() {
@@ -578,14 +601,6 @@ export default {
     this.resetBoundsAndMouseState()
   },
   mounted: function() {
-    //f2c 页面初始化后对样式重新赋值
-    if(this.preStyle){
-
-
-
-    }
-
-
     if (!this.enableNativeDrag) {
       this.$el.ondragstart = () => false
     }
@@ -620,9 +635,11 @@ export default {
   },
 
   methods: {
-    removeView(){
+    removeView() {
+      debugger
+      this.panelDesign.keepFlag = false
       // console.log(this.panelDesignId);
-      this.$emit('removeView',this.panelDesignId)
+      // this.$emit('removeView', this.panelDesign.id)
     },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {

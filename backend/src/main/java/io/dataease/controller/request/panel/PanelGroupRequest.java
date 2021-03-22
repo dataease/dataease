@@ -1,6 +1,7 @@
 package io.dataease.controller.request.panel;
 
 import io.dataease.base.domain.PanelGroup;
+import io.dataease.dto.panel.PanelGroupDTO;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * Description:
  */
 @Data
-public class PanelGroupRequest extends PanelGroup {
+public class PanelGroupRequest extends PanelGroupDTO {
     private String sort;
 
     public PanelGroupRequest() {

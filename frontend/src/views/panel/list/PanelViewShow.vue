@@ -39,6 +39,9 @@
             <el-button size="mini">
               背景图
             </el-button>
+            <el-button type="primary" size="mini" @click="savePanel">
+              保存
+            </el-button>
             <el-button type="primary" size="mini" @click="preViewShow">
               预览
             </el-button>
@@ -50,10 +53,9 @@
               v-for="panelDesign in panelDetails.panelDesigns"
               v-show="panelDesign.keepFlag"
               :key="panelDesign.id"
-              :panel-design-id="panelDesign.id"
+              :panel-design="panelDesign"
               :parent="true"
               @newStyle="newStyle"
-              @removeView="removeView"
             >
               <!--视图显示 panelDesign.componentType==='view'-->
               <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView" />
@@ -70,7 +72,7 @@
 </template>
 
 <script>
-import { get } from '@/api/panel/panel'
+import { post, get } from '@/api/panel/panel'
 import draggable from 'vuedraggable'
 import ChartComponent from '../../chart/components/ChartComponent'
 import VueDragResizeRotate from '@/components/vue-drag-resize-rotate'
@@ -90,8 +92,8 @@ export default {
         position: 'relative',
         height: '100%',
         width: '100%',
-        backgroundColor: '#808080',
-        background: 'linear-gradient(-90deg, rgba(0, 0, 0, .1) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px)',
+        backgroundColor: '#f2f2f2',
+        // background: 'linear-gradient(-90deg, rgba(0, 0, 0, .1) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px)',
         backgroundSize: '20px 20px, 20px 20px'
       },
       ViewActiveName: 'Views'
@@ -141,24 +143,25 @@ export default {
             id: uuid.v1(),
             keepFlag: true,
             chartView: item,
-            componentType: 'view'
+            componentType: 'view',
+            styleInit: false
           }
           panelDesigns.push(newComponent)
         }
       })
     },
-    removeView(panelDesignId) {
-      this.panelDetails.panelDesigns.forEach(function(panelDesign, index) {
-        if (panelDesign.id === panelDesignId) {
-          panelDesign.keepFlag = false
-        }
-      })
-    },
+    // removeView(panelDesignId) {
+    //   this.panelDetails.panelDesigns.forEach(function(panelDesign, index) {
+    //     if (panelDesign.id === panelDesignId) {
+    //       panelDesign.keepFlag = false
+    //     }
+    //   })
+    // },
     newStyle(viewId, newStyleInfo) {
       this.$nextTick(() => {
         this.$refs[viewId][0].chartResize()
       })
-
+      this.panelInfo.preStyle = JSON.stringify(newStyleInfo)
       console.log(viewId)
       console.log(JSON.stringify(newStyleInfo))
     },
@@ -184,6 +187,13 @@ export default {
     },
     preViewShow() {
 
+    },
+    savePanel() {
+      debugger
+      post('panel/group/saveGroupWithDesign', this.panelDetails, () => {
+        debugger
+      })
+      this.$success(this.$t('commons.save_success'))
     }
   }
 }
