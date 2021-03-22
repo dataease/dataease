@@ -25,8 +25,8 @@
             </el-form-item>
             <el-form-item :label="$t('chart.line_type')" class="form-item">
               <el-radio-group v-model="sizeForm.lineType" @change="changeBarSizeCase">
-                <el-radio label="solid">{{ $t('chart.line_type_solid') }}</el-radio>
-                <el-radio label="dashed">{{ $t('chart.line_type_dashed') }}</el-radio>
+                <el-radio-button label="solid">{{ $t('chart.line_type_solid') }}</el-radio-button>
+                <el-radio-button label="dashed">{{ $t('chart.line_type_dashed') }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('chart.line_symbol')" class="form-item">

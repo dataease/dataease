@@ -59,7 +59,7 @@
         <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;" class="padding-lr">
           <el-row>
             <span>{{ $t('chart.title') }}</span>
-            <!--          <el-checkbox v-model="view.show" style="float: right;">{{$t('chart.show')}}</el-checkbox>-->
+            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>
           </el-row>
           <el-form>
             <el-form-item class="form-item">
@@ -69,7 +69,6 @@
                 :placeholder="$t('chart.title')"
                 prefix-icon="el-icon-search"
                 clearable
-                @blur="save"
               />
             </el-form-item>
           </el-form>
@@ -371,10 +370,10 @@ export default {
       const yItems = this.quota.filter(function(m) {
         return m.id === that.moveId
       })
-      if (xItems && xItems.length > 0) {
+      if (xItems && xItems.length > 1) {
         this.dimension.splice(e.newDraggableIndex, 1)
       }
-      if (yItems && yItems.length > 0) {
+      if (yItems && yItems.length > 1) {
         this.quota.splice(e.newDraggableIndex, 1)
       }
     },
