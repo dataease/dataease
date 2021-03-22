@@ -1,4 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { componentStyle } from '../common/common'
 
 export function baseLineOption(chart_option, chart) {
   // 处理shape attr
@@ -27,6 +28,8 @@ export function baseLineOption(chart_option, chart) {
           width: customAttr.size.lineWidth,
           type: customAttr.size.lineType
         }
+        y.smooth = customAttr.size.lineSmooth
+        customAttr.size.lineArea ? y.areaStyle = { opacity: 0.6 } : { opacity: 0 }
       }
       y.type = 'line'
       chart_option.legend.data.push(y.name)
@@ -34,6 +37,18 @@ export function baseLineOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
+  componentStyle(chart_option, chart)
+  return chart_option
+}
+
+export function stackLineOption(chart_option, chart) {
+  baseLineOption(chart_option, chart)
+
+  // ext
+  chart_option.tooltip.trigger = 'axis'
+  chart_option.series.forEach(function(s) {
+    s.stack = 'stack'
+  })
   return chart_option
 }
 

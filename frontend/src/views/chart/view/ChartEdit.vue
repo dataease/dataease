@@ -79,14 +79,25 @@
           <el-row>
             <div class="chart-type">
               <!--TODO 这里要替换好看点的图标，UI标签可以重新定义-->
-              <el-radio-group v-model="view.type" @change="save">
-                <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
-                <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
-                <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
-                <el-radio value="bar-horizontal-stack" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
-                <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
-                <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
-                <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
+              <el-radio-group
+                v-model="view.type"
+                style="width: 100%"
+                @change="save"
+              >
+                <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                  <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
+                  <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
+                  <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
+                  <el-radio value="bar-horizontal-stack" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
+                  <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
+                </div>
+                <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                  <el-radio value="line-stack" label="line-stack"><svg-icon icon-class="line-stack" class="chart-icon" /></el-radio>
+                  <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
+                  <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
+                  <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
+                  <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                </div>
               </el-radio-group>
             </div>
           </el-row>
@@ -97,7 +108,10 @@
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
               <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
             </el-tab-pane>
-            <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">TODO</el-tab-pane>
+            <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
+              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+              <legend-selector class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+            </el-tab-pane>
           </el-tabs>
         </div>
         <div style="height: 30%;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr">
@@ -154,14 +168,16 @@ import draggable from 'vuedraggable'
 import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
 import ChartComponent from '../components/ChartComponent'
-// shape attr
-import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '../chart/chart'
+// shape attr,component style
+import { DEFAULT_COLOR_CASE, DEFAULT_SIZE, DEFAULT_TITLE_STYLE, DEFAULT_LEGEND_STYLE } from '../chart/chart'
 import ColorSelector from '../components/shape_attr/ColorSelector'
 import SizeSelector from '../components/shape_attr/SizeSelector'
+import TitleSelector from '../components/component_style/TitleSelector'
+import LegendSelector from '../components/component_style/LegendSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -176,6 +192,10 @@ export default {
         customAttr: {
           color: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE
+        },
+        customStyle: {
+          text: DEFAULT_TITLE_STYLE,
+          legend: DEFAULT_LEGEND_STYLE
         }
       },
       // 定义要被拖拽对象的数组
@@ -263,6 +283,7 @@ export default {
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
       view.customAttr = JSON.stringify(view.customAttr)
+      view.customStyle = JSON.stringify(view.customStyle)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         this.getData(response.data.id)
@@ -280,6 +301,7 @@ export default {
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
+          this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           // 将视图传入echart组件
           this.chart = response.data
         })
@@ -386,6 +408,16 @@ export default {
     onSizeChange(val) {
       this.view.customAttr.size = val
       this.save()
+    },
+
+    onTextChange(val) {
+      this.view.customStyle.text = val
+      this.save()
+    },
+
+    onLegendChange(val) {
+      this.view.customStyle.legend = val
+      this.save()
     }
   }
 }
@@ -488,5 +520,10 @@ export default {
 
   .attr-selector{
     margin: 2px 0;
+  }
+
+  .disabled-none-cursor{
+    cursor: not-allowed;
+    pointer-events:none;
   }
 </style>

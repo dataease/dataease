@@ -42,6 +42,12 @@
             <el-form-item :label="$t('chart.line_symbol_size')" class="form-item form-item-slider">
               <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
             </el-form-item>
+            <el-form-item :label="$t('chart.line_smooth')" class="form-item">
+              <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase">{{ $t('chart.line_smooth') }}</el-checkbox>
+            </el-form-item>
+            <el-form-item :label="$t('chart.line_area')" class="form-item">
+              <el-checkbox v-model="sizeForm.lineArea" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
+            </el-form-item>
           </el-form>
 
           <el-form v-if="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
@@ -58,11 +64,19 @@
               <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
           </el-form>
+
+          <el-form v-if="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+            <el-form-item :label="$t('chart.shape')" class="form-item">
+              <el-radio-group v-model="sizeForm.radarShape" size="mini" @change="changeBarSizeCase">
+                <el-radio-button label="polygon">{{ $t('chart.polygon') }}</el-radio-button>
+                <el-radio-button label="circle">{{ $t('chart.circle') }}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-form>
         </el-col>
 
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
-      <!--todo other size attr-->
     </div>
   </div>
 </template>

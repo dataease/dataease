@@ -11,9 +11,26 @@ export const DEFAULT_SIZE = {
   lineType: 'solid',
   lineSymbol: 'emptyCircle',
   lineSymbolSize: 4,
+  lineSmooth: false,
+  lineArea: false,
   pieInnerRadius: 0,
   pieOuterRadius: 60,
-  funnelWidth: 80
+  funnelWidth: 80,
+  radarShape: 'polygon'
+}
+export const DEFAULT_TITLE_STYLE = {
+  show: true,
+  fontSize: '18',
+  color: '#000000',
+  hPosition: 'center',
+  vPosition: 'top',
+  isItalic: false
+}
+export const DEFAULT_LEGEND_STYLE = {
+  show: true,
+  hPosition: 'center',
+  vPosition: 'bottom',
+  orient: 'horizontal'
 }
 export const BASE_BAR = {
   title: {
@@ -21,6 +38,8 @@ export const BASE_BAR = {
   },
   tooltip: {},
   legend: {
+    show: true,
+    type: 'scroll',
     data: []
   },
   xAxis: {
@@ -29,7 +48,12 @@ export const BASE_BAR = {
   yAxis: {
     type: 'value'
   },
-  series: []
+  series: [],
+  dataZoom: [
+    {
+      type: 'inside'
+    }
+  ]
 }
 export const HORIZONTAL_BAR = {
   title: {
@@ -37,6 +61,8 @@ export const HORIZONTAL_BAR = {
   },
   tooltip: {},
   legend: {
+    show: true,
+    type: 'scroll',
     data: []
   },
   xAxis: {
@@ -45,7 +71,12 @@ export const HORIZONTAL_BAR = {
   yAxis: {
     data: []
   },
-  series: []
+  series: [],
+  dataZoom: [
+    {
+      type: 'inside'
+    }
+  ]
 }
 
 export const BASE_LINE = {
@@ -54,15 +85,23 @@ export const BASE_LINE = {
   },
   tooltip: {},
   legend: {
+    show: true,
+    type: 'scroll',
     data: []
   },
   xAxis: {
+    boundaryGap: false,
     data: []
   },
   yAxis: {
     type: 'value'
   },
-  series: []
+  series: [],
+  dataZoom: [
+    {
+      type: 'inside'
+    }
+  ]
 }
 
 export const BASE_PIE = {
@@ -73,7 +112,10 @@ export const BASE_PIE = {
     trigger: 'item',
     formatter: '{a} <br/>{b}: {c} ({d}%)'
   },
-  legend: {},
+  legend: {
+    show: true,
+    type: 'scroll'
+  },
   series: [
     {
       name: '',
@@ -100,7 +142,8 @@ export const BASE_FUNNEL = {
     trigger: 'item'
   },
   legend: {
-    // data: []
+    show: true,
+    type: 'scroll'
   },
   series: [
     {
@@ -139,4 +182,31 @@ export const BASE_FUNNEL = {
       data: []
     }
   ]
+}
+
+export const BASE_RADAR = {
+  title: {
+    text: ''
+  },
+  tooltip: {},
+  legend: {
+    data: []
+  },
+  radar: {
+    shape: 'polygon',
+    name: {
+      textStyle: {
+        color: '#000000'
+        // backgroundColor: '#999',
+        // borderRadius: 3,
+        // padding: [3, 5]
+      }
+    },
+    indicator: []
+  },
+  series: [{
+    type: 'radar',
+    // areaStyle: {normal: {}},
+    data: []
+  }]
 }

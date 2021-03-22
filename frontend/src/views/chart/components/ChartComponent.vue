@@ -5,11 +5,12 @@
 </template>
 
 <script>
-import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL } from '../chart/chart'
+import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR } from '../chart/chart'
 import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
-import { baseLineOption } from '../chart/line/line'
+import { baseLineOption, stackLineOption } from '../chart/line/line'
 import { basePieOption } from '../chart/pie/pie'
 import { baseFunnelOption } from '../chart/funnel/funnel'
+import { baseRadarOption } from '../chart/radar/radar'
 
 export default {
   name: 'ChartComponent',
@@ -56,10 +57,14 @@ export default {
         chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
       } else if (chart.type === 'line') {
         chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
+      } else if (chart.type === 'line-stack') {
+        chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
       } else if (chart.type === 'pie') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
       } else if (chart.type === 'funnel') {
         chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
+      } else if (chart.type === 'radar') {
+        chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart)
       }
       console.log(chart_option)
       this.myEcharts(chart_option)
