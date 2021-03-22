@@ -26,7 +26,6 @@
 
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.color') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
-      <!--todo other color attr-->
     </div>
   </div>
 </template>

@@ -65,7 +65,6 @@
 
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
-      <!--todo other size attr-->
     </div>
   </div>
 </template>

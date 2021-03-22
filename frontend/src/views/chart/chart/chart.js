@@ -16,12 +16,27 @@ export const DEFAULT_SIZE = {
   pieOuterRadius: 60,
   funnelWidth: 80
 }
+export const DEFAULT_TITLE_STYLE = {
+  fontSize: '18',
+  color: '#000000',
+  hPosition: 'center',
+  vPosition: 'top',
+  isItalic: false
+}
+export const DEFAULT_LEGEND_STYLE = {
+  show: true,
+  hPosition: 'center',
+  vPosition: 'bottom',
+  orient: 'horizontal'
+}
 export const BASE_BAR = {
   title: {
     text: ''
   },
   tooltip: {},
   legend: {
+    show: true,
+    type: 'scroll',
     data: []
   },
   xAxis: {
@@ -30,7 +45,12 @@ export const BASE_BAR = {
   yAxis: {
     type: 'value'
   },
-  series: []
+  series: [],
+  dataZoom: [
+    {
+      type: 'inside'
+    }
+  ]
 }
 export const HORIZONTAL_BAR = {
   title: {
@@ -38,6 +58,8 @@ export const HORIZONTAL_BAR = {
   },
   tooltip: {},
   legend: {
+    show: true,
+    type: 'scroll',
     data: []
   },
   xAxis: {
@@ -46,7 +68,12 @@ export const HORIZONTAL_BAR = {
   yAxis: {
     data: []
   },
-  series: []
+  series: [],
+  dataZoom: [
+    {
+      type: 'inside'
+    }
+  ]
 }
 
 export const BASE_LINE = {
@@ -55,6 +82,8 @@ export const BASE_LINE = {
   },
   tooltip: {},
   legend: {
+    show: true,
+    type: 'scroll',
     data: []
   },
   xAxis: {
@@ -63,7 +92,12 @@ export const BASE_LINE = {
   yAxis: {
     type: 'value'
   },
-  series: []
+  series: [],
+  dataZoom: [
+    {
+      type: 'inside'
+    }
+  ]
 }
 
 export const BASE_PIE = {
@@ -74,7 +108,10 @@ export const BASE_PIE = {
     trigger: 'item',
     formatter: '{a} <br/>{b}: {c} ({d}%)'
   },
-  legend: {},
+  legend: {
+    show: true,
+    type: 'scroll'
+  },
   series: [
     {
       name: '',
@@ -101,7 +138,8 @@ export const BASE_FUNNEL = {
     trigger: 'item'
   },
   legend: {
-    // data: []
+    show: true,
+    type: 'scroll'
   },
   series: [
     {

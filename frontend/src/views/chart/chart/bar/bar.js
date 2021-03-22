@@ -1,4 +1,5 @@
 import { hexColorToRGBA } from '../util.js'
+import { componentStyle } from '../common/common'
 
 export function baseBarOption(chart_option, chart) {
   // 处理shape attr
@@ -35,6 +36,7 @@ export function baseBarOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
+  componentStyle(chart_option, chart)
   return chart_option
 }
 
@@ -86,6 +88,7 @@ export function horizontalBarOption(chart_option, chart) {
     }
   }
   // console.log(chart_option);
+  componentStyle(chart_option, chart)
   return chart_option
 }
 

@@ -25,6 +25,10 @@ import UmyUi from 'umy-ui'
 
 Vue.use(UmyUi)
 
+import vcolorpicker from 'vcolorpicker'
+
+Vue.use(vcolorpicker)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

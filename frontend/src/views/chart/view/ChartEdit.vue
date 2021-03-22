@@ -97,7 +97,10 @@
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
               <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
             </el-tab-pane>
-            <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">TODO</el-tab-pane>
+            <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
+              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+              <legend-selector class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+            </el-tab-pane>
           </el-tabs>
         </div>
         <div style="height: 30%;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr">
@@ -154,14 +157,16 @@ import draggable from 'vuedraggable'
 import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
 import ChartComponent from '../components/ChartComponent'
-// shape attr
-import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '../chart/chart'
+// shape attr,component style
+import { DEFAULT_COLOR_CASE, DEFAULT_SIZE, DEFAULT_TITLE_STYLE, DEFAULT_LEGEND_STYLE } from '../chart/chart'
 import ColorSelector from '../components/shape_attr/ColorSelector'
 import SizeSelector from '../components/shape_attr/SizeSelector'
+import TitleSelector from '../components/component_style/TitleSelector'
+import LegendSelector from '../components/component_style/LegendSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -176,6 +181,10 @@ export default {
         customAttr: {
           color: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE
+        },
+        customStyle: {
+          text: DEFAULT_TITLE_STYLE,
+          legend: DEFAULT_LEGEND_STYLE
         }
       },
       // 定义要被拖拽对象的数组
@@ -263,6 +272,7 @@ export default {
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
       view.customAttr = JSON.stringify(view.customAttr)
+      view.customStyle = JSON.stringify(view.customStyle)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         this.getData(response.data.id)
@@ -280,6 +290,7 @@ export default {
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
+          this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           // 将视图传入echart组件
           this.chart = response.data
         })
@@ -385,6 +396,16 @@ export default {
 
     onSizeChange(val) {
       this.view.customAttr.size = val
+      this.save()
+    },
+
+    onTextChange(val) {
+      this.view.customStyle.text = val
+      this.save()
+    },
+
+    onLegendChange(val) {
+      this.view.customStyle.legend = val
       this.save()
     }
   }
