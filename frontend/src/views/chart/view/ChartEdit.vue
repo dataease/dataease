@@ -79,16 +79,25 @@
           <el-row>
             <div class="chart-type">
               <!--TODO 这里要替换好看点的图标，UI标签可以重新定义-->
-              <el-radio-group v-model="view.type" @change="save">
-                <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
-                <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
-                <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
-                <el-radio value="bar-horizontal-stack" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
-                <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
-                <el-radio value="line-stack" label="line-stack"><svg-icon icon-class="line-stack" class="chart-icon" /></el-radio>
-                <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
-                <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
-                <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
+              <el-radio-group
+                v-model="view.type"
+                style="width: 100%"
+                @change="save"
+              >
+                <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                  <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
+                  <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
+                  <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
+                  <el-radio value="bar-horizontal-stack" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
+                  <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
+                </div>
+                <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                  <el-radio value="line-stack" label="line-stack"><svg-icon icon-class="line-stack" class="chart-icon" /></el-radio>
+                  <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
+                  <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
+                  <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
+                  <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                </div>
               </el-radio-group>
             </div>
           </el-row>
@@ -511,5 +520,10 @@ export default {
 
   .attr-selector{
     margin: 2px 0;
+  }
+
+  .disabled-none-cursor{
+    cursor: not-allowed;
+    pointer-events:none;
   }
 </style>
