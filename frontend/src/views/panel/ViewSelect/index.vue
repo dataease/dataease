@@ -71,11 +71,12 @@ export default {
     loadData() {
       const param = {}
       tree(param).then(res => {
-        let arr = []
-        for (let index = 0; index < 10; index++) {
-          arr = arr.concat(res.data)
-        }
-        this.data = arr
+        // let arr = []
+        // for (let index = 0; index < 10; index++) {
+        //   arr = arr.concat(res.data)
+        // }
+        // this.data = arr
+        this.data = res.data
       })
     },
     renderNode(h, { node, data, store }) {
