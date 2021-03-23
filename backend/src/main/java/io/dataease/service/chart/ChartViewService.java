@@ -160,6 +160,20 @@ public class ChartViewService {
         // TODO 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + y.getOriginName()).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0},{1} FROM {2} GROUP BY {3}", StringUtils.join(group, ","), StringUtils.join(field, ","), table, StringUtils.join(group, ","));
+        String[] order = yAxis.stream().filter(y -> StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none"))
+                .map(y -> "_" + y.getSummary() + "_" + y.getOriginName() + " " + y.getSort()).toArray(String[]::new);
+
+        String sql = MessageFormat.format("SELECT {0},{1} FROM {2} WHERE 1=1 {3} GROUP BY {4} ORDER BY null,{5}",
+                StringUtils.join(group, ","),
+                StringUtils.join(field, ","),
+                table,
+                "",
+                StringUtils.join(group, ","),
+                StringUtils.join(order, ","));
+        if (sql.endsWith(",")) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        // 如果是对结果字段过滤，则再包裹一层sql
+        return sql;
     }
 }

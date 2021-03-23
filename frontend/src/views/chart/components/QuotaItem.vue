@@ -6,10 +6,15 @@
           {{ item.name }}<span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span><i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item icon="el-icon-notebook-2">
-            <el-dropdown placement="right-start" size="mini" @command="summary">
-              <span class="el-dropdown-link">
-                {{ $t('chart.summary') }}<span class="summary-span">({{ $t('chart.'+item.summary) }})</span><i class="el-icon-arrow-right el-icon--right" />
+          <el-dropdown-item>
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="summary">
+              <span class="el-dropdown-link" style="display: flex;justify-content: space-between;align-items: center;width: 100%">
+                <span>
+                  <i class="el-icon-notebook-2" />
+                  <span>{{ $t('chart.summary') }}</span>
+                  <span class="summary-span">({{ $t('chart.'+item.summary) }})</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
@@ -22,15 +27,40 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-s-grid">
-            <el-dropdown placement="right-start" size="mini" @command="quickCalc">
-              <span class="el-dropdown-link">
-                {{ $t('chart.quick_calc') }}<span class="summary-span">(无)</span><i class="el-icon-arrow-right el-icon--right" />
+          <el-dropdown-item>
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">
+              <span class="el-dropdown-link" style="display: flex;justify-content: space-between;align-items: center;width: 100%">
+                <span>
+                  <i class="el-icon-s-grid" />
+                  <span>{{ $t('chart.quick_calc') }}</span>
+                  <span class="summary-span">(无)</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeQuickCalc('none')">无</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item divided>
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
+              <span class="el-dropdown-link" style="display: flex;justify-content: space-between;align-items: center;width: 100%">
+                <span>
+                  <i class="el-icon-sort" />
+                  <span>{{ $t('chart.sort') }}</span>
+                  <span class="summary-span">({{ $t('chart.'+item.sort) }})</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-files">
+            <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
@@ -45,7 +75,7 @@
     <el-dialog :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
       <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
         <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="itemForm.name" size="mini"/>
+          <el-input v-model="itemForm.name" size="mini" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -86,24 +116,6 @@ export default {
 
   },
   methods: {
-    summary(param) {
-      // console.log(param)
-      this.item.summary = param.type
-      this.$emit('onQuotaItemChange', this.item)
-    },
-    beforeSummary(type) {
-      return {
-        type: type
-      }
-    },
-    quickCalc(param) {
-
-    },
-    beforeQuickCalc(type) {
-      return {
-        type: type
-      }
-    },
     clickItem(param) {
       if (!param) {
         return
@@ -124,6 +136,38 @@ export default {
         type: type
       }
     },
+
+    summary(param) {
+      // console.log(param)
+      this.item.summary = param.type
+      this.$emit('onQuotaItemChange', this.item)
+    },
+    beforeSummary(type) {
+      return {
+        type: type
+      }
+    },
+
+    quickCalc(param) {
+
+    },
+    beforeQuickCalc(type) {
+      return {
+        type: type
+      }
+    },
+
+    sort(param) {
+      // console.log(param)
+      this.item.sort = param.type
+      this.$emit('onQuotaItemChange', this.item)
+    },
+    beforeSort(type) {
+      return {
+        type: type
+      }
+    },
+
     showRename() {
       this.itemForm.name = this.item.name
       this.renameItem = true

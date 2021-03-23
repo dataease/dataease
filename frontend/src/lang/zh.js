@@ -673,7 +673,13 @@ export default {
     position: '位置',
     rotate: '角度',
     name: '名称',
-    icon: '图标'
+    icon: '图标',
+    trigger_position: '触发位置',
+    asc: '升序',
+    desc: '降序',
+    sort: '排序',
+    filter: '过滤',
+    none: '无'
   },
   dataset: {
     datalist: '数据集',

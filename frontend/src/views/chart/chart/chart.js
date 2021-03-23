@@ -58,7 +58,8 @@ export const DEFAULT_XAXIS_STYLE = {
   position: 'bottom',
   name: '',
   axisLabel: {
-    rotate: 0
+    rotate: 0,
+    formatter: '{value}'
   }
 }
 export const DEFAULT_YAXIS_STYLE = {
@@ -66,7 +67,8 @@ export const DEFAULT_YAXIS_STYLE = {
   position: 'left',
   name: '',
   axisLabel: {
-    rotate: 0
+    rotate: 0,
+    formatter: '{value}'
   }
 }
 // chart config

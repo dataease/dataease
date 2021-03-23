@@ -281,14 +281,17 @@ export default {
       view.sceneId = this.sceneId
       view.name = this.table.name
       view.tableId = this.$store.state.chart.tableId
-      view.xaxis.forEach(function(ele) {
-        if (!ele.summary || ele.summary === '') {
-          ele.summary = 'sum'
-        }
-      })
+      // view.xaxis.forEach(function(ele) {
+      //   if (!ele.summary || ele.summary === '') {
+      //     ele.summary = 'sum'
+      //   }
+      // })
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
           ele.summary = 'sum'
+        }
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
         }
       })
       if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {

@@ -27,4 +27,6 @@ public class ChartViewFieldDTO {
     private Integer deType;
 
     private String summary;
+
+    private String sort;
 }

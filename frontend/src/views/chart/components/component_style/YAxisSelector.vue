@@ -23,6 +23,9 @@
             <el-form-item :label="$t('chart.rotate')" class="form-item form-item-slider">
               <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeYAxisStyle" />
             </el-form-item>
+            <el-form-item :label="$t('chart.content_formatter')" class="form-item">
+              <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeYAxisStyle"/>
+            </el-form-item>
           </el-form>
         </el-col>
 
