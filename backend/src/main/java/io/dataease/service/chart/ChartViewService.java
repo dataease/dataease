@@ -158,7 +158,7 @@ public class ChartViewService {
 
     public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis) {
         // TODO 字段汇总 排序等
-        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2))").toArray(String[]::new);
+        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + y.getOriginName()).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
         return MessageFormat.format("SELECT {0},{1} FROM {2} GROUP BY {3}", StringUtils.join(group, ","), StringUtils.join(field, ","), table, StringUtils.join(group, ","));
     }
