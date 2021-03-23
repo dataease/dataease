@@ -8,7 +8,7 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="summary">
-              <span class="el-dropdown-link" style="display: flex;justify-content: space-between;align-items: center;width: 100%">
+              <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-notebook-2" />
                   <span>{{ $t('chart.summary') }}</span>
@@ -29,7 +29,7 @@
           </el-dropdown-item>
           <el-dropdown-item>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">
-              <span class="el-dropdown-link" style="display: flex;justify-content: space-between;align-items: center;width: 100%">
+              <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-s-grid" />
                   <span>{{ $t('chart.quick_calc') }}</span>
@@ -44,7 +44,7 @@
           </el-dropdown-item>
           <el-dropdown-item divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
-              <span class="el-dropdown-link" style="display: flex;justify-content: space-between;align-items: center;width: 100%">
+              <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-sort" />
                   <span>{{ $t('chart.sort') }}</span>
@@ -219,5 +219,12 @@ export default {
   .summary-span{
     margin-left: 4px;
     color: #878d9f;;
+  }
+
+  .inner-dropdown-menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%
   }
 </style>
