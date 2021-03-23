@@ -73,7 +73,8 @@
           <div v-if="show" class="leftPanel">
 
             <div class="leftPanel-items">
-              <filter-group />
+              <view-select v-if="show && showIndex===0" />
+              <filter-group v-if="show && showIndex===1" />
             </div>
           </div>
         </div>
@@ -92,6 +93,7 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { addClass, removeClass } from '@/utils'
 import FilterGroup from '../filter'
+import ViewSelect from '../ViewSelect'
 import DrawingBoard from '../DrawingBoard'
 export default {
   components: {
@@ -99,13 +101,15 @@ export default {
     DeContainer,
     DeAsideContainer,
     FilterGroup,
+    ViewSelect,
     DrawingBoard
 
   },
   data() {
     return {
       show: false,
-      clickNotClose: false
+      clickNotClose: false,
+      showIndex: -1
     }
   },
   watch: {
@@ -136,6 +140,7 @@ export default {
     },
     showPanel(type) {
       this.show = !this.show
+      this.showIndex = type
     },
     addEventClick() {
       window.addEventListener('click', this.closeSidebar)
@@ -146,6 +151,7 @@ export default {
       if (!parent && !self) {
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
+        this.showIndex = -1
       }
     },
     insertToBody() {

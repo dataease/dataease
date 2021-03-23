@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.base.mapper.ext.ExtPanelViewMapper">
+
+    <resultMap id="treeNodeMap" type="io.dataease.dto.panel.po.PanelViewPo">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="pid" property="pid" />
+        <result column="type" property="type" />
+    </resultMap>
+
+
+
+    <select id="groups" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
+        select id, pid,  name, `type`
+        from chart_group
+        <if test="_parameter != null">
+            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by create_time desc
+        </if>
+    </select>
+
+    <select id="views" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
+        select id, scene_id  as pid ,title  as name, `type`
+        from chart_view
+        <if test="_parameter != null">
+            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by create_time desc
+        </if>
+    </select>
+
+
+
+
+
+
+</mapper>
