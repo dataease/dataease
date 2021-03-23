@@ -46,7 +46,7 @@ export default {
     drawEcharts() {
       const chart = this.chart
       let chart_option = {}
-      // todo type
+      // type
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
       } else if (chart.type === 'bar-stack') {

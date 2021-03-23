@@ -13,6 +13,13 @@ export function baseRadarOption(chart_option, chart) {
     if (customAttr.size) {
       chart_option.radar.shape = customAttr.size.radarShape
     }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
   }
   // 处理data
   if (chart.data) {
@@ -25,6 +32,10 @@ export function baseRadarOption(chart_option, chart) {
       // color
       y.itemStyle = {
         color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
       }
       chart_option.legend.data.push(y.name)
       y.value = JSON.parse(JSON.stringify(y.data))

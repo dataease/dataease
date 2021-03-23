@@ -11,11 +11,29 @@
             <el-form-item :label="$t('chart.show')" class="form-item">
               <el-checkbox v-model="legendForm.show" @change="changeLegendStyle">{{ $t('chart.show') }}</el-checkbox>
             </el-form-item>
+            <el-form-item :label="$t('chart.icon')" class="form-item">
+              <el-select v-model="legendForm.icon" :placeholder="$t('chart.icon')" @change="changeLegendStyle">
+                <el-option
+                  v-for="item in iconSymbolOptions"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
             <el-form-item :label="$t('chart.orient')" class="form-item">
               <el-radio-group v-model="legendForm.orient" size="mini" @change="changeLegendStyle">
                 <el-radio-button label="horizontal">{{ $t('chart.horizontal') }}</el-radio-button>
                 <el-radio-button label="vertical">{{ $t('chart.vertical') }}</el-radio-button>
               </el-radio-group>
+            </el-form-item>
+            <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
+              <el-select v-model="legendForm.textStyle.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLegendStyle">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('chart.text_color')" class="form-item">
+              <colorPicker v-model="legendForm.textStyle.color" style="padding-top: 6px;cursor: pointer;z-index: 999" @change="changeLegendStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.text_h_position')" class="form-item">
               <el-radio-group v-model="legendForm.hPosition" size="mini" @change="changeLegendStyle">
@@ -53,7 +71,16 @@ export default {
   },
   data() {
     return {
-      legendForm: JSON.parse(JSON.stringify(DEFAULT_LEGEND_STYLE))
+      legendForm: JSON.parse(JSON.stringify(DEFAULT_LEGEND_STYLE)),
+      fontSize: [],
+      iconSymbolOptions: [
+        { name: this.$t('chart.line_symbol_emptyCircle'), value: 'emptyCircle' },
+        { name: this.$t('chart.line_symbol_circle'), value: 'circle' },
+        { name: this.$t('chart.line_symbol_rect'), value: 'rect' },
+        { name: this.$t('chart.line_symbol_roundRect'), value: 'roundRect' },
+        { name: this.$t('chart.line_symbol_triangle'), value: 'triangle' },
+        { name: this.$t('chart.line_symbol_diamond'), value: 'diamond' }
+      ]
     }
   },
   watch: {
@@ -70,8 +97,19 @@ export default {
     }
   },
   mounted() {
+    this.init()
   },
   methods: {
+    init() {
+      const arr = []
+      for (let i = 10; i <= 60; i = i + 2) {
+        arr.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.fontSize = arr
+    },
     changeLegendStyle() {
       this.$emit('onLegendChange', this.legendForm)
     }

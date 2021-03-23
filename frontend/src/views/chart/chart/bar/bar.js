@@ -9,6 +9,13 @@ export function baseBarOption(chart_option, chart) {
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
   }
   // 处理data
   if (chart.data) {
@@ -29,6 +36,10 @@ export function baseBarOption(chart_option, chart) {
           y.barWidth = customAttr.size.barWidth
           y.barGap = customAttr.size.barGap
         }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
       }
       y.type = 'bar'
       chart_option.legend.data.push(y.name)
@@ -61,6 +72,12 @@ export function horizontalBarOption(chart_option, chart) {
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
   }
   // 处理data
   if (chart.data) {
@@ -81,6 +98,10 @@ export function horizontalBarOption(chart_option, chart) {
           y.barWidth = customAttr.size.barWidth
           y.barGap = customAttr.size.barGap
         }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
       }
       y.type = 'bar'
       chart_option.legend.data.push(y.name)

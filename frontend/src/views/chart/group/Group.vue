@@ -211,7 +211,14 @@
 <script>
 import { post } from '@/api/chart/chart'
 import TableSelector from '../view/TableSelector'
-import { DEFAULT_COLOR_CASE, DEFAULT_LEGEND_STYLE, DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '../chart/chart'
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_LABEL,
+  DEFAULT_LEGEND_STYLE,
+  DEFAULT_SIZE,
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_TOOLTIP
+} from '../chart/chart'
 
 export default {
   name: 'Group',
@@ -507,7 +514,9 @@ export default {
       view.type = 'bar'
       view.customAttr = JSON.stringify({
         color: DEFAULT_COLOR_CASE,
-        size: DEFAULT_SIZE
+        size: DEFAULT_SIZE,
+        label: DEFAULT_LABEL,
+        tooltip: DEFAULT_TOOLTIP
       })
       view.customStyle = JSON.stringify({
         text: DEFAULT_TITLE_STYLE,

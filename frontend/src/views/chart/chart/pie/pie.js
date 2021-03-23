@@ -9,6 +9,13 @@ export function basePieOption(chart_option, chart) {
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
   }
   // 处理data
   if (chart.data) {
@@ -18,6 +25,10 @@ export function basePieOption(chart_option, chart) {
       // size
       if (customAttr.size) {
         chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
+      }
+      // label
+      if (customAttr.label) {
+        chart_option.series[0].label = customAttr.label
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {

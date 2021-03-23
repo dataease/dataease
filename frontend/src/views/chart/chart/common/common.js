@@ -16,6 +16,20 @@ export function componentStyle(chart_option, chart) {
       chart_option.legend.left = customStyle.legend.hPosition
       chart_option.legend.top = customStyle.legend.vPosition
       chart_option.legend.orient = customStyle.legend.orient
+      chart_option.legend.icon = customStyle.legend.icon
+      chart_option.legend.textStyle = customStyle.legend.textStyle
+    }
+    if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line'))) {
+      chart_option.xAxis.show = customStyle.xAxis.show
+      chart_option.xAxis.position = customStyle.xAxis.position
+      chart_option.xAxis.name = customStyle.xAxis.name
+      chart_option.xAxis.axisLabel = customStyle.xAxis.axisLabel
+    }
+    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line'))) {
+      chart_option.yAxis.show = customStyle.yAxis.show
+      chart_option.yAxis.position = customStyle.yAxis.position
+      chart_option.yAxis.name = customStyle.yAxis.name
+      chart_option.yAxis.axisLabel = customStyle.yAxis.axisLabel
     }
   }
 }

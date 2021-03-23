@@ -18,10 +18,26 @@ export const DEFAULT_SIZE = {
   funnelWidth: 80,
   radarShape: 'polygon'
 }
+export const DEFAULT_LABEL = {
+  show: false,
+  position: 'top',
+  color: '#909399',
+  fontSize: '10',
+  formatter: '{c}'
+}
+export const DEFAULT_TOOLTIP = {
+  show: true,
+  trigger: 'item',
+  textStyle: {
+    fontSize: '10',
+    color: '#909399'
+  },
+  formatter: ''
+}
 export const DEFAULT_TITLE_STYLE = {
   show: true,
   fontSize: '18',
-  color: '#000000',
+  color: '#303133',
   hPosition: 'center',
   vPosition: 'top',
   isItalic: false
@@ -30,8 +46,30 @@ export const DEFAULT_LEGEND_STYLE = {
   show: true,
   hPosition: 'center',
   vPosition: 'bottom',
-  orient: 'horizontal'
+  orient: 'horizontal',
+  icon: 'rect',
+  textStyle: {
+    color: '#333333',
+    fontSize: '12'
+  }
 }
+export const DEFAULT_XAXIS_STYLE = {
+  show: true,
+  position: 'bottom',
+  name: '',
+  axisLabel: {
+    rotate: 0
+  }
+}
+export const DEFAULT_YAXIS_STYLE = {
+  show: true,
+  position: 'left',
+  name: '',
+  axisLabel: {
+    rotate: 0
+  }
+}
+// chart config
 export const BASE_BAR = {
   title: {
     text: ''
@@ -40,6 +78,9 @@ export const BASE_BAR = {
   legend: {
     show: true,
     type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
     data: []
   },
   xAxis: {
@@ -63,6 +104,9 @@ export const HORIZONTAL_BAR = {
   legend: {
     show: true,
     type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
     data: []
   },
   xAxis: {
@@ -87,6 +131,9 @@ export const BASE_LINE = {
   legend: {
     show: true,
     type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
     data: []
   },
   xAxis: {
@@ -108,13 +155,13 @@ export const BASE_PIE = {
   title: {
     text: ''
   },
-  tooltip: {
-    trigger: 'item',
-    formatter: '{a} <br/>{b}: {c} ({d}%)'
-  },
+  tooltip: {},
   legend: {
     show: true,
-    type: 'scroll'
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect'
   },
   series: [
     {
@@ -143,7 +190,10 @@ export const BASE_FUNNEL = {
   },
   legend: {
     show: true,
-    type: 'scroll'
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect'
   },
   series: [
     {
@@ -190,6 +240,11 @@ export const BASE_RADAR = {
   },
   tooltip: {},
   legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
     data: []
   },
   radar: {

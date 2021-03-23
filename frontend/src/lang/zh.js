@@ -658,7 +658,21 @@ export default {
     legend: '图例',
     shape: '形状',
     polygon: '多边形',
-    circle: '圆形'
+    circle: '圆形',
+    label: '标签',
+    label_position: '标签位置',
+    content_formatter: '内容格式',
+    inside: '内',
+    tooltip: '提示',
+    tooltip_item: '数据项',
+    tooltip_axis: '坐标轴',
+    formatter_plc: '内容格式为空时，显示默认格式',
+    xAxis: '横轴',
+    yAxis: '纵轴',
+    position: '位置',
+    rotate: '角度',
+    name: '名称',
+    icon: '图标'
   },
   dataset: {
     datalist: '数据集',

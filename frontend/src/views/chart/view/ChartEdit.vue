@@ -106,10 +106,14 @@
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
               <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+              <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+              <tooltip-selector class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
               <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
               <legend-selector class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+              <x-axis-selector v-if="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+              <y-axis-selector v-if="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -168,15 +172,26 @@ import DimensionItem from '../components/DimensionItem'
 import QuotaItem from '../components/QuotaItem'
 import ChartComponent from '../components/ChartComponent'
 // shape attr,component style
-import { DEFAULT_COLOR_CASE, DEFAULT_SIZE, DEFAULT_TITLE_STYLE, DEFAULT_LEGEND_STYLE } from '../chart/chart'
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_SIZE,
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_LEGEND_STYLE,
+  DEFAULT_LABEL,
+  DEFAULT_TOOLTIP
+} from '../chart/chart'
 import ColorSelector from '../components/shape_attr/ColorSelector'
 import SizeSelector from '../components/shape_attr/SizeSelector'
+import LabelSelector from '../components/shape_attr/LabelSelector'
 import TitleSelector from '../components/component_style/TitleSelector'
 import LegendSelector from '../components/component_style/LegendSelector'
+import TooltipSelector from '../components/shape_attr/TooltipSelector'
+import XAxisSelector from '../components/component_style/XAxisSelector'
+import YAxisSelector from '../components/component_style/YAxisSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -190,7 +205,9 @@ export default {
         title: '',
         customAttr: {
           color: DEFAULT_COLOR_CASE,
-          size: DEFAULT_SIZE
+          size: DEFAULT_SIZE,
+          label: DEFAULT_LABEL,
+          tooltip: DEFAULT_TOOLTIP
         },
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
@@ -416,6 +433,26 @@ export default {
 
     onLegendChange(val) {
       this.view.customStyle.legend = val
+      this.save()
+    },
+
+    onLabelChange(val) {
+      this.view.customAttr.label = val
+      this.save()
+    },
+
+    onTooltipChange(val) {
+      this.view.customAttr.tooltip = val
+      this.save()
+    },
+
+    onChangeXAxisForm(val) {
+      this.view.customStyle.xAxis = val
+      this.save()
+    },
+
+    onChangeYAxisForm(val) {
+      this.view.customStyle.yAxis = val
       this.save()
     }
   }
