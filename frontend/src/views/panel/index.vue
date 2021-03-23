@@ -5,7 +5,7 @@
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />列表</span>
-          <PanelList />
+          <panel-list />
         </el-tab-pane>
         <el-tab-pane name="panels_star">
           <span slot="label"><i class="el-icon-star-off" />收藏</span>
