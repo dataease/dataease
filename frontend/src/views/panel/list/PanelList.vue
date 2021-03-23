@@ -495,6 +495,7 @@ export default {
       this.authVisible = false
     },
     edit(data) {
+      this.$store.dispatch('panel/setPanelInfo', data)
       this.$router.replace('/panelEdit')
     }
   }

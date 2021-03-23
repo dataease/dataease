@@ -2,15 +2,15 @@
   <el-row class="panel-design-show">
     <div class="container" :style="panelDetails.gridStyle">
       <vue-drag-resize-rotate
-        v-for="panelDesign in panelDetails.panelDesigns"
-        v-show="panelDesign.keepFlag"
-        :key="panelDesign.id"
-        :panel-design="panelDesign"
+        v-for="item in panelDetails.panelDesigns"
+        v-show="item.keepFlag"
+        :key="item.id"
+        :panel-design="item"
         :parent="true"
         @newStyle="newStyle"
       >
         <!--视图显示 panelDesign.componentType==='view'-->
-        <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView" />
+        <chart-component v-if="item.componentType==='view'" :ref="item.id" :chart-id="item.id" :chart="item.chartView" />
 
         <!--组件显示（待开发）-->
 
@@ -24,9 +24,9 @@ import { post, get } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent'
 import VueDragResizeRotate from '@/components/vue-drag-resize-rotate'
 import { uuid } from 'vue-uuid'
-
+import bus from '@/utils/bus'
 export default {
-  name: 'PanelViewShow',
+  name: 'DrawingBoard',
   components: { ChartComponent, VueDragResizeRotate },
   data() {
     return {
@@ -56,17 +56,27 @@ export default {
       this.panelDesign(newVal.id)
     }
   },
-  created() {
-    // this.get(this.$store.state.chart.viewId);
-  },
+
   mounted() {
     const panelId = this.$store.state.panel.panelInfo.id
     if (panelId) {
       this.panelDesign(panelId)
     }
+
+    bus.$on('panel-drawing-load', (panelId) => {
+      panelId && this.panelDesign(panelId)
+    })
+    bus.$on('panel-view-add', (view) => {
+      view && this.panelViewAdd(view)
+    })
+    bus.$on('panel-drawing-save', () => {
+      this.savePanel()
+    })
+    bus.$on('panel-drawing-preview', () => {
+      this.preViewShow()
+    })
   },
-  activated() {
-  },
+
   methods: {
     // 加载公共组件
 
@@ -97,20 +107,12 @@ export default {
         }
       })
     },
-    // removeView(panelDesignId) {
-    //   this.panelDetails.panelDesigns.forEach(function(panelDesign, index) {
-    //     if (panelDesign.id === panelDesignId) {
-    //       panelDesign.keepFlag = false
-    //     }
-    //   })
-    // },
+
     newStyle(viewId, newStyleInfo) {
       this.$nextTick(() => {
         this.$refs[viewId][0].chartResize()
       })
       this.panelInfo.preStyle = JSON.stringify(newStyleInfo)
-      console.log(viewId)
-      console.log(JSON.stringify(newStyleInfo))
     },
 
     // 左边往右边拖动时的事件

@@ -18,6 +18,10 @@
             <el-button class="el-icon-full-screen" size="mini" circle />
           </el-tooltip>
 
+          <el-tooltip content="保存">
+            <el-button class="el-icon-circle-check" size="mini" circle @click="saveDrawing" />
+          </el-tooltip>
+
           <el-tooltip content="预览">
             <el-button class="el-icon-view" size="mini" circle @click="save" />
           </el-tooltip>
@@ -95,6 +99,7 @@ import { addClass, removeClass } from '@/utils'
 import FilterGroup from '../filter'
 import ViewSelect from '../ViewSelect'
 import DrawingBoard from '../DrawingBoard'
+import bus from '@/utils/bus'
 export default {
   components: {
     DeMainContainer,
@@ -160,6 +165,9 @@ export default {
         const body = document.querySelector('body')
         body.insertBefore(elx, body.firstChild)
       })
+    },
+    saveDrawing() {
+      bus.$emit('panel-drawing-save')
     }
 
   }

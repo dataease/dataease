@@ -12,21 +12,22 @@
           </span>
           <span style="float: right;line-height: 40px;">
 
-            <el-tooltip content="返回目录">
-              <el-button class="el-icon-refresh-left" size="mini" circle />
-            </el-tooltip>
-
             <el-tooltip content="背景图">
               <el-button class="el-icon-full-screen" size="mini" circle />
             </el-tooltip>
 
+            <!-- <el-tooltip content="保存">
+              <el-button class="el-icon-success" size="mini" circle @click="savePanel" />
+            </el-tooltip> -->
+
             <el-tooltip content="预览">
-              <el-button class="el-icon-view" size="mini" circle @click="save" />
+              <el-button class="el-icon-view" size="mini" circle @click="preViewShow" />
             </el-tooltip>
 
           </span>
         </el-row>
-        <el-row class="panel-design-show">
+        <drawing-board />
+        <!-- <el-row class="panel-design-show">
           <div class="container" :style="panelDetails.gridStyle">
             <vue-drag-resize-rotate
               v-for="panelDesign in panelDetails.panelDesigns"
@@ -36,43 +37,26 @@
               :parent="true"
               @newStyle="newStyle"
             >
-              <!--视图显示 panelDesign.componentType==='view'-->
               <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView" />
-
-              <!--组件显示（待开发）-->
 
             </vue-drag-resize-rotate>
           </div>
 
-        </el-row></el-col>
+        </el-row> -->
+      </el-col>
     </el-row>
   </el-row>
 </template>
 <script>
-import { post, get } from '@/api/panel/panel'
-import ChartComponent from '../../chart/components/ChartComponent'
-import VueDragResizeRotate from '@/components/vue-drag-resize-rotate'
-import { uuid } from 'vue-uuid'
+import DrawingBoard from '../DrawingBoard'
+import bus from '@/utils/bus'
 
 export default {
   name: 'PanelViewShow',
-  components: { ChartComponent, VueDragResizeRotate },
+  components: { DrawingBoard },
   data() {
     return {
-      panelDetails: {
-        viewsUsable: [],
-        panelDesigns: [],
-        gridStyle: null
-      },
-      gridStyleDefault: {
-        position: 'relative',
-        height: '100%',
-        width: '100%',
-        backgroundColor: '#f2f2f2',
-        // background: 'linear-gradient(-90deg, rgba(0, 0, 0, .1) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px)',
-        backgroundSize: '20px 20px, 20px 20px'
-      },
-      ViewActiveName: 'Views'
+
     }
   },
   computed: {
@@ -80,97 +64,13 @@ export default {
       return this.$store.state.panel.panelInfo
     }
   },
-  watch: {
-    panelInfo(newVal, oldVal) {
-      this.panelDesign(newVal.id)
-    }
-  },
-  created() {
-    // this.get(this.$store.state.chart.viewId);
-  },
-  mounted() {
-    const panelId = this.$store.state.panel.panelInfo.id
-    if (panelId) {
-      this.panelDesign(panelId)
-    }
-  },
-  activated() {
-  },
   methods: {
-    // 加载公共组件
 
-    // 加载panel design
-    panelDesign(panelId) {
-      get('panel/group/findOne/' + panelId).then(res => {
-        const panelDetailsInfo = res.data
-        if (panelDetailsInfo) {
-          this.panelDetails = panelDetailsInfo
-        }
-        if (!panelDetailsInfo.gridStyle) {
-          this.panelDetails.gridStyle = this.gridStyleDefault
-        }
-      })
-    },
-    panelViewAdd(view) {
-      const panelDesigns = this.panelDetails.panelDesigns
-      this.panelDetails.viewsUsable.forEach(function(item, index) {
-        if (item.id === view.id) {
-          const newComponent = {
-            id: uuid.v1(),
-            keepFlag: true,
-            chartView: item,
-            componentType: 'view',
-            styleInit: false
-          }
-          panelDesigns.push(newComponent)
-        }
-      })
-    },
-    // removeView(panelDesignId) {
-    //   this.panelDetails.panelDesigns.forEach(function(panelDesign, index) {
-    //     if (panelDesign.id === panelDesignId) {
-    //       panelDesign.keepFlag = false
-    //     }
-    //   })
-    // },
-    newStyle(viewId, newStyleInfo) {
-      this.$nextTick(() => {
-        this.$refs[viewId][0].chartResize()
-      })
-      this.panelInfo.preStyle = JSON.stringify(newStyleInfo)
-      console.log(viewId)
-      console.log(JSON.stringify(newStyleInfo))
-    },
-
-    // 左边往右边拖动时的事件
-    start1(e) {
-      console.log(e)
-    },
-    end1(e) {
-      console.log(e)
-    },
-    // 右边往左边拖动时的事件
-    start2(e) {
-      console.log(e)
-    },
-    end2(e) {
-      console.log(e)
-    },
-    // move回调方法
-    onMove(e, originalEvent) {
-      console.log(e)
-      return true
-    },
     preViewShow() {
-
+      bus.$emit('panel-drawing-preview')
     },
     savePanel() {
-      post('panel/group/saveGroupWithDesign', this.panelDetails, () => {
-      })
-      this.$success(this.$t('commons.save_success'))
-    },
-    save() {
-
+      bus.$emit('panel-drawing-save')
     }
   }
 }

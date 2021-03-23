@@ -33,6 +33,7 @@
 <script>
 import { tree } from '@/api/panel/view'
 import { addClass, removeClass } from '@/utils'
+import bus from '@/utils/bus'
 export default {
   name: 'ViewSelect',
   data() {
@@ -81,7 +82,7 @@ export default {
     },
     renderNode(h, { node, data, store }) {
       return (
-        <div class='custom-tree-node' on-click={() => this.detail(data)} >
+        <div class='custom-tree-node' on-click={() => this.detail(data)} on-dblclick={() => this.addView2Drawing(data.id)} >
           <span class='label-span'>{node.label}</span>
           {data.type !== 'group' && data.type !== 'scene' ? (
 
@@ -99,6 +100,14 @@ export default {
     closeDetail() {
       this.showdetail = false
       this.detailItem = null
+    },
+    addView2Drawing(viewId) {
+    //   viewInfo(viewId).then(res => {
+    //     const info = res.data
+    //     this.$emit('panel-view-add', info)
+    //   })
+      bus.$emit('panel-view-add', { id: viewId })
+    //   this.$emit('panel-view-add', viewId)
     }
   }
 }
