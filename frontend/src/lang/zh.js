@@ -803,6 +803,7 @@ export default {
     cancel: '取消',
     search: '搜索',
     back: '返回',
-    view: '视图'
+    view: '视图',
+    edit: '编辑'
   }
 }
