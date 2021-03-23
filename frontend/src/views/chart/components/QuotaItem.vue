@@ -13,6 +13,7 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
@@ -33,6 +34,9 @@
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
+            <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </span>
@@ -58,6 +62,10 @@ export default {
   props: {
     item: {
       type: Object,
+      required: true
+    },
+    index: {
+      type: Number,
       required: true
     }
   },
@@ -104,6 +112,9 @@ export default {
         case 'rename':
           this.showRename()
           break
+        case 'remove':
+          this.removeItem()
+          break
         default:
           break
       }
@@ -130,6 +141,10 @@ export default {
       this.itemForm = {
         name: ''
       }
+    },
+    removeItem() {
+      this.item.index = this.index
+      this.$emit('onQuotaItemRemove', this.item)
     }
   }
 }

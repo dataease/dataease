@@ -596,6 +596,7 @@ export default {
     summary: '汇总方式',
     fast_calc: '快速计算',
     sum: '求和',
+    count: '计数',
     avg: '平均',
     max: '最大值',
     min: '最小值',

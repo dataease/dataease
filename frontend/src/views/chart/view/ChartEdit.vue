@@ -101,7 +101,7 @@
             </div>
           </el-row>
         </div>
-        <div style="height: 45%;overflow:auto;border-top: 1px solid #e6e6e6">
+        <div style="height: 40%;overflow:auto;border-top: 1px solid #e6e6e6">
           <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
@@ -117,7 +117,7 @@
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div style="height: 30%;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr">
+        <div style="height: 35%;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr">
           <span>{{ $t('chart.result_filter') }}</span>
           <div>TODO</div>
         </div>
@@ -137,7 +137,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <dimension-item v-for="(item) in view.xaxis" :key="item.id" :item="item" />
+                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -152,7 +152,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <quota-item v-for="(item) in view.yaxis" :key="item.id" :item="item" @onQuotaItemChange="quotaItemChange" />
+                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -406,6 +406,15 @@ export default {
       return true
     },
 
+    dimensionItemChange(item) {
+      this.save()
+    },
+
+    dimensionItemRemove(item) {
+      this.view.xaxis.splice(item.index, 1)
+      this.save()
+    },
+
     quotaItemChange(item) {
       // 更新item
       // this.view.yaxis.forEach(function(ele) {
@@ -413,6 +422,11 @@ export default {
       //     ele.summary = item.summary
       //   }
       // })
+      this.save()
+    },
+
+    quotaItemRemove(item) {
+      this.view.yaxis.splice(item.index, 1)
       this.save()
     },
 
