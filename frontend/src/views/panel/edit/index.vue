@@ -23,7 +23,7 @@
           </el-tooltip>
 
           <el-tooltip content="预览">
-            <el-button class="el-icon-view" size="mini" circle @click="save" />
+            <el-button class="el-icon-view" size="mini" circle @click="preViewShow" />
           </el-tooltip>
 
         </span>
@@ -134,7 +134,7 @@ export default {
   },
   beforeDestroy() {
     const elx = this.$refs.rightPanel
-    elx.remove()
+    elx && elx.remove()
   },
   methods: {
     save() {
@@ -168,6 +168,9 @@ export default {
     },
     saveDrawing() {
       bus.$emit('panel-drawing-save')
+    },
+    preViewShow() {
+      bus.$emit('panel-drawing-preview')
     }
 
   }

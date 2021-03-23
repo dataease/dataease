@@ -73,6 +73,12 @@ export const constantRoutes = [
   },
 
   {
+    path: '/preview',
+    component: () => import('@/views/panel/preview/index'),
+    hidden: true
+  },
+
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',

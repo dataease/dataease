@@ -7,7 +7,9 @@
       </div>
       <div style="position: relative;margin-left: 5px;">
         <div v-for="o in 4" :key="o" class="item">
-          <el-button style="width: 90px;" size="mini" type="primary" icon="el-icon-edit" plain> {{ '条件 ' + o }}</el-button>
+          <div draggable>
+            <el-button style="width: 90px;" size="mini" type="primary" icon="el-icon-edit" plain> {{ '条件 ' + o }}</el-button>
+          </div>
         </div>
       </div>
 

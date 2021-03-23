@@ -5,6 +5,7 @@
         v-for="item in panelDetails.panelDesigns"
         v-show="item.keepFlag"
         :key="item.id"
+        :disabled="status"
         :panel-design="item"
         :parent="true"
         @newStyle="newStyle"
@@ -28,6 +29,12 @@ import bus from '@/utils/bus'
 export default {
   name: 'DrawingBoard',
   components: { ChartComponent, VueDragResizeRotate },
+  props: {
+    status: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       panelDetails: {
@@ -135,7 +142,7 @@ export default {
       return true
     },
     preViewShow() {
-
+      this.$router.replace('/preview')
     },
     savePanel() {
       post('panel/group/saveGroupWithDesign', this.panelDetails, () => {
