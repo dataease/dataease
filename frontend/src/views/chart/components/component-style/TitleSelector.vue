@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div style="width: 100%">
       <el-popover
         placement="right"
         width="400"
@@ -17,7 +17,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="titleForm.color" style="padding-top: 6px;cursor: pointer;z-index: 999" @change="changeTitleStyle" />
+              <colorPicker v-model="titleForm.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeTitleStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.text_h_position')" class="form-item">
               <el-radio-group v-model="titleForm.hPosition" size="mini" @change="changeTitleStyle">
@@ -100,6 +100,10 @@ export default {
 .shape-item{
   padding: 6px;
   border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .form-item-slider>>>.el-form-item__label{
   font-size: 12px;

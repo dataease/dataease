@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div style="width: 100%">
       <el-popover
         placement="right"
         width="400"
@@ -33,7 +33,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="legendForm.textStyle.color" style="padding-top: 6px;cursor: pointer;z-index: 999" @change="changeLegendStyle" />
+              <colorPicker v-model="legendForm.textStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeLegendStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.text_h_position')" class="form-item">
               <el-radio-group v-model="legendForm.hPosition" size="mini" @change="changeLegendStyle">
@@ -121,6 +121,10 @@ export default {
 .shape-item{
   padding: 6px;
   border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .form-item-slider>>>.el-form-item__label{
   font-size: 12px;

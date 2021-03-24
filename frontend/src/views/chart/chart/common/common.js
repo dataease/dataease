@@ -1,3 +1,5 @@
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+
 export function componentStyle(chart_option, chart) {
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
@@ -30,6 +32,9 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name
       chart_option.yAxis.axisLabel = customStyle.yAxis.axisLabel
+    }
+    if (customStyle.background) {
+      chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
   }
 }

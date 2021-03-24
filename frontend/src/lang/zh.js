@@ -679,7 +679,9 @@ export default {
     desc: '降序',
     sort: '排序',
     filter: '过滤',
-    none: '无'
+    none: '无',
+    background: '背景',
+    alpha: '透明度'
   },
   dataset: {
     datalist: '数据集',

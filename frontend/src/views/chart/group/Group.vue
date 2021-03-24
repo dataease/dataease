@@ -149,7 +149,7 @@
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
           <span>
-            <span>({{ data.type }})</span>
+            <span><svg-icon :icon-class="data.type" /></span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
           <span>
@@ -217,7 +217,10 @@ import {
   DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
   DEFAULT_TITLE_STYLE,
-  DEFAULT_TOOLTIP
+  DEFAULT_TOOLTIP,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_BACKGROUND_COLOR
 } from '../chart/chart'
 
 export default {
@@ -520,7 +523,10 @@ export default {
       })
       view.customStyle = JSON.stringify({
         text: DEFAULT_TITLE_STYLE,
-        legend: DEFAULT_LEGEND_STYLE
+        legend: DEFAULT_LEGEND_STYLE,
+        xAxis: DEFAULT_XAXIS_STYLE,
+        yAxis: DEFAULT_YAXIS_STYLE,
+        background: DEFAULT_BACKGROUND_COLOR
       })
       view.customFilter = JSON.stringify({})
       post('/chart/view/save', view).then(response => {

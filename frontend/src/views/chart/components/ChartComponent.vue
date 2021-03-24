@@ -53,7 +53,7 @@ export default {
         chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
       } else if (chart.type === 'bar-horizontal') {
         chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
-      } else if (chart.type === 'bar-horizontal-stack') {
+      } else if (chart.type === 'bar-stack-horizontal') {
         chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
       } else if (chart.type === 'line') {
         chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)

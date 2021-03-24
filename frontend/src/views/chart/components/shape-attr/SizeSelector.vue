@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div style="width: 100%">
       <el-popover
         placement="right"
         width="400"
@@ -134,6 +134,10 @@ export default {
 .shape-item{
   padding: 6px;
   border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .form-item-slider>>>.el-form-item__label{
   font-size: 12px;

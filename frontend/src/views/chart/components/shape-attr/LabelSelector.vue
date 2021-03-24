@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div style="width: 100%">
       <el-popover
         placement="right"
         width="400"
@@ -17,7 +17,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="labelForm.color" style="padding-top: 6px;cursor: pointer;z-index: 999" @change="changeLabelAttr" />
+              <colorPicker v-model="labelForm.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeLabelAttr" />
             </el-form-item>
             <el-form-item :label="$t('chart.label_position')" class="form-item">
               <el-radio-group v-model="labelForm.position" size="mini" @change="changeLabelAttr">
@@ -29,7 +29,7 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('chart.content_formatter')" class="form-item">
-              <el-input v-model="labelForm.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr"/>
+              <el-input v-model="labelForm.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr" />
             </el-form-item>
           </el-form>
         </el-col>
@@ -92,10 +92,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.shape-item{
-  padding: 6px;
-  border: none;
-}
+  .shape-item{
+    padding: 6px;
+    border: none;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 .form-item-slider>>>.el-form-item__label{
   font-size: 12px;
   line-height: 38px;

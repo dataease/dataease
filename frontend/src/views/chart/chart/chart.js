@@ -71,6 +71,10 @@ export const DEFAULT_YAXIS_STYLE = {
     formatter: '{value}'
   }
 }
+export const DEFAULT_BACKGROUND_COLOR = {
+  color: '#ffffff',
+  alpha: 0
+}
 // chart config
 export const BASE_BAR = {
   title: {

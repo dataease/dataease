@@ -87,7 +87,7 @@
                   <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
                   <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
                   <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
-                  <el-radio value="bar-horizontal-stack" label="bar-horizontal-stack"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
+                  <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
                   <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
                 </div>
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
@@ -114,6 +114,7 @@
               <legend-selector class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <x-axis-selector v-if="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
               <y-axis-selector v-if="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -192,7 +193,10 @@ import {
   DEFAULT_TITLE_STYLE,
   DEFAULT_LEGEND_STYLE,
   DEFAULT_LABEL,
-  DEFAULT_TOOLTIP
+  DEFAULT_TOOLTIP,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_BACKGROUND_COLOR
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -202,10 +206,11 @@ import LegendSelector from '../components/component-style/LegendSelector'
 import TooltipSelector from '../components/shape-attr/TooltipSelector'
 import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
+import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -225,7 +230,10 @@ export default {
         },
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
-          legend: DEFAULT_LEGEND_STYLE
+          legend: DEFAULT_LEGEND_STYLE,
+          xAxis: DEFAULT_XAXIS_STYLE,
+          yAxis: DEFAULT_YAXIS_STYLE,
+          background: DEFAULT_BACKGROUND_COLOR
         },
         customFilter: []
       },
@@ -476,6 +484,11 @@ export default {
 
     onChangeYAxisForm(val) {
       this.view.customStyle.yAxis = val
+      this.save()
+    },
+
+    onChangeBackgroundForm(val) {
+      this.view.customStyle.background = val
       this.save()
     }
   }
