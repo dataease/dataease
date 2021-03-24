@@ -522,6 +522,7 @@ export default {
         text: DEFAULT_TITLE_STYLE,
         legend: DEFAULT_LEGEND_STYLE
       })
+      view.customFilter = JSON.stringify({})
       post('/chart/view/save', view).then(response => {
         this.selectTableFlag = false
         this.$store.dispatch('chart/setTableId', null)

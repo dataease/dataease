@@ -1,5 +1,5 @@
 <template>
-  <div class="Echarts" style="height: 100%;display: flex;margin-top: 10px;">
+  <div class="Echarts" style="display: flex;">
     <div :id="chartId" style="width: 100%;height: 100%;" />
   </div>
 </template>

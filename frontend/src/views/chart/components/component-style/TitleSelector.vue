@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="width:100%;height: 32px;margin:0;padding:0 4px;border-radius: 4px;border: 1px solid #DCDFE6;display: flex;align-items: center;">
+    <div>
       <el-popover
         placement="right"
         width="400"

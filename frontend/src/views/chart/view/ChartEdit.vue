@@ -4,7 +4,7 @@
     <span v-show="false">{{ tableId }}</span>
     <span v-show="false">{{ sceneId }}</span>
     <span v-show="false">{{ vId }}</span>
-    <el-row style="height: 40px;" class="padding-lr">
+    <el-row style="height: 40px;background-color: white" class="padding-lr">
       <span style="line-height: 40px;">{{ view.name }}</span>
       <span style="float: right;line-height: 40px;">
         <el-button size="mini" @click="closeEdit">
@@ -54,9 +54,9 @@
       </el-col>
 
       <el-col
-        style="height: 100%;width: 25%;min-width: 200px;max-width:240px;border: 1px solid #E6E6E6;border-left: 0 solid;"
+        style="height: 100%;width: 25%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
-        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;" class="padding-lr">
+        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">
           <el-row>
             <span>{{ $t('chart.title') }}</span>
             <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>
@@ -117,9 +117,22 @@
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div style="height: 35%;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr">
+        <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
           <span>{{ $t('chart.result_filter') }}</span>
-          <div>TODO</div>
+          <div style="margin: 8px" class="filter-inner-class">
+            <draggable
+              v-model="view.customFilter"
+              group="drag"
+              animation="300"
+              :move="onMove"
+              style="height:100%;margin:0;overflow-x: auto;background-color: white;"
+              @end="end2"
+            >
+              <transition-group class="draggable-group">
+                <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :index="index" :item="item" />
+              </transition-group>
+            </draggable>
+          </div>
         </div>
       </el-col>
 
@@ -133,7 +146,7 @@
                 group="dimension"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                 @end="end2"
               >
                 <transition-group class="draggable-group">
@@ -148,7 +161,7 @@
                 group="quota"
                 animation="300"
                 :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;"
+                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                 @end="end2"
               >
                 <transition-group class="draggable-group">
@@ -158,7 +171,7 @@
             </el-row>
           </el-row>
 
-          <chart-component :chart-id="chart.id" :chart="chart" style="height: 80%" />
+          <chart-component :chart-id="chart.id" :chart="chart" style="padding: 10px" class="chart-class" />
         </el-row>
       </el-col>
     </el-row>
@@ -168,8 +181,9 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import draggable from 'vuedraggable'
-import DimensionItem from '../components/DimensionItem'
-import QuotaItem from '../components/QuotaItem'
+import DimensionItem from '../components/drag-item/DimensionItem'
+import QuotaItem from '../components/drag-item/QuotaItem'
+import FilterItem from '../components/drag-item/FilterItem'
 import ChartComponent from '../components/ChartComponent'
 // shape attr,component style
 import {
@@ -180,18 +194,18 @@ import {
   DEFAULT_LABEL,
   DEFAULT_TOOLTIP
 } from '../chart/chart'
-import ColorSelector from '../components/shape_attr/ColorSelector'
-import SizeSelector from '../components/shape_attr/SizeSelector'
-import LabelSelector from '../components/shape_attr/LabelSelector'
-import TitleSelector from '../components/component_style/TitleSelector'
-import LegendSelector from '../components/component_style/LegendSelector'
-import TooltipSelector from '../components/shape_attr/TooltipSelector'
-import XAxisSelector from '../components/component_style/XAxisSelector'
-import YAxisSelector from '../components/component_style/YAxisSelector'
+import ColorSelector from '../components/shape-attr/ColorSelector'
+import SizeSelector from '../components/shape-attr/SizeSelector'
+import LabelSelector from '../components/shape-attr/LabelSelector'
+import TitleSelector from '../components/component-style/TitleSelector'
+import LegendSelector from '../components/component-style/LegendSelector'
+import TooltipSelector from '../components/shape-attr/TooltipSelector'
+import XAxisSelector from '../components/component-style/XAxisSelector'
+import YAxisSelector from '../components/component-style/YAxisSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -212,19 +226,9 @@ export default {
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
           legend: DEFAULT_LEGEND_STYLE
-        }
+        },
+        customFilter: []
       },
-      // 定义要被拖拽对象的数组
-      arr1: [
-        { id: 1, name: 'id' },
-        { id: 2, name: '名称' },
-        { id: 3, name: '类型' },
-        { id: 5, name: '状态' },
-        { id: 4, name: '指标指标指标' }
-      ],
-      arr2: [
-        { id: 11, name: '容量' }
-      ],
       moveId: -1,
       chart: {
         id: 'echart'
@@ -303,6 +307,7 @@ export default {
       view.yaxis = JSON.stringify(view.yaxis)
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
+      view.customFilter = JSON.stringify(view.customFilter)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         this.getData(response.data.id)
@@ -321,6 +326,7 @@ export default {
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
+          this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           // 将视图传入echart组件
           this.chart = response.data
         })
@@ -505,7 +511,8 @@ export default {
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
-    background-color: rgba(35,46,64,.05);
+    /*background-color: rgba(35,46,64,.05);*/
+    background-color: white;
     display: block;
   }
 
@@ -515,7 +522,8 @@ export default {
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
-    background-color: rgba(35,46,64,.05);
+    /*background-color: rgba(35,46,64,.05);*/
+    background-color: white;
   }
 
   .item + .item {
@@ -539,6 +547,12 @@ export default {
 
   .tab-header>>>.el-tabs__item{
     font-size: 12px;
+    background-color: #E8EAED;
+  }
+
+  .tab-header>>>.is-active{
+    background-color: #f7f8fa;
+    border-bottom-color: #f7f8fa!important;
   }
 
   .draggable-group {
@@ -572,11 +586,28 @@ export default {
   }
 
   .attr-selector{
-    margin: 2px 0;
+    width:100%;
+    height: 32px;
+    margin:0 0 6px 0;
+    padding:0 4px;
+    display: flex;
+    align-items: center;
+    background-color: white
   }
 
   .disabled-none-cursor{
     cursor: not-allowed;
     pointer-events:none;
+  }
+
+  .filter-class{
+    height: calc(35% - 102px);
+    .filter-inner-class{
+      height: calc(100% - 40px);
+    }
+  }
+
+  .chart-class{
+    height: calc(100% - 124px);
   }
 </style>
