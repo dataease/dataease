@@ -39,7 +39,7 @@ public class DataSetTableTaskService {
             datasetTableTask.setCreateTime(System.currentTimeMillis());
             datasetTableTaskMapper.insert(datasetTableTask);
         } else {
-            datasetTableTaskMapper.updateByPrimaryKey(datasetTableTask);
+            datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);
         }
         scheduleService.addSchedule(datasetTableTask);
         return datasetTableTask;

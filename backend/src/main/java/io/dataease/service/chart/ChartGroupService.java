@@ -33,7 +33,7 @@ public class ChartGroupService {
             chartGroup.setCreateTime(System.currentTimeMillis());
             chartGroupMapper.insert(chartGroup);
         } else {
-            chartGroupMapper.updateByPrimaryKey(chartGroup);
+            chartGroupMapper.updateByPrimaryKeySelective(chartGroup);
         }
         ChartGroupDTO ChartGroupDTO = new ChartGroupDTO();
         BeanUtils.copyBean(ChartGroupDTO, chartGroup);

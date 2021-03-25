@@ -35,7 +35,7 @@ public class DataSetGroupService {
             datasetGroup.setCreateTime(System.currentTimeMillis());
             datasetGroupMapper.insert(datasetGroup);
         } else {
-            datasetGroupMapper.updateByPrimaryKey(datasetGroup);
+            datasetGroupMapper.updateByPrimaryKeySelective(datasetGroup);
         }
         DataSetGroupDTO dataSetGroupDTO = new DataSetGroupDTO();
         BeanUtils.copyBean(dataSetGroupDTO, datasetGroup);

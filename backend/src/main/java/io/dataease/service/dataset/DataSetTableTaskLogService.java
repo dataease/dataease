@@ -29,7 +29,7 @@ public class DataSetTableTaskLogService {
             datasetTableTaskLog.setCreateTime(System.currentTimeMillis());
             datasetTableTaskLogMapper.insert(datasetTableTaskLog);
         } else {
-            datasetTableTaskLogMapper.updateByPrimaryKey(datasetTableTaskLog);
+            datasetTableTaskLogMapper.updateByPrimaryKeySelective(datasetTableTaskLog);
         }
         return datasetTableTaskLog;
     }

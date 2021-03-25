@@ -31,7 +31,7 @@ public class DataSetTableFieldsService {
             datasetTableField.setId(UUID.randomUUID().toString());
             datasetTableFieldMapper.insert(datasetTableField);
         } else {
-            datasetTableFieldMapper.updateByPrimaryKey(datasetTableField);
+            datasetTableFieldMapper.updateByPrimaryKeySelective(datasetTableField);
         }
         return datasetTableField;
     }

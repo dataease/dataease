@@ -45,7 +45,7 @@ public class ChartViewService {
     public ChartViewWithBLOBs save(ChartViewWithBLOBs chartView) {
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        int i = chartViewMapper.updateByPrimaryKeyWithBLOBs(chartView);
+        int i = chartViewMapper.updateByPrimaryKeySelective(chartView);
         if (i == 0) {
             chartView.setId(UUID.randomUUID().toString());
             chartView.setCreateTime(timestamp);

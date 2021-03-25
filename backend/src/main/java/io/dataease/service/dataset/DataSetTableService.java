@@ -62,7 +62,7 @@ public class DataSetTableService {
                 saveTableField(datasetTable);
             }
         } else {
-            datasetTableMapper.updateByPrimaryKeyWithBLOBs(datasetTable);
+            datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
         }
         return datasetTable;
     }
