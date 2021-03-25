@@ -3,7 +3,7 @@
     <el-row>
       <el-row style="height: 26px;">
         <span style="line-height: 26px;">
-          {{ $t('dataset.add_sql_table') }}
+          {{ param.tableId?$t('dataset.edit_sql'):$t('dataset.add_sql_table') }}
         </span>
         <el-row style="float: right">
           <el-button size="mini" @click="cancel">
@@ -85,6 +85,7 @@
 <script>
 import { post, listDatasource } from '@/api/dataset/dataset'
 import { codemirror } from 'vue-codemirror'
+import { getTable } from '@/api/dataset/dataset'
 // 核心样式
 import 'codemirror/lib/codemirror.css'
 // 引入主题后还需要在 options 中指定主题才会生效
@@ -145,7 +146,13 @@ export default {
       return this.$refs.myCm.codemirror
     }
   },
-  watch: {},
+  watch: {
+    'param.tableId': {
+      handler: function() {
+        this.initTableInfo()
+      }
+    }
+  },
   mounted() {
     window.onresize = () => {
       return (() => {
@@ -157,12 +164,28 @@ export default {
     this.$refs.myCm.codemirror.on('keypress', () => {
       this.$refs.myCm.codemirror.showHint()
     })
+
+    this.initTableInfo()
   },
   methods: {
     initDataSource() {
       listDatasource().then(response => {
         this.options = response.data
       })
+    },
+
+    initTableInfo() {
+      if (this.param.tableId) {
+        getTable(this.param.tableId).then(response => {
+          const table = response.data
+          this.name = table.name
+          this.dataSource = table.dataSourceId
+          this.mode = table.mode + ''
+          this.sql = JSON.parse(table.info.replace(/\n/g, '\\n').replace(/\r/g, '\\r')).sql
+
+          this.getSQLPreview()
+        })
+      }
     },
 
     getSQLPreview() {
@@ -204,6 +227,7 @@ export default {
         return
       }
       const table = {
+        id: this.param.tableId,
         name: this.name,
         sceneId: this.param.id,
         dataSourceId: this.dataSource,

@@ -75,6 +75,12 @@ public class ChartViewService {
         chartViewMapper.deleteByPrimaryKey(id);
     }
 
+    public void deleteBySceneId(String sceneId) {
+        ChartViewExample chartViewExample = new ChartViewExample();
+        chartViewExample.createCriteria().andSceneIdEqualTo(sceneId);
+        chartViewMapper.deleteByExample(chartViewExample);
+    }
+
     public ChartViewDTO getData(String id) throws Exception {
         ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
         List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {

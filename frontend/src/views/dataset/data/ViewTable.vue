@@ -7,6 +7,9 @@
           {{ table.name }}
         </span>
         <el-row style="float: right">
+          <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
+            {{ $t('dataset.edit_sql') }}
+          </el-button>
           <el-button size="mini" @click="edit">
             {{ $t('dataset.edit') }}
           </el-button>
@@ -146,6 +149,10 @@ export default {
     closeEdit() {
       this.editField = false
       this.tableFields = []
+    },
+
+    editSql() {
+      this.$emit('switchComponent', { name: 'AddSQL', param: { id: this.table.sceneId, tableId: this.table.id }})
     }
   }
 }

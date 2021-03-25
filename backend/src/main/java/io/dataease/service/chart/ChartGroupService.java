@@ -2,9 +2,12 @@ package io.dataease.service.chart;
 
 import io.dataease.base.domain.ChartGroup;
 import io.dataease.base.domain.ChartGroupExample;
+import io.dataease.base.domain.DatasetGroup;
+import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.mapper.ChartGroupMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartGroupRequest;
+import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 public class ChartGroupService {
     @Resource
     private ChartGroupMapper chartGroupMapper;
+    @Resource
+    private ChartViewService chartViewService;
 
     public ChartGroupDTO save(ChartGroup chartGroup) {
         if (StringUtils.isEmpty(chartGroup.getId())) {
@@ -45,6 +50,14 @@ public class ChartGroupService {
         ChartGroupExample ChartGroupExample = new ChartGroupExample();
         ChartGroupExample.createCriteria().andIdIn(ids);
         chartGroupMapper.deleteByExample(ChartGroupExample);
+        // 删除所有chart
+        deleteChart(ids);
+    }
+
+    public void deleteChart(List<String> sceneIds) {
+        for (String sceneId : sceneIds) {
+            chartViewService.deleteBySceneId(sceneId);
+        }
     }
 
     public ChartGroup getScene(String id) {
