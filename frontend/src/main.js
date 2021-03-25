@@ -14,7 +14,7 @@ import '@/permission' // permission control
 import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import directives from './directive'
-
+import VueClipboard from 'vue-clipboard2'
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'
@@ -28,7 +28,7 @@ Vue.use(UmyUi)
 import vcolorpicker from 'vcolorpicker'
 
 Vue.use(vcolorpicker)
-
+Vue.use(VueClipboard)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
