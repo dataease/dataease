@@ -48,13 +48,11 @@ public class ShiroConfig {
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("f2cPerms", new F2CPermissionsFilter());
-        //filterMap.put("f2cRoles", new F2CRolesFilter());
         filterMap.put("jwt", new JWTFilter());
-        /*filterMap.put("jwt", jwtFilter);*/
         filterMap.put("logout", new F2CLogoutFilter());
         factoryBean.setSecurityManager(securityManager);
-        factoryBean.setLoginUrl("/index.html");
-        factoryBean.setUnauthorizedUrl("/index.html");
+        factoryBean.setLoginUrl("/login");
+        factoryBean.setUnauthorizedUrl("/login");
         factoryBean.setFilterChainDefinitionMap(shiroService.loadFilterChainDefinitionMap());
         factoryBean.setFilters(filterMap);
         return factoryBean;

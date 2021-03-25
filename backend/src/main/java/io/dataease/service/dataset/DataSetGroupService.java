@@ -35,7 +35,7 @@ public class DataSetGroupService {
             datasetGroup.setCreateTime(System.currentTimeMillis());
             datasetGroupMapper.insert(datasetGroup);
         } else {
-            datasetGroupMapper.updateByPrimaryKey(datasetGroup);
+            datasetGroupMapper.updateByPrimaryKeySelective(datasetGroup);
         }
         DataSetGroupDTO dataSetGroupDTO = new DataSetGroupDTO();
         BeanUtils.copyBean(dataSetGroupDTO, datasetGroup);
@@ -52,10 +52,8 @@ public class DataSetGroupService {
         DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
         datasetGroupExample.createCriteria().andIdIn(ids);
         datasetGroupMapper.deleteByExample(datasetGroupExample);
-        // 获取type为scene的id，删除场景下的表和字段
-        deleteTableAndField(tree.stream().filter(ele -> {
-            return StringUtils.equalsIgnoreCase(ele.getType(), "scene");
-        }).map(DatasetGroup::getId).collect(Collectors.toList()));
+        // 删除场景下的表和字段
+        deleteTableAndField(ids);
     }
 
     public DatasetGroup getScene(String id) {

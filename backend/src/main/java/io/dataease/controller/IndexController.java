@@ -2,6 +2,7 @@ package io.dataease.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -15,11 +16,18 @@ public class IndexController {
 
     @GetMapping(value = "/login")
     public String login() {
-//        if (SessionUtils.getUser() == null) {
-        if (null == null) {
-            return "login.html";
-        } else {
-            return "redirect:/";
-        }
+        return "index.html";
     }
+
+    @GetMapping("/link")
+    public String link() {
+        return "link.html";
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "test.html";
+    }
+
+
 }

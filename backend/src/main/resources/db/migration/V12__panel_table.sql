@@ -134,3 +134,12 @@ INSERT INTO `file_metadata` VALUES ('VIEW_DEFAULT_IMAGE', 'view-demo.png', 'PNG'
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+DROP TABLE IF EXISTS `panel_link`;
+CREATE TABLE `panel_link` (
+  `resource_id` varchar(50) NOT NULL COMMENT '资源ID',
+  `enable_pwd` tinyint(1) default 0 COMMENT '启用密码',
+  `pwd` varchar(255) DEFAULT NULL  COMMENT '密码',
+  PRIMARY KEY (`resource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板链接';

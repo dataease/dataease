@@ -21,7 +21,7 @@ export default {
   props: {
     width: {
       type: String,
-      default: '300px'
+      default: '260px'
     },
     enableAsideHidden: {
       type: Boolean,

@@ -2,6 +2,8 @@ package io.dataease.dto.chart;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @Author gin
  * @Date 2021/3/11 1:18 下午
@@ -29,4 +31,6 @@ public class ChartViewFieldDTO {
     private String summary;
 
     private String sort;
+
+    private List<ChartViewFieldFilterDTO> filter;
 }

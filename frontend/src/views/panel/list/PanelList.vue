@@ -91,6 +91,10 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
                         {{ $t('panel.edit') }}
                       </el-dropdown-item>
+
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
+                        创建公共链接
+                      </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
@@ -124,19 +128,35 @@
           <el-button type="primary" @click="authVisible = false">确 定</el-button>
         </span> -->
       </el-dialog>
+
+      <el-dialog
+        :title="linkTitle"
+        :visible.sync="linkVisible"
+        custom-class="de-dialog"
+        @closed="removeLink"
+      >
+        <link-generate v-if="linkVisible" :resource-id="linkResourceId" />
+        <!-- <span slot="footer" class="dialog-footer">
+          <el-button @click="copyUri">复制链接</el-button>
+        </span> -->
+      </el-dialog>
     </el-col>
   </el-col>
 </template>
 
 <script>
 import GrantAuth from '../GrantAuth'
+import LinkGenerate from '@/views/link/generate'
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree } from '@/api/panel/panel'
 
 export default {
   name: 'PanelList',
-  components: { GrantAuth },
+  components: { GrantAuth, LinkGenerate },
   data() {
     return {
+      linkTitle: '链接分享',
+      linkVisible: false,
+      linkResourceId: null,
       authTitle: null,
       authResourceId: null,
       authVisible: false,
@@ -234,6 +254,9 @@ export default {
           break
         case 'edit':
           this.edit(param.data)
+          break
+        case 'link':
+          this.link(param.data)
           break
       }
     },
@@ -497,6 +520,14 @@ export default {
     edit(data) {
       this.$store.dispatch('panel/setPanelInfo', data)
       this.$router.replace('/panelEdit')
+    },
+    link(data) {
+      this.linkVisible = true
+      this.linkResourceId = data.id
+    },
+    removeLink() {
+      this.linkVisible = false
+      this.linkResourceId = null
     }
   }
 }

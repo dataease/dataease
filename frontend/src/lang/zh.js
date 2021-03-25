@@ -681,7 +681,19 @@ export default {
     filter: '过滤',
     none: '无',
     background: '背景',
-    alpha: '透明度'
+    alpha: '透明度',
+    add_filter: '添加过滤',
+    no_limit: '无限制',
+    filter_eq: '等于',
+    filter_not_eq: '不等于',
+    filter_lt: '小于',
+    filter_le: '小于等于',
+    filter_gt: '大于',
+    filter_ge: '大于等于',
+    filter_null: '为空',
+    filter_not_null: '不为空',
+    filter_include: '包含',
+    filter_not_include: '不包含'
   },
   dataset: {
     datalist: '数据集',
@@ -756,7 +768,8 @@ export default {
     incremental_delete: '增量删除',
     last_update_time: '上次更新时间',
     current_update_time: '当前更新时间',
-    param: '参数'
+    param: '参数',
+    edit_sql: '编辑SQL'
   },
   datasource: {
     create: '新建数据连接',

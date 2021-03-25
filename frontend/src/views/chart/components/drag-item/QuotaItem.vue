@@ -59,7 +59,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-files">
+          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
@@ -71,18 +71,6 @@
         </el-dropdown-menu>
       </span>
     </el-dropdown>
-
-    <el-dialog :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
-      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
-        <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="itemForm.name" size="mini" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeRename()">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="saveRename(itemForm)">{{ $t('chart.confirm') }}</el-button>
-      </div>
-    </el-dialog>
   </span>
 </template>
 
@@ -101,15 +89,6 @@ export default {
   },
   data() {
     return {
-      renameItem: false,
-      itemForm: {
-        name: ''
-      },
-      itemFormRules: {
-        name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
-        ]
-      }
     }
   },
   mounted() {
@@ -126,6 +105,9 @@ export default {
           break
         case 'remove':
           this.removeItem()
+          break
+        case 'filter':
+          this.editFilter()
           break
         default:
           break
@@ -167,28 +149,18 @@ export default {
         type: type
       }
     },
-
     showRename() {
-      this.itemForm.name = this.item.name
-      this.renameItem = true
-    },
-    closeRename() {
-      this.renameItem = false
-      this.resetRename()
-    },
-    saveRename(param) {
-      this.item.name = param.name
-      this.$emit('onQuotaItemChange', this.item)
-      this.closeRename()
-    },
-    resetRename() {
-      this.itemForm = {
-        name: ''
-      }
+      this.item.index = this.index
+      this.item.renameType = 'quota'
+      this.$emit('onNameEdit', this.item)
     },
     removeItem() {
       this.item.index = this.index
       this.$emit('onQuotaItemRemove', this.item)
+    },
+    editFilter() {
+      this.item.index = this.index
+      this.$emit('editItemFilter', this.item)
     }
   }
 }

@@ -15,18 +15,18 @@
         <!--        </el-button>-->
       </span>
     </el-row>
-    <el-row style="display: flex;height: 100%">
+    <el-row class="view-panel">
       <el-col
         style="height: 100%;width: 20%;min-width: 180px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
-        <div style="height: 45%;border-bottom: 1px solid #E6E6E6;" class="padding-lr">
+        <div style="height: 50%;border-bottom: 1px solid #E6E6E6;" class="padding-lr">
           <span>{{ $t('chart.dimension') }}</span>
           <draggable
             v-model="dimension"
             :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
-            style="height: 90%;overflow:auto"
+            class="drag-list"
             @end="end1"
             @start="start1"
           >
@@ -35,14 +35,14 @@
             </transition-group>
           </draggable>
         </div>
-        <div style="height: 45%;" class="padding-lr">
+        <div style="height: 50%;" class="padding-lr">
           <span>{{ $t('chart.quota') }}</span>
           <draggable
             v-model="quota"
             :options="{group:{name: 'quota',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
-            style="height: 90%;overflow:auto"
+            class="drag-list"
             @end="end1"
             @start="start1"
           >
@@ -54,7 +54,7 @@
       </el-col>
 
       <el-col
-        style="height: 100%;width: 25%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
+        style="height: 100%;width: 30%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
         <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">
           <el-row>
@@ -73,7 +73,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div style="height: 25%;overflow:auto" class="padding-lr">
+        <div style="height: 30%;overflow:auto" class="padding-lr">
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
             <div class="chart-type">
@@ -151,7 +151,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" />
+                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -166,16 +166,44 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" />
+                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
           </el-row>
 
-          <chart-component :chart-id="chart.id" :chart="chart" style="padding: 10px" class="chart-class" />
+          <chart-component :chart-id="chart.id" :chart="chart" class="chart-class" />
         </el-row>
       </el-col>
     </el-row>
+
+    <!--显示名修改-->
+    <el-dialog :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
+      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="itemForm.name" size="mini" clearable />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeRename()">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveRename">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--指标过滤器-->
+    <el-dialog
+      :title="$t('chart.add_filter')"
+      :visible="filterEdit"
+      :show-close="false"
+      width="800px"
+      class="dialog-css"
+    >
+      <quota-filter-editor :item="quotaItem" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeQuotaFilter">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveQuotaFilter">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -207,10 +235,11 @@ import TooltipSelector from '../components/shape-attr/TooltipSelector'
 import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
 import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
+import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 
 export default {
   name: 'ChartEdit',
-  components: { BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -240,6 +269,17 @@ export default {
       moveId: -1,
       chart: {
         id: 'echart'
+      },
+      filterEdit: false,
+      quotaItem: {},
+      renameItem: false,
+      itemForm: {
+        name: ''
+      },
+      itemFormRules: {
+        name: [
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+        ]
       }
     }
   },
@@ -304,6 +344,9 @@ export default {
         }
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
+        }
+        if (!ele.filter) {
+          ele.filter = []
         }
       })
       if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
@@ -490,6 +533,40 @@ export default {
     onChangeBackgroundForm(val) {
       this.view.customStyle.background = val
       this.save()
+    },
+
+    showEditFilter(item) {
+      this.quotaItem = JSON.parse(JSON.stringify(item))
+      this.filterEdit = true
+    },
+    closeQuotaFilter() {
+      this.filterEdit = false
+    },
+    saveQuotaFilter() {
+      this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
+      this.save()
+      this.closeQuotaFilter()
+    },
+
+    showRename(val) {
+      this.itemForm = JSON.parse(JSON.stringify(val))
+      this.renameItem = true
+    },
+    saveRename() {
+      if (this.itemForm.renameType === 'quota') {
+        this.view.yaxis[this.itemForm.index].name = this.itemForm.name
+      } else if (this.itemForm.renameType === 'dimension') {
+        this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+      }
+      this.save()
+      this.closeRename()
+    },
+    closeRename() {
+      this.renameItem = false
+      this.resetRename()
+    },
+    resetRename() {
+      // this.itemForm = {}
     }
   }
 }
@@ -516,6 +593,16 @@ export default {
 
   .col + .col {
     margin-left: 10px;
+  }
+
+  .view-panel {
+    display: flex;
+    height: calc(100% - 40px);
+  }
+
+  .drag-list {
+    height: calc(100% - 26px);
+    overflow:auto;
   }
 
   .item {
@@ -621,6 +708,17 @@ export default {
   }
 
   .chart-class{
-    height: calc(100% - 124px);
+    height: calc(100% - 84px);
+    padding: 10px;
+  }
+
+  .dialog-css>>>.el-dialog__title {
+    font-size: 14px;
+  }
+  .dialog-css >>> .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px 20px;
   }
 </style>

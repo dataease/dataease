@@ -7,6 +7,9 @@
           {{ table.name }}
         </span>
         <el-row style="float: right">
+          <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
+            {{ $t('dataset.edit_sql') }}
+          </el-button>
           <el-button size="mini" @click="edit">
             {{ $t('dataset.edit') }}
           </el-button>
@@ -29,7 +32,7 @@
         </el-tab-pane>
       </el-tabs>
 
-      <el-dialog :title="table.name" :visible.sync="editField" :fullscreen="true" :show-close="false">
+      <el-dialog :title="table.name" :visible.sync="editField" :fullscreen="true" :show-close="false" class="dialog-css">
         <el-table :data="tableFields" size="mini" max-height="600px">
           <el-table-column property="type" :label="$t('dataset.field_type')" width="100">
             <template slot-scope="scope">
@@ -146,6 +149,10 @@ export default {
     closeEdit() {
       this.editField = false
       this.tableFields = []
+    },
+
+    editSql() {
+      this.$emit('switchComponent', { name: 'AddSQL', param: { id: this.table.sceneId, tableId: this.table.id }})
     }
   }
 }
@@ -158,5 +165,18 @@ export default {
 
   .form-item {
     margin-bottom: 6px;
+  }
+
+  .dialog-css>>>.el-dialog__title {
+    font-size: 14px;
+  }
+  .dialog-css >>> .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px;
+  }
+  .dialog-css >>> .el-dialog__footer {
+    padding-top: 30px;
   }
 </style>

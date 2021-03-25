@@ -528,7 +528,7 @@ export default {
         yAxis: DEFAULT_YAXIS_STYLE,
         background: DEFAULT_BACKGROUND_COLOR
       })
-      view.customFilter = JSON.stringify({})
+      view.customFilter = JSON.stringify([])
       post('/chart/view/save', view).then(response => {
         this.selectTableFlag = false
         this.$store.dispatch('chart/setTableId', null)

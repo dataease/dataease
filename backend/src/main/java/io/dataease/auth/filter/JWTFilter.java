@@ -80,11 +80,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 }else {
                     response401(request, response);
                 }
-
             }
         }
         return false;
     }
+
+
+
 
     private String refreshToken(ServletRequest request, ServletResponse response) throws Exception{
         // 获取AccessToken(Shiro中getAuthzHeader方法已经实现)
