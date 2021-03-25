@@ -195,9 +195,9 @@
 
       <el-row style="height: 26px;">
         <el-row>
-          <el-col :span="6"><div>{{ $t('dataset.incremental_update_type') }}:</div></el-col>
+          <el-col :span="4"><span>{{ $t('dataset.incremental_update_type') }}:</span></el-col>
           <el-col :span="18">
-            <el-radio-group v-model="incrementalUpdateType" size="small" @change="incrementalUpdateTypeChange">
+            <el-radio-group v-model="incrementalUpdateType" size="mini" @change="incrementalUpdateTypeChange">
               <el-radio label="incrementalAdd">{{ $t('dataset.incremental_add') }}</el-radio>
               <el-radio label="incrementalDelete">{{ $t('dataset.incremental_delete') }}</el-radio>
             </el-radio-group>
@@ -207,10 +207,10 @@
 
       <el-row style="height: 26px;">
         <el-row>
-          <el-col :span="6" style="height: 26px;"><div style="height: 26px;">{{ $t('dataset.param') }}:</div></el-col>
+          <el-col :span="4" style="height: 26px;"><span style="display: inline-block;height: 26px;line-height: 26px;">{{ $t('dataset.param') }}:</span></el-col>
           <el-col :span="18">
-            <el-button type="text" @click="insertParamToCodeMirror('${__last_update_time__}')">{{ $t('dataset.last_update_time') }}</el-button>
-            <el-button type="text" @click="insertParamToCodeMirror('${__current_update_time__}')">{{ $t('dataset.current_update_time') }}</el-button>
+            <el-button type="text" size="mini" @click="insertParamToCodeMirror('${__last_update_time__}')">{{ $t('dataset.last_update_time') }}</el-button>
+            <el-button type="text" size="mini" @click="insertParamToCodeMirror('${__current_update_time__}')">{{ $t('dataset.current_update_time') }}</el-button>
           </el-col>
         </el-row>
       </el-row>
@@ -504,7 +504,18 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  .el-divider--horizontal {
+    margin: 12px 0;
+  }
+
+  .el-radio{
+    margin-right: 10px;
+    >>>.el-radio__label{
+      font-size: 12px;
+    }
+  }
+
   .dialog-css >>> .el-dialog__header {
     padding: 20px 20px 0;
   }
@@ -524,5 +535,9 @@ export default {
   .codemirror >>> .CodeMirror-scroll {
     height: 100px;
     overflow-y: auto;
+  }
+
+  span{
+    font-size: 12px;
   }
 </style>
