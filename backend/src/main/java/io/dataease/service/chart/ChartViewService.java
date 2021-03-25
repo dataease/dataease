@@ -192,21 +192,21 @@ public class ChartViewService {
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":
-                return "=";
+                return " = ";
             case "not_eq":
-                return "<>";
+                return " <> ";
             case "lt":
-                return "<";
+                return " < ";
             case "le":
-                return "<=";
+                return " <= ";
             case "gt":
-                return ">";
+                return " > ";
             case "ge":
-                return ">=";
+                return " >= ";
             case "null":
-                return "IS NULL";
+                return " IS NULL ";
             case "not_null":
-                return "IS NOT NULL";
+                return " IS NOT NULL ";
             default:
                 return "";
         }
