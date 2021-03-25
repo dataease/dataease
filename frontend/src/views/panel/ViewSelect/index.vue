@@ -11,10 +11,13 @@
         :data="data"
         :props="defaultProps"
         :render-content="renderNode"
-        default-expand-all
-        :filter-node-method="filterNode"
+        draggable
+        :allow-drop="allowDrop"
+        :allow-drag="allowDrag"
+        @node-drag-start="handleDragStart"
       />
     </div>
+
     <div v-if="showdetail" class="detail-class">
       <el-card class="filter-card-class">
         <div slot="header" class="button-div-class">
@@ -82,8 +85,8 @@ export default {
     },
     renderNode(h, { node, data, store }) {
       return (
-        <div class='custom-tree-node' on-click={() => this.detail(data)} on-dblclick={() => this.addView2Drawing(data.id)} >
-          <span class='label-span'>{node.label}</span>
+        <div class='custom-tree-node' on-click={() => this.detail(data)} on-dblclick={() => this.addView2Drawing(data.id)}>
+          <span class='label-span' >{node.label}</span>
           {data.type !== 'group' && data.type !== 'scene' ? (
 
             <svg-icon icon-class={data.type} class='chart-icon' />
@@ -102,31 +105,54 @@ export default {
       this.detailItem = null
     },
     addView2Drawing(viewId) {
-    //   viewInfo(viewId).then(res => {
-    //     const info = res.data
-    //     this.$emit('panel-view-add', info)
-    //   })
+      //   viewInfo(viewId).then(res => {
+      //     const info = res.data
+      //     this.$emit('panel-view-add', info)
+      //   })
       bus.$emit('panel-view-add', { id: viewId })
-    //   this.$emit('panel-view-add', viewId)
+      //   this.$emit('panel-view-add', viewId)
+    },
+    handleDragStart(node, ev) {
+      ev.dataTransfer.effectAllowed = 'copy'
+      const dataTrans = {
+        type: 'view',
+        id: node.data.id
+      }
+      ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+      // bus.$emit('component-on-drag')
+    },
+
+    // 判断节点能否被拖拽
+    allowDrag(draggingNode) {
+      if (draggingNode.data.type === 'scene') {
+        return false
+      } else {
+        return true
+      }
+    },
+
+    allowDrop(draggingNode, dropNode, type) {
+      return false
     }
+
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.top-div-class {
+  .top-div-class {
     max-height: calc(100vh - 335px);
     width: 100%;
     position: fixed;
     overflow-y : auto
-}
-.detail-class {
+  }
+  .detail-class {
     width: 100%;
     position: fixed;
     bottom: 0px;
-}
-.view-list-thumbnails {
+  }
+  .view-list-thumbnails {
     width: 100%;
     height: 100%;
-}
+  }
 </style>

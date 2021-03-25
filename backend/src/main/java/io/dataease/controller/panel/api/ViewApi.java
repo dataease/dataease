@@ -18,4 +18,10 @@ public interface ViewApi {
     @ApiOperation("视图树")
     @PostMapping("/tree")
     List<PanelViewDto> tree(BaseGridRequest request);
+
+
+
+
+
+
 }

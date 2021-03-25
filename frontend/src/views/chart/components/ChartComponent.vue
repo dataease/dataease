@@ -1,5 +1,5 @@
 <template>
-  <div class="Echarts" style="display: flex;">
+  <div style="display: flex;width: 100%;height: 100%;">
     <div :id="chartId" style="width: 100%;height: 100%;" />
   </div>
 </template>
@@ -11,6 +11,7 @@ import { baseLineOption, stackLineOption } from '../chart/line/line'
 import { basePieOption } from '../chart/pie/pie'
 import { baseFunnelOption } from '../chart/funnel/funnel'
 import { baseRadarOption } from '../chart/radar/radar'
+import eventBus from '@/utils/eventBus'
 
 export default {
   name: 'ChartComponent',
@@ -41,9 +42,15 @@ export default {
     // 基于准备好的dom，初始化echarts实例
     this.myChart = this.$echarts.init(document.getElementById(this.chartId))
     this.drawEcharts()
+
+    // 监听元素变动事件
+    eventBus.$on('resizing', (componentId) => {
+      this.chartResize()
+    })
   },
   methods: {
     drawEcharts() {
+      debugger
       const chart = this.chart
       let chart_option = {}
       // type

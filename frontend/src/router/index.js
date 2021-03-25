@@ -71,6 +71,18 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/panelCanvas',
+    component: Layout,
+    redirect: '/panelCanvas/canvas',
+    hidden: true,
+    children: [
+      {
+        path: 'canvas',
+        component: () => import('@/views/panel/canvas')
+      }
+    ]
+  },
 
   {
     path: '/preview',

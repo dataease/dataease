@@ -15,6 +15,14 @@ import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import directives from './directive'
 
+import '@/custom-component' // 注册自定义组件
+import '@/assets/iconfont/iconfont.css'
+import '@/styles/animate.css'
+import 'element-ui/lib/theme-chalk/index.css'
+import '@/styles/reset.css'
+Vue.config.productionTip = false
+
+
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'

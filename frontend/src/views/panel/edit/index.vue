@@ -73,19 +73,27 @@
         </div>
 
         <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">
-          <div class="leftPanel-background" />
-          <div v-if="show" class="leftPanel">
+          <div />
+          <div v-show="show" class="leftPanel">
 
             <div class="leftPanel-items">
-              <view-select v-if="show && showIndex===0" />
-              <filter-group v-if="show && showIndex===1" />
+              <view-select v-show=" showIndex===0" />
+              <filter-group v-show="show && showIndex===1" />
             </div>
           </div>
         </div>
 
       </de-aside-container>
       <de-main-container class="ms-main-container">
-        <drawing-board />
+        <div
+          class="content"
+          @drop="handleDrop"
+          @dragover="handleDragOver"
+          @mousedown="handleMouseDown"
+          @mouseup="deselectCurComponent"
+        >
+          <Editor />
+        </div>
       </de-main-container>
     </de-container>
   </el-container>
@@ -98,8 +106,16 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { addClass, removeClass } from '@/utils'
 import FilterGroup from '../filter'
 import ViewSelect from '../ViewSelect'
-import DrawingBoard from '../DrawingBoard'
 import bus from '@/utils/bus'
+import Editor from '@/components/Editor/index'
+import { deepCopy } from '@/utils/utils'
+import componentList from '@/custom-component/component-list' // 左侧列表数据
+import generateID from '@/utils/generateID'
+import { listenGlobalKeyDown } from '@/utils/shortcutKey'
+import { mapState } from 'vuex'
+import { uuid } from 'vue-uuid'
+
+
 export default {
   components: {
     DeMainContainer,
@@ -107,16 +123,24 @@ export default {
     DeAsideContainer,
     FilterGroup,
     ViewSelect,
-    DrawingBoard
+    Editor
 
   },
   data() {
     return {
       show: false,
       clickNotClose: false,
-      showIndex: -1
+      showIndex: -1,
+      activeName: 'attr',
+      reSelectAnimateIndex: undefined
     }
   },
+  computed: mapState([
+    'componentData',
+    'curComponent',
+    'isClickComponent',
+    'canvasStyleData'
+  ]),
   watch: {
     show(value) {
       if (value && !this.clickNotClose) {
@@ -129,8 +153,16 @@ export default {
       }
     }
   },
+  created() {
+    this.restore()
+    // 全局监听按键事件
+    listenGlobalKeyDown()
+  },
   mounted() {
     this.insertToBody()
+    bus.$on('component-on-drag', () => {
+      this.show = false
+    })
   },
   beforeDestroy() {
     const elx = this.$refs.rightPanel
@@ -171,6 +203,73 @@ export default {
     },
     preViewShow() {
       bus.$emit('panel-drawing-preview')
+    },
+
+    // 画布
+    restore() {
+      // 用保存的数据恢复画布
+      if (localStorage.getItem('canvasData')) {
+        this.$store.commit('setComponentData', this.resetID(JSON.parse(localStorage.getItem('canvasData'))))
+      }
+
+      if (localStorage.getItem('canvasStyle')) {
+        this.$store.commit('setCanvasStyle', JSON.parse(localStorage.getItem('canvasStyle')))
+      }
+    },
+
+    resetID(data) {
+      data.forEach(item => {
+        item.id = uuid.v1()
+      })
+
+      return data
+    },
+    handleDrop(e) {
+      let component
+      console.log('handleDrop123')
+      const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
+      if (componentInfo.type === 'view') {
+        componentList.forEach(componentTemp => {
+          if (componentTemp.type === 'view') {
+            component = deepCopy(componentTemp)
+            component.style.top = e.offsetY
+            component.style.left = e.offsetX
+            component.id = uuid.v1()
+            const propValue = {
+              id: component.id,
+              viewId: componentInfo.id
+            }
+            component.propValue = propValue
+          }
+        })
+      }
+      this.$store.commit('addComponent', { component })
+      this.$store.commit('recordSnapshot')
+    },
+
+    handleDragOver(e) {
+      console.log('handleDragOver123')
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'copy'
+    },
+
+    handleMouseDown() {
+      console.log('handleMouseDown123')
+
+      this.$store.commit('setClickComponentStatus', false)
+    },
+
+    deselectCurComponent(e) {
+      console.log('deselectCurComponent123')
+
+      if (!this.isClickComponent) {
+        this.$store.commit('setCurComponent', { component: null, index: null })
+      }
+
+      // 0 左击 1 滚轮 2 右击
+      if (e.button != 2) {
+        this.$store.commit('hideContextMenu')
+      }
     }
 
   }
@@ -215,7 +314,7 @@ export default {
 
 .leftPanel {
   width: 100%;
-  max-width: 260px;
+  max-width: 200px;
   height: calc(100vh - 91px);
   position: fixed;
   top: 91px;
