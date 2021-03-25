@@ -15,18 +15,18 @@
         <!--        </el-button>-->
       </span>
     </el-row>
-    <el-row style="display: flex;height: 100%">
+    <el-row class="view-panel">
       <el-col
         style="height: 100%;width: 20%;min-width: 180px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
-        <div style="height: 45%;border-bottom: 1px solid #E6E6E6;" class="padding-lr">
+        <div style="height: 50%;border-bottom: 1px solid #E6E6E6;" class="padding-lr">
           <span>{{ $t('chart.dimension') }}</span>
           <draggable
             v-model="dimension"
             :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
-            style="height: 90%;overflow:auto"
+            class="drag-list"
             @end="end1"
             @start="start1"
           >
@@ -35,14 +35,14 @@
             </transition-group>
           </draggable>
         </div>
-        <div style="height: 45%;" class="padding-lr">
+        <div style="height: 50%;" class="padding-lr">
           <span>{{ $t('chart.quota') }}</span>
           <draggable
             v-model="quota"
             :options="{group:{name: 'quota',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
-            style="height: 90%;overflow:auto"
+            class="drag-list"
             @end="end1"
             @start="start1"
           >
@@ -54,7 +54,7 @@
       </el-col>
 
       <el-col
-        style="height: 100%;width: 25%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
+        style="height: 100%;width: 30%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
         <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">
           <el-row>
@@ -73,7 +73,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div style="height: 25%;overflow:auto" class="padding-lr">
+        <div style="height: 30%;overflow:auto" class="padding-lr">
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
             <div class="chart-type">
@@ -172,7 +172,7 @@
             </el-row>
           </el-row>
 
-          <chart-component :chart-id="chart.id" :chart="chart" style="padding: 10px" class="chart-class" />
+          <chart-component :chart-id="chart.id" :chart="chart" class="chart-class" />
         </el-row>
       </el-col>
     </el-row>
@@ -566,7 +566,7 @@ export default {
       this.resetRename()
     },
     resetRename() {
-      this.itemForm = {}
+      // this.itemForm = {}
     }
   }
 }
@@ -593,6 +593,16 @@ export default {
 
   .col + .col {
     margin-left: 10px;
+  }
+
+  .view-panel {
+    display: flex;
+    height: calc(100% - 40px);
+  }
+
+  .drag-list {
+    height: calc(100% - 26px);
+    overflow:auto;
   }
 
   .item {
@@ -698,7 +708,8 @@ export default {
   }
 
   .chart-class{
-    height: calc(100% - 124px);
+    height: calc(100% - 84px);
+    padding: 10px;
   }
 
   .dialog-css>>>.el-dialog__title {
