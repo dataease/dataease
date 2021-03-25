@@ -681,7 +681,19 @@ export default {
     filter: '过滤',
     none: '无',
     background: '背景',
-    alpha: '透明度'
+    alpha: '透明度',
+    add_filter: '添加过滤',
+    no_limit: '无限制',
+    filter_eq: '等于',
+    filter_not_eq: '不等于',
+    filter_lt: '小于',
+    filter_le: '小于等于',
+    filter_gt: '大于',
+    filter_ge: '大于等于',
+    filter_null: '为空',
+    filter_not_null: '不为空',
+    filter_include: '包含',
+    filter_not_include: '不包含'
   },
   dataset: {
     datalist: '数据集',

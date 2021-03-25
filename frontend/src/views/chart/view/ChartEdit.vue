@@ -151,7 +151,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" />
+                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -166,7 +166,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" />
+                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -176,6 +176,34 @@
         </el-row>
       </el-col>
     </el-row>
+
+    <!--显示名修改-->
+    <el-dialog :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
+      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="itemForm.name" size="mini" clearable />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeRename()">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveRename">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--指标过滤器-->
+    <el-dialog
+      :title="$t('chart.add_filter')"
+      :visible="filterEdit"
+      :show-close="false"
+      width="800px"
+      class="dialog-css"
+    >
+      <quota-filter-editor :item="quotaItem" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeQuotaFilter">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveQuotaFilter">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -207,10 +235,11 @@ import TooltipSelector from '../components/shape-attr/TooltipSelector'
 import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
 import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
+import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 
 export default {
   name: 'ChartEdit',
-  components: { BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -240,6 +269,17 @@ export default {
       moveId: -1,
       chart: {
         id: 'echart'
+      },
+      filterEdit: false,
+      quotaItem: {},
+      renameItem: false,
+      itemForm: {
+        name: ''
+      },
+      itemFormRules: {
+        name: [
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+        ]
       }
     }
   },
@@ -304,6 +344,9 @@ export default {
         }
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
+        }
+        if (!ele.filter) {
+          ele.filter = []
         }
       })
       if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
@@ -490,6 +533,40 @@ export default {
     onChangeBackgroundForm(val) {
       this.view.customStyle.background = val
       this.save()
+    },
+
+    showEditFilter(item) {
+      this.quotaItem = JSON.parse(JSON.stringify(item))
+      this.filterEdit = true
+    },
+    closeQuotaFilter() {
+      this.filterEdit = false
+    },
+    saveQuotaFilter() {
+      this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
+      this.save()
+      this.closeQuotaFilter()
+    },
+
+    showRename(val) {
+      this.itemForm = JSON.parse(JSON.stringify(val))
+      this.renameItem = true
+    },
+    saveRename() {
+      if (this.itemForm.renameType === 'quota') {
+        this.view.yaxis[this.itemForm.index].name = this.itemForm.name
+      } else if (this.itemForm.renameType === 'dimension') {
+        this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+      }
+      this.save()
+      this.closeRename()
+    },
+    closeRename() {
+      this.renameItem = false
+      this.resetRename()
+    },
+    resetRename() {
+      this.itemForm = {}
     }
   }
 }
@@ -622,5 +699,15 @@ export default {
 
   .chart-class{
     height: calc(100% - 124px);
+  }
+
+  .dialog-css>>>.el-dialog__title {
+    font-size: 14px;
+  }
+  .dialog-css >>> .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px 20px;
   }
 </style>

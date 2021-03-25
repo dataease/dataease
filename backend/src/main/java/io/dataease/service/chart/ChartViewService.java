@@ -174,6 +174,41 @@ public class ChartViewService {
             sql = sql.substring(0, sql.length() - 1);
         }
         // 如果是对结果字段过滤，则再包裹一层sql
-        return sql;
+        String[] resultFilter = yAxis.stream().filter(y -> CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0)
+                .map(y -> {
+                    String[] s = y.getFilter().stream().map(f -> "AND _" + y.getSummary() + "_" + y.getOriginName() + transMysqlFilterTerm(f.getTerm()) + f.getValue()).toArray(String[]::new);
+                    return StringUtils.join(s, " ");
+                }).toArray(String[]::new);
+        if (resultFilter.length == 0) {
+            return sql;
+        } else {
+            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1}",
+                    "(" + sql + ") AS tmp",
+                    StringUtils.join(resultFilter, " "));
+            return filterSql;
+        }
+    }
+
+    public String transMysqlFilterTerm(String term) {
+        switch (term) {
+            case "eq":
+                return "=";
+            case "not_eq":
+                return "<>";
+            case "lt":
+                return "<";
+            case "le":
+                return "<=";
+            case "gt":
+                return ">";
+            case "ge":
+                return ">=";
+            case "null":
+                return "IS NULL";
+            case "not_null":
+                return "IS NOT NULL";
+            default:
+                return "";
+        }
     }
 }
