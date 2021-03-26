@@ -122,3 +122,11 @@ div:focus {
         padding: 10px;
     }
 }
+
+.real-input {
+
+    .el-input__inner {
+        height: 25px !important;
+        border: none !important;
+    }
+}

@@ -3,6 +3,7 @@
 <mapper namespace="io.dataease.base.mapper.PanelLinkMapper">
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.PanelLink">
     <id column="resource_id" jdbcType="VARCHAR" property="resourceId" />
+    <result column="valid" jdbcType="BIT" property="valid" />
     <result column="enable_pwd" jdbcType="BIT" property="enablePwd" />
     <result column="pwd" jdbcType="VARCHAR" property="pwd" />
   </resultMap>
@@ -65,7 +66,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    resource_id, enable_pwd, pwd
+    resource_id, `valid`, enable_pwd, pwd
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelLinkExample" resultMap="BaseResultMap">
     select
@@ -98,16 +99,19 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.PanelLink">
-    insert into panel_link (resource_id, enable_pwd, pwd
-      )
-    values (#{resourceId,jdbcType=VARCHAR}, #{enablePwd,jdbcType=BIT}, #{pwd,jdbcType=VARCHAR}
-      )
+    insert into panel_link (resource_id, `valid`, enable_pwd, 
+      pwd)
+    values (#{resourceId,jdbcType=VARCHAR}, #{valid,jdbcType=BIT}, #{enablePwd,jdbcType=BIT}, 
+      #{pwd,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelLink">
     insert into panel_link
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="resourceId != null">
         resource_id,
+      </if>
+      <if test="valid != null">
+        `valid`,
       </if>
       <if test="enablePwd != null">
         enable_pwd,
@@ -119,6 +123,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="resourceId != null">
         #{resourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="valid != null">
+        #{valid,jdbcType=BIT},
       </if>
       <if test="enablePwd != null">
         #{enablePwd,jdbcType=BIT},
@@ -140,6 +147,9 @@
       <if test="record.resourceId != null">
         resource_id = #{record.resourceId,jdbcType=VARCHAR},
       </if>
+      <if test="record.valid != null">
+        `valid` = #{record.valid,jdbcType=BIT},
+      </if>
       <if test="record.enablePwd != null">
         enable_pwd = #{record.enablePwd,jdbcType=BIT},
       </if>
@@ -154,6 +164,7 @@
   <update id="updateByExample" parameterType="map">
     update panel_link
     set resource_id = #{record.resourceId,jdbcType=VARCHAR},
+      `valid` = #{record.valid,jdbcType=BIT},
       enable_pwd = #{record.enablePwd,jdbcType=BIT},
       pwd = #{record.pwd,jdbcType=VARCHAR}
     <if test="_parameter != null">
@@ -163,6 +174,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.PanelLink">
     update panel_link
     <set>
+      <if test="valid != null">
+        `valid` = #{valid,jdbcType=BIT},
+      </if>
       <if test="enablePwd != null">
         enable_pwd = #{enablePwd,jdbcType=BIT},
       </if>
@@ -174,7 +188,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelLink">
     update panel_link
-    set enable_pwd = #{enablePwd,jdbcType=BIT},
+    set `valid` = #{valid,jdbcType=BIT},
+      enable_pwd = #{enablePwd,jdbcType=BIT},
       pwd = #{pwd,jdbcType=VARCHAR}
     where resource_id = #{resourceId,jdbcType=VARCHAR}
   </update>

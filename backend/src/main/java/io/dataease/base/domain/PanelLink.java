@@ -7,6 +7,8 @@ import lombok.Data;
 public class PanelLink implements Serializable {
     private String resourceId;
 
+    private Boolean valid;
+
     private Boolean enablePwd;
 
     private String pwd;

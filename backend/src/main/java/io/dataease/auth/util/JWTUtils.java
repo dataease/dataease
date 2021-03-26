@@ -118,6 +118,24 @@ public class JWTUtils {
         }
     }
 
+    public static String signLink(String resourceId, String secret) {
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        return JWT.create().withClaim("resourceId", resourceId).sign(algorithm);
+    }
+
+    public static boolean verifyLink(String token,String resourceId, String secret) {
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withClaim("resourceId", resourceId)
+                .build();
+        try {
+            verifier.verify(token);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
     /**
      * 获取当前token上次操作时间
      * @param token

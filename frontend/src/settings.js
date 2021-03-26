@@ -1,6 +1,7 @@
 module.exports = {
   TokenKey: 'Authorization',
   RefreshTokenKey: 'refreshauthorization',
+  LinkTokenKey: 'LINK-PWD-TOKEN',
   title: 'DATA_EASE',
 
   /**

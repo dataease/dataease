@@ -3,9 +3,13 @@ package io.dataease.controller.request.panel.link;
 import lombok.Data;
 
 @Data
-public class LinkRequest {
+public class ValidateRequest {
 
     private String resourceId;
 
-    private boolean valid;
+    private Long time;
+
+    private String salt;
+
+
 }

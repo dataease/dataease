@@ -9,7 +9,7 @@ import dataset from './modules/dataset'
 import chart from './modules/chart'
 import request from './modules/request'
 import panel from './modules/panel'
-
+import link from './modules/link'
 import animation from './animation'
 import compose from './compose'
 import contextmenu from './contextmenu'
@@ -112,7 +112,8 @@ const data = {
     dataset,
     chart,
     request,
-    panel
+    panel,
+    link
   },
   getters
 }

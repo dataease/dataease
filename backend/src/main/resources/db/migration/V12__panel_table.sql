@@ -139,6 +139,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 DROP TABLE IF EXISTS `panel_link`;
 CREATE TABLE `panel_link` (
   `resource_id` varchar(50) NOT NULL COMMENT '资源ID',
+  `valid` tinyint(1) default 0 COMMENT '启用链接',
   `enable_pwd` tinyint(1) default 0 COMMENT '启用密码',
   `pwd` varchar(255) DEFAULT NULL  COMMENT '密码',
   PRIMARY KEY (`resource_id`)

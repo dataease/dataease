@@ -3,9 +3,9 @@ package io.dataease.controller.request.panel.link;
 import lombok.Data;
 
 @Data
-public class LinkRequest {
+public class EnablePwdRequest {
 
     private String resourceId;
 
-    private boolean valid;
+    private boolean enablePwd;
 }

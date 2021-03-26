@@ -1,18 +1,49 @@
 import request from '@/utils/request'
 
-export function validate(param) {
+export function validate(data) {
   return request({
     url: 'api/link/validate',
     method: 'post',
     loading: true,
-    param
+    data
   })
 }
 
-export function generate(param) {
+export function validatePwd(data) {
   return request({
-    url: 'api/link/generate',
+    url: 'api/link/validatePwd',
     method: 'post',
-    param
+    data
+  })
+}
+
+export function setPwd(data) {
+  return request({
+    url: 'api/link/resetPwd',
+    method: 'post',
+    data
+  })
+}
+
+export function switchValid(data) {
+  return request({
+    url: 'api/link/switchLink',
+    method: 'post',
+    data
+  })
+}
+
+export function switchEnablePwd(data) {
+  return request({
+    url: 'api/link/enablePwd',
+    method: 'post',
+    data
+  })
+}
+
+export function loadGenerate(resourceId) {
+  return request({
+    url: 'api/link/currentGenerate/' + resourceId,
+    method: 'post'
   })
 }

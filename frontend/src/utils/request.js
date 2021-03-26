@@ -10,6 +10,7 @@ import { tryShowLoading, tryHideLoading } from './loading'
 
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
+const LinkTokenKey = Config.LinkTokenKey
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -27,6 +28,9 @@ service.interceptors.request.use(
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
       config.headers[TokenKey] = getToken()
+    }
+    if (store.getters.linkToken) {
+      config.headers[LinkTokenKey] = store.getters.linkToken
     }
     // 增加loading
 
@@ -67,6 +71,11 @@ const checkAuth = response => {
   if (response.headers[RefreshTokenKey]) {
     const refreshToken = response.headers[RefreshTokenKey]
     store.dispatch('user/refreshToken', refreshToken)
+  }
+
+  if (response.headers[LinkTokenKey]) {
+    const linkToken = response.headers[LinkTokenKey]
+    store.dispatch('link/setLinkToken', linkToken)
   }
 }
 
