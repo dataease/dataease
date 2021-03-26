@@ -1,29 +1,23 @@
 <template>
   <div>
     <div class="toolbar">
-
-      <el-tooltip content="撤消">
-        <el-button class="el-icon-refresh-left" size="mini" circle @click="undo" />
-      </el-tooltip>
-      <el-tooltip content="重做">
-        <el-button class="el-icon-refresh-left" size="mini" circle @click="redo" />
-      </el-tooltip>
-      <el-tooltip content="插入图片">
-        <el-button class="el-icon-refresh-left" for="input" size="mini" circle />
-        <input id="input" type="file" hidden @change="handleFileChange">
-      </el-tooltip>
-      <el-tooltip content="预览">
-        <el-button class="el-icon-refresh-left" size="mini" circle @click="preview" />
-      </el-tooltip>
-      <el-tooltip content="清空">
-        <el-button class="el-icon-refresh-left" size="mini" circle @click="clearCanvas" />
-      </el-tooltip>
-      <el-tooltip content="保存">
-        <el-button class="el-icon-circle-check" size="mini" circle @click="save" />
-      </el-tooltip>
-      <el-tooltip content="预览">
-        <el-button class="el-icon-view" size="mini" circle @click="preview" />
-      </el-tooltip>
+      <el-button @click="undo">撤消</el-button>
+      <el-button @click="redo">重做</el-button>
+      <label for="input" class="insert">插入图片</label>
+      <input id="input" type="file" hidden @change="handleFileChange">
+      <el-button style="margin-left: 10px;" @click="preview">预览</el-button>
+      <el-button @click="save">保存</el-button>
+      <el-button @click="clearCanvas">清空画布</el-button>
+      <div class="canvas-config">
+        <span>画布大小</span>
+        <input v-model="canvasStyleData.width">
+        <span>*</span>
+        <input v-model="canvasStyleData.height">
+      </div>
+      <div class="canvas-config">
+        <span>画布比例</span>
+        <input v-model="scale" @input="handleScaleChange"> %
+      </div>
     </div>
 
     <!-- 预览 -->
@@ -193,62 +187,62 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toolbar {
-    height: 35px;
-    line-height: 35px;
+  .toolbar {
+    height: 50px;
+    line-height: 50px;
     background: #fff;
     border-bottom: 1px solid #ddd;
 
     .canvas-config {
-        display: inline-block;
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 14px;
+      color: #606266;
+
+      input {
+        width: 50px;
         margin-left: 10px;
-        font-size: 14px;
+        outline: none;
+        padding: 0 5px;
+        border: 1px solid #ddd;
         color: #606266;
+      }
 
-        input {
-            width: 50px;
-            margin-left: 10px;
-            outline: none;
-            padding: 0 5px;
-            border: 1px solid #ddd;
-            color: #606266;
-        }
-
-        span {
-            margin-left: 10px;
-        }
+      span {
+        margin-left: 10px;
+      }
     }
 
     .insert {
-        display: inline-block;
-        line-height: 1;
-        white-space: nowrap;
-        cursor: pointer;
-        background: #FFF;
-        border: 1px solid #DCDFE6;
-        color: #606266;
-        -webkit-appearance: none;
-        text-align: center;
-        box-sizing: border-box;
+      display: inline-block;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      background: #FFF;
+      border: 1px solid #DCDFE6;
+      color: #606266;
+      -webkit-appearance: none;
+      text-align: center;
+      box-sizing: border-box;
+      outline: 0;
+      margin: 0;
+      transition: .1s;
+      font-weight: 500;
+      padding: 9px 15px;
+      font-size: 12px;
+      border-radius: 3px;
+      margin-left: 10px;
+
+      &:active {
+        color: #3a8ee6;
+        border-color: #3a8ee6;
         outline: 0;
-        margin: 0;
-        transition: .1s;
-        font-weight: 500;
-        padding: 9px 15px;
-        font-size: 12px;
-        border-radius: 3px;
-        margin-left: 10px;
+      }
 
-        &:active {
-            color: #3a8ee6;
-            border-color: #3a8ee6;
-            outline: 0;
-        }
-
-        &:hover {
-            background-color: #ecf5ff;
-            color: #3a8ee6;
-        }
+      &:hover {
+        background-color: #ecf5ff;
+        color: #3a8ee6;
+      }
     }
-}
+  }
 </style>

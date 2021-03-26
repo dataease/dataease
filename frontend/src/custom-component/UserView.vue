@@ -1,6 +1,6 @@
 <template>
   <div class="rect-shape">
-    <chart-component v-if="showCard" :ref="element.propValue.id" :chart-id="element.propValue.id" :chart="chart" />
+    <chart-component v-if="showCard" :ref="element.propValue.id" class="chart-class" :chart-id="element.propValue.id" :chart="chart" />
   </div>
 </template>
 
@@ -53,5 +53,8 @@ export default {
     width: 100%;
     height: 100%;
     overflow: auto;
+}
+.chart-class{
+  height: 100%;
 }
 </style>

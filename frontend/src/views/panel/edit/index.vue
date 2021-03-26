@@ -3,30 +3,29 @@
     <!-- <de-header>Header</de-header> -->
     <el-header class="de-header">
       <el-row class="panel-design-head">
-        <span style="float: left;line-height: 35px; color: gray">
-
+        <span style="float: left;line-height: 50px; color: gray">
           <span>名称：测试仪表板</span>
-
         </span>
-        <span style="float: right;line-height: 35px;">
+        <Toolbar />
+        <!--        <span style="float: right;line-height: 35px;">-->
 
-          <el-tooltip content="返回目录">
-            <el-button class="el-icon-refresh-left" size="mini" circle @click="toDir" />
-          </el-tooltip>
+        <!--          <el-tooltip content="返回目录">-->
+        <!--            <el-button class="el-icon-refresh-left" size="mini" circle @click="toDir" />-->
+        <!--          </el-tooltip>-->
 
-          <el-tooltip content="背景图">
-            <el-button class="el-icon-full-screen" size="mini" circle />
-          </el-tooltip>
+        <!--          <el-tooltip content="背景图">-->
+        <!--            <el-button class="el-icon-full-screen" size="mini" circle />-->
+        <!--          </el-tooltip>-->
 
-          <el-tooltip content="保存">
-            <el-button class="el-icon-circle-check" size="mini" circle @click="saveDrawing" />
-          </el-tooltip>
+        <!--          <el-tooltip content="保存">-->
+        <!--            <el-button class="el-icon-circle-check" size="mini" circle @click="saveDrawing" />-->
+        <!--          </el-tooltip>-->
 
-          <el-tooltip content="预览">
-            <el-button class="el-icon-view" size="mini" circle @click="preViewShow" />
-          </el-tooltip>
+        <!--          <el-tooltip content="预览">-->
+        <!--            <el-button class="el-icon-view" size="mini" circle @click="preViewShow" />-->
+        <!--          </el-tooltip>-->
 
-        </span>
+        <!--        </span>-->
       </el-row>
     </el-header>
     <de-container>
@@ -113,6 +112,13 @@ import componentList from '@/custom-component/component-list' // 左侧列表数
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
+import Toolbar from '@/components/Toolbar'
+
+// 引入样式
+import '@/assets/iconfont/iconfont.css'
+import '@/styles/animate.css'
+import 'element-ui/lib/theme-chalk/index.css'
+import '@/styles/reset.css'
 
 export default {
   components: {
@@ -121,7 +127,8 @@ export default {
     DeAsideContainer,
     FilterGroup,
     ViewSelect,
-    Editor
+    Editor,
+    Toolbar
 
   },
   data() {

@@ -17,10 +17,6 @@ import directives from './directive'
 import VueClipboard from 'vue-clipboard2'
 
 import '@/custom-component' // 注册自定义组件
-import '@/assets/iconfont/iconfont.css'
-import '@/styles/animate.css'
-import 'element-ui/lib/theme-chalk/index.css'
-import '@/styles/reset.css'
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 
