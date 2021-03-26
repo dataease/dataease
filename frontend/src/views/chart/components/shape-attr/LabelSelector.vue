@@ -91,7 +91,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
   .shape-item{
     padding: 6px;
     border: none;

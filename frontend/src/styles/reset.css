@@ -32,7 +32,7 @@ li {
     list-style: none;
 }
 #app {
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 .el-tabs {
     height: 100%;

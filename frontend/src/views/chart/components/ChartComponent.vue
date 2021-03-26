@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex;width: 100%;height: 100%;">
+  <div style="display: flex;">
     <div :id="chartId" style="width: 100%;height: 100%;" />
   </div>
 </template>
@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     drawEcharts() {
-      debugger
+      // debugger
       const chart = this.chart
       let chart_option = {}
       // type

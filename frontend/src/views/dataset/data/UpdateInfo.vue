@@ -504,16 +504,16 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
   .el-divider--horizontal {
     margin: 12px 0;
   }
 
   .el-radio{
     margin-right: 10px;
-    >>>.el-radio__label{
-      font-size: 12px;
-    }
+  }
+  .el-radio>>>.el-radio__label{
+    font-size: 12px;
   }
 
   .dialog-css >>> .el-dialog__header {

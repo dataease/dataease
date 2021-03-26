@@ -101,7 +101,7 @@
             </div>
           </el-row>
         </div>
-        <div style="height: 40%;overflow:auto;border-top: 1px solid #e6e6e6">
+        <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
           <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
@@ -572,7 +572,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
   .padding-lr {
     padding: 0 6px;
   }
@@ -654,6 +654,9 @@ export default {
     background-color: #f7f8fa;
     border-bottom-color: #f7f8fa!important;
   }
+  .tab-header>>>.el-tabs__nav-scroll{
+    padding-left: 0!important;
+  }
 
   .draggable-group {
     display: inline-block;
@@ -702,9 +705,10 @@ export default {
 
   .filter-class{
     height: calc(35% - 102px);
-    .filter-inner-class{
-      height: calc(100% - 40px);
-    }
+  }
+
+  .filter-class>>>.filter-inner-class{
+    height: calc(100% - 40px);
   }
 
   .chart-class{

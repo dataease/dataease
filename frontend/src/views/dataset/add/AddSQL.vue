@@ -264,7 +264,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
   .el-divider--horizontal {
     margin: 12px 0;
   }
