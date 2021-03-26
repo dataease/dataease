@@ -1,8 +1,5 @@
 <template>
-  <!--TODO 慢慢完善，写个DEMO-->
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <span v-show="false">{{ tableId }}</span>
-    <span v-show="false">{{ sceneId }}</span>
     <span v-show="false">{{ vId }}</span>
     <el-row style="height: 40px;background-color: white" class="padding-lr">
       <span style="line-height: 40px;">{{ view.name }}</span>
@@ -284,15 +281,6 @@ export default {
     }
   },
   computed: {
-    tableId() {
-      // console.log(this.$store.state.chart.tableId);
-      this.initTableData(this.$store.state.chart.tableId)
-      return this.$store.state.chart.tableId
-    },
-    sceneId() {
-      // console.log(this.$store.state.chart.sceneId);
-      return this.$store.state.chart.sceneId
-    },
     vId() {
       // console.log(this.$store.state.chart.viewId);
       this.getData(this.$store.state.chart.viewId)
@@ -330,9 +318,9 @@ export default {
     save() {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
-      view.sceneId = this.sceneId
+      view.sceneId = this.view.sceneId
       view.name = this.table.name
-      view.tableId = this.$store.state.chart.tableId
+      view.tableId = this.view.tableId
       // view.xaxis.forEach(function(ele) {
       //   if (!ele.summary || ele.summary === '') {
       //     ele.summary = 'sum'
@@ -372,6 +360,7 @@ export default {
     getData(id) {
       if (id) {
         post('/chart/view/getData/' + id, null).then(response => {
+          this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []

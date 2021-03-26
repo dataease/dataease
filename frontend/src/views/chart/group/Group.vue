@@ -498,9 +498,6 @@ export default {
     sceneClick(data, node) {
       this.$store.dispatch('chart/setViewId', null)
       this.$store.dispatch('chart/setViewId', data.id)
-      this.$store.dispatch('chart/setTableId', null)
-      this.$store.dispatch('chart/setTableId', data.tableId)
-      // this.$router.push('/chart/chart-edit')
       this.$emit('switchComponent', { name: 'ChartEdit' })
     },
 
