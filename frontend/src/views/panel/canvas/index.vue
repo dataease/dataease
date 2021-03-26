@@ -122,7 +122,7 @@ export default {
       }
 
       // 0 左击 1 滚轮 2 右击
-      if (e.button != 2) {
+      if (e.button !== 2) {
         this.$store.commit('hideContextMenu')
       }
     }

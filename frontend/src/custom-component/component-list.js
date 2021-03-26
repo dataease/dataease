@@ -14,10 +14,12 @@ export const commonAttr = {
 // 编辑器左侧组件列表
 const list = [
   {
+    id: '10001',
     component: 'v-text',
     label: '文字',
     propValue: '双击编辑文字',
     icon: 'wenben',
+    type: 'other',
     style: {
       width: 200,
       height: 22,
@@ -30,10 +32,12 @@ const list = [
     }
   },
   {
+    id: '10002',
     component: 'v-button',
     label: '按钮',
     propValue: '按钮',
     icon: 'button',
+    type: 'other',
     style: {
       width: 100,
       height: 34,
@@ -50,9 +54,11 @@ const list = [
     }
   },
   {
+    id: '10003',
     component: 'Picture',
     label: '图片',
     icon: 'tupian',
+    type: 'other',
     propValue: require('@/assets/title.jpg'),
     style: {
       width: 300,
@@ -61,10 +67,25 @@ const list = [
     }
   },
   {
+    id: '10003-1',
+    component: 'Picture',
+    label: '背景-科技1',
+    icon: 'tupian',
+    type: 'other',
+    propValue: require('@/assets/bg-kj-1.jpg'),
+    style: {
+      width: 600,
+      height: 300,
+      borderRadius: ''
+    }
+  },
+  {
+    id: '10004',
     component: 'rect-shape',
     label: '矩形',
     propValue: '&nbsp;',
     icon: 'juxing',
+    type: 'other',
     style: {
       width: 200,
       height: 200,
@@ -82,6 +103,7 @@ const list = [
     }
   },
   {
+    id: '10005',
     component: 'user-view',
     label: '用户视图',
     propValue: '',

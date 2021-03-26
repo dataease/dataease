@@ -26,7 +26,7 @@
     >
       <component
         :is="item.component"
-        v-if="item.component != 'v-text'"
+        v-if="item.component !== 'v-text'"
         :id="'component' + item.id"
         class="component"
         :style="getComponentStyle(item.style)"
@@ -106,7 +106,7 @@ export default {
 
     handleMouseDown(e) {
       // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
-      if (!this.curComponent || (this.curComponent.component != 'v-text' && this.curComponent.component != 'rect-shape')) {
+      if (!this.curComponent || (this.curComponent.component !== 'v-text' && this.curComponent.component !== 'rect-shape')) {
         e.preventDefault()
       }
 
@@ -141,7 +141,7 @@ export default {
         document.removeEventListener('mousemove', move)
         document.removeEventListener('mouseup', up)
 
-        if (e.clientX == startX && e.clientY == startY) {
+        if (e.clientX === startX && e.clientY === startY) {
           this.hideArea()
           return
         }
@@ -173,7 +173,7 @@ export default {
       let right = -Infinity; let bottom = -Infinity
       areaData.forEach(component => {
         let style = {}
-        if (component.component == 'Group') {
+        if (component.component === 'Group') {
           component.propValue.forEach(item => {
             const rectInfo = $(`#component${item.id}`).getBoundingClientRect()
             style.left = rectInfo.left - this.editorX
@@ -255,7 +255,7 @@ export default {
     getShapeStyle(style) {
       const result = {};
       ['width', 'height', 'top', 'left', 'rotate'].forEach(attr => {
-        if (attr != 'rotate') {
+        if (attr !== 'rotate') {
           result[attr] = style[attr] + 'px'
         } else {
           result.transform = 'rotate(' + style[attr] + 'deg)'

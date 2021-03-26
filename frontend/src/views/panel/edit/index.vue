@@ -110,11 +110,9 @@ import bus from '@/utils/bus'
 import Editor from '@/components/Editor/index'
 import { deepCopy } from '@/utils/utils'
 import componentList from '@/custom-component/component-list' // 左侧列表数据
-import generateID from '@/utils/generateID'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
-
 
 export default {
   components: {
@@ -225,24 +223,38 @@ export default {
       return data
     },
     handleDrop(e) {
+      e.preventDefault()
+      e.stopPropagation()
       let component
+      const newComponentId = uuid.v1()
       console.log('handleDrop123')
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
+
+      // 用户视图设置 复制一个模板
       if (componentInfo.type === 'view') {
         componentList.forEach(componentTemp => {
           if (componentTemp.type === 'view') {
             component = deepCopy(componentTemp)
-            component.style.top = e.offsetY
-            component.style.left = e.offsetX
-            component.id = uuid.v1()
             const propValue = {
-              id: component.id,
+              id: newComponentId,
               viewId: componentInfo.id
             }
             component.propValue = propValue
           }
         })
       }
+
+      debugger
+      // 其他组件设置
+      componentList.forEach(componentTemp => {
+        if (componentInfo.id === componentTemp.id) {
+          component = deepCopy(componentTemp)
+        }
+      })
+
+      component.style.top = e.offsetY
+      component.style.left = e.offsetX
+      component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
     },
@@ -267,7 +279,7 @@ export default {
       }
 
       // 0 左击 1 滚轮 2 右击
-      if (e.button != 2) {
+      if (e.button !== 2) {
         this.$store.commit('hideContextMenu')
       }
     }

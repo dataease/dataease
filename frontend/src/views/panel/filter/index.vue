@@ -5,11 +5,16 @@
       <div slot="header">
         <span>卡片名称</span>
       </div>
-      <div style="position: relative;margin-left: 5px;">
-        <div v-for="o in 4" :key="o" class="item">
-          <div draggable>
-            <el-button style="width: 90px;" size="mini" type="primary" icon="el-icon-edit" plain> {{ '条件 ' + o }}</el-button>
-          </div>
+      <div style="position: relative;margin-left: 5px;" @dragstart="handleDragStart">
+        <div
+          v-for="(item, index) in componentList"
+          :key="index"
+          :data-id="item.id"
+          draggable
+          :data-index="index"
+        >
+          <span class="iconfont" :class="'icon-' + item.icon" />
+          <span>{{ item.label }}</span>
         </div>
       </div>
 
@@ -18,16 +23,23 @@
 
 </template>
 
-<script>
+<script>import componentList from '@/custom-component/component-list'
 export default {
   name: 'FilterGroup',
   data() {
     return {
-
+      componentList
     }
   },
   methods: {
-
+    handleDragStart(ev) {
+      ev.dataTransfer.effectAllowed = 'copy'
+      const dataTrans = {
+        type: 'other',
+        id: ev.target.dataset.id
+      }
+      ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+    }
   }
 }
 </script>

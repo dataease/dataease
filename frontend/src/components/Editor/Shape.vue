@@ -199,7 +199,7 @@ export default {
 
     handleMouseDownOnShape(e) {
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component != 'v-text' && this.element.component != 'rect-shape') {
+      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape') {
         e.preventDefault()
       }
 
@@ -329,7 +329,7 @@ export default {
     },
 
     isNeedLockProportion() {
-      if (this.element.component != 'Group') return false
+      if (this.element.component !== 'Group') return false
       const ratates = [0, 90, 180, 360]
       for (const component of this.element.propValue) {
         if (!ratates.includes(mod360(parseInt(component.style.rotate)))) {
