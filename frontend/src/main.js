@@ -15,11 +15,12 @@ import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import directives from './directive'
 import VueClipboard from 'vue-clipboard2'
+import widgets from '@/components/widget'
 
 import '@/custom-component' // 注册自定义组件
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
-
+Vue.use(widgets)
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'

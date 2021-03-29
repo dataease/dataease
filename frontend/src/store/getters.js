@@ -17,6 +17,7 @@ const getters = {
   table: state => state.dataset.table,
   loadingMap: state => state.request.loadingMap,
   currentPath: state => state.permission.currentPath,
-  permissions: state => state.user.permissions
+  permissions: state => state.user.permissions,
+  beanMap: state => state.application.beanMap
 }
 export default getters

@@ -24,6 +24,7 @@
 </template>
 
 <script>import componentList from '@/custom-component/component-list'
+import { ApplicationContext } from '@/utils/ApplicationContext'
 export default {
   name: 'FilterGroup',
   data() {
@@ -31,6 +32,11 @@ export default {
       componentList
     }
   },
+  mounted() {
+    const wid = ApplicationContext.getService('testWidget')
+    console.log(wid)
+  },
+
   methods: {
     handleDragStart(ev) {
       ev.dataTransfer.effectAllowed = 'copy'
