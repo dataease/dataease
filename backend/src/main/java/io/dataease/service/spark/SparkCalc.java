@@ -16,7 +16,10 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.sql.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
@@ -27,8 +30,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-
-import static org.reflections8.Reflections.collect;
 
 /**
  * @Author gin
@@ -98,8 +99,7 @@ public class SparkCalc {
         List<String[]> data = new ArrayList<>();
 
         // transform
-        JavaRDD<Row> rowJavaRDD = sql.javaRDD();
-        List<Row> list = rowJavaRDD.collect();
+        List<Row> list = sql.javaRDD().collect();
         for (Row row : list) {
             String[] r = new String[row.length()];
             for (int i = 0; i < row.length(); i++) {
