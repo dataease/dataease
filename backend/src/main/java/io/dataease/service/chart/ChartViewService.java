@@ -2,7 +2,10 @@ package io.dataease.service.chart;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.dataease.base.domain.*;
+import io.dataease.base.domain.ChartViewExample;
+import io.dataease.base.domain.ChartViewWithBLOBs;
+import io.dataease.base.domain.DatasetTable;
+import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -15,8 +18,8 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.chart.Series;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
+import io.dataease.service.spark.SparkCalc;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,6 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Author gin
@@ -40,7 +42,7 @@ public class ChartViewService {
     @Resource
     private DatasourceService datasourceService;
     @Resource
-    private DataSetTableFieldsService dataSetTableFieldsService;
+    private SparkCalc sparkCalc;
 
     public ChartViewWithBLOBs save(ChartViewWithBLOBs chartView) {
         long timestamp = System.currentTimeMillis();
@@ -102,22 +104,27 @@ public class ChartViewService {
 
         // 获取数据集
         DatasetTable table = dataSetTableService.get(view.getTableId());
-        // todo 判断连接方式，直连或者定时抽取 table.mode
-        Datasource ds = datasourceService.get(table.getDataSourceId());
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
-        if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
-            datasourceRequest.setTable(dataTableInfoDTO.getTable());
-            datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xAxis, yAxis));
-        } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
-            datasourceRequest.setQuery(getSQL(ds.getType(), " (" + dataTableInfoDTO.getSql() + ") AS tmp ", xAxis, yAxis));
+        // 判断连接方式，直连或者定时抽取 table.mode
+        List<String[]> data = new ArrayList<>();
+        if (table.getMode() == 0) {// 直连
+            Datasource ds = datasourceService.get(table.getDataSourceId());
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
+            if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
+                datasourceRequest.setTable(dataTableInfoDTO.getTable());
+                datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xAxis, yAxis));
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
+                datasourceRequest.setQuery(getSQL(ds.getType(), " (" + dataTableInfoDTO.getSql() + ") AS tmp ", xAxis, yAxis));
+            }
+            data = datasourceProvider.getData(datasourceRequest);
+        } else if (table.getMode() == 1) {// 抽取
+            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
+            data = sparkCalc.getData(dataTableInfoDTO.getTable() + "-" + table.getDataSourceId(), xAxis, yAxis, "tmp");// todo hBase table name maybe change
         }
 
-        List<String[]> data = datasourceProvider.getData(datasourceRequest);
-
-        // todo 处理结果,目前做一个单系列图表，后期图表组件再扩展
+        // 图表组件可再扩展
         for (ChartViewFieldDTO y : yAxis) {
             Series series1 = new Series();
             series1.setName(y.getName());
@@ -163,7 +170,7 @@ public class ChartViewService {
     }
 
     public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis) {
-        // TODO 字段汇总 排序等
+        // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + y.getOriginName()).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
         String[] order = yAxis.stream().filter(y -> StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none"))
