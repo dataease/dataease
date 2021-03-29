@@ -6,54 +6,27 @@
         <!--TODO 仪表盘设计公共设置区域-->
         <el-row class="panel-design-head">
           <span style="float: left;line-height: 40px; color: gray">
-
             <span>名称：{{ panelInfo.name || '测试仪表板' }}</span>
-
           </span>
           <span style="float: right;line-height: 40px;">
-
-            <el-tooltip content="背景图">
-              <el-button class="el-icon-full-screen" size="mini" circle />
-            </el-tooltip>
-
-            <!-- <el-tooltip content="保存">
-              <el-button class="el-icon-success" size="mini" circle @click="savePanel" />
-            </el-tooltip> -->
-
             <el-tooltip content="预览">
               <el-button class="el-icon-view" size="mini" circle @click="preViewShow" />
             </el-tooltip>
-
           </span>
         </el-row>
-        <drawing-board />
-        <!-- <el-row class="panel-design-show">
-          <div class="container" :style="panelDetails.gridStyle">
-            <vue-drag-resize-rotate
-              v-for="panelDesign in panelDetails.panelDesigns"
-              v-show="panelDesign.keepFlag"
-              :key="panelDesign.id"
-              :panel-design="panelDesign"
-              :parent="true"
-              @newStyle="newStyle"
-            >
-              <chart-component v-if="panelDesign.componentType==='view'" :ref="panelDesign.id" :chart-id="panelDesign.id" :chart="panelDesign.chartView" />
-
-            </vue-drag-resize-rotate>
-          </div>
-
-        </el-row> -->
+        <!--TODO 仪表盘预览区域-->
+<!--        <Preview />-->
       </el-col>
     </el-row>
   </el-row>
 </template>
 <script>
-import DrawingBoard from '../DrawingBoard'
 import bus from '@/utils/bus'
+import Preview from '@/components/Editor/Preview'
 
 export default {
   name: 'PanelViewShow',
-  components: { DrawingBoard },
+  components: { Preview },
   data() {
     return {
 

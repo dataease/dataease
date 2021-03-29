@@ -77,7 +77,7 @@ public class PanelGroupService {
             request.setCreateTime(System.currentTimeMillis());
             panelGroupMapper.insert(request);
         } else {
-            panelGroupMapper.updateByPrimaryKey(request);
+            panelGroupMapper.updateByPrimaryKeySelective(request);
         }
         PanelGroupDTO panelGroupDTO = new PanelGroupDTO();
         BeanUtils.copyBean(panelGroupDTO, request);
@@ -92,7 +92,11 @@ public class PanelGroupService {
     }
 
 
-    public PanelGroupDTO findOne(String panelId) throws Exception{
+    public PanelGroupWithBLOBs findOne(String panelId){
+       return panelGroupMapper.selectByPrimaryKey(panelId);
+    }
+
+    public PanelGroupDTO findOneBack(String panelId) throws Exception{
         PanelGroupDTO panelGroupDTO = extPanelGroupMapper.panelGroup(panelId);
         Assert.notNull(panelGroupDTO, "未查询到仪表盘信息");
         PanelDesignExample panelDesignExample = new PanelDesignExample();

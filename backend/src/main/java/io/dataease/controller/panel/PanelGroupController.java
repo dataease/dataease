@@ -1,6 +1,7 @@
 package io.dataease.controller.panel;
 
 import io.dataease.base.domain.DatasetGroup;
+import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
@@ -47,7 +48,7 @@ public class PanelGroupController {
     }
 
     @GetMapping("/findOne/{id}")
-    public PanelGroupDTO findOne(@PathVariable String id) throws Exception {
+    public PanelGroupWithBLOBs findOne(@PathVariable String id) throws Exception {
         return panelGroupService.findOne(id);
     }
 

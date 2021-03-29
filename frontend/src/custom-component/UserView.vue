@@ -1,6 +1,6 @@
 <template>
   <div class="rect-shape">
-    <chart-component v-if="showCard" :ref="element.propValue.id" class="chart-class" :chart-id="element.propValue.id" :chart="chart" />
+    <chart-component :ref="element.propValue.id" class="chart-class" :chart-id="element.propValue.id" :chart="chart" />
   </div>
 </template>
 
@@ -18,9 +18,7 @@ export default {
   },
   data() {
     return {
-      chart: {},
-      showCard: false
-
+      chart: {}
     }
   },
   created() {
@@ -40,7 +38,6 @@ export default {
         post('/chart/view/getData/' + id, null).then(response => {
           // 将视图传入echart组件
           this.chart = response.data
-          this.showCard = true
         })
       }
     }

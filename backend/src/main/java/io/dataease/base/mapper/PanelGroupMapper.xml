@@ -10,7 +10,10 @@
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="panel_type" jdbcType="VARCHAR" property="panelType" />
-    <result column="panel_style" jdbcType="VARCHAR" property="panelStyle" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.PanelGroupWithBLOBs">
+    <result column="panel_style" jdbcType="LONGVARCHAR" property="panelStyle" />
+    <result column="panel_data" jdbcType="LONGVARCHAR" property="panelData" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -71,8 +74,27 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, pid, `level`, node_type, create_by, create_time, panel_type, panel_style
+    id, `name`, pid, `level`, node_type, create_by, create_time, panel_type
   </sql>
+  <sql id="Blob_Column_List">
+    panel_style, panel_data
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.PanelGroupExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from panel_group
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelGroupExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -87,9 +109,11 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from panel_group
     where id = #{id,jdbcType=VARCHAR}
   </select>
@@ -103,17 +127,17 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="io.dataease.base.domain.PanelGroup">
+  <insert id="insert" parameterType="io.dataease.base.domain.PanelGroupWithBLOBs">
     insert into panel_group (id, `name`, pid, 
       `level`, node_type, create_by, 
-      create_time, panel_type, panel_style
-      )
+      create_time, panel_type, panel_style, 
+      panel_data)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
       #{level,jdbcType=INTEGER}, #{nodeType,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{panelType,jdbcType=VARCHAR}, #{panelStyle,jdbcType=VARCHAR}
-      )
+      #{createTime,jdbcType=BIGINT}, #{panelType,jdbcType=VARCHAR}, #{panelStyle,jdbcType=LONGVARCHAR}, 
+      #{panelData,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelGroup">
+  <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelGroupWithBLOBs">
     insert into panel_group
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -143,6 +167,9 @@
       <if test="panelStyle != null">
         panel_style,
       </if>
+      <if test="panelData != null">
+        panel_data,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -170,7 +197,10 @@
         #{panelType,jdbcType=VARCHAR},
       </if>
       <if test="panelStyle != null">
-        #{panelStyle,jdbcType=VARCHAR},
+        #{panelStyle,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="panelData != null">
+        #{panelData,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -208,9 +238,28 @@
         panel_type = #{record.panelType,jdbcType=VARCHAR},
       </if>
       <if test="record.panelStyle != null">
-        panel_style = #{record.panelStyle,jdbcType=VARCHAR},
+        panel_style = #{record.panelStyle,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.panelData != null">
+        panel_data = #{record.panelData,jdbcType=LONGVARCHAR},
       </if>
     </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update panel_group
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      `level` = #{record.level,jdbcType=INTEGER},
+      node_type = #{record.nodeType,jdbcType=VARCHAR},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      panel_type = #{record.panelType,jdbcType=VARCHAR},
+      panel_style = #{record.panelStyle,jdbcType=LONGVARCHAR},
+      panel_data = #{record.panelData,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -224,13 +273,12 @@
       node_type = #{record.nodeType,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
-      panel_type = #{record.panelType,jdbcType=VARCHAR},
-      panel_style = #{record.panelStyle,jdbcType=VARCHAR}
+      panel_type = #{record.panelType,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.PanelGroup">
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.PanelGroupWithBLOBs">
     update panel_group
     <set>
       <if test="name != null">
@@ -255,9 +303,25 @@
         panel_type = #{panelType,jdbcType=VARCHAR},
       </if>
       <if test="panelStyle != null">
-        panel_style = #{panelStyle,jdbcType=VARCHAR},
+        panel_style = #{panelStyle,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="panelData != null">
+        panel_data = #{panelData,jdbcType=LONGVARCHAR},
       </if>
     </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.base.domain.PanelGroupWithBLOBs">
+    update panel_group
+    set `name` = #{name,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=VARCHAR},
+      `level` = #{level,jdbcType=INTEGER},
+      node_type = #{nodeType,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      panel_type = #{panelType,jdbcType=VARCHAR},
+      panel_style = #{panelStyle,jdbcType=LONGVARCHAR},
+      panel_data = #{panelData,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelGroup">
@@ -268,8 +332,7 @@
       node_type = #{nodeType,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
-      panel_type = #{panelType,jdbcType=VARCHAR},
-      panel_style = #{panelStyle,jdbcType=VARCHAR}
+      panel_type = #{panelType,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -1,23 +1,36 @@
 <template>
   <div>
     <div class="toolbar">
-      <el-button @click="undo">撤消</el-button>
-      <el-button @click="redo">重做</el-button>
-      <label for="input" class="insert">插入图片</label>
-      <input id="input" type="file" hidden @change="handleFileChange">
-      <el-button style="margin-left: 10px;" @click="preview">预览</el-button>
-      <el-button @click="save">保存</el-button>
-      <el-button @click="clearCanvas">清空画布</el-button>
+
       <div class="canvas-config">
         <span>画布大小</span>
         <input v-model="canvasStyleData.width">
         <span>*</span>
         <input v-model="canvasStyleData.height">
       </div>
-      <div class="canvas-config">
+      <div class="canvas-config" style="margin-right: 10px">
         <span>画布比例</span>
         <input v-model="scale" @input="handleScaleChange"> %
       </div>
+      <el-tooltip content="撤消">
+        <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
+      </el-tooltip>
+      <el-tooltip content="重做">
+        <el-button class="el-icon-refresh-left" size="mini" circle @click="redo" />
+      </el-tooltip>
+      <el-tooltip content="插入图片">
+        <el-button class="el-icon-upload" size="mini" circle @click="goFile" />
+      </el-tooltip>
+      <el-tooltip content="清空画布" style="margin-right: 10px">
+        <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
+      </el-tooltip>
+      <input id="input" ref="files" type="file" hidden @change="handleFileChange">
+      <el-tooltip content="保存">
+        <el-button class="el-icon-circle-check" size="mini" circle @click="save" />
+      </el-tooltip>
+      <el-tooltip content="预览">
+        <el-button class="el-icon-view" size="mini" circle @click="preview" />
+      </el-tooltip>
     </div>
 
     <!-- 预览 -->
@@ -33,6 +46,7 @@ import Preview from '@/components/Editor/Preview'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { deepCopy } from '@/utils/utils'
+import { post } from '@/api/panel/panel'
 
 export default {
   components: { Preview },
@@ -65,6 +79,9 @@ export default {
     this.scale = this.canvasStyleData.scale
   },
   methods: {
+    goFile() {
+      this.$refs.files.click()
+    },
     format(value) {
       const scale = this.scale
       return value * parseInt(scale) / 100
@@ -171,9 +188,15 @@ export default {
     save() {
       localStorage.setItem('canvasData', JSON.stringify(this.componentData))
       localStorage.setItem('canvasStyle', JSON.stringify(this.canvasStyleData))
+      // 保存到数据库
+      const requestInfo = {
+        id: this.$store.state.panel.panelInfo.id,
+        panelStyle: JSON.stringify(this.canvasStyleData),
+        panelData: JSON.stringify(this.componentData)
+      }
+      post('panel/group/save', requestInfo, () => {})
       this.$message.success('保存成功')
     },
-
     clearCanvas() {
       this.$store.commit('setComponentData', [])
       this.$store.commit('recordSnapshot')
@@ -188,8 +211,9 @@ export default {
 
 <style lang="scss" scoped>
   .toolbar {
-    height: 50px;
-    line-height: 50px;
+    float: right;
+    height: 35px;
+    line-height: 35px;
     background: #fff;
     border-bottom: 1px solid #ddd;
 

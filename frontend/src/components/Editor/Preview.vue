@@ -1,21 +1,19 @@
 <template>
-    <div class="bg" v-if="show">
-        <el-button @click="close" class="close">关闭</el-button>
-        <div class="canvas-container">
-            <div class="canvas"
-                :style="{
-                    width: changeStyleWithScale(canvasStyleData.width) + 'px',
-                    height: changeStyleWithScale(canvasStyleData.height) + 'px',
-                }"
-            >
-                <ComponentWrapper
-                    v-for="(item, index) in componentData"
-                    :key="index"
-                    :config="item"
-                />
-            </div>
-        </div>
+  <div class="canvas-container">
+    <div
+      class="canvas"
+      :style="{
+        width: changeStyleWithScale(canvasStyleData.width) + 'px',
+        height: changeStyleWithScale(canvasStyleData.height) + 'px',
+      }"
+    >
+      <ComponentWrapper
+        v-for="(item, index) in componentData"
+        :key="index"
+        :config="item"
+      />
     </div>
+  </div>
 </template>
 
 <script>
@@ -25,30 +23,30 @@ import ComponentWrapper from './ComponentWrapper'
 import { changeStyleWithScale } from '@/utils/translate'
 
 export default {
-    model: {
-        prop: 'show',
-        event: 'change',
-    },
-    props: {
-        show: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    components: { ComponentWrapper },
-    computed: mapState([
-        'componentData',
-        'canvasStyleData',
-    ]),
-    methods: {
-        changeStyleWithScale,
+  components: { ComponentWrapper },
+  model: {
+    prop: 'show',
+    event: 'change'
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: mapState([
+    'componentData',
+    'canvasStyleData'
+  ]),
+  methods: {
+    changeStyleWithScale,
 
-        getStyle,
+    getStyle,
 
-        close() {
-            this.$emit('change', false)
-        },
-    },
+    close() {
+      this.$emit('change', false)
+    }
+  }
 }
 </script>
 

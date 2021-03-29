@@ -21,6 +21,7 @@ CREATE TABLE `panel_design` (
 -- ----------------------------
 -- Table structure for panel_group
 -- ----------------------------
+-- ----------------------------
 DROP TABLE IF EXISTS `panel_group`;
 CREATE TABLE `panel_group` (
   `id` varchar(50) NOT NULL,
@@ -31,10 +32,10 @@ CREATE TABLE `panel_group` (
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   `panel_type` varchar(255) DEFAULT NULL COMMENT '仪表盘类型 system 系统内置 self 用户自建 ',
-  `panel_style` varchar(2000) DEFAULT NULL COMMENT 'panel 样式',
+  `panel_style` longtext COMMENT 'panel 样式',
+  `panel_data` longtext COMMENT 'panel 数据',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- ----------------------------
 -- Records of panel_group
 -- ----------------------------

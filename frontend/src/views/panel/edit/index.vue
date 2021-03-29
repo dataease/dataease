@@ -1,37 +1,17 @@
 <template>
   <el-container>
-    <!-- <de-header>Header</de-header> -->
     <el-header class="de-header">
       <el-row class="panel-design-head">
-        <span style="float: left;line-height: 50px; color: gray">
-          <span>名称：测试仪表板</span>
+        <span style="float: left;line-height: 35px; color: gray">
+          名称：{{ panelInfo.name || '测试仪表板' }}
         </span>
+        <!--横向工具栏-->
         <Toolbar />
-        <!--        <span style="float: right;line-height: 35px;">-->
-
-        <!--          <el-tooltip content="返回目录">-->
-        <!--            <el-button class="el-icon-refresh-left" size="mini" circle @click="toDir" />-->
-        <!--          </el-tooltip>-->
-
-        <!--          <el-tooltip content="背景图">-->
-        <!--            <el-button class="el-icon-full-screen" size="mini" circle />-->
-        <!--          </el-tooltip>-->
-
-        <!--          <el-tooltip content="保存">-->
-        <!--            <el-button class="el-icon-circle-check" size="mini" circle @click="saveDrawing" />-->
-        <!--          </el-tooltip>-->
-
-        <!--          <el-tooltip content="预览">-->
-        <!--            <el-button class="el-icon-view" size="mini" circle @click="preViewShow" />-->
-        <!--          </el-tooltip>-->
-
-        <!--        </span>-->
       </el-row>
     </el-header>
     <de-container>
       <de-aside-container class="ms-aside-container">
         <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
-
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
             <!-- 视图图表 -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
@@ -49,28 +29,19 @@
             </div>
             <!-- 过滤组件 -->
             <div tabindex="-1" style="position: relative; margin: 20px auto">
-
               <div style="height: 60px; position: relative">
-
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-
-                  <!-- <i class="el-icon-s-tools" style="width: 24px; height: 24px;position: relative;flex-shrink: 0;font-size:150%;" /> -->
                   <el-button circle class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
-
                 </div>
                 <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
-
                   <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-
                     组件
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
         <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">
           <div />
           <div v-show="show" class="leftPanel">
@@ -81,8 +52,9 @@
             </div>
           </div>
         </div>
-
       </de-aside-container>
+
+      <!--画布区域-->
       <de-main-container class="ms-main-container">
         <div
           class="content"
@@ -113,6 +85,7 @@ import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/Toolbar'
+import { get } from '@/api/panel/panel'
 
 // 引入样式
 import '@/assets/iconfont/iconfont.css'
@@ -140,12 +113,19 @@ export default {
       reSelectAnimateIndex: undefined
     }
   },
-  computed: mapState([
-    'componentData',
-    'curComponent',
-    'isClickComponent',
-    'canvasStyleData'
-  ]),
+
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    ...mapState([
+      'componentData',
+      'curComponent',
+      'isClickComponent',
+      'canvasStyleData'
+    ])
+  },
+
   watch: {
     show(value) {
       if (value && !this.clickNotClose) {
@@ -156,10 +136,14 @@ export default {
       } else {
         removeClass(document.body, 'showRightPanel')
       }
+    },
+    panelInfo(newVal, oldVal) {
+      this.init(newVal.id)
     }
   },
   created() {
-    this.restore()
+    this.init(this.$store.state.panel.panelInfo.id)
+    // this.restore()
     // 全局监听按键事件
     listenGlobalKeyDown()
   },
@@ -174,6 +158,18 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    init(panelId) {
+      // 清理原有画布本地数据
+      localStorage.setItem('canvasData', null)
+      localStorage.setItem('canvasStyle', null)
+      if (panelId) {
+        get('panel/group/findOne/' + panelId).then(response => {
+          localStorage.setItem('canvasData', response.data.panelData)
+          localStorage.setItem('canvasStyle', response.data.panelStyle)
+          this.restore()
+        })
+      }
+    },
     save() {
 
     },

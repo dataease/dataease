@@ -1,6 +1,7 @@
 package io.dataease.dto.panel;
 
 import io.dataease.base.domain.PanelGroup;
+import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.dto.chart.ChartViewDTO;
 import lombok.Data;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * Description:
  */
 @Data
-public class PanelGroupDTO extends PanelGroup {
+public class PanelGroupDTO extends PanelGroupWithBLOBs {
 
     private String label;
 

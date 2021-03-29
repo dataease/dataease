@@ -147,7 +147,8 @@
 <script>
 import GrantAuth from '../GrantAuth'
 import LinkGenerate from '@/views/link/generate'
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree } from '@/api/panel/panel'
+import generateID from '@/utils/generateID'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree, get } from '@/api/panel/panel'
 
 export default {
   name: 'PanelList',
@@ -422,6 +423,22 @@ export default {
       if (data.nodeType === 'panel') {
         this.currGroup = data
         this.$store.dispatch('panel/setPanelInfo', data)
+        // 加载视图数据
+        this.$nextTick(() => {
+          localStorage.setItem('canvasData', null)
+          localStorage.setItem('canvasStyle', null)
+          get('panel/group/findOne/' + data.id).then(response => {
+            localStorage.setItem('canvasData', response.data.panelData)
+            localStorage.setItem('canvasStyle', response.data.panelStyle)
+            // 用保存的数据恢复画布
+            if (localStorage.getItem('canvasData')) {
+              this.$store.commit('setComponentData', this.resetID(JSON.parse(localStorage.getItem('canvasData'))))
+            }
+            if (localStorage.getItem('canvasStyle')) {
+              this.$store.commit('setCanvasStyle', JSON.parse(localStorage.getItem('canvasStyle')))
+            }
+          })
+        })
       }
       if (node.expanded) {
         this.expandedArray.push(data.id)
@@ -431,14 +448,18 @@ export default {
           this.expandedArray.splice(index, 1)
         }
       }
-      // console.log(this.expandedArray);
+    },
+
+    resetID(data) {
+      data.forEach(item => {
+        item.id = generateID()
+      })
+
+      return data
     },
 
     back() {
       this.sceneMode = false
-      //   const route = this.$store.state.permission.currentRoutes
-      //   console.log(route)
-      // this.$router.push('/dataset/index')
       this.$store.dispatch('dataset/setSceneData', null)
       this.$emit('switchComponent', { name: '' })
     },
