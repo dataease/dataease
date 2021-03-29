@@ -40,6 +40,7 @@ export default {
   },
   mounted() {
     // 基于准备好的dom，初始化echarts实例
+    console.log('chartId:' + this.chartId)
     this.myChart = this.$echarts.init(document.getElementById(this.chartId))
     this.drawEcharts()
 
