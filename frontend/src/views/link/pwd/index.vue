@@ -22,7 +22,7 @@
 
         <div class="auth-root-class">
           <span slot="footer">
-            <el-button size="mini" type="primary" @click="validatePwd">确定</el-button>
+            <el-button size="mini" type="primary" @click="refresh">确定</el-button>
           </span>
         </div>
       </div>
@@ -33,6 +33,8 @@
 
 <script>
 import { validatePwd } from '@/api/link'
+import { encrypt } from '@/utils/rsaEncrypt'
+
 export default {
   name: 'LinkPwd',
   props: {
@@ -47,10 +49,15 @@ export default {
       msg: null
     }
   },
+
   methods: {
     // 验证密码是否正确 如果正确 设置请求头部带LINK-PWD-TOKEN=entrypt(pwd)再刷新页面
     refresh() {
-      validatePwd({ password: this.pwd, resourceId: this.resourceId }).then(res => {
+      const param = {
+        password: encrypt(this.pwd),
+        resourceId: this.resourceId
+      }
+      validatePwd(param).then(res => {
         if (!res.data) {
           this.msg = '密码错误'
         } else {

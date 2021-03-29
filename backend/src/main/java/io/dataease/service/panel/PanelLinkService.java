@@ -25,7 +25,7 @@ import java.util.Map;
 @Service
 public class PanelLinkService {
 
-    @Value("${public-link-url:http://localhost:8081/link?link=}")
+    @Value("${public-link-url:http://localhost:9528/link.html?link=}")
     private String baseUrl;
 
     @Value("${public-link-salt:DataEaseLinkSalt}")
@@ -113,19 +113,19 @@ public class PanelLinkService {
     }
 
     // 验证请求头部携带的信息 如果正确说明通过密码验证 否则没有通过
-    public Boolean validateHeads(PanelLink panelLink){
+    public Boolean validateHeads(PanelLink panelLink) throws Exception{
         HttpServletRequest request = ServletUtils.request();
         String token = request.getHeader("LINK-PWD-TOKEN");
         if (StringUtils.isEmpty(token)) return false;
-        boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), panelLink.getPwd());
+        boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd()));
         return verify;
     }
 
-    public boolean validatePwd(PasswordRequest request) {
-        String password = request.getPassword();
+    public boolean validatePwd(PasswordRequest request) throws Exception {
+        String password = decryptParam(request.getPassword());
         String resourceId = request.getResourceId();
         PanelLink one = findOne(resourceId);
-        String pwd = one.getPwd();
+        String pwd = decryptParam(one.getPwd());
         boolean pass = StringUtils.equals(pwd, password);
         if (pass){
             String token = JWTUtils.signLink(resourceId, password);
