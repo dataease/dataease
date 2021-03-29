@@ -1,6 +1,6 @@
 <template>
   <div>
-    我是视图7u页面
+    我是视图页面
   </div>
 </template>
 

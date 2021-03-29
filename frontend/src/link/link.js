@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Link from './Link.vue'
 import router from './link-router'
+import store from '../store'
 import '@/styles/index.scss' // global css
 import i18n from '../lang' // internationalization
 import ElementUI from 'element-ui'
@@ -11,5 +12,6 @@ Vue.use(ElementUI, {
 })
 new Vue({
   router,
+  store,
   render: h => h(Link)
 }).$mount('#link')

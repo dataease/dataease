@@ -17,7 +17,6 @@ const getters = {
   table: state => state.dataset.table,
   loadingMap: state => state.request.loadingMap,
   currentPath: state => state.permission.currentPath,
-  permissions: state => state.user.permissions,
-  linkToken: state => state.link.linkToken
+  permissions: state => state.user.permissions
 }
 export default getters

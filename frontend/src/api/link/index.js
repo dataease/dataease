@@ -5,6 +5,7 @@ export function validate(data) {
     url: 'api/link/validate',
     method: 'post',
     loading: true,
+    hideMsg: true,
     data
   })
 }

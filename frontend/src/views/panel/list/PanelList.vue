@@ -132,7 +132,7 @@
       <el-dialog
         :title="linkTitle"
         :visible.sync="linkVisible"
-        custom-class="de-dialog"
+        width="500px"
         @closed="removeLink"
       >
         <link-generate v-if="linkVisible" :resource-id="linkResourceId" />

@@ -36,9 +36,9 @@ public interface LinkApi {
 
     @ApiOperation("验证访问")
     @PostMapping("/validate")
-    ValidateDto validate(Map<String, String> param);
+    ValidateDto validate(Map<String, String> param) throws Exception;
 
     @ApiOperation("验证密码")
     @PostMapping("/validatePwd")
-    boolean validatePwd(PasswordRequest request);
+    boolean validatePwd(PasswordRequest request) throws Exception;
 }

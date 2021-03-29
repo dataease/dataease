@@ -10,4 +10,6 @@ public class ValidateDto {
     private boolean enablePwd;
 
     private boolean passPwd;
+
+    private String resourceId;
 }

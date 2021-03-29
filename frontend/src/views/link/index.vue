@@ -1,8 +1,8 @@
 <template>
   <div>
-    <link-error v-if="showIndex===0" />
+    <link-error v-if="showIndex===0" :resource-id="resourceId" />
     <link-pwd v-if="showIndex===1" :resource-id="resourceId" />
-    <link-view v-if="showIndex===2" />
+    <link-view v-if="showIndex===2" :resource-id="resourceId" />
   </div>
 </template>
 <script>
@@ -17,6 +17,7 @@ export default {
   },
   data() {
     return {
+      resourceId: null,
       PARAMKEY: 'link',
       link: null,
       showIndex: -1
@@ -30,9 +31,10 @@ export default {
     loadInit() {
       this.link = getQueryVariable(this.PARAMKEY)
       validate({ link: this.link }).then(res => {
-        const { valid, enablePwd, passPwd } = res.data
+        const { resourceId, valid, enablePwd, passPwd } = res.data
+        this.resourceId = resourceId
         // 如果链接无效 直接显示无效页面
-        if (!valid) {
+        if (!valid || !resourceId) {
           this.showError()
           return
         }
@@ -43,6 +45,8 @@ export default {
         }
 
         this.showView()
+      }).catch(() => {
+        this.showError()
       })
     },
 

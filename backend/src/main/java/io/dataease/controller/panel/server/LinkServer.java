@@ -49,20 +49,16 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
-    public ValidateDto validate(@RequestBody Map<String, String> param)  {
+    public ValidateDto validate(@RequestBody Map<String, String> param)  throws Exception{
         String link = param.get("link");
-        String json = null;
-        try {
-            json = panelLinkService.decryptParam(link);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String json = panelLinkService.decryptParam(link);
         Gson gson = new Gson();
 
         ValidateRequest request = gson.fromJson(json, ValidateRequest.class);
         ValidateDto dto = new ValidateDto();
         String resourceId = request.getResourceId();
         PanelLink one = panelLinkService.findOne(resourceId);
+        dto.setResourceId(resourceId);
         if (ObjectUtils.isEmpty(one)){
             dto.setValid(false);
             return dto;
@@ -74,7 +70,7 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
-    public boolean validatePwd(@RequestBody PasswordRequest request) {
+    public boolean validatePwd(@RequestBody PasswordRequest request) throws Exception {
         return panelLinkService.validatePwd(request);
     }
 }

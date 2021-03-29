@@ -6,6 +6,7 @@ import { getToken } from '@/utils/auth'
 import Config from '@/settings'
 import i18n from '@/lang'
 import { tryShowLoading, tryHideLoading } from './loading'
+import { getLinkToken, setLinkToken } from '@/utils/auth'
 // import router from '@/router'
 
 const TokenKey = Config.TokenKey
@@ -29,8 +30,9 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers[TokenKey] = getToken()
     }
-    if (store.getters.linkToken) {
-      config.headers[LinkTokenKey] = store.getters.linkToken
+    let linkToken = null
+    if ((linkToken = getLinkToken()) !== null) {
+      config.headers[LinkTokenKey] = linkToken
     }
     // 增加loading
 
@@ -73,9 +75,9 @@ const checkAuth = response => {
     store.dispatch('user/refreshToken', refreshToken)
   }
 
-  if (response.headers[LinkTokenKey]) {
-    const linkToken = response.headers[LinkTokenKey]
-    store.dispatch('link/setLinkToken', linkToken)
+  if (response.headers[LinkTokenKey.toLocaleLowerCase()]) {
+    const linkToken = response.headers[LinkTokenKey.toLocaleLowerCase()]
+    setLinkToken(linkToken)
   }
 }
 
@@ -147,7 +149,7 @@ service.interceptors.response.use(response => {
     console.log('error: ' + error) // for debug
     msg = error.message
   }
-  $error(msg)
+  !error.config.hideMsg && $error(msg)
   return Promise.reject(error)
 })
 export default service
