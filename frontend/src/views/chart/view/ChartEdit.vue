@@ -301,16 +301,16 @@ export default {
   activated() {
   },
   methods: {
-    initTableData(id) {
+    initTableData: async function(id) {
       if (id != null) {
-        post('/dataset/table/get/' + id, null).then(response => {
+        await post('/dataset/table/get/' + id, null).then(response => {
           this.table = response.data
           this.initTableField(id)
         })
       }
     },
-    initTableField(id) {
-      post('/dataset/table/getFieldsFromDE', this.table).then(response => {
+    initTableField: async function(id) {
+      await post('/dataset/table/getFieldsFromDE', this.table).then(response => {
         this.dimension = response.data.dimension
         this.quota = response.data.quota
       })
@@ -357,9 +357,9 @@ export default {
     closeEdit() {
       this.$emit('switchComponent', { name: '' })
     },
-    getData(id) {
+    getData: async function(id) {
       if (id) {
-        post('/chart/view/getData/' + id, null).then(response => {
+        await post('/chart/view/getData/' + id, null).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
