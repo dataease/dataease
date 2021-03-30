@@ -33,13 +33,12 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 // import Group from './group/Group'
 import PanelList from './list/PanelList'
-import PanelView from './list/PanelView'
 import PanelViewShow from './list/PanelViewShow'
 import ShareTree from './GrantAuth/shareTree'
 
 export default {
   name: 'Panel',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelView, PanelViewShow, ShareTree },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelViewShow, ShareTree },
   data() {
     return {
       component: PanelViewShow,

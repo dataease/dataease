@@ -20,7 +20,7 @@
     <de-container>
 
       <de-main-container class="ms-main-container">
-        <drawing-board :disabled="true" />
+<!--        <drawing-board :disabled="true" />-->
       </de-main-container>
     </de-container>
   </el-container>
@@ -29,13 +29,11 @@
 <script>
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
-import DrawingBoard from '../DrawingBoard'
+// import DrawingBoard from '../DrawingBoard'
 export default {
   components: {
     DeMainContainer,
-    DeContainer,
-    DrawingBoard
-
+    DeContainer
   },
   data() {
     return {
