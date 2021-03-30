@@ -92,7 +92,7 @@ import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/components/canvas/styles/reset.css'
-
+import { ApplicationContext } from '@/utils/ApplicationContext'
 export default {
   components: {
     DeMainContainer,
@@ -249,11 +249,13 @@ export default {
 
       debugger
       // 其他组件设置
-      componentList.forEach(componentTemp => {
-        if (componentInfo.id === componentTemp.id) {
-          component = deepCopy(componentTemp)
-        }
-      })
+      //   componentList.forEach(componentTemp => {
+      //     if (componentInfo.id === componentTemp.id) {
+      //       component = deepCopy(componentTemp)
+      //     }
+      //   })
+
+      component = deepCopy(ApplicationContext.getService(componentInfo.id))
 
       component.style.top = e.offsetY
       component.style.left = e.offsetX
@@ -329,7 +331,7 @@ export default {
 
 .leftPanel {
   width: 100%;
-  max-width: 200px;
+  max-width: 240px;
   height: calc(100vh - 91px);
   position: fixed;
   top: 91px;
