@@ -15,6 +15,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -29,6 +30,7 @@ import scala.Tuple2;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -51,33 +53,37 @@ public class SparkCalc {
         conf.set(TableInputFormat.SCAN, scanToString);
 
         JavaPairRDD<ImmutableBytesWritable, Result> pairRDD = sparkContext.newAPIHadoopRDD(conf, TableInputFormat.class, ImmutableBytesWritable.class, Result.class);
-        JavaRDD<Row> rdd = pairRDD.map((Function<Tuple2<ImmutableBytesWritable, Result>, Row>) immutableBytesWritableResultTuple2 ->
-        {
-            Result result = immutableBytesWritableResultTuple2._2;
-            List<Object> list = new ArrayList<>();
-            xAxis.forEach(x -> {
-                if (x.getDeType() == 0 || x.getDeType() == 1) {
-                    list.add(Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes())));
-                } else if (x.getDeType() == 2) {
-                    String l = Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes()));
-                    if (StringUtils.isEmpty(l)) {
-                        l = "0";
+
+        JavaRDD<Row> rdd = pairRDD.mapPartitions((FlatMapFunction<Iterator<Tuple2<ImmutableBytesWritable, Result>>, Row>) tuple2Iterator -> {
+            List<Row> iterator = new ArrayList<>();
+            while (tuple2Iterator.hasNext()) {
+                Result result = tuple2Iterator.next()._2;
+                List<Object> list = new ArrayList<>();
+                xAxis.forEach(x -> {
+                    if (x.getDeType() == 0 || x.getDeType() == 1) {
+                        list.add(Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes())));
+                    } else if (x.getDeType() == 2) {
+                        String l = Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes()));
+                        if (StringUtils.isEmpty(l)) {
+                            l = "0";
+                        }
+                        list.add(Long.valueOf(l));
                     }
-                    list.add(Long.valueOf(l));
-                }
-            });
-            yAxis.forEach(y -> {
-                if (y.getDeType() == 0 || y.getDeType() == 1) {
-                    list.add(Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes())));
-                } else if (y.getDeType() == 2) {
-                    String l = Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes()));
-                    if (StringUtils.isEmpty(l)) {
-                        l = "0";
+                });
+                yAxis.forEach(y -> {
+                    if (y.getDeType() == 0 || y.getDeType() == 1) {
+                        list.add(Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes())));
+                    } else if (y.getDeType() == 2) {
+                        String l = Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes()));
+                        if (StringUtils.isEmpty(l)) {
+                            l = "0";
+                        }
+                        list.add(Long.valueOf(l));
                     }
-                    list.add(Long.valueOf(l));
-                }
-            });
-            return RowFactory.create(list.toArray());
+                });
+                iterator.add(RowFactory.create(list.toArray()));
+            }
+            return iterator.iterator();
         });
 
         List<StructField> structFields = new ArrayList<>();
@@ -104,10 +110,8 @@ public class SparkCalc {
 
         Dataset<Row> sql = sqlContext.sql(getSQL(xAxis, yAxis, tmpTable));
 
-        List<String[]> data = new ArrayList<>();
-
         // transform
-//        List<Row> list = sql.javaRDD().collect();
+        List<String[]> data = new ArrayList<>();
         List<Row> list = sql.collectAsList();
         for (Row row : list) {
             String[] r = new String[row.length()];
@@ -116,16 +120,6 @@ public class SparkCalc {
             }
             data.add(r);
         }
-
-//        Iterator<Row> rowIterator = sql.toLocalIterator();
-//        while (rowIterator.hasNext()){
-//            Row row = rowIterator.next();
-//            String[] r = new String[row.length()];
-//            for (int i = 0; i < row.length(); i++) {
-//                r[i] = row.get(i).toString();
-//            }
-//            data.add(r);
-//        }
 
         return data;
     }

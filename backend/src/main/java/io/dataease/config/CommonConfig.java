@@ -37,6 +37,7 @@ public class CommonConfig {
         SparkSession spark = SparkSession.builder()
                 .appName(env.getProperty("spark.appName", "DataeaseJob"))
                 .master(env.getProperty("spark.master", "local[*]"))
+                .config("spark.scheduler.mode", "FAIR")
                 .getOrCreate();
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         return sc;

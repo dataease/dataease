@@ -173,7 +173,7 @@
         class="tree-list"
         @node-click="sceneClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
+        <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span>
               ({{ data.type }})
@@ -595,6 +595,15 @@ export default {
   }
 
   .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right:8px;
+  }
+
+  .custom-tree-node-list {
     flex: 1;
     display: flex;
     align-items: center;

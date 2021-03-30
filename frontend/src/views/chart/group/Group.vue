@@ -148,7 +148,7 @@
         class="tree-list"
         @node-click="sceneClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
+        <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span><svg-icon :icon-class="data.type" /></span>
             <span style="margin-left: 6px">{{ data.name }}</span>
@@ -581,6 +581,15 @@ export default {
   }
 
   .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right:8px;
+  }
+
+  .custom-tree-node-list {
     flex: 1;
     display: flex;
     align-items: center;
