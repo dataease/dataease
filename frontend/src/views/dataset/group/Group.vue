@@ -18,19 +18,19 @@
         </el-button>
       </el-row>
 
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('dataset.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
-          </el-form-item>
-        </el-form>
-      </el-row>
+      <!--      <el-row>-->
+      <!--        <el-form>-->
+      <!--          <el-form-item class="form-item">-->
+      <!--            <el-input-->
+      <!--              v-model="search"-->
+      <!--              size="mini"-->
+      <!--              :placeholder="$t('dataset.search')"-->
+      <!--              prefix-icon="el-icon-search"-->
+      <!--              clearable-->
+      <!--            />-->
+      <!--          </el-form-item>-->
+      <!--        </el-form>-->
+      <!--      </el-row>-->
 
       <el-col class="custom-tree-container">
         <div class="block">
@@ -170,6 +170,7 @@
         :data="tableData"
         node-key="id"
         :expand-on-click-node="true"
+        class="tree-list"
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -245,6 +246,7 @@ export default {
       editTable: false,
       tData: [],
       tableData: [],
+      tables: [],
       currGroup: {},
       expandedArray: [],
       groupForm: {
@@ -287,6 +289,13 @@ export default {
     //   this.groupForm.name = val;
     //   this.tree(this.groupForm);
     // }
+    search(val) {
+      if (val && val !== '') {
+        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
+      } else {
+        this.tableData = JSON.parse(JSON.stringify(this.tables))
+      }
+    }
   },
   mounted() {
     this.tree(this.groupForm)
@@ -472,13 +481,15 @@ export default {
     },
 
     tableTree() {
+      this.tables = []
       this.tableData = []
       if (this.currGroup.id) {
         loadTable({
           sort: 'type asc,create_time desc,name asc',
           sceneId: this.currGroup.id
         }).then(res => {
-          this.tableData = res.data
+          this.tables = res.data
+          this.tableData = JSON.parse(JSON.stringify(this.tables))
         })
       }
     },
@@ -575,13 +586,21 @@ export default {
     padding: 12px 0;
   }
 
+  .custom-tree-container{
+    margin-top: 10px;
+  }
+
+  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+    display: none;
+  }
+
   .custom-tree-node {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding-right: 8px;
+    padding:0 8px;
   }
 
   .custom-position {

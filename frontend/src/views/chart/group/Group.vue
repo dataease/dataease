@@ -18,19 +18,19 @@
         </el-button>
       </el-row>
 
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('chart.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
-          </el-form-item>
-        </el-form>
-      </el-row>
+      <!--      <el-row>-->
+      <!--        <el-form>-->
+      <!--          <el-form-item class="form-item">-->
+      <!--            <el-input-->
+      <!--              v-model="search"-->
+      <!--              size="mini"-->
+      <!--              :placeholder="$t('chart.search')"-->
+      <!--              prefix-icon="el-icon-search"-->
+      <!--              clearable-->
+      <!--            />-->
+      <!--          </el-form-item>-->
+      <!--        </el-form>-->
+      <!--      </el-row>-->
 
       <el-col class="custom-tree-container">
         <div class="block">
@@ -145,6 +145,7 @@
         :data="chartData"
         node-key="id"
         :expand-on-click-node="true"
+        class="tree-list"
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
@@ -260,7 +261,8 @@ export default {
         ]
       },
       selectTableFlag: false,
-      table: {}
+      table: {},
+      tables: []
     }
   },
   computed: {
@@ -269,7 +271,15 @@ export default {
       return this.$store.state.chart.chartSceneData
     }
   },
-  watch: {},
+  watch: {
+    search(val) {
+      if (val && val !== '') {
+        this.chartData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
+      } else {
+        this.chartData = JSON.parse(JSON.stringify(this.tables))
+      }
+    }
+  },
   mounted() {
     this.groupTree(this.groupForm)
     this.refresh()
@@ -447,13 +457,15 @@ export default {
     },
 
     chartTree() {
+      this.tables = []
       this.chartData = []
       if (this.currGroup.id) {
         post('/chart/view/list', {
           sort: 'create_time desc,name asc',
           sceneId: this.currGroup.id
         }).then(response => {
-          this.chartData = response.data
+          this.tables = response.data
+          this.chartData = JSON.parse(JSON.stringify(this.tables))
         })
       }
     },
@@ -564,13 +576,21 @@ export default {
     padding: 12px 0;
   }
 
+  .custom-tree-container{
+    margin-top: 10px;
+  }
+
   .custom-tree-node {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding-right: 8px;
+    padding:0 8px;
+  }
+
+  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+    display: none;
   }
 
   .custom-position {
