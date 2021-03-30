@@ -59,14 +59,22 @@ public class SparkCalc {
                 if (x.getDeType() == 0 || x.getDeType() == 1) {
                     list.add(Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes())));
                 } else if (x.getDeType() == 2) {
-                    list.add(Long.valueOf(Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes()))));
+                    String l = Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes()));
+                    if (StringUtils.isEmpty(l)) {
+                        l = "0";
+                    }
+                    list.add(Long.valueOf(l));
                 }
             });
             yAxis.forEach(y -> {
                 if (y.getDeType() == 0 || y.getDeType() == 1) {
                     list.add(Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes())));
                 } else if (y.getDeType() == 2) {
-                    list.add(Long.valueOf(Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes()))));
+                    String l = Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes()));
+                    if (StringUtils.isEmpty(l)) {
+                        l = "0";
+                    }
+                    list.add(Long.valueOf(l));
                 }
             });
             return RowFactory.create(list.toArray());
@@ -99,7 +107,8 @@ public class SparkCalc {
         List<String[]> data = new ArrayList<>();
 
         // transform
-        List<Row> list = sql.javaRDD().collect();
+//        List<Row> list = sql.javaRDD().collect();
+        List<Row> list = sql.collectAsList();
         for (Row row : list) {
             String[] r = new String[row.length()];
             for (int i = 0; i < row.length(); i++) {
@@ -107,6 +116,16 @@ public class SparkCalc {
             }
             data.add(r);
         }
+
+//        Iterator<Row> rowIterator = sql.toLocalIterator();
+//        while (rowIterator.hasNext()){
+//            Row row = rowIterator.next();
+//            String[] r = new String[row.length()];
+//            for (int i = 0; i < row.length(); i++) {
+//                r[i] = row.get(i).toString();
+//            }
+//            data.add(r);
+//        }
 
         return data;
     }

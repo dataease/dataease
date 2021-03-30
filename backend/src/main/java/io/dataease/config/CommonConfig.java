@@ -1,7 +1,6 @@
 package io.dataease.config;
 
 import com.fit2cloud.autoconfigure.QuartzAutoConfiguration;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
@@ -35,8 +34,10 @@ public class CommonConfig {
     @Bean
     @ConditionalOnMissingBean
     public JavaSparkContext javaSparkContext() {
-        SparkConf conf = new SparkConf().setAppName(env.getProperty("spark.appName", "DataeaseJob")).setMaster(env.getProperty("spark.master", "local[*]"));
-        SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
+        SparkSession spark = SparkSession.builder()
+                .appName(env.getProperty("spark.appName", "DataeaseJob"))
+                .master(env.getProperty("spark.master", "local[*]"))
+                .getOrCreate();
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         return sc;
     }
