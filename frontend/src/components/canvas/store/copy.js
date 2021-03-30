@@ -1,7 +1,7 @@
-import store from './index'
-import toast from '@/utils/toast'
-import generateID from '@/utils/generateID'
-import { deepCopy } from '@/utils/utils'
+import store from '@/store/index'
+import toast from '@/components/canvas/utils/toast'
+import generateID from '@/components/canvas/utils/generateID'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
     state: {
@@ -26,7 +26,7 @@ export default {
             }
 
             const data = state.copyData.data
-            
+
             if (isMouse) {
                 data.style.top = state.menuTop
                 data.style.left = state.menuLeft
@@ -34,7 +34,7 @@ export default {
                 data.style.top += 10
                 data.style.left += 10
             }
-            
+
             data.id = generateID()
             store.commit('addComponent', { component: deepCopy(data) })
             if (state.isCut) {
@@ -47,7 +47,7 @@ export default {
                 toast('请选择组件')
                 return
             }
-            
+
             if (state.copyData) {
                 const data = deepCopy(state.copyData.data)
                 const index = state.copyData.index

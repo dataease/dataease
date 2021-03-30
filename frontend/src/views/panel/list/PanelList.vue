@@ -147,7 +147,6 @@
 <script>
 import GrantAuth from '../GrantAuth'
 import LinkGenerate from '@/views/link/generate'
-import generateID from '@/utils/generateID'
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree, get } from '@/api/panel/panel'
 
 export default {

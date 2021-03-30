@@ -17,7 +17,7 @@ import directives from './directive'
 import VueClipboard from 'vue-clipboard2'
 import widgets from '@/components/widget'
 
-import '@/custom-component' // 注册自定义组件
+import '@/components/canvas/custom-component' // 注册自定义组件
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)

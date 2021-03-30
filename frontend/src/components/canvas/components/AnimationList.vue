@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import Modal from '@/components/Modal'
-import eventBus from '@/utils/eventBus'
-import animationClassData from '@/utils/animationClassData'
+import Modal from '@/components/canvas/components/Modal'
+import eventBus from '@/components/canvas/utils/eventBus'
+import animationClassData from '@/components/canvas/utils/animationClassData'
 import { mapState } from 'vuex'
 
 export default {

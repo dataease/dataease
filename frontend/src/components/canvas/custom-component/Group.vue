@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { getStyle } from '@/utils/style'
+import { getStyle } from '@/components/canvas/utils/style'
 
 export default {
     props: {

@@ -22,7 +22,7 @@
 </template>
 <script>
 import bus from '@/utils/bus'
-import Preview from '@/components/Editor/Preview'
+import Preview from '@/components/canvas/components/Editor/Preview'
 
 export default {
   name: 'PanelViewShow',

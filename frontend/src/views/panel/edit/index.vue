@@ -78,20 +78,20 @@ import { addClass, removeClass } from '@/utils'
 import FilterGroup from '../filter'
 import ViewSelect from '../ViewSelect'
 import bus from '@/utils/bus'
-import Editor from '@/components/Editor/index'
-import { deepCopy } from '@/utils/utils'
-import componentList from '@/custom-component/component-list' // 左侧列表数据
-import { listenGlobalKeyDown } from '@/utils/shortcutKey'
+import Editor from '@/components/canvas/components/Editor/index'
+import { deepCopy } from '@/components/canvas/utils/utils'
+import componentList from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
-import Toolbar from '@/components/Toolbar'
+import Toolbar from '@/components/canvas/components/Toolbar'
 import { get } from '@/api/panel/panel'
 
 // 引入样式
-import '@/assets/iconfont/iconfont.css'
-import '@/styles/animate.css'
+import '@/components/canvas/assets/iconfont/iconfont.css'
+import '@/components/canvas/styles/animate.css'
 import 'element-ui/lib/theme-chalk/index.css'
-import '@/styles/reset.css'
+import '@/components/canvas/styles/reset.css'
 
 export default {
   components: {

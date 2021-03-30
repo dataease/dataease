@@ -95,7 +95,7 @@ export function getRotatedPointCoordinate(style, center, name) {
                 x: style.left + style.width,
                 y: style.top+ style.height,
             }
-            
+
             break
     }
 
@@ -113,7 +113,7 @@ export function getCenterPoint(p1, p2) {
 export function sin(rotate) {
     return Math.abs(Math.sin(angleToRadian(rotate)))
 }
-  
+
 export function cos(rotate) {
     return Math.abs(Math.cos(angleToRadian(rotate)))
 }

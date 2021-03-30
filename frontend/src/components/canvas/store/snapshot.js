@@ -1,5 +1,5 @@
-import store from './index'
-import { deepCopy } from '@/utils/utils'
+import store from '@/store/index'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
     state: {

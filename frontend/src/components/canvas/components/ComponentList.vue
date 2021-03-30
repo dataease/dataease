@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import componentList from '@/custom-component/component-list'
+import componentList from '@/components/canvas/custom-component/component-list'
 
 export default {
   data() {

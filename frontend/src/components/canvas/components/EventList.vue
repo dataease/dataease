@@ -29,8 +29,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import Modal from '@/components/Modal'
-import { eventList } from '@/utils/events'
+import Modal from '@/components/canvas/components/Modal'
+import { eventList } from '@/components/canvas/utils/events'
 
 export default {
     components: { Modal },
@@ -63,7 +63,7 @@ export default {
     .div-events {
         text-align: center;
         padding: 0 20px;
-        
+
         .el-button {
             display: inline-block;
             margin-bottom: 10px;

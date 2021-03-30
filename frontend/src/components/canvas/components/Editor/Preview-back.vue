@@ -19,10 +19,10 @@
 </template>
 
 <script>
-import { getStyle } from '@/utils/style'
+import { getStyle } from '@/components/canvas/utils/style'
 import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
-import { changeStyleWithScale } from '@/utils/translate'
+import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 
 export default {
     model: {

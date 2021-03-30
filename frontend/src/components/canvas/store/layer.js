@@ -1,5 +1,5 @@
-import { swap } from '@/utils/utils'
-import toast from '@/utils/toast'
+import { swap } from '@/components/canvas/utils/utils'
+import toast from '@/components/canvas/utils/toast'
 
 export default {
     mutations: {

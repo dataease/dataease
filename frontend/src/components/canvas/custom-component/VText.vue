@@ -13,7 +13,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { keycodes } from '@/utils/shortcutKey.js'
+import { keycodes } from '@/components/canvas/utils/shortcutKey.js'
 
 export default {
     props: {

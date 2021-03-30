@@ -39,13 +39,13 @@
 </template>
 
 <script>
-import generateID from '@/utils/generateID'
-import toast from '@/utils/toast'
+import generateID from '@/components/canvas/utils/generateID'
+import toast from '@/components/canvas/utils/toast'
 import { mapState } from 'vuex'
-import Preview from '@/components/Editor/Preview'
-import { commonStyle, commonAttr } from '@/custom-component/component-list'
-import eventBus from '@/utils/eventBus'
-import { deepCopy } from '@/utils/utils'
+import Preview from '@/components/canvas/components/Editor/Preview'
+import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
+import eventBus from '@/components/canvas/utils/eventBus'
+import { deepCopy } from '@/components/canvas/utils/utils'
 import { post } from '@/api/panel/panel'
 
 export default {

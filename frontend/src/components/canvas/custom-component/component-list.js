@@ -59,7 +59,7 @@ const list = [
     label: '图片',
     icon: 'tupian',
     type: 'other',
-    propValue: require('@/assets/title.jpg'),
+    propValue: require('@/components/canvas/assets/title.jpg'),
     style: {
       width: 300,
       height: 200,
@@ -72,7 +72,7 @@ const list = [
     label: '背景-科技1',
     icon: 'tupian',
     type: 'other',
-    propValue: require('@/assets/bg-kj-1.jpg'),
+    propValue: require('@/components/canvas/assets/bg-kj-1.jpg'),
     style: {
       width: 600,
       height: 300,

@@ -14,11 +14,11 @@
 </template>
 
 <script>
-import eventBus from '@/utils/eventBus'
-import runAnimation from '@/utils/runAnimation'
+import eventBus from '@/components/canvas/utils/eventBus'
+import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mapState } from 'vuex'
-import calculateComponentPositonAndSize from '@/utils/calculateComponentPositonAndSize'
-import { mod360 } from '@/utils/translate'
+import calculateComponentPositonAndSize from '@/components/canvas/utils/calculateComponentPositonAndSize'
+import { mod360 } from '@/components/canvas/utils/translate'
 
 export default {
   props: {

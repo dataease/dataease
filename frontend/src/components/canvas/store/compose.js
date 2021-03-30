@@ -1,9 +1,9 @@
-import store from './index'
-import generateID from '@/utils/generateID'
-import eventBus from '@/utils/eventBus'
-import decomposeComponent from '@/utils/decomposeComponent'
-import { $ } from '@/utils/utils'
-import { commonStyle, commonAttr } from '@/custom-component/component-list'
+import store from '@/store/index'
+import generateID from '@/components/canvas/utils/generateID'
+import eventBus from '@/components/canvas/utils/eventBus'
+import decomposeComponent from '@/components/canvas/utils/decomposeComponent'
+import { $ } from '@/components/canvas/utils/utils'
+import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 
 export default {
     state: {
@@ -61,11 +61,11 @@ export default {
                     propValue: components,
                 },
             })
-            
+
             eventBus.$emit('hideArea')
 
             store.commit('batchDeleteComponent', areaData.components)
-            store.commit('setCurComponent', { 
+            store.commit('setCurComponent', {
                 component: componentData[componentData.length - 1],
                 index: componentData.length - 1,
             })

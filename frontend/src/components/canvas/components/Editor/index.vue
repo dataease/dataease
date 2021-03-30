@@ -57,14 +57,14 @@
 <script>
 import { mapState } from 'vuex'
 import Shape from './Shape'
-import { getStyle, getComponentRotatedStyle } from '@/utils/style'
-import { $ } from '@/utils/utils'
+import { getStyle, getComponentRotatedStyle } from '@/components/canvas/utils/style'
+import { $ } from '@/components/canvas/utils/utils'
 import ContextMenu from './ContextMenu'
 import MarkLine from './MarkLine'
 import Area from './Area'
-import eventBus from '@/utils/eventBus'
+import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
-import { changeStyleWithScale } from '@/utils/translate'
+import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 
 export default {
   components: { Shape, ContextMenu, MarkLine, Area, Grid },

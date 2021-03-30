@@ -11,9 +11,9 @@
 </template>
 
 <script>
-import { getStyle } from '@/utils/style'
-import runAnimation from '@/utils/runAnimation'
-import { mixins } from '@/utils/events'
+import { getStyle } from '@/components/canvas/utils/style'
+import runAnimation from '@/components/canvas/utils/runAnimation'
+import { mixins } from '@/components/canvas/utils/events'
 
 export default {
     props: {

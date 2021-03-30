@@ -1,7 +1,7 @@
 import store from '@/store'
-import eventBus from '@/utils/eventBus'
+import eventBus from '@/components/canvas/utils/eventBus'
 
-const ctrlKey = 17, 
+const ctrlKey = 17,
     vKey = 86, // 粘贴
     cKey = 67, // 复制
     xKey = 88, // 剪切

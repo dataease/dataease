@@ -11,7 +11,7 @@ import { baseLineOption, stackLineOption } from '../chart/line/line'
 import { basePieOption } from '../chart/pie/pie'
 import { baseFunnelOption } from '../chart/funnel/funnel'
 import { baseRadarOption } from '../chart/radar/radar'
-import eventBus from '@/utils/eventBus'
+import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   name: 'ChartComponent',

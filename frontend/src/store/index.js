@@ -10,14 +10,15 @@ import chart from './modules/chart'
 import request from './modules/request'
 import panel from './modules/panel'
 import application from './modules/application'
-import animation from './animation'
-import compose from './compose'
-import contextmenu from './contextmenu'
-import copy from './copy'
-import event from './event'
-import layer from './layer'
-import snapshot from './snapshot'
-import lock from './lock'
+
+import animation from '@/components/canvas/store/animation'
+import compose from '@/components/canvas/store/compose'
+import contextmenu from '@/components/canvas/store/contextmenu'
+import copy from '@/components/canvas/store/copy'
+import event from '@/components/canvas/store/event'
+import layer from '@/components/canvas/store/layer'
+import snapshot from '@/components/canvas/store/snapshot'
+import lock from '@/components/canvas/store/lock'
 
 Vue.use(Vuex)
 

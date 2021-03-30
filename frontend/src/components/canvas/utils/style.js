@@ -1,4 +1,4 @@
-import { sin, cos } from '@/utils/translate'
+import { sin, cos } from '@/components/canvas/utils/translate'
 
 export function getStyle(style, filter = []) {
     const needUnit = [

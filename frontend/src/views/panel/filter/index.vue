@@ -23,7 +23,7 @@
 
 </template>
 
-<script>import componentList from '@/custom-component/component-list'
+<script>import componentList from '@/components/canvas/custom-component/component-list'
 import { ApplicationContext } from '@/utils/ApplicationContext'
 export default {
   name: 'FilterGroup',
