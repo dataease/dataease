@@ -1,8 +1,8 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
-  name: 'buttonSureWidget',
+  name: 'textInputWidget',
   icon: null,
-  label: '确定',
+  label: '文本搜索',
   style: {
     width: 100,
     height: 34,
@@ -17,18 +17,17 @@ const defaultOptions = {
     color: '',
     backgroundColor: ''
   },
-  component: 'de-button',
+  component: 'de-input-search',
   options: {
     refId: '1234567890',
     attrs: {
-      type: 'primary',
-      round: true
+      placeholder: '请输入关键字'
     },
-    value: '测试按钮'
+    value: ''
   }
 }
 
-class ButtonSureServiceImpl extends WidgetService {
+class TextInputServiceImpl extends WidgetService {
   constructor(options) {
     Object.assign(options, defaultOptions)
     super(options)
@@ -45,5 +44,5 @@ class ButtonSureServiceImpl extends WidgetService {
 
   }
 }
-const buttonSureServiceImpl = new ButtonSureServiceImpl({ name: 'buttonSureWidget' })
-export default buttonSureServiceImpl
+const textInputServiceImpl = new TextInputServiceImpl({ name: 'textInputWidget' })
+export default textInputServiceImpl

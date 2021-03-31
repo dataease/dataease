@@ -16,6 +16,7 @@ export class WidgetService {
     options = { ...commonAttr, ...options }
     Object.assign(this, options)
     this.style = { ...commonStyle, ...options.style }
+    this.type = 'custom'
     this.storeWidget()
   }
   storeWidget() {

@@ -49,7 +49,16 @@ export default {
       componentList,
       widgetSubjects: {
         '时间过滤组件': [
-          'timeYearWidget'
+          'timeYearWidget',
+          'timeMonthWidget',
+          'timeQuarterWidget',
+          'timeDateWidget',
+          'timeDateRangeWidget'
+
+        ],
+        '文本过滤组件': [
+          'textSelectWidget',
+          'textInputWidget'
         ],
         '按钮': [
           'buttonSureWidget'

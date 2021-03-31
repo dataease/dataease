@@ -1,34 +1,30 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
-  name: 'buttonSureWidget',
+  name: 'timeDateWidget',
   icon: null,
-  label: '确定',
+  label: '日期',
   style: {
-    width: 100,
-    height: 34,
-    borderWidth: '',
-    borderColor: '',
-    borderRadius: '',
+    width: 200,
+    height: 22,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
     letterSpacing: 0,
     textAlign: '',
-    color: '',
-    backgroundColor: ''
+    color: ''
   },
-  component: 'de-button',
   options: {
     refId: '1234567890',
     attrs: {
-      type: 'primary',
-      round: true
+      type: 'date',
+      placeholder: '请选择日期'
     },
-    value: '测试按钮'
-  }
+    value: ''
+  },
+  component: 'de-date'
 }
 
-class ButtonSureServiceImpl extends WidgetService {
+class TimeDateServiceImpl extends WidgetService {
   constructor(options) {
     Object.assign(options, defaultOptions)
     super(options)
@@ -45,5 +41,5 @@ class ButtonSureServiceImpl extends WidgetService {
 
   }
 }
-const buttonSureServiceImpl = new ButtonSureServiceImpl({ name: 'buttonSureWidget' })
-export default buttonSureServiceImpl
+const timeDateServiceImpl = new TimeDateServiceImpl({ name: 'timeDateWidget' })
+export default timeDateServiceImpl

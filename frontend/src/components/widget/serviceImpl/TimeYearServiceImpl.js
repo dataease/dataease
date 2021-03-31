@@ -13,10 +13,15 @@ const defaultOptions = {
     textAlign: '',
     color: ''
   },
-  deProp: {
-    type: 'year'
+  options: {
+    refId: '1234567890',
+    attrs: {
+      type: 'year',
+      placeholder: '请选择年份'
+    },
+    value: ''
   },
-  component: 'el-date-picker'
+  component: 'de-date'
 }
 
 class TimeYearServiceImpl extends WidgetService {

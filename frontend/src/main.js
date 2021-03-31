@@ -64,9 +64,9 @@ Vue.use(message)
 Vue.config.productionTip = false
 
 new Vue({
-  el: '#app',
+
   router,
   store,
   i18n,
   render: h => h(App)
-})
+}).$mount('#app')

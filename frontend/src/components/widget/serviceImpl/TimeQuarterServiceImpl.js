@@ -1,34 +1,30 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
-  name: 'buttonSureWidget',
+  name: 'timeQuarterWidget',
   icon: null,
-  label: '确定',
+  label: '季度',
   style: {
-    width: 100,
-    height: 34,
-    borderWidth: '',
-    borderColor: '',
-    borderRadius: '',
+    width: 200,
+    height: 22,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
     letterSpacing: 0,
     textAlign: '',
-    color: '',
-    backgroundColor: ''
+    color: ''
   },
-  component: 'de-button',
   options: {
     refId: '1234567890',
     attrs: {
-      type: 'primary',
-      round: true
+
+      placeholder: '请选择季度'
     },
-    value: '测试按钮'
-  }
+    value: ''
+  },
+  component: 'de-quarter'
 }
 
-class ButtonSureServiceImpl extends WidgetService {
+class TimeQuarterServiceImpl extends WidgetService {
   constructor(options) {
     Object.assign(options, defaultOptions)
     super(options)
@@ -45,5 +41,5 @@ class ButtonSureServiceImpl extends WidgetService {
 
   }
 }
-const buttonSureServiceImpl = new ButtonSureServiceImpl({ name: 'buttonSureWidget' })
-export default buttonSureServiceImpl
+const timeQuarterServiceImpl = new TimeQuarterServiceImpl({ name: 'timeQuarterWidget' })
+export default timeQuarterServiceImpl

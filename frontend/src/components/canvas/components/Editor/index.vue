@@ -24,14 +24,14 @@
       :index="index"
       :class="{ lock: item.isLock }"
     >
-      <component
-        :is="item.component"
-        v-if="item.component !== 'v-text'"
+
+      <de-drawing-widget
+        v-if="item.type==='custom'"
         :id="'component' + item.id"
         class="component"
         :style="getComponentStyle(item.style)"
-        :prop-value="item.propValue"
         :element="item"
+        :item="item"
       />
 
       <component
@@ -42,8 +42,17 @@
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"
-        @input="handleInput"
       />
+      <!-- <component
+        :is="item.component"
+        v-else
+        :id="'component' + item.id"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        @input="handleInput"
+      /> -->
     </Shape>
     <!-- 右击菜单 -->
     <ContextMenu />
