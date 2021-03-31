@@ -1,9 +1,6 @@
 package io.dataease.service.chart;
 
-import io.dataease.base.domain.ChartGroup;
-import io.dataease.base.domain.ChartGroupExample;
-import io.dataease.base.domain.DatasetGroup;
-import io.dataease.base.domain.DatasetTable;
+import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartGroupMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartGroupRequest;
@@ -28,6 +25,7 @@ public class ChartGroupService {
     private ChartViewService chartViewService;
 
     public ChartGroupDTO save(ChartGroup chartGroup) {
+        checkName(chartGroup);
         if (StringUtils.isEmpty(chartGroup.getId())) {
             chartGroup.setId(UUID.randomUUID().toString());
             chartGroup.setCreateTime(System.currentTimeMillis());
@@ -124,5 +122,26 @@ public class ChartGroupService {
             }
         }
         return ids;
+    }
+
+    private void checkName(ChartGroup chartGroup) {
+        ChartGroupExample chartGroupExample = new ChartGroupExample();
+        ChartGroupExample.Criteria criteria = chartGroupExample.createCriteria();
+        if (StringUtils.isNotEmpty(chartGroup.getPid())) {
+            criteria.andPidEqualTo(chartGroup.getPid());
+        }
+        if (StringUtils.isNotEmpty(chartGroup.getType())) {
+            criteria.andTypeEqualTo(chartGroup.getType());
+        }
+        if (StringUtils.isNotEmpty(chartGroup.getName())) {
+            criteria.andNameEqualTo(chartGroup.getName());
+        }
+        if (StringUtils.isNotEmpty(chartGroup.getId())) {
+            criteria.andIdNotEqualTo(chartGroup.getId());
+        }
+        List<ChartGroup> list = chartGroupMapper.selectByExample(chartGroupExample);
+        if (list.size() > 0) {
+            throw new RuntimeException("Name can't repeat in same group.");
+        }
     }
 }

@@ -30,6 +30,7 @@ public class DataSetGroupService {
     private DataSetTableService dataSetTableService;
 
     public DataSetGroupDTO save(DatasetGroup datasetGroup) {
+        checkName(datasetGroup);
         if (StringUtils.isEmpty(datasetGroup.getId())) {
             datasetGroup.setId(UUID.randomUUID().toString());
             datasetGroup.setCreateTime(System.currentTimeMillis());
@@ -131,5 +132,26 @@ public class DataSetGroupService {
             }
         }
         return ids;
+    }
+
+    private void checkName(DatasetGroup datasetGroup) {
+        DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
+        DatasetGroupExample.Criteria criteria = datasetGroupExample.createCriteria();
+        if (StringUtils.isNotEmpty(datasetGroup.getPid())) {
+            criteria.andPidEqualTo(datasetGroup.getPid());
+        }
+        if (StringUtils.isNotEmpty(datasetGroup.getType())) {
+            criteria.andTypeEqualTo(datasetGroup.getType());
+        }
+        if (StringUtils.isNotEmpty(datasetGroup.getName())) {
+            criteria.andNameEqualTo(datasetGroup.getName());
+        }
+        if (StringUtils.isNotEmpty(datasetGroup.getId())) {
+            criteria.andIdNotEqualTo(datasetGroup.getId());
+        }
+        List<DatasetGroup> list = datasetGroupMapper.selectByExample(datasetGroupExample);
+        if (list.size() > 0) {
+            throw new RuntimeException("Name can't repeat in same group.");
+        }
     }
 }
