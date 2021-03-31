@@ -245,17 +245,9 @@ export default {
             component.propValue = propValue
           }
         })
+      } else {
+        component = deepCopy(ApplicationContext.getService(componentInfo.id))
       }
-
-      debugger
-      // 其他组件设置
-      //   componentList.forEach(componentTemp => {
-      //     if (componentInfo.id === componentTemp.id) {
-      //       component = deepCopy(componentTemp)
-      //     }
-      //   })
-
-      component = deepCopy(ApplicationContext.getService(componentInfo.id))
 
       component.style.top = e.offsetY
       component.style.left = e.offsetX
