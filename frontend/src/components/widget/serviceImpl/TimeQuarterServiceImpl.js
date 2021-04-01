@@ -1,7 +1,7 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
   name: 'timeQuarterWidget',
-  icon: null,
+  icon: 'iconfont icon-jidu',
   label: '季度',
   style: {
     width: 200,
@@ -21,6 +21,7 @@ const defaultOptions = {
     },
     value: ''
   },
+  defaultClass: 'time-filter',
   component: 'de-quarter'
 }
 

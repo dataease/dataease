@@ -27,7 +27,14 @@
       </div>
 
       <div class="filter-widget-content">
-        <div v-for="(widget, index) in item" :key="widget.name+index" :data-id="widget.name" draggable :data-index="index" class="filter-widget">
+        <div
+          v-for="(widget, index) in item"
+          :key="widget.name+index"
+          :data-id="widget.name"
+          draggable
+          :data-index="index"
+          :class="'filter-widget '+ (widget.defaultClass || '')"
+        >
           <div class="filter-widget-icon">
             <i :class="(widget.icon || 'el-icon-setting') + ' widget-icon-i'" />
           </div>
@@ -92,17 +99,17 @@ export default {
 <style lang="scss" scoped>
 
   .filter-container {
-      width: 240px;
-        overflow: hidden auto;
-        min-height: 24px;
-        padding-top: 0px;
-        padding-bottom: 0px;
-        position: relative;
-        height: 940px;
-        max-height: 976px;
+    width: 240px;
+    overflow: hidden auto;
+    min-height: 24px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    position: relative;
+    height: 940px;
+    max-height: 976px;
   }
   .filter-header {
-      overflow: hidden;
+    overflow: hidden;
     position: relative;
     margin-top: 24px;
     margin-left: 15px;
@@ -115,9 +122,9 @@ export default {
   }
 
   .filter-header-text {
-      font-size: 14px;
-      max-width: 100%;
-      color: gray;
+    font-size: 14px;
+    max-width: 100%;
+    color: gray;
     text-align: left;
     white-space: pre;
     text-overflow: ellipsis;
@@ -131,30 +138,68 @@ export default {
   }
 
   .filter-widget-content {
-      position: relative;
-      margin-left: 5px;
+    position: relative;
+    margin-left: 5px;
   }
 
   .filter-widget {
-      width: 100px;
-      height: 36px;
-      position: relative;
+    width: 100px;
+    height: 36px;
+    position: relative;
     float: left;
     margin-top: 10px;
     margin-left: 10px;
-    background-color: rgba(54,133,242,.1);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#1a3685f2,endColorstr=#1a3685f2);
     font-size: 12px;
-    border-radius: 2px;
+    border-radius: 10px;
     cursor: pointer;
-    :hover {
+    overflow: hidden;
+  }
+
+  .time-filter {
+    background-color: rgba(54,133,242,.1);
+    .filter-widget-icon {
+        color: #3685f2;
+    }
+    .filter-widget-text {
+        color: #3d4d66;
+    }
+  }
+  .time-filter:hover {
+    background-color: #3685f2;
+    color: #fff;
+    .filter-widget-icon {
         background-color: #3685f2;
+        color: #fff;
+    }
+    .filter-widget-text {
+        color: #fff;
+    }
+  }
+
+  .text-filter {
+    background-color: rgba(35,190,239,.1);
+    .filter-widget-icon {
+        color: #23beef;
+    }
+    .filter-widget-text {
+        color: #3d4d66;
+    }
+  }
+  .text-filter:hover {
+    background-color: #23beef;
+    color: #fff;
+    .filter-widget-icon {
+        background-color: #23beef;
+        color: #fff;
+    }
+    .filter-widget-text {
         color: #fff;
     }
   }
 
   .filter-widget-icon {
-      width: 40px;
+    width: 40px;
     height: 36px;
     text-align: center;
     line-height: 1;
@@ -169,21 +214,22 @@ export default {
     display: flex;
 
     .widget-icon-i {
-        width: 24px;
-        height: 24px;
-        position: relative;
-        flex-shrink: 0;
-        font-size: 24px;
-        margin: auto;
-        font-family: fineui;
-        font-style: normal;
-        -webkit-font-smoothing: antialiased;
-        text-align: center;
+      width: 24px;
+      height: 24px;
+      position: relative;
+      flex-shrink: 0;
+      font-size: 24px;
+      margin: auto;
+      font-family: fineui;
+      font-style: normal;
+      -webkit-font-smoothing: antialiased;
+      text-align: center;
+
     }
   }
   .filter-widget-text {
-      font-size: 14px;
-      height: 36px;
+    font-size: 14px;
+    height: 36px;
     line-height: 36px;
     text-align: left;
     white-space: pre;
@@ -196,12 +242,11 @@ export default {
     overflow-y: hidden;
     word-break: break-all;
     cursor: pointer;
-    color: #3d4d66;
 
   }
 
   .widget-subject {
-      display: flow-root;
+    display: flow-root;
   }
 
 </style>

@@ -1,7 +1,7 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
   name: 'buttonSureWidget',
-  icon: null,
+  icon: 'iconfont icon-chaxunsousuo',
   label: '确定',
   style: {
     width: 100,
@@ -17,6 +17,7 @@ const defaultOptions = {
     color: '',
     backgroundColor: ''
   },
+  defaultClass: 'time-filter',
   component: 'de-button',
   options: {
     refId: '1234567890',

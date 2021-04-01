@@ -1,7 +1,7 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
   name: 'timeDateWidget',
-  icon: null,
+  icon: 'iconfont icon-ri',
   label: '日期',
   style: {
     width: 200,
@@ -21,6 +21,8 @@ const defaultOptions = {
     },
     value: ''
   },
+
+  defaultClass: 'time-filter',
   component: 'de-date'
 }
 
