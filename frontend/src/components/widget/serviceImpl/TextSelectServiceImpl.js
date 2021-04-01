@@ -1,7 +1,7 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
   name: 'textSelectWidget',
-  icon: null,
+  icon: 'iconfont icon-xialakuang',
   label: '文本下拉',
   style: {
     width: 200,
@@ -43,6 +43,7 @@ const defaultOptions = {
     },
     value: ''
   },
+  defaultClass: 'text-filter',
   component: 'de-select'
 }
 

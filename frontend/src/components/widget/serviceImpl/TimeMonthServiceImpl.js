@@ -1,7 +1,7 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
   name: 'timeMonthWidget',
-  icon: null,
+  icon: 'iconfont icon-yue',
   label: '年月',
   style: {
     width: 200,
@@ -21,6 +21,7 @@ const defaultOptions = {
     },
     value: ''
   },
+  defaultClass: 'time-filter',
   component: 'de-date'
 }
 

@@ -1,7 +1,7 @@
 import { WidgetService } from '../service/WidgetService'
 const defaultOptions = {
   name: 'textInputWidget',
-  icon: null,
+  icon: 'iconfont icon-shuru',
   label: '文本搜索',
   style: {
     width: 100,
@@ -17,6 +17,7 @@ const defaultOptions = {
     color: '',
     backgroundColor: ''
   },
+  defaultClass: 'text-filter',
   component: 'de-input-search',
   options: {
     refId: '1234567890',
@@ -43,6 +44,16 @@ class TextInputServiceImpl extends WidgetService {
   beforeToDraw() {
 
   }
+  dynamicStype() {
+    return {
+      'background-color': 'rgba(35,190,239,.1)'
+    }
+  }
+//   dynamicIconStype() {
+//     return {
+//       color: '#23beef'
+//     }
+//   }
 }
 const textInputServiceImpl = new TextInputServiceImpl({ name: 'textInputWidget' })
 export default textInputServiceImpl
