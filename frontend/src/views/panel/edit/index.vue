@@ -164,13 +164,21 @@ export default {
       // 清理原有画布本地数据
       localStorage.setItem('canvasData', null)
       localStorage.setItem('canvasStyle', null)
-      if (panelId) {
+
+      // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
+      if (localStorage.getItem('canvasDataEditTmp') && localStorage.getItem('canvasStyleEditTmp')) {
+        localStorage.setItem('canvasData', localStorage.getItem('canvasDataEditTmp'))
+        localStorage.setItem('canvasStyle', localStorage.getItem('canvasStyleEditTmp'))
+      } else if (panelId) {
         get('panel/group/findOne/' + panelId).then(response => {
           localStorage.setItem('canvasData', response.data.panelData)
           localStorage.setItem('canvasStyle', response.data.panelStyle)
-          this.restore()
         })
       }
+      // 清理临时画布本地数据
+      localStorage.setItem('canvasDataEditTmp', null)
+      localStorage.setItem('canvasStyleEditTmp', null)
+      this.restore()
     },
     save() {
 

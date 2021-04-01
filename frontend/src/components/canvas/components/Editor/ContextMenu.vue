@@ -35,11 +35,16 @@ export default {
     'menuTop',
     'menuLeft',
     'menuShow',
-    'curComponent'
+    'curComponent',
+    'componentData',
+    'canvasStyleData'
   ]),
   methods: {
     edit() {
       debugger
+      // 编辑时临时保存 当前修改的画布
+      localStorage.setItem('canvasDataEditTmp', JSON.stringify(this.componentData))
+      localStorage.setItem('canvasStyleEditTmp', JSON.stringify(this.canvasStyleData))
       if (this.curComponent.component === 'user-view') {
         this.$store.dispatch('chart/setViewId', null)
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)

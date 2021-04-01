@@ -518,6 +518,9 @@ export default {
       this.authVisible = false
     },
     edit(data) {
+      // 清空临时画布
+      localStorage.setItem('canvasDataEditTmp', null)
+      localStorage.setItem('canvasStyleEditTmp', null)
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
