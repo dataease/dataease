@@ -48,6 +48,7 @@ public class DataSetTableService {
     }
 
     public DatasetTable save(DatasetTable datasetTable) throws Exception {
+        checkName(datasetTable);
         if (StringUtils.isEmpty(datasetTable.getId())) {
             datasetTable.setId(UUID.randomUUID().toString());
             datasetTable.setCreateTime(System.currentTimeMillis());
@@ -364,34 +365,56 @@ public class DataSetTableService {
         }
     }
 
-    public DatasetTableIncrementalConfig incrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig){
-        if(StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())){return new DatasetTableIncrementalConfig();}
+    public DatasetTableIncrementalConfig incrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig) {
+        if (StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
+            return new DatasetTableIncrementalConfig();
+        }
         DatasetTableIncrementalConfigExample example = new DatasetTableIncrementalConfigExample();
         example.createCriteria().andTableIdEqualTo(datasetTableIncrementalConfig.getTableId());
         List<DatasetTableIncrementalConfig> configs = datasetTableIncrementalConfigMapper.selectByExample(example);
-        if(CollectionUtils.isNotEmpty(configs)){
+        if (CollectionUtils.isNotEmpty(configs)) {
             return configs.get(0);
-        }else {
+        } else {
             return new DatasetTableIncrementalConfig();
         }
     }
 
-    public DatasetTableIncrementalConfig incrementalConfig(String datasetTableId){
+    public DatasetTableIncrementalConfig incrementalConfig(String datasetTableId) {
         DatasetTableIncrementalConfig datasetTableIncrementalConfig = new DatasetTableIncrementalConfig();
         datasetTableIncrementalConfig.setTableId(datasetTableId);
         return incrementalConfig(datasetTableIncrementalConfig);
     }
 
 
-    public void saveIncrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig){
-        if(StringUtils.isEmpty(datasetTableIncrementalConfig.getId())){
+    public void saveIncrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig) {
+        if (StringUtils.isEmpty(datasetTableIncrementalConfig.getId())) {
             datasetTableIncrementalConfig.setId(UUID.randomUUID().toString());
             datasetTableIncrementalConfigMapper.insertSelective(datasetTableIncrementalConfig);
-        }else{
+        } else {
             DatasetTableIncrementalConfigExample example = new DatasetTableIncrementalConfigExample();
             example.createCriteria().andTableIdEqualTo(datasetTableIncrementalConfig.getTableId());
             datasetTableIncrementalConfigMapper.updateByExample(datasetTableIncrementalConfig, example);
         }
     }
 
+    private void checkName(DatasetTable datasetTable) {
+        if (StringUtils.isEmpty(datasetTable.getId()) && StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
+            return;
+        }
+        DatasetTableExample datasetTableExample = new DatasetTableExample();
+        DatasetTableExample.Criteria criteria = datasetTableExample.createCriteria();
+        if (StringUtils.isNotEmpty(datasetTable.getId())) {
+            criteria.andIdNotEqualTo(datasetTable.getId());
+        }
+        if (StringUtils.isNotEmpty(datasetTable.getSceneId())) {
+            criteria.andSceneIdEqualTo(datasetTable.getSceneId());
+        }
+        if (StringUtils.isNotEmpty(datasetTable.getName())) {
+            criteria.andNameEqualTo(datasetTable.getName());
+        }
+        List<DatasetTable> list = datasetTableMapper.selectByExample(datasetTableExample);
+        if (list.size() > 0) {
+            throw new RuntimeException("Name can't repeat in same group.");
+        }
+    }
 }
