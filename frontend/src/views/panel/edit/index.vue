@@ -199,12 +199,6 @@ export default {
         body.insertBefore(elx, body.firstChild)
       })
     },
-    saveDrawing() {
-      bus.$emit('panel-drawing-save')
-    },
-    preViewShow() {
-      bus.$emit('panel-drawing-preview')
-    },
 
     // 画布
     restore() {
@@ -230,7 +224,6 @@ export default {
       e.stopPropagation()
       let component
       const newComponentId = uuid.v1()
-      console.log('handleDrop123')
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
 
       // 用户视图设置 复制一个模板

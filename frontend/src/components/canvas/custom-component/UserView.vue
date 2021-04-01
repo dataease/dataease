@@ -1,6 +1,6 @@
 <template>
   <div class="rect-shape">
-    <chart-component :ref="element.propValue.id" class="chart-class" :chart-id="element.propValue.id" :chart="chart" />
+    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" />
   </div>
 </template>
 
@@ -8,6 +8,7 @@
 
 import { post } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
+
 export default {
   name: 'UserView',
   components: { ChartComponent },
@@ -22,12 +23,7 @@ export default {
     }
   },
   created() {
-    const id = this.element.propValue.viewId
-    debugger
-    this.$nextTick(() => {
-      // 获取eChar数据
-      this.getData(id)
-    })
+    this.getData(this.element.propValue.viewId)
   },
   mounted() {
 
