@@ -1,6 +1,5 @@
 <template>
-  <div v-if="show" class="bg">
-    <el-button class="close" @click="close">关闭</el-button>
+  <div class="bg">
     <div class="canvas-container">
       <div
         class="canvas"
@@ -57,33 +56,14 @@ export default {
 .bg {
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
-    position: fixed;
-    background: rgb(0, 0, 0, .5);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: auto;
-    padding: 20px;
-
     .canvas-container {
-        width: calc(100% - 40px);
-        height: calc(100% - 120px);
+        width: 100%;
+        height: 100%;
         overflow: auto;
-
-        .canvas {
-            background: #fff;
+      .canvas {
             position: relative;
             margin: auto;
         }
-    }
-
-    .close {
-        position: absolute;
-        right: 20px;
-        top: 100px;
     }
 }
 </style>

@@ -10,18 +10,19 @@
           </span>
           <span style="float: right;line-height: 40px;">
             <el-tooltip content="预览">
-              <el-button class="el-icon-view" size="mini" circle @click="preViewShow" />
+              <el-button class="el-icon-view" size="mini" circle />
             </el-tooltip>
           </span>
         </el-row>
         <!--TODO 仪表盘预览区域-->
-<!--        <Preview />-->
+        <section>
+          <Preview />
+        </section>
       </el-col>
     </el-row>
   </el-row>
 </template>
 <script>
-import bus from '@/utils/bus'
 import Preview from '@/components/canvas/components/Editor/Preview'
 
 export default {
@@ -37,14 +38,11 @@ export default {
       return this.$store.state.panel.panelInfo
     }
   },
+  mounted() {
+
+  },
   methods: {
 
-    preViewShow() {
-      bus.$emit('panel-drawing-preview')
-    },
-    savePanel() {
-      bus.$emit('panel-drawing-save')
-    }
   }
 }
 </script>
