@@ -23,6 +23,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 
 export default {
   data() {
@@ -38,6 +39,12 @@ export default {
   ]),
   methods: {
     edit() {
+      debugger
+      if (this.curComponent.component === 'user-view') {
+        this.$store.dispatch('chart/setViewId', null)
+        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
+        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit' })
+      }
       // 编辑组件
     },
     lock() {

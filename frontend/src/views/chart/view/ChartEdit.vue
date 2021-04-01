@@ -211,6 +211,8 @@ import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
 import ChartComponent from '../components/ChartComponent'
+import bus from '@/utils/bus'
+
 // shape attr,component style
 import {
   DEFAULT_COLOR_CASE,
@@ -355,6 +357,8 @@ export default {
       })
     },
     closeEdit() {
+      // 从仪表盘入口关闭
+      bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
       this.$emit('switchComponent', { name: '' })
     },
     getData(id) {
