@@ -2,6 +2,14 @@
   <div class="shape" :class="classInfo" @mouseenter="enter" @mouseleave="leave" @click="selectCurComponent" @mousedown="handleMouseDownOnShape">
     <span v-show="isActive()" class="iconfont icon-xiangyouxuanzhuan" @mousedown="handleRotate" />
     <span v-show="element.isLock" class="iconfont icon-suo" />
+
+<!--    <span v-show="isActive()" class="iconfont icon-more">-->
+<!--      <el-button-->
+<!--        icon="el-icon-more"-->
+<!--        type="text"-->
+<!--        size="small"-->
+<!--      />-->
+<!--    </span>-->
     <div
       v-for="item in (isActive()? pointList : [])"
       :key="item"
@@ -403,5 +411,18 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+.edit-side {
+  overflow: hidden auto;
+  min-height: 24px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.icon-more {
+  position: absolute;
+  top: 0;
+  right: -10px;
 }
 </style>

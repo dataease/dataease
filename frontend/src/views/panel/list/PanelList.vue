@@ -519,7 +519,7 @@ export default {
     },
     edit(data) {
       this.$store.dispatch('panel/setPanelInfo', data)
-      this.$router.replace('/panelEdit')
+      bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
     link(data) {
       this.linkVisible = true

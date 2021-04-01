@@ -1,25 +1,5 @@
 <template>
-  <de-container>
-
-    <de-aside-container>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane name="PanelList">
-          <span slot="label"><i class="el-icon-document" />列表</span>
-          <panel-list />
-        </el-tab-pane>
-        <el-tab-pane name="panels_star">
-          <span slot="label"><i class="el-icon-star-off" />收藏</span>
-          开发中...
-        </el-tab-pane>
-        <el-tab-pane name="panels_share" :lazy="true">
-          <span slot="label"><i class="el-icon-share" />分享</span>
-          <share-tree v-if="showShare" />
-        </el-tab-pane>
-
-      </el-tabs>
-
-    </de-aside-container>
-
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <de-main-container>
       <component :is="component" :param="param" />
     </de-main-container>
@@ -27,45 +7,42 @@
 </template>
 
 <script>
+import bus from '@/utils/bus'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
-import DeAsideContainer from '@/components/dataease/DeAsideContainer'
-// import Group from './group/Group'
-import PanelList from './list/PanelList'
-import PanelViewShow from './list/PanelViewShow'
-import ShareTree from './GrantAuth/shareTree'
+import PanelMain from '@/views/panel/list/PanelMain'
+import ChartEdit from '@/views/chart/view/ChartEdit'
+import PanelEdit from '@/views/panel/edit'
 
 export default {
   name: 'Panel',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelViewShow, ShareTree },
+  components: { DeMainContainer, DeContainer, PanelMain, ChartEdit, PanelEdit },
   data() {
     return {
-      component: PanelViewShow,
-      param: {},
-      activeName: 'PanelList',
-      showShare: false
+      component: PanelMain,
+      param: {}
     }
   },
-  methods: {
-    handleClick(tab, event) {
-      // 点击分析面板需要刷新分享内容
-      if (tab.name === 'panels_share') {
-        this.refreshShare()
+  mounted() {
+    bus.$on('PanelSwitchComponent', (c) => {
+      debugger
+      console.log(c)
+      this.param = c.param
+      switch (c.name) {
+        case 'PanelEdit':
+          this.component = PanelEdit
+          break
+        case 'ChartEdit':
+          this.component = ChartEdit
+          break
+        default:
+          this.component = PanelMain
+          break
       }
-    },
-    // switchComponent(c) {
-    //   console.log(c)
-    //   this.param = c.param
-    //   switch (c.name) {
-    //     case 'PanelViewShow':
-    //       this.component = PanelViewShow
-    //       break
-    //   }
-    // },
-    refreshShare() {
-      this.showShare = false
-      this.$nextTick(() => (this.showShare = true))
-    }
+    })
+  },
+  methods: {
+
   }
 }
 </script>
@@ -80,6 +57,7 @@ export default {
 
   .ms-main-container {
     height: calc(100vh - 56px);
+    padding: 0;
   }
 
 </style>

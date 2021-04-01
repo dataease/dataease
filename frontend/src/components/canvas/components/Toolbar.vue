@@ -31,6 +31,12 @@
       <el-tooltip content="预览">
         <el-button class="el-icon-view" size="mini" circle @click="preview" />
       </el-tooltip>
+
+      <span style="float: right;margin-left: 10px">
+        <el-button size="mini" @click="closePanelEdit">
+          关闭
+        </el-button>
+      </span>
     </div>
 
     <!-- 预览 -->
@@ -46,6 +52,7 @@ import { commonStyle, commonAttr } from '@/components/canvas/custom-component/co
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { post } from '@/api/panel/panel'
+import bus from '@/utils/bus'
 
 export default {
   data() {
@@ -77,6 +84,10 @@ export default {
     this.scale = this.canvasStyleData.scale
   },
   methods: {
+    closePanelEdit() {
+      debugger
+      bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
+    },
     goFile() {
       this.$refs.files.click()
     },

@@ -67,6 +67,7 @@
         </div>
       </de-main-container>
     </de-container>
+
   </el-container>
 </template>
 
@@ -94,6 +95,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/components/canvas/styles/reset.css'
 import { ApplicationContext } from '@/utils/ApplicationContext'
 export default {
+  name: 'PanelEdit',
   components: {
     DeMainContainer,
     DeContainer,
@@ -102,11 +104,11 @@ export default {
     ViewSelect,
     Editor,
     Toolbar
-
   },
   data() {
     return {
       show: false,
+      editView: false,
       clickNotClose: false,
       showIndex: -1,
       activeName: 'attr',
