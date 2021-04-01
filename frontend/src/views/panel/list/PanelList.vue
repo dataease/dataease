@@ -123,10 +123,6 @@
         custom-class="de-dialog"
       >
         <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
-        <!-- <span slot="footer" class="dialog-footer">
-          <el-button @click="authVisible = false">取 消</el-button>
-          <el-button type="primary" @click="authVisible = false">确 定</el-button>
-        </span> -->
       </el-dialog>
 
       <el-dialog
@@ -147,6 +143,8 @@
 <script>
 import GrantAuth from '../GrantAuth'
 import LinkGenerate from '@/views/link/generate'
+import { uuid } from 'vue-uuid'
+import bus from '@/utils/bus'
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree, get } from '@/api/panel/panel'
 
 export default {
@@ -236,7 +234,6 @@ export default {
           this.groupForm = JSON.parse(JSON.stringify(param.data))
           break
         case 'move':
-
           break
         case 'delete':
           this.delete(param.data)
@@ -421,7 +418,15 @@ export default {
     nodeClick(data, node) {
       if (data.nodeType === 'panel') {
         this.currGroup = data
-        // this.$store.dispatch('panel/setPanelInfo', data)
+        // 加载视图数据
+        this.$nextTick(() => {
+          localStorage.setItem('canvasData', null)
+          localStorage.setItem('canvasStyle', null)
+          get('panel/group/findOne/' + data.id).then(response => {
+            this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+            this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
+          })
+        })
       }
       if (node.expanded) {
         this.expandedArray.push(data.id)
@@ -523,6 +528,13 @@ export default {
     removeLink() {
       this.linkVisible = false
       this.linkResourceId = null
+    },
+    resetID(data) {
+      data.forEach(item => {
+        item.id = uuid.v1()
+      })
+
+      return data
     }
   }
 }

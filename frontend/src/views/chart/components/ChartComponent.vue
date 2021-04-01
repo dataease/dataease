@@ -12,6 +12,7 @@ import { basePieOption } from '../chart/pie/pie'
 import { baseFunnelOption } from '../chart/funnel/funnel'
 import { baseRadarOption } from '../chart/radar/radar'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { uuid } from 'vue-uuid'
 
 export default {
   name: 'ChartComponent',
@@ -19,15 +20,12 @@ export default {
     chart: {
       type: Object,
       required: true
-    },
-    chartId: {
-      type: String,
-      required: false
     }
   },
   data() {
     return {
-      myChart: {}
+      myChart: {},
+      chartId: uuid.v1()
     }
   },
   watch: {
@@ -41,8 +39,15 @@ export default {
   mounted() {
     // 基于准备好的dom，初始化echarts实例
     console.log('chartId:' + this.chartId)
-    this.myChart = this.$echarts.init(document.getElementById(this.chartId))
-    this.drawEcharts()
+    // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表盘有重复id情况
+    new Promise((resolve) => { resolve() }).then(() => {
+      //	此dom为echarts图标展示dom
+      this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
+      if (!this.myChart) {
+        this.myChart = this.$echarts.init(document.getElementById(this.chartId))
+      }
+      this.drawEcharts()
+    })
 
     // 监听元素变动事件
     eventBus.$on('resizing', (componentId) => {

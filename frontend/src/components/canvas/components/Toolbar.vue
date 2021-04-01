@@ -34,7 +34,7 @@
     </div>
 
     <!-- 预览 -->
-    <Preview v-model="isShowPreview" @change="handlePreviewChange" />
+<!--    <Preview v-model="isShowPreview" @change="handlePreviewChange" />-->
   </div>
 </template>
 

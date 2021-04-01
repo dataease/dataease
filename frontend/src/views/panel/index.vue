@@ -21,7 +21,6 @@
     </de-aside-container>
 
     <de-main-container>
-      <!--<router-view/>-->
       <component :is="component" :param="param" />
     </de-main-container>
   </de-container>
