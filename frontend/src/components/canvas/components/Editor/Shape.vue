@@ -1,5 +1,5 @@
 <template>
-  <div class="shape" :class="{ active }" @click="selectCurComponent" @mousedown="handleMouseDownOnShape">
+  <div class="shape" :class="classInfo" @mouseenter="enter" @mouseleave="leave" @click="selectCurComponent" @mousedown="handleMouseDownOnShape">
     <span v-show="isActive()" class="iconfont icon-xiangyouxuanzhuan" @mousedown="handleRotate" />
     <span v-show="element.isLock" class="iconfont icon-suo" />
     <div
@@ -23,6 +23,10 @@ import { mod360 } from '@/components/canvas/utils/translate'
 export default {
   props: {
     active: {
+      type: Boolean,
+      default: false
+    },
+    mouseon: {
       type: Boolean,
       default: false
     },
@@ -65,10 +69,22 @@ export default {
       cursors: {}
     }
   },
-  computed: mapState([
-    'curComponent',
-    'editor'
-  ]),
+
+  computed: {
+    classInfo() {
+      if (this.active) {
+        return 'active'
+      } else if (this.mouseon) {
+        return 'mouseon'
+      } else {
+        return ''
+      }
+    },
+    ...mapState([
+      'curComponent',
+      'editor'
+    ])
+  },
   mounted() {
     // 用于 Group 组件
     if (this.curComponent) {
@@ -76,16 +92,23 @@ export default {
     }
 
     eventBus.$on('runAnimation', () => {
-      if (this.element == this.curComponent) {
+      if (this.element === this.curComponent) {
         runAnimation(this.$el, this.curComponent.animations)
       }
     })
   },
   methods: {
+    // 鼠标移入事件
+    enter() {
+      this.mouseon = true
+    },
+    // 鼠标移出事件
+    leave() {
+      this.mouseon = false
+    },
     isActive() {
       return this.active && !this.element.isLock
     },
-
     // 处理旋转
     handleRotate(e) {
       this.$store.commit('setClickComponentStatus', true)
@@ -354,6 +377,11 @@ export default {
 .active {
     outline: 1px solid #70c0ff;
     user-select: none;
+}
+
+.mouseon {
+  outline: 1px dashed #70c0ff;
+  user-select: none;
 }
 .shape-point {
     position: absolute;
