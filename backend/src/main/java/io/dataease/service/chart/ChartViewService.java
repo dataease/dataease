@@ -2,10 +2,7 @@ package io.dataease.service.chart;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.dataease.base.domain.ChartViewExample;
-import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.base.domain.Datasource;
+import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -45,6 +42,7 @@ public class ChartViewService {
     private SparkCalc sparkCalc;
 
     public ChartViewWithBLOBs save(ChartViewWithBLOBs chartView) {
+        checkName(chartView);
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
         int i = chartViewMapper.updateByPrimaryKeySelective(chartView);
@@ -222,6 +220,27 @@ public class ChartViewService {
                 return " IS NOT NULL ";
             default:
                 return "";
+        }
+    }
+
+    private void checkName(ChartViewWithBLOBs chartView) {
+        if (StringUtils.isEmpty(chartView.getId())) {
+            return;
+        }
+        ChartViewExample chartViewExample = new ChartViewExample();
+        ChartViewExample.Criteria criteria = chartViewExample.createCriteria();
+        if (StringUtils.isNotEmpty(chartView.getId())) {
+            criteria.andIdNotEqualTo(chartView.getId());
+        }
+        if (StringUtils.isNotEmpty(chartView.getSceneId())) {
+            criteria.andSceneIdEqualTo(chartView.getSceneId());
+        }
+        if (StringUtils.isNotEmpty(chartView.getName())) {
+            criteria.andNameEqualTo(chartView.getName());
+        }
+        List<ChartViewWithBLOBs> list = chartViewMapper.selectByExampleWithBLOBs(chartViewExample);
+        if (list.size() > 0) {
+            throw new RuntimeException("Name can't repeat in same group.");
         }
     }
 }
