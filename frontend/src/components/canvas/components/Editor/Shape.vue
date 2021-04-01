@@ -26,10 +26,6 @@ export default {
       type: Boolean,
       default: false
     },
-    mouseon: {
-      type: Boolean,
-      default: false
-    },
     element: {
       require: true,
       type: Object
@@ -45,6 +41,7 @@ export default {
   },
   data() {
     return {
+      mouseOn: false,
       pointList: ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l'], // 八个方向
       initialAngle: { // 每个点对应的初始角度
         lt: 0,
@@ -72,13 +69,7 @@ export default {
 
   computed: {
     classInfo() {
-      if (this.active) {
-        return 'active'
-      } else if (this.mouseon) {
-        return 'mouseon'
-      } else {
-        return ''
-      }
+      return this.active ? 'active' : (this.mouseOn ? 'mouseOn' : '')
     },
     ...mapState([
       'curComponent',
@@ -100,11 +91,11 @@ export default {
   methods: {
     // 鼠标移入事件
     enter() {
-      this.mouseon = true
+      this.mouseOn = true
     },
     // 鼠标移出事件
     leave() {
-      this.mouseon = false
+      this.mouseOn = false
     },
     isActive() {
       return this.active && !this.element.isLock
@@ -379,7 +370,7 @@ export default {
     user-select: none;
 }
 
-.mouseon {
+.mouseOn {
   outline: 1px dashed #70c0ff;
   user-select: none;
 }
