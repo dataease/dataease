@@ -34,7 +34,7 @@
     </div>
 
     <!-- 预览 -->
-<!--    <Preview v-model="isShowPreview" @change="handlePreviewChange" />-->
+    <!--    <Preview v-model="isShowPreview" @change="handlePreviewChange" />-->
   </div>
 </template>
 
@@ -42,14 +42,12 @@
 import generateID from '@/components/canvas/utils/generateID'
 import toast from '@/components/canvas/utils/toast'
 import { mapState } from 'vuex'
-import Preview from '@/components/canvas/components/Editor/Preview'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { post } from '@/api/panel/panel'
 
 export default {
-  components: { Preview },
   data() {
     return {
       isShowPreview: false,
