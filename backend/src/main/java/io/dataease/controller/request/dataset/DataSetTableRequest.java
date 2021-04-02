@@ -15,5 +15,5 @@ import java.util.List;
 public class DataSetTableRequest extends DatasetTable {
     private String sort;
     private List<String> tableNames;
-    private String row;
+    private String row = "1000";
 }
