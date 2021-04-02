@@ -28,7 +28,18 @@
                 <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item :label="$t('chart.content_formatter')" class="form-item">
+            <el-form-item class="form-item">
+              <span slot="label">
+                <span class="span-box">
+                  <span>{{ $t('chart.content_formatter') }}</span>
+                  <el-tooltip class="item" effect="dark" placement="bottom">
+                    <div slot="content">
+                      字符串支持用 \n 换行<br>字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。
+                    </div>
+                    <i class="el-icon-info" style="cursor: pointer;" />
+                  </el-tooltip>
+                </span>
+              </span>
               <el-input v-model="labelForm.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr" />
             </el-form-item>
           </el-form>

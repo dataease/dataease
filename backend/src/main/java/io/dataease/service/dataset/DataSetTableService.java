@@ -155,10 +155,10 @@ public class DataSetTableService {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
             String table = dataTableInfoDTO.getTable();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0,10");// todo limit
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0," + dataSetTableRequest.getRow());
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
             String sql = dataTableInfoDTO.getSql();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray));// todo 因为编辑可能取消某些字段展示，这里sql看看怎么处理
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray) + " LIMIT 0," + dataSetTableRequest.getRow());
         }
 
         List<String[]> data = new ArrayList<>();

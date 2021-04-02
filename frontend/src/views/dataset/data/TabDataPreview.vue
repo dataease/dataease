@@ -1,5 +1,16 @@
 <template>
   <el-col>
+    <el-row>
+      <el-col :span="4">
+        <el-form ref="form" :model="form" label-width="60px" size="mini" class="row-style">
+          <el-form-item :label="$t('dataset.showRow')">
+            <el-input v-model="form.row">
+              <el-button slot="append" icon="el-icon-search" @click="reSearch" />
+            </el-input>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
     <ux-grid
       ref="plxTable"
       size="mini"
@@ -35,6 +46,10 @@ export default {
     data: {
       type: Array,
       required: true
+    },
+    form: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -60,10 +75,16 @@ export default {
   },
   activated() {
   },
-  methods: {}
+  methods: {
+    reSearch() {
+      this.$emit('reSearch', this.form)
+    }
+  }
 }
 </script>
 
 <style scoped>
-
+.row-style>>>.el-form-item__label{
+  font-size: 12px;
+}
 </style>

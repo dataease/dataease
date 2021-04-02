@@ -769,7 +769,8 @@ export default {
     last_update_time: '上次更新时间',
     current_update_time: '当前更新时间',
     param: '参数',
-    edit_sql: '编辑SQL'
+    edit_sql: '编辑SQL',
+    showRow: '显示行'
   },
   datasource: {
     create: '新建数据连接',

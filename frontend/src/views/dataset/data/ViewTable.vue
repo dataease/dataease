@@ -22,7 +22,7 @@
 
       <el-tabs v-model="tabActive">
         <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
-          <tab-data-preview :table="table" :fields="fields" :data="data" />
+          <tab-data-preview :table="table" :fields="fields" :data="data" :form="tableViewRowForm" @reSearch="reSearch" />
         </el-tab-pane>
         <el-tab-pane :label="$t('dataset.join_view')" name="joinView">
           关联视图 TODO
@@ -86,7 +86,10 @@ export default {
       fields: [],
       data: [],
       tabActive: 'dataPreview',
-      tableFields: []
+      tableFields: [],
+      tableViewRowForm: {
+        row: 1000
+      }
     }
   },
   computed: {
@@ -102,6 +105,7 @@ export default {
   methods: {
     initTable(id) {
       console.log(id)
+      this.tableViewRowForm.row = 1000
       if (id !== null) {
         this.fields = []
         this.data = []
@@ -114,6 +118,7 @@ export default {
 
     initPreviewData() {
       if (this.table.id) {
+        this.table.row = this.tableViewRowForm.row
         getPreviewData(this.table).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
@@ -153,6 +158,11 @@ export default {
 
     editSql() {
       this.$emit('switchComponent', { name: 'AddSQL', param: { id: this.table.sceneId, tableId: this.table.id }})
+    },
+
+    reSearch(val) {
+      this.tableViewRowForm = val
+      this.initPreviewData()
     }
   }
 }
