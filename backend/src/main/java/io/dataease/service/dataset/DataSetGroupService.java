@@ -4,6 +4,7 @@ import io.dataease.base.domain.DatasetGroup;
 import io.dataease.base.domain.DatasetGroupExample;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.mapper.DatasetGroupMapper;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
@@ -33,6 +34,7 @@ public class DataSetGroupService {
         checkName(datasetGroup);
         if (StringUtils.isEmpty(datasetGroup.getId())) {
             datasetGroup.setId(UUID.randomUUID().toString());
+            datasetGroup.setCreateBy(AuthUtils.getUser().getUsername());
             datasetGroup.setCreateTime(System.currentTimeMillis());
             datasetGroupMapper.insert(datasetGroup);
         } else {
@@ -75,6 +77,7 @@ public class DataSetGroupService {
     public List<DataSetGroupDTO> tree(DataSetGroupRequest datasetGroup) {
         DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
         DatasetGroupExample.Criteria criteria = datasetGroupExample.createCriteria();
+        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
         if (StringUtils.isNotEmpty(datasetGroup.getName())) {
             criteria.andNameLike("%" + datasetGroup.getName() + "%");
         }
@@ -102,6 +105,7 @@ public class DataSetGroupService {
         for (DataSetGroupDTO obj : list) {
             DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
             DatasetGroupExample.Criteria criteria = datasetGroupExample.createCriteria();
+            criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
             if (StringUtils.isNotEmpty(datasetGroup.getName())) {
                 criteria.andNameLike("%" + datasetGroup.getName() + "%");
             }

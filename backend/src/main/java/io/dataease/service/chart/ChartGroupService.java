@@ -2,6 +2,7 @@ package io.dataease.service.chart;
 
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartGroupMapper;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
@@ -28,6 +29,7 @@ public class ChartGroupService {
         checkName(chartGroup);
         if (StringUtils.isEmpty(chartGroup.getId())) {
             chartGroup.setId(UUID.randomUUID().toString());
+            chartGroup.setCreateBy(AuthUtils.getUser().getUsername());
             chartGroup.setCreateTime(System.currentTimeMillis());
             chartGroupMapper.insert(chartGroup);
         } else {
@@ -65,6 +67,7 @@ public class ChartGroupService {
     public List<ChartGroupDTO> tree(ChartGroupRequest ChartGroup) {
         ChartGroupExample ChartGroupExample = new ChartGroupExample();
         ChartGroupExample.Criteria criteria = ChartGroupExample.createCriteria();
+        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
         if (StringUtils.isNotEmpty(ChartGroup.getName())) {
             criteria.andNameLike("%" + ChartGroup.getName() + "%");
         }
@@ -92,6 +95,7 @@ public class ChartGroupService {
         for (ChartGroupDTO obj : list) {
             ChartGroupExample ChartGroupExample = new ChartGroupExample();
             ChartGroupExample.Criteria criteria = ChartGroupExample.createCriteria();
+            criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
             if (StringUtils.isNotEmpty(ChartGroup.getName())) {
                 criteria.andNameLike("%" + ChartGroup.getName() + "%");
             }
