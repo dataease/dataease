@@ -29,7 +29,7 @@
         <el-button class="el-icon-circle-check" size="mini" circle @click="save" />
       </el-tooltip>
       <el-tooltip content="预览">
-        <el-button class="el-icon-view" size="mini" circle @click="preview" />
+        <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
 
       <span style="float: right;margin-left: 10px">
@@ -40,7 +40,7 @@
     </div>
 
     <!-- 预览 -->
-    <PreviewEject v-model="isShowPreview" @change="handlePreviewChange" />
+    <!--    <PreviewEject v-model="isShowPreview" @change="handlePreviewChange" />-->
   </div>
 </template>
 
@@ -216,6 +216,13 @@ export default {
 
     handlePreviewChange() {
       this.$store.commit('setEditMode', 'edit')
+    },
+
+    clickPreview() {
+      localStorage.setItem('canvasData', JSON.stringify(this.componentData))
+      localStorage.setItem('canvasStyle', JSON.stringify(this.canvasStyleData))
+      const url = '#/preview'
+      window.open(url, '_blank')
     }
   }
 }

@@ -1,7 +1,6 @@
 <template>
-  <div v-if="show" class="bg">
-    <el-button class="close" @click="close">关闭</el-button>
-    <div class="canvas-container">
+  <div class="bg">
+    <div id="preview-parent" class="canvas-container">
       <div
         class="canvas"
         :style="{
@@ -38,13 +37,16 @@ export default {
       default: false
     }
   },
-  created() {
-    this.restore()
-  },
   computed: mapState([
     'componentData',
     'canvasStyleData'
   ]),
+  mounted() {
+    // 计算组件当前合适宽度
+  },
+  created() {
+    this.restore()
+  },
   methods: {
     changeStyleWithScale,
 
@@ -54,14 +56,12 @@ export default {
       this.$emit('change', false)
     },
     restore() {
-      debugger
       // 用保存的数据恢复画布
       if (localStorage.getItem('canvasData')) {
-        this.componentData = this.resetID(JSON.parse(localStorage.getItem('canvasData')))
+        this.$store.commit('setComponentData', this.resetID(JSON.parse(localStorage.getItem('canvasData'))))
       }
 
       if (localStorage.getItem('canvasStyle')) {
-        this.canvasStyleData = JSON.parse(localStorage.getItem('canvasStyle'))
         this.$store.commit('setCanvasStyle', JSON.parse(localStorage.getItem('canvasStyle')))
       }
     },
@@ -77,17 +77,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bg {
+.bg {
     width: 100%;
     height: 100%;
     .canvas-container {
-      width: 100%;
-      height: 100%;
-      overflow: auto;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
       .canvas {
-        position: relative;
-        margin: auto;
-      }
+            position: relative;
+            margin: auto;
+        }
     }
-  }
+}
 </style>

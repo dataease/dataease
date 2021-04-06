@@ -73,7 +73,7 @@ export const constantRoutes = [
   },
   {
     path: '/preview',
-    component: () => import('@/views/panel/preview/index'),
+    component: () => import('@/components/canvas/components/Editor/PreviewFullScreen'),
     hidden: true
   },
 

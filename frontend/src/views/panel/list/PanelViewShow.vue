@@ -10,7 +10,7 @@
           </span>
           <span style="float: right;line-height: 40px;">
             <el-tooltip content="预览">
-              <el-button class="el-icon-view" size="mini" circle />
+              <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
             </el-tooltip>
           </span>
         </el-row>
@@ -24,6 +24,7 @@
 </template>
 <script>
 import Preview from '@/components/canvas/components/Editor/Preview'
+import { mapState } from 'vuex'
 
 export default {
   name: 'PanelViewShow',
@@ -36,12 +37,22 @@ export default {
   computed: {
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    }
+    },
+    ...mapState([
+      'componentData',
+      'canvasStyleData'
+    ])
   },
   mounted() {
 
   },
   methods: {
+    clickPreview() {
+      localStorage.setItem('canvasData', JSON.stringify(this.componentData))
+      localStorage.setItem('canvasStyle', JSON.stringify(this.canvasStyleData))
+      const url = '#/preview'
+      window.open(url, '_blank')
+    }
 
   }
 }
