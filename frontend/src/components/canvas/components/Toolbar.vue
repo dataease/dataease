@@ -40,13 +40,14 @@
     </div>
 
     <!-- 预览 -->
-    <!--    <Preview v-model="isShowPreview" @change="handlePreviewChange" />-->
+    <PreviewEject v-model="isShowPreview" @change="handlePreviewChange" />
   </div>
 </template>
 
 <script>
 import generateID from '@/components/canvas/utils/generateID'
 import toast from '@/components/canvas/utils/toast'
+import PreviewEject from '@/components/canvas/components/Editor/PreviewEject'
 import { mapState } from 'vuex'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
@@ -55,6 +56,7 @@ import { post } from '@/api/panel/panel'
 import bus from '@/utils/bus'
 
 export default {
+  components: { PreviewEject },
   data() {
     return {
       isShowPreview: false,
@@ -121,7 +123,8 @@ export default {
           ...this.canvasStyleData,
           scale: this.scale
         })
-      }, 500)
+        eventBus.$emit('resizing', '')
+      }, 1000)
     },
 
     lock() {

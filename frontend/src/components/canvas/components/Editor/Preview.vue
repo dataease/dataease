@@ -1,6 +1,6 @@
 <template>
   <div class="bg">
-    <div class="canvas-container">
+    <div id="preview-parent" class="canvas-container">
       <div
         class="canvas"
         :style="{
@@ -40,6 +40,9 @@ export default {
     'componentData',
     'canvasStyleData'
   ]),
+  mounted() {
+    // 计算组件当前合适宽度
+  },
   methods: {
     changeStyleWithScale,
 
