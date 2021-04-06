@@ -22,7 +22,8 @@ const defaultOptions = {
     value: ''
   },
   defaultClass: 'time-filter',
-  component: 'de-date'
+  component: 'de-date',
+  filterDialog: true
 }
 
 class TimeYearServiceImpl extends WidgetService {
