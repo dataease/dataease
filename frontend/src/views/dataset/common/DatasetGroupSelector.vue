@@ -9,19 +9,19 @@
       </el-row>
       <el-divider />
 
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('dataset.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
-          </el-form-item>
-        </el-form>
-      </el-row>
+      <!--      <el-row>-->
+      <!--        <el-form>-->
+      <!--          <el-form-item class="form-item">-->
+      <!--            <el-input-->
+      <!--              v-model="search"-->
+      <!--              size="mini"-->
+      <!--              :placeholder="$t('dataset.search')"-->
+      <!--              prefix-icon="el-icon-search"-->
+      <!--              clearable-->
+      <!--            />-->
+      <!--          </el-form-item>-->
+      <!--        </el-form>-->
+      <!--      </el-row>-->
 
       <el-col class="custom-tree-container">
         <div class="block">
@@ -77,9 +77,10 @@
         :data="tableData"
         node-key="id"
         :expand-on-click-node="true"
+        class="tree-list"
         @node-click="sceneClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
+        <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span>
               ({{ data.type }})
@@ -107,6 +108,7 @@ export default {
       search: '',
       data: [],
       tableData: [],
+      tables: [],
       currGroup: null,
       expandedArray: [],
       groupForm: {
@@ -129,6 +131,13 @@ export default {
     //   this.groupForm.name = val;
     //   this.tree(this.groupForm);
     // }
+    search(val) {
+      if (val && val !== '') {
+        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
+      } else {
+        this.tableData = JSON.parse(JSON.stringify(this.tables))
+      }
+    }
   },
   mounted() {
     this.tree(this.groupForm)
@@ -171,7 +180,8 @@ export default {
           sort: 'type asc,create_time desc,name asc',
           sceneId: this.currGroup.id
         }).then(response => {
-          this.tableData = response.data
+          this.tables = response.data
+          this.tableData = JSON.parse(JSON.stringify(this.tables))
         })
       }
     },
@@ -216,6 +226,10 @@ export default {
     padding: 12px 0;
   }
 
+  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+    display: none;
+  }
+
   .custom-tree-node {
     flex: 1;
     display: flex;
@@ -223,6 +237,15 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
+  }
+
+  .custom-tree-node-list {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding:0 8px;
   }
 
   .custom-position {

@@ -47,7 +47,7 @@ export default {
   .ms-aside-container {
     height: 50vh;
     min-width: 180px;
-    max-width: 300px;
+    max-width: 280px;
   }
 
   .ms-main-container {
