@@ -6,6 +6,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableIncrementalConfigMapper;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.constants.DatasourceTypes;
@@ -51,6 +52,7 @@ public class DataSetTableService {
         checkName(datasetTable);
         if (StringUtils.isEmpty(datasetTable.getId())) {
             datasetTable.setId(UUID.randomUUID().toString());
+            datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
             datasetTable.setCreateTime(System.currentTimeMillis());
             DataTableInfoDTO dataTableInfoDTO = new DataTableInfoDTO();
             if (StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
@@ -77,8 +79,10 @@ public class DataSetTableService {
 
     public List<DatasetTable> list(DataSetTableRequest dataSetTableRequest) {
         DatasetTableExample datasetTableExample = new DatasetTableExample();
+        DatasetTableExample.Criteria criteria = datasetTableExample.createCriteria();
+        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
         if (StringUtils.isNotEmpty(dataSetTableRequest.getSceneId())) {
-            datasetTableExample.createCriteria().andSceneIdEqualTo(dataSetTableRequest.getSceneId());
+            criteria.andSceneIdEqualTo(dataSetTableRequest.getSceneId());
         }
         if (StringUtils.isNotEmpty(dataSetTableRequest.getSort())) {
             datasetTableExample.setOrderByClause(dataSetTableRequest.getSort());

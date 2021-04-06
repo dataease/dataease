@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.datasource.constants.DatasourceTypes;
@@ -48,6 +49,7 @@ public class ChartViewService {
         int i = chartViewMapper.updateByPrimaryKeySelective(chartView);
         if (i == 0) {
             chartView.setId(UUID.randomUUID().toString());
+            chartView.setCreateBy(AuthUtils.getUser().getUsername());
             chartView.setCreateTime(timestamp);
             chartView.setUpdateTime(timestamp);
             chartViewMapper.insert(chartView);
@@ -58,6 +60,7 @@ public class ChartViewService {
     public List<ChartViewWithBLOBs> list(ChartViewRequest chartViewRequest) {
         ChartViewExample chartViewExample = new ChartViewExample();
         ChartViewExample.Criteria criteria = chartViewExample.createCriteria();
+        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
         if (StringUtils.isNotEmpty(chartViewRequest.getSceneId())) {
             criteria.andSceneIdEqualTo(chartViewRequest.getSceneId());
         }
