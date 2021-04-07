@@ -72,8 +72,8 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/preview',
-    component: () => import('@/components/canvas/components/Editor/PreviewFullScreen'),
+    path: '/preview/:reportId',
+    component: () => import('@/components/canvas/components/Editor/PreviewEject'),
     hidden: true
   },
 

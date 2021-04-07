@@ -417,6 +417,7 @@ export default {
 
     nodeClick(data, node) {
       if (data.nodeType === 'panel') {
+        this.$store.dispatch('panel/setPanelInfo', data)
         this.currGroup = data
         // 加载视图数据
         this.$nextTick(() => {
