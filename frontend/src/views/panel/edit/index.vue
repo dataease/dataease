@@ -73,7 +73,9 @@
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
-      <filter-dialog />
+      <filter-dialog>
+        <h1>aaaaaaaaa</h1>
+      </filter-dialog>
     </el-dialog>
 
   </el-container>

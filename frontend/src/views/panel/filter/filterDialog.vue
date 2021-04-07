@@ -89,7 +89,7 @@
                       group="dimension"
                       animation="300"
                       :move="onMove"
-                      style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @end="end2"
                     >
                       <transition-group class="draggable-group">
@@ -120,7 +120,12 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <div class="filter-content" />
+            <div class="filter-content">
+              <el-card class="box-card">
+                <slot />
+              </el-card>
+
+            </div>
           </el-col>
         </el-row>
       </div>
@@ -292,9 +297,10 @@ export default {
     min-width: 230px !important;
     max-width: 260px !important;
     height: 100%;
-    min-height: 400px;
+    min-height: 390px;
     padding: 5px;
     border: none;
+    padding-bottom: 20px !important;
   }
 
   .ms-main-container {
@@ -343,7 +349,7 @@ export default {
             display: table-cell;
             vertical-align: middle;
             margin: 0px;
-            padding: 0 0 0 10px;
+            padding: 0 0 0 0;
             height: 100%;
         }
     }
@@ -367,9 +373,9 @@ export default {
   }
 
   .filter-content {
-      height: calc(50vh - 150px);
+      height: calc(50vh - 130px);
       top: 160px;
-      background: #99a9bf;
+
   }
 
   .filter-dialog-tabs {
@@ -403,5 +409,9 @@ export default {
     display: inline-block;
     width: 100%;
     height: calc(100% - 6px);
+  }
+  .box-card {
+      width: 100%;
+      height: 100%;
   }
 </style>
