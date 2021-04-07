@@ -536,10 +536,10 @@ export default {
           this.addData('AddSQL')
           break
         case 'excel':
-          this.$message(param.type)
+          this.addData('AddExcel')
           break
         case 'custom':
-          this.$message(param.type)
+          this.addData('AddCustom')
           break
       }
     },

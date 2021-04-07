@@ -770,7 +770,10 @@ export default {
     current_update_time: '当前更新时间',
     param: '参数',
     edit_sql: '编辑SQL',
-    showRow: '显示行'
+    showRow: '显示行',
+    add_excel_table: '添加Excel数据集',
+    add_custom_table: '添加自助数据集',
+    upload_file: '上传文件'
   },
   datasource: {
     create: '新建数据连接',
