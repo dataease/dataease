@@ -134,7 +134,6 @@ export default {
       this.isShowArea = true
 
       const move = (moveEvent) => {
-        debugger
         this.width = Math.abs(moveEvent.clientX - startX)
         this.height = Math.abs(moveEvent.clientY - startY)
         if (moveEvent.clientX < startX) {

@@ -68,6 +68,14 @@
       </de-main-container>
     </de-container>
 
+    <el-dialog
+      title="过滤组件"
+      :visible.sync="filterVisible"
+      custom-class="de-filter-dialog"
+    >
+      <filter-dialog />
+    </el-dialog>
+
   </el-container>
 </template>
 
@@ -94,6 +102,7 @@ import '@/components/canvas/styles/animate.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/components/canvas/styles/reset.css'
 import { ApplicationContext } from '@/utils/ApplicationContext'
+import FilterDialog from '../filter/filterDialog'
 export default {
   name: 'PanelEdit',
   components: {
@@ -103,7 +112,8 @@ export default {
     FilterGroup,
     ViewSelect,
     Editor,
-    Toolbar
+    Toolbar,
+    FilterDialog
   },
   data() {
     return {
@@ -112,7 +122,8 @@ export default {
       clickNotClose: false,
       showIndex: -1,
       activeName: 'attr',
-      reSelectAnimateIndex: undefined
+      reSelectAnimateIndex: undefined,
+      filterVisible: false
     }
   },
 
@@ -249,7 +260,13 @@ export default {
           }
         })
       } else {
-        component = deepCopy(ApplicationContext.getService(componentInfo.id))
+        const wd = ApplicationContext.getService(componentInfo.id)
+        if (wd.filterDialog) {
+          this.show = false
+          this.openFilterDiolog()
+          return
+        }
+        component = deepCopy(wd)
       }
 
       component.style.top = e.offsetY
@@ -282,6 +299,9 @@ export default {
       if (e.button !== 2) {
         this.$store.commit('hideContextMenu')
       }
+    },
+    openFilterDiolog() {
+      this.filterVisible = true
     }
 
   }

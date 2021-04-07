@@ -85,6 +85,20 @@ div:focus {
     }
 }
 
+.de-filter-dialog {
+    min-width: 500px !important;
+    width: 50% !important;
+    
+    .el-dialog__header{
+        background-color: #f4f4f5;
+        padding: 10px 20px !important;
+    }
+    .el-dialog__body{
+        padding: 1px 20px !important;
+
+    }
+}
+
 .de-search-header {
     .el-tabs__header{
         display: none !important;;

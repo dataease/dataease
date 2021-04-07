@@ -41,7 +41,6 @@ export default {
   ]),
   methods: {
     edit() {
-      debugger
       // 编辑时临时保存 当前修改的画布
       localStorage.setItem('canvasDataEditTmp', JSON.stringify(this.componentData))
       localStorage.setItem('canvasStyleEditTmp', JSON.stringify(this.canvasStyleData))

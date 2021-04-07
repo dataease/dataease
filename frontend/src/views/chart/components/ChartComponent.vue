@@ -56,7 +56,6 @@ export default {
   },
   methods: {
     drawEcharts() {
-      // debugger
       const chart = this.chart
       let chart_option = {}
       // type

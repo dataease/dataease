@@ -4,9 +4,9 @@
 
     <main>
       <!-- 左侧组件列表 -->
-<!--      <section class="left">-->
-<!--        <ComponentList />-->
-<!--      </section>-->
+      <!--      <section class="left">-->
+      <!--        <ComponentList />-->
+      <!--      </section>-->
       <!-- 中间画布 -->
       <section class="center">
         <div
@@ -80,7 +80,6 @@ export default {
       e.preventDefault()
       e.stopPropagation()
 
-      debugger
       let component
       const id = e.dataTransfer.getData('componentId')
       componentList.forEach(componentTemp => {
