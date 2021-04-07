@@ -54,7 +54,6 @@ export default {
       this.$emit('change', false)
     },
     restore() {
-      debugger
       // 用保存的数据恢复画布
       if (localStorage.getItem('canvasData')) {
         this.componentData = this.resetID(JSON.parse(localStorage.getItem('canvasData')))

@@ -25,7 +25,6 @@ export default {
   },
   mounted() {
     bus.$on('PanelSwitchComponent', (c) => {
-      debugger
       console.log(c)
       this.param = c.param
       switch (c.name) {

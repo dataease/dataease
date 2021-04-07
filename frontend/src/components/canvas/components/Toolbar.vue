@@ -87,7 +87,6 @@ export default {
   },
   methods: {
     closePanelEdit() {
-      debugger
       bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
     },
     goFile() {
