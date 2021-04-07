@@ -88,7 +88,7 @@ div:focus {
 .de-filter-dialog {
     min-width: 500px !important;
     width: 50% !important;
-    
+
     .el-dialog__header{
         background-color: #f4f4f5;
         padding: 10px 20px !important;
@@ -143,4 +143,24 @@ div:focus {
         height: 25px !important;
         border: none !important;
     }
+}
+
+.de-filter-data-table {
+    .el-table__body-wrapper >table>{
+        tbody {
+            .el-table__row {
+                :hover {
+                    cursor: pointer;
+                }
+                td {
+                    border: none !important;
+                }
+            }
+
+        }
+
+    }
+}
+.de-filter-data-table::before {
+    height: 0px !important;
 }

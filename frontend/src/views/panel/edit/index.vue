@@ -224,11 +224,12 @@ export default {
     // 画布
     restore() {
       // 用保存的数据恢复画布
-      if (localStorage.getItem('canvasData')) {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(localStorage.getItem('canvasData'))))
+      let canvasData = null
+      if ((canvasData = localStorage.getItem('canvasData')) !== null && canvasData !== 'null') {
+        this.$store.commit('setComponentData', this.resetID(JSON.parse(canvasData)))
       }
 
-      if (localStorage.getItem('canvasStyle')) {
+      if (canvasData && canvasData !== 'null') {
         this.$store.commit('setCanvasStyle', JSON.parse(localStorage.getItem('canvasStyle')))
       }
     },
@@ -277,7 +278,6 @@ export default {
     },
 
     handleDragOver(e) {
-      console.log('handleDragOver123')
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
     },
