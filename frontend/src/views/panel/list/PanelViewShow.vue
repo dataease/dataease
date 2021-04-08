@@ -170,10 +170,6 @@ export default {
     box-sizing: border-box;
   }
 
-  span {
-    font-size: 12px;
-  }
-
   .custom-position {
     flex: 1;
     display: flex;
