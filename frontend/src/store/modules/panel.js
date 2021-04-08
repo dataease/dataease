@@ -6,7 +6,9 @@ const getDefaultState = () => {
       id: null,
       name: '',
       preStyle: null
-    }
+    },
+    canvasStyleDataTemp: null, // 页面全局临时存储数据
+    componentDataTemp: null // 画布组件临时存储数据
   }
 }
 
@@ -18,6 +20,12 @@ const mutations = {
   },
   setPanelInfo: (state, panelInfo) => {
     state.panelInfo = panelInfo
+  },
+  setCanvasStyleDataTemp: (state, canvasStyleDataTemp) => {
+    state.canvasStyleDataTemp = canvasStyleDataTemp
+  },
+  setComponentDataTemp: (state, componentDataTemp) => {
+    state.componentDataTemp = componentDataTemp
   }
 }
 
@@ -27,6 +35,12 @@ const actions = {
   },
   setPanelInfo({ commit }, panelInfo) {
     commit('setPanelInfo', panelInfo)
+  },
+  setCanvasStyleDataTemp({ commit }, canvasStyleDataTemp) {
+    commit('setCanvasStyleDataTemp', canvasStyleDataTemp)
+  },
+  setComponentDataTemp({ commit }, componentDataTemp) {
+    commit('setComponentDataTemp', componentDataTemp)
   }
 }
 

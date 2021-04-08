@@ -420,8 +420,6 @@ export default {
       if (data.nodeType === 'panel') {
         // 加载视图数据
         this.$nextTick(() => {
-          localStorage.setItem('canvasData', null)
-          localStorage.setItem('canvasStyle', null)
           get('panel/group/findOne/' + data.id).then(response => {
             this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
             this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
@@ -522,8 +520,6 @@ export default {
     },
     edit(data) {
       // 清空临时画布
-      localStorage.setItem('canvasDataEditTmp', null)
-      localStorage.setItem('canvasStyleEditTmp', null)
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },

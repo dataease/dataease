@@ -197,8 +197,6 @@ export default {
     },
 
     save() {
-      localStorage.setItem('canvasData', JSON.stringify(this.componentData))
-      localStorage.setItem('canvasStyle', JSON.stringify(this.canvasStyleData))
       // 保存到数据库
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
@@ -218,8 +216,6 @@ export default {
     },
 
     clickPreview() {
-      localStorage.setItem('canvasData', JSON.stringify(this.componentData))
-      localStorage.setItem('canvasStyle', JSON.stringify(this.canvasStyleData))
       const url = '#/preview'
       window.open(url, '_blank')
     }

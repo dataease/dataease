@@ -42,8 +42,8 @@ export default {
   methods: {
     edit() {
       // 编辑时临时保存 当前修改的画布
-      localStorage.setItem('canvasDataEditTmp', JSON.stringify(this.componentData))
-      localStorage.setItem('canvasStyleEditTmp', JSON.stringify(this.canvasStyleData))
+      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
+      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
       if (this.curComponent.component === 'user-view') {
         this.$store.dispatch('chart/setViewId', null)
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)

@@ -195,24 +195,18 @@ export default {
   },
   methods: {
     init(panelId) {
-      // 清理原有画布本地数据
-      localStorage.setItem('canvasData', null)
-      localStorage.setItem('canvasStyle', null)
-
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
-      if (localStorage.getItem('canvasDataEditTmp') && localStorage.getItem('canvasStyleEditTmp')) {
-        localStorage.setItem('canvasData', localStorage.getItem('canvasDataEditTmp'))
-        localStorage.setItem('canvasStyle', localStorage.getItem('canvasStyleEditTmp'))
+      const componentDataTemp = this.$store.state.panel.componentDataTemp
+      const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
+      if (componentDataTemp && canvasStyleDataTemp) {
+        this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
+        this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
       } else if (panelId) {
         get('panel/group/findOne/' + panelId).then(response => {
-          localStorage.setItem('canvasData', response.data.panelData)
-          localStorage.setItem('canvasStyle', response.data.panelStyle)
+          this.$store.commit('setComponentData', this.resetID(response.data.panelData))
+          this.$store.commit('setCanvasStyle', response.data.panelStyle)
         })
       }
-      // 清理临时画布本地数据
-      localStorage.setItem('canvasDataEditTmp', null)
-      localStorage.setItem('canvasStyleEditTmp', null)
-      this.restore()
     },
     save() {
 
@@ -242,19 +236,6 @@ export default {
         const body = document.querySelector('body')
         body.insertBefore(elx, body.firstChild)
       })
-    },
-
-    // 画布
-    restore() {
-      // 用保存的数据恢复画布
-      let canvasData = null
-      if ((canvasData = localStorage.getItem('canvasData')) !== null && canvasData !== 'null') {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(canvasData)))
-      }
-
-      if (canvasData && canvasData !== 'null') {
-        this.$store.commit('setCanvasStyle', JSON.parse(localStorage.getItem('canvasStyle')))
-      }
     },
 
     resetID(data) {

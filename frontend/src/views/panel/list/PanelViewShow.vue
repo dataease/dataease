@@ -48,9 +48,6 @@ export default {
   },
   methods: {
     clickPreview() {
-      debugger
-      localStorage.setItem('canvasData', JSON.stringify(this.componentData))
-      localStorage.setItem('canvasStyle', JSON.stringify(this.canvasStyleData))
       const url = '#/preview/' + this.$store.state.panel.panelInfo.id
       window.open(url, '_blank')
     }
