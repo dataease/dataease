@@ -9,7 +9,7 @@
     <!--<i v-if="asideHidden" class="el-icon-arrow-right"/>-->
     <!--</div>-->
     <slot />
-    <de-horizontal-drag-bar />
+    <de-horizontal-drag-bar v-if="showDragBar" />
   </el-aside>
 </template>
 
@@ -24,6 +24,10 @@ export default {
       default: '260px'
     },
     enableAsideHidden: {
+      type: Boolean,
+      default: true
+    },
+    showDragBar: {
       type: Boolean,
       default: true
     }

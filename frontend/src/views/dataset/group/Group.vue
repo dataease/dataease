@@ -132,15 +132,19 @@
           </el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="beforeClickAddData('db')">
+              <svg-icon icon-class="db" class="icon" />
               {{ $t('dataset.db_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('sql')">
+              <svg-icon icon-class="sql" class="icon" />
               {{ $t('dataset.sql_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('excel')">
+              <svg-icon icon-class="excel" class="icon" />
               {{ $t('dataset.excel_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('custom')">
+              <svg-icon icon-class="custom" class="icon" />
               {{ $t('dataset.custom_data') }}
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -176,7 +180,7 @@
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span>
-              ({{ data.type }})
+              <svg-icon :icon-class="data.type" class="icon" />
             </span>
             <span>
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
@@ -532,10 +536,10 @@ export default {
           this.addData('AddSQL')
           break
         case 'excel':
-          this.$message(param.type)
+          this.addData('AddExcel')
           break
         case 'custom':
-          this.$message(param.type)
+          this.addData('AddCustom')
           break
       }
     },
@@ -578,6 +582,11 @@ export default {
 </script>
 
 <style scoped>
+  .icon{
+    width: 14px;
+    height: 14px;
+  }
+
   .el-divider--horizontal {
     margin: 12px 0
   }

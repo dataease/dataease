@@ -2,25 +2,6 @@
 
   <div class="filter-container" @dragstart="handleDragStart">
 
-    <!-- <el-card class="filter-card-class">
-      <div slot="header">
-        <span>卡片名称</span>
-      </div>
-      <div style="position: relative;margin-left: 5px;" @dragstart="handleDragStart">
-        <div
-          v-for="(item, index) in componentList"
-          :key="index"
-          :data-id="item.id"
-          draggable
-          :data-index="index"
-        >
-          <span class="iconfont" :class="'icon-' + item.icon" />
-          <span>{{ item.label }}</span>
-        </div>
-      </div>
-
-    </el-card> -->
-
     <div v-for="(item, key) in widgetSubjects" :key="key" class="widget-subject">
       <div class="filter-header">
         <div class="filter-header-text"> {{ key }} </div>

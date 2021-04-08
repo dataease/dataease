@@ -83,7 +83,7 @@
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span>
-              ({{ data.type }})
+              <svg-icon :icon-class="data.type" class="icon" />
             </span>
             <span>
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>

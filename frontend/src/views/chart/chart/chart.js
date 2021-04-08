@@ -15,6 +15,8 @@ export const DEFAULT_SIZE = {
   lineArea: false,
   pieInnerRadius: 0,
   pieOuterRadius: 60,
+  pieRoseType: 'radius',
+  pieRoseRadius: 5,
   funnelWidth: 80,
   radarShape: 'polygon'
 }

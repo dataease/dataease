@@ -123,7 +123,7 @@ public class ChartViewService {
         } else if (table.getMode() == 1) {// 抽取
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
             String tableName = dataTableInfoDTO.getTable() + "-" + table.getDataSourceId();// todo hBase table name maybe change
-            data = sparkCalc.getData(tableName, xAxis, yAxis, view.getId().split("-")[0]);
+            data = sparkCalc.getData(tableName, xAxis, yAxis, "tmp_" + view.getId().split("-")[0]);
         }
 
         // 图表组件可再扩展
@@ -136,7 +136,6 @@ public class ChartViewService {
         }
         for (String[] d : data) {
             StringBuilder a = new StringBuilder();
-            BigDecimal b = new BigDecimal("0");
             for (int i = 0; i < xAxis.size(); i++) {
                 if (i == xAxis.size() - 1) {
                     a.append(d[i]);
@@ -147,7 +146,7 @@ public class ChartViewService {
             x.add(a.toString());
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
-                series.get(j).getData().add(new BigDecimal(d[i]));
+                series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
             }
         }
         Map<String, Object> map = new HashMap<>();
