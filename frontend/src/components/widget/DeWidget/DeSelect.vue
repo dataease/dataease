@@ -1,6 +1,6 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :placeholder="options.attrs.placeholder">
+  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :placeholder="options.attrs.placeholder" @change="changeValue">
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"
@@ -29,6 +29,11 @@ export default {
     this.$nextTick(() => {
 
     })
+  },
+  methods: {
+    changeValue(value) {
+      this.$emit('value-change', value)
+    }
   }
 }
 </script>

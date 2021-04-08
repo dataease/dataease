@@ -24,7 +24,8 @@ const defaultOptions = {
     value: ''
   },
   defaultClass: 'time-filter',
-  component: 'de-date'
+  component: 'de-date',
+  filterDialog: true
 }
 
 class TimeDateRangeServiceImpl extends WidgetService {
@@ -42,6 +43,11 @@ class TimeDateRangeServiceImpl extends WidgetService {
   // 移动到画布之前回掉
   beforeToDraw() {
 
+  }
+  filterFieldMethod(fields) {
+    return fields.filter(field => {
+      return field['deType'] === 1
+    })
   }
 }
 const timeDateRangeServiceImpl = new TimeDateRangeServiceImpl({ name: 'timeDateRangeWidget' })

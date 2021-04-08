@@ -18,25 +18,7 @@ const defaultOptions = {
     attrs: {
       multiple: false,
       placeholder: '请选择',
-      datas: [
-        {
-          id: '0',
-          text: '北京'
-        },
-        {
-          id: '1',
-          text: '上海'
-        },
-        {
-          id: '2',
-          text: '广东'
-        },
-        {
-          id: '3',
-          text: '深圳'
-        }
-
-      ],
+      datas: [],
       key: 'id',
       label: 'text',
       value: 'id'
@@ -44,7 +26,8 @@ const defaultOptions = {
     value: ''
   },
   defaultClass: 'text-filter',
-  component: 'de-select'
+  component: 'de-select',
+  filterDialog: true
 }
 
 class TextSelectServiceImpl extends WidgetService {
@@ -62,6 +45,16 @@ class TextSelectServiceImpl extends WidgetService {
   // 移动到画布之前回掉
   beforeToDraw() {
 
+  }
+
+  setOptionDatas(data) {
+    this.options.attrs.datas = data
+  }
+
+  filterFieldMethod(fields) {
+    return fields.filter(field => {
+      return field['deType'] === 0
+    })
   }
 }
 const textSelectServiceImpl = new TextSelectServiceImpl({ name: 'textSelectWidget' })

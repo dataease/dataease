@@ -145,7 +145,7 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import draggable from 'vuedraggable'
 import DragItem from '@/components/DragItem'
 import { ApplicationContext } from '@/utils/ApplicationContext'
-import { groupTree, loadTable, fieldList } from '@/api/dataset/dataset'
+import { groupTree, loadTable, fieldList, fieldValues } from '@/api/dataset/dataset'
 export default {
   name: 'FilterDialog',
   components: {
@@ -176,7 +176,23 @@ export default {
         label: 'label'
       },
       selectField: [],
-      widget: null
+      widget: null,
+      fieldValues: []
+    }
+  },
+  watch: {
+    selectField(values) {
+      if (values && values.length > 0) {
+        const value = values[0]
+        const fieldId = value.id
+        this.widget && this.widget.setOptionDatas && fieldValues(fieldId).then(res => {
+          const datas = res.data.map(item => {
+            return { id: item, text: item }
+          })
+          this.widget.setOptionDatas(datas)
+          this.$emit('re-fresh-component', this.widget)
+        })
+      }
     }
   },
   created() {
@@ -192,10 +208,8 @@ export default {
     },
     loadDataSetTree() {
       groupTree({}).then(res => {
-        let datas = res.data
-        if (this.widget && this.widget.filterFieldMethod) {
-          datas = this.widget.filterFieldMethod(datas)
-        }
+        const datas = res.data
+
         this.data = datas
       })
     },
@@ -249,7 +263,11 @@ export default {
 
     loadField(tableId) {
       fieldList(tableId).then(res => {
-        this.fieldDatas = res.data
+        let datas = res.data
+        if (this.widget && this.widget.filterFieldMethod) {
+          datas = this.widget.filterFieldMethod(datas)
+        }
+        this.fieldDatas = datas
       })
     },
     showFieldDatas(row) {

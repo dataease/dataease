@@ -74,7 +74,7 @@
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
-      <filter-dialog v-if="filterVisible" :widget-id="currentWidgetId">
+      <filter-dialog v-if="filterVisible" :widget-id="currentWidgetId" @re-fresh-component="reFreshComponent">
         <de-drawing-widget
           v-if="filterVisible && currentComponent"
           :id="'component' + currentComponent.id"
@@ -323,6 +323,9 @@ export default {
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
       this.cancelFilter()
+    },
+    reFreshComponent(component) {
+      this.currentComponent = component
     }
   }
 }

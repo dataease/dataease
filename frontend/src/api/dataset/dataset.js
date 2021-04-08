@@ -111,4 +111,12 @@ export function post(url, data) {
   })
 }
 
+export function fieldValues(fieldId) {
+  return request({
+    url: '/dataset/field/fieldValues/' + fieldId,
+    method: 'post',
+    loading: true
+  })
+}
+
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree }
