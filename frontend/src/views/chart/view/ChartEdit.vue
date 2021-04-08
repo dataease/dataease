@@ -598,6 +598,7 @@ export default {
   .view-panel {
     display: flex;
     height: calc(100% - 40px);
+    background-color: #f7f8fa;
   }
 
   .drag-list {
