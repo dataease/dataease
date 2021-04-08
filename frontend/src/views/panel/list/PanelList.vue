@@ -145,6 +145,7 @@ import GrantAuth from '../GrantAuth'
 import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
+import eventBus from '@/components/canvas/utils/eventBus'
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree, get } from '@/api/panel/panel'
 
 export default {
@@ -417,8 +418,6 @@ export default {
 
     nodeClick(data, node) {
       if (data.nodeType === 'panel') {
-        this.$store.dispatch('panel/setPanelInfo', data)
-        this.currGroup = data
         // 加载视图数据
         this.$nextTick(() => {
           localStorage.setItem('canvasData', null)
@@ -426,6 +425,9 @@ export default {
           get('panel/group/findOne/' + data.id).then(response => {
             this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
             this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
+            this.$store.dispatch('panel/setPanelInfo', data)
+            this.currGroup = data
+            eventBus.$emit('componentDataChange', '')
           })
         })
       }

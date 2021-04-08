@@ -22,10 +22,12 @@ import DataHome from './data/DataHome'
 import ViewTable from './data/ViewTable'
 import AddDB from './add/AddDB'
 import AddSQL from './add/AddSQL'
+import AddExcel from './add/AddExcel'
+import AddCustom from './add/AddCustom'
 
 export default {
   name: 'DataSet',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL, AddExcel, AddCustom },
   data() {
     return {
       component: DataHome,
@@ -45,6 +47,12 @@ export default {
           break
         case 'AddSQL':
           this.component = AddSQL
+          break
+        case 'AddExcel':
+          this.component = AddExcel
+          break
+        case 'AddCustom':
+          this.component = AddCustom
           break
         default:
           this.component = DataHome

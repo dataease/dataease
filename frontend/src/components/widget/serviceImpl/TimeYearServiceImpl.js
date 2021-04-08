@@ -42,6 +42,12 @@ class TimeYearServiceImpl extends WidgetService {
   beforeToDraw() {
 
   }
+
+  filterFieldMethod(fields) {
+    return fields.filter(field => {
+      return field['deType'] === 1
+    })
+  }
 }
 const timeYearServiceImpl = new TimeYearServiceImpl({ name: 'timeYearWidget' })
 export default timeYearServiceImpl

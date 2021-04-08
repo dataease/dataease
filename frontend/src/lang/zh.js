@@ -693,7 +693,11 @@ export default {
     filter_null: '为空',
     filter_not_null: '不为空',
     filter_include: '包含',
-    filter_not_include: '不包含'
+    filter_not_include: '不包含',
+    rose_type: '玫瑰图模式',
+    radius_mode: '半径',
+    area_mode: '面积',
+    rose_radius: '圆角'
   },
   dataset: {
     datalist: '数据集',
@@ -770,7 +774,10 @@ export default {
     current_update_time: '当前更新时间',
     param: '参数',
     edit_sql: '编辑SQL',
-    showRow: '显示行'
+    showRow: '显示行',
+    add_excel_table: '添加Excel数据集',
+    add_custom_table: '添加自助数据集',
+    upload_file: '上传文件'
   },
   datasource: {
     create: '新建数据连接',

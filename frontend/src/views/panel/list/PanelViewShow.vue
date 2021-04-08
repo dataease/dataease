@@ -1,25 +1,25 @@
 <template>
-  <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <el-row style="display: flex;height: 100%">
-
-      <el-col class="panel-design">
-        <!--TODO 仪表盘设计公共设置区域-->
-        <el-row class="panel-design-head">
-          <span style="float: left;line-height: 40px; color: gray">
-            <span>名称：{{ panelInfo.name || '测试仪表板' }}</span>
-          </span>
-          <span style="float: right;line-height: 40px;">
-            <el-tooltip content="预览">
-              <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
-            </el-tooltip>
-          </span>
-        </el-row>
-        <!--TODO 仪表盘预览区域-->
-        <section>
-          <Preview />
-        </section>
-      </el-col>
-    </el-row>
+  <el-row style="height: 100%;width: 100%;">
+    <el-col v-if="panelInfo.name.length>0" class="panel-design">
+      <el-row class="panel-design-head">
+        <!--TODO 仪表盘头部区域-->
+        <span>{{ panelInfo.name || '测试仪表板' }}</span>
+        <span style="float: right;">
+          <el-tooltip content="预览">
+            <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
+          </el-tooltip>
+        </span>
+      </el-row>
+      <!--TODO 仪表盘预览区域-->
+      <el-row class="panel-design-preview">
+        <Preview />
+      </el-row>
+    </el-col>
+    <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
+      <el-row style="height: 100%;" class="custom-position">
+        请从左侧选择仪表盘
+      </el-row>
+    </el-col>
   </el-row>
 </template>
 <script>
@@ -59,7 +59,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
   .view-list {
     height: 100%;
     width: 20%;
@@ -81,18 +81,26 @@ export default {
   }
 
   .panel-design {
+    min-height: 400px;
     height: 100%;
     min-width: 500px;
+    overflow-y: auto;
     border-top: 1px solid #E6E6E6;
   }
 
   .panel-design-head {
     height: 40px;
+    background-color: white;
+    padding: 0 6px;
+    line-height: 40px;
   }
 
-  .panel-design-show {
-    height: 100%;
+  .panel-design-preview {
     width: 100%;
+    height: calc(100% - 40px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px;
     border-top: 1px solid #E6E6E6;
   }
 
@@ -164,5 +172,15 @@ export default {
 
   span {
     font-size: 12px;
+  }
+
+  .custom-position {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    flex-flow: row nowrap;
+    color: #9ea6b2;
   }
 </style>

@@ -1,0 +1,144 @@
+<template>
+  <el-col>
+    <el-row>
+      <el-row style="height: 26px;">
+        <span style="line-height: 26px;">
+          {{ $t('dataset.add_custom_table') }}
+        </span>
+        <el-row style="float: right">
+          <el-button size="mini" @click="cancel">
+            {{ $t('dataset.cancel') }}
+          </el-button>
+          <el-button size="mini" type="primary" :disabled="checkTableList.length < 1" @click="save">
+            {{ $t('dataset.confirm') }}
+          </el-button>
+        </el-row>
+      </el-row>
+      <el-divider />
+      <el-row>
+        <el-col>
+          123
+        </el-col>
+        <el-col>
+          456
+        </el-col>
+      </el-row>
+    </el-row>
+  </el-col>
+</template>
+
+<script>
+import { post } from '@/api/dataset/dataset'
+
+export default {
+  name: 'AddCustom',
+  props: {
+    param: {
+      type: Object,
+      default: null
+    }
+  },
+  data() {
+    return {
+      searchTable: '',
+      options: [],
+      dataSource: '',
+      tables: [],
+      checkTableList: [],
+      mode: '0',
+      tableData: []
+    }
+  },
+  watch: {
+    // dataSource(val) {
+    //   if (val) {
+    //     post('/datasource/getTables', { id: val }).then(response => {
+    //       this.tables = response.data
+    //       this.tableData = JSON.parse(JSON.stringify(this.tables))
+    //     })
+    //   }
+    // },
+    // searchTable(val) {
+    //   if (val && val !== '') {
+    //     this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.includes(val) })))
+    //   } else {
+    //     this.tableData = JSON.parse(JSON.stringify(this.tables))
+    //   }
+    // }
+  },
+  mounted() {
+    // this.initDataSource()
+  },
+  activated() {
+    // this.initDataSource()
+  },
+  methods: {
+    // initDataSource() {
+    //   listDatasource().then(response => {
+    //     this.options = response.data
+    //   })
+    // },
+
+    save() {
+      // console.log(this.checkTableList);
+      // console.log(this.scene);
+      const sceneId = this.param.id
+      const dataSourceId = this.dataSource
+      const tables = []
+      // const mode = this.mode
+      this.checkTableList.forEach(function(name) {
+        tables.push({
+          name: name,
+          sceneId: sceneId,
+          dataSourceId: dataSourceId,
+          type: 'excel',
+          mode: 1
+        })
+      })
+      post('/dataset/table/batchAdd', tables).then(response => {
+        this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        this.cancel()
+      })
+    },
+
+    cancel() {
+      this.dataReset()
+      // this.$router.push('/dataset/home')
+      this.$emit('switchComponent', { name: '' })
+    },
+
+    dataReset() {
+      this.searchTable = ''
+      this.options = []
+      this.dataSource = ''
+      this.tables = []
+      this.checkTableList = []
+    }
+  }
+
+}
+</script>
+
+<style scoped>
+  .el-divider--horizontal {
+    margin: 12px 0;
+  }
+
+  .form-item {
+    margin-bottom: 6px;
+  }
+
+  .el-checkbox {
+    margin-bottom: 14px;
+    margin-left: 0;
+    margin-right: 14px;
+  }
+
+  .el-checkbox.is-bordered + .el-checkbox.is-bordered {
+    margin-left: 0;
+  }
+
+  span{
+    font-size: 14px;
+  }
+</style>

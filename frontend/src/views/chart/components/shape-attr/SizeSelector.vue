@@ -57,6 +57,18 @@
             <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
               <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
+
+            <span v-if="chart.type && chart.type.includes('pie-rose')">
+              <el-form-item :label="$t('chart.rose_type')" class="form-item">
+                <el-radio-group v-model="sizeForm.pieRoseType" size="mini" @change="changeBarSizeCase">
+                  <el-radio-button label="radius">{{ $t('chart.radius_mode') }}</el-radio-button>
+                  <el-radio-button label="area">{{ $t('chart.area_mode') }}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item :label="$t('chart.rose_radius')" class="form-item form-item-slider">
+                <el-slider v-model="sizeForm.pieRoseRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+              </el-form-item>
+            </span>
           </el-form>
 
           <el-form v-if="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
