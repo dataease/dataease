@@ -69,13 +69,31 @@
     </de-container>
 
     <el-dialog
+      v-if="filterVisible"
       title="过滤组件"
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
-      <filter-dialog>
-        <h1>aaaaaaaaa</h1>
+      <filter-dialog v-if="filterVisible" :widget-id="currentWidgetId">
+        <de-drawing-widget
+          v-if="filterVisible && currentComponent"
+          :id="'component' + currentComponent.id"
+          style="width: 100% !important;"
+          class="component"
+          :element="currentComponent"
+          :item="currentComponent"
+        />
       </filter-dialog>
+      <!-- <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="editPasswordVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="editUserPassword('editPasswordForm')">确认</el-button>
+      </div> -->
+      <div style="text-align: end !important;margin: 0 15px !important;">
+        <span slot="footer">
+          <el-button @click="cancelFilter">取 消</el-button>
+          <el-button type="primary" @click="sureFilter">确 定</el-button>
+        </span>
+      </div>
     </el-dialog>
 
   </el-container>
@@ -125,7 +143,10 @@ export default {
       showIndex: -1,
       activeName: 'attr',
       reSelectAnimateIndex: undefined,
-      filterVisible: false
+      filterVisible: false,
+      currentWidgetId: null,
+      currentWidget: null,
+      currentComponent: null
     }
   },
 
@@ -263,13 +284,17 @@ export default {
           }
         })
       } else {
-        const wd = ApplicationContext.getService(componentInfo.id)
-        if (wd.filterDialog) {
+        this.currentWidget = ApplicationContext.getService(componentInfo.id)
+        if (this.currentWidget.filterDialog) {
           this.show = false
-          this.openFilterDiolog()
+          this.currentComponent = deepCopy(this.currentWidget)
+          this.currentComponent.style.top = e.offsetY
+          this.currentComponent.style.left = e.offsetX
+          this.currentComponent.id = newComponentId
+          this.openFilterDiolog(componentInfo.id)
           return
         }
-        component = deepCopy(wd)
+        component = deepCopy(this.currentWidget)
       }
 
       component.style.top = e.offsetY
@@ -302,10 +327,22 @@ export default {
         this.$store.commit('hideContextMenu')
       }
     },
-    openFilterDiolog() {
+    openFilterDiolog(widgetId) {
+      this.currentWidgetId = widgetId
       this.filterVisible = true
+    },
+    cancelFilter() {
+      this.filterVisible = false
+      this.currentWidgetId = null
+      this.currentWidget = null
+      this.currentComponent = null
+    },
+    sureFilter() {
+      const component = deepCopy(this.currentComponent)
+      this.$store.commit('addComponent', { component })
+      this.$store.commit('recordSnapshot')
+      this.cancelFilter()
     }
-
   }
 }
 </script>
@@ -373,7 +410,6 @@ export default {
   .leftPanel {
     transform: translate(0);
   }
-
 }
 
 </style>

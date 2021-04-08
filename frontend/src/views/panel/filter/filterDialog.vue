@@ -122,7 +122,12 @@
           <el-col :span="24">
             <div class="filter-content">
               <el-card class="box-card">
-                <slot />
+                <div style="margin-bottom: 10px;">
+                  <span> {{ widget.label }}</span>
+                </div>
+                <div class="custom-component-class">
+                  <slot />
+                </div>
               </el-card>
 
             </div>
@@ -139,6 +144,7 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import draggable from 'vuedraggable'
 import DragItem from '@/components/DragItem'
+import { ApplicationContext } from '@/utils/ApplicationContext'
 import { groupTree, loadTable, fieldList } from '@/api/dataset/dataset'
 export default {
   name: 'FilterDialog',
@@ -148,6 +154,12 @@ export default {
     DeAsideContainer,
     draggable,
     DragItem
+  },
+  props: {
+    widgetId: {
+      type: String,
+      default: null
+    }
   },
   data() {
     return {
@@ -163,10 +175,12 @@ export default {
         children: 'children',
         label: 'label'
       },
-      selectField: []
+      selectField: [],
+      widget: null
     }
   },
   created() {
+    this.widget = ApplicationContext.getService(this.widgetId)
     this.loadDataSetTree()
   },
 
@@ -178,7 +192,11 @@ export default {
     },
     loadDataSetTree() {
       groupTree({}).then(res => {
-        this.data = res.data
+        let datas = res.data
+        if (this.widget && this.widget.filterFieldMethod) {
+          datas = this.widget.filterFieldMethod(datas)
+        }
+        this.data = datas
       })
     },
     renderNode(h, { node, data, store }) {
@@ -414,4 +432,5 @@ export default {
       width: 100%;
       height: 100%;
   }
+
 </style>
