@@ -146,7 +146,7 @@ public class ChartViewService {
             x.add(a.toString());
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
-                series.get(j).getData().add(new BigDecimal(d[i] == null ? "0" : d[i]));
+                series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
             }
         }
         Map<String, Object> map = new HashMap<>();
