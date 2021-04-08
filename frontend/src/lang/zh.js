@@ -693,7 +693,11 @@ export default {
     filter_null: '为空',
     filter_not_null: '不为空',
     filter_include: '包含',
-    filter_not_include: '不包含'
+    filter_not_include: '不包含',
+    rose_type: '玫瑰图模式',
+    radius_mode: '半径',
+    area_mode: '面积',
+    rose_radius: '圆角'
   },
   dataset: {
     datalist: '数据集',

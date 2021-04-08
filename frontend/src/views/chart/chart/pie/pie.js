@@ -50,3 +50,18 @@ export function basePieOption(chart_option, chart) {
   return chart_option
 }
 
+export function rosePieOption(chart_option, chart) {
+  basePieOption(chart_option, chart)
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.size) {
+      chart_option.series[0].roseType = customAttr.size.pieRoseType
+      chart_option.series[0].itemStyle = {
+        borderRadius: customAttr.size.pieRoseRadius
+      }
+    }
+  }
+  return chart_option
+}
+
