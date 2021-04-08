@@ -1,5 +1,5 @@
 <template>
-  <div ref="element" class="bg">
+  <div id="canvasInfo" class="bg">
     <ComponentWrapper
       v-for="(item, index) in componentDataInfo"
       :key="index"
@@ -10,12 +10,12 @@
 
 <script>
 import { getStyle } from '@/components/canvas/utils/style'
-import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { uuid } from 'vue-uuid'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
+import elementResizeDetectorMaker from 'element-resize-detector'
 import { get } from '@/api/panel/panel'
 
 export default {
@@ -47,6 +47,7 @@ export default {
       scaleWidth: '100',
       scaleHeight: '100',
       timer: null,
+      componentDataSource: {},
       componentData: {},
       canvasStyleData: {}
 
@@ -58,8 +59,17 @@ export default {
     }
   },
   mounted() {
+    const _this = this
+
     // 加载数据
-    this.restore()
+    _this.restore()
+    const erd = elementResizeDetectorMaker()
+    // 监听div变动事件
+    erd.listenTo(document.getElementById('canvasInfo'), element => {
+      _this.$nextTick(() => {
+        _this.resize()
+      })
+    })
     window.onresize = () => {
       debugger
       this.resize()
@@ -82,7 +92,7 @@ export default {
       this.panelId = this.$route.path.split('/')[2]
       // 加载视图数据
       get('panel/group/findOne/' + this.panelId).then(response => {
-        this.componentData = this.resetID(JSON.parse(response.data.panelData))
+        this.componentDataSource = this.resetID(JSON.parse(response.data.panelData))
         this.canvasStyleData = JSON.parse(response.data.panelStyle)
         this.resize()
       })
@@ -98,7 +108,7 @@ export default {
       return value * parseInt(scale) / 100
     },
     handleScaleChange() {
-      const componentData = deepCopy(this.componentData)
+      const componentData = deepCopy(this.componentDataSource)
       componentData.forEach(component => {
         Object.keys(component.style).forEach(key => {
           if (this.needToChangeHeight.includes(key)) {
@@ -118,6 +128,8 @@ export default {
 
 <style lang="scss" scoped>
   .bg {
+    min-width: 800px;
+    min-height: 600px;
     width: 100%;
     height: 100%;
     overflow: auto;

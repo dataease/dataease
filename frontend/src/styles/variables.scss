@@ -42,7 +42,7 @@ $subMenuHover:#1682e6;
 
 $sideBarWidth: 210px;
 $topBarHeight: 56px;
-$contentHeight: calc(100vh - 56px);
+$contentHeight: 100vh;
 
 // the :export directive is the magic sauce for webpack
 // https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
