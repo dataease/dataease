@@ -136,7 +136,6 @@ public class ChartViewService {
         }
         for (String[] d : data) {
             StringBuilder a = new StringBuilder();
-            BigDecimal b = new BigDecimal("0");
             for (int i = 0; i < xAxis.size(); i++) {
                 if (i == xAxis.size() - 1) {
                     a.append(d[i]);
@@ -147,7 +146,7 @@ public class ChartViewService {
             x.add(a.toString());
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
-                series.get(j).getData().add(new BigDecimal(d[i]));
+                series.get(j).getData().add(new BigDecimal(d[i] == null ? "0" : d[i]));
             }
         }
         Map<String, Object> map = new HashMap<>();
