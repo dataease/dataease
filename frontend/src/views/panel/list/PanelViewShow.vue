@@ -1,5 +1,5 @@
 <template>
-  <el-row style="height: 100%;width: 100%;">
+  <el-row v-if="showMain" style="height: 100%;width: 100%;">
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
       <el-row class="panel-design-head">
         <!--TODO 仪表盘头部区域-->
@@ -25,12 +25,14 @@
 <script>
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { mapState } from 'vuex'
+import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   name: 'PanelViewShow',
   components: { Preview },
   data() {
     return {
+      showMain: false
 
     }
   },
@@ -44,7 +46,14 @@ export default {
     ])
   },
   mounted() {
-
+    // 监听数据变动事件 刷新清楚历史样式
+    eventBus.$on('componentDataChange', () => {
+      // 刷新
+      this.showMain = false
+      this.$nextTick(() => {
+        this.showMain = true
+      })
+    })
   },
   methods: {
     clickPreview() {

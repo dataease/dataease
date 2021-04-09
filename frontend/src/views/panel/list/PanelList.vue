@@ -10,7 +10,7 @@
             :data="defaultData"
             node-key="id"
             :expand-on-click-node="true"
-            @node-click="panelDefaultClick"
+            @node-click="nodeClick"
           >
             <span slot-scope="{ data }" class="custom-tree-node">
               <span>
@@ -419,14 +419,12 @@ export default {
     nodeClick(data, node) {
       if (data.nodeType === 'panel') {
         // 加载视图数据
-        this.$nextTick(() => {
-          get('panel/group/findOne/' + data.id).then(response => {
-            this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-            this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-            this.$store.dispatch('panel/setPanelInfo', data)
-            this.currGroup = data
-            eventBus.$emit('componentDataChange', '')
-          })
+        get('panel/group/findOne/' + data.id).then(response => {
+          this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+          this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
+          this.$store.dispatch('panel/setPanelInfo', data)
+          this.currGroup = data
+          eventBus.$emit('componentDataChange', '')
         })
       }
       if (node.expanded) {

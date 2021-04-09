@@ -1,26 +1,16 @@
 <template>
   <el-container>
     <!-- <de-header>Header</de-header> -->
-    <el-header class="de-header">
-      <el-row class="panel-design-head">
-        <span style="float: left;line-height: 35px; color: gray">
-
-          <span>名称：测试仪表板</span>
-
-        </span>
-        <span style="float: right;line-height: 35px;">
-
-          <el-tooltip content="返回目录">
-            <el-button class="el-icon-refresh-left" size="mini" circle @click="toDir" />
-          </el-tooltip>
-
-        </span>
-      </el-row>
-    </el-header>
+    <span style="line-height: 35px; position: absolute; top:10px;right: 10px">
+      <el-button size="mini" @click="toDir">
+        关闭
+      </el-button>
+    </span>
     <de-container>
 
       <de-main-container class="ms-main-container">
-<!--        <drawing-board :disabled="true" />-->
+        <!--        <drawing-board :disabled="true" />-->
+        this is test
       </de-main-container>
     </de-container>
   </el-container>

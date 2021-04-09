@@ -135,5 +135,6 @@ export default {
     overflow: auto;
     position: relative;
     margin: 0;
+    background-color: #f7f8fa;
   }
 </style>

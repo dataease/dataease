@@ -216,8 +216,8 @@ export default {
     },
 
     clickPreview() {
-      const url = '#/preview'
-      window.open(url, '_blank')
+      // 编辑时临时保存 当前修改的画布
+      this.$router.replace('/PreviewFullScreen')
     }
   }
 }
