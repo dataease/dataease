@@ -74,7 +74,7 @@
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
-      <filter-dialog v-if="filterVisible" :widget-id="currentWidgetId" @re-fresh-component="reFreshComponent">
+      <filter-dialog v-if="filterVisible" :component-info="currentComponent" :widget-id="currentWidgetId" @re-fresh-component="reFreshComponent">
         <de-drawing-widget
           v-if="filterVisible && currentComponent"
           :id="'component' + currentComponent.id"
@@ -272,7 +272,7 @@ export default {
           this.currentComponent.style.top = e.offsetY
           this.currentComponent.style.left = e.offsetX
           this.currentComponent.id = newComponentId
-          this.openFilterDiolog(componentInfo.id)
+          this.openFilterDiolog()
           return
         }
         component = deepCopy(this.currentWidget)
@@ -308,8 +308,8 @@ export default {
         this.$store.commit('hideContextMenu')
       }
     },
-    openFilterDiolog(widgetId) {
-      this.currentWidgetId = widgetId
+    openFilterDiolog() {
+      this.currentWidgetId = this.currentComponent.name
       this.filterVisible = true
     },
     cancelFilter() {

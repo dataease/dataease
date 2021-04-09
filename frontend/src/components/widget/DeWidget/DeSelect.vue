@@ -15,15 +15,18 @@
 export default {
 
   props: {
-    options: {
+    element: {
       type: Object,
       default: null
     }
   },
   data() {
     return {
-
+      options: null
     }
+  },
+  created() {
+    this.options = this.element.options
   },
   mounted() {
     this.$nextTick(() => {

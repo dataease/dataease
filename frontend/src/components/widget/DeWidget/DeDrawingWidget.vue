@@ -13,7 +13,6 @@ export default {
     const item = context.props.item
     return createElement(item.component, {
       props: {
-        options: item.options,
         element: item
       },
       on: {

@@ -159,6 +159,10 @@ export default {
     widgetId: {
       type: String,
       default: null
+    },
+    componentInfo: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -185,12 +189,12 @@ export default {
       if (values && values.length > 0) {
         const value = values[0]
         const fieldId = value.id
-        this.widget && this.widget.setOptionDatas && fieldValues(fieldId).then(res => {
+        this.componentInfo && this.componentInfo.setOptionDatas && fieldValues(fieldId).then(res => {
           const datas = res.data.map(item => {
             return { id: item, text: item }
           })
-          this.widget.setOptionDatas(datas)
-          this.$emit('re-fresh-component', this.widget)
+          this.componentInfo.setOptionDatas(datas)
+          this.$emit('re-fresh-component', this.componentInfo)
         })
       }
     }
