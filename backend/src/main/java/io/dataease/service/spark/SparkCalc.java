@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -80,7 +81,7 @@ public class SparkCalc {
                         if (StringUtils.isEmpty(l)) {
                             l = "0";
                         }
-                        list.add(Long.valueOf(l));
+                        list.add(new BigDecimal(l));
                     }
                 });
                 yAxis.forEach(y -> {
@@ -91,7 +92,7 @@ public class SparkCalc {
                         if (StringUtils.isEmpty(l)) {
                             l = "0";
                         }
-                        list.add(Long.valueOf(l));
+                        list.add(new BigDecimal(l));
                     }
                 });
                 iterator.add(RowFactory.create(list.toArray()));
