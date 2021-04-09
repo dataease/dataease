@@ -74,25 +74,35 @@ public class SparkCalc {
                 Result result = tuple2Iterator.next()._2;
                 List<Object> list = new ArrayList<>();
                 xAxis.forEach(x -> {
+                    String l = Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes()));
                     if (x.getDeType() == 0 || x.getDeType() == 1) {
-                        list.add(Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes())));
+                        list.add(l);
                     } else if (x.getDeType() == 2) {
-                        String l = Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes()));
                         if (StringUtils.isEmpty(l)) {
                             l = "0";
                         }
-                        list.add(l.contains(".") ? Double.parseDouble(l) : Long.parseLong(l));
+                        list.add(Long.valueOf(l));
+                    } else if (x.getDeType() == 3) {
+                        if (StringUtils.isEmpty(l)) {
+                            l = "0.0";
+                        }
+                        list.add(Double.valueOf(l));
                     }
                 });
                 yAxis.forEach(y -> {
+                    String l = Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes()));
                     if (y.getDeType() == 0 || y.getDeType() == 1) {
-                        list.add(Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes())));
+                        list.add(l);
                     } else if (y.getDeType() == 2) {
-                        String l = Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes()));
                         if (StringUtils.isEmpty(l)) {
                             l = "0";
                         }
-                        list.add(l.contains(".") ? Double.parseDouble(l) : Long.parseLong(l));
+                        list.add(Long.valueOf(l));
+                    } else if (y.getDeType() == 3) {
+                        if (StringUtils.isEmpty(l)) {
+                            l = "0.0";
+                        }
+                        list.add(Double.valueOf(l));
                     }
                 });
                 iterator.add(RowFactory.create(list.toArray()));
@@ -107,6 +117,8 @@ public class SparkCalc {
                 structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.StringType, true));
             } else if (x.getDeType() == 2) {
                 structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.LongType, true));
+            } else if (x.getDeType() == 3) {
+                structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.DoubleType, true));
             }
         });
         yAxis.forEach(y -> {
@@ -114,6 +126,8 @@ public class SparkCalc {
                 structFields.add(DataTypes.createStructField(y.getOriginName(), DataTypes.StringType, true));
             } else if (y.getDeType() == 2) {
                 structFields.add(DataTypes.createStructField(y.getOriginName(), DataTypes.LongType, true));
+            } else if (y.getDeType() == 3) {
+                structFields.add(DataTypes.createStructField(y.getOriginName(), DataTypes.DoubleType, true));
             }
         });
         StructType structType = DataTypes.createStructType(structFields);

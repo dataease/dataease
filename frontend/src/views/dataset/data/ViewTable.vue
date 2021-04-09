@@ -38,7 +38,7 @@
             <template slot-scope="scope">
               <span v-if="scope.row.deType === 0">{{ $t('dataset.text') }}</span>
               <span v-if="scope.row.deType === 1">{{ $t('dataset.time') }}</span>
-              <span v-if="scope.row.deType === 2">{{ $t('dataset.value') }}</span>
+              <span v-if="scope.row.deType === 2 || scope.row.deType === 3">{{ $t('dataset.value') }}</span>
             </template>
           </el-table-column>
           <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
