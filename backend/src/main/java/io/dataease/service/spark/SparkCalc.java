@@ -147,7 +147,7 @@ public class SparkCalc {
         for (Row row : list) {
             String[] r = new String[row.length()];
             for (int i = 0; i < row.length(); i++) {
-                r[i] = row.get(i).toString();
+                r[i] = row.get(i) == null ? "null" : row.get(i).toString();
             }
             data.add(r);
         }
