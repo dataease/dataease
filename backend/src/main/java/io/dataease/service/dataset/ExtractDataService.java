@@ -491,7 +491,7 @@ public class ExtractDataService {
             case 1:
                 return "Date";
             case 2:
-                return "Long";
+                return "BigNumber";
             default:
                 return "String";
         }
