@@ -40,12 +40,12 @@ CREATE TABLE `panel_group` (
 -- Records of panel_group
 -- ----------------------------
 BEGIN;
-INSERT INTO `panel_group` VALUES ('1001', '飞致云', NULL, 0, 'folder', NULL, NULL, 'self', NULL);
-INSERT INTO `panel_group` VALUES ('1c78bc65-ea38-40bc-ad73-738a9b386379', '测试仪表盘1', '1001', 1, 'panel', NULL, 1615961778552, NULL, NULL);
-INSERT INTO `panel_group` VALUES ('2003', '默认仪表盘1', NULL, NULL, 'panel', NULL, NULL, 'system', NULL);
-INSERT INTO `panel_group` VALUES ('2004', '默认仪表盘2', NULL, NULL, 'panel', NULL, NULL, 'system', NULL);
-INSERT INTO `panel_group` VALUES ('8ff64eb1-a96a-4218-85cd-01b437d21f2e', '测试仪表盘2', '1001', 1, 'panel', NULL, 1615200099827, NULL, NULL);
-INSERT INTO `panel_group` VALUES ('d15f816d-46b7-4859-8ec8-2b19918dc772', 'TSEE', '1001', 1, 'folder', NULL, 1616403978419, NULL, NULL);
+INSERT INTO `panel_group` VALUES ('1001', '飞致云', NULL, 0, 'folder', NULL, NULL, 'self', NULL, NULL);
+INSERT INTO `panel_group` VALUES ('1c78bc65-ea38-40bc-ad73-738a9b386379', '测试仪表盘1', '1001', 1, 'panel', NULL, 1615961778552, NULL, NULL, NULL);
+INSERT INTO `panel_group` VALUES ('2003', '默认仪表盘1', NULL, NULL, 'panel', NULL, NULL, 'system', NULL, NULL);
+INSERT INTO `panel_group` VALUES ('2004', '默认仪表盘2', NULL, NULL, 'panel', NULL, NULL, 'system', NULL, NULL);
+INSERT INTO `panel_group` VALUES ('8ff64eb1-a96a-4218-85cd-01b437d21f2e', '测试仪表盘2', '1001', 1, 'panel', NULL, 1615200099827, NULL, NULL, NULL);
+INSERT INTO `panel_group` VALUES ('d15f816d-46b7-4859-8ec8-2b19918dc772', 'TSEE', '1001', 1, 'folder', NULL, 1616403978419, NULL, NULL, NULL);
 COMMIT;
 
 -- ----------------------------
