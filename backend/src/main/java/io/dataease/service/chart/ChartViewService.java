@@ -121,9 +121,9 @@ public class ChartViewService {
             }
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
-            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
-            String tableName = dataTableInfoDTO.getTable() + "-" + table.getDataSourceId();// todo hBase table name maybe change
-            data = sparkCalc.getData(tableName, xAxis, yAxis, "tmp_" + view.getId().split("-")[0]);
+//            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
+//            String tableName = dataTableInfoDTO.getTable() + "-" + table.getDataSourceId();// todo hBase table name maybe change
+            data = sparkCalc.getData(table.getId(), xAxis, yAxis, "tmp_" + view.getId().split("-")[0]);
         }
 
         // 图表组件可再扩展
