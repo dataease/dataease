@@ -22,7 +22,8 @@ const defaultOptions = {
     value: ''
   },
   defaultClass: 'time-filter',
-  component: 'de-quarter'
+  component: 'de-quarter',
+  filterDialog: true
 }
 
 class TimeQuarterServiceImpl extends WidgetService {
@@ -40,6 +41,11 @@ class TimeQuarterServiceImpl extends WidgetService {
   // 移动到画布之前回掉
   beforeToDraw() {
 
+  }
+  filterFieldMethod(fields) {
+    return fields.filter(field => {
+      return field['deType'] === 1
+    })
   }
 }
 const timeQuarterServiceImpl = new TimeQuarterServiceImpl({ name: 'timeQuarterWidget' })

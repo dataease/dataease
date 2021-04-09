@@ -32,6 +32,7 @@
         :style="getComponentStyle(item.style)"
         :element="item"
         :item="item"
+        @filter-value-change="filterValueChange"
       />
 
       <component
@@ -290,6 +291,10 @@ export default {
 
       const newHeight = (text.split('<br>').length - 1) * lineHeight * fontSize
       return height > newHeight ? height : newHeight
+    },
+
+    filterValueChange(value) {
+      console.log('emit:' + value)
     }
   }
 }

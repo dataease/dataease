@@ -1,7 +1,9 @@
 package io.dataease.controller.dataset;
 
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -17,6 +19,9 @@ public class DataSetTableFieldController {
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
 
+    @Autowired
+    private DataSetFieldService dataSetFieldService;
+
     @PostMapping("list/{tableId}")
     public List<DatasetTableField> list(@PathVariable String tableId) {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
@@ -27,5 +32,10 @@ public class DataSetTableFieldController {
     @PostMapping("batchEdit")
     public void batchEdit(@RequestBody List<DatasetTableField> list) {
         dataSetTableFieldsService.batchEdit(list);
+    }
+
+    @PostMapping("fieldValues/{fieldId}")
+    public List<Object> fieldValues(@PathVariable String fieldId) {
+        return dataSetFieldService.fieldValues(fieldId);
     }
 }

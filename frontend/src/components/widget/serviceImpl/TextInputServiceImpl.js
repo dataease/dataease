@@ -25,7 +25,8 @@ const defaultOptions = {
       placeholder: '请输入关键字'
     },
     value: ''
-  }
+  },
+  filterDialog: true
 }
 
 class TextInputServiceImpl extends WidgetService {
@@ -48,6 +49,11 @@ class TextInputServiceImpl extends WidgetService {
     return {
       'background-color': 'rgba(35,190,239,.1)'
     }
+  }
+  filterFieldMethod(fields) {
+    return fields.filter(field => {
+      return field['deType'] === 0
+    })
   }
 //   dynamicIconStype() {
 //     return {
