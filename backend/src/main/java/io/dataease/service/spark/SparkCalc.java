@@ -81,7 +81,7 @@ public class SparkCalc {
                         if (StringUtils.isEmpty(l)) {
                             l = "0";
                         }
-                        list.add(new BigDecimal(l));
+                        list.add(l.contains(".") ? Double.parseDouble(l) : Long.parseLong(l));
                     }
                 });
                 yAxis.forEach(y -> {
@@ -92,7 +92,7 @@ public class SparkCalc {
                         if (StringUtils.isEmpty(l)) {
                             l = "0";
                         }
-                        list.add(new BigDecimal(l));
+                        list.add(l.contains(".") ? Double.parseDouble(l) : Long.parseLong(l));
                     }
                 });
                 iterator.add(RowFactory.create(list.toArray()));
