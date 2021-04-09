@@ -174,6 +174,7 @@ export default {
       }
     },
     panelInfo(newVal, oldVal) {
+      debugger
       this.init(newVal.id)
     }
   },
@@ -195,6 +196,7 @@ export default {
   },
   methods: {
     init(panelId) {
+      debugger
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
@@ -203,8 +205,8 @@ export default {
         this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
       } else if (panelId) {
         get('panel/group/findOne/' + panelId).then(response => {
-          this.$store.commit('setComponentData', this.resetID(response.data.panelData))
-          this.$store.commit('setCanvasStyle', response.data.panelStyle)
+          this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+          this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
         })
       }
     },

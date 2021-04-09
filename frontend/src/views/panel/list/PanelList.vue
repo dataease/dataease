@@ -424,7 +424,6 @@ export default {
           this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
           this.$store.dispatch('panel/setPanelInfo', data)
           this.currGroup = data
-          eventBus.$emit('componentDataChange', '')
         })
       }
       if (node.expanded) {
@@ -517,7 +516,6 @@ export default {
       this.authVisible = false
     },
     edit(data) {
-      // 清空临时画布
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },

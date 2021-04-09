@@ -67,12 +67,9 @@ export default {
     // 监听div变动事件
     erd.listenTo(document.getElementById('canvasInfo'), element => {
       _this.$nextTick(() => {
+        debugger
         _this.restore()
       })
-    })
-    // 监听数据变动事件
-    eventBus.$on('componentDataChange', () => {
-      _this.restore()
     })
   },
   methods: {
