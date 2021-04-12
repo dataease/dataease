@@ -55,8 +55,8 @@
         <span class="title-text">
           {{ currGroup.name }}
         </span>
-        <el-button icon="el-icon-back" size="mini" style="float: right" @click="back">
-          {{ $t('dataset.back') }}
+        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
+          <!--          {{ $t('dataset.back') }}-->
         </el-button>
       </el-row>
       <el-divider />
