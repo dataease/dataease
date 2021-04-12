@@ -44,11 +44,12 @@
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <span>
                 <span v-if="data.type === 'scene'">
-                  <el-button
-                    icon="el-icon-folder"
-                    type="text"
-                    size="mini"
-                  />
+                  <!--                  <el-button-->
+                  <!--                    icon="el-icon-folder-opened"-->
+                  <!--                    type="text"-->
+                  <!--                    size="mini"-->
+                  <!--                  />-->
+                  <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px">{{ data.name }}</span>
               </span>

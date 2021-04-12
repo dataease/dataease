@@ -35,11 +35,12 @@
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <span>
                 <span v-if="data.type === 'scene'">
-                  <el-button
-                    icon="el-icon-folder"
-                    type="text"
-                    size="mini"
-                  />
+                  <!--                  <el-button-->
+                  <!--                    icon="el-icon-folder-opened"-->
+                  <!--                    type="text"-->
+                  <!--                    size="mini"-->
+                  <!--                  />-->
+                  <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px">{{ data.name }}</span>
               </span>
@@ -83,7 +84,10 @@
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span>
-              <svg-icon :icon-class="data.type" class="icon" />
+              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
             </span>
             <span>
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>

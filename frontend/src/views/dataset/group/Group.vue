@@ -44,11 +44,12 @@
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <span>
                 <span v-if="data.type === 'scene'">
-                  <el-button
-                    icon="el-icon-folder"
-                    type="text"
-                    size="mini"
-                  />
+                  <!--                  <el-button-->
+                  <!--                    icon="el-icon-folder-opened"-->
+                  <!--                    type="text"-->
+                  <!--                    size="mini"-->
+                  <!--                  />-->
+                  <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px">{{ data.name }}</span>
               </span>
@@ -585,31 +586,6 @@ export default {
 </script>
 
 <style scoped>
-  .ds-icon-db{
-    width: 14px;
-    height: 14px;
-    color: #3685f2;
-    margin: 0 2px 0 0;
-  }
-  .ds-icon-sql{
-    width: 14px;
-    height: 14px;
-    color: #faaa39;
-    margin: 0 2px 0 0;
-  }
-  .ds-icon-excel{
-    width: 14px;
-    height: 14px;
-    color: #13cd66;
-    margin: 0 2px 0 0;
-  }
-  .ds-icon-custom{
-    width: 14px;
-    height: 14px;
-    color: #23beef;
-    margin: 0 2px 0 0;
-  }
-
   .el-divider--horizontal {
     margin: 12px 0
   }
