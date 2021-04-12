@@ -171,3 +171,20 @@ div:focus {
       width: 100% !important;
     }
 }
+
+%field-icon{
+  font-size: 13px;
+  margin: 0 3px 0 0;
+}
+.field-icon-text{
+  @extend %field-icon;
+  color: #688fd8;
+}
+.field-icon-time{
+  @extend %field-icon;
+  color: #faaa39;
+}
+.field-icon-value{
+  @extend %field-icon;
+  color: #37b4aa;
+}

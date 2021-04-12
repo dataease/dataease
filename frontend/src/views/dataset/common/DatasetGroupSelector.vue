@@ -87,7 +87,7 @@
             </span>
             <span>
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time" /></span>
+              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
             </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
