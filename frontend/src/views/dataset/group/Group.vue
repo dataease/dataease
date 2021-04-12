@@ -132,19 +132,19 @@
           </el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="beforeClickAddData('db')">
-              <svg-icon icon-class="db" class="icon" />
+              <svg-icon icon-class="ds-db" class="ds-icon-db" />
               {{ $t('dataset.db_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('sql')">
-              <svg-icon icon-class="sql" class="icon" />
+              <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
               {{ $t('dataset.sql_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('excel')">
-              <svg-icon icon-class="excel" class="icon" />
+              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
               {{ $t('dataset.excel_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('custom')">
-              <svg-icon icon-class="custom" class="icon" />
+              <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
               {{ $t('dataset.custom_data') }}
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -180,7 +180,10 @@
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span>
-              <svg-icon :icon-class="data.type" class="icon" />
+              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
             </span>
             <span>
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
@@ -582,9 +585,29 @@ export default {
 </script>
 
 <style scoped>
-  .icon{
+  .ds-icon-db{
     width: 14px;
     height: 14px;
+    color: #3685f2;
+    margin: 0 2px 0 0;
+  }
+  .ds-icon-sql{
+    width: 14px;
+    height: 14px;
+    color: #faaa39;
+    margin: 0 2px 0 0;
+  }
+  .ds-icon-excel{
+    width: 14px;
+    height: 14px;
+    color: #13cd66;
+    margin: 0 2px 0 0;
+  }
+  .ds-icon-custom{
+    width: 14px;
+    height: 14px;
+    color: #23beef;
+    margin: 0 2px 0 0;
   }
 
   .el-divider--horizontal {
