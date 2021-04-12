@@ -27,7 +27,7 @@
         <el-tab-pane :label="$t('dataset.join_view')" name="joinView">
           关联视图 TODO
         </el-tab-pane>
-        <el-tab-pane :label="$t('dataset.update_info')" name="updateInfo">
+        <el-tab-pane v-if="table.mode === 1" :label="$t('dataset.update_info')" name="updateInfo">
           <update-info :table="table" />
         </el-tab-pane>
       </el-tabs>
@@ -36,9 +36,18 @@
         <el-table :data="tableFields" size="mini" max-height="600px">
           <el-table-column property="type" :label="$t('dataset.field_type')" width="100">
             <template slot-scope="scope">
-              <span v-if="scope.row.deType === 0">{{ $t('dataset.text') }}</span>
-              <span v-if="scope.row.deType === 1">{{ $t('dataset.time') }}</span>
-              <span v-if="scope.row.deType === 2 || scope.row.deType === 3">{{ $t('dataset.value') }}</span>
+              <span v-if="scope.row.deType === 0">
+                <svg-icon v-if="scope.row.deType === 0" icon-class="field_text" class="field-icon-text" />
+                {{ $t('dataset.text') }}
+              </span>
+              <span v-if="scope.row.deType === 1">
+                <svg-icon v-if="scope.row.deType === 1" icon-class="field_time" class="field-icon-time" />
+                {{ $t('dataset.time') }}
+              </span>
+              <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
+                <svg-icon v-if="scope.row.deType === 2 || scope.row.deType === 3" icon-class="field_value" class="field-icon-value" />
+                {{ $t('dataset.value') }}
+              </span>
             </template>
           </el-table-column>
           <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
@@ -105,6 +114,7 @@ export default {
   methods: {
     initTable(id) {
       console.log(id)
+      this.tabActive = 'dataPreview'
       this.tableViewRowForm.row = 1000
       if (id !== null) {
         this.fields = []
