@@ -1,8 +1,10 @@
 package io.dataease.service.spark;
 
+import io.dataease.base.domain.DatasetTableField;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Result;
@@ -42,20 +44,55 @@ public class SparkCalc {
     @Resource
     private Environment env; // 保存了配置文件的信息
 
-    public List<String[]> getData(String hTable, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String tmpTable) throws Exception {
+    public List<String[]> getData(String hTable, List<DatasetTableField> fields, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String tmpTable) throws Exception {
+        // Spark Context
+        SparkSession spark = CommonBeanFactory.getBean(SparkSession.class);
+        JavaSparkContext sparkContext = new JavaSparkContext(spark.sparkContext());
+
+        // Spark SQL Context
+//        SQLContext sqlContext = CommonBeanFactory.getBean(SQLContext.class);
+        SQLContext sqlContext = new SQLContext(sparkContext);
+        sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
+        sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
+
+        Dataset<Row> dataFrame = CacheUtil.getInstance().getCacheData(hTable);
+        if (ObjectUtils.isEmpty(dataFrame)) {
+            dataFrame = getHBaseDataAndCache(sparkContext, sqlContext, hTable, fields);
+        }
+
+        dataFrame.createOrReplaceTempView(tmpTable);
+        Dataset<Row> sql = sqlContext.sql(getSQL(xAxis, yAxis, tmpTable));
+        // transform
+        List<String[]> data = new ArrayList<>();
+        List<Row> list = sql.collectAsList();
+        for (Row row : list) {
+            String[] r = new String[row.length()];
+            for (int i = 0; i < row.length(); i++) {
+                r[i] = row.get(i) == null ? "null" : row.get(i).toString();
+            }
+            data.add(r);
+        }
+        return data;
+    }
+
+    public Dataset<Row> getHBaseDataAndCache(String hTable, List<DatasetTableField> fields) throws Exception {
+        // Spark Context
+        SparkSession spark = CommonBeanFactory.getBean(SparkSession.class);
+        JavaSparkContext sparkContext = new JavaSparkContext(spark.sparkContext());
+
+        // Spark SQL Context
+//        SQLContext sqlContext = CommonBeanFactory.getBean(SQLContext.class);
+        SQLContext sqlContext = new SQLContext(sparkContext);
+        sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
+        sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
+        return getHBaseDataAndCache(sparkContext, sqlContext, hTable, fields);
+    }
+
+    public Dataset<Row> getHBaseDataAndCache(JavaSparkContext sparkContext, SQLContext sqlContext, String hTable, List<DatasetTableField> fields) throws Exception {
         Scan scan = new Scan();
         scan.addFamily(column_family.getBytes());
         ClientProtos.Scan proto = ProtobufUtil.toScan(scan);
         String scanToString = new String(Base64.getEncoder().encode(proto.toByteArray()));
-
-        // Spark Context
-//        JavaSparkContext sparkContext = CommonBeanFactory.getBean(JavaSparkContext.class);
-        SparkSession spark = SparkSession.builder()
-                .appName(env.getProperty("spark.appName", "DataeaseJob"))
-                .master(env.getProperty("spark.master", "local[*]"))
-                .config("spark.scheduler.mode", "FAIR")
-                .getOrCreate();
-        JavaSparkContext sparkContext = new JavaSparkContext(spark.sparkContext());
 
         // HBase config
 //        Configuration conf = CommonBeanFactory.getBean(Configuration.class);
@@ -73,7 +110,7 @@ public class SparkCalc {
             while (tuple2Iterator.hasNext()) {
                 Result result = tuple2Iterator.next()._2;
                 List<Object> list = new ArrayList<>();
-                xAxis.forEach(x -> {
+                fields.forEach(x -> {
                     String l = Bytes.toString(result.getValue(column_family.getBytes(), x.getOriginName().getBytes()));
                     if (x.getDeType() == 0 || x.getDeType() == 1) {
                         list.add(l);
@@ -89,22 +126,6 @@ public class SparkCalc {
                         list.add(Double.valueOf(l));
                     }
                 });
-                yAxis.forEach(y -> {
-                    String l = Bytes.toString(result.getValue(column_family.getBytes(), y.getOriginName().getBytes()));
-                    if (y.getDeType() == 0 || y.getDeType() == 1) {
-                        list.add(l);
-                    } else if (y.getDeType() == 2) {
-                        if (StringUtils.isEmpty(l)) {
-                            l = "0";
-                        }
-                        list.add(Long.valueOf(l));
-                    } else if (y.getDeType() == 3) {
-                        if (StringUtils.isEmpty(l)) {
-                            l = "0.0";
-                        }
-                        list.add(Double.valueOf(l));
-                    }
-                });
                 iterator.add(RowFactory.create(list.toArray()));
             }
             return iterator.iterator();
@@ -112,7 +133,7 @@ public class SparkCalc {
 
         List<StructField> structFields = new ArrayList<>();
         // struct顺序要与rdd顺序一致
-        xAxis.forEach(x -> {
+        fields.forEach(x -> {
             if (x.getDeType() == 0 || x.getDeType() == 1) {
                 structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.StringType, true));
             } else if (x.getDeType() == 2) {
@@ -121,40 +142,15 @@ public class SparkCalc {
                 structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.DoubleType, true));
             }
         });
-        yAxis.forEach(y -> {
-            if (y.getDeType() == 0 || y.getDeType() == 1) {
-                structFields.add(DataTypes.createStructField(y.getOriginName(), DataTypes.StringType, true));
-            } else if (y.getDeType() == 2) {
-                structFields.add(DataTypes.createStructField(y.getOriginName(), DataTypes.LongType, true));
-            } else if (y.getDeType() == 3) {
-                structFields.add(DataTypes.createStructField(y.getOriginName(), DataTypes.DoubleType, true));
-            }
-        });
         StructType structType = DataTypes.createStructType(structFields);
 
-        // Spark SQL Context
-//        SQLContext sqlContext = CommonBeanFactory.getBean(SQLContext.class);
-        SQLContext sqlContext = new SQLContext(sparkContext);
-        sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
-        sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
-
-        Dataset<Row> dataFrame = sqlContext.createDataFrame(rdd, structType);
-        dataFrame.createOrReplaceTempView(tmpTable);
-        Dataset<Row> sql = sqlContext.sql(getSQL(xAxis, yAxis, tmpTable));
-        // transform
-        List<String[]> data = new ArrayList<>();
-        List<Row> list = sql.collectAsList();
-        for (Row row : list) {
-            String[] r = new String[row.length()];
-            for (int i = 0; i < row.length(); i++) {
-                r[i] = row.get(i) == null ? "null" : row.get(i).toString();
-            }
-            data.add(r);
-        }
-        return data;
+        Dataset<Row> dataFrame = sqlContext.createDataFrame(rdd, structType).persist();
+        CacheUtil.getInstance().addCacheData(hTable, dataFrame);
+        dataFrame.count();
+        return dataFrame;
     }
 
-    private String getSQL(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String table) {
+    public String getSQL(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String table) {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + y.getOriginName()).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);

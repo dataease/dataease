@@ -1,6 +1,7 @@
 package io.dataease.config;
 
 import com.fit2cloud.autoconfigure.QuartzAutoConfiguration;
+import io.dataease.commons.utils.CommonThreadPool;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
@@ -33,36 +34,34 @@ public class CommonConfig {
         return configuration;
     }
 
-
     @Bean
     @ConditionalOnMissingBean
-    public JavaSparkContext javaSparkContext() {
+    public SparkSession javaSparkSession() {
         SparkSession spark = SparkSession.builder()
                 .appName(env.getProperty("spark.appName", "DataeaseJob"))
                 .master(env.getProperty("spark.master", "local[*]"))
                 .config("spark.scheduler.mode", "FAIR")
                 .getOrCreate();
-        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
-        return sc;
+        return spark;
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SQLContext sqlContext(JavaSparkContext javaSparkContext) {
-        SQLContext sqlContext = new SQLContext(javaSparkContext);
-        sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
-        sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
-        return sqlContext;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public KettleFileRepository kettleFileRepository()throws Exception{
+    public KettleFileRepository kettleFileRepository() throws Exception {
         KettleEnvironment.init();
         KettleFileRepository repository = new KettleFileRepository();
         KettleFileRepositoryMeta kettleDatabaseMeta = new KettleFileRepositoryMeta("KettleFileRepository", "repo",
                 "dataease kettle repo", root_path);
         repository.init(kettleDatabaseMeta);
         return repository;
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public CommonThreadPool resourcePoolThreadPool() {
+        CommonThreadPool commonThreadPool = new CommonThreadPool();
+        commonThreadPool.setCorePoolSize(20);
+        commonThreadPool.setMaxQueueSize(100);
+        commonThreadPool.setKeepAliveSeconds(3600);
+        return commonThreadPool;
     }
 }

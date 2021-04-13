@@ -60,4 +60,10 @@ public class DataSetTableFieldsService {
         datasetTableFieldExample.createCriteria().andIdIn(ids);
         return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
     }
+
+    public List<DatasetTableField> getFieldsByTableId(String id) {
+        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+        datasetTableFieldExample.createCriteria().andTableIdEqualTo(id);
+        return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+    }
 }

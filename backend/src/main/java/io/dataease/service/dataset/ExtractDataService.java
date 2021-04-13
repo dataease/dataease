@@ -13,6 +13,7 @@ import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.service.spark.SparkCalc;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -97,7 +98,7 @@ public class ExtractDataService {
     private DataSetTableTaskService dataSetTableTaskService;
     @Resource
     private DatasourceMapper datasourceMapper;
-    private static ExecutorService pool = Executors.newScheduledThreadPool(50);	//设置连接池
+    private static ExecutorService pool = Executors.newScheduledThreadPool(50);    //设置连接池
     private Connection connection;
 
     private static String lastUpdateTime = "${__last_update_time__}";
@@ -120,6 +121,9 @@ public class ExtractDataService {
     @Value("${hbase.zookeeper.property.clientPort:2181}")
     private String zkPort;
 
+    @Resource
+    private SparkCalc sparkCalc;
+
 
     public void extractData(String datasetTableId, String taskId, String type) {
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
@@ -131,60 +135,62 @@ public class ExtractDataService {
             List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
             String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             TableName hbaseTable = TableName.valueOf(datasetTableId);
-            switch (updateType){
+            switch (updateType) {
                 // 全量更新
                 case all_scope:
                     writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
 
                     //check pentaho_mappings table
                     TableName pentaho_mappings = TableName.valueOf(this.pentaho_mappings);
-                    if(!admin.tableExists(pentaho_mappings)){
-                        creatHaseTable(pentaho_mappings, admin, Arrays.asList("columns","key"));
+                    if (!admin.tableExists(pentaho_mappings)) {
+                        creatHaseTable(pentaho_mappings, admin, Arrays.asList("columns", "key"));
                     }
 
                     //check pentaho files
-                    if(!isExitFile("job_" + datasetTableId + ".kjb") || !isExitFile("trans_" + datasetTableId + ".ktr")){
+                    if (!isExitFile("job_" + datasetTableId + ".kjb") || !isExitFile("trans_" + datasetTableId + ".ktr")) {
                         generateTransFile("all_scope", datasetTable, datasource, table, datasetTableFields, null);
                         generateJobFile("all_scope", datasetTable);
                     }
 
-                    if(!admin.tableExists(hbaseTable)){
+                    if (!admin.tableExists(hbaseTable)) {
                         creatHaseTable(hbaseTable, admin, Arrays.asList(dataease_column_family));
                     }
                     admin.disableTable(hbaseTable);
                     admin.truncateTable(hbaseTable, true);
 
                     extractData(datasetTable, "all_scope");
+                    // after sync complete,read data to cache from HBase
+                    sparkCalc.getHBaseDataAndCache(datasetTableId, dataSetTableFieldsService.getFieldsByTableId(datasetTableId));
                     datasetTableTaskLog.setStatus(JobStatus.Completed.name());
                     datasetTableTaskLog.setEndTime(System.currentTimeMillis());
                     dataSetTableTaskLogService.save(datasetTableTaskLog);
                     break;
                 case add_scope:
                     // 增量更新
-                    if(!admin.tableExists(hbaseTable)){
+                    if (!admin.tableExists(hbaseTable)) {
                         LogUtil.error("TableName error, dataaset: " + datasetTableId);
                         return;
                     }
                     DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
-                    if(datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())){
+                    if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
                         return;
                     }
                     DatasetTableTaskLog request = new DatasetTableTaskLog();
                     request.setTableId(datasetTableId);
                     request.setStatus(JobStatus.Completed.name());
                     List<DataSetTaskLogDTO> dataSetTaskLogDTOS = dataSetTableTaskLogService.list(request);
-                    if(CollectionUtils.isEmpty(dataSetTaskLogDTOS)){
+                    if (CollectionUtils.isEmpty(dataSetTaskLogDTOS)) {
                         return;
                     }
-                    writeDatasetTableTaskLog(datasetTableTaskLog,datasetTableId, taskId);
+                    writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
 
                     // 增量添加
-                    if(StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))){
+                    if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {
                         System.out.println("datasetTableIncrementalConfig.getIncrementalAdd(): " + datasetTableIncrementalConfig.getIncrementalAdd());
                         String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, dataSetTaskLogDTOS.get(0).getStartTime().toString()
                                 .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString()));
 
-                        if(!isExitFile("job_add_" + datasetTableId + ".kjb") || !isExitFile("trans_add_" + datasetTableId + ".ktr")){
+                        if (!isExitFile("job_add_" + datasetTableId + ".kjb") || !isExitFile("trans_add_" + datasetTableId + ".ktr")) {
                             generateTransFile("incremental_add", datasetTable, datasource, table, datasetTableFields, sql);
                             generateJobFile("incremental_add", datasetTable);
                         }
@@ -193,39 +199,39 @@ public class ExtractDataService {
                     }
 
                     // 增量删除
-                    if( StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete())){
+                    if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete())) {
                         String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, dataSetTaskLogDTOS.get(0).getStartTime().toString()
                                 .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString()));
-                        if(!isExitFile("job_delete_" + datasetTableId + ".kjb") || !isExitFile("trans_delete_" + datasetTableId + ".ktr")){
+                        if (!isExitFile("job_delete_" + datasetTableId + ".kjb") || !isExitFile("trans_delete_" + datasetTableId + ".ktr")) {
                             generateTransFile("incremental_delete", datasetTable, datasource, table, datasetTableFields, sql);
                             generateJobFile("incremental_delete", datasetTable);
                         }
                         extractData(datasetTable, "incremental_delete");
                     }
-
+                    // after sync complete,read data to cache from HBase
+                    sparkCalc.getHBaseDataAndCache(datasetTableId, dataSetTableFieldsService.getFieldsByTableId(datasetTableId));
                     datasetTableTaskLog.setStatus(JobStatus.Completed.name());
                     datasetTableTaskLog.setEndTime(System.currentTimeMillis());
                     dataSetTableTaskLogService.save(datasetTableTaskLog);
                     break;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             LogUtil.error("ExtractData error, dataaset: " + datasetTableId);
             LogUtil.error(e.getMessage(), e);
             datasetTableTaskLog.setStatus(JobStatus.Error.name());
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
-        }
-        finally {
+        } finally {
             DatasetTableTask datasetTableTask = dataSetTableTaskService.get(taskId);
-            if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
+            if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                 datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                 dataSetTableTaskService.update(datasetTableTask);
             }
         }
     }
 
-    private void writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId){
+    private void writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
@@ -233,7 +239,7 @@ public class ExtractDataService {
         dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
-    private void creatHaseTable(TableName tableName, Admin admin, List<String> columnFamily)throws Exception{
+    private void creatHaseTable(TableName tableName, Admin admin, List<String> columnFamily) throws Exception {
         TableDescriptorBuilder descBuilder = TableDescriptorBuilder.newBuilder(tableName);
         Collection<ColumnFamilyDescriptor> families = new ArrayList<>();
         for (String s : columnFamily) {
@@ -245,11 +251,11 @@ public class ExtractDataService {
         admin.createTable(desc);
     }
 
-    private void extractData(DatasetTable datasetTable, String extractType)throws Exception{
+    private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
         JobMeta jobMeta = null;
-        switch (extractType){
+        switch (extractType) {
             case "all_scope":
                 jobMeta = repository.loadJob("job_" + datasetTable.getId(), repositoryDirectoryInterface, null, null);
                 break;
@@ -272,27 +278,27 @@ public class ExtractDataService {
         do {
             jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), lastCarteObjectId, 0);
         } while (jobStatus != null && jobStatus.isRunning());
-       if(jobStatus.getStatusDescription().equals("Finished")){
+        if (jobStatus.getStatusDescription().equals("Finished")) {
             return;
-       }else {
+        } else {
             throw new Exception(jobStatus.getLoggingString());
-       }
+        }
     }
 
-    private synchronized Connection getConnection() throws Exception{
-        if(connection == null || connection.isClosed()){
+    private synchronized Connection getConnection() throws Exception {
+        if (connection == null || connection.isClosed()) {
             Configuration cfg = CommonBeanFactory.getBean(Configuration.class);
             connection = ConnectionFactory.createConnection(cfg, pool);
         }
         return connection;
     }
 
-    private boolean isExitFile(String fileName){
-        File file=new File(root_path + fileName);
+    private boolean isExitFile(String fileName) {
+        File file = new File(root_path + fileName);
         return file.exists();
     }
 
-    private SlaveServer getSlaveServer(){
+    private SlaveServer getSlaveServer() {
         SlaveServer remoteSlaveServer = new SlaveServer();
         remoteSlaveServer.setHostname(carte);// 设置远程IP
         remoteSlaveServer.setPort(port);// 端口
@@ -301,14 +307,14 @@ public class ExtractDataService {
         return remoteSlaveServer;
     }
 
-    private void generateJobFile(String extractType, DatasetTable datasetTable) throws Exception{
+    private void generateJobFile(String extractType, DatasetTable datasetTable) throws Exception {
         String jobName = null;
         switch (extractType) {
             case "all_scope":
                 jobName = "job_" + datasetTable.getId();
                 break;
             case "incremental_add":
-                jobName =  "job_add_" + datasetTable.getId();
+                jobName = "job_add_" + datasetTable.getId();
                 break;
             case "incremental_delete":
                 jobName = "job_delete_" + datasetTable.getId();
@@ -323,7 +329,7 @@ public class ExtractDataService {
                 transName = "trans_" + datasetTable.getId();
                 break;
             case "incremental_add":
-                transName =  "trans_add_" + datasetTable.getId();
+                transName = "trans_add_" + datasetTable.getId();
                 break;
             case "incremental_delete":
                 transName = "trans_delete_" + datasetTable.getId();
@@ -364,11 +370,11 @@ public class ExtractDataService {
         jobMeta.addJobHop(greenHop);
 
         String jobXml = jobMeta.getXML();
-        File file = new File( root_path + jobName + ".kjb");
+        File file = new File(root_path + jobName + ".kjb");
         FileUtils.writeStringToFile(file, jobXml, "UTF-8");
     }
 
-    private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, String table, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception{
+    private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, String table, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception {
         TransMeta transMeta = new TransMeta();
         String transName = null;
         switch (extractType) {
@@ -377,7 +383,7 @@ public class ExtractDataService {
                 selectSQL = dataSetTableService.createQuerySQL(datasource.getType(), table, datasetTableFields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new));
                 break;
             case "incremental_add":
-                transName =  "trans_add_" + datasetTable.getId();
+                transName = "trans_add_" + datasetTable.getId();
                 break;
             case "incremental_delete":
                 transName = "trans_delete_" + datasetTable.getId();
@@ -450,11 +456,11 @@ public class ExtractDataService {
         RuntimeTestActionHandler defaultHandler = null;
 
         RuntimeTestActionService runtimeTestActionService = new RuntimeTestActionServiceImpl(runtimeTestActionHandlers, defaultHandler);
-        RuntimeTester runtimeTester = new RuntimeTesterImpl(new ArrayList<>( Arrays.asList( mock( RuntimeTest.class ) ) ), mock( ExecutorService.class ), "modules");
+        RuntimeTester runtimeTester = new RuntimeTesterImpl(new ArrayList<>(Arrays.asList(mock(RuntimeTest.class))), mock(ExecutorService.class), "modules");
 
         Put put = new Put((datasetTable.getId() + "," + "target_mapping").getBytes());
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            put.addColumn("columns".getBytes(), (dataease_column_family + "," + datasetTableField.getOriginName() +  "," + datasetTableField.getOriginName()).getBytes(), transToColumnType(datasetTableField.getDeType()).getBytes());
+            put.addColumn("columns".getBytes(), (dataease_column_family + "," + datasetTableField.getOriginName() + "," + datasetTableField.getOriginName()).getBytes(), transToColumnType(datasetTableField.getDeType()).getBytes());
         }
         put.addColumn("key".getBytes(), "uuid".getBytes(), "String".getBytes());
         TableName pentaho_mappings = TableName.valueOf(this.pentaho_mappings);
@@ -466,7 +472,7 @@ public class ExtractDataService {
         hBaseOutputMeta.setTargetMappingName("target_mapping");
         hBaseOutputMeta.setNamedCluster(clusterTemplate);
         hBaseOutputMeta.setCoreConfigURL(hbase_conf_file);
-        if(extractType.equalsIgnoreCase("incremental_delete")){
+        if (extractType.equalsIgnoreCase("incremental_delete")) {
             hBaseOutputMeta.setDeleteRowKey(true);
         }
         StepMeta tostep = new StepMeta("HBaseOutput", "HBaseOutput", hBaseOutputMeta);
