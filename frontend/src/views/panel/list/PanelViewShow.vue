@@ -4,7 +4,12 @@
       <el-row class="panel-design-head">
         <!--TODO 仪表盘头部区域-->
         <span>{{ panelInfo.name || '测试仪表板' }}</span>
-        <span style="float: right;">
+        <span style="float: right;margin-right: 10px">
+          <el-tooltip content="导出为模板">
+            <el-button class="el-icon-download" size="mini" circle @click="saveToTemplate" />
+          </el-tooltip>
+        </span>
+        <span style="float: right;margin-right: 10px">
           <el-tooltip content="预览">
             <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
           </el-tooltip>
@@ -12,7 +17,9 @@
       </el-row>
       <!--TODO 仪表盘预览区域-->
       <el-row class="panel-design-preview">
-        <Preview v-if="showMain" />
+        <div ref="imageWrapper" style="width: 100%;height: 100%">
+          <Preview v-if="showMain" />
+        </div>
       </el-row>
     </el-col>
     <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
@@ -25,6 +32,8 @@
 <script>
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { mapState } from 'vuex'
+import html2canvas from 'html2canvas'
+import FileSaver from 'file-saver'
 
 export default {
   name: 'PanelViewShow',
@@ -57,6 +66,22 @@ export default {
     clickPreview() {
       const url = '#/preview/' + this.$store.state.panel.panelInfo.id
       window.open(url, '_blank')
+    },
+    saveToTemplate() {
+      html2canvas(this.$refs.imageWrapper).then(canvas => {
+        debugger
+        const snapShot = canvas.toDataURL('image/jpeg', 0.5) // 0.5是图片质量
+        if (snapShot !== '') {
+          const templateInfo = {
+            snapShot: snapShot,
+            panelStyle: JSON.stringify(this.canvasStyleData),
+            panelData: JSON.stringify(this.componentData),
+            dynamicData: ''
+          }
+          const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
+          FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
+        }
+      })
     }
 
   }
