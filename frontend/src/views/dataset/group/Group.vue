@@ -44,11 +44,12 @@
             <span slot-scope="{ node, data }" class="custom-tree-node">
               <span>
                 <span v-if="data.type === 'scene'">
-                  <el-button
-                    icon="el-icon-folder"
-                    type="text"
-                    size="mini"
-                  />
+                  <!--                  <el-button-->
+                  <!--                    icon="el-icon-folder-opened"-->
+                  <!--                    type="text"-->
+                  <!--                    size="mini"-->
+                  <!--                  />-->
+                  <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px">{{ data.name }}</span>
               </span>
@@ -120,8 +121,8 @@
         <span class="title-text">
           {{ currGroup.name }}
         </span>
-        <el-button icon="el-icon-back" size="mini" style="float: right" @click="back">
-          {{ $t('dataset.back') }}
+        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
+          <!--          {{ $t('dataset.back') }}-->
         </el-button>
       </el-row>
       <el-divider />
@@ -132,19 +133,19 @@
           </el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="beforeClickAddData('db')">
-              <svg-icon icon-class="db" class="icon" />
+              <svg-icon icon-class="ds-db" class="ds-icon-db" />
               {{ $t('dataset.db_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('sql')">
-              <svg-icon icon-class="sql" class="icon" />
+              <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
               {{ $t('dataset.sql_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('excel')">
-              <svg-icon icon-class="excel" class="icon" />
+              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
               {{ $t('dataset.excel_data') }}
             </el-dropdown-item>
             <el-dropdown-item :command="beforeClickAddData('custom')">
-              <svg-icon icon-class="custom" class="icon" />
+              <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
               {{ $t('dataset.custom_data') }}
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -180,11 +181,14 @@
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span>
             <span>
-              <svg-icon :icon-class="data.type" class="icon" />
+              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
             </span>
             <span>
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-time" /></span>
+              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
             </span>
             <span style="margin-left: 6px">{{ data.name }}</span>
           </span>
@@ -582,11 +586,6 @@ export default {
 </script>
 
 <style scoped>
-  .icon{
-    width: 14px;
-    height: 14px;
-  }
-
   .el-divider--horizontal {
     margin: 12px 0
   }

@@ -28,7 +28,12 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in dimension" :key="item.id" class="item">{{ item.name }}</span>
+              <span v-for="item in dimension" :key="item.id" class="item">
+                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                {{ item.name }}
+              </span>
             </transition-group>
           </draggable>
         </div>
@@ -44,7 +49,12 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in quota" :key="item.id" class="item">{{ item.name }}</span>
+              <span v-for="item in quota" :key="item.id" class="item">
+                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                {{ item.name }}
+              </span>
             </transition-group>
           </draggable>
         </div>

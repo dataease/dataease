@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
+import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -16,6 +17,7 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.chart.Series;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.spark.SparkCalc;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +43,8 @@ public class ChartViewService {
     private DatasourceService datasourceService;
     @Resource
     private SparkCalc sparkCalc;
+    @Resource
+    private DataSetTableFieldsService dataSetTableFieldsService;
 
     public ChartViewWithBLOBs save(ChartViewWithBLOBs chartView) {
         checkName(chartView);
@@ -121,9 +125,9 @@ public class ChartViewService {
             }
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
-//            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
-//            String tableName = dataTableInfoDTO.getTable() + "-" + table.getDataSourceId();// todo hBase table name maybe change
-            data = sparkCalc.getData(table.getId(), xAxis, yAxis, "tmp_" + view.getId().split("-")[0]);
+            // 获取数据集de字段
+            List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
+            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0]);
         }
 
         // 图表组件可再扩展

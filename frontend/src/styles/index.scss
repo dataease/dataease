@@ -171,3 +171,49 @@ div:focus {
       width: 100% !important;
     }
 }
+
+%field-icon{
+  font-size: 13px;
+  margin: 0 3px 0 0;
+}
+.field-icon-text{
+  @extend %field-icon;
+  color: #688fd8;
+}
+.field-icon-time{
+  @extend %field-icon;
+  color: #faaa39;
+}
+.field-icon-value{
+  @extend %field-icon;
+  color: #37b4aa;
+}
+.ds-icon-scene{
+  width: 14px;
+  height: 14px;
+  color: #faaa39;
+}
+.ds-icon-db{
+  width: 14px;
+  height: 14px;
+  color: #3685f2;
+  margin: 0 2px 0 0;
+}
+.ds-icon-sql{
+  width: 14px;
+  height: 14px;
+  color: #faaa39;
+  margin: 0 2px 0 0;
+}
+.ds-icon-excel{
+  width: 14px;
+  height: 14px;
+  color: #13cd66;
+  margin: 0 2px 0 0;
+}
+.ds-icon-custom{
+  width: 14px;
+  height: 14px;
+  color: #23beef;
+  margin: 0 2px 0 0;
+}

@@ -113,7 +113,7 @@ public class DataSetTableService {
         List<DatasetTableField> quota = new ArrayList<>();
 
         fields.forEach(field -> {
-            if (field.getDeType() == 2) {
+            if (field.getDeType() == 2 || field.getDeType() == 3) {
                 quota.add(field);
             } else {
                 dimension.add(field);
@@ -360,10 +360,11 @@ public class DataSetTableService {
             case "MEDIUMINT":
             case "INTEGER":
             case "BIGINT":
+                return 2;// 整型
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
-                return 2;// 数值
+                return 3;// 浮点
             default:
                 return 0;
         }
