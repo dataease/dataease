@@ -697,7 +697,9 @@ export default {
     rose_type: '玫瑰图模式',
     radius_mode: '半径',
     area_mode: '面积',
-    rose_radius: '圆角'
+    rose_radius: '圆角',
+    view_name: '视图名称',
+    name_can_not_empty: '名称不能为空'
   },
   dataset: {
     datalist: '数据集',

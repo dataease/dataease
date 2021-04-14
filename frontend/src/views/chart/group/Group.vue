@@ -199,10 +199,17 @@
         width="70%"
         class="dialog-css"
       >
+        <el-row style="width: 400px;">
+          <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
+            <el-form-item :label="$t('chart.view_name')">
+              <el-input v-model="table.name" size="mini" />
+            </el-form-item>
+          </el-form>
+        </el-row>
         <table-selector @getTable="getTable" />
         <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="selectTableFlag = false">{{ $t('chart.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="createChart">{{ $t('chart.confirm') }}</el-button>
+          <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
+          <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
         </div>
       </el-dialog>
 
@@ -518,10 +525,24 @@ export default {
       this.selectTableFlag = true
     },
 
+    closeCreateChart() {
+      this.selectTableFlag = false
+      this.table = {}
+    },
+
     createChart() {
       console.log(this.table)
+      if (!this.table.name) {
+        this.$message({
+          message: this.$t('chart.name_can_not_empty'),
+          type: 'error',
+          showClose: true
+        })
+        return
+      }
       const view = {}
       view.name = this.table.name
+      view.title = this.table.name
       view.sceneId = this.currGroup.id
       view.tableId = this.table.id
       view.type = 'bar'
@@ -540,7 +561,7 @@ export default {
       })
       view.customFilter = JSON.stringify([])
       post('/chart/view/save', view).then(response => {
-        this.selectTableFlag = false
+        this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
         // this.$router.push('/chart/chart-edit')
@@ -551,7 +572,7 @@ export default {
     },
 
     getTable(table) {
-      this.table = table
+      this.table = JSON.parse(JSON.stringify(table))
     },
 
     refresh() {
@@ -629,5 +650,9 @@ export default {
 
   .dialog-css >>> .el-dialog__body {
     padding: 10px 20px 20px;
+  }
+
+  .form-item>>>.el-form-item__label{
+    font-size: 12px;
   }
 </style>

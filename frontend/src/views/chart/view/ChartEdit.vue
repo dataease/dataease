@@ -132,23 +132,23 @@
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
-          <span>{{ $t('chart.result_filter') }}</span>
-          <div style="margin: 8px" class="filter-inner-class">
-            <draggable
-              v-model="view.customFilter"
-              group="drag"
-              animation="300"
-              :move="onMove"
-              style="height:100%;margin:0;overflow-x: auto;background-color: white;"
-              @end="end2"
-            >
-              <transition-group class="draggable-group">
-                <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :index="index" :item="item" />
-              </transition-group>
-            </draggable>
-          </div>
-        </div>
+        <!--        <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">-->
+        <!--          <span>{{ $t('chart.result_filter') }}</span>-->
+        <!--          <div style="margin: 8px" class="filter-inner-class">-->
+        <!--            <draggable-->
+        <!--              v-model="view.customFilter"-->
+        <!--              group="drag"-->
+        <!--              animation="300"-->
+        <!--              :move="onMove"-->
+        <!--              style="height:100%;margin:0;overflow-x: auto;background-color: white;"-->
+        <!--              @end="end2"-->
+        <!--            >-->
+        <!--              <transition-group class="draggable-group">-->
+        <!--                <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :index="index" :item="item" />-->
+        <!--              </transition-group>-->
+        <!--            </draggable>-->
+        <!--          </div>-->
+        <!--        </div>-->
       </el-col>
 
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">

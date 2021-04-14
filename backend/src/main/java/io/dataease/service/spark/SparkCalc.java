@@ -22,6 +22,7 @@ import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.apache.spark.storage.StorageLevel;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
@@ -144,7 +145,7 @@ public class SparkCalc {
         });
         StructType structType = DataTypes.createStructType(structFields);
 
-        Dataset<Row> dataFrame = sqlContext.createDataFrame(rdd, structType).persist();
+        Dataset<Row> dataFrame = sqlContext.createDataFrame(rdd, structType).persist(StorageLevel.MEMORY_AND_DISK_SER());
         CacheUtil.getInstance().addCacheData(hTable, dataFrame);
         dataFrame.count();
         return dataFrame;
