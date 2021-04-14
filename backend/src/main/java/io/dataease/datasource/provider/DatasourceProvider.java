@@ -19,7 +19,7 @@ public abstract class DatasourceProvider {
 
     abstract public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception;
 
-    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception{
+    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
         return new ArrayList<>();
     };
 
@@ -27,7 +27,7 @@ public abstract class DatasourceProvider {
         getData(datasourceRequest);
     }
 
-    abstract public Long count(DatasourceRequest datasourceRequest)throws Exception;
+    abstract public Long count(DatasourceRequest datasourceRequest) throws Exception;
 
     abstract public List<String[]> getPageData(DatasourceRequest datasourceRequest) throws Exception;
 
@@ -35,4 +35,5 @@ public abstract class DatasourceProvider {
 
     abstract public List<TableFiled> fetchResultField(ResultSet rs) throws Exception;
 
+    abstract public void initConnectionPool(DatasourceRequest datasourceRequest) throws Exception;
 }

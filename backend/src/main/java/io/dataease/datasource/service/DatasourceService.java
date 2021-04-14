@@ -5,6 +5,7 @@ import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
@@ -24,7 +25,8 @@ public class DatasourceService {
 
     @Resource
     private DatasourceMapper datasourceMapper;
-
+    @Resource
+    private CommonThreadPool commonThreadPool;
     @Resource
     private ExtDataSourceMapper extDataSourceMapper;
 
@@ -39,6 +41,7 @@ public class DatasourceService {
         datasource.setUpdateTime(currentTimeMillis);
         datasource.setCreateTime(currentTimeMillis);
         datasourceMapper.insertSelective(datasource);
+        initConnectionPool(datasource);
         return datasource;
     }
 
@@ -68,6 +71,7 @@ public class DatasourceService {
         datasource.setCreateTime(null);
         datasource.setUpdateTime(System.currentTimeMillis());
         datasourceMapper.updateByPrimaryKeySelective(datasource);
+        initConnectionPool(datasource);
     }
 
     public void validate(Datasource datasource) throws Exception {
@@ -89,4 +93,28 @@ public class DatasourceService {
         return datasourceMapper.selectByPrimaryKey(id);
     }
 
+    private void initConnectionPool(Datasource datasource){
+        commonThreadPool.addTask(() ->{
+            try {
+                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(datasource);
+                datasourceProvider.initConnectionPool(datasourceRequest);
+            }catch (Exception e){}
+        });
+    }
+
+    public void initAllDataSourceConnectionPool(){
+        List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
+        datasources.forEach(datasource -> {
+            try {
+                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(datasource);
+                datasourceProvider.initConnectionPool(datasourceRequest);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        });
+    }
 }
