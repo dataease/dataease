@@ -132,7 +132,7 @@
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
+        <div v-if="false" style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
           <span>{{ $t('chart.result_filter') }}</span>
           <div style="margin: 8px" class="filter-inner-class">
             <draggable
