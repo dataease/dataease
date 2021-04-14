@@ -44,4 +44,9 @@ public class ChartViewController {
     public ChartViewDTO getData(@PathVariable String id) throws Exception {
         return chartViewService.getData(id);
     }
+
+    @PostMapping("chartDetail/{id}")
+    public Map<String, Object> chartDetail(@PathVariable String id) {
+        return chartViewService.getChartDetail(id);
+    }
 }

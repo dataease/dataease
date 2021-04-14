@@ -82,4 +82,8 @@ public class DataSetTableController {
         dataSetTableService.saveIncrementalConfig(datasetTableIncrementalConfig);
     }
 
+    @PostMapping("datasetDetail/{id}")
+    public Map<String, Object> datasetDetail(@PathVariable String id) {
+        return dataSetTableService.getDatasetDetail(id);
+    }
 }
