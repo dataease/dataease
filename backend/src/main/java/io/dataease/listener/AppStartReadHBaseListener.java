@@ -45,14 +45,14 @@ public class AppStartReadHBaseListener implements ApplicationListener<Applicatio
         datasetTableExample.createCriteria().andModeEqualTo(1);
         List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
         for (DatasetTable table : datasetTables) {
-            commonThreadPool.addTask(() -> {
+//            commonThreadPool.addTask(() -> {
                 try {
                     List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
                     sparkCalc.getHBaseDataAndCache(table.getId(), fields);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
+//            });
         }
     }
 }
