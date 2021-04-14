@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
-import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartViewRequest;

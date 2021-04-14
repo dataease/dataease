@@ -2,8 +2,6 @@ package io.dataease.config;
 
 import com.fit2cloud.autoconfigure.QuartzAutoConfiguration;
 import io.dataease.commons.utils.CommonThreadPool;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.repository.filerep.KettleFileRepository;

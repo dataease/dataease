@@ -6,7 +6,6 @@ import io.dataease.dto.chart.ChartViewFieldDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -51,7 +49,6 @@ public class SparkCalc {
         JavaSparkContext sparkContext = new JavaSparkContext(spark.sparkContext());
 
         // Spark SQL Context
-//        SQLContext sqlContext = CommonBeanFactory.getBean(SQLContext.class);
         SQLContext sqlContext = new SQLContext(sparkContext);
         sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
         sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
@@ -82,7 +79,6 @@ public class SparkCalc {
         JavaSparkContext sparkContext = new JavaSparkContext(spark.sparkContext());
 
         // Spark SQL Context
-//        SQLContext sqlContext = CommonBeanFactory.getBean(SQLContext.class);
         SQLContext sqlContext = new SQLContext(sparkContext);
         sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
         sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
@@ -99,7 +95,6 @@ public class SparkCalc {
         String scanToString = new String(Base64.getEncoder().encode(proto.toByteArray()));
 
         // HBase config
-//        Configuration conf = CommonBeanFactory.getBean(Configuration.class);
         org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
         conf.set("hbase.zookeeper.quorum", env.getProperty("hbase.zookeeper.quorum"));
         conf.set("hbase.zookeeper.property.clientPort", env.getProperty("hbase.zookeeper.property.clientPort"));
