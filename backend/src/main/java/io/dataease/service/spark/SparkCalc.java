@@ -91,7 +91,10 @@ public class SparkCalc {
 
     public Dataset<Row> getHBaseDataAndCache(JavaSparkContext sparkContext, SQLContext sqlContext, String hTable, List<DatasetTableField> fields) throws Exception {
         Scan scan = new Scan();
-        scan.addFamily(column_family.getBytes());
+        scan.addFamily(Bytes.toBytes(column_family));
+        for (DatasetTableField field : fields) {
+            scan.addColumn(Bytes.toBytes(column_family), Bytes.toBytes(field.getOriginName()));
+        }
         ClientProtos.Scan proto = ProtobufUtil.toScan(scan);
         String scanToString = new String(Base64.getEncoder().encode(proto.toByteArray()));
 
