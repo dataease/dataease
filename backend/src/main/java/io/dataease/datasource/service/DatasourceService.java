@@ -107,14 +107,16 @@ public class DatasourceService {
     public void initAllDataSourceConnectionPool(){
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
-            try {
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-                DatasourceRequest datasourceRequest = new DatasourceRequest();
-                datasourceRequest.setDatasource(datasource);
-                datasourceProvider.initConnectionPool(datasourceRequest);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            commonThreadPool.addTask(() ->{
+                try {
+                    DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+                    DatasourceRequest datasourceRequest = new DatasourceRequest();
+                    datasourceRequest.setDatasource(datasource);
+                    datasourceProvider.initConnectionPool(datasourceRequest);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            });
         });
     }
 }
