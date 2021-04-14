@@ -118,10 +118,10 @@ export default {
   }
 
   .panel-design-head {
-    height: 40px;
-    background-color: white;
+    height: 35px;
+    /*background-color: white;*/
     padding: 0 6px;
-    line-height: 40px;
+    line-height: 35px;
   }
 
   .panel-design-preview {
