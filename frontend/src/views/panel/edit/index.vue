@@ -69,19 +69,18 @@
     </de-container>
 
     <el-dialog
-      v-if="filterVisible"
+      v-if="filterVisible && panelInfo.id"
       title="过滤组件"
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
-      <filter-dialog v-if="filterVisible" :component-info="currentComponent" :widget-id="currentWidgetId" @re-fresh-component="reFreshComponent">
+      <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" @re-fresh-component="reFreshComponent">
         <de-drawing-widget
-          v-if="filterVisible && currentComponent"
-          :id="'component' + currentComponent.id"
+          v-if="filterVisible"
           style="width: 100% !important;"
           class="component"
-          :element="currentComponent"
-          :item="currentComponent"
+          :service-name="currentWidget.name"
+          :panel-id="panelInfo.id"
         />
       </filter-dialog>
       <!-- <div slot="footer" class="dialog-footer">
@@ -144,9 +143,7 @@ export default {
       activeName: 'attr',
       reSelectAnimateIndex: undefined,
       filterVisible: false,
-      currentWidgetId: null,
-      currentWidget: null,
-      currentComponent: null
+      currentWidget: null
     }
   },
 
@@ -252,6 +249,7 @@ export default {
       e.stopPropagation()
       let component
       const newComponentId = uuid.v1()
+
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
 
       // 用户视图设置 复制一个模板
@@ -268,16 +266,18 @@ export default {
         })
       } else {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
-        if (this.currentWidget.filterDialog) {
+
+        const drawPanel = this.currentWidget.getDrawPanel(this.panelInfo.id)
+        drawPanel.style.top = e.offsetY
+        drawPanel.style.left = e.offsetX
+        drawPanel.id = newComponentId
+        this.currentWidget.setDrawPanel(this.panelInfo.id, drawPanel)
+        if (this.currentWidget.initFilterDialog) {
           this.show = false
-          this.currentComponent = deepCopy(this.currentWidget)
-          this.currentComponent.style.top = e.offsetY
-          this.currentComponent.style.left = e.offsetX
-          this.currentComponent.id = newComponentId
           this.openFilterDiolog()
           return
         }
-        component = deepCopy(this.currentWidget)
+        component = deepCopy(drawPanel)
       }
 
       component.style.top = e.offsetY
@@ -311,17 +311,16 @@ export default {
       }
     },
     openFilterDiolog() {
-      this.currentWidgetId = this.currentComponent.name
       this.filterVisible = true
     },
     cancelFilter() {
       this.filterVisible = false
-      this.currentWidgetId = null
       this.currentWidget = null
-      this.currentComponent = null
     },
     sureFilter() {
-      const component = deepCopy(this.currentComponent)
+      const currentComponent = this.currentWidget.getDrawPanel(this.panelInfo.id)
+      currentComponent.widgetService = this.currentWidget
+      const component = deepCopy(currentComponent)
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
       this.cancelFilter()

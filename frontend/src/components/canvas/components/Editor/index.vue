@@ -30,8 +30,8 @@
         :id="'component' + item.id"
         class="component"
         :style="getComponentStyle(item.style)"
-        :element="item"
-        :item="item"
+        :service-name="item.widgetService.name"
+        :panel-id="panelInfo.id"
         @filter-value-change="filterValueChange"
       />
 
@@ -97,12 +97,18 @@ export default {
       isShowArea: false
     }
   },
-  computed: mapState([
-    'componentData',
-    'curComponent',
-    'canvasStyleData',
-    'editor'
-  ]),
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    ...mapState([
+      'componentData',
+      'curComponent',
+      'canvasStyleData',
+      'editor'
+    ])
+  },
+
   mounted() {
     // 获取编辑器元素
     this.$store.commit('getEditor')
