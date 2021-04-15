@@ -5,7 +5,7 @@
       <el-popover
         placement="right-start"
         width="400"
-        trigger="hover"
+        trigger="click"
         @show="showTab"
         @hide="hideTab"
       >
