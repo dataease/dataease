@@ -2,7 +2,16 @@
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
     <span v-show="false">{{ vId }}</span>
     <el-row style="height: 40px;background-color: white" class="padding-lr">
-      <span style="line-height: 40px;">{{ view.name }}</span>
+      <el-popover
+        placement="right-start"
+        width="400"
+        trigger="hover"
+        @show="showTab"
+        @hide="hideTab"
+      >
+        <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
+        <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
+      </el-popover>
       <span style="float: right;line-height: 40px;">
         <el-button size="mini" @click="closeEdit">
           {{ $t('chart.close') }}
@@ -229,6 +238,7 @@ import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
+import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 
 // shape attr,component style
 import {
@@ -255,7 +265,7 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 
 export default {
   name: 'ChartEdit',
-  components: { QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   data() {
     return {
       table: {},
@@ -296,7 +306,8 @@ export default {
         name: [
           { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
         ]
-      }
+      },
+      tabStatus: false
     }
   },
   computed: {
@@ -577,6 +588,13 @@ export default {
     },
     resetRename() {
       // this.itemForm = {}
+    },
+
+    showTab() {
+      this.tabStatus = true
+    },
+    hideTab() {
+      this.tabStatus = false
     }
   }
 }

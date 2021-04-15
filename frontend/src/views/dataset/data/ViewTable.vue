@@ -3,9 +3,18 @@
     <el-row>
       <el-row style="height: 26px;">
         <span v-show="false">{{ tableId }}</span>
-        <span style="line-height: 26px;">
-          {{ table.name }}
-        </span>
+        <el-popover
+          placement="right-start"
+          width="400"
+          trigger="hover"
+          @show="showTab"
+          @hide="hideTab"
+        >
+          <dataset-chart-detail type="dataset" :data="table" :tab-status="tabStatus" />
+          <span slot="reference" style="line-height: 26px;cursor: pointer;">
+            {{ table.name }}
+          </span>
+        </el-popover>
         <el-row style="float: right">
           <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
             {{ $t('dataset.edit_sql') }}
@@ -81,10 +90,11 @@
 import { getTable, getPreviewData, fieldList, batchEdit } from '@/api/dataset/dataset'
 import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
+import DatasetChartDetail from '../common/DatasetChartDetail'
 
 export default {
   name: 'ViewTable',
-  components: { UpdateInfo, TabDataPreview },
+  components: { DatasetChartDetail, UpdateInfo, TabDataPreview },
   data() {
     return {
       createViewDialog: false,
@@ -98,7 +108,8 @@ export default {
       tableFields: [],
       tableViewRowForm: {
         row: 1000
-      }
+      },
+      tabStatus: false
     }
   },
   computed: {
@@ -173,6 +184,13 @@ export default {
     reSearch(val) {
       this.tableViewRowForm = val
       this.initPreviewData()
+    },
+
+    showTab() {
+      this.tabStatus = true
+    },
+    hideTab() {
+      this.tabStatus = false
     }
   }
 }
