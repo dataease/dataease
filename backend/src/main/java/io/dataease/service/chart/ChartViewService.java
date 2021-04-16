@@ -20,6 +20,7 @@ import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.spark.SparkCalc;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -248,5 +249,16 @@ public class ChartViewService {
         if (list.size() > 0) {
             throw new RuntimeException("Name can't repeat in same group.");
         }
+    }
+
+    public Map<String, Object> getChartDetail(String id) {
+        Map<String, Object> map = new HashMap<>();
+        ChartViewWithBLOBs chartViewWithBLOBs = chartViewMapper.selectByPrimaryKey(id);
+        map.put("chart", chartViewWithBLOBs);
+        if (ObjectUtils.isNotEmpty(chartViewWithBLOBs)) {
+            Map<String, Object> datasetDetail = dataSetTableService.getDatasetDetail(chartViewWithBLOBs.getTableId());
+            map.putAll(datasetDetail);
+        }
+        return map;
     }
 }

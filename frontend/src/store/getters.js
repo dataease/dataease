@@ -18,6 +18,9 @@ const getters = {
   loadingMap: state => state.request.loadingMap,
   currentPath: state => state.permission.currentPath,
   permissions: state => state.user.permissions,
-  beanMap: state => state.application.beanMap
+  beanMap: state => state.application.beanMap,
+  leftWidgetMap: state => state.application.leftWidgetMap,
+  dialogWidgetMap: state => state.application.dialogWidgetMap,
+  drawWidgetMap: state => state.application.drawWidgetMap
 }
 export default getters

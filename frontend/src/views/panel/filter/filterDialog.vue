@@ -144,7 +144,7 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import draggable from 'vuedraggable'
 import DragItem from '@/components/DragItem'
-import { ApplicationContext } from '@/utils/ApplicationContext'
+// import { ApplicationContext } from '@/utils/ApplicationContext'
 import { groupTree, loadTable, fieldList, fieldValues } from '@/api/dataset/dataset'
 export default {
   name: 'FilterDialog',
@@ -156,11 +156,8 @@ export default {
     DragItem
   },
   props: {
-    widgetId: {
-      type: String,
-      default: null
-    },
-    componentInfo: {
+
+    widgetInfo: {
       type: Object,
       default: null
     }
@@ -184,23 +181,29 @@ export default {
       fieldValues: []
     }
   },
+  computed: {
+    uuid() {
+      return this.$store.state.panel.panelInfo.id
+    }
+  },
   watch: {
     selectField(values) {
       if (values && values.length > 0) {
         const value = values[0]
         const fieldId = value.id
-        this.componentInfo && this.componentInfo.setOptionDatas && fieldValues(fieldId).then(res => {
+        this.widget && this.widget.setOptionDatas && fieldValues(fieldId).then(res => {
           const datas = res.data.map(item => {
             return { id: item, text: item }
           })
-          this.componentInfo.setOptionDatas(datas)
-          this.$emit('re-fresh-component', this.componentInfo)
+          this.widget.setOptionDatas(this.uuid, datas)
+        //   this.$emit('re-fresh-component', this.componentInfo)
         })
       }
     }
   },
   created() {
-    this.widget = ApplicationContext.getService(this.widgetId)
+    // this.widget = ApplicationContext.getService(this.widgetId)
+    this.widget = this.widgetInfo
     this.loadDataSetTree()
   },
 

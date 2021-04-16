@@ -779,9 +779,14 @@ export default {
     showRow: '显示行',
     add_excel_table: '添加Excel数据集',
     add_custom_table: '添加自助数据集',
-    upload_file: '上传文件'
+    upload_file: '上传文件',
+    detail: '详情',
+    type: '类型',
+    create_by: '创建者',
+    create_time: '创建时间'
   },
   datasource: {
+    datasource: '数据源',
     create: '新建数据连接',
     type: '类型',
     please_choose_type: '请选择数据源类型',
