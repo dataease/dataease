@@ -65,10 +65,8 @@ export default {
       const widgetNames = this.widgetSubjects[key]
       this.widgetSubjects[key] = widgetNames.map(widgetName => {
         const widget = ApplicationContext.getService(widgetName)
-        const uuid = this.panelInfo.id
-        // widget.initLeftPanel(uuid)
         const result = { widgetName: widgetName }
-        Object.assign(result, widget.getLeftPanel(uuid))
+        Object.assign(result, widget.getLeftPanel())
         return result
       })
     }

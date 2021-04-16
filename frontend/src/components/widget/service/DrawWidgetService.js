@@ -1,5 +1,4 @@
 import store from '@/store'
-import { uuid } from 'vue-uuid'
 export const commonStyle = {
   rotate: 0,
   opacity: 1
@@ -15,9 +14,9 @@ export class DrawWidgetService {
   constructor(options) {
     this.options = options
     this.name = options.name
-    this.leftPanelPath = 'application/addLeftWidget'
-    this.dialogPanelPath = 'application/addDialogWidget'
-    this.drawPanelPath = 'application/addDrawWidget'
+    // this.leftPanelPath = 'application/addLeftWidget'
+    // this.dialogPanelPath = 'application/addDialogWidget'
+    // this.drawPanelPath = 'application/addDrawWidget'
     this.storeWidget()
   }
   /**
@@ -28,56 +27,26 @@ export class DrawWidgetService {
   store(path, data) {
     store.dispatch(path, data)
   }
-  uuid() {
-    return uuid.v1()
-  }
-  setLeftPanel(uuid, leftPanel) {
-    this.store(this.leftPanelPath, { uuid: uuid, leftPanel: leftPanel })
-  }
-  getLeftPanel(uuid) {
-    if (!store.getters.leftWidgetMap[uuid]) {
-      this.initLeftPanel && this.initLeftPanel(uuid)
-    }
-    return store.getters.leftWidgetMap[uuid]
+
+  getLeftPanel() {
+    return this.initLeftPanel()
   }
 
-  setDialogPanel(uuid, dialogPanel) {
-    this.store(this.dialogPanelPath, { uuid: uuid, dialogPanel: dialogPanel })
-  }
-  getDialogPanel(uuid) {
-    if (!store.getters.dialogWidgetMap[uuid]) {
-      this.initFilterDialog && this.initFilterDialog(uuid)
-    }
-    return store.getters.dialogWidgetMap[uuid]
+  getDialogPanel() {
+    return this.initFilterDialog()
   }
 
-  setDrawPanel(uuid, drawPanel) {
-    if (!store.getters.drawWidgetMap[uuid]) { // 第一次
-      drawPanel.style = Object.assign(drawPanel.style, commonStyle)
-      drawPanel = Object.assign(drawPanel, commonAttr)
-      if (this.initFilterDialog) { // 需要弹窗
-        const dialogOptions = this.getDialogPanel(uuid)
-        drawPanel = Object.assign(drawPanel, dialogOptions)
-      }
+  getDrawPanel() {
+    let drawPanel = this.initDrawPanel()
+    drawPanel.style = Object.assign(drawPanel.style, commonStyle)
+    drawPanel = Object.assign(drawPanel, commonAttr)
+    if (this.filterDialog) {
+      const dialogOptions = this.getDialogPanel()
+      drawPanel = Object.assign(drawPanel, dialogOptions)
     }
-    this.store(this.drawPanelPath, { uuid: uuid, drawPanel: drawPanel })
+    return drawPanel
   }
-
-  getDrawPanel(uuid) {
-    if (!store.getters.drawWidgetMap[uuid]) {
-      this.initDrawPanel && this.initDrawPanel(uuid)
-    }
-    return store.getters.drawWidgetMap[uuid]
-  }
-
   storeWidget() {
-    // store.dispatch('application/loadBean', { key: this.name, value: this })
     this.store('application/loadBean', { key: this.name, value: this })
-  }
-  initWidget() {
-    console.log('this is initWidget')
-  }
-  toDrawWidget() {
-    console.log('this is toDrawWidget')
   }
 }

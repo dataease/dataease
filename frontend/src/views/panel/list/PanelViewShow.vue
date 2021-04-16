@@ -69,7 +69,6 @@ export default {
     },
     saveToTemplate() {
       html2canvas(this.$refs.imageWrapper).then(canvas => {
-        debugger
         const snapShot = canvas.toDataURL('image/jpeg', 0.5) // 0.5是图片质量
         if (snapShot !== '') {
           const templateInfo = {

@@ -61,13 +61,11 @@ export default {
     ])
   },
   mounted() {
-    debugger
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
     erd.listenTo(document.getElementById('canvasInfo'), element => {
       _this.$nextTick(() => {
-        debugger
         _this.restore()
       })
     })

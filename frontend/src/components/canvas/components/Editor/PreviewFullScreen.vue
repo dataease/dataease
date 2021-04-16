@@ -19,7 +19,6 @@ export default {
 
   methods: {
     toDir() {
-      debugger
       this.$router.replace('/panel/index')
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     }

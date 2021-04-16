@@ -160,6 +160,10 @@ export default {
     widgetInfo: {
       type: Object,
       default: null
+    },
+    componentInfo: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -181,22 +185,17 @@ export default {
       fieldValues: []
     }
   },
-  computed: {
-    uuid() {
-      return this.$store.state.panel.panelInfo.id
-    }
-  },
+
   watch: {
     selectField(values) {
       if (values && values.length > 0) {
         const value = values[0]
         const fieldId = value.id
-        this.widget && this.widget.setOptionDatas && fieldValues(fieldId).then(res => {
-          const datas = res.data.map(item => {
-            return { id: item, text: item }
-          })
-          this.widget.setOptionDatas(this.uuid, datas)
-        //   this.$emit('re-fresh-component', this.componentInfo)
+        const info = this.componentInfo
+        this.widget && fieldValues(fieldId).then(res => {
+          info.options.attrs.datas = this.widget.optionDatas(res.data)
+          info.options.attrs.fieldId = fieldId
+          this.$emit('re-fresh-component', info)
         })
       }
     }

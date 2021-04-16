@@ -74,13 +74,20 @@
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
-      <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" @re-fresh-component="reFreshComponent">
-        <de-drawing-widget
+      <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" :component-info="currentFilterCom" @re-fresh-component="reFreshComponent">
+        <!-- <de-drawing-widget
           v-if="filterVisible"
           style="width: 100% !important;"
           class="component"
           :service-name="currentWidget.name"
-          :panel-id="panelInfo.id"
+        /> -->
+        <component
+          :is="currentFilterCom.component"
+          :id="'component' + currentFilterCom.id"
+          class="component"
+          :style="currentFilterCom.style"
+          :element="currentFilterCom"
+          :in-draw="false"
         />
       </filter-dialog>
       <!-- <div slot="footer" class="dialog-footer">
@@ -143,7 +150,8 @@ export default {
       activeName: 'attr',
       reSelectAnimateIndex: undefined,
       filterVisible: false,
-      currentWidget: null
+      currentWidget: null,
+      currentFilterCom: null
     }
   },
 
@@ -171,7 +179,6 @@ export default {
       }
     },
     panelInfo(newVal, oldVal) {
-      debugger
       this.init(newVal.id)
     }
   },
@@ -193,7 +200,6 @@ export default {
   },
   methods: {
     init(panelId) {
-      debugger
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
@@ -267,17 +273,16 @@ export default {
       } else {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
 
-        const drawPanel = this.currentWidget.getDrawPanel(this.panelInfo.id)
-        drawPanel.style.top = e.offsetY
-        drawPanel.style.left = e.offsetX
-        drawPanel.id = newComponentId
-        this.currentWidget.setDrawPanel(this.panelInfo.id, drawPanel)
-        if (this.currentWidget.initFilterDialog) {
+        this.currentFilterCom = this.currentWidget.getDrawPanel(this.panelInfo.id)
+        this.currentFilterCom.style.top = e.offsetY
+        this.currentFilterCom.style.left = e.offsetX
+        this.currentFilterCom.id = newComponentId
+        if (this.currentWidget.filterDialog) {
           this.show = false
           this.openFilterDiolog()
           return
         }
-        component = deepCopy(drawPanel)
+        component = deepCopy(this.currentFilterCom)
       }
 
       component.style.top = e.offsetY
@@ -285,6 +290,11 @@ export default {
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
+      this.clearCurrentInfo()
+    },
+    clearCurrentInfo() {
+      this.currentWidget = null
+      this.currentFilterCom = null
     },
 
     handleDragOver(e) {
@@ -316,17 +326,16 @@ export default {
     cancelFilter() {
       this.filterVisible = false
       this.currentWidget = null
+      this.clearCurrentInfo()
     },
     sureFilter() {
-      const currentComponent = this.currentWidget.getDrawPanel(this.panelInfo.id)
-      currentComponent.widgetService = this.currentWidget
-      const component = deepCopy(currentComponent)
+      const component = deepCopy(this.currentFilterCom)
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
       this.cancelFilter()
     },
     reFreshComponent(component) {
-      this.currentComponent = component
+      this.currentFilterCom = component
     }
   }
 }

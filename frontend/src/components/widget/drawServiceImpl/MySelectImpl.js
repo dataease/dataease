@@ -1,3 +1,4 @@
+
 import { DrawWidgetService } from '../service/DrawWidgetService'
 
 const leftPanel = {
@@ -42,44 +43,38 @@ class MySelectImpl extends DrawWidgetService {
   constructor(options = {}) {
     Object.assign(options, { name: 'mySelectWidget' })
     super(options)
+    this.filterDialog = true
   }
 
-  initLeftPanel(uuid) {
-    uuid = uuid || this.uuid()
-    this.setLeftPanel(uuid, leftPanel)
-    return uuid
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
     // console.log('this is first initWidget')
   }
 
-  initFilterDialog(uuid) {
-    uuid = uuid || this.uuid()
-    this.setDialogPanel(uuid, dialogPanel)
-    return uuid
+  initFilterDialog() {
+    const value = JSON.parse(JSON.stringify(dialogPanel))
+    return value
   }
 
-  initDrawPanel(uuid) {
-    uuid = uuid || this.uuid()
-    this.setDrawPanel(uuid, drawPanel)
-    return uuid
-  }
-
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
-
-  }
-
-  setOptionDatas(uuid, data) {
-    const dialogPanel = this.getDialogPanel(uuid)
-    dialogPanel.options.attrs.datas = data
-    this.setDialogPanel(uuid, dialogPanel)
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
 
   filterFieldMethod(fields) {
     return fields.filter(field => {
       return field['deType'] === 0
+    })
+  }
+
+  optionDatas(datas) {
+    if (!datas) return null
+    return datas.map(item => {
+      return {
+        id: item,
+        text: item
+      }
     })
   }
 }
