@@ -1,6 +1,7 @@
 /**
  * fieldId 字段ID
  * value 字段值
+ * operator 操作[eq, ne, gt, ge, lt, le, in, not in, like, not like]
  * viewIds 过滤视图范围
  */
 export class Condition {
