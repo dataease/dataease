@@ -54,6 +54,9 @@ export default {
           'textSelectWidget',
           'textInputWidget'
         ],
+        '数字过滤组件': [
+          'numberSelectWidget'
+        ],
         '按钮': [
           'buttonSureWidget'
         ]
@@ -181,6 +184,24 @@ export default {
     .filter-widget-icon {
         background-color: #23beef;
         color: #fff;
+    }
+    .filter-widget-text {
+        color: #fff;
+    }
+  }
+  .tree-filter {
+    background-color: rgba(22,160,132,.1);
+    .filter-widget-icon {
+        color: #37b4aa;
+    }
+    .filter-widget-text {
+        color: #3d4d66;
+    }
+  }
+  .tree-filter:hover {
+    background-color: #37b4aa;
+    .filter-widget-icon {
+        color: #37b4aa;
     }
     .filter-widget-text {
         color: #fff;
