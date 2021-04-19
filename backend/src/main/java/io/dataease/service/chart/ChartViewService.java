@@ -6,6 +6,8 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.controller.request.chart.ChartExtFilterRequest;
+import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.provider.DatasourceProvider;
@@ -88,7 +90,7 @@ public class ChartViewService {
         chartViewMapper.deleteByExample(chartViewExample);
     }
 
-    public ChartViewDTO getData(String id) throws Exception {
+    public ChartViewDTO getData(String id, ChartExtRequest requestList) throws Exception {
         ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
         List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
@@ -107,6 +109,24 @@ public class ChartViewService {
 //        List<DatasetTableField> xList = dataSetTableFieldsService.getListByIds(xIds);
 //        List<DatasetTableField> yList = dataSetTableFieldsService.getListByIds(yIds);
 
+        // 过滤来自仪表盘的条件
+        List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(requestList.getFilter())) {
+            for (ChartExtFilterRequest request : requestList.getFilter()) {
+                DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
+                request.setDatasetTableField(datasetTableField);
+                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                    if (CollectionUtils.isNotEmpty(request.getViewIds())) {
+                        if (request.getViewIds().contains(view.getId())) {
+                            extFilterList.add(request);
+                        }
+                    } else {
+                        extFilterList.add(request);
+                    }
+                }
+            }
+        }
+
         // 获取数据集
         DatasetTable table = dataSetTableService.get(view.getTableId());
         // 判断连接方式，直连或者定时抽取 table.mode
@@ -119,15 +139,15 @@ public class ChartViewService {
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
             if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xAxis, yAxis));
+                datasourceRequest.setQuery(getSQL(ds.getType(), dataTableInfoDTO.getTable(), xAxis, yAxis, extFilterList));
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
-                datasourceRequest.setQuery(getSQL(ds.getType(), " (" + dataTableInfoDTO.getSql() + ") AS tmp ", xAxis, yAxis));
+                datasourceRequest.setQuery(getSQL(ds.getType(), " (" + dataTableInfoDTO.getSql() + ") AS tmp ", xAxis, yAxis, extFilterList));
             }
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             // 获取数据集de字段
             List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
-            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0]);
+            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0], extFilterList);
         }
 
         // 图表组件可再扩展
@@ -163,18 +183,45 @@ public class ChartViewService {
         return dto;
     }
 
-    public String getSQL(String type, String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis) {
+    public String transMysqlExtFilter(List<ChartExtFilterRequest> requestList) {
+        if (CollectionUtils.isEmpty(requestList)) {
+            return "";
+        }
+        StringBuilder filter = new StringBuilder();
+        for (ChartExtFilterRequest request : requestList) {
+            List<String> value = request.getValue();
+            if (CollectionUtils.isEmpty(value)) {
+                continue;
+            }
+            DatasetTableField field = request.getDatasetTableField();
+            filter.append(" AND ")
+                    .append(field.getOriginName())
+                    .append(" ")
+                    .append(transMysqlFilterTerm(request.getOperator()))
+                    .append(" ");
+            if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                filter.append("('").append(StringUtils.join(value, "','")).append("')");
+            } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
+                filter.append("'%").append(value.get(0)).append("%'");
+            } else {
+                filter.append("'").append(value.get(0)).append("'");
+            }
+        }
+        return filter.toString();
+    }
+
+    public String getSQL(String type, String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
-                return transMysqlSQL(table, xAxis, yAxis);
+                return transMysqlSQL(table, xAxis, yAxis, extFilterRequestList);
             case sqlServer:
             default:
                 return "";
         }
     }
 
-    public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis) {
+    public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + y.getOriginName()).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
@@ -185,7 +232,7 @@ public class ChartViewService {
                 StringUtils.join(group, ","),
                 StringUtils.join(field, ","),
                 table,
-                "",
+                transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter
                 StringUtils.join(group, ","),
                 StringUtils.join(order, ","));
         if (sql.endsWith(",")) {
@@ -221,6 +268,14 @@ public class ChartViewService {
                 return " > ";
             case "ge":
                 return " >= ";
+            case "in":
+                return " IN ";
+            case "not in":
+                return " NOT IN ";
+            case "like":
+                return " LIKE ";
+            case "not like":
+                return " NOT LIKE ";
             case "null":
                 return " IS NULL ";
             case "not_null":

@@ -391,7 +391,9 @@ export default {
     },
     getData(id) {
       if (id) {
-        post('/chart/view/getData/' + id, null).then(response => {
+        post('/chart/view/getData/' + id, {
+          filter: []
+        }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []

@@ -2,6 +2,7 @@ package io.dataease.service.spark;
 
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -43,7 +44,7 @@ public class SparkCalc {
     @Resource
     private Environment env; // 保存了配置文件的信息
 
-    public List<String[]> getData(String hTable, List<DatasetTableField> fields, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String tmpTable) throws Exception {
+    public List<String[]> getData(String hTable, List<DatasetTableField> fields, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String tmpTable, List<ChartExtFilterRequest> requestList) throws Exception {
         // Spark Context
         SparkSession spark = CommonBeanFactory.getBean(SparkSession.class);
         JavaSparkContext sparkContext = new JavaSparkContext(spark.sparkContext());
@@ -59,7 +60,7 @@ public class SparkCalc {
         }
 
         dataFrame.createOrReplaceTempView(tmpTable);
-        Dataset<Row> sql = sqlContext.sql(getSQL(xAxis, yAxis, tmpTable));
+        Dataset<Row> sql = sqlContext.sql(getSQL(xAxis, yAxis, tmpTable, requestList));
         // transform
         List<String[]> data = new ArrayList<>();
         List<Row> list = sql.collectAsList();
@@ -149,7 +150,7 @@ public class SparkCalc {
         return dataFrame;
     }
 
-    public String getSQL(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String table) {
+    public String getSQL(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, String table, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + y.getOriginName()).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
@@ -160,7 +161,7 @@ public class SparkCalc {
                 StringUtils.join(group, ","),
                 StringUtils.join(field, ","),
                 table,
-                "",
+                transExtFilter(extFilterRequestList),// origin field filter and panel field filter,
                 StringUtils.join(group, ","),
                 StringUtils.join(order, ","));
         if (sql.endsWith(",")) {
@@ -196,6 +197,14 @@ public class SparkCalc {
                 return " > ";
             case "ge":
                 return " >= ";
+            case "in":
+                return " IN ";
+            case "not in":
+                return " NOT IN ";
+            case "like":
+                return " LIKE ";
+            case "not like":
+                return " NOT LIKE ";
             case "null":
                 return " IS NULL ";
             case "not_null":
@@ -203,5 +212,32 @@ public class SparkCalc {
             default:
                 return "";
         }
+    }
+
+    public String transExtFilter(List<ChartExtFilterRequest> requestList) {
+        if (CollectionUtils.isEmpty(requestList)) {
+            return "";
+        }
+        StringBuilder filter = new StringBuilder();
+        for (ChartExtFilterRequest request : requestList) {
+            List<String> value = request.getValue();
+            if (CollectionUtils.isEmpty(value)) {
+                continue;
+            }
+            DatasetTableField field = request.getDatasetTableField();
+            filter.append(" AND ")
+                    .append(field.getOriginName())
+                    .append(" ")
+                    .append(transFilterTerm(request.getOperator()))
+                    .append(" ");
+            if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                filter.append("('").append(StringUtils.join(value, "','")).append("')");
+            } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
+                filter.append("'%").append(value.get(0)).append("%'");
+            } else {
+                filter.append("'").append(value.get(0)).append("'");
+            }
+        }
+        return filter.toString();
     }
 }

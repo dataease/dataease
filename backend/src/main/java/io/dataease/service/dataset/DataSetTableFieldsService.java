@@ -66,4 +66,8 @@ public class DataSetTableFieldsService {
         datasetTableFieldExample.createCriteria().andTableIdEqualTo(id);
         return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
     }
+
+    public DatasetTableField get(String id) {
+        return datasetTableFieldMapper.selectByPrimaryKey(id);
+    }
 }
