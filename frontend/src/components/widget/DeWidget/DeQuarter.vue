@@ -11,10 +11,24 @@
 export default {
 
   props: {
-    options: {
+    element: {
       type: Object,
       default: null
+    },
+    inDraw: {
+      type: Boolean,
+      default: true
     }
+  },
+  data() {
+    return {
+      options: null,
+      operator: 'eq',
+      values: null
+    }
+  },
+  created() {
+    this.options = this.element.options
   }
 }
 </script>

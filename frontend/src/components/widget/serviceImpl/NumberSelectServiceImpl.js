@@ -1,16 +1,14 @@
 
-import { DrawWidgetService } from '../service/DrawWidgetService'
+import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
-//   name: 'text-select',
   icon: 'iconfont icon-xialakuang',
-  label: '文本下拉',
+  label: '数字下拉',
   defaultClass: 'text-filter'
 }
 
 const dialogPanel = {
   options: {
-    refId: '1234567890',
     attrs: {
       multiple: false,
       placeholder: '请选择',
@@ -27,8 +25,8 @@ const dialogPanel = {
 const drawPanel = {
   type: 'custom',
   style: {
-    width: 200,
-    height: 22,
+    width: 300,
+    height: 35,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
@@ -39,9 +37,9 @@ const drawPanel = {
   component: 'de-select'
 }
 
-class MySelectImpl extends DrawWidgetService {
+class NumberSelectServiceImpl extends WidgetService {
   constructor(options = {}) {
-    Object.assign(options, { name: 'mySelectWidget' })
+    Object.assign(options, { name: 'numberSelectWidget' })
     super(options)
     this.filterDialog = true
     this.showSwitch = true
@@ -50,7 +48,6 @@ class MySelectImpl extends DrawWidgetService {
   initLeftPanel() {
     const value = JSON.parse(JSON.stringify(leftPanel))
     return value
-    // console.log('this is first initWidget')
   }
 
   initFilterDialog() {
@@ -65,7 +62,7 @@ class MySelectImpl extends DrawWidgetService {
 
   filterFieldMethod(fields) {
     return fields.filter(field => {
-      return field['deType'] === 0
+      return field['deType'] === 2
     })
   }
 
@@ -79,5 +76,5 @@ class MySelectImpl extends DrawWidgetService {
     })
   }
 }
-const mySelectImpl = new MySelectImpl()
-export default mySelectImpl
+const numberSelectServiceImpl = new NumberSelectServiceImpl()
+export default numberSelectServiceImpl

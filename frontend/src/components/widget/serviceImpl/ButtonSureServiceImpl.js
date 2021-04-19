@@ -1,50 +1,50 @@
 import { WidgetService } from '../service/WidgetService'
-const defaultOptions = {
-  name: 'buttonSureWidget',
+
+const leftPanel = {
   icon: 'iconfont icon-chaxunsousuo',
   label: '确定',
+  defaultClass: 'time-filter'
+}
+
+const drawPanel = {
+  type: 'custom',
   style: {
-    width: 100,
-    height: 34,
-    borderWidth: '',
-    borderColor: '',
-    borderRadius: '',
+    width: 300,
+    height: 35,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
     letterSpacing: 0,
     textAlign: '',
-    color: '',
-    backgroundColor: ''
+    color: ''
   },
-  defaultClass: 'time-filter',
-  component: 'de-button',
   options: {
-    refId: '1234567890',
     attrs: {
       type: 'primary',
       round: true
     },
     value: '测试按钮'
-  }
+  },
+  component: 'de-button'
 }
 
 class ButtonSureServiceImpl extends WidgetService {
-  constructor(options) {
-    Object.assign(options, defaultOptions)
+  constructor(options = {}) {
+    Object.assign(options, { name: 'buttonSureWidget' })
     super(options)
+    this.filterDialog = false
+    this.showSwitch = false
   }
 
-  initWidget() {
-    // console.log('this is first initWidget')
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
   }
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
 
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
 }
-const buttonSureServiceImpl = new ButtonSureServiceImpl({ name: 'buttonSureWidget' })
+const buttonSureServiceImpl = new ButtonSureServiceImpl()
 export default buttonSureServiceImpl

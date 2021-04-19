@@ -12,20 +12,42 @@ export const commonAttr = {
 }
 export class WidgetService {
   constructor(options) {
+    this.options = options
     this.name = options.name
-    options = { ...commonAttr, ...options }
-    Object.assign(this, options)
-    this.style = { ...commonStyle, ...options.style }
-    this.type = 'custom'
+    // this.leftPanelPath = 'application/addLeftWidget'
+    // this.dialogPanelPath = 'application/addDialogWidget'
+    // this.drawPanelPath = 'application/addDrawWidget'
     this.storeWidget()
   }
+  /**
+   * 存储数据到本地
+   * @param {本地存储路径} path
+   * @param {要存储的数据} data
+   */
+  store(path, data) {
+    store.dispatch(path, data)
+  }
+
+  getLeftPanel() {
+    return this.initLeftPanel()
+  }
+
+  getDialogPanel() {
+    return this.initFilterDialog()
+  }
+
+  getDrawPanel() {
+    let drawPanel = this.initDrawPanel()
+    drawPanel.serviceName = this.options.name
+    drawPanel.style = Object.assign(drawPanel.style, commonStyle)
+    drawPanel = Object.assign(drawPanel, commonAttr)
+    if (this.filterDialog) {
+      const dialogOptions = this.getDialogPanel()
+      drawPanel = Object.assign(drawPanel, dialogOptions)
+    }
+    return drawPanel
+  }
   storeWidget() {
-    store.dispatch('application/loadBean', { key: this.name, value: this })
-  }
-  initWidget() {
-    console.log('this is initWidget')
-  }
-  toDrawWidget() {
-    console.log('this is toDrawWidget')
+    this.store('application/loadBean', { key: this.name, value: this })
   }
 }

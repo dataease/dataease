@@ -110,12 +110,36 @@
                 v-model="componentInfo.options.attrs.multiple"
                 active-text="多选"
                 inactive-text="单选"
+                @change="multipleChange"
               />
             </div>
           </el-col>
           <el-col :span="16"><div class="filter-options-right">
             <el-checkbox v-model="customRange"><span> 自定义控制范围 </span> </el-checkbox>
-            <i :class="{'i-filter-active': customRange, 'i-filter-inactive': !customRange}" class="el-icon-setting i-filter" @click="showFilterRange" />
+
+            <el-popover
+              v-model="popovervisible"
+              placement="bottom-end"
+              :disabled="!customRange"
+              width="200"
+            >
+              <div class="view-container-class">
+                <el-checkbox-group v-model="checkedViews" @change="checkedViewsChange">
+                  <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id" border>
+                    <span>
+                      <svg-icon :icon-class="item.type" class="chart-icon" />
+                      <span style="margin-left: 6px">{{ item.name }}</span>
+                    </span>
+                  </el-checkbox>
+                </el-checkbox-group>
+              </div>
+
+              <!-- <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="popovervisible=false">取消</el-button>
+                <el-button type="primary" size="mini" @click="popovervisible=false">确定</el-button>
+              </div> -->
+              <i slot="reference" :class="{'i-filter-active': customRange, 'i-filter-inactive': !customRange}" class="el-icon-setting i-filter" />
+            </el-popover>
             <!-- <el-checkbox disabled>备选项</el-checkbox> -->
           </div>
 
@@ -147,8 +171,10 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import draggable from 'vuedraggable'
 import DragItem from '@/components/DragItem'
+import { mapState } from 'vuex'
 // import { ApplicationContext } from '@/utils/ApplicationContext'
 import { groupTree, loadTable, fieldList, fieldValues } from '@/api/dataset/dataset'
+import { viewsWithIds } from '@/api/panel/view'
 export default {
   name: 'FilterDialog',
   components: {
@@ -169,6 +195,7 @@ export default {
       default: null
     }
   },
+
   data() {
     return {
       activeName: 'dataset',
@@ -186,8 +213,23 @@ export default {
       selectField: [],
       widget: null,
       fieldValues: [],
-      customRange: false
+      customRange: false,
+      popovervisible: false,
+      viewInfos: [],
+      checkedViews: []
     }
+  },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    ...mapState([
+      'componentData',
+      'curComponent',
+      'isClickComponent',
+      'canvasStyleData',
+      'curComponentIndex'
+    ])
   },
 
   watch: {
@@ -195,13 +237,21 @@ export default {
       if (values && values.length > 0) {
         const value = values[0]
         const fieldId = value.id
-        const info = this.componentInfo
-        this.widget && fieldValues(fieldId).then(res => {
-          info.options.attrs.datas = this.widget.optionDatas(res.data)
-          info.options.attrs.fieldId = fieldId
-          info.options.attrs.dragItems = values
-          this.$emit('re-fresh-component', info)
-        })
+        if (this.widget && this.widget.optionDatas) {
+          fieldValues(fieldId).then(res => {
+            this.componentInfo.options.attrs.datas = this.widget.optionDatas(res.data)
+            this.componentInfo.options.attrs.fieldId = fieldId
+            this.componentInfo.options.attrs.dragItems = values
+            this.$emit('re-fresh-component', this.componentInfo)
+          })
+        } else {
+          this.componentInfo.options.attrs.fieldId = fieldId
+          this.componentInfo.options.attrs.dragItems = values
+          this.$emit('re-fresh-component', this.componentInfo)
+        }
+      } else if (this.componentInfo && this.componentInfo.options.attrs.fieldId) {
+        this.componentInfo.options.attrs.fieldId = null
+        this.$emit('re-fresh-component', this.componentInfo)
       }
     }
   },
@@ -213,9 +263,26 @@ export default {
     if (this.componentInfo && this.componentInfo.options.attrs.dragItems) {
       this.selectField = this.componentInfo.options.attrs.dragItems
     }
+    this.loadViews()
   },
 
   methods: {
+
+    loadViews() {
+      const viewIds = this.componentData
+        .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
+        .map(item => item.propValue.viewId)
+      viewsWithIds(viewIds).then(res => {
+        const datas = res.data
+
+        // for (let index = 0; index < 4; index++) {
+        //   datas = datas.concat(datas)
+        // }
+        // datas.forEach(item => item.name += 'aaaaaaaaabbbbb')
+
+        this.viewInfos = datas
+      })
+    },
     handleNodeClick(data) {
       if (data.type === 'scene') {
         this.showSceneTable(data)
@@ -334,11 +401,16 @@ export default {
       const index = tag.index
       this.selectField.splice(index, 1)
     },
-    showFilterRange() {
-      // 如果不是自定义范围 直接返回
-      if (!this.customRange) {
-        return
-      }
+
+    multipleChange(value) {
+      // this.componentInfo.options.attrs.multiple = value
+    //   this.componentInfo.options.value = null
+      this.$emit('re-fresh-component', this.componentInfo)
+    },
+
+    checkedViewsChange(values) {
+      this.componentInfo.options.attrs.viewIds = values
+      this.$emit('re-fresh-component', this.componentInfo)
     }
   }
 }
@@ -482,6 +554,20 @@ export default {
   }
   .i-filter-active {
       cursor: pointer!important;
+  }
+
+  .view-container-class {
+
+      min-height: 150px;
+      max-height: 200px;
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      word-break:break-all;
+      position: relative;
+        >>> label {
+            width: 100%;
+        }
   }
 
 </style>

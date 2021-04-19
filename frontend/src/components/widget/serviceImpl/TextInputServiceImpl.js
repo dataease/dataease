@@ -1,65 +1,65 @@
 import { WidgetService } from '../service/WidgetService'
-const defaultOptions = {
-  name: 'textInputWidget',
+
+const leftPanel = {
   icon: 'iconfont icon-shuru',
   label: '文本搜索',
+  defaultClass: 'text-filter'
+}
+
+const dialogPanel = {
+  options: {
+    attrs: {
+      placeholder: '请选择'
+
+    },
+    value: ''
+  },
+  defaultClass: 'text-filter',
+  component: 'de-input-search'
+}
+const drawPanel = {
+  type: 'custom',
   style: {
-    width: 100,
-    height: 34,
-    borderWidth: '',
-    borderColor: '',
-    borderRadius: '',
+    width: 300,
+    height: 35,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
     letterSpacing: 0,
     textAlign: '',
-    color: '',
-    backgroundColor: ''
+    color: ''
   },
-  defaultClass: 'text-filter',
-  component: 'de-input-search',
-  options: {
-    refId: '1234567890',
-    attrs: {
-      placeholder: '请输入关键字'
-    },
-    value: ''
-  },
-  filterDialog: true
+  component: 'de-input-search'
 }
 
 class TextInputServiceImpl extends WidgetService {
-  constructor(options) {
-    Object.assign(options, defaultOptions)
+  constructor(options = {}) {
+    Object.assign(options, { name: 'textInputWidget' })
     super(options)
+    this.filterDialog = true
+    this.showSwitch = false
   }
 
-  initWidget() {
-    // console.log('this is first initWidget')
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
   }
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
 
+  initFilterDialog() {
+    const value = JSON.parse(JSON.stringify(dialogPanel))
+    return value
   }
-  dynamicStype() {
-    return {
-      'background-color': 'rgba(35,190,239,.1)'
-    }
+
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
+
   filterFieldMethod(fields) {
     return fields.filter(field => {
       return field['deType'] === 0
     })
   }
-//   dynamicIconStype() {
-//     return {
-//       color: '#23beef'
-//     }
-//   }
 }
-const textInputServiceImpl = new TextInputServiceImpl({ name: 'textInputWidget' })
+const textInputServiceImpl = new TextInputServiceImpl()
 export default textInputServiceImpl

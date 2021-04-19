@@ -13,27 +13,24 @@
 export default {
 
   props: {
-    options: {
+    element: {
       type: Object,
       default: null
+    },
+    inDraw: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
-
+      options: null,
+      operator: 'eq',
+      values: null
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-    //   this.defaultOptions = Object.assign({}, this.options)
-    //   const dom = this.$refs[this.options.refId]
-    //   for (const key in this.options.attrs) {
-    //     if (Object.hasOwnProperty.call(this.defaultOptions.attrs, key)) {
-    //       const element = this.defaultOptions.attrs[key]
-    //       dom.$props[key] = element
-    //     }
-    //   }
-    })
+  created() {
+    this.options = this.element.options
   }
 }
 </script>

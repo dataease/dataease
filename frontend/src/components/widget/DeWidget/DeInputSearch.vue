@@ -1,6 +1,6 @@
 <template>
 
-  <el-input v-if="options!== null && options.attrs!==null" v-model="options.value" style="width:260px;" :placeholder="options.attrs.placeholder">
+  <el-input v-if="options!== null && options.attrs!==null" v-model="options.value" style="width: 260px" :placeholder="options.attrs.placeholder">
 
     <el-button slot="append" icon="el-icon-search" />
   </el-input>
@@ -11,20 +11,24 @@
 export default {
 
   props: {
-    options: {
+    element: {
       type: Object,
       default: null
+    },
+    inDraw: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
-
+      options: null,
+      operator: 'eq',
+      values: null
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-
-    })
+  created() {
+    this.options = this.element.options
   }
 }
 </script>
