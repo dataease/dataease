@@ -783,7 +783,8 @@ export default {
     detail: '详情',
     type: '类型',
     create_by: '创建者',
-    create_time: '创建时间'
+    create_time: '创建时间',
+    preview_100_data: '预览前100行数据'
   },
   datasource: {
     datasource: '数据源',

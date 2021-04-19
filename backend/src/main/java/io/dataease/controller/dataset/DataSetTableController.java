@@ -7,6 +7,7 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.service.dataset.DataSetTableService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -85,5 +86,10 @@ public class DataSetTableController {
     @PostMapping("datasetDetail/{id}")
     public Map<String, Object> datasetDetail(@PathVariable String id) {
         return dataSetTableService.getDatasetDetail(id);
+    }
+
+    @PostMapping("excel/upload")
+    public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file) throws Exception {
+        return dataSetTableService.excelSaveAndParse(file);
     }
 }
