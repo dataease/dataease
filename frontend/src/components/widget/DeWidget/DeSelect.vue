@@ -1,6 +1,6 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :multiple="options.attrs.multiple" :style="element.style" :placeholder="options.attrs.placeholder" @change="changeValue">
+  <el-select v-if="options!== null && options.attrs!==null" v-model="values" :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder" @change="changeValue">
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"
@@ -28,12 +28,17 @@ export default {
   data() {
     return {
       options: null,
-      operator: 'eq'
+      operator: 'eq',
+      values: null
     }
   },
   watch: {
-    'element.style': function(value) {
-      // console.log(value)
+    'options.attrs.multiple': function(value) {
+      if (value) {
+        this.values = []
+      } else {
+        this.values = null
+      }
     }
   },
 

@@ -27,8 +27,8 @@ const dialogPanel = {
 const drawPanel = {
   type: 'custom',
   style: {
-    width: 200,
-    height: 22,
+    width: 300,
+    height: 35,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',

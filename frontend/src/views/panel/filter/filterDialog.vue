@@ -395,7 +395,7 @@ export default {
 
     multipleChange(value) {
       // this.componentInfo.options.attrs.multiple = value
-      this.componentInfo.options.value = null
+    //   this.componentInfo.options.value = null
       this.$emit('re-fresh-component', this.componentInfo)
     },
 
