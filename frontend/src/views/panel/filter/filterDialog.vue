@@ -237,12 +237,18 @@ export default {
       if (values && values.length > 0) {
         const value = values[0]
         const fieldId = value.id
-        this.widget && fieldValues(fieldId).then(res => {
-          this.componentInfo.options.attrs.datas = this.widget.optionDatas(res.data)
+        if (this.widget && this.widget.optionDatas) {
+          fieldValues(fieldId).then(res => {
+            this.componentInfo.options.attrs.datas = this.widget.optionDatas(res.data)
+            this.componentInfo.options.attrs.fieldId = fieldId
+            this.componentInfo.options.attrs.dragItems = values
+            this.$emit('re-fresh-component', this.componentInfo)
+          })
+        } else {
           this.componentInfo.options.attrs.fieldId = fieldId
           this.componentInfo.options.attrs.dragItems = values
           this.$emit('re-fresh-component', this.componentInfo)
-        })
+        }
       }
     }
   },

@@ -31,8 +31,8 @@ requireComponent.keys().forEach(fileName => {
   )
 })
 
-// const req = require.context('./serviceImpl', false, /\.js$/)
-const req = require.context('./drawServiceImpl', false, /\.js$/)
+const req = require.context('./serviceImpl', false, /\.js$/)
+// const req = require.context('./drawServiceImpl', false, /\.js$/)
 const requireAll = requireContext => requireContext.keys()
 
 const widgets = {}

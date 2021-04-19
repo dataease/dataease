@@ -1,20 +1,14 @@
+
 import { WidgetService } from '../service/WidgetService'
-const defaultOptions = {
-  name: 'textSelectWidget',
+
+const leftPanel = {
   icon: 'iconfont icon-xialakuang',
   label: '文本下拉',
-  style: {
-    width: 200,
-    height: 22,
-    fontSize: 14,
-    fontWeight: 500,
-    lineHeight: '',
-    letterSpacing: 0,
-    textAlign: '',
-    color: ''
-  },
+  defaultClass: 'text-filter'
+}
+
+const dialogPanel = {
   options: {
-    refId: '1234567890',
     attrs: {
       multiple: false,
       placeholder: '请选择',
@@ -26,29 +20,44 @@ const defaultOptions = {
     value: ''
   },
   defaultClass: 'text-filter',
-  component: 'de-select',
-  filterDialog: true
+  component: 'de-select'
+}
+const drawPanel = {
+  type: 'custom',
+  style: {
+    width: 300,
+    height: 35,
+    fontSize: 14,
+    fontWeight: 500,
+    lineHeight: '',
+    letterSpacing: 0,
+    textAlign: '',
+    color: ''
+  },
+  component: 'de-select'
 }
 
 class TextSelectServiceImpl extends WidgetService {
-  constructor(options) {
-    Object.assign(options, defaultOptions)
+  constructor(options = {}) {
+    Object.assign(options, { name: 'textSelectWidget' })
     super(options)
+    this.filterDialog = true
+    this.showSwitch = true
   }
 
-  initWidget() {
-    // console.log('this is first initWidget')
-  }
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
-
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
   }
 
-  setOptionDatas(data) {
-    this.options.attrs.datas = data
+  initFilterDialog() {
+    const value = JSON.parse(JSON.stringify(dialogPanel))
+    return value
+  }
+
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
 
   filterFieldMethod(fields) {
@@ -56,6 +65,16 @@ class TextSelectServiceImpl extends WidgetService {
       return field['deType'] === 0
     })
   }
+
+  optionDatas(datas) {
+    if (!datas) return null
+    return datas.map(item => {
+      return {
+        id: item,
+        text: item
+      }
+    })
+  }
 }
-const textSelectServiceImpl = new TextSelectServiceImpl({ name: 'textSelectWidget' })
+const textSelectServiceImpl = new TextSelectServiceImpl()
 export default textSelectServiceImpl

@@ -1,20 +1,13 @@
 import { WidgetService } from '../service/WidgetService'
-const defaultOptions = {
-  name: 'timeMonthWidget',
+
+const leftPanel = {
   icon: 'iconfont icon-yue',
   label: '年月',
-  style: {
-    width: 200,
-    height: 22,
-    fontSize: 14,
-    fontWeight: 500,
-    lineHeight: '',
-    letterSpacing: 0,
-    textAlign: '',
-    color: ''
-  },
+  defaultClass: 'time-filter'
+}
+
+const dialogPanel = {
   options: {
-    refId: '1234567890',
     attrs: {
       type: 'month',
       placeholder: '请选择年月'
@@ -22,25 +15,45 @@ const defaultOptions = {
     value: ''
   },
   defaultClass: 'time-filter',
-  component: 'de-date',
-  filterDialog: true
+  component: 'de-date'
+}
+const drawPanel = {
+  type: 'custom',
+  style: {
+    width: 300,
+    height: 35,
+    fontSize: 14,
+    fontWeight: 500,
+    lineHeight: '',
+    letterSpacing: 0,
+    textAlign: '',
+    color: ''
+  },
+  component: 'de-date'
 }
 
 class TimeMonthServiceImpl extends WidgetService {
-  constructor(options) {
-    Object.assign(options, defaultOptions)
+  constructor(options = {}) {
+    Object.assign(options, { name: 'timeMonthWidget' })
     super(options)
+    this.filterDialog = true
+    this.showSwitch = false
   }
 
-  initWidget() {
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
     // console.log('this is first initWidget')
   }
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
 
+  initFilterDialog() {
+    const value = JSON.parse(JSON.stringify(dialogPanel))
+    return value
+  }
+
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
   filterFieldMethod(fields) {
     return fields.filter(field => {
@@ -48,5 +61,5 @@ class TimeMonthServiceImpl extends WidgetService {
     })
   }
 }
-const timeMonthServiceImpl = new TimeMonthServiceImpl({ name: 'timeMonthWidget' })
+const timeMonthServiceImpl = new TimeMonthServiceImpl()
 export default timeMonthServiceImpl

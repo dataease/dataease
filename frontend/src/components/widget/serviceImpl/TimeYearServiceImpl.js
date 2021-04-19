@@ -1,20 +1,13 @@
 import { WidgetService } from '../service/WidgetService'
-const defaultOptions = {
-  name: 'timeYearWidget',
+
+const leftPanel = {
   icon: 'iconfont icon-nian',
   label: '年份',
-  style: {
-    width: 200,
-    height: 22,
-    fontSize: 14,
-    fontWeight: 500,
-    lineHeight: '',
-    letterSpacing: 0,
-    textAlign: '',
-    color: ''
-  },
+  defaultClass: 'time-filter'
+}
+
+const dialogPanel = {
   options: {
-    refId: '1234567890',
     attrs: {
       type: 'year',
       placeholder: '请选择年份'
@@ -22,25 +15,45 @@ const defaultOptions = {
     value: ''
   },
   defaultClass: 'time-filter',
-  component: 'de-date',
-  filterDialog: true
+  component: 'de-date'
+}
+const drawPanel = {
+  type: 'custom',
+  style: {
+    width: 300,
+    height: 35,
+    fontSize: 14,
+    fontWeight: 500,
+    lineHeight: '',
+    letterSpacing: 0,
+    textAlign: '',
+    color: ''
+  },
+  component: 'de-date'
 }
 
 class TimeYearServiceImpl extends WidgetService {
-  constructor(options) {
-    Object.assign(options, defaultOptions)
+  constructor(options = {}) {
+    Object.assign(options, { name: 'timeYearWidget' })
     super(options)
+    this.filterDialog = true
+    this.showSwitch = false
   }
 
-  initWidget() {
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
     // console.log('this is first initWidget')
   }
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
 
+  initFilterDialog() {
+    const value = JSON.parse(JSON.stringify(dialogPanel))
+    return value
+  }
+
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
 
   filterFieldMethod(fields) {
@@ -49,5 +62,5 @@ class TimeYearServiceImpl extends WidgetService {
     })
   }
 }
-const timeYearServiceImpl = new TimeYearServiceImpl({ name: 'timeYearWidget' })
+const timeYearServiceImpl = new TimeYearServiceImpl()
 export default timeYearServiceImpl

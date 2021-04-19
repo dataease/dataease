@@ -1,11 +1,26 @@
 import { WidgetService } from '../service/WidgetService'
-const defaultOptions = {
-  name: 'timeQuarterWidget',
+
+const leftPanel = {
   icon: 'iconfont icon-jidu',
   label: '季度',
+  defaultClass: 'time-filter'
+}
+
+const dialogPanel = {
+  options: {
+    attrs: {
+      placeholder: '请选择年份'
+    },
+    value: ''
+  },
+  defaultClass: 'time-filter',
+  component: 'de-quarter'
+}
+const drawPanel = {
+  type: 'custom',
   style: {
-    width: 200,
-    height: 22,
+    width: 300,
+    height: 35,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
@@ -13,34 +28,31 @@ const defaultOptions = {
     textAlign: '',
     color: ''
   },
-  options: {
-    refId: '1234567890',
-    attrs: {
-
-      placeholder: '请选择季度'
-    },
-    value: ''
-  },
-  defaultClass: 'time-filter',
-  component: 'de-quarter',
-  filterDialog: true
+  component: 'de-quarter'
 }
 
 class TimeQuarterServiceImpl extends WidgetService {
-  constructor(options) {
-    Object.assign(options, defaultOptions)
+  constructor(options = {}) {
+    Object.assign(options, { name: 'timeQuarterWidget' })
     super(options)
+    this.filterDialog = true
+    this.showSwitch = false
   }
 
-  initWidget() {
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
     // console.log('this is first initWidget')
   }
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
 
+  initFilterDialog() {
+    const value = JSON.parse(JSON.stringify(dialogPanel))
+    return value
+  }
+
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
   filterFieldMethod(fields) {
     return fields.filter(field => {
@@ -48,5 +60,5 @@ class TimeQuarterServiceImpl extends WidgetService {
     })
   }
 }
-const timeQuarterServiceImpl = new TimeQuarterServiceImpl({ name: 'timeQuarterWidget' })
+const timeQuarterServiceImpl = new TimeQuarterServiceImpl()
 export default timeQuarterServiceImpl

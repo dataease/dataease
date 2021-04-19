@@ -1,11 +1,27 @@
 import { WidgetService } from '../service/WidgetService'
-const defaultOptions = {
-  name: 'timeDateWidget',
+
+const leftPanel = {
   icon: 'iconfont icon-ri',
   label: '日期',
+  defaultClass: 'time-filter'
+}
+
+const dialogPanel = {
+  options: {
+    attrs: {
+      type: 'date',
+      placeholder: '请选择日期'
+    },
+    value: ''
+  },
+  defaultClass: 'time-filter',
+  component: 'de-date'
+}
+const drawPanel = {
+  type: 'custom',
   style: {
-    width: 200,
-    height: 22,
+    width: 300,
+    height: 35,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
@@ -13,35 +29,31 @@ const defaultOptions = {
     textAlign: '',
     color: ''
   },
-  options: {
-    refId: '1234567890',
-    attrs: {
-      type: 'date',
-      placeholder: '请选择日期'
-    },
-    value: ''
-  },
-
-  defaultClass: 'time-filter',
-  component: 'de-date',
-  filterDialog: true
+  component: 'de-date'
 }
 
 class TimeDateServiceImpl extends WidgetService {
-  constructor(options) {
-    Object.assign(options, defaultOptions)
+  constructor(options = {}) {
+    Object.assign(options, { name: 'timeDateWidget' })
     super(options)
+    this.filterDialog = true
+    this.showSwitch = false
   }
 
-  initWidget() {
+  initLeftPanel() {
+    const value = JSON.parse(JSON.stringify(leftPanel))
+    return value
     // console.log('this is first initWidget')
   }
-  toDrawWidget() {
-    // console.log('this is first toDrawWidget')
-  }
-  // 移动到画布之前回掉
-  beforeToDraw() {
 
+  initFilterDialog() {
+    const value = JSON.parse(JSON.stringify(dialogPanel))
+    return value
+  }
+
+  initDrawPanel() {
+    const value = JSON.parse(JSON.stringify(drawPanel))
+    return value
   }
   filterFieldMethod(fields) {
     return fields.filter(field => {

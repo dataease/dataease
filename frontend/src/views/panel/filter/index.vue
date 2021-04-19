@@ -36,28 +36,28 @@ export default {
     return {
       componentList,
       panelInfo: this.$store.state.panel.panelInfo,
+      //   widgetSubjects: {
+      //     '文本过滤组件': [
+      //       'mySelectWidget'
+      //     ]
+      //   }
       widgetSubjects: {
+        '时间过滤组件': [
+          'timeYearWidget',
+          'timeMonthWidget',
+          'timeQuarterWidget',
+          'timeDateWidget',
+          'timeDateRangeWidget'
+
+        ],
         '文本过滤组件': [
-          'mySelectWidget'
+          'textSelectWidget',
+          'textInputWidget'
+        ],
+        '按钮': [
+          'buttonSureWidget'
         ]
       }
-      //   widgetSubjects: {
-      //     '时间过滤组件': [
-      //       'timeYearWidget',
-      //       'timeMonthWidget',
-      //       'timeQuarterWidget',
-      //       'timeDateWidget',
-      //       'timeDateRangeWidget'
-
-    //     ],
-    //     '文本过滤组件': [
-    //       'textSelectWidget',
-    //       'textInputWidget'
-    //     ],
-    //     '按钮': [
-    //       'buttonSureWidget'
-    //     ]
-    //   }
     }
   },
   created() {
