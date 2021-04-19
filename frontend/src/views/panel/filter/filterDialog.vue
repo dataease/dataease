@@ -249,6 +249,9 @@ export default {
           this.componentInfo.options.attrs.dragItems = values
           this.$emit('re-fresh-component', this.componentInfo)
         }
+      } else if (this.componentInfo && this.componentInfo.options.attrs.fieldId) {
+        this.componentInfo.options.attrs.fieldId = null
+        this.$emit('re-fresh-component', this.componentInfo)
       }
     }
   },

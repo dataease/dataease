@@ -9,7 +9,7 @@ const leftPanel = {
 const dialogPanel = {
   options: {
     attrs: {
-      placeholder: '请选择年份'
+      placeholder: '请选择季度'
     },
     value: ''
   },

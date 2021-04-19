@@ -45,7 +45,7 @@ export default {
         '时间过滤组件': [
           'timeYearWidget',
           'timeMonthWidget',
-          'timeQuarterWidget',
+          //   'timeQuarterWidget',
           'timeDateWidget',
           'timeDateRangeWidget'
 

@@ -97,7 +97,7 @@
       <div style="text-align: end !important;margin: 0 15px !important;">
         <span slot="footer">
           <el-button @click="cancelFilter">取 消</el-button>
-          <el-button type="primary" @click="sureFilter">确 定</el-button>
+          <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" @click="sureFilter">确 定</el-button>
         </span>
       </div>
     </el-dialog>
@@ -342,6 +342,7 @@ export default {
     },
     reFreshComponent(component) {
       this.currentFilterCom = component
+      this.$forceUpdate()
     },
     eidtDialog() {
       const serviceName = this.curComponent.serviceName
