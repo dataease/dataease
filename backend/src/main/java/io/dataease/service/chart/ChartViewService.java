@@ -170,7 +170,11 @@ public class ChartViewService {
             x.add(a.toString());
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
-                series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                try {
+                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                } catch (Exception e) {
+                    series.get(j).getData().add(new BigDecimal(0));
+                }
             }
         }
         Map<String, Object> map = new HashMap<>();
