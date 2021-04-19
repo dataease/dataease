@@ -44,6 +44,7 @@ class MySelectImpl extends DrawWidgetService {
     Object.assign(options, { name: 'mySelectWidget' })
     super(options)
     this.filterDialog = true
+    this.showSwitch = true
   }
 
   initLeftPanel() {

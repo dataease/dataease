@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     changeValue(value) {
-      this.inDraw && this.$emit('set-condition-value', { component: this.element, value: value, operator: this.operator })
+      this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
     }
   }
 }

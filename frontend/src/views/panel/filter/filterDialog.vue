@@ -106,14 +106,17 @@
           <el-col :span="8">
             <div class="filter-options-left">
               <el-switch
-                active-text="单选"
-                inactive-text="多选"
+                v-if="widget.showSwitch"
+                v-model="componentInfo.options.attrs.multiple"
+                active-text="多选"
+                inactive-text="单选"
               />
             </div>
           </el-col>
           <el-col :span="16"><div class="filter-options-right">
-            <el-checkbox disabled>备选项1</el-checkbox>
-            <el-checkbox disabled>备选项</el-checkbox>
+            <el-checkbox v-model="customRange"><span> 自定义控制范围 </span> </el-checkbox>
+            <i :class="{'i-filter-active': customRange, 'i-filter-inactive': !customRange}" class="el-icon-setting i-filter" @click="showFilterRange" />
+            <!-- <el-checkbox disabled>备选项</el-checkbox> -->
           </div>
 
           </el-col>
@@ -182,7 +185,8 @@ export default {
       },
       selectField: [],
       widget: null,
-      fieldValues: []
+      fieldValues: [],
+      customRange: false
     }
   },
 
@@ -329,6 +333,12 @@ export default {
     closeItem(tag) {
       const index = tag.index
       this.selectField.splice(index, 1)
+    },
+    showFilterRange() {
+      // 如果不是自定义范围 直接返回
+      if (!this.customRange) {
+        return
+      }
     }
   }
 }
@@ -460,6 +470,18 @@ export default {
   .box-card {
       width: 100%;
       height: 100%;
+  }
+  .i-filter {
+    text-align: center;
+    margin-left: 5px;
+    margin-top: 1px;
+  }
+  .i-filter-inactive {
+      color: #9ea6b2!important;
+      cursor: not-allowed!important;
+  }
+  .i-filter-active {
+      cursor: pointer!important;
   }
 
 </style>
