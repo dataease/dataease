@@ -1,6 +1,6 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :style="element.style" :placeholder="options.attrs.placeholder" @change="changeValue">
+  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :multiple="options.attrs.multiple" :style="element.style" :placeholder="options.attrs.placeholder" @change="changeValue">
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"

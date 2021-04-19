@@ -31,7 +31,7 @@ export default {
   methods: {
     getData(id) {
       if (id) {
-        post('/chart/view/getData/' + id, null).then(response => {
+        post('/chart/view/getData/' + id, {}).then(response => {
           // 将视图传入echart组件
           this.chart = response.data
         })

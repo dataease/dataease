@@ -314,7 +314,8 @@ export default {
     setConditionValue(obj) {
       const { component, value, operator } = obj
       const fieldId = component.options.attrs.fieldId
-      const condition = new Condition(component.id, fieldId, operator, value, null)
+      const viewIds = component.options.attrs.viewIds
+      const condition = new Condition(component.id, fieldId, operator, value, viewIds)
       this.addCondition(condition)
     },
     addCondition(condition) {

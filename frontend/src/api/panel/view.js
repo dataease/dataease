@@ -8,3 +8,12 @@ export function tree(data) {
     data
   })
 }
+
+export function viewsWithIds(data) {
+  return request({
+    url: '/api/panelView/viewsWithIds',
+    method: 'post',
+    loading: true,
+    data
+  })
+}

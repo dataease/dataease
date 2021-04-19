@@ -320,4 +320,10 @@ public class ChartViewService {
         }
         return map;
     }
+
+    public List<ChartView> viewsByIds(List<String> viewIds){
+        ChartViewExample example = new ChartViewExample();
+        example.createCriteria().andIdIn(viewIds);
+        return chartViewMapper.selectByExample(example);
+    }
 }
