@@ -38,6 +38,7 @@ export class DrawWidgetService {
 
   getDrawPanel() {
     let drawPanel = this.initDrawPanel()
+    drawPanel.serviceName = this.options.name
     drawPanel.style = Object.assign(drawPanel.style, commonStyle)
     drawPanel = Object.assign(drawPanel, commonAttr)
     if (this.filterDialog) {

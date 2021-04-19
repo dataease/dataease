@@ -195,6 +195,7 @@ export default {
         this.widget && fieldValues(fieldId).then(res => {
           info.options.attrs.datas = this.widget.optionDatas(res.data)
           info.options.attrs.fieldId = fieldId
+          info.options.attrs.dragItems = values
           this.$emit('re-fresh-component', info)
         })
       }
@@ -204,6 +205,10 @@ export default {
     // this.widget = ApplicationContext.getService(this.widgetId)
     this.widget = this.widgetInfo
     this.loadDataSetTree()
+
+    if (this.componentInfo && this.componentInfo.options.attrs.dragItems) {
+      this.selectField = this.componentInfo.options.attrs.dragItems
+    }
   },
 
   methods: {

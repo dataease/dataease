@@ -49,6 +49,9 @@ export default {
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
         bus.$emit('PanelSwitchComponent', { name: 'ChartEdit' })
       }
+      if (this.curComponent.type === 'custom') {
+        bus.$emit('component-dialog-edit')
+      }
       // 编辑组件
     },
     lock() {

@@ -163,7 +163,8 @@ export default {
       'componentData',
       'curComponent',
       'isClickComponent',
-      'canvasStyleData'
+      'canvasStyleData',
+      'curComponentIndex'
     ])
   },
 
@@ -192,6 +193,10 @@ export default {
     this.insertToBody()
     bus.$on('component-on-drag', () => {
       this.show = false
+    })
+
+    bus.$on('component-dialog-edit', () => {
+      this.eidtDialog()
     })
   },
   beforeDestroy() {
@@ -273,7 +278,7 @@ export default {
       } else {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
 
-        this.currentFilterCom = this.currentWidget.getDrawPanel(this.panelInfo.id)
+        this.currentFilterCom = this.currentWidget.getDrawPanel()
         this.currentFilterCom.style.top = e.offsetY
         this.currentFilterCom.style.left = e.offsetX
         this.currentFilterCom.id = newComponentId
@@ -330,12 +335,19 @@ export default {
     },
     sureFilter() {
       const component = deepCopy(this.currentFilterCom)
-      this.$store.commit('addComponent', { component })
+      //   this.$store.commit('addComponent', { component })
+      this.$store.commit('setComponentWithId', component)
       this.$store.commit('recordSnapshot')
       this.cancelFilter()
     },
     reFreshComponent(component) {
       this.currentFilterCom = component
+    },
+    eidtDialog() {
+      const serviceName = this.curComponent.serviceName
+      this.currentWidget = ApplicationContext.getService(serviceName)
+      this.currentFilterCom = this.curComponent
+      this.openFilterDiolog()
     }
   }
 }
