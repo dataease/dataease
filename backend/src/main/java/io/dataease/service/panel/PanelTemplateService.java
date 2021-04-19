@@ -69,9 +69,9 @@ public class PanelTemplateService {
     }
 
 
-    public void deleteCircle(String id){
+    public void delete(String id){
         Assert.notNull(id, "id cannot be null");
-        extPanelTemplateMapper.deleteCircle(id);
+        panelTemplateMapper.deleteByPrimaryKey(id);
     }
 
 

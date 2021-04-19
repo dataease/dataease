@@ -1,6 +1,6 @@
 <template>
   <div class="testcase-template">
-    <div :style="classBackground" class="template-img">
+    <div class="template-img" :style="classBackground">
       <i class="el-icon-error" @click.stop="templateDelete" />
     </div>
     <span class="demonstration">{{ template.name }}</span>
@@ -23,13 +23,23 @@ export default {
     classBackground() {
       return {
         background: `url(${this.template.snapshot}) no-repeat`,
-        'background-size': '100%,100%'
+        'background-size': `100% 100%`
       }
     }
   },
   methods: {
     templateDelete() {
-      console.log('templateDelete')
+      this.$alert('是否删除模板：' + this.template.name + '？', '', {
+        confirmButtonText: '确认',
+        callback: (action) => {
+          if (action === 'confirm') {
+            this.$emit('templateDelete', this.template.id)
+          }
+        }
+      })
+    },
+    templateEdit() {
+      this.$emit('templateEdit', this.template)
     },
     handleDelete() {
       console.log('handleDelete')
@@ -57,14 +67,13 @@ export default {
   }
 
   .template-img {
-    height: 150px;
+    height: 130px;
     width: 200px;
     margin: 0 auto;
     box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
     border: solid 2px #fff;
     box-sizing: border-box;
     border-radius: 3px;
-    background-size: 100%,100%;
   }
 
   .template-img:hover {

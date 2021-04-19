@@ -15,6 +15,20 @@ export default {
   props: {
     element: {
       type: Object
+    },
+    filter: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {
+          filter: []
+        }
+      }
+    }
+  },
+  watch: {
+    filter(val) {
+      this.getData(this.element.propValue.viewId)
     }
   },
   data() {
@@ -31,7 +45,7 @@ export default {
   methods: {
     getData(id) {
       if (id) {
-        post('/chart/view/getData/' + id, null).then(response => {
+        post('/chart/view/getData/' + id, this.filter).then(response => {
           // 将视图传入echart组件
           this.chart = response.data
         })
