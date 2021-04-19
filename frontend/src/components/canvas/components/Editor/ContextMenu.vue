@@ -49,6 +49,9 @@ export default {
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
         bus.$emit('PanelSwitchComponent', { name: 'ChartEdit' })
       }
+      if (this.curComponent.type === 'custom') {
+        bus.$emit('component-dialog-edit')
+      }
       // 编辑组件
     },
     lock() {
@@ -65,6 +68,7 @@ export default {
     },
 
     cut() {
+      this.deleteCurCondition()
       this.$store.commit('cut')
     },
 
@@ -78,8 +82,15 @@ export default {
     },
 
     deleteComponent() {
+      this.deleteCurCondition()
       this.$store.commit('deleteComponent')
       this.$store.commit('recordSnapshot')
+    },
+
+    deleteCurCondition() {
+      if (this.curComponent.type === 'custom') {
+        bus.$emit('delete-condition', { componentId: this.curComponent.id })
+      }
     },
 
     upComponent() {

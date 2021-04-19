@@ -10,8 +10,8 @@
       <div class="filter-widget-content">
         <div
           v-for="(widget, index) in item"
-          :key="widget.name+index"
-          :data-id="widget.name"
+          :key="widget.widgetName+index"
+          :data-id="widget.widgetName"
           draggable
           :data-index="index"
           :class="'filter-widget '+ (widget.defaultClass || '')"
@@ -35,23 +35,29 @@ export default {
   data() {
     return {
       componentList,
+      panelInfo: this.$store.state.panel.panelInfo,
       widgetSubjects: {
-        '时间过滤组件': [
-          'timeYearWidget',
-          'timeMonthWidget',
-          'timeQuarterWidget',
-          'timeDateWidget',
-          'timeDateRangeWidget'
-
-        ],
         '文本过滤组件': [
-          'textSelectWidget',
-          'textInputWidget'
-        ],
-        '按钮': [
-          'buttonSureWidget'
+          'mySelectWidget'
         ]
       }
+      //   widgetSubjects: {
+      //     '时间过滤组件': [
+      //       'timeYearWidget',
+      //       'timeMonthWidget',
+      //       'timeQuarterWidget',
+      //       'timeDateWidget',
+      //       'timeDateRangeWidget'
+
+    //     ],
+    //     '文本过滤组件': [
+    //       'textSelectWidget',
+    //       'textInputWidget'
+    //     ],
+    //     '按钮': [
+    //       'buttonSureWidget'
+    //     ]
+    //   }
     }
   },
   created() {
@@ -59,7 +65,9 @@ export default {
       const widgetNames = this.widgetSubjects[key]
       this.widgetSubjects[key] = widgetNames.map(widgetName => {
         const widget = ApplicationContext.getService(widgetName)
-        return widget
+        const result = { widgetName: widgetName }
+        Object.assign(result, widget.getLeftPanel())
+        return result
       })
     }
   },

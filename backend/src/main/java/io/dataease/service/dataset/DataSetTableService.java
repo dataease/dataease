@@ -16,6 +16,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -421,5 +422,16 @@ public class DataSetTableService {
         if (list.size() > 0) {
             throw new RuntimeException("Name can't repeat in same group.");
         }
+    }
+
+    public Map<String, Object> getDatasetDetail(String id) {
+        Map<String, Object> map = new HashMap<>();
+        DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
+        map.put("table", table);
+        if (ObjectUtils.isNotEmpty(table)) {
+            Datasource datasource = datasourceMapper.selectByPrimaryKey(table.getDataSourceId());
+            map.put("datasource", datasource);
+        }
+        return map;
     }
 }

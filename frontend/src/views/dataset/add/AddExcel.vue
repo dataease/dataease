@@ -24,10 +24,11 @@
               </el-form-item>
               <el-form-item>
                 <el-upload
-                  action="https://jsonplaceholder.typicode.com/posts/"
+                  action="/posts/"
                   :multiple="false"
                   :show-file-list="false"
                   accept=".xls,.xlsx,.csv"
+                  :on-success="uploadSuccess"
                 >
                   <el-button size="mini" type="primary">{{ $t('dataset.upload_file') }}</el-button>
                 </el-upload>
@@ -117,6 +118,9 @@ export default {
     //     this.options = response.data
     //   })
     // },
+    uploadSuccess(response, file, fileList) {
+      console.log(response)
+    },
 
     save() {
       // console.log(this.checkTableList);

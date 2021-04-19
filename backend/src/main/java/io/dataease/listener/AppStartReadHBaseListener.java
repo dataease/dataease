@@ -3,16 +3,10 @@ package io.dataease.listener;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableExample;
 import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.DatasetTableFieldExample;
-import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.base.mapper.DatasetTableMapper;
-import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.spark.SparkCalc;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.SparkSession;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
@@ -45,14 +39,14 @@ public class AppStartReadHBaseListener implements ApplicationListener<Applicatio
         datasetTableExample.createCriteria().andModeEqualTo(1);
         List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
         for (DatasetTable table : datasetTables) {
-            commonThreadPool.addTask(() -> {
+//            commonThreadPool.addTask(() -> {
                 try {
                     List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
                     sparkCalc.getHBaseDataAndCache(table.getId(), fields);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
+//            });
         }
     }
 }

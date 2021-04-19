@@ -1,6 +1,8 @@
 package io.dataease.controller.chart;
 
 import io.dataease.base.domain.ChartViewWithBLOBs;
+import io.dataease.controller.request.chart.ChartExtFilterRequest;
+import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.service.chart.ChartViewService;
@@ -41,7 +43,12 @@ public class ChartViewController {
     }
 
     @PostMapping("/getData/{id}")
-    public ChartViewDTO getData(@PathVariable String id) throws Exception {
-        return chartViewService.getData(id);
+    public ChartViewDTO getData(@PathVariable String id, @RequestBody ChartExtRequest requestList) throws Exception {
+        return chartViewService.getData(id, requestList);
+    }
+
+    @PostMapping("chartDetail/{id}")
+    public Map<String, Object> chartDetail(@PathVariable String id) {
+        return chartViewService.getChartDetail(id);
     }
 }

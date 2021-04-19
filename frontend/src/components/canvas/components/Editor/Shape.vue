@@ -3,13 +3,13 @@
     <span v-show="isActive()" class="iconfont icon-xiangyouxuanzhuan" @mousedown="handleRotate" />
     <span v-show="element.isLock" class="iconfont icon-suo" />
 
-<!--    <span v-show="isActive()" class="iconfont icon-more">-->
-<!--      <el-button-->
-<!--        icon="el-icon-more"-->
-<!--        type="text"-->
-<!--        size="small"-->
-<!--      />-->
-<!--    </span>-->
+    <!--    <span v-show="isActive()" class="iconfont icon-more">-->
+    <!--      <el-button-->
+    <!--        icon="el-icon-more"-->
+    <!--        type="text"-->
+    <!--        size="small"-->
+    <!--      />-->
+    <!--    </span>-->
     <div
       v-for="item in (isActive()? pointList : [])"
       :key="item"
@@ -335,9 +335,9 @@ export default {
           symmetricPoint
         })
 
-        console.log('this is test:' + JSON.stringify(this.element.propValue.viewId))
+        // console.log('this is test:' + JSON.stringify(this.element.propValue.viewId))
         this.$store.commit('setShapeStyle', style)
-        eventBus.$emit('resizing', this.element.propValue.viewId)
+        this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)
       }
 
       const up = () => {

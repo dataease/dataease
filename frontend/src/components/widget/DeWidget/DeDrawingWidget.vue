@@ -1,20 +1,30 @@
 <script>
+import { ApplicationContext } from '@/utils/ApplicationContext'
+import store from '@/store'
 export default {
   name: 'DeDrawingWidget',
   functional: true,
   props: {
-    item: {
-      type: Object,
+    serviceName: {
+      type: String,
       default: null
     }
   },
 
   render(createElement, context) {
-    const item = context.props.item
-    return createElement(item.component, {
+    const widgetInfo = ApplicationContext.getService(context.props.serviceName)
+    // const widgetInfo = context.props.widgetInfo
+    const dialogInfo = widgetInfo.getDialogPanel && widgetInfo.getDialogPanel() || null
+    const drawInfo = widgetInfo.getDrawPanel && widgetInfo.getDrawPanel() || null
+    const curComponent = store.state.curComponent
+    if (!dialogInfo) {
+      throw new Error('系统错误')
+    }
+    return createElement(dialogInfo.component, {
       props: {
-        element: item
+        element: curComponent || drawInfo || dialogInfo
       },
+      style: context.data.style,
       on: {
         'value-change': value => {
           context.listeners['filter-value-change'] && context.listeners['filter-value-change'](value)

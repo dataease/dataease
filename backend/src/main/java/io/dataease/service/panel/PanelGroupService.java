@@ -58,7 +58,7 @@ public class PanelGroupService {
         return panelGroupDTOList;
     }
 
-    public void getTreeChildren(List<PanelGroupDTO> parentPanelGroupDTO){
+    public void getTreeChildren(List<PanelGroupDTO> parentPanelGroupDTO) {
         Optional.ofNullable(parentPanelGroupDTO).ifPresent(parent -> parent.forEach(panelGroupDTO -> {
             List<PanelGroupDTO> panelGroupDTOChildren = extPanelGroupMapper.panelGroupList(new PanelGroupRequest(panelGroupDTO.getId()));
             panelGroupDTO.setChildren(panelGroupDTOChildren);
@@ -66,7 +66,7 @@ public class PanelGroupService {
         }));
     }
 
-    public List<PanelGroupDTO> getDefaultTree(PanelGroupRequest panelGroupRequest){
+    public List<PanelGroupDTO> getDefaultTree(PanelGroupRequest panelGroupRequest) {
         return extPanelGroupMapper.panelGroupList(panelGroupRequest);
     }
 
@@ -86,32 +86,32 @@ public class PanelGroupService {
     }
 
 
-    public void deleteCircle(String id){
+    public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
         extPanelGroupMapper.deleteCircle(id);
     }
 
 
-    public PanelGroupWithBLOBs findOne(String panelId){
-       return panelGroupMapper.selectByPrimaryKey(panelId);
+    public PanelGroupWithBLOBs findOne(String panelId) {
+        return panelGroupMapper.selectByPrimaryKey(panelId);
     }
 
-    public PanelGroupDTO findOneBack(String panelId) throws Exception{
+    public PanelGroupDTO findOneBack(String panelId) throws Exception {
         PanelGroupDTO panelGroupDTO = extPanelGroupMapper.panelGroup(panelId);
         Assert.notNull(panelGroupDTO, "未查询到仪表盘信息");
         PanelDesignExample panelDesignExample = new PanelDesignExample();
         panelDesignExample.createCriteria().andPanelIdEqualTo(panelId);
-        List<PanelDesign>  panelDesignList = panelDesignMapper.selectByExample(panelDesignExample);
-        if(CollectionUtils.isNotEmpty(panelDesignList)){
+        List<PanelDesign> panelDesignList = panelDesignMapper.selectByExample(panelDesignExample);
+        if (CollectionUtils.isNotEmpty(panelDesignList)) {
             List<PanelDesignDTO> panelDesignDTOList = new ArrayList<>();
             //TODO 加载所有视图和组件的数据
-            for(PanelDesign panelDesign:panelDesignList){
+            for (PanelDesign panelDesign : panelDesignList) {
                 //TODO 获取view 视图数据
-                ChartViewDTO chartViewDTO = chartViewService.getData(panelDesign.getComponentId());
+                ChartViewDTO chartViewDTO = chartViewService.getData(panelDesign.getComponentId(), null);
                 //TODO 获取systemComponent 系统组件数据（待开发）
 
                 PanelDesignDTO panelDesignDTO = new PanelDesignDTO(chartViewDTO);
-                BeanUtils.copyBean(panelDesignDTO,panelDesign);
+                BeanUtils.copyBean(panelDesignDTO, panelDesign);
                 panelDesignDTO.setKeepFlag(true);
                 panelDesignDTOList.add(panelDesignDTO);
             }
@@ -123,14 +123,14 @@ public class PanelGroupService {
     }
 
 
-    public List<ChartViewDTO> getUsableViews(String panelId) throws Exception{
+    public List<ChartViewDTO> getUsableViews(String panelId) throws Exception {
         List<ChartViewDTO> chartViewDTOList = new ArrayList<>();
         List<ChartView> allChartView = chartViewMapper.selectByExample(null);
         Optional.ofNullable(allChartView).orElse(new ArrayList<>()).stream().forEach(chartView -> {
             try {
-                chartViewDTOList.add(chartViewService.getData(chartView.getId()));
-            }catch (Exception e){
-                LOGGER.error("获取view详情出错："+chartView.getId(),e);
+                chartViewDTOList.add(chartViewService.getData(chartView.getId(), null));
+            } catch (Exception e) {
+                LOGGER.error("获取view详情出错：" + chartView.getId(), e);
             }
         });
         return chartViewDTOList;
@@ -150,24 +150,24 @@ public class PanelGroupService {
 
         //TODO 更新panelDesign 信息
         String panelId = request.getId();
-        Assert.notNull(panelId,"panelId should not be null");
+        Assert.notNull(panelId, "panelId should not be null");
         //清理原有design
         extPanelDesignMapper.deleteByPanelId(panelId);
         //保存view 或者component design
         Optional.ofNullable(request.getPanelDesigns()).orElse(new ArrayList<>()).stream().forEach(panelDesignDTO -> {
-           if(panelDesignDTO.isKeepFlag()) {
-               String componentId = "";
-               if(StringUtils.equals(PanelConstants.COMPONENT_TYPE_VIEW,panelDesignDTO.getComponentType())){
-                   componentId = panelDesignDTO.getChartView().getId();
-               }else{
-                   //预留 公共组件id获取
-                   componentId = "";
-               }
-               panelDesignDTO.setPanelId(panelId);
-               panelDesignDTO.setComponentId(componentId);
-               panelDesignDTO.setUpdateTime(System.currentTimeMillis());
-               panelDesignMapper.insertSelective(panelDesignDTO);
-           }
+            if (panelDesignDTO.isKeepFlag()) {
+                String componentId = "";
+                if (StringUtils.equals(PanelConstants.COMPONENT_TYPE_VIEW, panelDesignDTO.getComponentType())) {
+                    componentId = panelDesignDTO.getChartView().getId();
+                } else {
+                    //预留 公共组件id获取
+                    componentId = "";
+                }
+                panelDesignDTO.setPanelId(panelId);
+                panelDesignDTO.setComponentId(componentId);
+                panelDesignDTO.setUpdateTime(System.currentTimeMillis());
+                panelDesignMapper.insertSelective(panelDesignDTO);
+            }
         });
     }
 }

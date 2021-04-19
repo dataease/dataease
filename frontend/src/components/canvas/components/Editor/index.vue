@@ -25,14 +25,14 @@
       :class="{ lock: item.isLock }"
     >
 
-      <de-drawing-widget
+      <component
+        :is="item.component"
         v-if="item.type==='custom'"
         :id="'component' + item.id"
         class="component"
-        :style="getComponentStyle(item.style)"
+        :style="item.style"
         :element="item"
-        :item="item"
-        @filter-value-change="filterValueChange"
+        @set-condition-value="setConditionValue"
       />
 
       <component
@@ -67,6 +67,7 @@
 <script>
 import { mapState } from 'vuex'
 import Shape from './Shape'
+// eslint-disable-next-line no-unused-vars
 import { getStyle, getComponentRotatedStyle } from '@/components/canvas/utils/style'
 import { $ } from '@/components/canvas/utils/utils'
 import ContextMenu from './ContextMenu'
@@ -75,7 +76,8 @@ import Area from './Area'
 import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
-
+import { Condition } from '@/components/widget/bean/Condition'
+import bus from '@/utils/bus'
 export default {
   components: { Shape, ContextMenu, MarkLine, Area, Grid },
   props: {
@@ -94,21 +96,31 @@ export default {
       },
       width: 0,
       height: 0,
-      isShowArea: false
+      isShowArea: false,
+      conditions: []
     }
   },
-  computed: mapState([
-    'componentData',
-    'curComponent',
-    'canvasStyleData',
-    'editor'
-  ]),
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    ...mapState([
+      'componentData',
+      'curComponent',
+      'canvasStyleData',
+      'editor'
+    ])
+  },
+
   mounted() {
     // 获取编辑器元素
     this.$store.commit('getEditor')
 
     eventBus.$on('hideArea', () => {
       this.hideArea()
+    })
+    bus.$on('delete-condition', condition => {
+      this.deleteCondition(condition)
     })
   },
   methods: {
@@ -275,7 +287,8 @@ export default {
     },
 
     getComponentStyle(style) {
-      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+    //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      return style
     },
 
     handleInput(element, value) {
@@ -284,6 +297,7 @@ export default {
     },
 
     getTextareaHeight(element, text) {
+      // eslint-disable-next-line prefer-const
       let { lineHeight, fontSize, height } = element.style
       if (lineHeight === '') {
         lineHeight = 1.5
@@ -295,6 +309,28 @@ export default {
 
     filterValueChange(value) {
       console.log('emit:' + value)
+    },
+
+    setConditionValue(obj) {
+      const { component, value, operator } = obj
+      const fieldId = component.options.attrs.fieldId
+      const condition = new Condition(component.id, fieldId, operator, value, null)
+      this.addCondition(condition)
+    },
+    addCondition(condition) {
+      this.conditions.push(condition)
+      this.executeSearch()
+    },
+    deleteCondition(condition) {
+      this.conditions = this.conditions.filter(item => {
+        const componentIdSuitable = !condition.componentId || (item.componentId === condition.componentId)
+        const fieldIdSuitable = !condition.fieldId || (item.fieldId === condition.fieldId)
+        return !(componentIdSuitable && fieldIdSuitable)
+      })
+      this.executeSearch()
+    },
+    executeSearch() {
+      console.log('当前查询条件是: ' + JSON.stringify(this.conditions))
     }
   }
 }

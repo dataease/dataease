@@ -1,6 +1,6 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :placeholder="options.attrs.placeholder" @change="changeValue">
+  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :style="element.style" :placeholder="options.attrs.placeholder" @change="changeValue">
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"
@@ -12,19 +12,31 @@
 </template>
 
 <script>
+
 export default {
 
   props: {
     element: {
       type: Object,
       default: null
+    },
+    inDraw: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
-      options: null
+      options: null,
+      operator: 'eq'
     }
   },
+  watch: {
+    'element.style': function(value) {
+      // console.log(value)
+    }
+  },
+
   created() {
     this.options = this.element.options
   },
@@ -35,7 +47,7 @@ export default {
   },
   methods: {
     changeValue(value) {
-      this.$emit('value-change', value)
+      this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
     }
   }
 }

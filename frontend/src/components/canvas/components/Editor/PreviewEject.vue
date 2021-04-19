@@ -71,7 +71,6 @@ export default {
       })
     })
     window.onresize = () => {
-      debugger
       this.resize()
     }
     // this.resize()
@@ -88,7 +87,6 @@ export default {
       this.handleScaleChange()
     },
     restore() {
-      debugger
       this.panelId = this.$route.path.split('/')[2]
       // 加载视图数据
       get('panel/group/findOne/' + this.panelId).then(response => {

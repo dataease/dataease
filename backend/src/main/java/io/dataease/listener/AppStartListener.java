@@ -1,7 +1,6 @@
 package io.dataease.listener;
 
 import io.dataease.base.domain.DatasetTableTask;
-import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetTableTaskService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

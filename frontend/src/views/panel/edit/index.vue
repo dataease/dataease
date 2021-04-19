@@ -69,19 +69,25 @@
     </de-container>
 
     <el-dialog
-      v-if="filterVisible"
+      v-if="filterVisible && panelInfo.id"
       title="过滤组件"
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
-      <filter-dialog v-if="filterVisible" :component-info="currentComponent" :widget-id="currentWidgetId" @re-fresh-component="reFreshComponent">
-        <de-drawing-widget
-          v-if="filterVisible && currentComponent"
-          :id="'component' + currentComponent.id"
+      <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" :component-info="currentFilterCom" @re-fresh-component="reFreshComponent">
+        <!-- <de-drawing-widget
+          v-if="filterVisible"
           style="width: 100% !important;"
           class="component"
-          :element="currentComponent"
-          :item="currentComponent"
+          :service-name="currentWidget.name"
+        /> -->
+        <component
+          :is="currentFilterCom.component"
+          :id="'component' + currentFilterCom.id"
+          class="component"
+          :style="currentFilterCom.style"
+          :element="currentFilterCom"
+          :in-draw="false"
         />
       </filter-dialog>
       <!-- <div slot="footer" class="dialog-footer">
@@ -144,9 +150,8 @@ export default {
       activeName: 'attr',
       reSelectAnimateIndex: undefined,
       filterVisible: false,
-      currentWidgetId: null,
       currentWidget: null,
-      currentComponent: null
+      currentFilterCom: null
     }
   },
 
@@ -158,7 +163,8 @@ export default {
       'componentData',
       'curComponent',
       'isClickComponent',
-      'canvasStyleData'
+      'canvasStyleData',
+      'curComponentIndex'
     ])
   },
 
@@ -174,7 +180,6 @@ export default {
       }
     },
     panelInfo(newVal, oldVal) {
-      debugger
       this.init(newVal.id)
     }
   },
@@ -189,6 +194,10 @@ export default {
     bus.$on('component-on-drag', () => {
       this.show = false
     })
+
+    bus.$on('component-dialog-edit', () => {
+      this.eidtDialog()
+    })
   },
   beforeDestroy() {
     const elx = this.$refs.rightPanel
@@ -196,7 +205,6 @@ export default {
   },
   methods: {
     init(panelId) {
-      debugger
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
@@ -252,6 +260,7 @@ export default {
       e.stopPropagation()
       let component
       const newComponentId = uuid.v1()
+
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
 
       // 用户视图设置 复制一个模板
@@ -268,16 +277,17 @@ export default {
         })
       } else {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
+
+        this.currentFilterCom = this.currentWidget.getDrawPanel()
+        this.currentFilterCom.style.top = e.offsetY
+        this.currentFilterCom.style.left = e.offsetX
+        this.currentFilterCom.id = newComponentId
         if (this.currentWidget.filterDialog) {
           this.show = false
-          this.currentComponent = deepCopy(this.currentWidget)
-          this.currentComponent.style.top = e.offsetY
-          this.currentComponent.style.left = e.offsetX
-          this.currentComponent.id = newComponentId
           this.openFilterDiolog()
           return
         }
-        component = deepCopy(this.currentWidget)
+        component = deepCopy(this.currentFilterCom)
       }
 
       component.style.top = e.offsetY
@@ -285,6 +295,11 @@ export default {
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
+      this.clearCurrentInfo()
+    },
+    clearCurrentInfo() {
+      this.currentWidget = null
+      this.currentFilterCom = null
     },
 
     handleDragOver(e) {
@@ -311,23 +326,28 @@ export default {
       }
     },
     openFilterDiolog() {
-      this.currentWidgetId = this.currentComponent.name
       this.filterVisible = true
     },
     cancelFilter() {
       this.filterVisible = false
-      this.currentWidgetId = null
       this.currentWidget = null
-      this.currentComponent = null
+      this.clearCurrentInfo()
     },
     sureFilter() {
-      const component = deepCopy(this.currentComponent)
-      this.$store.commit('addComponent', { component })
+      const component = deepCopy(this.currentFilterCom)
+      //   this.$store.commit('addComponent', { component })
+      this.$store.commit('setComponentWithId', component)
       this.$store.commit('recordSnapshot')
       this.cancelFilter()
     },
     reFreshComponent(component) {
-      this.currentComponent = component
+      this.currentFilterCom = component
+    },
+    eidtDialog() {
+      const serviceName = this.curComponent.serviceName
+      this.currentWidget = ApplicationContext.getService(serviceName)
+      this.currentFilterCom = this.curComponent
+      this.openFilterDiolog()
     }
   }
 }

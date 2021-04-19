@@ -97,6 +97,26 @@ const data = {
       }
     },
 
+    setComponentWithId(state, component) {
+      for (let index = 0; index < state.componentData.length; index++) {
+        const element = state.componentData[index]
+        if (element.id && element.id === component.id) {
+          state.componentData[index] = component
+          return
+        }
+      }
+      state.componentData.push(component)
+    },
+    deleteComponentWithId(state, id) {
+      for (let index = 0; index < state.componentData.length; index++) {
+        const element = state.componentData[index]
+        if (element.id && element.id === id) {
+          state.componentData.splice(index, 1)
+          break
+        }
+      }
+    },
+
     deleteComponent(state, index) {
       if (index === undefined) {
         index = state.curComponentIndex

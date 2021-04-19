@@ -472,6 +472,8 @@ public class ExtractDataService {
         hBaseOutputMeta.setTargetMappingName("target_mapping");
         hBaseOutputMeta.setNamedCluster(clusterTemplate);
         hBaseOutputMeta.setCoreConfigURL(hbase_conf_file);
+        hBaseOutputMeta.setDisableWriteToWAL(true);
+        hBaseOutputMeta.setWriteBufferSize("31457280"); //30M
         if (extractType.equalsIgnoreCase("incremental_delete")) {
             hBaseOutputMeta.setDeleteRowKey(true);
         }

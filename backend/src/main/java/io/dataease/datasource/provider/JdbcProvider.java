@@ -13,24 +13,28 @@ import org.springframework.stereotype.Service;
 import java.sql.*;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider {
 
-
+    private static Map<String, ArrayBlockingQueue<Connection>> jdbcConnection = new HashMap<>();
+    private static int poolSize = 20;
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         List<String[]> list = new LinkedList<>();
-        try (
-                Connection connection = getConnection(datasourceRequest);
-                Statement stat = connection.createStatement();
-                ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())
-        ) {
+        Connection connection = null;
+        try {
+            connection = getConnectionFromPool(datasourceRequest);
+            Statement stat = connection.createStatement();
+            ResultSet rs = stat.executeQuery(datasourceRequest.getQuery());
             list = fetchResult(rs);
         } catch (SQLException e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
+        }finally {
+            returnSource(connection, datasourceRequest.getDatasource().getId());
         }
         return list;
     }
@@ -38,14 +42,18 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public ResultSet getDataResultSet(DatasourceRequest datasourceRequest) throws Exception {
         ResultSet rs;
+        Connection connection = null;
         try {
-            Connection connection = getConnection(datasourceRequest);
+            connection = getConnectionFromPool(datasourceRequest);
             Statement stat = connection.createStatement();
             rs = stat.executeQuery(datasourceRequest.getQuery());
+            returnSource(connection, datasourceRequest.getDatasource().getId());
         } catch (SQLException e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
+        }finally {
+            returnSource(connection, datasourceRequest.getDatasource().getId());
         }
         return rs;
     }
@@ -53,16 +61,19 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String[]> getPageData(DatasourceRequest datasourceRequest) throws Exception {
         List<String[]> list = new LinkedList<>();
-        try (
-                Connection connection = getConnection(datasourceRequest);
-                Statement stat = connection.createStatement();
-                ResultSet rs = stat.executeQuery(datasourceRequest.getQuery() + MessageFormat.format(" LIMIT {0}, {1}", (datasourceRequest.getStartPage() - 1) * datasourceRequest.getPageSize(), datasourceRequest.getPageSize()))
-        ) {
+        Connection connection = null;
+        try {
+            connection = getConnectionFromPool(datasourceRequest);
+            Statement stat = connection.createStatement();
+            ResultSet rs = stat.executeQuery(datasourceRequest.getQuery() + MessageFormat.format(" LIMIT {0}, {1}", (datasourceRequest.getStartPage() - 1) * datasourceRequest.getPageSize(), datasourceRequest.getPageSize()));
+            returnSource(connection, datasourceRequest.getDatasource().getId());
             list = fetchResult(rs);
         } catch (SQLException e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
+        }finally {
+            returnSource(connection, datasourceRequest.getDatasource().getId());
         }
         return list;
     }
@@ -112,23 +123,28 @@ public class JdbcProvider extends DatasourceProvider {
     public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
         String queryStr = getTablesSql(datasourceRequest);
-        try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
+        Connection con = null;
+        try {
+            con = getConnectionFromPool(datasourceRequest);
+            Statement ps = con.createStatement();
             ResultSet resultSet = ps.executeQuery(queryStr);
             while (resultSet.next()) {
                 tables.add(resultSet.getString(1));
             }
+            return tables;
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
+        }finally {
+            returnSource(con, datasourceRequest.getDatasource().getId());
         }
-        return tables;
     }
 
     @Override
     public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
         List<TableFiled> list = new LinkedList<>();
-        try (
-                Connection connection = getConnection(datasourceRequest);
-        ) {
+        Connection connection = null;
+        try {
+            connection = getConnectionFromPool(datasourceRequest);
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable().toUpperCase(), "%");
             while (resultSet.next()) {
@@ -152,6 +168,8 @@ public class JdbcProvider extends DatasourceProvider {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
+        }finally {
+            returnSource(connection, datasourceRequest.getDatasource().getId());
         }
         return list;
     }
@@ -161,27 +179,73 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public void test(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
-        try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
+        Connection con = null;
+        try {
+            con = getConnection(datasourceRequest);
+            Statement ps = con.createStatement();
             ResultSet resultSet = ps.executeQuery(queryStr);
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
+        }finally {
+            con.close();
         }
     }
 
 
     public Long count(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection con = getConnection(datasourceRequest); Statement ps = con.createStatement()) {
+        Connection con = null;
+        try {
+            con = getConnectionFromPool(datasourceRequest); Statement ps = con.createStatement();
             ResultSet resultSet = ps.executeQuery(datasourceRequest.getQuery());
             while (resultSet.next()) {
                 return resultSet.getLong(1);
             }
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
+        }finally {
+            returnSource(con, datasourceRequest.getDatasource().getId());
         }
         return 0L;
     }
 
-    private Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
+    private void returnSource(Connection connection, String dataSourceId) throws Exception{
+        if(connection != null && !connection.isClosed()){
+            ArrayBlockingQueue<Connection> connections = jdbcConnection.get(dataSourceId);
+            connections.put(connection);
+        }
+    }
+
+    private Connection getConnectionFromPool(DatasourceRequest datasourceRequest)throws Exception {
+        ArrayBlockingQueue<Connection> connections = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+        if (connections == null) {
+            initConnectionPool(datasourceRequest);
+        }
+        connections = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+        Connection co = connections.take();
+        return co;
+    }
+
+    @Override
+    public void initConnectionPool(DatasourceRequest datasourceRequest)throws Exception{
+        ArrayBlockingQueue<Connection> connections = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+        if (connections == null) {
+            connections = new ArrayBlockingQueue<>(poolSize);
+            for (int i = 0; i < poolSize ; i++) {
+                Connection connection = getConnection(datasourceRequest);
+                connections.add(connection);
+            }
+            jdbcConnection.put(datasourceRequest.getDatasource().getId(), connections);
+        }else {
+            for (int i = 0; i < poolSize ; i++) {
+                Connection connection = connections.take();
+                connection.close();
+                connection = getConnection(datasourceRequest);
+                connections.add(connection);
+            }
+        }
+    }
+
+    private static Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
         String username = null;
         String password = null;
         String driver = null;
