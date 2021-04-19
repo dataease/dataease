@@ -65,7 +65,9 @@
         <!--要生成的数据库表 -->
 
         <!--        <table tableName="datasource"/>-->
-        <table tableName="panel_group"/>
+<!--        <table tableName="sys_dict"/>-->
+<!--        <table tableName="sys_dict_item"/>-->
+        <table tableName="panel_template"/>
 <!--        <table tableName="panel_design"/>-->
 
 

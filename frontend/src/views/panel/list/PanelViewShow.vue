@@ -5,8 +5,13 @@
         <!--TODO 仪表盘头部区域-->
         <span>{{ panelInfo.name || '测试仪表板' }}</span>
         <span style="float: right;margin-right: 10px">
+          <el-tooltip content="保存为模板">
+            <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
+          </el-tooltip>
+        </span>
+        <span style="float: right;margin-right: 10px">
           <el-tooltip content="导出为模板">
-            <el-button class="el-icon-download" size="mini" circle @click="saveToTemplate" />
+            <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
           </el-tooltip>
         </span>
         <span style="float: right;margin-right: 10px">
@@ -27,21 +32,32 @@
         请从左侧选择仪表盘
       </el-row>
     </el-col>
+
+    <el-dialog
+      :title="templateSaveTitle"
+      :visible.sync="templateSaveShow"
+      custom-class="de-dialog"
+    >
+      <save-to-template />
+    </el-dialog>
   </el-row>
 </template>
 <script>
 import Preview from '@/components/canvas/components/Editor/Preview'
+import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
 import html2canvas from 'html2canvas'
 import FileSaver from 'file-saver'
 
 export default {
   name: 'PanelViewShow',
-  components: { Preview },
+  components: { Preview, SaveToTemplate },
   data() {
     return {
-      showMain: true
-
+      showMain: true,
+      templateInfo: '',
+      templateSaveTitle: '保存为模板',
+      templateSaveShow: false
     }
   },
   computed: {
@@ -68,18 +84,48 @@ export default {
       window.open(url, '_blank')
     },
     saveToTemplate() {
+      this.templateSaveShow = true
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         debugger
-        const snapShot = canvas.toDataURL('image/jpeg', 0.5) // 0.5是图片质量
+        const snapShot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
         if (snapShot !== '') {
-          const templateInfo = {
+          this.templateInfo = {
             snapShot: snapShot,
             panelStyle: JSON.stringify(this.canvasStyleData),
             panelData: JSON.stringify(this.componentData),
             dynamicData: ''
           }
-          const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
+        }
+      })
+    },
+    downloadToTemplate() {
+      html2canvas(this.$refs.imageWrapper).then(canvas => {
+        debugger
+        const snapShot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        if (snapShot !== '') {
+          this.templateInfo = {
+            snapShot: snapShot,
+            panelStyle: JSON.stringify(this.canvasStyleData),
+            panelData: JSON.stringify(this.componentData),
+            dynamicData: ''
+          }
+          const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
           FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
+        }
+      })
+    },
+    refreshTemplateInfo() {
+      this.templateInfo = ''
+      html2canvas(this.$refs.imageWrapper).then(canvas => {
+        debugger
+        const snapShot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        if (snapShot !== '') {
+          this.templateInfo = {
+            snapShot: snapShot,
+            panelStyle: JSON.stringify(this.canvasStyleData),
+            panelData: JSON.stringify(this.componentData),
+            dynamicData: ''
+          }
         }
       })
     }
