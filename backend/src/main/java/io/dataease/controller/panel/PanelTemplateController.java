@@ -31,9 +31,9 @@ public class PanelTemplateController {
         return panelTemplateService.save(request);
     }
 
-    @PostMapping("/deleteCircle/{id}")
-    public void deleteCircle(@PathVariable String id) {
-        panelTemplateService.deleteCircle(id);
+    @PostMapping("/delete/{id}")
+    public void delete(@PathVariable String id) {
+        panelTemplateService.delete(id);
     }
 
     @GetMapping("/findOne/{id}")

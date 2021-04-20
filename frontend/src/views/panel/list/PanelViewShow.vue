@@ -38,7 +38,7 @@
       :visible.sync="templateSaveShow"
       custom-class="de-dialog"
     >
-      <save-to-template />
+      <save-to-template :template-info="templateInfo" @closeSaveDialog="closeSaveDialog" />
     </el-dialog>
   </el-row>
 </template>
@@ -87,12 +87,16 @@ export default {
       this.templateSaveShow = true
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         debugger
-        const snapShot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
-        if (snapShot !== '') {
+        const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        if (snapshot !== '') {
           this.templateInfo = {
-            snapShot: snapShot,
-            panelStyle: JSON.stringify(this.canvasStyleData),
-            panelData: JSON.stringify(this.componentData),
+            name: this.$store.state.panel.panelInfo.name,
+            snapshot: snapshot,
+            templateStyle: JSON.stringify(this.canvasStyleData),
+            templateData: JSON.stringify(this.componentData),
+            templateType: 'self',
+            level: 1,
+            pid: null,
             dynamicData: ''
           }
         }
@@ -104,6 +108,8 @@ export default {
         const snapShot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
         if (snapShot !== '') {
           this.templateInfo = {
+            name: this.$store.state.panel.panelInfo.name,
+            templateType: 'self',
             snapShot: snapShot,
             panelStyle: JSON.stringify(this.canvasStyleData),
             panelData: JSON.stringify(this.componentData),
@@ -128,6 +134,9 @@ export default {
           }
         }
       })
+    },
+    closeSaveDialog() {
+      this.templateSaveShow = false
     }
 
   }

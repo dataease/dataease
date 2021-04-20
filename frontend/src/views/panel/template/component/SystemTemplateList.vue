@@ -1,18 +1,21 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col>
     <el-row>
-      <div class="block">
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="systemTemplateFilterText"
-              placeholder="输入关键字进行过滤"
-              size="mini"
-              clearable
-              prefix-icon="el-icon-search"
-            />
-          </el-form-item>
-        </el-form>
+      <el-button icon="el-icon-folder-add" type="primary" size="mini" @click="add()">
+        添加分类
+      </el-button>
+    </el-row>
+    <el-row style="margin-top: 5px">
+      <el-row>
+        <el-input
+          v-model="systemTemplateFilterText"
+          placeholder="输入关键字进行过滤"
+          size="mini"
+          clearable
+          prefix-icon="el-icon-search"
+        />
+      </el-row>
+      <el-row style="margin-top: 5px">
         <el-tree
           ref="systemTemplateTree"
           :default-expanded-keys="defaultExpandedKeys"
@@ -27,7 +30,7 @@
             <span>
               <span>
                 <el-button
-                  icon="el-icon-picture-outline"
+                  icon="el-icon-collection"
                   type="text"
                 />
               </span>
@@ -35,22 +38,27 @@
             </span>
           </span>
         </el-tree>
-      </div>
+      </el-row>
     </el-row>
   </el-col>
 </template>
 
 <script>
-import { get, post } from '@/api/panel/panel'
-
 export default {
   name: 'SystemTemplateList',
   components: { },
+  props: {
+    systemTemplateList: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       systemTemplateFilterText: '',
       defaultExpandedKeys: [],
-      systemTemplateList: [],
       currentTemplateShowList: []
     }
   },
@@ -62,33 +70,18 @@ export default {
       this.$refs.systemTemplateTree.filter(val)
     }
   },
-  mounted() {
-    this.getTree()
-  },
   methods: {
     filterNode(value, data) {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    getTree() {
-      const request = {
-        templateType: 'system',
-        level: '0'
-      }
-      post('/template/templateList', request).then(res => {
-        this.systemTemplateList = res.data
-        if (this.systemTemplateList && this.systemTemplateList.length > 0) {
-          const id = this.systemTemplateList[0].id
-          // this.currentNodeKey = id
-          // this.$refs['systemTemplateTree'].setCurrentKey(id)
-          this.$emit('showCurrentTemplate', id)
-        }
-      })
-    },
     nodeClick(data, node) {
       console.log('nodeClick')
       debugger
       this.$emit('showCurrentTemplate', data.id)
+    },
+    add() {
+      this.$emit('showTemplateEditDialog', 'new')
     }
   }
 }

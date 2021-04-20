@@ -43,6 +43,7 @@
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"
+        :filter="filter"
       />
       <!-- <component
         :is="item.component"
@@ -84,6 +85,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: true
+    },
+    filter: {
+      type: Object,
+      require: false
     }
   },
   data() {

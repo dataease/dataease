@@ -20,7 +20,11 @@ export default {
     chart: {
       type: Object,
       required: true
-    }
+    },
+  filter: {
+    type: Object,
+    required: false
+  }
   },
   data() {
     return {

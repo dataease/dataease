@@ -1,7 +1,10 @@
 <template>
   <el-row>
     <el-row>
-      <el-input v-model="name" placeholder="名称" />
+      <el-col span="4">模板名称</el-col>
+      <el-col span="20">
+        <el-input v-model="templateInfo.name" clearable size="mini" />
+      </el-col>
     </el-row>
     <el-row class="de-tab">
       <div class="my_table">
@@ -15,9 +18,9 @@
         >
           <el-table-column :label="columnLabel" :column-key="fieldName" :prop="fieldName" />
           <el-table-column align="right">
-            <template slot="header">
-              <el-input v-model="keyWordSearch" size="mini" placeholder="输入关键字搜索" />
-            </template>
+            <!--            <template slot="header">-->
+            <!--              <el-input v-model="keyWordSearch" size="mini" placeholder="输入关键字搜索" />-->
+            <!--            </template>-->
             <template slot-scope="scope">
               <el-radio v-model="tableRadio" :label="scope.row"><i /></el-radio>
             </template>
@@ -26,8 +29,8 @@
       </div>
     </el-row>
     <el-row class="root-class">
-      <el-button @click="cancel">取 消</el-button>
-      <el-button type="primary" @click="save">确 定</el-button>
+      <el-button @click="cancel()">取 消</el-button>
+      <el-button type="primary" @click="save()">确 定</el-button>
     </el-row>
   </el-row>
 </template>
@@ -37,10 +40,15 @@ import { post } from '@/api/panel/panel'
 
 export default {
   name: 'SaveToTemplate',
+  props: {
+    templateInfo: {
+      type: Object,
+      require: true
+    }
+  },
   data() {
     return {
       data: [],
-      name: '',
       fieldName: 'name',
       tableRadio: null,
       keyWordSearch: '',
@@ -53,26 +61,37 @@ export default {
   methods: {
     search() {
       const param = {
-        template_type: 'self',
+        templateType: 'self',
         level: '0'
       }
       post('/template/templateList', param).then(response => {
         this.data = response.data
       })
     },
-
-    setCheckNodes() {
-      this.data.forEach(node => {
-        const nodeId = node.userId
-        this.shares.includes(nodeId) && this.$refs.table.toggleRowSelection(node, true)
-      })
-    },
     clickChange(item) {
       this.tableRadio = item
+      this.templateInfo.pid = item.id
     },
     cancel() {
-      this.$refs[this.activeName].cancel()
-      this.$emit('close-grant', 0)
+      this.$emit('closeSaveDialog')
+    },
+    save() {
+      if (!this.templateInfo.pid) {
+        this.$warning('请选择所属类别')
+        return false
+      }
+      if (!this.templateInfo.name) {
+        this.$warning('模板名称不能为空')
+        return false
+      }
+      post('/template/save', this.templateInfo).then(response => {
+        this.$message({
+          message: '保存成功',
+          type: 'success',
+          showClose: true
+        })
+        this.$emit('closeSaveDialog')
+      })
     }
 
   }
