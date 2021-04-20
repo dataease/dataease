@@ -18,10 +18,26 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.*;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +58,8 @@ public class DataSetTableService {
     private DataSetTableTaskService dataSetTableTaskService;
     @Resource
     private DatasetTableIncrementalConfigMapper datasetTableIncrementalConfigMapper;
+    @Value("${upload.file.path}")
+    private String path;
 
     public void batchInsert(List<DatasetTable> datasetTable) throws Exception {
         for (DatasetTable table : datasetTable) {
@@ -433,5 +451,121 @@ public class DataSetTableService {
             map.put("datasource", datasource);
         }
         return map;
+    }
+
+    public Map<String, Object> excelSaveAndParse(MultipartFile file) throws Exception {
+        String filename = file.getOriginalFilename();
+        String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+
+        List<TableFiled> fields = new ArrayList<>();
+        List<String[]> data = new ArrayList<>();
+        List<Map<String, Object>> jsonArray = new ArrayList<>();
+
+        InputStream inputStream = file.getInputStream();
+        if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
+            HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
+            HSSFSheet sheet0 = workbook.getSheetAt(0);
+            if (sheet0.getNumMergedRegions() > 0) {
+                throw new RuntimeException("Sheet have merged regions.");
+            }
+            int rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
+            for (int i = 0; i < rows; i++) {
+                HSSFRow row = sheet0.getRow(i);
+                String[] r = new String[row.getPhysicalNumberOfCells()];
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    if (i == 0) {
+                        TableFiled tableFiled = new TableFiled();
+                        tableFiled.setFieldName(readCell(row.getCell(j)));
+                        tableFiled.setRemarks(readCell(row.getCell(j)));
+                        fields.add(tableFiled);
+                    } else {
+                        r[j] = readCell(row.getCell(j));
+                    }
+                }
+                if (i > 0) {
+                    data.add(r);
+                }
+            }
+        } else if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+            XSSFWorkbook xssfWorkbook = new XSSFWorkbook(inputStream);
+            XSSFSheet sheet0 = xssfWorkbook.getSheetAt(0);
+            if (sheet0.getNumMergedRegions() > 0) {
+                throw new RuntimeException("Sheet have merged regions.");
+            }
+            int rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
+            for (int i = 0; i < rows; i++) {
+                XSSFRow row = sheet0.getRow(i);
+                String[] r = new String[row.getPhysicalNumberOfCells()];
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    if (i == 0) {
+                        TableFiled tableFiled = new TableFiled();
+                        tableFiled.setFieldName(readCell(row.getCell(j)));
+                        tableFiled.setRemarks(readCell(row.getCell(j)));
+                        fields.add(tableFiled);
+                    } else {
+                        r[j] = readCell(row.getCell(j));
+                    }
+                }
+                if (i > 0) {
+                    data.add(r);
+                }
+            }
+        } else if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            String s = reader.readLine();// first line
+            String[] split = s.split(",");
+            for (String s1 : split) {
+                TableFiled tableFiled = new TableFiled();
+                tableFiled.setFieldName(s1);
+                tableFiled.setRemarks(s1);
+                fields.add(tableFiled);
+            }
+            int num = 1;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (num > 100) {
+                    break;
+                }
+                data.add(line.split(","));
+                num++;
+            }
+        }
+
+        String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
+        if (CollectionUtils.isNotEmpty(data)) {
+            jsonArray = data.stream().map(ele -> {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < ele.length; i++) {
+                    map.put(fieldArray[i], ele[i]);
+                }
+                return map;
+            }).collect(Collectors.toList());
+        }
+        inputStream.close();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("fields", fields);
+        map.put("data", jsonArray);
+
+        return map;
+    }
+
+    private String readCell(Cell cell) {
+        CellType cellTypeEnum = cell.getCellTypeEnum();
+        if (cellTypeEnum.equals(CellType.STRING)) {
+            return cell.getStringCellValue();
+        } else if (cellTypeEnum.equals(CellType.NUMERIC)) {
+            double d = cell.getNumericCellValue();
+            try {
+                return new Double(d).longValue() + "";
+            } catch (Exception e) {
+                BigDecimal b = new BigDecimal(d);
+                return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
+            }
+        } else if (cellTypeEnum.equals(CellType.BOOLEAN)) {
+            return cell.getBooleanCellValue() ? "1" : "0";
+        } else {
+            return "";
+        }
     }
 }

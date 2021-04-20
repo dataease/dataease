@@ -12,12 +12,12 @@
               </el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          <div class="component-search filter-common">
+          <!-- <div class="component-search filter-common">
             <el-input
               placeholder="请输入内容"
               prefix-icon="el-icon-search"
             />
-          </div>
+          </div> -->
 
           <!-- <div class="component-result-content filter-common" @dragstart="handleDragStart" @dragend="handleDragEnd"> -->
           <div class="component-result-content filter-common">
@@ -68,7 +68,61 @@
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane :lazy="true" class="de-tab" label="按组件选择" name="assembly">按组件选择</el-tab-pane>
+        <el-tab-pane :lazy="true" class="de-tab" label="按组件选择" name="assembly">
+          <div class="component-header filter-common">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item v-for="bread in componentSetBreads" :key="bread.label">
+                <a v-if="bread.link" :class="{'link-text' : bread.link}" @click="comBackLink(bread)"> {{ bread.label }}</a>
+                <span v-else>{{ bread.label }}</span>
+              </el-breadcrumb-item>
+            </el-breadcrumb>
+          </div>
+          <!-- <div class="component-search filter-common">
+            <el-input
+              placeholder="请输入内容"
+              prefix-icon="el-icon-search"
+            />
+          </div> -->
+          <div class="component-result-content filter-common">
+            <el-table
+              v-if="comShowDomType === 'view'"
+              class="de-filter-data-table"
+              :data="viewInfos"
+              :show-header="false"
+              size="mini"
+              :highlight-current-row="true"
+              style="width: 100%"
+            >
+              <el-table-column prop="name" label="名称">
+                <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
+                  <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
+                    <i class="el-icon-s-data" />
+                    <span> {{ scope.row.name }}</span>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+
+            <div v-else-if="comShowDomType === 'field'">
+              <draggable
+                v-model="comFieldDatas"
+                :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
+                animation="300"
+                :move="onMove"
+                class="drag-list"
+                @end="end1"
+                @start="start1"
+              >
+                <transition-group>
+                  <div v-for="item in comFieldDatas" :key="item.id" class="filter-db-row">
+                    <i class="el-icon-s-data" />
+                    <span> {{ item.name }}</span>
+                  </div>
+                </transition-group>
+              </draggable>
+            </div>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </de-aside-container>
 
@@ -200,12 +254,18 @@ export default {
     return {
       activeName: 'dataset',
       showDomType: 'tree',
+      comShowDomType: 'view',
       dataSetBreads: [
         { label: '数据列表', link: false, type: 'root' }
       ],
+      componentSetBreads: [
+        { label: '组件列表', link: false, type: 'root' }
+      ],
       data: [],
       sceneDatas: [],
+      //   viewDatas: [],
       fieldDatas: [],
+      comFieldDatas: [],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -319,14 +379,27 @@ export default {
       tail.type = node.type
       tail.link = true
     },
+    comSetTailLink(node) {
+      const tail = this.componentSetBreads[this.componentSetBreads.length - 1]
+      tail.type = node.type
+      tail.link = true
+    },
     addTail(node) {
       const tail = { link: false, label: node.label || node.name, type: node.type }
       this.dataSetBreads.push(tail)
+    },
+    comAddTail(node) {
+      const tail = { link: false, label: node.label || node.name, type: node.type }
+      this.componentSetBreads.push(tail)
     },
 
     removeTail() {
       this.dataSetBreads = this.dataSetBreads.slice(0, this.dataSetBreads.length - 1)
       this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
+    },
+    comRemoveTail() {
+      this.componentSetBreads = this.componentSetBreads.slice(0, this.componentSetBreads.length - 1)
+      this.componentSetBreads[this.componentSetBreads.length - 1]['link'] = false
     },
     backToLink(bread) {
       if (bread.type === 'db') {
@@ -336,6 +409,10 @@ export default {
       }
 
       this.removeTail()
+    },
+    comBackLink(bread) {
+      this.comShowDomType = 'view'
+      this.comRemoveTail()
     },
     loadTable(sceneId) {
       loadTable({ sceneId: sceneId, sort: 'type asc,create_time desc,name asc' }).then(res => {
@@ -352,13 +429,27 @@ export default {
         this.fieldDatas = datas
       })
     },
+    comLoadField(tableId) {
+      fieldList(tableId).then(res => {
+        let datas = res.data
+        if (this.widget && this.widget.filterFieldMethod) {
+          datas = this.widget.filterFieldMethod(datas)
+        }
+        this.comFieldDatas = datas
+      })
+    },
     showFieldDatas(row) {
       this.showDomType = 'field'
       this.setTailLink(row)
       this.addTail(row)
       this.loadField(row.id)
     },
-    test(row) {},
+    comShowFieldDatas(row) {
+      this.comShowDomType = 'field'
+      this.comSetTailLink(row)
+      this.comAddTail(row)
+      this.comLoadField(row.tableId)
+    },
     onMove(e, originalEvent) {
       this.moveId = e.draggedContext.element.id
       return true

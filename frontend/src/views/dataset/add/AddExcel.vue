@@ -9,7 +9,7 @@
           <el-button size="mini" @click="cancel">
             {{ $t('dataset.cancel') }}
           </el-button>
-          <el-button size="mini" type="primary" @click="save">
+          <el-button :disabled="!form.name || fileList.length === 0" size="mini" type="primary" @click="save">
             {{ $t('dataset.confirm') }}
           </el-button>
         </el-row>
@@ -24,11 +24,14 @@
               </el-form-item>
               <el-form-item>
                 <el-upload
-                  action="/posts/"
+                  :action="baseUrl+'dataset/table/excel/upload'"
                   :multiple="false"
                   :show-file-list="false"
+                  :file-list="fileList"
                   accept=".xls,.xlsx,.csv"
                   :on-success="uploadSuccess"
+                  name="file"
+                  :headers="headers"
                 >
                   <el-button size="mini" type="primary">{{ $t('dataset.upload_file') }}</el-button>
                 </el-upload>
@@ -42,6 +45,7 @@
         <el-card class="box-card dataPreview" shadow="never">
           <div slot="header" class="clearfix">
             <span>{{ $t('dataset.data_preview') }}</span>
+            <span style="font-size: 12px;color: #3d4d66;">（{{ $t('dataset.preview_100_data') }}）</span>
           </div>
           <div class="text item">
             <ux-grid
@@ -70,6 +74,9 @@
 
 <script>
 import { post } from '@/api/dataset/dataset'
+import { getToken } from '@/utils/auth'
+
+const token = getToken()
 
 export default {
   name: 'AddExcel',
@@ -85,8 +92,12 @@ export default {
         name: ''
       },
       fields: [],
+      data: [],
       mode: '1',
-      height: 600
+      height: 600,
+      fileList: [],
+      headers: { Authorization: token },
+      baseUrl: process.env.VUE_APP_BASE_API
     }
   },
   watch: {
@@ -120,6 +131,18 @@ export default {
     // },
     uploadSuccess(response, file, fileList) {
       console.log(response)
+      console.log(file)
+      console.log(fileList)
+
+      this.fields = response.data.fields
+      this.data = response.data.data
+      const datas = this.data
+      this.$refs.plxTable.reloadData(datas)
+
+      if (file.name.lastIndexOf('.') > 0) {
+        this.form.name = file.name.substring(0, file.name.lastIndexOf('.'))
+      }
+      this.fileList = fileList
     },
 
     save() {

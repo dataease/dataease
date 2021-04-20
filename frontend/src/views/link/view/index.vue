@@ -1,19 +1,54 @@
 <template>
-  <div>
-    我是视图页面
+  <div style="width: 100%;height: 100%;background-color: #f7f8fa">
+    <Preview v-if="show" />
   </div>
 </template>
 
 <script>
+import { loadResource } from '@/api/link'
+import { uuid } from 'vue-uuid'
+import Preview from '@/components/canvas/components/Editor/Preview'
 export default {
   name: 'LinkView',
-  data() {
-    return {
-
+  components: { Preview },
+  props: {
+    resourceId: {
+      type: String,
+      default: null
     }
   },
+  data() {
+    return {
+      show: false
+    }
+  },
+  created() {
+    this.show = false
+    this.setPanelInfo()
+  },
   methods: {
+    setPanelInfo() {
+      loadResource(this.resourceId).then(res => {
+        this.$store.commit('setComponentData', this.resetID(JSON.parse(res.data.panelData)))
+        // this.$store.commit('setComponentData', JSON.parse(res.data.panelData))
+        this.$store.commit('setCanvasStyle', JSON.parse(res.data.panelStyle))
+        this.show = true
+      })
+    },
+    resetID(data) {
+      data.forEach(item => {
+        item.id = uuid.v1()
+      })
+      return data
+    }
 
   }
 }
 </script>
+
+<style scoped>
+ *{
+     margin: 0;
+     padding: 0;
+ }
+</style>
