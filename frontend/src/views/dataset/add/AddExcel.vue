@@ -9,7 +9,7 @@
           <el-button size="mini" @click="cancel">
             {{ $t('dataset.cancel') }}
           </el-button>
-          <el-button :disabled="!form.name || fileList.length === 0" size="mini" type="primary" @click="save">
+          <el-button :disabled="!name || fileList.length === 0" size="mini" type="primary" @click="save">
             {{ $t('dataset.confirm') }}
           </el-button>
         </el-row>
@@ -18,9 +18,9 @@
       <el-row>
         <el-row>
           <el-col style="width: 500px;">
-            <el-form :model="form" :inline="true" size="mini" class="row-style">
+            <el-form :inline="true" size="mini" class="row-style">
               <el-form-item>
-                <el-input v-model="form.name" :placeholder="$t('commons.name')" />
+                <el-input v-model="name" :placeholder="$t('commons.name')" />
               </el-form-item>
               <el-form-item>
                 <el-upload
@@ -88,9 +88,7 @@ export default {
   },
   data() {
     return {
-      form: {
-        name: ''
-      },
+      name: '',
       fields: [],
       data: [],
       mode: '1',
@@ -130,9 +128,9 @@ export default {
     //   })
     // },
     uploadSuccess(response, file, fileList) {
-      console.log(response)
-      console.log(file)
-      console.log(fileList)
+      // console.log(response)
+      // console.log(file)
+      // console.log(fileList)
 
       this.fields = response.data.fields
       this.data = response.data.data
@@ -140,7 +138,7 @@ export default {
       this.$refs.plxTable.reloadData(datas)
 
       if (file.name.lastIndexOf('.') > 0) {
-        this.form.name = file.name.substring(0, file.name.lastIndexOf('.'))
+        this.name = file.name.substring(0, file.name.lastIndexOf('.'))
       }
       this.fileList = fileList
     },
@@ -148,20 +146,16 @@ export default {
     save() {
       // console.log(this.checkTableList);
       // console.log(this.scene);
-      const sceneId = this.param.id
-      const dataSourceId = this.dataSource
-      const tables = []
-      const mode = this.mode
-      this.checkTableList.forEach(function(name) {
-        tables.push({
-          name: name,
-          sceneId: sceneId,
-          dataSourceId: dataSourceId,
-          type: 'excel',
-          mode: parseInt(mode)
-        })
-      })
-      post('/dataset/table/batchAdd', tables).then(response => {
+      const table = {
+        id: this.param.tableId,
+        name: this.name,
+        sceneId: this.param.id,
+        dataSourceId: null,
+        type: 'excel',
+        mode: parseInt(this.mode),
+        info: '{"data":"' + '123' + '"}'
+      }
+      post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())
         this.cancel()
       })

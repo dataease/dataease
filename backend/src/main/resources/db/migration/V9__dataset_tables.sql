@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table`
     `id`             varchar(50) NOT NULL COMMENT 'ID',
     `name`           varchar(64) NOT NULL COMMENT '表名称',
     `scene_id`       varchar(50) NOT NULL COMMENT '场景ID',
-    `data_source_id` varchar(50) NOT NULL COMMENT '数据源ID',
+    `data_source_id` varchar(50) COMMENT '数据源ID',
     `type`           varchar(50) COMMENT 'db,sql,excel,custom',
     `mode`           int(10) DEFAULT 0 COMMENT '连接模式：0-直连，1-定时同步',
     `info`           longtext COMMENT '表原始信息',
