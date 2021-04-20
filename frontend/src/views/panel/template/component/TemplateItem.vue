@@ -2,6 +2,7 @@
   <div class="testcase-template">
     <div class="template-img" :style="classBackground">
       <i class="el-icon-error" @click.stop="templateDelete" />
+      <i class="el-icon-edit" @click.stop="templateEdit" />
     </div>
     <span class="demonstration">{{ template.name }}</span>
   </div>
@@ -95,6 +96,10 @@ export default {
   }
 
   .template-img:hover > .el-icon-error {
+    display: inline;
+  }
+
+  .template-img:hover > .el-icon-edit {
     display: inline;
   }
 

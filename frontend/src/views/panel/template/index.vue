@@ -4,11 +4,12 @@
       <el-tabs v-model="currentTemplateType" @tab-click="handleClick">
         <el-tab-pane name="system">
           <span slot="label"><i class="el-icon-document" />系统模板</span>
-          <system-template-list :system-template-list="systemTemplateList" @showTemplateEditDialog="showTemplateEditDialog" />
+          <template-list v-if="currentTemplateType==='system'" :template-type="currentTemplateType" :template-list="templateList" @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate" @showTemplateEditDialog="showTemplateEditDialog" />
         </el-tab-pane>
         <el-tab-pane name="self">
           <span slot="label"><i class="el-icon-star-off" />用户模板</span>
-          开发中...
+          <!--v-if 重新渲染 强制刷新首行高亮属性-->
+          <template-list v-if="currentTemplateType==='self'" :template-type="currentTemplateType" :template-list="templateList" @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate" @showTemplateEditDialog="showTemplateEditDialog" />
         </el-tab-pane>
       </el-tabs>
     </de-aside-container>
@@ -40,14 +41,13 @@
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
-import SystemTemplateList from './component/SystemTemplateList'
+import TemplateList from './component/TemplateList'
 import TemplateItem from './component/TemplateItem'
 import { get, post } from '@/api/panel/panel'
-import { deepCopy } from '../../../components/canvas/utils/utils'
 
 export default {
   name: 'PanelMain',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, SystemTemplateList, TemplateItem },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, TemplateList, TemplateItem },
   data() {
     return {
       showShare: false,
@@ -62,7 +62,7 @@ export default {
       templateEditForm: {},
       editTemplate: false,
       dialogTitle: '',
-      systemTemplateList: []
+      templateList: []
     }
   },
   mounted() {
@@ -70,12 +70,12 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-
+      this.getTree()
     },
     showCurrentTemplate(pid) {
-      this.currentPid = pid
-      if (this.currentPid) {
-        post('/template/templateList', { pid: this.currentPid }).then(response => {
+      this.currentTemplateId = pid
+      if (this.currentTemplateId) {
+        post('/template/templateList', { pid: this.currentTemplateId }).then(response => {
           this.currentTemplateShowList = response.data
         })
       }
@@ -88,26 +88,14 @@ export default {
             type: 'success',
             showClose: true
           })
-          this.showCurrentTemplate(this.currentPid)
-        })
-      }
-    },
-    saveTemplate(templateEditForm) {
-      if (templateEditForm) {
-        post('/template/save', templateEditForm).then(response => {
-          this.$message({
-            message: '删除成功',
-            type: 'success',
-            showClose: true
-          })
-          this.showCurrentTemplate(this.currentPid)
+          this.getTree()
         })
       }
     },
     showTemplateEditDialog(type, templateInfo) {
       if (type === 'edit') {
         this.dialogTitle = '编辑'
-        this.templateEditForm = deepCopy(templateInfo)
+        this.templateEditForm = JSON.parse(JSON.stringify(templateInfo))
       } else {
         this.dialogTitle = '新建'
         this.templateEditForm = { name: '', templateType: this.currentTemplateType, level: 0 }
@@ -138,11 +126,30 @@ export default {
         level: '0'
       }
       post('/template/templateList', request).then(res => {
-        this.systemTemplateList = res.data
-        if (this.systemTemplateList && this.systemTemplateList.length > 0) {
-          this.showCurrentTemplate(this.systemTemplateList[0].id)
-        }
+        this.templateList = res.data
+        this.showFirst()
       })
+    },
+    showFirst() {
+      // 判断是否默认点击第一条
+      if (this.templateList && this.templateList.length > 0) {
+        let showFirst = true
+        this.templateList.forEach(template => {
+          if (template.id === this.currentTemplateId) {
+            showFirst = false
+          }
+        })
+        if (showFirst) {
+          this.$nextTick().then(() => {
+            const firstNode = document.querySelector('.el-tree-node')
+            firstNode.click()
+          })
+        } else {
+          this.showCurrentTemplate(this.currentTemplateId)
+        }
+      } else {
+        this.currentTemplateShowList = []
+      }
     }
   }
 }
