@@ -18,13 +18,11 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -37,7 +35,6 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -163,11 +160,6 @@ public class DataSetTableService {
     }
 
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest) throws Exception {
-        Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
@@ -176,18 +168,38 @@ public class DataSetTableService {
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
-        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
-            String table = dataTableInfoDTO.getTable();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0," + dataSetTableRequest.getRow());
-        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
-            String sql = dataTableInfoDTO.getSql();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray) + " LIMIT 0," + dataSetTableRequest.getRow());
-        }
 
         List<String[]> data = new ArrayList<>();
-        try {
-            data.addAll(datasourceProvider.getData(datasourceRequest));
-        } catch (Exception e) {
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
+            Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+
+            String table = dataTableInfoDTO.getTable();
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0," + dataSetTableRequest.getRow());
+
+            try {
+                data.addAll(datasourceProvider.getData(datasourceRequest));
+            } catch (Exception e) {
+            }
+        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
+            Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+
+            String sql = dataTableInfoDTO.getSql();
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray) + " LIMIT 0," + dataSetTableRequest.getRow());
+
+            try {
+                data.addAll(datasourceProvider.getData(datasourceRequest));
+            } catch (Exception e) {
+            }
+        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+
+        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
+
         }
 
         List<Map<String, Object>> jsonArray = new ArrayList<>();
@@ -315,6 +327,19 @@ public class DataSetTableService {
             datasourceRequest.setQuery(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql());
             ResultSet dataResultSet = datasourceProvider.getDataResultSet(datasourceRequest);
             fields = datasourceProvider.fetchResultField(dataResultSet);
+        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+            String path = dataTableInfoDTO.getData();
+            File file = new File(path);
+            // save field
+            Map<String, Object> map = parseExcel(path.substring(path.lastIndexOf("/") + 1), new FileInputStream(file), false);
+            fields = (List<TableFiled>) map.get("fields");
+            List<Map<String, Object>> data = (List<Map<String, Object>>) map.get("data");
+            // save data
+        } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
+            // save field
+
+            // save data
         }
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
@@ -324,7 +349,11 @@ public class DataSetTableService {
                 datasetTableField.setOriginName(filed.getFieldName());
                 datasetTableField.setName(filed.getRemarks());
                 datasetTableField.setType(filed.getFieldType());
-                datasetTableField.setDeType(transFieldType(ds.getType(), filed.getFieldType()));
+                if (ObjectUtils.isEmpty(ds)) {
+                    datasetTableField.setDeType(transFieldType(filed.getFieldType()));
+                } else {
+                    datasetTableField.setDeType(transFieldType(ds.getType(), filed.getFieldType()));
+                }
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(syncTime);
@@ -342,6 +371,21 @@ public class DataSetTableService {
                 return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
             default:
                 return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+        }
+    }
+
+    public Integer transFieldType(String field) {
+        switch (field) {
+            case "TEXT":
+                return 0;
+            case "TIME":
+                return 1;
+            case "INT":
+                return 2;
+            case "DOUBLE":
+                return 3;
+            default:
+                return 0;
         }
     }
 
@@ -455,20 +499,33 @@ public class DataSetTableService {
 
     public Map<String, Object> excelSaveAndParse(MultipartFile file) throws Exception {
         String filename = file.getOriginalFilename();
-        String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+        // parse file
+        Map<String, Object> fileMap = parseExcel(filename, file.getInputStream(), true);
+        // save file
+        String filePath = saveFile(file);
+        Map<String, Object> map = new HashMap<>(fileMap);
+        map.put("path", filePath);
+        return map;
+    }
 
+    private Map<String, Object> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
+        String suffix = filename.substring(filename.lastIndexOf(".") + 1);
         List<TableFiled> fields = new ArrayList<>();
         List<String[]> data = new ArrayList<>();
         List<Map<String, Object>> jsonArray = new ArrayList<>();
 
-        InputStream inputStream = file.getInputStream();
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
             HSSFSheet sheet0 = workbook.getSheetAt(0);
             if (sheet0.getNumMergedRegions() > 0) {
                 throw new RuntimeException("Sheet have merged regions.");
             }
-            int rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
+            int rows;
+            if (isPreview) {
+                rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
+            } else {
+                rows = sheet0.getPhysicalNumberOfRows();
+            }
             for (int i = 0; i < rows; i++) {
                 HSSFRow row = sheet0.getRow(i);
                 String[] r = new String[row.getPhysicalNumberOfCells()];
@@ -477,6 +534,7 @@ public class DataSetTableService {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldName(readCell(row.getCell(j)));
                         tableFiled.setRemarks(readCell(row.getCell(j)));
+                        tableFiled.setFieldType("TEXT");
                         fields.add(tableFiled);
                     } else {
                         r[j] = readCell(row.getCell(j));
@@ -492,7 +550,12 @@ public class DataSetTableService {
             if (sheet0.getNumMergedRegions() > 0) {
                 throw new RuntimeException("Sheet have merged regions.");
             }
-            int rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
+            int rows;
+            if (isPreview) {
+                rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
+            } else {
+                rows = sheet0.getPhysicalNumberOfRows();
+            }
             for (int i = 0; i < rows; i++) {
                 XSSFRow row = sheet0.getRow(i);
                 String[] r = new String[row.getPhysicalNumberOfCells()];
@@ -501,6 +564,7 @@ public class DataSetTableService {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldName(readCell(row.getCell(j)));
                         tableFiled.setRemarks(readCell(row.getCell(j)));
+                        tableFiled.setFieldType("TEXT");
                         fields.add(tableFiled);
                     } else {
                         r[j] = readCell(row.getCell(j));
@@ -518,13 +582,16 @@ public class DataSetTableService {
                 TableFiled tableFiled = new TableFiled();
                 tableFiled.setFieldName(s1);
                 tableFiled.setRemarks(s1);
+                tableFiled.setFieldType("TEXT");
                 fields.add(tableFiled);
             }
             int num = 1;
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
-                if (num > 100) {
-                    break;
+                if (isPreview) {
+                    if (num > 100) {
+                        break;
+                    }
                 }
                 data.add(line.split(","));
                 num++;
@@ -546,7 +613,6 @@ public class DataSetTableService {
         Map<String, Object> map = new HashMap<>();
         map.put("fields", fields);
         map.put("data", jsonArray);
-
         return map;
     }
 
@@ -567,5 +633,20 @@ public class DataSetTableService {
         } else {
             return "";
         }
+    }
+
+    private String saveFile(MultipartFile file) throws Exception {
+        String filename = file.getOriginalFilename();
+        File p = new File(path);
+        if (!p.exists()) {
+            p.mkdirs();
+        }
+        String filePath = path + AuthUtils.getUser().getUsername() + "/" + filename;
+        File f = new File(filePath);
+        FileOutputStream fileOutputStream = new FileOutputStream(f);
+        fileOutputStream.write(file.getBytes());
+        fileOutputStream.flush();
+        fileOutputStream.close();
+        return filePath;
     }
 }
