@@ -48,3 +48,10 @@ export function loadGenerate(resourceId) {
     method: 'post'
   })
 }
+
+export function loadResource(resourceId) {
+  return request({
+    url: 'panel/group/findOne/' + resourceId,
+    method: 'get'
+  })
+}
