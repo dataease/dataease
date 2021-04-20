@@ -4,6 +4,7 @@
 
     <resultMap id="panelStoreMap" type="io.dataease.dto.panel.PanelStoreDto" >
         <id column="store_id" property="storeId"></id>
+        <result column="panel_group_id" property="panelGroupId"></result>
         <result column="name" property="name"></result>
     </resultMap>
 
@@ -11,7 +12,7 @@
 
 
     <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="panelStoreMap">
-       select s.store_id, g.name
+       select s.store_id,s.panel_group_id, g.name
        from panel_store s
        left join panel_group g on g.id = s.panel_group_id
         <if test="_parameter != null">

@@ -6,9 +6,9 @@
           <span slot="label"><i class="el-icon-document" />列表</span>
           <panel-list />
         </el-tab-pane>
-        <el-tab-pane name="panels_star">
+        <el-tab-pane name="panels_star" :lazy="true">
           <span slot="label"><i class="el-icon-star-off" />收藏</span>
-          开发中...
+          <enshrine v-if="showEnshrine" />
         </el-tab-pane>
         <el-tab-pane name="panels_share" :lazy="true">
           <span slot="label"><i class="el-icon-share" />分享</span>
@@ -29,14 +29,16 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import PanelList from '../list/PanelList'
 import PanelViewShow from '../list/PanelViewShow'
 import ShareTree from '../GrantAuth/shareTree'
+import Enshrine from '../enshrine/index'
 
 export default {
   name: 'PanelMain',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelViewShow, ShareTree },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, PanelList, PanelViewShow, ShareTree, Enshrine },
   data() {
     return {
       activeName: 'PanelList',
-      showShare: false
+      showShare: false,
+      showEnshrine: false
     }
   },
   methods: {
@@ -45,10 +47,17 @@ export default {
       if (tab.name === 'panels_share') {
         this.refreshShare()
       }
+      if (tab.name === 'panels_star') {
+        this.refreshEnshrine()
+      }
     },
     refreshShare() {
       this.showShare = false
       this.$nextTick(() => (this.showShare = true))
+    },
+    refreshEnshrine() {
+      this.showEnshrine = false
+      this.$nextTick(() => (this.showEnshrine = true))
     }
   }
 }
