@@ -319,7 +319,15 @@ export default {
       this.addCondition(condition)
     },
     addCondition(condition) {
-      this.conditions.push(condition)
+      let conditionExist = false
+      for (let index = 0; index < this.conditions.length; index++) {
+        const element = this.conditions[index]
+        if (condition.componentId === element.componentId) {
+          this.conditions[index] = condition
+          conditionExist = true
+        }
+      }
+      !conditionExist && this.conditions.push(condition)
       this.executeSearch()
     },
     deleteCondition(condition) {
