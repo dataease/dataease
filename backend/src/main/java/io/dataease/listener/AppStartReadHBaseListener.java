@@ -33,20 +33,20 @@ public class AppStartReadHBaseListener implements ApplicationListener<Applicatio
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        System.out.println("================= Read HBase start =================");
-        // 项目启动，从数据集中找到定时抽取的表，从HBase中读取放入缓存
-        DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andModeEqualTo(1);
-        List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
-        for (DatasetTable table : datasetTables) {
-//            commonThreadPool.addTask(() -> {
-                try {
-                    List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
-                    sparkCalc.getHBaseDataAndCache(table.getId(), fields);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-//            });
-        }
+//        System.out.println("================= Read HBase start =================");
+//        // 项目启动，从数据集中找到定时抽取的表，从HBase中读取放入缓存
+//        DatasetTableExample datasetTableExample = new DatasetTableExample();
+//        datasetTableExample.createCriteria().andModeEqualTo(1);
+//        List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
+//        for (DatasetTable table : datasetTables) {
+////            commonThreadPool.addTask(() -> {
+//                try {
+//                    List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
+//                    sparkCalc.getHBaseDataAndCache(table.getId(), fields);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+////            });
+//        }
     }
 }

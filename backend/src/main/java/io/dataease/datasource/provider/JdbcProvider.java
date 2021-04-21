@@ -7,6 +7,7 @@ import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
+import org.apache.arrow.util.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,23 @@ public class JdbcProvider extends DatasourceProvider {
         return list;
     }
 
+    @VisibleForTesting
+    public void exec(DatasourceRequest datasourceRequest) throws Exception {
+        Connection connection = null;
+        try {
+            connection = getConnectionFromPool(datasourceRequest);
+            Statement stat = connection.createStatement();
+            stat.execute(datasourceRequest.getQuery());
+        } catch (SQLException e) {
+            throw new Exception("ERROR:" + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new Exception("ERROR:" + e.getMessage(), e);
+        }finally {
+            returnSource(connection, datasourceRequest.getDatasource().getId());
+        }
+    }
+
+
     @Override
     public ResultSet getDataResultSet(DatasourceRequest datasourceRequest) throws Exception {
         ResultSet rs;
@@ -47,7 +65,6 @@ public class JdbcProvider extends DatasourceProvider {
             connection = getConnectionFromPool(datasourceRequest);
             Statement stat = connection.createStatement();
             rs = stat.executeQuery(datasourceRequest.getQuery());
-            returnSource(connection, datasourceRequest.getDatasource().getId());
         } catch (SQLException e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
@@ -66,7 +83,6 @@ public class JdbcProvider extends DatasourceProvider {
             connection = getConnectionFromPool(datasourceRequest);
             Statement stat = connection.createStatement();
             ResultSet rs = stat.executeQuery(datasourceRequest.getQuery() + MessageFormat.format(" LIMIT {0}, {1}", (datasourceRequest.getStartPage() - 1) * datasourceRequest.getPageSize(), datasourceRequest.getPageSize()));
-            returnSource(connection, datasourceRequest.getDatasource().getId());
             list = fetchResult(rs);
         } catch (SQLException e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
@@ -173,8 +189,6 @@ public class JdbcProvider extends DatasourceProvider {
         }
         return list;
     }
-
-    ;
 
     @Override
     public void test(DatasourceRequest datasourceRequest) throws Exception {
