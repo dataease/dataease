@@ -19,6 +19,8 @@
 
 <script>
 import { loadTree } from '@/api/panel/share'
+import { uuid } from 'vue-uuid'
+import { get } from '@/api/panel/panel'
 export default {
   name: 'ShareTree',
   data() {
@@ -41,7 +43,19 @@ export default {
       })
     },
     handleNodeClick(data) {
-      console.log(data)
+      get('panel/group/findOne/' + data.id).then(response => {
+        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
+
+        this.$store.dispatch('panel/setPanelInfo', data)
+      })
+    },
+    resetID(data) {
+      data.forEach(item => {
+        item.id = uuid.v1()
+      })
+
+      return data
     }
   }
 }

@@ -138,9 +138,9 @@
         </div>
       </el-dialog>
       <el-row>
-        <el-button icon="el-icon-download" size="mini">
-          {{ $t('dataset.sync_now') }}
-        </el-button>
+        <!--        <el-button icon="el-icon-download" size="mini">-->
+        <!--          {{ $t('dataset.sync_now') }}-->
+        <!--        </el-button>-->
         <el-button icon="el-icon-plus" size="mini" @click="addTask(undefined)">
           {{ $t('dataset.add_task') }}
         </el-button>

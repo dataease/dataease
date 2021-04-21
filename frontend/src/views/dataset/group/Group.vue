@@ -186,7 +186,7 @@
               <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
               <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
             </span>
-            <span>
+            <span v-if="data.type === 'db' || data.type === 'sql'">
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
               <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
             </span>

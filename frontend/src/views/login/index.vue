@@ -5,7 +5,7 @@
         <el-col :span="12">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
-              <img src="@/assets/RackShift-black.png" alt="">
+              <img src="@/assets/DataEase-black.png" alt="">
             </div>
             <div class="login-title">
               {{ $t('login.title') }}

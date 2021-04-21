@@ -10,8 +10,9 @@
     overflow: hidden;
 
     .log {
-      padding: 0 20px;
+      padding: 0 16px;
       line-height: 56px;
+      height: 56px;
       font-size: 24px;
       font-weight: bold;
       // color: rgb(191, 203, 217);
@@ -37,7 +38,7 @@
             background-color: $subMenuHover !important;
             color: $subMenuActiveText !important;
           }
-          
+
         }
         .is-active {
             background-color: $subMenuHover !important;

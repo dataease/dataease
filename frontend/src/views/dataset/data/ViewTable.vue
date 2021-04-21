@@ -36,7 +36,7 @@
         <el-tab-pane :label="$t('dataset.join_view')" name="joinView">
           关联视图 TODO
         </el-tab-pane>
-        <el-tab-pane v-if="table.mode === 1" :label="$t('dataset.update_info')" name="updateInfo">
+        <el-tab-pane v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
           <update-info :table="table" />
         </el-tab-pane>
       </el-tabs>

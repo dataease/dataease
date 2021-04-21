@@ -12,4 +12,5 @@ import lombok.Setter;
 public class DataTableInfoDTO {
     private String table;
     private String sql;
+    private String data;// file path
 }

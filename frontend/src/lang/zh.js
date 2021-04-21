@@ -74,7 +74,7 @@ export default {
   },
   login: {
     title: '系统登录',
-    welcome: '欢迎使用DATAEASE',
+    welcome: '欢迎使用DataEase',
     logIn: '登录',
     username: '账号',
     password: '密码',

@@ -19,6 +19,18 @@
             <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
           </el-tooltip>
         </span>
+
+        <span v-if="!hasStar && panelInfo" style="float: right;margin-right: 10px">
+          <el-tooltip content="收藏">
+            <el-button class="el-icon-star-off" size="mini" circle @click="star" />
+          </el-tooltip>
+        </span>
+
+        <span v-if="hasStar && panelInfo" style="float: right;margin-right: 10px">
+          <el-tooltip content="取消">
+            <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
+          </el-tooltip>
+        </span>
       </el-row>
       <!--TODO 仪表盘预览区域-->
       <el-row class="panel-design-preview">
@@ -48,7 +60,7 @@ import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
 import html2canvas from 'html2canvas'
 import FileSaver from 'file-saver'
-
+import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate },
@@ -57,7 +69,8 @@ export default {
       showMain: true,
       templateInfo: '',
       templateSaveTitle: '保存为模板',
-      templateSaveShow: false
+      templateSaveShow: false,
+      hasStar: false
     }
   },
   computed: {
@@ -73,7 +86,10 @@ export default {
     panelInfo(newVal, oldVla) {
       // 刷新 进行重新渲染
       this.showMain = false
-      this.$nextTick(() => { this.showMain = true })
+      this.$nextTick(() => {
+        this.showMain = true
+        this.initHasStar()
+      })
     }
   },
   mounted() {
@@ -138,6 +154,22 @@ export default {
     },
     closeSaveDialog() {
       this.templateSaveShow = false
+    },
+    star() {
+      this.panelInfo && saveEnshrine(this.panelInfo.id).then(res => {
+        this.hasStar = true
+      })
+    },
+    unstar() {
+      this.panelInfo && deleteEnshrine(this.panelInfo.id).then(res => {
+        this.hasStar = false
+      })
+    },
+    initHasStar() {
+      const param = {}
+      enshrineList(param).then(res => {
+        this.hasStar = res.data && res.data.some(item => item.panelGroupId === this.panelInfo.id)
+      })
     }
 
   }

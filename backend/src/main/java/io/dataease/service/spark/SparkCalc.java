@@ -41,6 +41,7 @@ import java.util.List;
 @Service
 public class SparkCalc {
     private static String column_family = "dataease";
+    private static String data_path = "/opt/dataease/data/db/";
     @Resource
     private Environment env; // 保存了配置文件的信息
 
@@ -54,12 +55,13 @@ public class SparkCalc {
         sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
         sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
 
-        Dataset<Row> dataFrame = CacheUtil.getInstance().getCacheData(hTable);
-        if (ObjectUtils.isEmpty(dataFrame)) {
-            dataFrame = getHBaseDataAndCache(sparkContext, sqlContext, hTable, fields);
-        }
+        Dataset<Row> dataFrame = getData(sparkContext, sqlContext, hTable, fields);
+//        Dataset<Row> dataFrame = CacheUtil.getInstance().getCacheData(hTable);
+//        if (ObjectUtils.isEmpty(dataFrame)) {
+//            dataFrame = getData(sparkContext, sqlContext, hTable, fields);
+//        }
 
-        dataFrame.createOrReplaceTempView(tmpTable);
+        dataFrame.createOrReplaceTempView( tmpTable);
         Dataset<Row> sql = sqlContext.sql(getSQL(xAxis, yAxis, tmpTable, requestList));
         // transform
         List<String[]> data = new ArrayList<>();
@@ -84,6 +86,69 @@ public class SparkCalc {
         sqlContext.setConf("spark.sql.shuffle.partitions", env.getProperty("spark.sql.shuffle.partitions", "1"));
         sqlContext.setConf("spark.default.parallelism", env.getProperty("spark.default.parallelism", "1"));
         return getHBaseDataAndCache(sparkContext, sqlContext, hTable, fields);
+    }
+
+    public Dataset<Row> getData(JavaSparkContext sparkContext, SQLContext sqlContext, String tableId, List<DatasetTableField> fields) throws Exception {
+        fields.sort((o1, o2) -> {
+            if (o1.getOriginName() == null) {
+                return -1;
+            }
+            if (o2.getOriginName() == null) {
+                return 1;
+            }
+            return o1.getOriginName().compareTo(o2.getOriginName());
+        });
+
+        JavaRDD<String> pairRDD = sparkContext.textFile(data_path + tableId + ".txt");
+
+        JavaRDD<Row> rdd = pairRDD.mapPartitions( (FlatMapFunction<java.util.Iterator<String>, Row>) tuple2Iterator -> {
+            List<Row> iterator = new ArrayList<>();
+            while (tuple2Iterator.hasNext()) {
+                String[] items = tuple2Iterator.next().split(";");
+                List<Object> list = new ArrayList<>();
+                for(int i=0; i<items.length; i++){
+                    String l = items[i];
+                    DatasetTableField x = fields.get(i);
+                    if (x.getDeType() == 0 || x.getDeType() == 1) {
+                        list.add(l);
+                    } else if (x.getDeType() == 2) {
+                        if (StringUtils.isEmpty(l)) {
+                            l = "0";
+                        }
+                        if (StringUtils.equalsIgnoreCase(l,"Y")) {
+                            l = "1";
+                        }
+                        if (StringUtils.equalsIgnoreCase(l,"N")) {
+                            l = "0";
+                        }
+                        list.add(Long.valueOf(l));
+                    } else if (x.getDeType() == 3) {
+                        if (StringUtils.isEmpty(l)) {
+                            l = "0.0";
+                        }
+                        list.add(Double.valueOf(l));
+                    }
+                }
+                iterator.add(RowFactory.create(list.toArray()));
+            }
+            return iterator.iterator();
+        });
+
+        List<StructField> structFields = new ArrayList<>();
+        // struct顺序要与rdd顺序一致
+        fields.forEach(x -> {
+            if (x.getDeType() == 0 || x.getDeType() == 1) {
+                structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.StringType, true));
+            } else if (x.getDeType() == 2) {
+                structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.LongType, true));
+            } else if (x.getDeType() == 3) {
+                structFields.add(DataTypes.createStructField(x.getOriginName(), DataTypes.DoubleType, true));
+            }
+        });
+        StructType structType = DataTypes.createStructType(structFields);
+
+        Dataset<Row> dataFrame = sqlContext.createDataFrame(rdd, structType);
+        return dataFrame;
     }
 
     public Dataset<Row> getHBaseDataAndCache(JavaSparkContext sparkContext, SQLContext sqlContext, String hTable, List<DatasetTableField> fields) throws Exception {
@@ -145,7 +210,7 @@ public class SparkCalc {
         StructType structType = DataTypes.createStructType(structFields);
 
         Dataset<Row> dataFrame = sqlContext.createDataFrame(rdd, structType).persist(StorageLevel.MEMORY_AND_DISK_SER());
-        CacheUtil.getInstance().addCacheData(hTable, dataFrame);
+//        CacheUtil.getInstance().addCacheData(hTable, dataFrame);
         dataFrame.count();
         return dataFrame;
     }

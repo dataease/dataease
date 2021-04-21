@@ -1,6 +1,8 @@
 <template>
   <div class="top-nav" :style="{'background-color': theme}">
-    <div class="log">DATA_EASE</div>
+    <div class="log">
+      <img src="@/assets/DataEase-white.png" width="160" alt="" style="padding-top: 8px;">
+    </div>
     <el-menu
       :active-text-color="variables.topMenuActiveText"
       :default-active="activeMenu"
