@@ -95,6 +95,7 @@ export default {
             templateStyle: JSON.stringify(this.canvasStyleData),
             templateData: JSON.stringify(this.componentData),
             templateType: 'self',
+            nodeType: 'folder',
             level: 1,
             pid: null,
             dynamicData: ''
@@ -105,12 +106,12 @@ export default {
     downloadToTemplate() {
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         debugger
-        const snapShot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
-        if (snapShot !== '') {
+        const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        if (snapshot !== '') {
           this.templateInfo = {
             name: this.$store.state.panel.panelInfo.name,
             templateType: 'self',
-            snapShot: snapShot,
+            snapshot: snapshot,
             panelStyle: JSON.stringify(this.canvasStyleData),
             panelData: JSON.stringify(this.componentData),
             dynamicData: ''
@@ -124,10 +125,10 @@ export default {
       this.templateInfo = ''
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         debugger
-        const snapShot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
-        if (snapShot !== '') {
+        const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        if (snapshot !== '') {
           this.templateInfo = {
-            snapShot: snapShot,
+            snapshot: snapshot,
             panelStyle: JSON.stringify(this.canvasStyleData),
             panelData: JSON.stringify(this.componentData),
             dynamicData: ''

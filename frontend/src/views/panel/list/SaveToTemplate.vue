@@ -1,8 +1,8 @@
 <template>
   <el-row>
     <el-row>
-      <el-col span="4">模板名称</el-col>
-      <el-col span="20">
+      <el-col :span="4">模板名称</el-col>
+      <el-col :span="20">
         <el-input v-model="templateInfo.name" clearable size="mini" />
       </el-col>
     </el-row>

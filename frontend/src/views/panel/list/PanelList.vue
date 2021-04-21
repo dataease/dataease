@@ -51,7 +51,7 @@
               </span>
               <span>
                 <span v-if="data.nodeType ==='folder'" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="clickAdd">
+                  <el-dropdown trigger="click" size="small" @command="showEditPanel">
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-plus"
@@ -60,10 +60,10 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('folder',data,node)">
+                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickEdit('folder','new',data,node)">
                         {{ $t('panel.groupAdd') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('panel',data,node)">
+                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickEdit('panel','new',data,node)">
                         {{ $t('panel.panelAdd') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -79,7 +79,7 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('edit',data,node)">
                         {{ $t('panel.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
@@ -136,6 +136,10 @@
           <el-button @click="copyUri">复制链接</el-button>
         </span> -->
       </el-dialog>
+      <!--新建仪表盘dialog-->
+      <el-dialog :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
+        <edit-panel v-if="editPanel.visible" :edit-panel="editPanel" @closeEditPanelDialog="closeEditPanelDialog" />
+      </el-dialog>
     </el-col>
   </el-col>
 </template>
@@ -145,14 +149,44 @@ import GrantAuth from '../GrantAuth'
 import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
-import eventBus from '@/components/canvas/utils/eventBus'
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, defaultTree, get } from '@/api/panel/panel'
+import EditPanel from './EditPanel'
+import { addGroup, delGroup, groupTree, defaultTree, get } from '@/api/panel/panel'
 
 export default {
   name: 'PanelList',
-  components: { GrantAuth, LinkGenerate },
+  components: { GrantAuth, LinkGenerate, EditPanel },
   data() {
     return {
+      editPanelModel: {
+        titlePre: null,
+        titleSuf: null,
+        visible: false,
+        optType: null,
+        panelInfo: {
+          name: null,
+          pid: null,
+          level: null,
+          nodeType: null,
+          panelType: null,
+          panelStyle: null,
+          panelDate: null
+        }
+      },
+      editPanel: {
+        titlePre: null,
+        titleSuf: '仪表盘',
+        visible: false,
+        optType: 'new',
+        panelInfo: {
+          name: null,
+          pid: null,
+          level: null,
+          nodeType: null,
+          panelType: null,
+          panelStyle: null,
+          panelDate: null
+        }
+      },
       linkTitle: '链接分享',
       linkVisible: false,
       linkResourceId: null,
@@ -163,7 +197,6 @@ export default {
       dialogTitle: '',
       search: '',
       editGroup: false,
-      editTable: false,
       tData: [],
       tableData: [],
       currGroup: {},
@@ -197,61 +230,71 @@ export default {
     }
   },
   computed: {
+    panelDialogTitle() {
+      return this.editPanel.titlePre + this.editPanel.titleSuf
+    }
   },
   watch: {
-    // search(val){
-    //   this.groupForm.name = val;
-    //   this.tree(this.groupForm);
-    // }
+
   },
   mounted() {
     this.defaultTree()
     this.tree(this.groupForm)
-    this.refresh()
-    this.tableTree()
-    // this.$router.push('/dataset');
   },
   methods: {
-    clickAdd(param) {
-      // console.log(param);
-      this.add(param.type)
-      this.groupForm.pid = param.data.id
-      this.groupForm.level = param.data.level + 1
+    closeEditPanelDialog() {
+      this.editPanel.visible = false
+      this.tree(this.groupForm)
     },
-
-    beforeClickAdd(type, data, node) {
+    showEditPanel(param) {
+      this.editPanel = JSON.parse(JSON.stringify(this.editPanelModel))
+      this.editPanel.optType = param.optType
+      this.editPanel.panelInfo.nodeType = param.type
+      this.editPanel.visible = true
+      switch (param.optType) {
+        case 'new':
+          this.editPanel.titlePre = '新建'
+          this.editPanel.panelInfo.name = '新建仪表盘'
+          this.editPanel.panelInfo.pid = param.data.id
+          this.editPanel.panelInfo.level = param.data.level + 1
+          break
+        case 'edit':
+          this.editPanel.titlePre = '编辑'
+          this.editPanel.panelInfo.id = param.data.id
+          this.editPanel.panelInfo.name = param.data.name
+          break
+      }
+      switch (param.type) {
+        case 'folder':
+          this.editPanel.titleSuf = '目录'
+          break
+        case 'panel':
+          this.editPanel.titleSuf = '仪表盘'
+          break
+      }
+    },
+    beforeClickEdit(type, optType, data, node) {
       return {
         'type': type,
         'data': data,
-        'node': node
+        'node': node,
+        'optType': optType
       }
     },
 
     clickMore(param) {
-      console.log(param)
-      switch (param.type) {
-        case 'rename':
-          this.add(param.data.nodeType)
-          this.groupForm = JSON.parse(JSON.stringify(param.data))
+      debugger
+      switch (param.optType) {
+        case 'edit':
+          this.showEditPanel(param)
           break
         case 'move':
           break
         case 'delete':
           this.delete(param.data)
           break
-        case 'editTable':
-          this.editTable = true
-          this.tableForm = JSON.parse(JSON.stringify(param.data))
-          this.tableForm.mode = this.tableForm.mode + ''
-          break
-        case 'deleteTable':
-          this.deleteTable(param.data)
-          break
         case 'share':
           this.share(param.data)
-          break
-        case 'edit':
-          this.edit(param.data)
           break
         case 'link':
           this.link(param.data)
@@ -259,25 +302,27 @@ export default {
       }
     },
 
-    beforeClickMore(type, data, node) {
+    beforeClickMore(optType, data, node) {
       return {
-        'type': type,
+        'type': data.nodeType,
         'data': data,
-        'node': node
+        'node': node,
+        'optType': optType
       }
     },
 
     add(nodeType) {
+      this.groupForm.nodeType = nodeType
       switch (nodeType) {
         case 'folder':
           this.dialogTitle = this.$t('panel.groupAdd')
+          this.editGroup = true
           break
         case 'panel':
-          this.dialogTitle = this.$t('panel.panelAdd')
+          this.editPanel.title = this.$t('panel.panelAdd')
+          this.editPanel.visible = true
           break
       }
-      this.groupForm.nodeType = nodeType
-      this.editGroup = true
     },
 
     saveGroup(group) {
@@ -292,34 +337,6 @@ export default {
               showClose: true
             })
             this.tree(this.groupForm)
-          })
-        } else {
-          this.$message({
-            message: this.$t('commons.input_content'),
-            type: 'error',
-            showClose: true
-          })
-          return false
-        }
-      })
-    },
-
-    saveTable(table) {
-      //   console.log(table)
-      table.mode = parseInt(table.mode)
-      this.$refs['tableForm'].validate((valid) => {
-        if (valid) {
-          addTable(table).then(response => {
-            this.closeTable()
-            this.$message({
-              message: this.$t('commons.save_success'),
-              type: 'success',
-              showClose: true
-            })
-            this.tableTree()
-            // this.$router.push('/dataset/home')
-            this.$emit('switchComponent', { name: '' })
-            this.$store.dispatch('dataset/setTable', null)
           })
         } else {
           this.$message({
@@ -350,27 +367,6 @@ export default {
       })
     },
 
-    deleteTable(data) {
-      this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
-        confirmButtonText: this.$t('panel.confirm'),
-        cancelButtonText: this.$t('panel.cancel'),
-        type: 'warning'
-      }).then(() => {
-        delTable(data.id).then(response => {
-          this.$message({
-            type: 'success',
-            message: this.$t('panel.delete_success'),
-            showClose: true
-          })
-          this.tableTree()
-          // this.$router.push('/dataset/home')
-          this.$emit('switchComponent', { name: '' })
-          this.$store.dispatch('dataset/setTable', null)
-        })
-      }).catch(() => {
-      })
-    },
-
     close() {
       this.editGroup = false
       this.groupForm = {
@@ -382,14 +378,6 @@ export default {
         sort: 'node_type desc,name asc'
       }
     },
-
-    closeTable() {
-      this.editTable = false
-      this.tableForm = {
-        name: ''
-      }
-    },
-
     tree(group) {
       groupTree(group).then(res => {
         this.tData = res.data
@@ -402,18 +390,6 @@ export default {
       defaultTree(requestInfo).then(res => {
         this.defaultData = res.data
       })
-    },
-
-    tableTree() {
-      this.tableData = []
-      if (this.currGroup.id) {
-        loadTable({
-          sort: 'type asc,create_time desc,name asc',
-          sceneId: this.currGroup.id
-        }).then(res => {
-          this.tableData = res.data
-        })
-      }
     },
 
     nodeClick(data, node) {
@@ -440,72 +416,12 @@ export default {
       this.$store.dispatch('dataset/setSceneData', null)
       this.$emit('switchComponent', { name: '' })
     },
-
-    clickAddData(param) {
-      // console.log(param);
-      switch (param.type) {
-        case 'db':
-          this.addDB()
-          break
-        case 'sql':
-          this.$message(param.type)
-          break
-        case 'excel':
-          this.$message(param.type)
-          break
-        case 'custom':
-          this.$message(param.type)
-          break
-      }
-    },
-
     beforeClickAddData(type) {
       return {
         'type': type
       }
     },
 
-    addDB() {
-      // this.$router.push({
-      //   name: 'add_db',
-      //   params: {
-      //     scene: this.currGroup
-
-      //   }
-      // })
-      this.$emit('switchComponent', { name: 'AddDB', param: this.currGroup })
-    },
-
-    sceneClick(data, node) {
-      // console.log(data);
-      this.$store.dispatch('dataset/setTable', null)
-      this.$store.dispatch('dataset/setTable', data.id)
-      // this.$router.push({
-      //   name: 'table',
-      //   params: {
-      //     table: data
-      //   }
-      // })
-      this.$emit('switchComponent', { name: 'ViewTable' })
-    },
-
-    refresh() {
-      const path = this.$route.path
-      if (path === '/dataset/table') {
-        this.sceneMode = true
-        const sceneId = this.$store.state.dataset.sceneData
-        getScene(sceneId).then(res => {
-          this.currGroup = res.data
-        })
-      }
-    },
-    panelDefaultClick(data, node) {
-      console.log(data)
-      console.log(node)
-      this.$store.dispatch('panel/setPanelInfo', data)
-      // 切换view
-      this.$emit('switchComponent', { name: 'PanelView' })
-    },
     share(data) {
       this.authResourceId = data.id
       this.authTitle = '把[' + data.label + ']分享给'

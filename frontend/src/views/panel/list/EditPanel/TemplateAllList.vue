@@ -1,10 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col>
-    <el-row>
-      <el-button icon="el-icon-folder-add" type="primary" size="mini" @click="add()">
-        添加分类
-      </el-button>
-    </el-row>
     <el-row style="margin-top: 5px">
       <el-row>
         <el-input
@@ -28,38 +23,21 @@
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
-              <span>
+              <span v-if="data.nodeType==='template'">
                 <el-button
                   icon="el-icon-picture-outline"
                   type="text"
                 />
               </span>
+              <span v-if="data.nodeType==='folder'">
+                <el-button
+                  icon="el-icon-folder"
+                  type="text"
+                />
+              </span>
               <span style="margin-left: 6px">{{ data.name }}</span>
             </span>
-            <span>
-              <span @click.stop>
-                <el-dropdown trigger="click" size="small" @command="clickMore">
-                  <span class="el-dropdown-link">
-                    <el-button
-                      icon="el-icon-plus"
-                      type="text"
-                      size="small"
-                    />
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
-                      编辑
-                    </el-dropdown-item>
-                    <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
-                      删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span>
-            </span>
-          </span>
-
-        </el-tree>
+          </span></el-tree>
       </el-row>
     </el-row>
   </el-col>
@@ -67,13 +45,9 @@
 
 <script>
 export default {
-  name: 'TemplateList',
+  name: 'TemplateAllList',
   components: { },
   props: {
-    templateType: {
-      type: String,
-      default: ''
-    },
     templateList: {
       type: Array,
       default: function() {
@@ -97,9 +71,6 @@ export default {
     }
   },
   methods: {
-    clickAdd() {
-
-    },
     clickMore(param) {
       console.log(param)
       switch (param.type) {
@@ -124,23 +95,7 @@ export default {
       return data.label.indexOf(value) !== -1
     },
     nodeClick(data, node) {
-      this.$emit('showCurrentTemplate', data.id)
-    },
-    add() {
-      this.$emit('showTemplateEditDialog', 'new')
-    },
-    templateDelete(template) {
-      this.$alert('是否删除分类：' + template.name + '？', '', {
-        confirmButtonText: '确认',
-        callback: (action) => {
-          if (action === 'confirm') {
-            this.$emit('templateDelete', template.id)
-          }
-        }
-      })
-    },
-    templateEdit(template) {
-      this.$emit('templateEdit', template)
+      this.$emit('showCurrentTemplateInfo', data)
     }
   }
 }

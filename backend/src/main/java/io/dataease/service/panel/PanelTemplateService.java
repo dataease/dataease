@@ -56,6 +56,10 @@ public class PanelTemplateService {
 
     public PanelTemplateDTO save(PanelTemplateRequest request) {
         if (StringUtils.isEmpty(request.getId())) {
+            //如果level 是0（第一级）设置父级为对应的templateType
+            if(request.getLevel()==0){
+                request.setPid(request.getTemplateType());
+            }
             request.setId(UUID.randomUUID().toString());
             request.setCreateTime(System.currentTimeMillis());
             panelTemplateMapper.insert(request);
