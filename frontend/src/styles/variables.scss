@@ -4,7 +4,7 @@
 **/
 
 /* theme color */
-$--color-primary: #1890ff;
+$--color-primary: #f1a826;
 $--color-success: #13ce66;
 $--color-warning: #ffba00;
 $--color-danger: #ff4949;
@@ -27,7 +27,7 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 
 // sidebar
 $menuText:rgba(255,255,255,0.87);
-$menuActiveText:#409EFF;
+$menuActiveText:#f18126;
 $topMenuActiveText:#f4f4f5;
 $subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
 
@@ -38,7 +38,7 @@ $menuHover: rgba(158, 158, 158, 0.2);
 
 $subMenuBg:#1f2d3d;
 // $subMenuHover:#001528;
-$subMenuHover:#1682e6;
+$subMenuHover:#f18126;
 
 $sideBarWidth: 210px;
 $topBarHeight: 56px;

@@ -662,9 +662,9 @@ export default {
   }
 
   .item:hover {
-    color: #1890ff;
-    background: #e8f4ff;
-    border-color: #a3d3ff;
+    color: #f1a826;
+    background: #fffcef;
+    border-color: #f3c13c;
     cursor: pointer;
   }
 
