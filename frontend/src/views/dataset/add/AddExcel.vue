@@ -95,7 +95,8 @@ export default {
       height: 600,
       fileList: [],
       headers: { Authorization: token },
-      baseUrl: process.env.VUE_APP_BASE_API
+      baseUrl: process.env.VUE_APP_BASE_API,
+      path: ''
     }
   },
   watch: {
@@ -131,7 +132,7 @@ export default {
       // console.log(response)
       // console.log(file)
       // console.log(fileList)
-
+      this.path = response.data.path
       this.fields = response.data.fields
       this.data = response.data.data
       const datas = this.data
@@ -153,7 +154,7 @@ export default {
         dataSourceId: null,
         type: 'excel',
         mode: parseInt(this.mode),
-        info: '{"data":"' + '123' + '"}'
+        info: '{"data":"' + this.path + '"}'
       }
       post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())
