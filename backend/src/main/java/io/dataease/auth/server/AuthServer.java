@@ -83,6 +83,15 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    public Boolean validateName(@RequestBody Map<String, String> nameDto) {
+        String userName = nameDto.get("userName");
+        if (StringUtils.isEmpty(userName)) return false;
+        SysUserEntity userEntity = authUserService.getUserByName(userName);
+        if (ObjectUtils.isEmpty(userEntity)) return false;
+        return true;
+    }
+
+    @Override
     public Boolean isLogin() {
         return null;
     }

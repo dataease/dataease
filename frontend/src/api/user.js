@@ -21,3 +21,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function validateUserName(data) {
+  return request({
+    url: '/api/auth/validateName',
+    method: 'post',
+    data
+  })
+}

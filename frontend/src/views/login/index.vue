@@ -49,17 +49,28 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+
 import { encrypt } from '@/utils/rsaEncrypt'
+import { validateUserName } from '@/api/user'
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      const userName = value.trim()
+      validateUserName({ userName: userName }).then(res => {
+        if (res.data) {
+          callback()
+        } else {
+          callback(new Error('Please enter the correct user name'))
+        }
+      }).catch(() => {
         callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
+      })
+    //   if (!validUsername(value)) {
+    //     callback(new Error('Please enter the correct user name'))
+    //   } else {
+    //     callback()
+    //   }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
