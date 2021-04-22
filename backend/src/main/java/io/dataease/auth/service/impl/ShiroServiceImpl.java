@@ -42,6 +42,10 @@ public class ShiroServiceImpl implements ShiroService {
 
         //验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
+        filterChainDefinitionMap.put("/panel/group/findOne/**", ANON);
+        filterChainDefinitionMap.put("/chart/view/getData/**", ANON);
+
+
 
 
         filterChainDefinitionMap.put("/api/auth/login", ANON);
