@@ -55,12 +55,19 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             throw  new AuthenticationException(expireMessage);
         }
         if (JWTUtils.needRefresh(authorization)){
+            String oldAuthorization = authorization;
             authorization = refreshToken(request, response);
+            JWTUtils.removeTokenExpire(oldAuthorization);
         }
+        // 删除老的操作时间
+        JWTUtils.removeTokenExpire(authorization);
+        // 设置新的操作时间
+        JWTUtils.addTokenExpire(authorization);
         JWTToken token = new JWTToken(authorization);
         Subject subject = getSubject(request, response);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         subject.login(token);
+
         return true;
     }
 
@@ -98,10 +105,10 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String password = user.getPassword();
 
         // 删除老token操作时间
-        JWTUtils.removeTokenExpire(token);
+        // JWTUtils.removeTokenExpire(token);
         String newToken = JWTUtils.sign(tokenInfo, password);
         // 记录新token操作时间
-        JWTUtils.addTokenExpire(newToken);
+        // JWTUtils.addTokenExpire(newToken);
 
         JWTToken jwtToken = new JWTToken(newToken);
         this.getSubject(request, response).login(jwtToken);
