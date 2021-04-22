@@ -82,18 +82,24 @@ export const constantRoutes = [
     component: () => import('@/components/canvas/components/Editor/PreviewFullScreen'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' }
-    }]
+    redirect: '/panel',
+    hidden: true
   }
+
+  //   {
+  //     path: '/',
+  //     component: Layout,
+  //     redirect: '/panel',
+  //     children: [{
+  //       path: 'index',
+  //       name: '仪表板',
+  //       component: () => import('@/views/panel/index'),
+  //       meta: { title: '仪表板', icon: 'dashboard' }
+  //     }]
+  //   }
 
   //   {
   //     path: '/example',

@@ -94,7 +94,7 @@ export default {
         return meta.activeMenu
       }
       // 如果是首页，首页高亮
-      if (path === '/dashboard') {
+      if (path === '/panel') {
         return '/'
       }
       // 如果不是首页，高亮一级菜单

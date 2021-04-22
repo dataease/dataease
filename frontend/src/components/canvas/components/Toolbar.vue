@@ -56,6 +56,7 @@ import { post } from '@/api/panel/panel'
 import bus from '@/utils/bus'
 
 export default {
+  // eslint-disable-next-line vue/no-unused-components
   components: { PreviewEject },
   data() {
     return {
