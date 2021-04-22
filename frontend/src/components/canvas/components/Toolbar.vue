@@ -87,7 +87,10 @@ export default {
   },
   methods: {
     closePanelEdit() {
-      bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
+      this.$emit('close-left-panel')
+      this.$nextTick(() => {
+        bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
+      })
     },
     goFile() {
       this.$refs.files.click()

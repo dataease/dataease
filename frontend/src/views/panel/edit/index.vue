@@ -6,7 +6,7 @@
           名称：{{ panelInfo.name || '测试仪表板' }}
         </span>
         <!--横向工具栏-->
-        <Toolbar />
+        <Toolbar @close-left-panel="closeLeftPanel" />
       </el-row>
     </el-header>
     <de-container>
@@ -44,10 +44,10 @@
         </div>
         <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">
           <div />
-          <div v-show="show" class="leftPanel">
+          <div v-if="show" class="leftPanel">
 
             <div class="leftPanel-items">
-              <view-select v-show=" showIndex===0" />
+              <view-select v-show="show && showIndex===0" />
               <filter-group v-show="show && showIndex===1" />
             </div>
           </div>
@@ -349,6 +349,10 @@ export default {
       this.currentWidget = ApplicationContext.getService(serviceName)
       this.currentFilterCom = this.curComponent
       this.openFilterDiolog()
+    },
+    closeLeftPanel() {
+      this.show = false
+      this.beforeDestroy()
     }
   }
 }
