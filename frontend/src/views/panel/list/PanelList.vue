@@ -79,7 +79,7 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('edit',data,node)">
+                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
                         {{ $t('panel.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
@@ -259,6 +259,7 @@ export default {
           this.editPanel.panelInfo.level = param.data.level + 1
           break
         case 'edit':
+        case 'rename':
           this.editPanel.titlePre = '编辑'
           this.editPanel.panelInfo.id = param.data.id
           this.editPanel.panelInfo.name = param.data.name
@@ -285,7 +286,7 @@ export default {
     clickMore(param) {
       debugger
       switch (param.optType) {
-        case 'edit':
+        case 'rename':
           this.showEditPanel(param)
           break
         case 'move':
@@ -295,6 +296,9 @@ export default {
           break
         case 'share':
           this.share(param.data)
+          break
+        case 'edit':
+          this.edit(param.data)
           break
         case 'link':
           this.link(param.data)
