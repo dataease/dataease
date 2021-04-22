@@ -125,8 +125,8 @@ import { get } from '@/api/panel/panel'
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
-import 'element-ui/lib/theme-chalk/index.css'
 import '@/components/canvas/styles/reset.css'
+
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import FilterDialog from '../filter/filterDialog'
 export default {
