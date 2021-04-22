@@ -102,7 +102,28 @@ CREATE TABLE `panel_store` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板收藏';
 
 
+DROP TABLE IF EXISTS `panel_template`;
+CREATE TABLE `panel_template` (
+  `id` varchar(50) NOT NULL,
+  `name` varchar(255) DEFAULT NULL COMMENT '名称',
+  `pid` varchar(255) DEFAULT NULL COMMENT '父级id',
+  `level` int(10) DEFAULT NULL COMMENT '层级',
+  `node_type` varchar(255) DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
+  `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+  `snapshot` longtext COMMENT '缩略图',
+  `template_type` varchar(255) DEFAULT NULL COMMENT '仪表盘类型 system 系统内置 self 用户自建 ',
+  `template_style` longtext COMMENT 'template 样式',
+  `template_data` longtext COMMENT 'template 数据',
+  `dynamic_data` longtext COMMENT '预存数据',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 SET FOREIGN_KEY_CHECKS = 1;
+
+INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('self', '用户模板', '', -1, 'folder', NULL, NULL, '', 'self', '', '', NULL);
+INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('system', '系统模板', '', -1, 'folder', NULL, NULL, NULL, 'system', NULL, NULL, NULL);
 
 
 
