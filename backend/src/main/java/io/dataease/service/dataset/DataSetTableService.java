@@ -637,11 +637,12 @@ public class DataSetTableService {
 
     private String saveFile(MultipartFile file) throws Exception {
         String filename = file.getOriginalFilename();
-        File p = new File(path);
+        String dirPath = path + AuthUtils.getUser().getUsername() + "/";
+        File p = new File(dirPath);
         if (!p.exists()) {
             p.mkdirs();
         }
-        String filePath = path + AuthUtils.getUser().getUsername() + "/" + filename;
+        String filePath = dirPath + filename;
         File f = new File(filePath);
         FileOutputStream fileOutputStream = new FileOutputStream(f);
         fileOutputStream.write(file.getBytes());

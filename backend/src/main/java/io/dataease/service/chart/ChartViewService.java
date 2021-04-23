@@ -1,11 +1,13 @@
 package io.dataease.service.chart;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -20,7 +22,6 @@ import io.dataease.dto.chart.Series;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
-import io.dataease.service.spark.SparkCalc;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,8 +44,8 @@ public class ChartViewService {
     private DataSetTableService dataSetTableService;
     @Resource
     private DatasourceService datasourceService;
-    @Resource
-    private SparkCalc sparkCalc;
+    //    @Resource
+//    private SparkCalc sparkCalc;
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
 
@@ -146,8 +147,18 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             // 获取数据集de字段
-            List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
-            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0], extFilterList);
+//            List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(table.getId());
+//            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0], extFilterList);
+
+            // 连接doris，构建doris数据源查询
+            Datasource ds = dorisDatasource();
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            String tableName = "ds_" + table.getId().replaceAll("-", "_");
+            datasourceRequest.setTable(tableName);
+            datasourceRequest.setQuery(getSQL(ds.getType(), tableName, xAxis, yAxis, extFilterList));
+            data = datasourceProvider.getData(datasourceRequest);
         }
 
         // 图表组件可再扩展
@@ -212,6 +223,24 @@ public class ChartViewService {
             }
         }
         return filter.toString();
+    }
+
+    public Datasource dorisDatasource() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("dataSourceType", "jdbc");
+        jsonObject.put("dataBase", "example_db");
+        jsonObject.put("username", "root");
+        jsonObject.put("password", "dataease");
+        jsonObject.put("host", "59.110.64.159");
+        jsonObject.put("port", "9030");
+
+        Datasource datasource = new Datasource();
+        datasource.setId("doris");
+        datasource.setName("doris");
+        datasource.setDesc("doris");
+        datasource.setType("mysql");
+        datasource.setConfiguration(jsonObject.toJSONString());
+        return datasource;
     }
 
     public String getSQL(String type, String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
@@ -321,7 +350,7 @@ public class ChartViewService {
         return map;
     }
 
-    public List<ChartView> viewsByIds(List<String> viewIds){
+    public List<ChartView> viewsByIds(List<String> viewIds) {
         ChartViewExample example = new ChartViewExample();
         example.createCriteria().andIdIn(viewIds);
         return chartViewMapper.selectByExample(example);

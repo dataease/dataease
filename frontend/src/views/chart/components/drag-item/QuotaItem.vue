@@ -22,8 +22,8 @@
                 <el-dropdown-item :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSummary('std')">{{ $t('chart.std') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSummary('var_samp')">{{ $t('chart.var_samp') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>

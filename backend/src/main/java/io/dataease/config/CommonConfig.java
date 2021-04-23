@@ -2,7 +2,6 @@ package io.dataease.config;
 
 import com.fit2cloud.autoconfigure.QuartzAutoConfiguration;
 import io.dataease.commons.utils.CommonThreadPool;
-import org.apache.spark.sql.SparkSession;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
@@ -32,31 +31,31 @@ public class CommonConfig {
 //        return configuration;
 //    }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public SparkSession javaSparkSession() {
-        SparkSession spark = SparkSession.builder()
-                .appName(env.getProperty("spark.appName", "DataeaseJob"))
-                .master(env.getProperty("spark.master", "local[*]"))
-                .config("spark.scheduler.mode", env.getProperty("spark.scheduler.mode", "FAIR"))
-                .config("spark.serializer", env.getProperty("spark.serializer", "org.apache.spark.serializer.KryoSerializer"))
-                .config("spark.executor.cores", env.getProperty("spark.executor.cores", "8"))
-                .config("spark.executor.memory", env.getProperty("spark.executor.memory", "6442450944b"))
-                .config("spark.locality.wait", env.getProperty("spark.locality.wait", "600000"))
-                .config("spark.maxRemoteBlockSizeFetchToMem", env.getProperty("spark.maxRemoteBlockSizeFetchToMem", "2000m"))
-                .config("spark.shuffle.detectCorrupt", env.getProperty("spark.shuffle.detectCorrupt", "false"))
-                .config("spark.shuffle.service.enabled", env.getProperty("spark.shuffle.service.enabled", "true"))
-                .config("spark.sql.adaptive.enabled", env.getProperty("spark.sql.adaptive.enabled", "true"))
-                .config("spark.sql.adaptive.shuffle.targetPostShuffleInputSize", env.getProperty("spark.sql.adaptive.shuffle.targetPostShuffleInputSize", "200M"))
-                .config("spark.sql.broadcastTimeout", env.getProperty("spark.sql.broadcastTimeout", "12000"))
-                .config("spark.sql.retainGroupColumns", env.getProperty("spark.sql.retainGroupColumns", "false"))
-                .config("spark.sql.sortMergeJoinExec.buffer.in.memory.threshold", env.getProperty("spark.sql.sortMergeJoinExec.buffer.in.memory.threshold", "100000"))
-                .config("spark.sql.sortMergeJoinExec.buffer.spill.threshold", env.getProperty("spark.sql.sortMergeJoinExec.buffer.spill.threshold", "100000"))
-                .config("spark.sql.variable.substitute", env.getProperty("spark.sql.variable.substitute", "false"))
-                .config("spark.temp.expired.time", env.getProperty("spark.temp.expired.time", "3600"))
-                .getOrCreate();
-        return spark;
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    public SparkSession javaSparkSession() {
+//        SparkSession spark = SparkSession.builder()
+//                .appName(env.getProperty("spark.appName", "DataeaseJob"))
+//                .master(env.getProperty("spark.master", "local[*]"))
+//                .config("spark.scheduler.mode", env.getProperty("spark.scheduler.mode", "FAIR"))
+////                .config("spark.serializer", env.getProperty("spark.serializer", "org.apache.spark.serializer.KryoSerializer"))
+////                .config("spark.executor.cores", env.getProperty("spark.executor.cores", "8"))
+////                .config("spark.executor.memory", env.getProperty("spark.executor.memory", "6442450944b"))
+////                .config("spark.locality.wait", env.getProperty("spark.locality.wait", "600000"))
+////                .config("spark.maxRemoteBlockSizeFetchToMem", env.getProperty("spark.maxRemoteBlockSizeFetchToMem", "2000m"))
+////                .config("spark.shuffle.detectCorrupt", env.getProperty("spark.shuffle.detectCorrupt", "false"))
+////                .config("spark.shuffle.service.enabled", env.getProperty("spark.shuffle.service.enabled", "true"))
+////                .config("spark.sql.adaptive.enabled", env.getProperty("spark.sql.adaptive.enabled", "true"))
+////                .config("spark.sql.adaptive.shuffle.targetPostShuffleInputSize", env.getProperty("spark.sql.adaptive.shuffle.targetPostShuffleInputSize", "200M"))
+////                .config("spark.sql.broadcastTimeout", env.getProperty("spark.sql.broadcastTimeout", "12000"))
+////                .config("spark.sql.retainGroupColumns", env.getProperty("spark.sql.retainGroupColumns", "false"))
+////                .config("spark.sql.sortMergeJoinExec.buffer.in.memory.threshold", env.getProperty("spark.sql.sortMergeJoinExec.buffer.in.memory.threshold", "100000"))
+////                .config("spark.sql.sortMergeJoinExec.buffer.spill.threshold", env.getProperty("spark.sql.sortMergeJoinExec.buffer.spill.threshold", "100000"))
+////                .config("spark.sql.variable.substitute", env.getProperty("spark.sql.variable.substitute", "false"))
+////                .config("spark.temp.expired.time", env.getProperty("spark.temp.expired.time", "3600"))
+//                .getOrCreate();
+//        return spark;
+//    }
 
     @Bean
     @ConditionalOnMissingBean
