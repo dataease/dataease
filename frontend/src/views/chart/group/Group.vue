@@ -516,9 +516,9 @@ export default {
     },
 
     sceneClick(data, node) {
-      this.$store.dispatch('chart/setViewId', null)
-      this.$store.dispatch('chart/setViewId', data.id)
-      this.$emit('switchComponent', { name: 'ChartEdit' })
+      // this.$store.dispatch('chart/setViewId', null)
+      // this.$store.dispatch('chart/setViewId', data.id)
+      this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
     },
 
     selectTable() {

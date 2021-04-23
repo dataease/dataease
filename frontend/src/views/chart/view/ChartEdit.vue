@@ -1,6 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <span v-show="false">{{ vId }}</span>
+<!--    <span v-show="false">{{ vId }}</span>-->
     <el-row style="height: 40px;background-color: white" class="padding-lr">
       <el-popover
         placement="right-start"
@@ -266,6 +266,12 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 export default {
   name: 'ChartEdit',
   components: { DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  props: {
+    param: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       table: {},
@@ -311,21 +317,25 @@ export default {
     }
   },
   computed: {
-    vId() {
-      // console.log(this.$store.state.chart.viewId);
-      this.getData(this.$store.state.chart.viewId)
-      return this.$store.state.chart.viewId
-    }
+    // vId() {
+    //   // console.log(this.$store.state.chart.viewId);
+    //   this.getData(this.$store.state.chart.viewId)
+    //   return this.$store.state.chart.viewId
+    // }
 
   },
   watch: {
+    'param': function() {
+      console.log(this.param)
+      this.getData(this.param.id)
+    }
   },
   created() {
     // this.get(this.$store.state.chart.viewId);
   },
   mounted() {
     // this.get(this.$store.state.chart.viewId);
-    this.getData(this.$store.state.chart.viewId)
+    this.getData(this.param.id)
     // this.myEcharts();
   },
   activated() {
