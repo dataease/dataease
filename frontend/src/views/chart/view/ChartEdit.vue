@@ -114,7 +114,7 @@
                   <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
                 </div>
                 <div>
-                  <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                  <el-radio value="table-normal" label="table-normal"><svg-icon icon-class="table-normal" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
@@ -195,7 +195,8 @@
             </el-row>
           </el-row>
 
-          <chart-component :chart-id="chart.id" :chart="chart" class="chart-class" />
+          <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+          <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" />
         </el-row>
       </el-col>
     </el-row>
@@ -262,10 +263,11 @@ import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
 import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
+import TableNormal from '../components/table/TableNormal'
 
 export default {
   name: 'ChartEdit',
-  components: { DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,

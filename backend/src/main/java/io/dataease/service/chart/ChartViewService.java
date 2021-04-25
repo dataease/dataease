@@ -7,7 +7,6 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -29,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -98,8 +98,6 @@ public class ChartViewService {
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
 
-        List<String> x = new ArrayList<>();
-        List<Series> series = new ArrayList<>();
         if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
             ChartViewDTO dto = new ChartViewDTO();
             BeanUtils.copyBean(dto, view);
@@ -162,6 +160,8 @@ public class ChartViewService {
         }
 
         // 图表组件可再扩展
+        List<String> x = new ArrayList<>();
+        List<Series> series = new ArrayList<>();
         for (ChartViewFieldDTO y : yAxis) {
             Series series1 = new Series();
             series1.setName(y.getName());
@@ -188,9 +188,29 @@ public class ChartViewService {
                 }
             }
         }
+        // table组件
+        List<ChartViewFieldDTO> fields = new ArrayList<>();
+        List<Map<String, Object>> tableRow = new ArrayList<>();
+        fields.addAll(xAxis);
+        fields.addAll(yAxis);
+        data.forEach(ele -> {
+            Map<String, Object> d = new HashMap<>();
+            for (int i = 0; i < fields.size(); i++) {
+                ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
+                if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
+                    d.put(fields.get(i).getOriginName(), ele[i]);
+                } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
+                    d.put(fields.get(i).getOriginName(), new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
+                }
+            }
+            tableRow.add(d);
+        });
+
         Map<String, Object> map = new HashMap<>();
         map.put("x", x);
         map.put("series", series);
+        map.put("fields", fields);
+        map.put("tableRow", tableRow);
 
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
@@ -259,7 +279,7 @@ public class ChartViewService {
         String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
         String[] order = yAxis.stream().filter(y -> StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none"))
-                .map(y -> "_" + y.getSummary() + "_" + y.getOriginName() + " " + y.getSort()).toArray(String[]::new);
+                .map(y -> "_" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()) + " " + y.getSort()).toArray(String[]::new);
 
         String sql = MessageFormat.format("SELECT {0},{1} FROM {2} WHERE 1=1 {3} GROUP BY {4} ORDER BY null,{5}",
                 StringUtils.join(group, ","),
