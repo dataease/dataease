@@ -54,6 +54,7 @@ export default {
     }
   },
   mounted() {
+    this.calcHeight()
     this.init()
   },
   methods: {
@@ -61,6 +62,14 @@ export default {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
       const datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.$refs.plxTable.reloadData(datas)
+      const that = this
+      window.onresize = function() {
+        that.calcHeight()
+      }
+    },
+    calcHeight() {
+      const currentHeight = document.documentElement.clientHeight
+      this.height = currentHeight - 56 - 40 - 84 - 24 - 16 * 2 - 20
     }
   }
 }

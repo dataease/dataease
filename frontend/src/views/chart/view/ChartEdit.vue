@@ -196,7 +196,7 @@
           </el-row>
 
           <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
-          <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" />
+          <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="chart-class" />
         </el-row>
       </el-col>
     </el-row>
