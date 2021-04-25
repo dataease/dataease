@@ -135,6 +135,19 @@ public class DataSetTableService {
                 dimension.add(field);
             }
         });
+        // quota add count
+        DatasetTableField count = DatasetTableField.builder()
+                .id("count")
+                .tableId(dataSetTableRequest.getId())
+                .originName("*")
+                .name("记录数*")
+                .type("INT")
+                .checked(true)
+                .columnIndex(999)
+                .deType(2)
+                .build();
+        quota.add(count);
+
         Map<String, List<DatasetTableField>> map = new HashMap<>();
         map.put("dimension", dimension);
         map.put("quota", quota);

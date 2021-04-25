@@ -699,7 +699,8 @@ export default {
     area_mode: '面积',
     rose_radius: '圆角',
     view_name: '视图名称',
-    name_can_not_empty: '名称不能为空'
+    name_can_not_empty: '名称不能为空',
+    custom_count: '记录数'
   },
   dataset: {
     datalist: '数据集',

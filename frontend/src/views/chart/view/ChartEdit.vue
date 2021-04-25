@@ -1,6 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-<!--    <span v-show="false">{{ vId }}</span>-->
+    <!--    <span v-show="false">{{ vId }}</span>-->
     <el-row style="height: 40px;background-color: white" class="padding-lr">
       <el-popover
         placement="right-start"
@@ -62,7 +62,7 @@
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-                {{ item.name }}
+                <span>{{ item.name }}</span>
               </span>
             </transition-group>
           </draggable>
@@ -368,7 +368,11 @@ export default {
       // })
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
-          ele.summary = 'sum'
+          if (ele.id === 'count') {
+            ele.summary = 'count'
+          } else {
+            ele.summary = 'sum'
+          }
         }
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
