@@ -95,8 +95,14 @@ export default {
   methods: {
     init() {
       const that = this
-      this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
-      const datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      let datas = []
+      if (this.chart.data) {
+        this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
+        datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      } else {
+        this.fields = []
+        datas = []
+      }
       this.$refs.plxTable.reloadData(datas)
       this.initStyle()
       window.onresize = function() {
@@ -108,7 +114,12 @@ export default {
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 8 * 2 - 20
-        const tableHeight = (that.chart.data.tableRow.length + 2) * 36
+        let tableHeight
+        if (that.chart.data) {
+          tableHeight = (that.chart.data.tableRow.length + 2) * 36
+        } else {
+          tableHeight = 0
+        }
         if (tableHeight > tableMaxHeight) {
           that.height = tableMaxHeight + 'px'
         } else {
