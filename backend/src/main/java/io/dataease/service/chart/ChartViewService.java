@@ -294,7 +294,7 @@ public class ChartViewService {
         // 如果是对结果字段过滤，则再包裹一层sql
         String[] resultFilter = yAxis.stream().filter(y -> CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0)
                 .map(y -> {
-                    String[] s = y.getFilter().stream().map(f -> "AND _" + y.getSummary() + "_" + y.getOriginName() + transMysqlFilterTerm(f.getTerm()) + f.getValue()).toArray(String[]::new);
+                    String[] s = y.getFilter().stream().map(f -> "AND _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()) + transMysqlFilterTerm(f.getTerm()) + f.getValue()).toArray(String[]::new);
                     return StringUtils.join(s, " ");
                 }).toArray(String[]::new);
         if (resultFilter.length == 0) {
