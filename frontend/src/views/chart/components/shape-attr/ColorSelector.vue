@@ -8,8 +8,8 @@
       >
         <el-col>
           <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('chart.color_case')" class="form-item">
-              <el-select v-model="colorForm.colorCase" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorCase">
+            <el-form-item v-if="chart.type && !chart.type.includes('table')" :label="$t('chart.color_case')" class="form-item">
+              <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorCase">
                 <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
                   <div style="float: left">
                     <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
@@ -18,6 +18,20 @@
                 </el-option>
               </el-select>
             </el-form-item>
+
+            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.table_header_bg')" class="form-item">
+              <colorPicker v-model="colorForm.tableHeaderBgColor" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeColorCase" />
+            </el-form-item>
+            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.table_item_bg')" class="form-item">
+              <colorPicker v-model="colorForm.tableItemBgColor" style="margin-top: 6px;cursor: pointer;z-index: 1003;border: solid 1px black" @change="changeColorCase" />
+            </el-form-item>
+            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.table_item_font_color')" class="form-item">
+              <colorPicker v-model="colorForm.tableFontColor" style="margin-top: 6px;cursor: pointer;z-index: 1002;border: solid 1px black" @change="changeColorCase" />
+            </el-form-item>
+            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.stripe')" class="form-item">
+              <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase">{{ $t('chart.stripe') }}</el-checkbox>
+            </el-form-item>
+
             <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
               <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
             </el-form-item>
@@ -31,6 +45,8 @@
 </template>
 
 <script>
+import { DEFAULT_COLOR_CASE } from '../../chart/chart'
+
 export default {
   name: 'ColorSelector',
   props: {
@@ -88,10 +104,7 @@ export default {
           colors: ['#05f8d6', '#0082fc', '#fdd845', '#22ed7c', '#09b0d3', '#1d27c9', '#f9e264', '#f47a75', '#009db2']
         }
       ],
-      colorForm: {
-        colorCase: 'default',
-        alpha: 100
-      }
+      colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE))
     }
   },
   watch: {
@@ -101,8 +114,7 @@ export default {
         if (chart.customAttr) {
           const customAttr = JSON.parse(chart.customAttr)
           if (customAttr.color) {
-            this.colorForm.colorCase = customAttr.color.value
-            this.colorForm.alpha = customAttr.color.alpha
+            this.colorForm = customAttr.color
           }
         }
       }
@@ -114,13 +126,12 @@ export default {
     changeColorCase() {
       const that = this
       const items = this.colorCases.filter(ele => {
-        return ele.value === that.colorForm.colorCase
+        return ele.value === that.colorForm.value
       })
-      this.$emit('onColorChange', {
-        value: items[0].value,
-        colors: items[0].colors,
-        alpha: this.colorForm.alpha
-      })
+      const val = JSON.parse(JSON.stringify(this.colorForm))
+      val.value = items[0].value
+      val.colors = items[0].colors
+      this.$emit('onColorChange', val)
     }
   }
 }

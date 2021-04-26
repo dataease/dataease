@@ -1,7 +1,11 @@
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
-  alpha: 100
+  alpha: 100,
+  tableHeaderBgColor: '#e8eaec',
+  tableItemBgColor: '#ffffff',
+  tableFontColor: '#606266',
+  tableStripe: true
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -18,7 +22,9 @@ export const DEFAULT_SIZE = {
   pieRoseType: 'radius',
   pieRoseRadius: 5,
   funnelWidth: 80,
-  radarShape: 'polygon'
+  radarShape: 'polygon',
+  tableTitleFontSize: 12,
+  tableItemFontSize: 12
 }
 export const DEFAULT_LABEL = {
   show: false,

@@ -85,6 +85,19 @@
               </el-radio-group>
             </el-form-item>
           </el-form>
+
+          <el-form v-if="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+            <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
+              <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('chart.table_item_fontsize')" class="form-item">
+              <el-select v-model="sizeForm.tableItemFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
+          </el-form>
         </el-col>
 
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>
@@ -116,7 +129,8 @@ export default {
         { name: this.$t('chart.line_symbol_diamond'), value: 'diamond' },
         { name: this.$t('chart.line_symbol_pin'), value: 'pin' },
         { name: this.$t('chart.line_symbol_arrow'), value: 'arrow' }
-      ]
+      ],
+      fontSize: []
     }
   },
   watch: {
@@ -133,8 +147,19 @@ export default {
     }
   },
   mounted() {
+    this.init()
   },
   methods: {
+    init() {
+      const arr = []
+      for (let i = 10; i <= 30; i = i + 2) {
+        arr.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.fontSize = arr
+    },
     changeBarSizeCase() {
       this.$emit('onSizeChange', this.sizeForm)
     }

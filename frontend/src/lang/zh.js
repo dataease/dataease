@@ -700,7 +700,13 @@ export default {
     rose_radius: '圆角',
     view_name: '视图名称',
     name_can_not_empty: '名称不能为空',
-    custom_count: '记录数'
+    custom_count: '记录数',
+    table_title_fontsize: '表头字体大小',
+    table_item_fontsize: '表格字体大小',
+    table_header_bg: '表头背景',
+    table_item_bg: '表格背景',
+    table_item_font_color: '字体颜色',
+    stripe: '斑马纹'
   },
   dataset: {
     datalist: '数据集',

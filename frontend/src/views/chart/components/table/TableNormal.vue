@@ -8,6 +8,9 @@
       :height="height"
       :checkbox-config="{highlight: true}"
       :width-resize="true"
+      :header-row-style="table_header_class"
+      :row-style="getRowStyle"
+      class="table-class"
     >
       <ux-table-column
         v-for="field in fields"
@@ -59,6 +62,21 @@ export default {
       bg_class: {
         background: hexColorToRGBA('#ffffff', 0)
       },
+      table_header_class: {
+        fontSize: '12px',
+        color: '#606266',
+        background: '#e8eaec'
+      },
+      table_item_class: {
+        fontSize: '12px',
+        color: '#606266',
+        background: '#ffffff'
+      },
+      table_item_class_stripe: {
+        fontSize: '12px',
+        color: '#606266',
+        background: '#ffffff'
+      },
       title_show: true
     }
   },
@@ -91,6 +109,23 @@ export default {
       }, 100)
     },
     initStyle() {
+      if (this.chart.customAttr) {
+        const customAttr = JSON.parse(this.chart.customAttr)
+        if (customAttr.color) {
+          this.table_header_class.color = customAttr.color.tableFontColor
+          this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
+          this.table_item_class.color = customAttr.color.tableFontColor
+          this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
+        }
+        if (customAttr.size) {
+          this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
+          this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
+        }
+        this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
+        if (customAttr.color.tableStripe) {
+          this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
+        }
+      }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
         if (customStyle.text) {
@@ -104,11 +139,20 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+    },
+    getRowStyle({ row, rowIndex }) {
+      if (rowIndex % 2 === 0) {
+        return this.table_item_class_stripe
+      } else {
+        return this.table_item_class
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-
+  .table-class>>>.body--wrapper{
+    background: rgba(1,1,1,0);
+  }
 </style>
