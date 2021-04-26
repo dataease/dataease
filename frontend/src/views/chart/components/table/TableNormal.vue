@@ -192,7 +192,7 @@ export default {
                 return prev
               }
             }, 0)
-            means[columnIndex] = means[columnIndex].toFixed(2)
+            means[columnIndex] = (means[columnIndex] + '').includes('.') ? means[columnIndex].toFixed(2) : means[columnIndex]
           } else {
             means[columnIndex] = ''
           }

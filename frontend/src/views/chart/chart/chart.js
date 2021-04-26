@@ -2,9 +2,9 @@ export const DEFAULT_COLOR_CASE = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100,
-  tableHeaderBgColor: '#e8eaec',
-  tableItemBgColor: '#ffffff',
-  tableFontColor: '#606266',
+  tableHeaderBgColor: '#4e81bb',
+  tableItemBgColor: '#c6d9f0',
+  tableFontColor: '#000000',
   tableStripe: true
 }
 export const DEFAULT_SIZE = {
