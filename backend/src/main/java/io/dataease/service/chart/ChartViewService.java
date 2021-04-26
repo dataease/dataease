@@ -294,7 +294,19 @@ public class ChartViewService {
         // 如果是对结果字段过滤，则再包裹一层sql
         String[] resultFilter = yAxis.stream().filter(y -> CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0)
                 .map(y -> {
-                    String[] s = y.getFilter().stream().map(f -> "AND _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()) + transMysqlFilterTerm(f.getTerm()) + f.getValue()).toArray(String[]::new);
+                    String[] s = y.getFilter().stream().map(f -> {
+                        StringBuilder filter = new StringBuilder();
+                        filter.append("AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(transMysqlFilterTerm(f.getTerm()));
+                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                            filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                            filter.append("%").append(f.getValue()).append("%");
+                        } else {
+                            filter.append(f.getValue());
+                        }
+                        return filter.toString();
+                    }).toArray(String[]::new);
                     return StringUtils.join(s, " ");
                 }).toArray(String[]::new);
         if (resultFilter.length == 0) {
