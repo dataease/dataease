@@ -11,6 +11,8 @@
       :header-row-style="table_header_class"
       :row-style="getRowStyle"
       class="table-class"
+      show-summary
+      :summary-method="summaryMethod"
     >
       <ux-table-column
         v-for="field in fields"
@@ -50,7 +52,7 @@ export default {
   data() {
     return {
       fields: [],
-      height: 500,
+      height: 'auto',
       title_class: {
         margin: '8px 0',
         width: '100%',
@@ -105,8 +107,14 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        that.height = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 8 * 2 - 20
-      }, 100)
+        const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 8 * 2 - 20
+        const tableHeight = (that.chart.data.tableRow.length + 2) * 36
+        if (tableHeight > tableMaxHeight) {
+          that.height = tableMaxHeight + 'px'
+        } else {
+          that.height = 'auto'
+        }
+      }, 10)
     },
     initStyle() {
       if (this.chart.customAttr) {
@@ -139,6 +147,15 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+
+      // 修改footer合计样式
+      const s_table = document.getElementsByClassName('elx-table--footer')[0]
+      // console.log(s_table)
+      let s = ''
+      for (const i in this.table_header_class) {
+        s += i + ':' + this.table_header_class[i] + ';'
+      }
+      s_table.setAttribute('style', s)
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 === 0) {
@@ -146,6 +163,32 @@ export default {
       } else {
         return this.table_item_class
       }
+    },
+    summaryMethod({ columns, data }) {
+      const means = [] // 合计
+      columns.forEach((column, columnIndex) => {
+        if (columnIndex === 0) {
+          means.push('合计')
+        } else {
+          const values = data.map(item => Number(item[column.property]))
+          // 合计
+          if (!values.every(value => isNaN(value))) {
+            means[columnIndex] = values.reduce((prev, curr) => {
+              const value = Number(curr)
+              if (!isNaN(value)) {
+                return prev + curr
+              } else {
+                return prev
+              }
+            }, 0)
+            means[columnIndex] = means[columnIndex].toFixed(2)
+          } else {
+            means[columnIndex] = ''
+          }
+        }
+      })
+      // 返回一个二维数组的表尾合计(不要平均值，就不要在数组中添加)
+      return [means]
     }
   }
 }
