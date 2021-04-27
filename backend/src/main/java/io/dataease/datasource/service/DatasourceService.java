@@ -41,7 +41,6 @@ public class DatasourceService {
         datasource.setUpdateTime(currentTimeMillis);
         datasource.setCreateTime(currentTimeMillis);
         datasourceMapper.insertSelective(datasource);
-        initConnectionPool(datasource);
         return datasource;
     }
 
@@ -71,7 +70,6 @@ public class DatasourceService {
         datasource.setCreateTime(null);
         datasource.setUpdateTime(System.currentTimeMillis());
         datasourceMapper.updateByPrimaryKeySelective(datasource);
-        initConnectionPool(datasource);
     }
 
     public void validate(Datasource datasource) throws Exception {
@@ -91,32 +89,5 @@ public class DatasourceService {
 
     public Datasource get(String id) {
         return datasourceMapper.selectByPrimaryKey(id);
-    }
-
-    private void initConnectionPool(Datasource datasource){
-        commonThreadPool.addTask(() ->{
-            try {
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-                DatasourceRequest datasourceRequest = new DatasourceRequest();
-                datasourceRequest.setDatasource(datasource);
-                datasourceProvider.initConnectionPool(datasourceRequest);
-            }catch (Exception e){}
-        });
-    }
-
-    public void initAllDataSourceConnectionPool(){
-        List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
-        datasources.forEach(datasource -> {
-            commonThreadPool.addTask(() ->{
-                try {
-                    DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-                    DatasourceRequest datasourceRequest = new DatasourceRequest();
-                    datasourceRequest.setDatasource(datasource);
-                    datasourceProvider.initConnectionPool(datasourceRequest);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            });
-        });
     }
 }

@@ -1,6 +1,8 @@
 package io.dataease.config;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fit2cloud.autoconfigure.QuartzAutoConfiguration;
+import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.CommonThreadPool;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.repository.filerep.KettleFileRepository;
@@ -21,41 +23,26 @@ public class CommonConfig {
     private Environment env; // 保存了配置文件的信息
     private static String root_path = "/opt/dataease/data/kettle/";
 
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public org.apache.hadoop.conf.Configuration configuration() {
-//        org.apache.hadoop.conf.Configuration configuration = new org.apache.hadoop.conf.Configuration();
-//        configuration.set("hbase.zookeeper.quorum", env.getProperty("hbase.zookeeper.quorum"));
-//        configuration.set("hbase.zookeeper.property.clientPort", env.getProperty("hbase.zookeeper.property.clientPort"));
-//        configuration.set("hbase.client.retries.number", env.getProperty("hbase.client.retries.number", "1"));
-//        return configuration;
-//    }
+    @Bean(name = "DorisDatasource")
+    @ConditionalOnMissingBean
+    public Datasource configuration() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("dataSourceType", "jdbc");
+        jsonObject.put("dataBase", env.getProperty("doris.db", "doris"));
+        jsonObject.put("username", env.getProperty("doris.user", "root"));
+        jsonObject.put("password", env.getProperty("doris.password", "dataease"));
+        jsonObject.put("host", env.getProperty("doris.host", "doris"));
+        jsonObject.put("port", env.getProperty("doris.port", "9030"));
 
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public SparkSession javaSparkSession() {
-//        SparkSession spark = SparkSession.builder()
-//                .appName(env.getProperty("spark.appName", "DataeaseJob"))
-//                .master(env.getProperty("spark.master", "local[*]"))
-//                .config("spark.scheduler.mode", env.getProperty("spark.scheduler.mode", "FAIR"))
-////                .config("spark.serializer", env.getProperty("spark.serializer", "org.apache.spark.serializer.KryoSerializer"))
-////                .config("spark.executor.cores", env.getProperty("spark.executor.cores", "8"))
-////                .config("spark.executor.memory", env.getProperty("spark.executor.memory", "6442450944b"))
-////                .config("spark.locality.wait", env.getProperty("spark.locality.wait", "600000"))
-////                .config("spark.maxRemoteBlockSizeFetchToMem", env.getProperty("spark.maxRemoteBlockSizeFetchToMem", "2000m"))
-////                .config("spark.shuffle.detectCorrupt", env.getProperty("spark.shuffle.detectCorrupt", "false"))
-////                .config("spark.shuffle.service.enabled", env.getProperty("spark.shuffle.service.enabled", "true"))
-////                .config("spark.sql.adaptive.enabled", env.getProperty("spark.sql.adaptive.enabled", "true"))
-////                .config("spark.sql.adaptive.shuffle.targetPostShuffleInputSize", env.getProperty("spark.sql.adaptive.shuffle.targetPostShuffleInputSize", "200M"))
-////                .config("spark.sql.broadcastTimeout", env.getProperty("spark.sql.broadcastTimeout", "12000"))
-////                .config("spark.sql.retainGroupColumns", env.getProperty("spark.sql.retainGroupColumns", "false"))
-////                .config("spark.sql.sortMergeJoinExec.buffer.in.memory.threshold", env.getProperty("spark.sql.sortMergeJoinExec.buffer.in.memory.threshold", "100000"))
-////                .config("spark.sql.sortMergeJoinExec.buffer.spill.threshold", env.getProperty("spark.sql.sortMergeJoinExec.buffer.spill.threshold", "100000"))
-////                .config("spark.sql.variable.substitute", env.getProperty("spark.sql.variable.substitute", "false"))
-////                .config("spark.temp.expired.time", env.getProperty("spark.temp.expired.time", "3600"))
-//                .getOrCreate();
-//        return spark;
-//    }
+        Datasource datasource = new Datasource();
+        datasource.setId("doris");
+        datasource.setName("doris");
+        datasource.setDesc("doris");
+        datasource.setType("mysql");
+        datasource.setConfiguration(jsonObject.toJSONString());
+        return datasource;
+    }
+
 
     @Bean
     @ConditionalOnMissingBean

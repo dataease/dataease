@@ -18,13 +18,15 @@ public class DatasetTableField implements Serializable {
 
     private String type;
 
+    private Integer size;
+
+    private Integer deType;
+
     private Boolean checked;
 
     private Integer columnIndex;
 
     private Long lastSyncTime;
-
-    private Integer deType;
 
     private static final long serialVersionUID = 1L;
 }

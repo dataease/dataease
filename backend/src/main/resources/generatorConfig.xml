@@ -67,7 +67,7 @@
         <!--        <table tableName="datasource"/>-->
 <!--        <table tableName="sys_dict"/>-->
 <!--        <table tableName="sys_dict_item"/>-->
-        <table tableName="panel_template"/>
+        <table tableName="dataset_table_field"/>
 <!--        <table tableName="panel_design"/>-->
 
 

@@ -8,14 +8,13 @@ import io.dataease.datasource.request.DatasourceRequest;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class DatasourceProvider {
 
     private int resultLimit = 30000;
 
     abstract public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception;
-
-    abstract public ResultSet getDataResultSet(DatasourceRequest datasourceRequest) throws Exception;
 
     abstract public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception;
 
@@ -27,13 +26,11 @@ public abstract class DatasourceProvider {
         getData(datasourceRequest);
     }
 
-    abstract public Long count(DatasourceRequest datasourceRequest) throws Exception;
+    abstract public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception;
 
-    abstract public List<String[]> getPageData(DatasourceRequest datasourceRequest) throws Exception;
+    abstract public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception;
 
-    abstract public List<String[]> fetchResult(ResultSet rs) throws Exception;
+    abstract public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception;
 
-    abstract public List<TableFiled> fetchResultField(ResultSet rs) throws Exception;
-
-    abstract public void initConnectionPool(DatasourceRequest datasourceRequest) throws Exception;
+    abstract public void initDataSource(DatasourceRequest datasourceRequest) throws Exception;
 }
