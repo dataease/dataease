@@ -102,7 +102,7 @@ public class ExtractDataService {
                     Column_Fields = Column_Fields + "bigint(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",";
                     break;
                 case 3:
-                    Column_Fields = Column_Fields + "DOUBLE(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",";
+                    Column_Fields = Column_Fields + "DOUBLE" + ",";
                     break;
                 default:
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",";
