@@ -174,7 +174,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @onNameEdit="showRename" />
+                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -189,7 +189,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showEditFilter" @onNameEdit="showRename" />
+                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -217,7 +217,7 @@
     <!--指标过滤器-->
     <el-dialog
       :title="$t('chart.add_filter')"
-      :visible="filterEdit"
+      :visible="quotaFilterEdit"
       :show-close="false"
       width="800px"
       class="dialog-css"
@@ -226,6 +226,19 @@
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeQuotaFilter">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" @click="saveQuotaFilter">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      :title="$t('chart.add_filter')"
+      :visible="dimensionFilterEdit"
+      :show-close="false"
+      width="800px"
+      class="dialog-css"
+    >
+      <dimension-filter-editor :item="dimensionItem" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeDimensionFilter">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveDimensionFilter">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -263,11 +276,12 @@ import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
 import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
+import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 
 export default {
   name: 'ChartEdit',
-  components: { TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,
@@ -304,7 +318,9 @@ export default {
       chart: {
         id: 'echart'
       },
-      filterEdit: false,
+      dimensionFilterEdit: false,
+      dimensionItem: {},
+      quotaFilterEdit: false,
       quotaItem: {},
       renameItem: false,
       itemForm: {
@@ -363,11 +379,17 @@ export default {
       view.sceneId = this.view.sceneId
       view.name = this.view.name ? this.view.name : this.table.name
       view.tableId = this.view.tableId
-      // view.xaxis.forEach(function(ele) {
-      //   if (!ele.summary || ele.summary === '') {
-      //     ele.summary = 'sum'
-      //   }
-      // })
+      view.xaxis.forEach(function(ele) {
+        // if (!ele.summary || ele.summary === '') {
+        //   ele.summary = 'sum'
+        // }
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
+        }
+        if (!ele.filter) {
+          ele.filter = []
+        }
+      })
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
           if (ele.id === 'count') {
@@ -574,12 +596,25 @@ export default {
       this.save()
     },
 
-    showEditFilter(item) {
+    showDimensionEditFilter(item) {
+      this.dimensionItem = JSON.parse(JSON.stringify(item))
+      this.dimensionFilterEdit = true
+    },
+    closeDimensionFilter() {
+      this.dimensionFilterEdit = false
+    },
+    saveDimensionFilter() {
+      this.view.xaxis[this.dimensionItem.index].filter = this.dimensionItem.filter
+      this.save()
+      this.closeDimensionFilter()
+    },
+
+    showQuotaEditFilter(item) {
       this.quotaItem = JSON.parse(JSON.stringify(item))
-      this.filterEdit = true
+      this.quotaFilterEdit = true
     },
     closeQuotaFilter() {
-      this.filterEdit = false
+      this.quotaFilterEdit = false
     },
     saveQuotaFilter() {
       this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter

@@ -278,14 +278,36 @@ public class ChartViewService {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
-        String[] order = yAxis.stream().filter(y -> StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none"))
-                .map(y -> "_" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()) + " " + y.getSort()).toArray(String[]::new);
+        String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
+                .map(f -> f.getOriginName() + " " + f.getSort()).toArray(String[]::new);
+        String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
+                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + " " + f.getSort()).toArray(String[]::new);
+        String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
+        System.arraycopy(yOrder, 0, order, xOrder.length, yOrder.length);
+
+        String[] xFilter = xAxis.stream().filter(x -> CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0)
+                .map(x -> {
+                    String[] s = x.getFilter().stream().map(f -> {
+                        StringBuilder filter = new StringBuilder();
+                        filter.append(" AND ").append(x.getOriginName()).append(transMysqlFilterTerm(f.getTerm()));
+                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                            filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                            filter.append("%").append(f.getValue()).append("%");
+                        } else {
+                            filter.append(f.getValue());
+                        }
+                        return filter.toString();
+                    }).toArray(String[]::new);
+                    return StringUtils.join(s, " ");
+                }).toArray(String[]::new);
 
         String sql = MessageFormat.format("SELECT {0},{1} FROM {2} WHERE 1=1 {3} GROUP BY {4} ORDER BY null,{5}",
                 StringUtils.join(group, ","),
                 StringUtils.join(field, ","),
                 table,
-                transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter
+                xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "" + transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter
                 StringUtils.join(group, ","),
                 StringUtils.join(order, ","));
         if (sql.endsWith(",")) {
@@ -296,7 +318,7 @@ public class ChartViewService {
                 .map(y -> {
                     String[] s = y.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
-                        filter.append("AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(transMysqlFilterTerm(f.getTerm()));
+                        filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");

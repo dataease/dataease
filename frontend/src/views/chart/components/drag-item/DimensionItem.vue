@@ -6,7 +6,27 @@
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickItem('rename')">
+          <el-dropdown-item>
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-sort" />
+                  <span>{{ $t('chart.sort') }}</span>
+                  <span class="summary-span">({{ $t('chart.'+item.sort) }})</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
+            <span>{{ $t('chart.filter') }}...</span>
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
@@ -49,6 +69,9 @@ export default {
         case 'remove':
           this.removeItem()
           break
+        case 'filter':
+          this.editFilter()
+          break
         default:
           break
       }
@@ -57,6 +80,20 @@ export default {
       return {
         type: type
       }
+    },
+    sort(param) {
+      // console.log(param)
+      this.item.sort = param.type
+      this.$emit('onDimensionItemChange', this.item)
+    },
+    beforeSort(type) {
+      return {
+        type: type
+      }
+    },
+    editFilter() {
+      this.item.index = this.index
+      this.$emit('editItemFilter', this.item)
     },
     showRename() {
       this.item.index = this.index
