@@ -135,6 +135,19 @@ public class DataSetTableService {
                 dimension.add(field);
             }
         });
+        // quota add count
+        DatasetTableField count = DatasetTableField.builder()
+                .id("count")
+                .tableId(dataSetTableRequest.getId())
+                .originName("*")
+                .name("记录数*")
+                .type("INT")
+                .checked(true)
+                .columnIndex(999)
+                .deType(2)
+                .build();
+        quota.add(count);
+
         Map<String, List<DatasetTableField>> map = new HashMap<>();
         map.put("dimension", dimension);
         map.put("quota", quota);
@@ -637,11 +650,12 @@ public class DataSetTableService {
 
     private String saveFile(MultipartFile file) throws Exception {
         String filename = file.getOriginalFilename();
-        File p = new File(path);
+        String dirPath = path + AuthUtils.getUser().getUsername() + "/";
+        File p = new File(dirPath);
         if (!p.exists()) {
             p.mkdirs();
         }
-        String filePath = path + AuthUtils.getUser().getUsername() + "/" + filename;
+        String filePath = dirPath + filename;
         File f = new File(filePath);
         FileOutputStream fileOutputStream = new FileOutputStream(f);
         fileOutputStream.write(file.getBytes());

@@ -1,6 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <span v-show="false">{{ vId }}</span>
+    <!--    <span v-show="false">{{ vId }}</span>-->
     <el-row style="height: 40px;background-color: white" class="padding-lr">
       <el-popover
         placement="right-start"
@@ -62,7 +62,7 @@
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-                {{ item.name }}
+                <span>{{ item.name }}</span>
               </span>
             </transition-group>
           </draggable>
@@ -114,7 +114,7 @@
                   <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
                 </div>
                 <div>
-                  <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                  <el-radio value="table-normal" label="table-normal"><svg-icon icon-class="table-normal" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
@@ -129,12 +129,12 @@
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
               <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-              <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-              <tooltip-selector class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+              <label-selector v-if="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+              <tooltip-selector v-if="!view.type.includes('table')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
               <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+              <legend-selector v-if="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <x-axis-selector v-if="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
               <y-axis-selector v-if="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
               <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
@@ -195,7 +195,8 @@
             </el-row>
           </el-row>
 
-          <chart-component :chart-id="chart.id" :chart="chart" class="chart-class" />
+          <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+          <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
         </el-row>
       </el-col>
     </el-row>
@@ -262,10 +263,17 @@ import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
 import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
+import TableNormal from '../components/table/TableNormal'
 
 export default {
   name: 'ChartEdit',
-  components: { DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  props: {
+    param: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       table: {},
@@ -311,21 +319,25 @@ export default {
     }
   },
   computed: {
-    vId() {
-      // console.log(this.$store.state.chart.viewId);
-      this.getData(this.$store.state.chart.viewId)
-      return this.$store.state.chart.viewId
-    }
+    // vId() {
+    //   // console.log(this.$store.state.chart.viewId);
+    //   this.getData(this.$store.state.chart.viewId)
+    //   return this.$store.state.chart.viewId
+    // }
 
   },
   watch: {
+    'param': function() {
+      console.log(this.param)
+      this.getData(this.param.id)
+    }
   },
   created() {
     // this.get(this.$store.state.chart.viewId);
   },
   mounted() {
     // this.get(this.$store.state.chart.viewId);
-    this.getData(this.$store.state.chart.viewId)
+    this.getData(this.param.id)
     // this.myEcharts();
   },
   activated() {
@@ -358,7 +370,11 @@ export default {
       // })
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
-          ele.summary = 'sum'
+          if (ele.id === 'count') {
+            ele.summary = 'count'
+          } else {
+            ele.summary = 'sum'
+          }
         }
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
@@ -745,6 +761,10 @@ export default {
   .chart-class{
     height: calc(100% - 84px);
     padding: 10px;
+  }
+  .table-class{
+    height: calc(100% - 104px);
+    margin: 10px;
   }
 
   .dialog-css>>>.el-dialog__title {

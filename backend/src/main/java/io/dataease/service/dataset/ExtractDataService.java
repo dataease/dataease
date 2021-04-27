@@ -1,7 +1,6 @@
 package io.dataease.service.dataset;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.bcel.internal.generic.SWITCH;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.constants.JobStatus;
@@ -13,31 +12,15 @@ import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigrationDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.service.spark.SparkCalc;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.*;
-import org.pentaho.big.data.api.cluster.NamedCluster;
-import org.pentaho.big.data.api.cluster.NamedClusterService;
-import org.pentaho.big.data.api.cluster.service.locator.NamedClusterServiceLocator;
-import org.pentaho.big.data.api.cluster.service.locator.impl.NamedClusterServiceLocatorImpl;
-import org.pentaho.big.data.api.initializer.ClusterInitializer;
-import org.pentaho.big.data.api.initializer.ClusterInitializerProvider;
-import org.pentaho.big.data.api.initializer.impl.ClusterInitializerImpl;
-import org.pentaho.big.data.impl.cluster.NamedClusterImpl;
-import org.pentaho.big.data.impl.cluster.NamedClusterManager;
-import org.pentaho.big.data.kettle.plugins.hbase.MappingDefinition;
-import org.pentaho.big.data.kettle.plugins.hbase.output.HBaseOutputMeta;
+import org.apache.hadoop.hbase.client.Connection;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
@@ -45,48 +28,24 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entries.success.JobEntrySuccess;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
-import org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.filerep.KettleFileRepository;
-import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
-import org.pentaho.di.trans.TransConfiguration;
-import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
-import org.pentaho.di.trans.steps.textfileoutput.TextFileOutput;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.InfoStepDefinition;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
-import org.pentaho.runtime.test.RuntimeTest;
-import org.pentaho.runtime.test.RuntimeTester;
-import org.pentaho.runtime.test.action.RuntimeTestActionHandler;
-import org.pentaho.runtime.test.action.RuntimeTestActionService;
-import org.pentaho.runtime.test.action.impl.RuntimeTestActionServiceImpl;
-import org.pentaho.runtime.test.impl.RuntimeTesterImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import scala.annotation.meta.field;
 
 import javax.annotation.Resource;
-import javax.sound.sampled.Line;
 import java.io.File;
-import java.security.MessageDigest;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static org.mockito.Mockito.mock;
 
 @Service
 public class ExtractDataService {
@@ -125,8 +84,8 @@ public class ExtractDataService {
     @Value("${hbase.zookeeper.property.clientPort:2181}")
     private String zkPort;
 
-    @Resource
-    private SparkCalc sparkCalc;
+//    @Resource
+//    private SparkCalc sparkCalc;
 
 
     public void extractData(String datasetTableId, String taskId, String type) {

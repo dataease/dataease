@@ -179,7 +179,7 @@
             >
               <div class="view-container-class">
                 <el-checkbox-group v-model="checkedViews" @change="checkedViewsChange">
-                  <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id" border>
+                  <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id">
                     <span>
                       <svg-icon :icon-class="item.type" class="chart-icon" />
                       <span style="margin-left: 6px">{{ item.name }}</span>
@@ -658,6 +658,7 @@ export default {
       position: relative;
         >>> label {
             width: 100%;
+            margin-left: 0px !important;
         }
   }
 

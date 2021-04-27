@@ -516,9 +516,9 @@ export default {
     },
 
     sceneClick(data, node) {
-      this.$store.dispatch('chart/setViewId', null)
-      this.$store.dispatch('chart/setViewId', data.id)
-      this.$emit('switchComponent', { name: 'ChartEdit' })
+      // this.$store.dispatch('chart/setViewId', null)
+      // this.$store.dispatch('chart/setViewId', data.id)
+      this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
     },
 
     selectTable() {
@@ -565,8 +565,8 @@ export default {
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
         // this.$router.push('/chart/chart-edit')
-        this.$emit('switchComponent', { name: 'ChartEdit' })
-        this.$store.dispatch('chart/setViewId', response.data.id)
+        this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': response.data.id }})
+        // this.$store.dispatch('chart/setViewId', response.data.id)
         this.chartTree()
       })
     },

@@ -7,6 +7,7 @@ import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelDesignMapper;
 import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
 import io.dataease.commons.constants.PanelConstants;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.chart.ChartViewDTO;
@@ -75,6 +76,7 @@ public class PanelGroupService {
         if (StringUtils.isEmpty(request.getId())) {
             request.setId(UUID.randomUUID().toString());
             request.setCreateTime(System.currentTimeMillis());
+            request.setCreateBy(AuthUtils.getUser().getUsername());
             panelGroupMapper.insert(request);
         } else {
             panelGroupMapper.updateByPrimaryKeySelective(request);

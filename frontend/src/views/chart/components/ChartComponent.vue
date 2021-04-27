@@ -21,10 +21,13 @@ export default {
       type: Object,
       required: true
     },
-  filter: {
-    type: Object,
-    required: false
-  }
+    filter: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
+    }
   },
   data() {
     return {
