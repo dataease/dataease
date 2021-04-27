@@ -204,7 +204,7 @@
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
-                    {{ $t('dataset.edit') }}
+                    {{ $t('dataset.rename') }}
                   </el-dropdown-item>
                   <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
                   <!--                    {{$t('dataset.move_to')}}-->
