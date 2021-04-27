@@ -45,9 +45,9 @@ export default {
       this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
       this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
       if (this.curComponent.component === 'user-view') {
-        this.$store.dispatch('chart/setViewId', null)
-        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit' })
+        // this.$store.dispatch('chart/setViewId', null)
+        // this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
+        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId }})
       }
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
