@@ -7,6 +7,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -149,7 +150,7 @@ public class ChartViewService {
 //            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0], extFilterList);
 
             // 连接doris，构建doris数据源查询
-            Datasource ds = dorisDatasource();
+            Datasource ds =  (Datasource) CommonBeanFactory.getBean("DorisDatasource");
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
@@ -243,24 +244,6 @@ public class ChartViewService {
             }
         }
         return filter.toString();
-    }
-
-    public Datasource dorisDatasource() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataSourceType", "jdbc");
-        jsonObject.put("dataBase", "example_db");
-        jsonObject.put("username", "root");
-        jsonObject.put("password", "dataease");
-        jsonObject.put("host", "59.110.64.159");
-        jsonObject.put("port", "9030");
-
-        Datasource datasource = new Datasource();
-        datasource.setId("doris");
-        datasource.setName("doris");
-        datasource.setDesc("doris");
-        datasource.setType("mysql");
-        datasource.setConfiguration(jsonObject.toJSONString());
-        return datasource;
     }
 
     public String getSQL(String type, String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
