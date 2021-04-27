@@ -181,7 +181,7 @@ export default {
         if (columnIndex === 0) {
           means.push('合计')
         } else {
-          const values = data.map(item => Number(item[column.property]))
+          const values = data.map(item => Number((item[column.property] + '').trim() === '' ? 'a' : item[column.property]))
           // 合计
           if (!values.every(value => isNaN(value))) {
             means[columnIndex] = values.reduce((prev, curr) => {
