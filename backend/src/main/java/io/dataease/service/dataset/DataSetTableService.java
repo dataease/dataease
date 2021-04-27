@@ -240,9 +240,9 @@ public class DataSetTableService {
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
         datasourceRequest.setQuery(sql);
-        ResultSet dataResultSet = datasourceProvider.getDataResultSet(datasourceRequest);
-        List<String[]> data = datasourceProvider.fetchResult(dataResultSet);
-        List<TableFiled> fields = datasourceProvider.fetchResultField(dataResultSet);
+        Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
+        List<String[]> data = result.get("dataList");
+        List<TableFiled> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
 
         List<Map<String, Object>> jsonArray = new ArrayList<>();
@@ -263,67 +263,6 @@ public class DataSetTableService {
         return map;
     }
 
-    public List<String[]> getDataSetData(String datasourceId, String table, List<DatasetTableField> fields) {
-        List<String[]> data = new ArrayList<>();
-        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
-        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT 0, 10");
-        try {
-            data.addAll(datasourceProvider.getData(datasourceRequest));
-        } catch (Exception e) {
-        }
-        return data;
-    }
-
-    public Long getDataSetTotalData(String datasourceId, String table) {
-        List<String[]> data = new ArrayList<>();
-        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        datasourceRequest.setQuery("select count(*) from " + table);
-        try {
-            return datasourceProvider.count(datasourceRequest);
-        } catch (Exception e) {
-
-        }
-        return 0l;
-    }
-
-    public List<String[]> getDataSetPageData(String datasourceId, String table, List<DatasetTableField> fields, Long startPage, Long pageSize) {
-        List<String[]> data = new ArrayList<>();
-        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
-        datasourceRequest.setPageSize(pageSize);
-        datasourceRequest.setStartPage(startPage);
-        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray));
-        try {
-            return datasourceProvider.getData(datasourceRequest);
-        } catch (Exception e) {
-        }
-        return data;
-    }
-
-    public List<String[]> getDataSetDataBySql(String datasourceId, String table, String sql) {
-        List<String[]> data = new ArrayList<>();
-        Datasource ds = datasourceMapper.selectByPrimaryKey(datasourceId);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        datasourceRequest.setQuery(sql);
-        try {
-            return datasourceProvider.getData(datasourceRequest);
-        } catch (Exception e) {
-        }
-        return data;
-    }
-
     public void saveTableField(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
@@ -338,8 +277,7 @@ public class DataSetTableService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             datasourceRequest.setQuery(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql());
-            ResultSet dataResultSet = datasourceProvider.getDataResultSet(datasourceRequest);
-            fields = datasourceProvider.fetchResultField(dataResultSet);
+            fields = datasourceProvider.fetchResultField(datasourceRequest);
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
             String path = dataTableInfoDTO.getData();
@@ -367,6 +305,7 @@ public class DataSetTableService {
                 } else {
                     datasetTableField.setDeType(transFieldType(ds.getType(), filed.getFieldType()));
                 }
+                datasetTableField.setSize(filed.getFieldSize());
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(syncTime);
