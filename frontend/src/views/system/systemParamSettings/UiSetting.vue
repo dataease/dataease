@@ -1,8 +1,8 @@
 <template>
-  <div v-loading="result.loading">
+  <div v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <el-form
       ref="systemParams"
-      v-loading="loading"
+      v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
       class="demo-form-inline"
       :disabled="show"
       size="small"
@@ -15,7 +15,7 @@
             :label="$t('display.logo')"
           >
             <el-upload
-              v-loading="result.loading"
+              v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
               style="float: right;margin-left: 10px"
               class="upload-demo"
               action=""
@@ -52,7 +52,7 @@
             :label="$t('display.loginImage')"
           >
             <el-upload
-              v-loading="result.loading"
+              v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
               style="float: right;margin-left: 10px"
               class="upload-demo"
               action=""
@@ -89,7 +89,7 @@
             :label="$t('display.loginLogo')"
           >
             <el-upload
-              v-loading="result.loading"
+              v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
               style="float: right;margin-left: 10px"
               class="upload-demo"
               action=""
@@ -126,7 +126,7 @@
             :label="$t('display.favicon')"
           >
             <el-upload
-              v-loading="result.loading"
+              v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
               style="float: right;margin-left: 10px"
               class="upload-demo"
               action=""
@@ -179,12 +179,12 @@
 </template>
 
 <script>
-import ElUploadList from 'element-ui/packages/upload/src/upload-list'
+import { get, fileUpload } from '@/api/commonAjax'
 
 export default {
   name: 'UiSetting',
   components: {
-    ElUploadList
+
   },
   data() {
     return {
@@ -219,8 +219,9 @@ export default {
   },
   methods: {
     query() {
-      this.result = this.$get('/system/ui/info', response => {
-        this.systemParams = response.data
+      debugger
+      get('/system/ui/info').then(res => {
+        this.systemParams = res.data
       })
     },
     edit() {
@@ -244,7 +245,7 @@ export default {
         }
       })
 
-      this.result = this.$fileUpload('/system/save/ui', null, this.files, { 'systemParams': this.systemParams }, response => {
+      fileUpload('/system/save/ui', null, this.files, { 'systemParams': this.systemParams }).then(response => {
         if (response.success) {
           this.query()// 刷新数据
           this.$success(this.$t('commons.save_success'))

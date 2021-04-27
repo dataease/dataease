@@ -6,7 +6,7 @@
           名称：{{ panelInfo.name || '测试仪表板' }}
         </span>
         <!--横向工具栏-->
-        <Toolbar />
+        <Toolbar @showPanel="showPanel" />
       </el-row>
     </el-header>
     <de-container>
@@ -47,8 +47,9 @@
           <div v-show="show" class="leftPanel">
 
             <div class="leftPanel-items">
-              <view-select v-show=" showIndex===0" />
-              <filter-group v-show="show && showIndex===1" />
+              <view-select v-if=" showIndex===0" />
+              <filter-group v-if="showIndex===1" />
+              <subject-setting v-if="showIndex===2" />
             </div>
           </div>
         </div>
@@ -112,6 +113,7 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { addClass, removeClass } from '@/utils'
 import FilterGroup from '../filter'
 import ViewSelect from '../ViewSelect'
+import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
 import { deepCopy } from '@/components/canvas/utils/utils'
@@ -139,7 +141,8 @@ export default {
     ViewSelect,
     Editor,
     Toolbar,
-    FilterDialog
+    FilterDialog,
+    SubjectSetting
   },
   data() {
     return {
@@ -192,6 +195,7 @@ export default {
   mounted() {
     this.insertToBody()
     bus.$on('component-on-drag', () => {
+      debugger
       this.show = false
     })
 
@@ -225,6 +229,7 @@ export default {
       this.$router.replace('/panel/index')
     },
     showPanel(type) {
+      debugger
       this.show = !this.show
       this.showIndex = type
     },
@@ -234,7 +239,10 @@ export default {
     closeSidebar(evt) {
       const parent = evt.target.closest('.button-div-class')
       const self = evt.target.closest('.leftPanel')
-      if (!parent && !self) {
+      // 点击样式按钮 排除
+      const stick = evt.target.closest('.el-icon-magic-stick')
+      if (!parent && !self && !stick) {
+        debugger
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
@@ -283,6 +291,7 @@ export default {
         this.currentFilterCom.style.left = e.offsetX
         this.currentFilterCom.id = newComponentId
         if (this.currentWidget.filterDialog) {
+          debugger
           this.show = false
           this.openFilterDiolog()
           return
@@ -392,7 +401,7 @@ export default {
 
 .leftPanel {
   width: 100%;
-  max-width: 240px;
+  max-width: 300px;
   height: calc(100vh - 91px);
   position: fixed;
   top: 91px;
@@ -401,14 +410,14 @@ export default {
   transition: all .25s cubic-bezier(.7, .3, .1, 1);
   transform: translate(100%);
   background: #fff;
-  z-index: 40000;
+  z-index: 1003;
 }
 
 .show {
   transition: all .3s cubic-bezier(.7, .3, .1, 1);
 
   .leftPanel-background {
-    z-index: 20000;
+    z-index: 1002;
     opacity: 1;
     width: 100%;
     height: 100%;

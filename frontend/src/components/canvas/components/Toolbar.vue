@@ -12,6 +12,10 @@
         <span>画布比例</span>
         <input v-model="scale" @input="handleScaleChange"> %
       </div>
+
+      <el-tooltip content="样式">
+        <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
+      </el-tooltip>
       <el-tooltip content="撤消">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
       </el-tooltip>
@@ -38,16 +42,12 @@
         </el-button>
       </span>
     </div>
-
-    <!-- 预览 -->
-    <!--    <PreviewEject v-model="isShowPreview" @change="handlePreviewChange" />-->
   </div>
 </template>
 
 <script>
 import generateID from '@/components/canvas/utils/generateID'
 import toast from '@/components/canvas/utils/toast'
-import PreviewEject from '@/components/canvas/components/Editor/PreviewEject'
 import { mapState } from 'vuex'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
@@ -56,7 +56,6 @@ import { post } from '@/api/panel/panel'
 import bus from '@/utils/bus'
 
 export default {
-  components: { PreviewEject },
   data() {
     return {
       isShowPreview: false,
@@ -152,6 +151,9 @@ export default {
       this.$store.commit('redo')
     },
 
+    showPanel() {
+      this.$emit('showPanel', 2)
+    },
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {

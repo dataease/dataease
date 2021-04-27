@@ -98,6 +98,8 @@
 
 <script>
 
+import { post, get } from '@/api/commonAjax'
+
 export default {
   name: 'EmailSetting',
   data() {
@@ -146,7 +148,7 @@ export default {
       this.$refs.input = 'password'
     },
     query() {
-      this.result = this.$get('/system/mail/info', response => {
+      this.result = get('/system/mail/info', response => {
         this.formInline = response.data
         this.formInline.ssl = this.formInline.ssl === 'true'
         this.formInline.tls = this.formInline.tls === 'true'
@@ -177,7 +179,7 @@ export default {
       }
       this.$refs[formInline].validate((valid) => {
         if (valid) {
-          this.result = this.$post('/system/testConnection', param, response => {
+          this.result = post('/system/testConnection', param, response => {
             this.$success(this.$t('commons.connection_successful'))
           })
         } else {
@@ -209,7 +211,7 @@ export default {
 
       this.$refs[formInline].validate(valid => {
         if (valid) {
-          this.result = this.$post('/system/edit/email', param, response => {
+          this.result = post('/system/edit/email', param, response => {
             const flag = response.success
             if (flag) {
               this.$success(this.$t('commons.save_success'))
