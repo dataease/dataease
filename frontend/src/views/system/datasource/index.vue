@@ -154,7 +154,7 @@ export default {
       }
     }
   },
-  activated() {
+  mounted() {
     this.search()
   },
   methods: {
@@ -199,7 +199,7 @@ export default {
             this.$success(this.$t('commons.save_success'))
             this.search()
             this.dialogVisible = false
-          });
+          })
         } else {
           return false
         }

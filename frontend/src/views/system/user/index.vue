@@ -285,7 +285,7 @@ export default {
       }
     }
   },
-  activated() {
+  mounted() {
     // this.form = Object.assign({}, this.defaultForm);
     this.allRoles()
     this.search()

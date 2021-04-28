@@ -199,7 +199,7 @@ export default {
       isLazy: true
     }
   },
-  activated() {
+  mounted() {
     this.form = Object.assign({}, this.defaultForm)
     this.search()
   },

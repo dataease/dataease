@@ -146,7 +146,7 @@ export default {
   watch: {
     currentRow: 'currentRowChange'
   },
-  activated() {
+  mounted() {
     this.search()
   },
   methods: {
