@@ -128,7 +128,7 @@ export default {
       }, 10)
     },
     reSearch() {
-      if (this.form.row.length > 8 || isNaN(Number(this.form.row)) || String(this.form.row).includes('.')) {
+      if (!this.form.row || this.form.row === '' || this.form.row.length > 8 || isNaN(Number(this.form.row)) || String(this.form.row).includes('.')) {
         this.$message({
           message: this.$t('dataset.pls_input_less_9'),
           type: 'error',

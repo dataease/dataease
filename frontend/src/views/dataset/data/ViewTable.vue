@@ -40,7 +40,7 @@
     </el-tabs>
 
     <el-dialog :title="table.name" :visible.sync="editField" :fullscreen="true" :show-close="false" class="dialog-css">
-      <el-table :data="tableFields" size="mini" max-height="600px">
+      <el-table :data="tableFields" size="mini" :max-height="maxHeight">
         <el-table-column property="type" :label="$t('dataset.field_type')" width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.deType === 0">
@@ -117,7 +117,8 @@ export default {
       tableViewRowForm: {
         row: 1000
       },
-      tabStatus: false
+      tabStatus: false,
+      maxHeight: 'auto'
     }
   },
   // computed: {
@@ -132,6 +133,7 @@ export default {
     }
   },
   mounted() {
+    this.maxHeight = (document.documentElement.clientHeight - 45 - 78) + 'px'
     this.initTable(this.param)
   },
   methods: {
@@ -228,6 +230,6 @@ export default {
     padding: 10px 20px;
   }
   .dialog-css >>> .el-dialog__footer {
-    padding-top: 30px;
+    padding-top: 10px;
   }
 </style>

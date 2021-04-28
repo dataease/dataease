@@ -1,61 +1,59 @@
 <template>
-  <el-col>
-    <el-row>
-      <el-row style="height: 26px;">
-        <span style="line-height: 26px;">
-          {{ $t('dataset.add_db_table') }}
-        </span>
-        <el-row style="float: right">
-          <el-button size="mini" @click="cancel">
-            {{ $t('dataset.cancel') }}
-          </el-button>
-          <el-button size="mini" type="primary" :disabled="checkTableList.length < 1" @click="save">
-            {{ $t('dataset.confirm') }}
-          </el-button>
-        </el-row>
-      </el-row>
-      <el-divider />
-      <el-row>
-        <el-form :inline="true">
-          <el-form-item class="form-item">
-            <el-select v-model="dataSource" filterable :placeholder="$t('dataset.pls_slc_data_source')" size="mini">
-              <el-option
-                v-for="item in options"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item class="form-item">
-            <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-              <el-option :label="$t('dataset.direct_connect')" value="0" />
-              <el-option :label="$t('dataset.sync_data')" value="1" />
-            </el-select>
-          </el-form-item>
-          <el-form-item class="form-item" style="float: right;">
-            <el-input
-              v-model="searchTable"
-              size="mini"
-              :placeholder="$t('dataset.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <el-row style="overflow: auto;height: 60vh;">
-        <el-checkbox-group v-model="checkTableList" size="small">
-          <el-checkbox
-            v-for="t in tableData"
-            :key="t"
-            border
-            :label="t"
-          />
-        </el-checkbox-group>
+  <el-row style="display: flex;flex-direction: column;height: 100%">
+    <el-row style="height: 26px;">
+      <span style="line-height: 26px;">
+        {{ $t('dataset.add_db_table') }}
+      </span>
+      <el-row style="float: right">
+        <el-button size="mini" @click="cancel">
+          {{ $t('dataset.cancel') }}
+        </el-button>
+        <el-button size="mini" type="primary" :disabled="checkTableList.length < 1" @click="save">
+          {{ $t('dataset.confirm') }}
+        </el-button>
       </el-row>
     </el-row>
-  </el-col>
+    <el-divider />
+    <el-row>
+      <el-form :inline="true">
+        <el-form-item class="form-item">
+          <el-select v-model="dataSource" filterable :placeholder="$t('dataset.pls_slc_data_source')" size="mini">
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="form-item">
+          <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
+            <el-option :label="$t('dataset.direct_connect')" value="0" />
+            <el-option :label="$t('dataset.sync_data')" value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="form-item" style="float: right;">
+          <el-input
+            v-model="searchTable"
+            size="mini"
+            :placeholder="$t('dataset.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+        </el-form-item>
+      </el-form>
+    </el-row>
+    <el-col style="overflow-y: auto;">
+      <el-checkbox-group v-model="checkTableList" size="small">
+        <el-checkbox
+          v-for="t in tableData"
+          :key="t"
+          border
+          :label="t"
+        />
+      </el-checkbox-group>
+    </el-col>
+  </el-row>
 </template>
 
 <script>

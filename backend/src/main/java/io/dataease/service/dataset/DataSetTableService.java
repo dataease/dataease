@@ -188,6 +188,9 @@ public class DataSetTableService {
         dataSetPreviewPage.setPage(page);
         dataSetPreviewPage.setPageSize(pageSize);
         int realSize = Integer.parseInt(dataSetTableRequest.getRow()) < pageSize ? Integer.parseInt(dataSetTableRequest.getRow()) : pageSize;
+        if (page == Integer.parseInt(dataSetTableRequest.getRow()) / pageSize + 1) {
+            realSize = Integer.parseInt(dataSetTableRequest.getRow()) % pageSize;
+        }
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
             Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
