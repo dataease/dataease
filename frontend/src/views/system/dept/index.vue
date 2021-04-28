@@ -86,7 +86,7 @@
         </el-form-item>
 
         <el-form-item label="顶级组织" prop="top">
-          <el-radio-group v-model="form.top" style="width: 140px">
+          <el-radio-group v-model="form.top" style="width: 140px" @change="topChange">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
@@ -507,6 +507,10 @@ export default {
         }
       })
       return roots
+    },
+    topChange(value) {
+    //   console.log(value)
+      !value && (this.depts = null)
     }
 
   }
