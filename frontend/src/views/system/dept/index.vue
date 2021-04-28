@@ -18,12 +18,11 @@
     > -->
     <tree-table
       :columns="columns"
-      :buttons="buttons"
-      :header="header"
+
       :search-config="searchConfig"
       @search="search"
     >
-      <template #buttons>
+      <template #toolbar>
         <fu-table-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" />
       </template>
       <el-table

@@ -2,12 +2,11 @@
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <tree-table
       :columns="columns"
-      :buttons="buttons"
-      :header="header"
+
       :search-config="searchConfig"
       @search="initTableData"
     >
-      <template v-permission="['menu:add']" #buttons>
+      <template #toolbar>
         <fu-table-button v-permission="['menu:add']" icon="el-icon-circle-plus-outline" :label="$t('menu.create')" @click="create" />
       </template>
 
@@ -173,7 +172,7 @@ export default {
         }
       ],
       searchConfig: {
-        useQuickSearch: false,
+        useQuickSearch: true,
         useComplexSearch: false,
         quickPlaceholder: '按姓名搜索',
         components: [

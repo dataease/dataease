@@ -7,14 +7,13 @@
           highlight-current-row
           :data="tableData"
           :columns="columns"
-          :buttons="buttons"
-          :header="header"
+
           :search-config="searchConfig"
           :pagination-config="paginationConfig"
           @search="search"
           @row-click="rowClick"
         >
-          <template #buttons>
+          <template #toolbar>
             <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" />
           </template>
 

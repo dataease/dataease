@@ -5,12 +5,22 @@
     </div>
 
     <div v-if="$slots.toolbar || searchConfig" class="complex-table__toolbar">
-      <slot name="toolbar">
+      <!-- <slot name="toolbar">
         <fu-search-bar v-bind="searchConfig" @exec="search">
           <slot name="buttons" />
           <fu-table-column-select :columns="columns" />
         </fu-search-bar>
-      </slot>
+      </slot> -->
+      <div>
+        <slot name="toolbar" />
+      </div>
+      <fu-search-bar v-bind="searchConfig" @exec="search">
+        <template #complex>
+          <slot name="complex" />
+        </template>
+        <slot name="buttons" />
+        <fu-table-column-select :columns="columns" />
+      </fu-search-bar>
     </div>
 
     <div class="complex-table__body">
@@ -73,12 +83,16 @@ export default {
 .complex-table {
   .complex-table__header {
     @include flex-row(flex-start, center);
-    height: 60px;
-    font-size: 20px;
+    line-height: 60px;
+    font-size: 18px;
   }
 
   .complex-table__toolbar {
-    @include flex-row(flex-end, center);
+    @include flex-row(space-between, center);
+
+    .fu-search-bar {
+      width: auto;
+    }
   }
 
   .complex-table__pagination {
