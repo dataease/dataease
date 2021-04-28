@@ -1,9 +1,16 @@
 @mixin flex-row($justify: flex-start, $align: stretch) {
-  display: flex;
-  @if $justify != flex-start {
-    justify-content: $justify;
+    display: flex;
+    @if $justify != flex-start {
+      justify-content: $justify;
+    }
+    @if $align != stretch {
+      align-items: $align;
+    }
   }
-  @if $align != stretch {
-    align-items: $align;
+  
+  @mixin variant($color, $background-color, $border-color) {
+    color: $color;
+    background-color: $background-color;
+    border-color: $border-color;
   }
-}
+  
