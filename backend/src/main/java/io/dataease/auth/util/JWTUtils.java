@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.core.env.Environment;
+
 import java.util.Date;
 
 
@@ -22,7 +24,9 @@ public class JWTUtils {
     // token过期时间1min (过期会自动刷新续命 目的是避免一直都是同一个token )
     private static final long EXPIRE_TIME = 1*60*1000;
     // 登录间隔时间10min 超过这个时间强制重新登录
-    private static final long Login_Interval = 10*60*1000;
+     private static long Login_Interval;
+
+
 
 
     /**
@@ -79,6 +83,11 @@ public class JWTUtils {
      * @return
      */
     public static boolean loginExpire(String token){
+        if (Login_Interval==0) {
+            String property = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout");
+            int seconds = StringUtils.isNotEmpty(property) ? Integer.parseInt(property): (10*60);
+            Login_Interval = seconds * 1000;
+        }
         Long now = System.currentTimeMillis();
         Long lastOperateTime = tokenLastOperateTime(token);
         boolean isExpire = false;
@@ -169,4 +178,5 @@ public class JWTUtils {
         long now = System.currentTimeMillis();
         tokens_expire.put(token, now);
     }
+
 }
