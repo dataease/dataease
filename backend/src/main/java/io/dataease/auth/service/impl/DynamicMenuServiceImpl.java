@@ -42,6 +42,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         menuMeta.setIcon(sysMenu.getIcon());
         dynamicMenuDto.setMeta(menuMeta);
         dynamicMenuDto.setPermission(sysMenu.getPermission());
+        dynamicMenuDto.setHidden(sysMenu.getHidden());
         return dynamicMenuDto;
     }
 
