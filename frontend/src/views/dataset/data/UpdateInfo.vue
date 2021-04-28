@@ -464,9 +464,11 @@ export default {
       })
     },
     handleSizeChange(val) {
+      this.page.pageSize = val
       this.listTaskLog()
     },
     handleCurrentChange(val) {
+      this.page.currentPage = val
       this.listTaskLog()
     },
     resetTaskForm() {

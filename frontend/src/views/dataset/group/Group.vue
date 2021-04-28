@@ -523,10 +523,6 @@ export default {
 
     back() {
       this.sceneMode = false
-      //   const route = this.$store.state.permission.currentRoutes
-      //   console.log(route)
-      // this.$router.push('/dataset/index')
-      this.$store.dispatch('dataset/setSceneData', null)
       this.$emit('switchComponent', { name: '' })
     },
 
@@ -559,16 +555,7 @@ export default {
     },
 
     sceneClick(data, node) {
-      // console.log(data);
-      this.$store.dispatch('dataset/setTable', null)
-      this.$store.dispatch('dataset/setTable', data.id)
-      // this.$router.push({
-      //   name: 'table',
-      //   params: {
-      //     table: data
-      //   }
-      // })
-      this.$emit('switchComponent', { name: 'ViewTable' })
+      this.$emit('switchComponent', { name: 'ViewTable', param: data.id })
     },
 
     refresh() {
