@@ -15,12 +15,12 @@ import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
 import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
-import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,10 @@ import java.util.stream.Collectors;
 @Service
 public class SysUserService {
 
-    private final static String DEFAULT_PWD = "DataEase123..";
+    //private final static String DEFAULT_PWD = "DataEase123..";
+
+    @Value("${dataease.init_password:DataEase123..}")
+    private String DEFAULT_PWD;
 
     @Resource
     private SysUserMapper sysUserMapper;
@@ -89,6 +92,7 @@ public class SysUserService {
     }
 
 
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     public int updateStatus(SysUserStateRequest request){
         SysUser sysUser = new SysUser();
         sysUser.setUserId(request.getUserId());
