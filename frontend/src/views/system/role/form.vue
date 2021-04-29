@@ -23,7 +23,7 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import { addRole, editRole } from '@/api/system/user'
+import { addRole, editRole } from '@/api/system/role'
 export default {
 
   components: { LayoutContent },
