@@ -41,7 +41,7 @@ public class DatasourceController {
         return PageUtils.setPageInfo(page, datasourceService.gridQuery(request));
     }
 
-    @GetMapping("/delete/{datasourceID}")
+    @PostMapping("/delete/{datasourceID}")
     public void deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) {
         datasourceService.deleteDatasource(datasourceID);
     }
