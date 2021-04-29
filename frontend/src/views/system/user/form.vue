@@ -31,7 +31,7 @@
           v-model="form.deptId"
           :options="depts"
           :load-options="loadDepts"
-
+          :auto-load-root-options="false"
           placeholder="选择部门"
         />
       </el-form-item>
@@ -182,6 +182,7 @@ export default {
         const results = res.data.map(node => {
           if (node.hasChildren && !node.children) {
             node.children = null
+            // delete node.children
           }
           return node
         })

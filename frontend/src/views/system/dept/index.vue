@@ -203,17 +203,23 @@ export default {
     this.search()
   },
   methods: {
+    // create() {
+    //   this.form = Object.assign({}, this.defaultForm)
+    //   this.dialogOrgAddVisible = true
+    //   this.formType = 'add'
+    // },
+    // edit(row) {
+    //   this.dialogOrgAddVisible = true
+    //   this.formType = 'modify'
+    //   this.oldPid = row.pid
+    //   this.form = Object.assign({}, row)
+    //   this.treeByRow(row)
+    // },
     create() {
-      this.form = Object.assign({}, this.defaultForm)
-      this.dialogOrgAddVisible = true
-      this.formType = 'add'
+      this.$router.push({ name: '组织表单' })
     },
     edit(row) {
-      this.dialogOrgAddVisible = true
-      this.formType = 'modify'
-      this.oldPid = row.pid
-      this.form = Object.assign({}, row)
-      this.treeByRow(row)
+      this.$router.push({ name: '组织表单', params: row })
     },
 
     treeByRow(row) {

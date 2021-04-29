@@ -152,10 +152,13 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
     },
+    // create() {
+    //   this.form = {}
+    //   this.formType = 'add'
+    //   this.dialogVisible = true
+    // },
     create() {
-      this.form = {}
-      this.formType = 'add'
-      this.dialogVisible = true
+      this.$router.push({ name: '角色表单' })
     },
     search(condition) {
       const temp = formatCondition(condition)
@@ -167,10 +170,13 @@ export default {
       })
     },
 
+    // edit(row) {
+    //   this.formType = 'modify'
+    //   this.dialogVisible = true
+    //   this.form = Object.assign({}, row)
+    // },
     edit(row) {
-      this.formType = 'modify'
-      this.dialogVisible = true
-      this.form = Object.assign({}, row)
+      this.$router.push({ name: '角色表单', params: row })
     },
 
     saveRole(roleForm) {

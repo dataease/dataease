@@ -46,4 +46,11 @@ export function editMenu(data) {
   })
 }
 
-export default { addMenu, editMenu, delMenu, getMenusTree, getChild }
+export function treeByMenuId(menuId) {
+  return request({
+    url: '/api/menu/nodesByMenuId/' + menuId,
+    method: 'post'
+  })
+}
+
+export default { addMenu, editMenu, delMenu, getMenusTree, getChild, treeByMenuId }
