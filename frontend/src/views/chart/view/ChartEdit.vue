@@ -419,7 +419,7 @@ export default {
         // this.get(response.data.id);
         this.getData(response.data.id)
         this.$store.dispatch('chart/setChartSceneData', null)
-        this.$store.dispatch('chart/setChartSceneData', this.sceneId)
+        this.$store.dispatch('chart/setChartSceneData', response.data)
       })
     },
     closeEdit() {
