@@ -8,7 +8,7 @@
       >
         <el-col>
           <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
-            <el-form-item v-if="chart.type && !chart.type.includes('table')" :label="$t('chart.color_case')" class="form-item">
+            <el-form-item v-show="chart.type && !chart.type.includes('table')" :label="$t('chart.color_case')" class="form-item">
               <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorCase">
                 <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
                   <div style="float: left">
@@ -19,16 +19,16 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.table_header_bg')" class="form-item">
+            <el-form-item v-show="chart.type && chart.type.includes('table')" :label="$t('chart.table_header_bg')" class="form-item">
               <colorPicker v-model="colorForm.tableHeaderBgColor" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeColorCase" />
             </el-form-item>
-            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.table_item_bg')" class="form-item">
+            <el-form-item v-show="chart.type && chart.type.includes('table')" :label="$t('chart.table_item_bg')" class="form-item">
               <colorPicker v-model="colorForm.tableItemBgColor" style="margin-top: 6px;cursor: pointer;z-index: 1003;border: solid 1px black" @change="changeColorCase" />
             </el-form-item>
-            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.table_item_font_color')" class="form-item">
+            <el-form-item v-show="chart.type && chart.type.includes('table')" :label="$t('chart.table_item_font_color')" class="form-item">
               <colorPicker v-model="colorForm.tableFontColor" style="margin-top: 6px;cursor: pointer;z-index: 1002;border: solid 1px black" @change="changeColorCase" />
             </el-form-item>
-            <el-form-item v-if="chart.type && chart.type.includes('table')" :label="$t('chart.stripe')" class="form-item">
+            <el-form-item v-show="chart.type && chart.type.includes('table')" :label="$t('chart.stripe')" class="form-item">
               <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase">{{ $t('chart.stripe') }}</el-checkbox>
             </el-form-item>
 

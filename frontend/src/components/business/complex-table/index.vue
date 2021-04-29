@@ -1,3 +1,4 @@
+
 <template>
   <div class="complex-table">
     <div v-if="$slots.header || header" class="complex-table__header">
@@ -5,12 +6,16 @@
     </div>
 
     <div v-if="$slots.toolbar || searchConfig" class="complex-table__toolbar">
-      <slot name="toolbar">
-        <fu-search-bar v-bind="searchConfig" @exec="search">
-          <slot name="buttons" />
-          <fu-table-column-select :columns="columns" />
-        </fu-search-bar>
-      </slot>
+      <div>
+        <slot name="toolbar" />
+      </div>
+      <fu-search-bar v-bind="searchConfig" @exec="search">
+        <template #complex>
+          <slot name="complex" />
+        </template>
+        <slot name="buttons" />
+        <fu-table-column-select :columns="columns" />
+      </fu-search-bar>
     </div>
 
     <div class="complex-table__body">
@@ -41,13 +46,9 @@ export default {
       type: Array,
       default: () => []
     },
-    // eslint-disable-next-line vue/require-default-prop
     localKey: String, // 如果需要记住选择的列，则这里添加一个唯一的Key
-    // eslint-disable-next-line vue/require-default-prop
     header: String,
-    // eslint-disable-next-line vue/require-default-prop
     searchConfig: Object,
-    // eslint-disable-next-line vue/require-default-prop
     paginationConfig: Object
   },
   data() {
@@ -72,12 +73,16 @@ export default {
 .complex-table {
   .complex-table__header {
     @include flex-row(flex-start, center);
-    height: 60px;
-    font-size: 20px;
+    line-height: 60px;
+    font-size: 18px;
   }
 
   .complex-table__toolbar {
-    @include flex-row(flex-end, center);
+    @include flex-row(space-between, center);
+
+    .fu-search-bar {
+      width: auto;
+    }
   }
 
   .complex-table__pagination {

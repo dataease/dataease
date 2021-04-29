@@ -34,6 +34,32 @@
         </template>
       </ux-table-column>
     </ux-grid>
+    <el-row style="margin-top: 4px;">
+      <span class="table-count">
+        <span v-if="page.total <= currentPage.show">
+          {{ $t('dataset.preview_total') }}
+          <span class="span-number">{{ page.total }}</span>
+          {{ $t('dataset.preview_item') }}
+        </span>
+        <span v-if="page.total > currentPage.show">
+          {{ $t('dataset.preview_show') }}
+          <span class="span-number">{{ currentPage.show }}</span>
+          {{ $t('dataset.preview_item') }}
+          ，{{ $t('dataset.preview_total') }}
+          <span class="span-number">{{ page.total }}</span>
+          {{ $t('dataset.preview_item') }}
+        </span>
+      </span>
+      <el-pagination
+        :current-page="currentPage.page"
+        :page-sizes="[100]"
+        :page-size="currentPage.pageSize"
+        :pager-count="5"
+        layout="sizes, prev, pager, next"
+        :total="currentPage.show"
+        @current-change="pageChange"
+      />
+    </el-row>
   </el-col>
 </template>
 
@@ -56,11 +82,20 @@ export default {
     form: {
       type: Object,
       required: true
+    },
+    page: {
+      type: Object,
+      required: false
     }
   },
   data() {
     return {
-      height: 500
+      height: 500,
+      currentPage: {
+        page: 1,
+        pageSize: 100,
+        show: parseInt(this.form.row)
+      }
     }
   },
   computed: {
@@ -69,28 +104,68 @@ export default {
     data() {
       const datas = this.data
       this.$refs.plxTable.reloadData(datas)
+    },
+    page() {
+      if (this.page.total < parseInt(this.form.row)) {
+        this.currentPage.show = this.page.total
+      } else {
+        this.currentPage.show = parseInt(this.form.row)
+      }
     }
   },
   mounted() {
-    window.onresize = () => {
-      return (() => {
-        this.height = window.innerHeight / 2
-      })()
-    }
-    this.height = window.innerHeight / 2
-  },
-  activated() {
+    this.init()
   },
   methods: {
+    init() {
+      this.calHeight()
+    },
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
+      }, 10)
+    },
     reSearch() {
-      this.$emit('reSearch', this.form)
+      if (!this.form.row || this.form.row === '' || this.form.row.length > 8 || isNaN(Number(this.form.row)) || String(this.form.row).includes('.')) {
+        this.$message({
+          message: this.$t('dataset.pls_input_less_9'),
+          type: 'error',
+          showClose: true
+        })
+        return
+      }
+      this.currentPage.show = parseInt(this.form.row)
+      this.currentPage.page = 1
+      this.$emit('reSearch', { form: this.form, page: this.currentPage })
+    },
+    pageChange(val) {
+      this.currentPage.page = val
+      // console.log(this.currentPage)
+      this.$emit('reSearch', { form: this.form, page: this.currentPage })
     }
   }
 }
 </script>
 
 <style scoped>
-.row-style>>>.el-form-item__label{
-  font-size: 12px;
-}
+  .row-style>>>.el-form-item__label{
+    font-size: 12px;
+  }
+  .row-style>>>.el-form-item--mini.el-form-item{
+    margin-bottom: 10px;
+  }
+  .el-pagination{
+    float: right;
+  }
+  span{
+    font-size: 14px;
+  }
+  .span-number{
+    color: #f18126;
+  }
+  .table-count{
+    color: #606266;
+  }
 </style>

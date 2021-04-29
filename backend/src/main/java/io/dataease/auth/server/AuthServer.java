@@ -35,10 +35,14 @@ public class AuthServer implements AuthApi {
         String username = loginDto.getUsername();
         String password = loginDto.getPassword();
         SysUserEntity user = authUserService.getUserByName(username);
-        String realPwd = user.getPassword();
+
         if (ObjectUtils.isEmpty(user)){
             throw new RuntimeException("没有该用户！");
         }
+        if (user.getEnabled()==0){
+            throw new RuntimeException("用户已经失效！");
+        }
+        String realPwd = user.getPassword();
         //私钥解密
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, password);
         //md5加密

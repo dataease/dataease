@@ -25,6 +25,8 @@ public class DynamicMenuDto implements Serializable {
 
     private String permission;
 
+    private Boolean hidden;
+
     private List<DynamicMenuDto> children;
 
 }

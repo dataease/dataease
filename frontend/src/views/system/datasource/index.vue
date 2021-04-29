@@ -3,14 +3,14 @@
     <complex-table
       :data="data"
       :columns="columns"
-      :buttons="buttons"
-      :header="header"
+
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"
       @search="search"
     >
-      <template #buttons>
+
+      <template #toolbar>
         <fu-table-button v-permission="['datasource:add']" icon="el-icon-circle-plus-outline" :label="$t('datasource.create')" @click="create" />
       </template>
 
@@ -154,7 +154,7 @@ export default {
       }
     }
   },
-  activated() {
+  mounted() {
     this.search()
   },
   methods: {
@@ -199,7 +199,7 @@ export default {
             this.$success(this.$t('commons.save_success'))
             this.search()
             this.dialogVisible = false
-          });
+          })
         } else {
           return false
         }

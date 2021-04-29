@@ -68,6 +68,9 @@ public class F2CRealm extends AuthorizingRealm {
         if (user == null) {
             throw new AuthenticationException("User didn't existed!");
         }
+        if (user.getEnabled()==0) {
+            throw new AuthenticationException("User is valid!");
+        }
         String pass = null;
         try {
             pass = user.getPassword();

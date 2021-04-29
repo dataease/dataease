@@ -7,14 +7,13 @@
           highlight-current-row
           :data="tableData"
           :columns="columns"
-          :buttons="buttons"
-          :header="header"
+
           :search-config="searchConfig"
           :pagination-config="paginationConfig"
           @search="search"
           @row-click="rowClick"
         >
-          <template #buttons>
+          <template #toolbar>
             <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" />
           </template>
 
@@ -107,7 +106,8 @@ export default {
       rule: {
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' }
-        ]
+        ],
+        code: [{ required: true, message: '请输入代码', trigger: 'blur' }]
       },
       currentRow: null,
       permission: {
@@ -145,7 +145,7 @@ export default {
   watch: {
     currentRow: 'currentRowChange'
   },
-  activated() {
+  mounted() {
     this.search()
   },
   methods: {
