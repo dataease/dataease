@@ -483,7 +483,7 @@ export default {
       if (data.type === 'scene') {
         this.sceneMode = true
         this.currGroup = data
-        // this.$store.dispatch('chart/setSceneId', this.currGroup.id)
+        this.$store.dispatch('chart/setSceneId', this.currGroup.id)
         this.chartTree()
       }
       if (node.expanded) {
