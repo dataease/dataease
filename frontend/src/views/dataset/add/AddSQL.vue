@@ -253,7 +253,11 @@ export default {
 
     cancel() {
       // this.dataReset()
-      this.$emit('switchComponent', { name: '' })
+      if (this.param.tableId) {
+        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.tableId })
+      } else {
+        this.$emit('switchComponent', { name: '' })
+      }
     },
 
     showSQL(val) {

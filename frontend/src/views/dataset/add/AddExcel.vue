@@ -179,7 +179,7 @@ export default {
   }
 
   .form-item {
-    margin-bottom: 6px;
+    margin-bottom: 6px !important;
   }
 
   .el-checkbox {

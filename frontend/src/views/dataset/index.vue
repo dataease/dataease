@@ -24,6 +24,7 @@ import AddDB from './add/AddDB'
 import AddSQL from './add/AddSQL'
 import AddExcel from './add/AddExcel'
 import AddCustom from './add/AddCustom'
+import FieldEdit from './data/FieldEdit'
 
 export default {
   name: 'DataSet',
@@ -53,6 +54,9 @@ export default {
           break
         case 'AddCustom':
           this.component = AddCustom
+          break
+        case 'FieldEdit':
+          this.component = FieldEdit
           break
         default:
           this.component = DataHome
