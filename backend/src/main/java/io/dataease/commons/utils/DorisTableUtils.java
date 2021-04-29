@@ -6,8 +6,12 @@ public class DorisTableUtils {
         return "ds_" + datasetId.replace("-", "_");
     }
 
-    public static String doristmpName(String dorisName){
-        return "tmp" + dorisName;
+    public static String dorisTmpName(String dorisName){
+        return "tmp_" + dorisName;
+    }
+
+    public static String dorisDeleteName(String dorisName){
+        return "delete_" + dorisName;
     }
 
 }

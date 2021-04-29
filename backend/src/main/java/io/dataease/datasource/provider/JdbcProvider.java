@@ -3,7 +3,7 @@ package io.dataease.datasource.provider;
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import io.dataease.datasource.constants.DatasourceTypes;
-import io.dataease.datasource.dto.MysqlConfigrationDTO;
+import io.dataease.datasource.dto.MysqlConfigration;
 import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -292,11 +292,11 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
-                MysqlConfigrationDTO mysqlConfigrationDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
-                username = mysqlConfigrationDTO.getUsername();
-                password = mysqlConfigrationDTO.getPassword();
-                driver = mysqlConfigrationDTO.getDriver();
-                jdbcurl = mysqlConfigrationDTO.getJdbc();
+                MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
+                username = mysqlConfigration.getUsername();
+                password = mysqlConfigration.getPassword();
+                driver = mysqlConfigration.getDriver();
+                jdbcurl = mysqlConfigration.getJdbc();
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
@@ -323,11 +323,11 @@ public class JdbcProvider extends DatasourceProvider {
             DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
             switch (datasourceType) {
                 case mysql:
-                    MysqlConfigrationDTO mysqlConfigrationDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
-                    dataSource.setUser(mysqlConfigrationDTO.getUsername());
-                    dataSource.setDriverClass(mysqlConfigrationDTO.getDriver());
-                    dataSource.setPassword(mysqlConfigrationDTO.getPassword());
-                    dataSource.setJdbcUrl(mysqlConfigrationDTO.getJdbc());
+                    MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
+                    dataSource.setUser(mysqlConfigration.getUsername());
+                    dataSource.setDriverClass(mysqlConfigration.getDriver());
+                    dataSource.setPassword(mysqlConfigration.getPassword());
+                    dataSource.setJdbcUrl(mysqlConfigration.getJdbc());
                     break;
                 case sqlServer:
                     SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
@@ -345,8 +345,8 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
-                MysqlConfigrationDTO mysqlConfigrationDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigrationDTO.class);
-                return mysqlConfigrationDTO.getDataBase();
+                MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
+                return mysqlConfigration.getDataBase();
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 return sqlServerConfigration.getDataBase();

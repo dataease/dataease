@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
-public class MysqlConfigrationDTO extends JdbcDTO {
+public class MysqlConfigration extends JdbcDTO {
 
     private String driver = "com.mysql.cj.jdbc.Driver";
 
