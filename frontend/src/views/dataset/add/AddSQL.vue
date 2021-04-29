@@ -76,6 +76,11 @@
               />
             </ux-grid>
           </div>
+          <span class="table-count">
+            {{ $t('dataset.preview_show') }}
+            <span class="span-number">1000</span>
+            {{ $t('dataset.preview_item') }}
+          </span>
         </el-card>
       </el-row>
     </el-row>
@@ -155,11 +160,9 @@ export default {
   },
   mounted() {
     window.onresize = () => {
-      return (() => {
-        this.height = window.innerHeight / 2
-      })()
+      this.calHeight()
     }
-    this.height = window.innerHeight / 2
+    this.calHeight()
     this.initDataSource()
     this.$refs.myCm.codemirror.on('keypress', () => {
       this.$refs.myCm.codemirror.showHint()
@@ -168,6 +171,13 @@ export default {
     this.initTableInfo()
   },
   methods: {
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 43 - 160 - 10 - 37 - 20 - 10 - 16
+      }, 10)
+    },
     initDataSource() {
       listDatasource().then(response => {
         this.options = response.data
@@ -302,5 +312,11 @@ export default {
 
   span{
     font-size: 14px;
+  }
+  .span-number{
+    color: #f18126;
+  }
+  .table-count{
+    color: #606266;
   }
 </style>

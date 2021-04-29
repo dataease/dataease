@@ -160,7 +160,7 @@ export default {
     float: right;
   }
   span{
-    font-size: 14px;
+    font-size: 12px;
   }
   .span-number{
     color: #f18126;
