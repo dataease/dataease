@@ -38,53 +38,11 @@
         <update-info :table="table" />
       </el-tab-pane>
     </el-tabs>
-
-    <el-dialog :title="table.name" :visible.sync="editField" :fullscreen="true" :show-close="false" class="dialog-css">
-      <el-table :data="tableFields" size="mini" :max-height="maxHeight">
-        <el-table-column property="type" :label="$t('dataset.field_type')" width="100">
-          <template slot-scope="scope">
-            <span v-if="scope.row.deType === 0">
-              <svg-icon v-if="scope.row.deType === 0" icon-class="field_text" class="field-icon-text" />
-              {{ $t('dataset.text') }}
-            </span>
-            <span v-if="scope.row.deType === 1">
-              <svg-icon v-if="scope.row.deType === 1" icon-class="field_time" class="field-icon-time" />
-              {{ $t('dataset.time') }}
-            </span>
-            <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
-              <svg-icon v-if="scope.row.deType === 2 || scope.row.deType === 3" icon-class="field_value" class="field-icon-value" />
-              {{ $t('dataset.value') }}
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.name" size="mini" />
-          </template>
-        </el-table-column>
-        <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="180" />
-        <el-table-column property="checked" :label="$t('dataset.field_check')" width="80">
-          <template slot-scope="scope">
-            <el-checkbox v-model="scope.row.checked" />
-          </template>
-        </el-table-column>
-        <!--下面这一列占位-->
-        <el-table-column property="" />
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeEdit">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="saveEdit">{{ $t('dataset.confirm') }}</el-button>
-      </div>
-    </el-dialog>
-
-    <!--    <el-dialog title="view" :visible.sync="createViewDialog" :fullscreen="true">-->
-    <!--      <chart-edit/>-->
-    <!--    </el-dialog>-->
   </el-row>
 </template>
 
 <script>
-import { getTable, post, fieldList, batchEdit } from '@/api/dataset/dataset'
+import { getTable, post } from '@/api/dataset/dataset'
 import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
 import DatasetChartDetail from '../common/DatasetChartDetail'
@@ -100,8 +58,6 @@ export default {
   },
   data() {
     return {
-      createViewDialog: false,
-      editField: false,
       table: {
         name: ''
       },
@@ -113,27 +69,18 @@ export default {
         show: 1000
       },
       tabActive: 'dataPreview',
-      tableFields: [],
       tableViewRowForm: {
         row: 1000
       },
-      tabStatus: false,
-      maxHeight: 'auto'
+      tabStatus: false
     }
   },
-  // computed: {
-  //   tableId() {
-  //     this.initTable(this.$store.state.dataset.table)
-  //     return this.$store.state.dataset.table
-  //   }
-  // },
   watch: {
     'param': function() {
       this.initTable(this.param)
     }
   },
   mounted() {
-    this.maxHeight = (document.documentElement.clientHeight - 45 - 78) + 'px'
     this.initTable(this.param)
   },
   methods: {
@@ -162,34 +109,8 @@ export default {
       }
     },
 
-    initTableFields() {
-      fieldList(this.table.id).then(response => {
-        this.tableFields = response.data
-      })
-    },
-
     edit() {
-      this.editField = true
-      // 请求当前表的所有字段，进行编辑
-      this.initTableFields()
-    },
-
-    // createChart() {
-    //   console.log(this.table);
-    //   this.createViewDialog = true;
-    // },
-
-    saveEdit() {
-      console.log(this.tableFields)
-      batchEdit(this.tableFields).then(response => {
-        this.closeEdit()
-        this.initTable(this.table.id)
-      })
-    },
-
-    closeEdit() {
-      this.editField = false
-      this.tableFields = []
+      this.$emit('switchComponent', { name: 'FieldEdit', param: { table: this.table }})
     },
 
     editSql() {
@@ -218,18 +139,5 @@ export default {
 
   .form-item {
     margin-bottom: 6px;
-  }
-
-  .dialog-css>>>.el-dialog__title {
-    font-size: 14px;
-  }
-  .dialog-css >>> .el-dialog__header {
-    padding: 20px 20px 0;
-  }
-  .dialog-css >>> .el-dialog__body {
-    padding: 10px 20px;
-  }
-  .dialog-css >>> .el-dialog__footer {
-    padding-top: 10px;
   }
 </style>
