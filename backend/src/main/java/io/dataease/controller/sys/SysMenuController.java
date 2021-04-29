@@ -7,6 +7,7 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.request.MenuCreateRequest;
 import io.dataease.controller.sys.request.MenuDeleteRequest;
 import io.dataease.controller.sys.response.MenuNodeResponse;
+import io.dataease.controller.sys.response.MenuTreeNode;
 import io.dataease.service.sys.MenuService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,6 +63,12 @@ public class SysMenuController {
         sets.add(pid);
         return sets;
     }
+    @PostMapping("/nodesByMenuId/{menuId}")
+    public List<MenuTreeNode> nodesByMenuId(@PathVariable("menuId") Long menuId) {
+        return  menuService.searchTree(menuId);
+    }
+
+
 
 
 }

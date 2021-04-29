@@ -1,5 +1,6 @@
 package io.dataease.service.sys;
 
+import io.dataease.base.domain.SysDept;
 import io.dataease.base.domain.SysMenu;
 import io.dataease.base.domain.SysMenuExample;
 import io.dataease.base.mapper.SysMenuMapper;
@@ -7,8 +8,10 @@ import io.dataease.base.mapper.ext.ExtMenuMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.request.MenuCreateRequest;
 import io.dataease.controller.sys.request.MenuDeleteRequest;
+import io.dataease.controller.sys.response.DeptTreeNode;
 import io.dataease.controller.sys.response.MenuNodeResponse;
 
+import io.dataease.controller.sys.response.MenuTreeNode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -121,6 +125,24 @@ public class MenuService {
         return responses;
     }
 
+    public List<MenuTreeNode> searchTree(Long menuId) {
+        List<SysMenu> roots = nodesByPid(0L);
+        if (menuId == MENU_ROOT_PID) return roots.stream().map(this::format).collect(Collectors.toList());
+        SysMenu sysMenu = sysMenuMapper.selectByPrimaryKey(menuId);
+        if (roots.stream().anyMatch(node -> node.getMenuId() == menuId)) return roots.stream().map(this::format).collect(Collectors.toList());
+        SysMenu current = sysMenu;
+        MenuTreeNode currentNode = format(sysMenu);
+        while (current.getPid() != MENU_ROOT_PID){
+            SysMenu parent = sysMenuMapper.selectByPrimaryKey(current.getPid()); //pid上有索引 所以效率不会太差
+            MenuTreeNode parentNode = format(parent);
+            parentNode.setChildren(currentNode.toList());
+            current = parent;
+            currentNode = parentNode;
+        }
+        MenuTreeNode targetRootNode = currentNode;
+        return roots.stream().map(node -> node.getMenuId() == targetRootNode.getId() ? targetRootNode : format(node)).collect(Collectors.toList());
+    }
+
     private Set<SysMenu> getChilds(List<SysMenu> lists, Set<SysMenu> sets){
         lists.forEach(menu -> {
             sets.add(menu);
@@ -130,6 +152,15 @@ public class MenuService {
             }
         });
         return sets;
+    }
+
+    private MenuTreeNode format(SysMenu sysMenu) {
+        MenuTreeNode menuTreeNode = new MenuTreeNode();
+        menuTreeNode.setId(sysMenu.getMenuId());
+        menuTreeNode.setLabel(sysMenu.getName());
+        menuTreeNode.setHasChildren(false);
+        Optional.ofNullable(sysMenu.getMenuSort()).ifPresent(num -> menuTreeNode.setHasChildren(num > 0));
+        return menuTreeNode;
     }
 
     public List<MenuNodeResponse> convert(List<SysMenu> menus){

@@ -199,21 +199,27 @@ export default {
     this.initTableData()
   },
   methods: {
+    // create() {
+    //   this.form = Object.assign({}, this.defaultForm)
+    //   this.dialogVisible = true
+    //   this.formType = 'add'
+    // },
     create() {
-      this.form = Object.assign({}, this.defaultForm)
-      this.dialogVisible = true
-      this.formType = 'add'
+      this.$router.push({ name: '菜单表单' })
     },
     search(condition) {
       console.log(condition)
     },
 
+    // edit(row) {
+    //   this.dialogVisible = true
+    //   this.formType = 'modify'
+    //   this.oldPid = row.pid
+    //   this.form = Object.assign({}, row)
+    //   this.treeByRow(row)
+    // },
     edit(row) {
-      this.dialogVisible = true
-      this.formType = 'modify'
-      this.oldPid = row.pid
-      this.form = Object.assign({}, row)
-      this.treeByRow(row)
+      this.$router.push({ name: '菜单表单', params: row })
     },
 
     treeByRow(row) {

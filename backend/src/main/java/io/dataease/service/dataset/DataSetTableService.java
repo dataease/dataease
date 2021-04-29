@@ -81,7 +81,15 @@ public class DataSetTableService {
                 saveTableField(datasetTable);
             }
         } else {
-            datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+            int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+            // sql 更新
+            if (update == 1) {
+                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
+                    // 删除所有字段，重新抽象
+                    dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
+                    saveTableField(datasetTable);
+                }
+            }
         }
         return datasetTable;
     }
@@ -262,7 +270,7 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
-        datasourceRequest.setQuery(sql);
+        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp LIMIT 0,1000");
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");

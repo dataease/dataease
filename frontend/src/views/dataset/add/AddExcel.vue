@@ -19,10 +19,10 @@
         <el-row>
           <el-col style="width: 500px;">
             <el-form :inline="true" size="mini" class="row-style">
-              <el-form-item>
+              <el-form-item class="form-item">
                 <el-input v-model="name" :placeholder="$t('commons.name')" />
               </el-form-item>
-              <el-form-item>
+              <el-form-item class="form-item">
                 <el-upload
                   :action="baseUrl+'dataset/table/excel/upload'"
                   :multiple="false"
@@ -41,7 +41,7 @@
         </el-row>
       </el-row>
 
-      <el-row>
+      <el-row style="margin-top: 10px;">
         <el-card class="box-card dataPreview" shadow="never">
           <div slot="header" class="clearfix">
             <span>{{ $t('dataset.data_preview') }}</span>
@@ -100,27 +100,13 @@ export default {
     }
   },
   watch: {
-    // dataSource(val) {
-    //   if (val) {
-    //     post('/datasource/getTables', { id: val }).then(response => {
-    //       this.tables = response.data
-    //       this.tableData = JSON.parse(JSON.stringify(this.tables))
-    //     })
-    //   }
-    // },
-    // searchTable(val) {
-    //   if (val && val !== '') {
-    //     this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.includes(val) })))
-    //   } else {
-    //     this.tableData = JSON.parse(JSON.stringify(this.tables))
-    //   }
-    // }
   },
   mounted() {
     // this.initDataSource()
-  },
-  activated() {
-    // this.initDataSource()
+    window.onresize = () => {
+      this.calHeight()
+    }
+    this.calHeight()
   },
   methods: {
     // initDataSource() {
@@ -128,6 +114,13 @@ export default {
     //     this.options = response.data
     //   })
     // },
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
+      }, 10)
+    },
     uploadSuccess(response, file, fileList) {
       // console.log(response)
       // console.log(file)

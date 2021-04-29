@@ -46,9 +46,13 @@ export default {
       type: Array,
       default: () => []
     },
+    // eslint-disable-next-line vue/require-default-prop
     localKey: String, // 如果需要记住选择的列，则这里添加一个唯一的Key
+    // eslint-disable-next-line vue/require-default-prop
     header: String,
+    // eslint-disable-next-line vue/require-default-prop
     searchConfig: Object,
+    // eslint-disable-next-line vue/require-default-prop
     paginationConfig: Object
   },
   data() {
