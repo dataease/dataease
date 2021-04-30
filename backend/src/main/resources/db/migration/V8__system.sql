@@ -101,6 +101,7 @@ INSERT INTO `sys_menu` VALUES (35, 1, 0, 1, '用户表单', '用户表单', 'sys
 INSERT INTO `sys_menu` VALUES (36, 1, 0, 1, '菜单表单', '菜单表单', 'system/menu/form', 11, 'menu', 'menu-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (37, 1, 0, 1, '组织表单', '组织表单', 'system/dept/form', 12, 'dept', 'dept-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (38, 1, 0, 1, '角色表单', '角色表单', 'system/role/form', 13, 'role', 'role-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (39, 33, 0, 1, '数据源表单', '数据源表单', 'system/datasource/form', 2, NULL, 'ds-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
