@@ -5,9 +5,9 @@
         <el-input v-model="form.name" />
       </el-form-item>
 
-      <el-form-item label="角色代码" prop="code">
+      <!-- <el-form-item label="角色代码" prop="code">
         <el-input v-model="form.code" :disabled="formType !== 'add'" />
-      </el-form-item>
+      </el-form-item> -->
 
       <el-form-item label="描述信息" prop="description">
         <el-input v-model="form.description" type="textarea" />
@@ -23,19 +23,22 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import { addRole, editRole } from '@/api/system/role'
+import { addRole, editRole, allRoles } from '@/api/system/role'
 export default {
 
   components: { LayoutContent },
   data() {
     return {
+      formType: 'add',
       form: {},
       rule: {
         name: [
-          { required: true, message: '请输入名称', trigger: 'blur' }
+          { required: true, trigger: 'blur', validator: this.roleValidator }
         ],
         code: [{ required: true, message: '请输入代码', trigger: 'blur' }]
-      }
+      },
+      roles: [],
+      originName: null
     }
   },
 
@@ -46,6 +49,7 @@ export default {
     } else {
       this.create()
     }
+    this.queryAllRoles()
   },
   methods: {
     create() {
@@ -54,6 +58,7 @@ export default {
     edit(row) {
       this.formType = 'modify'
       this.form = Object.assign({}, row)
+      this.originName = row.name
     },
 
     reset() {
@@ -71,6 +76,30 @@ export default {
           return false
         }
       })
+    },
+    queryAllRoles() {
+      allRoles().then(res => {
+        this.roles = res.data
+      })
+    },
+    nameRepeat(value) {
+      if (!this.roles || this.roles.length === 0) {
+        return false
+      }
+      // 编辑场景 不能 因为名称重复而报错
+      if (this.formType === 'modify' && this.originName === value) {
+        return false
+      }
+      return this.roles.some(role => role.name === value)
+    },
+    roleValidator(rule, value, callback) {
+      if (!value || value.length === 0) {
+        callback(new Error('请输入名称'))
+      } else if (this.nameRepeat(value)) {
+        callback(new Error('角色名称已存在'))
+      } else {
+        callback()
+      }
     },
     backToList() {
       this.$router.push({ name: '角色管理' })
