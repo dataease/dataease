@@ -151,7 +151,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role` (
   `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `code` varchar(100) NOT NULL COMMENT '代码',
   `name` varchar(255) NOT NULL COMMENT '名称',
   `description` varchar(255) DEFAULT NULL COMMENT '描述',
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',
@@ -161,18 +160,17 @@ CREATE TABLE `sys_role` (
   PRIMARY KEY (`role_id`) USING BTREE,
   UNIQUE KEY `uniq_name` (`name`),
   KEY `role_name_index` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
 
 -- ----------------------------
 -- Records of sys_role
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_role` VALUES (3, 'admin', '管理员', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `sys_role` VALUES (4, 'emp', '普通员工', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_role` VALUES (3, '管理员', 'www', NULL, NULL, NULL, 1619685033918);
+INSERT INTO `sys_role` VALUES (4, '普通员工', 'ceshi', NULL, NULL, NULL, 1619684053527);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
-
 
 -- ----------------------------
 -- Table structure for sys_roles_menus
