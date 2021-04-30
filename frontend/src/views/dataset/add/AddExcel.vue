@@ -29,11 +29,16 @@
                   :show-file-list="false"
                   :file-list="fileList"
                   accept=".xls,.xlsx,.csv"
+                  :before-upload="beforeUpload"
                   :on-success="uploadSuccess"
+                  :on-error="uploadFail"
                   name="file"
                   :headers="headers"
                 >
-                  <el-button size="mini" type="primary">{{ $t('dataset.upload_file') }}</el-button>
+                  <el-button size="mini" type="primary" :disabled="uploading">
+                    <span v-if="!uploading" style="font-size: 12px;">{{ $t('dataset.upload_file') }}</span>
+                    <span v-if="uploading" style="font-size: 12px;"><i class="el-icon-loading" /> {{ $t('dataset.uploading') }}</span>
+                  </el-button>
                 </el-upload>
               </el-form-item>
             </el-form>
@@ -96,7 +101,8 @@ export default {
       fileList: [],
       headers: { Authorization: token },
       baseUrl: process.env.VUE_APP_BASE_API,
-      path: ''
+      path: '',
+      uploading: false
     }
   },
   watch: {
@@ -121,6 +127,12 @@ export default {
         that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
       }, 10)
     },
+    beforeUpload(file) {
+      this.uploading = true
+    },
+    uploadFail(response, file, fileList) {
+      this.uploading = false
+    },
     uploadSuccess(response, file, fileList) {
       // console.log(response)
       // console.log(file)
@@ -135,6 +147,7 @@ export default {
         this.name = file.name.substring(0, file.name.lastIndexOf('.'))
       }
       this.fileList = fileList
+      this.uploading = false
     },
 
     save() {

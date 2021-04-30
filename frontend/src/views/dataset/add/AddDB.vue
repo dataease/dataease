@@ -90,7 +90,7 @@ export default {
     },
     searchTable(val) {
       if (val && val !== '') {
-        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.includes(val) })))
+        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
       } else {
         this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
