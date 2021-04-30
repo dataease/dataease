@@ -206,7 +206,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
 
             String table = dataTableInfoDTO.getTable();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * realSize + "," + realSize);
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
 
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
@@ -226,7 +226,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
 
             String sql = dataTableInfoDTO.getSql();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray) + " LIMIT " + (page - 1) * realSize + "," + realSize);
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
 
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
