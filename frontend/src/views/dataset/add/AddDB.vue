@@ -45,12 +45,13 @@
     </el-row>
     <el-col style="overflow-y: auto;">
       <el-checkbox-group v-model="checkTableList" size="small">
-        <el-checkbox
-          v-for="t in tableData"
-          :key="t"
-          border
-          :label="t"
-        />
+        <el-tooltip v-for="t in tableData" :key="t.name" :disabled="t.enableCheck" effect="dark" :content="$t('dataset.table_already_add_to')+': '+t.datasetPath" placement="bottom">
+          <el-checkbox
+            border
+            :label="t.name"
+            :disabled="!t.enableCheck"
+          />
+        </el-tooltip>
       </el-checkbox-group>
     </el-col>
   </el-row>
