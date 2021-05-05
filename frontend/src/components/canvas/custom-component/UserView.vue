@@ -1,6 +1,14 @@
 <template>
-  <div class="rect-shape">
-    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" />
+  <div v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="rect-shape">
+    <div v-if="requestStatus==='error'" style=";width: 100%;height: 100%;background-color: #ece7e7; text-align: center">
+      <div style="font-size: 12px; color: #9ea6b2;">
+        获取数据出错 请联系管理员<br>
+        {{ message }}
+      </div>
+    </div>
+    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table')" :ref="element.propValue.id" class="chart-class" :chart="chart" />
+    <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+
   </div>
 </template>
 
@@ -8,6 +16,8 @@
 
 import { post } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
+import TableNormal from '@/views/chart/components/table/TableNormal'
+
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 
@@ -25,7 +35,7 @@ import {
 
 export default {
   name: 'UserView',
-  components: { ChartComponent },
+  components: { ChartComponent, TableNormal },
   props: {
     element: {
       type: Object
@@ -63,17 +73,6 @@ export default {
   computed: mapState([
     'canvasStyleData'
   ]),
-  // computed: mapState({
-  //   canvasStyleData: function(state) {
-  //     debugger
-  //     // this.chart.viewFirst == false 优先使用仪表盘样式
-  //     if (!this.chart.viewFirst) {
-  //       this.chart.customAttr = state.canvasStyleData.chart.customAttr
-  //       this.chart.customStyle = state.canvasStyleData.chart.customStyle
-  //     }
-  //   }
-  //
-  // }),
   data() {
     return {
       chart: {
@@ -97,7 +96,9 @@ export default {
           background: DEFAULT_BACKGROUND_COLOR
         },
         customFilter: []
-      }
+      },
+      requestStatus: 'waiting',
+      message: null
     }
   },
   created() {
@@ -109,9 +110,23 @@ export default {
   methods: {
     getData(id) {
       if (id) {
+        this.requestStatus = 'waiting'
+        this.message = null
         post('/chart/view/getData/' + id, this.filter).then(response => {
           // 将视图传入echart组件
-          this.chart = response.data
+          debugger
+          if (response.success) {
+            this.chart = response.data
+            this.requestStatus = 'success'
+          } else {
+            this.requestStatus = 'error'
+            this.message = response.massage
+          }
+          return true
+        }).catch(err => {
+          this.requestStatus = 'error'
+          this.message = err
+          return true
         })
       }
     }
@@ -126,6 +141,9 @@ export default {
     overflow: auto;
 }
 .chart-class{
+  height: 100%;
+}
+.table-class{
   height: 100%;
 }
 </style>
