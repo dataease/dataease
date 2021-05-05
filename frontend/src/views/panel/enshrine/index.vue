@@ -52,9 +52,11 @@ export default {
       })
     },
     resetID(data) {
-      data.forEach(item => {
-        item.id = uuid.v1()
-      })
+      if( data ) {
+        data.forEach(item => {
+          item.id = uuid.v1()
+        })
+      }
 
       return data
     },

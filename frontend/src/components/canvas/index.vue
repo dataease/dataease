@@ -69,9 +69,11 @@ export default {
     },
 
     resetID(data) {
-      data.forEach(item => {
-        item.id = generateID()
-      })
+      if( data ) {
+        data.forEach(item => {
+          item.id = uuid.v1()
+        })
+      }
 
       return data
     },

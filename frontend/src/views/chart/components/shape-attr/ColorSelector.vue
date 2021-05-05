@@ -112,7 +112,12 @@ export default {
       handler: function() {
         const chart = JSON.parse(JSON.stringify(this.chart))
         if (chart.customAttr) {
-          const customAttr = JSON.parse(chart.customAttr)
+          let customAttr = null
+          if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+            customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+          } else {
+            customAttr = JSON.parse(chart.customAttr)
+          }
           if (customAttr.color) {
             this.colorForm = customAttr.color
           }

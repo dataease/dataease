@@ -441,6 +441,7 @@ export default {
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           // 将视图传入echart组件
           this.chart = response.data
+          console.log(JSON.stringify(this.chart))
         })
       } else {
         this.view = {}

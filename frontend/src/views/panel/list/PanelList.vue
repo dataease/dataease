@@ -284,7 +284,6 @@ export default {
     },
 
     clickMore(param) {
-      debugger
       switch (param.optType) {
         case 'rename':
           this.showEditPanel(param)
@@ -448,9 +447,11 @@ export default {
       this.linkResourceId = null
     },
     resetID(data) {
-      data.forEach(item => {
-        item.id = uuid.v1()
-      })
+      if( data ) {
+        data.forEach(item => {
+          item.id = uuid.v1()
+        })
+      }
 
       return data
     }

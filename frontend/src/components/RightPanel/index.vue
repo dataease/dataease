@@ -63,7 +63,6 @@ export default {
     closeSidebar(evt) {
       const parent = evt.target.closest('.rightPanel')
       if (!parent) {
-        debugger
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
       }

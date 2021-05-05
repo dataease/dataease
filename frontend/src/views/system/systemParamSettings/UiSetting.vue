@@ -219,7 +219,6 @@ export default {
   },
   methods: {
     query() {
-      debugger
       get('/system/ui/info').then(res => {
         this.systemParams = res.data
       })

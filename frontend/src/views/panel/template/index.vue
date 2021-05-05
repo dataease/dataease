@@ -106,7 +106,6 @@ export default {
       this.showTemplateEditDialog('edit', templateInfo)
     },
     saveTemplateEdit(templateEditForm) {
-      debugger
       post('/template/save', templateEditForm).then(response => {
         this.$message({
           message: '保存成功',

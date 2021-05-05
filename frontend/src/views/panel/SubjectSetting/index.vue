@@ -10,24 +10,37 @@
       <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item title="仪表盘" name="panel">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <background-selector class="attr-selector" @changeBackgroundStyle="changeBackgroundStyle" />
-            <background-selector class="attr-selector" @changeBackgroundStyle="changeBackgroundStyle" />
-            <background-selector class="attr-selector" @changeBackgroundStyle="changeBackgroundStyle" />
-            <background-selector class="attr-selector" @changeBackgroundStyle="changeBackgroundStyle" />
+            <background-selector class="attr-selector" />
+            <component-gap class="attr-selector" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="视图" name="view">
-          <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-          <div>页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。</div>
+        <el-collapse-item title="组件样式" name="component" @click="testClick">
+          <el-row style="background-color: #f7f8fa; margin: 5px">
+            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+            <legend-selector class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+            <x-axis-selector class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+            <y-axis-selector class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+            <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item title="图形属性" name="graphical">
+          <el-row style="background-color: #f7f8fa; margin: 5px">
+            <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+            <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+            <tooltip-selector class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+          </el-row>
         </el-collapse-item>
         <el-collapse-item title="表格" name="table">
-          <div>简化流程：设计简洁直观的操作流程；</div>
-          <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-          <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
+          <el-row style="background-color: #f7f8fa; margin: 5px">
+            <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+            <tooltip-selector class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+          </el-row>
         </el-collapse-item>
-        <el-collapse-item title="过滤组件" name="4">
-          <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-          <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <el-collapse-item title="过滤组件" name="filter">
+          <el-row style="background-color: #f7f8fa; margin: 5px">
+            <background-selector class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />
+            <component-gap class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />
+          </el-row>
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -35,31 +48,166 @@
 </template>
 
 <script>
-import slider from './Slider'
-import BackgroundSelector from './BackgroundSelector'
+import slider from './PreSubject/Slider'
+import BackgroundSelector from './PanelStyle/BackgroundSelector'
+import ComponentGap from './PanelStyle/ComponentGap'
+
+import ColorSelector from '@/views/chart/components/shape-attr/ColorSelector'
+import SizeSelector from '@/views/chart/components/shape-attr/SizeSelector'
+import LabelSelector from '@/views/chart/components/shape-attr/LabelSelector'
+import TitleSelector from '@/views/chart/components/component-style/TitleSelector'
+import LegendSelector from '@/views/chart/components/component-style/LegendSelector'
+import TooltipSelector from '@/views/chart/components/shape-attr/TooltipSelector'
+import XAxisSelector from '@/views/chart/components/component-style/XAxisSelector'
+import YAxisSelector from '@/views/chart/components/component-style/YAxisSelector'
+import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
+import QuotaFilterEditor from '@/views/chart/components/filter/QuotaFilterEditor'
+import DimensionFilterEditor from '@/views/chart/components/filter/DimensionFilterEditor'
+import TableNormal from '@/views/chart/components/table/TableNormal'
+import { mapState } from 'vuex'
+import { deepCopy } from '@/components/canvas/utils/utils'
+
 export default {
   components: {
     slider,
-    BackgroundSelector
+    BackgroundSelector,
+    ComponentGap,
+    ColorSelector,
+    SizeSelector,
+    LabelSelector,
+    TitleSelector,
+    LegendSelector,
+    TooltipSelector,
+    XAxisSelector,
+    YAxisSelector,
+    BackgroundColorSelector,
+    QuotaFilterEditor,
+    DimensionFilterEditor,
+    TableNormal
   },
   data() {
     return {
       panelInfo: this.$store.state.panel.panelInfo,
-      activeNames: ['1'],
-      backgroundType: 'color'
+      activeNames: ['panel'],
+      chart: null
+    }
+  },
+  computed: mapState([
+    'canvasStyleData'
+  ]),
+
+  watch: {
+    // deep监听panel 如果改变 提交到 store
+    chart: {
+      handler(newVal, oldVla) {
+        debugger
+        const canvasStyleData = deepCopy(this.canvasStyleData)
+        const chart = deepCopy(this.chart)
+        chart.xaxis = JSON.stringify(this.chart.xaxis)
+        chart.yaxis = JSON.stringify(this.chart.yaxis)
+        chart.customAttr = JSON.stringify(this.chart.customAttr)
+        chart.customStyle = JSON.stringify(this.chart.customStyle)
+        chart.customFilter = JSON.stringify(this.chart.customFilter)
+        canvasStyleData.chart = chart
+        this.$store.commit('setCanvasStyle', canvasStyleData)
+      },
+      deep: true
     }
   },
   created() {
-
+    debugger
+    // 初始化赋值
+    const chart = deepCopy(this.canvasStyleData.chart)
+    chart.xaxis = JSON.parse(chart.xaxis)
+    chart.yaxis = JSON.parse(chart.yaxis)
+    chart.customAttr = JSON.parse(chart.customAttr)
+    chart.customStyle = JSON.parse(chart.customStyle)
+    chart.customFilter = JSON.parse(chart.customFilter)
+    this.chart = chart
   },
 
   methods: {
-
+    testClick(val) {
+      debugger
+      console.log(JSON.stringify(this.chart))
+      console.log('message+>')
+    },
     handleChange(val) {
       console.log(val)
     },
-    changeBackgroundStyle() {
-      console.log('changeBackgroundStyle')
+    onChangePanelStyle(parma) {
+      console.log('parma:' + JSON.stringify(parma))
+    },
+
+    dimensionItemChange(item) {
+      this.save()
+    },
+
+    dimensionItemRemove(item) {
+      this.chart.xaxis.splice(item.index, 1)
+      this.save()
+    },
+
+    quotaItemChange(item) {
+      // 更新item
+      // this.view.yaxis.forEach(function(ele) {
+      //   if (ele.id === item.id) {
+      //     ele.summary = item.summary
+      //   }
+      // })
+      this.save()
+    },
+
+    quotaItemRemove(item) {
+      this.chart.yaxis.splice(item.index, 1)
+      this.save()
+    },
+
+    onColorChange(val) {
+      this.chart.customAttr.color = val
+      this.save()
+    },
+
+    onSizeChange(val) {
+      this.chart.customAttr.size = val
+      this.save()
+    },
+    onTextChange(val) {
+      this.chart.customStyle.text = val
+      // this.save()
+    },
+
+    onLegendChange(val) {
+      this.chart.customStyle.legend = val
+      this.save()
+    },
+
+    onLabelChange(val) {
+      this.chart.customAttr.label = val
+      this.save()
+    },
+
+    onTooltipChange(val) {
+      this.chart.customAttr.tooltip = val
+      this.save()
+    },
+
+    onChangeXAxisForm(val) {
+      this.chart.customStyle.xAxis = val
+      this.save()
+    },
+
+    onChangeYAxisForm(val) {
+      this.chart.customStyle.yAxis = val
+      this.save()
+    },
+
+    onChangeBackgroundForm(val) {
+      this.chart.customStyle.background = val
+      this.save()
+    },
+    save() {
+      console.log('save')
     }
   }
 }

@@ -111,7 +111,6 @@ export default {
       })
     },
     handleFileChange(e) {
-      debugger
       const file = e.target.files[0]
       const reader = new FileReader()
       reader.onload = (res) => {

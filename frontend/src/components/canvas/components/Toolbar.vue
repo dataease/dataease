@@ -205,6 +205,7 @@ export default {
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
+      debugger
       post('panel/group/save', requestInfo, () => {})
       this.$message.success('保存成功')
     },

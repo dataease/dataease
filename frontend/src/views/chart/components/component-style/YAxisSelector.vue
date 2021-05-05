@@ -56,7 +56,12 @@ export default {
       handler: function() {
         const chart = JSON.parse(JSON.stringify(this.chart))
         if (chart.customStyle) {
-          const customStyle = JSON.parse(chart.customStyle)
+          let customStyle = null
+          if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
+            customStyle = JSON.parse(JSON.stringify(chart.customStyle))
+          } else {
+            customStyle = JSON.parse(chart.customStyle)
+          }
           if (customStyle.yAxis) {
             this.axisForm = customStyle.yAxis
           }

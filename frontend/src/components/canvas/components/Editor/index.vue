@@ -3,10 +3,7 @@
     id="editor"
     class="editor"
     :class="{ edit: isEdit }"
-    :style="{
-      width: changeStyleWithScale(canvasStyleData.width) + 'px',
-      height: changeStyleWithScale(canvasStyleData.height) + 'px',
-    }"
+    :style="customStyle"
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
@@ -58,8 +55,8 @@
     </Shape>
     <!-- 右击菜单 -->
     <ContextMenu />
-    <!-- 标线 -->
-    <MarkLine />
+    <!-- 标线 (临时去掉标线 吸附等功能)-->
+    <!--    <MarkLine />-->
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
   </div>
@@ -106,6 +103,29 @@ export default {
     }
   },
   computed: {
+    customStyle() {
+      let style = {
+        width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
+        height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px'
+      }
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image') {
+          style = {
+            width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
+            height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px',
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
+          }
+        } else {
+          style = {
+            width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
+            height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px',
+            background: this.canvasStyleData.panel.color
+          }
+        }
+      }
+
+      return style
+    },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
@@ -355,6 +375,7 @@ export default {
     position: relative;
     background: #fff;
     margin: auto;
+    background-size:100% 100% !important;
 
     .lock {
         opacity: .5;

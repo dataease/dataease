@@ -102,7 +102,6 @@ export default {
     saveToTemplate() {
       this.templateSaveShow = true
       html2canvas(this.$refs.imageWrapper).then(canvas => {
-        debugger
         const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
@@ -121,7 +120,6 @@ export default {
     },
     downloadToTemplate() {
       html2canvas(this.$refs.imageWrapper).then(canvas => {
-        debugger
         const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
@@ -140,7 +138,6 @@ export default {
     refreshTemplateInfo() {
       this.templateInfo = ''
       html2canvas(this.$refs.imageWrapper).then(canvas => {
-        debugger
         const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {

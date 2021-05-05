@@ -81,9 +81,11 @@ export default {
       this.handleScaleChange()
     },
     resetID(data) {
-      data.forEach(item => {
-        item.id = uuid.v1()
-      })
+      if( data ) {
+        data.forEach(item => {
+          item.id = uuid.v1()
+        })
+      }
       return data
     },
     format(value, scale) {

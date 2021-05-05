@@ -47,9 +47,9 @@
           <div v-show="show" class="leftPanel">
 
             <div class="leftPanel-items">
-              <view-select v-if=" showIndex===0" />
-              <filter-group v-if="showIndex===1" />
-              <subject-setting v-if="showIndex===2" />
+              <view-select v-show=" showIndex===0" />
+              <filter-group v-show="showIndex===1" />
+              <subject-setting v-show="showIndex===2" />
             </div>
           </div>
         </div>
@@ -195,7 +195,6 @@ export default {
   mounted() {
     this.insertToBody()
     bus.$on('component-on-drag', () => {
-      debugger
       this.show = false
     })
 
@@ -217,8 +216,10 @@ export default {
         this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
       } else if (panelId) {
         get('panel/group/findOne/' + panelId).then(response => {
+          debugger
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-          this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
+          const panelStyle = JSON.parse(response.data.panelStyle)
+          this.$store.commit('setCanvasStyle', panelStyle)
         })
       }
     },
@@ -229,7 +230,6 @@ export default {
       this.$router.replace('/panel/index')
     },
     showPanel(type) {
-      debugger
       this.show = !this.show
       this.showIndex = type
     },
@@ -242,7 +242,6 @@ export default {
       // 点击样式按钮 排除
       const stick = evt.target.closest('.el-icon-magic-stick')
       if (!parent && !self && !stick) {
-        debugger
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
@@ -257,10 +256,11 @@ export default {
     },
 
     resetID(data) {
-      data.forEach(item => {
-        item.id = uuid.v1()
-      })
-
+      if (data) {
+        data.forEach(item => {
+          item.id = uuid.v1()
+        })
+      }
       return data
     },
     handleDrop(e) {
@@ -291,7 +291,6 @@ export default {
         this.currentFilterCom.style.left = e.offsetX
         this.currentFilterCom.id = newComponentId
         if (this.currentWidget.filterDialog) {
-          debugger
           this.show = false
           this.openFilterDiolog()
           return
