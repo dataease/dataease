@@ -18,12 +18,11 @@
     > -->
     <tree-table
       :columns="columns"
-      :buttons="buttons"
-      :header="header"
+
       :search-config="searchConfig"
       @search="search"
     >
-      <template #buttons>
+      <template #toolbar>
         <fu-table-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" />
       </template>
       <el-table
@@ -86,7 +85,7 @@
         </el-form-item>
 
         <el-form-item label="顶级组织" prop="top">
-          <el-radio-group v-model="form.top" style="width: 140px">
+          <el-radio-group v-model="form.top" style="width: 140px" @change="topChange">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
@@ -199,22 +198,28 @@ export default {
       isLazy: true
     }
   },
-  activated() {
+  mounted() {
     this.form = Object.assign({}, this.defaultForm)
     this.search()
   },
   methods: {
+    // create() {
+    //   this.form = Object.assign({}, this.defaultForm)
+    //   this.dialogOrgAddVisible = true
+    //   this.formType = 'add'
+    // },
+    // edit(row) {
+    //   this.dialogOrgAddVisible = true
+    //   this.formType = 'modify'
+    //   this.oldPid = row.pid
+    //   this.form = Object.assign({}, row)
+    //   this.treeByRow(row)
+    // },
     create() {
-      this.form = Object.assign({}, this.defaultForm)
-      this.dialogOrgAddVisible = true
-      this.formType = 'add'
+      this.$router.push({ name: '组织表单' })
     },
     edit(row) {
-      this.dialogOrgAddVisible = true
-      this.formType = 'modify'
-      this.oldPid = row.pid
-      this.form = Object.assign({}, row)
-      this.treeByRow(row)
+      this.$router.push({ name: '组织表单', params: row })
     },
 
     treeByRow(row) {
@@ -507,6 +512,10 @@ export default {
         }
       })
       return roots
+    },
+    topChange(value) {
+    //   console.log(value)
+      !value && (this.depts = null)
     }
 
   }

@@ -454,6 +454,126 @@ public class DatasetTableFieldExample {
             return (Criteria) this;
         }
 
+        public Criteria andSizeIsNull() {
+            addCriterion("`size` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeIsNotNull() {
+            addCriterion("`size` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeEqualTo(Integer value) {
+            addCriterion("`size` =", value, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeNotEqualTo(Integer value) {
+            addCriterion("`size` <>", value, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeGreaterThan(Integer value) {
+            addCriterion("`size` >", value, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("`size` >=", value, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeLessThan(Integer value) {
+            addCriterion("`size` <", value, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeLessThanOrEqualTo(Integer value) {
+            addCriterion("`size` <=", value, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeIn(List<Integer> values) {
+            addCriterion("`size` in", values, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeNotIn(List<Integer> values) {
+            addCriterion("`size` not in", values, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeBetween(Integer value1, Integer value2) {
+            addCriterion("`size` between", value1, value2, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andSizeNotBetween(Integer value1, Integer value2) {
+            addCriterion("`size` not between", value1, value2, "size");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeIsNull() {
+            addCriterion("de_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeIsNotNull() {
+            addCriterion("de_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeEqualTo(Integer value) {
+            addCriterion("de_type =", value, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeNotEqualTo(Integer value) {
+            addCriterion("de_type <>", value, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeGreaterThan(Integer value) {
+            addCriterion("de_type >", value, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("de_type >=", value, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeLessThan(Integer value) {
+            addCriterion("de_type <", value, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("de_type <=", value, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeIn(List<Integer> values) {
+            addCriterion("de_type in", values, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeNotIn(List<Integer> values) {
+            addCriterion("de_type not in", values, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeBetween(Integer value1, Integer value2) {
+            addCriterion("de_type between", value1, value2, "deType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("de_type not between", value1, value2, "deType");
+            return (Criteria) this;
+        }
+
         public Criteria andCheckedIsNull() {
             addCriterion("`checked` is null");
             return (Criteria) this;
@@ -631,66 +751,6 @@ public class DatasetTableFieldExample {
 
         public Criteria andLastSyncTimeNotBetween(Long value1, Long value2) {
             addCriterion("last_sync_time not between", value1, value2, "lastSyncTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeIsNull() {
-            addCriterion("de_type is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeIsNotNull() {
-            addCriterion("de_type is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeEqualTo(Integer value) {
-            addCriterion("de_type =", value, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeNotEqualTo(Integer value) {
-            addCriterion("de_type <>", value, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeGreaterThan(Integer value) {
-            addCriterion("de_type >", value, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeGreaterThanOrEqualTo(Integer value) {
-            addCriterion("de_type >=", value, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeLessThan(Integer value) {
-            addCriterion("de_type <", value, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeLessThanOrEqualTo(Integer value) {
-            addCriterion("de_type <=", value, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeIn(List<Integer> values) {
-            addCriterion("de_type in", values, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeNotIn(List<Integer> values) {
-            addCriterion("de_type not in", values, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeBetween(Integer value1, Integer value2) {
-            addCriterion("de_type between", value1, value2, "deType");
-            return (Criteria) this;
-        }
-
-        public Criteria andDeTypeNotBetween(Integer value1, Integer value2) {
-            addCriterion("de_type not between", value1, value2, "deType");
             return (Criteria) this;
         }
     }

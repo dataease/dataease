@@ -2,9 +2,9 @@
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
       <el-main class="ms-main-container">
-        <keep-alive>
-          <router-view :key="key" />
-        </keep-alive>
+        <!-- <keep-alive> -->
+        <router-view :key="key" />
+        <!-- </keep-alive> -->
       </el-main>
     </transition>
   </section>

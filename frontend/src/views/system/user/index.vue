@@ -3,18 +3,16 @@
     <complex-table
       :data="data"
       :columns="columns"
-      :buttons="buttons"
-      :header="header"
+
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"
       @search="search"
     >
-      <template #buttons>
+      <template #toolbar>
         <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" />
       </template>
 
-      <!-- <el-table-column type="selection" fix /> -->
       <el-table-column prop="username" label="ID" width="80" />
       <el-table-column prop="nickName" :label="$t('commons.name')" width="140" />
       <el-table-column prop="gender" label="性别" width="50" />
@@ -109,7 +107,6 @@
       </div>
     </el-dialog>
 
-    <!--Changing user password in system settings-->
     <el-dialog
       :close-on-click-modal="false"
       :title="$t('member.edit_password')"
@@ -145,9 +142,7 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-// import conditionTable from '@/components/business/condition-table'
-// import CustomCondition from './CustomCondtion'
-// import { GridButton } from '@/components/GridButton'
+
 import { checkPermission } from '@/utils/permission'
 import { formatCondition } from '@/utils/index'
 import { PHONE_REGEX } from '@/utils/validate'
@@ -285,7 +280,7 @@ export default {
       }
     }
   },
-  activated() {
+  mounted() {
     // this.form = Object.assign({}, this.defaultForm);
     this.allRoles()
     this.search()
@@ -306,23 +301,28 @@ export default {
         this.paginationConfig.total = response.data.itemCount
       })
     },
-
     create() {
-      this.depts = null
-      this.formType = 'add'
-      this.form = Object.assign({}, this.defaultForm)
-      this.dialogVisible = true
+      this.$router.push({ name: '用户表单' })
     },
+    // create() {
+    //   this.depts = null
+    //   this.formType = 'add'
+    //   this.form = Object.assign({}, this.defaultForm)
+    //   this.dialogVisible = true
+    // },
     edit(row) {
-      this.depts = null
-      this.formType = 'modify'
-      this.dialogVisible = true
-      this.form = Object.assign({}, row)
-      if (this.form.deptId === 0) {
-        this.form.deptId = null
-      }
-      this.initDeptTree()
+      this.$router.push({ name: '用户表单', params: row })
     },
+    // edit(row) {
+    //   this.depts = null
+    //   this.formType = 'modify'
+    //   this.dialogVisible = true
+    //   this.form = Object.assign({}, row)
+    //   if (this.form.deptId === 0) {
+    //     this.form.deptId = null
+    //   }
+    //   this.initDeptTree()
+    // },
     editPassword(row) {
       this.editPasswordVisible = true
       const tempForm = Object.assign({}, row)

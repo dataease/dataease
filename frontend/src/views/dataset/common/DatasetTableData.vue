@@ -58,7 +58,7 @@ export default {
       this.resetData()
       if (this.table.id) {
         this.table.row = 10
-        post('/dataset/table/getPreviewData', this.table).then(response => {
+        post('/dataset/table/getPreviewData/1/10', this.table).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
           const datas = this.data

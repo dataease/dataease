@@ -63,9 +63,9 @@ public class DataSetTableController {
         return dataSetTableService.getData(dataSetTableRequest);
     }
 
-    @PostMapping("getPreviewData")
-    public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
-        return dataSetTableService.getPreviewData(dataSetTableRequest);
+    @PostMapping("getPreviewData/{page}/{pageSize}")
+    public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
+        return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize);
     }
 
     @PostMapping("sqlPreview")

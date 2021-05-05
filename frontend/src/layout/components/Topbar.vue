@@ -187,11 +187,19 @@ export default {
     },
     // 设置侧边栏的显示和隐藏
     setSidebarHide(route) {
-      if (!route.children || route.children.length === 1) {
+    //   if (!route.children || route.children.length === 1) {
+      if (!route.children || this.showChildLength(route) === 1) {
         this.$store.dispatch('app/toggleSideBarHide', true)
       } else {
         this.$store.dispatch('app/toggleSideBarHide', false)
       }
+    },
+    // 获取非隐藏子路由的个数
+    showChildLength(route) {
+      if (!route || !route.children) {
+        return 0
+      }
+      return route.children.filter(kid => !kid.hidden).length
     },
     async logout() {
       await this.$store.dispatch('user/logout')

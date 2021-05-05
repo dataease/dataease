@@ -791,7 +791,14 @@ export default {
     type: '类型',
     create_by: '创建者',
     create_time: '创建时间',
-    preview_100_data: '预览前100行数据'
+    preview_100_data: '预览前100行数据',
+    preview_show: '显示',
+    preview_item: '条数据',
+    preview_total: '共',
+    pls_input_less_9: '请输入9位以内的正整数',
+    field_edit: '编辑字段',
+    table_already_add_to: '该表已添加至',
+    uploading: '上传中...'
   },
   datasource: {
     datasource: '数据源',

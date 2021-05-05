@@ -7,7 +7,7 @@
         trigger="click"
       >
         <el-col>
-          <el-form v-if="chart.type && chart.type.includes('bar')" ref="sizeFormBar" :model="sizeForm" label-width="80px" size="mini">
+          <el-form v-show="chart.type && chart.type.includes('bar')" ref="sizeFormBar" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.adapt')" class="form-item">
               <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
             </el-form-item>
@@ -19,7 +19,7 @@
             </el-form-item>
           </el-form>
 
-          <el-form v-if="chart.type && chart.type.includes('line')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
+          <el-form v-show="chart.type && chart.type.includes('line')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
               <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />
             </el-form-item>
@@ -50,7 +50,7 @@
             </el-form-item>
           </el-form>
 
-          <el-form v-if="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+          <el-form v-show="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
               <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
@@ -58,7 +58,7 @@
               <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
 
-            <span v-if="chart.type && chart.type.includes('pie-rose')">
+            <span v-show="chart.type && chart.type.includes('pie-rose')">
               <el-form-item :label="$t('chart.rose_type')" class="form-item">
                 <el-radio-group v-model="sizeForm.pieRoseType" size="mini" @change="changeBarSizeCase">
                   <el-radio-button label="radius">{{ $t('chart.radius_mode') }}</el-radio-button>
@@ -71,13 +71,13 @@
             </span>
           </el-form>
 
-          <el-form v-if="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+          <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">
               <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
             </el-form-item>
           </el-form>
 
-          <el-form v-if="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+          <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.shape')" class="form-item">
               <el-radio-group v-model="sizeForm.radarShape" size="mini" @change="changeBarSizeCase">
                 <el-radio-button label="polygon">{{ $t('chart.polygon') }}</el-radio-button>
@@ -86,7 +86,7 @@
             </el-form-item>
           </el-form>
 
-          <el-form v-if="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+          <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
             <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
               <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />

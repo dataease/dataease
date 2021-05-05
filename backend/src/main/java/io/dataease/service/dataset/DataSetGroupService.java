@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -156,6 +157,23 @@ public class DataSetGroupService {
         List<DatasetGroup> list = datasetGroupMapper.selectByExample(datasetGroupExample);
         if (list.size() > 0) {
             throw new RuntimeException("Name can't repeat in same group.");
+        }
+    }
+
+    public List<DatasetGroup> getParents(String id) {
+        List<DatasetGroup> list = new ArrayList<>();
+        DatasetGroup datasetGroup = datasetGroupMapper.selectByPrimaryKey(id);
+        list.add(datasetGroup);
+        getParent(list, datasetGroup);
+        Collections.reverse(list);
+        return list;
+    }
+
+    public void getParent(List<DatasetGroup> list, DatasetGroup datasetGroup) {
+        if (StringUtils.isNotEmpty(datasetGroup.getPid())) {
+            DatasetGroup d = datasetGroupMapper.selectByPrimaryKey(datasetGroup.getPid());
+            list.add(d);
+            getParent(list, d);
         }
     }
 }

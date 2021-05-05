@@ -3,14 +3,14 @@
     <complex-table
       :data="data"
       :columns="columns"
-      :buttons="buttons"
-      :header="header"
+
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"
       @search="search"
     >
-      <template #buttons>
+
+      <template #toolbar>
         <fu-table-button v-permission="['datasource:add']" icon="el-icon-circle-plus-outline" :label="$t('datasource.create')" @click="create" />
       </template>
 
@@ -125,7 +125,7 @@ export default {
           label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit,
           show: checkPermission(['datasource:edit'])
         }, {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete,
           show: checkPermission(['datasource:del'])
         }
       ],
@@ -154,23 +154,29 @@ export default {
       }
     }
   },
-  activated() {
+  mounted() {
     this.search()
   },
   methods: {
     select(selection) {
       console.log(selection)
     },
+    // create() {
+    //   this.formType = 'add'
+    //   this.dialogVisible = true
+    // },
     create() {
-      this.formType = 'add'
-      this.dialogVisible = true
+      this.$router.push({ name: '数据源表单' })
     },
 
+    // edit(row) {
+    //   this.formType = 'modify'
+    //   this.dialogVisible = true
+    //   this.form = Object.assign({}, row)
+    //   this.form.configuration = JSON.parse(this.form.configuration)
+    // },
     edit(row) {
-      this.formType = 'modify'
-      this.dialogVisible = true
-      this.form = Object.assign({}, row)
-      this.form.configuration = JSON.parse(this.form.configuration)
+      this.$router.push({ name: '数据源表单', params: row })
     },
 
     _handleDelete(datasource) {
@@ -199,7 +205,7 @@ export default {
             this.$success(this.$t('commons.save_success'))
             this.search()
             this.dialogVisible = false
-          });
+          })
         } else {
           return false
         }

@@ -164,7 +164,7 @@ export default {
       // console.log(s_table)
       let s = ''
       for (const i in this.table_header_class) {
-        s += i + ':' + this.table_header_class[i] + ';'
+        s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
       }
       s_table.setAttribute('style', s)
     },
@@ -176,23 +176,28 @@ export default {
       }
     },
     summaryMethod({ columns, data }) {
+      const that = this
       const means = [] // 合计
       columns.forEach((column, columnIndex) => {
         if (columnIndex === 0) {
           means.push('合计')
         } else {
-          const values = data.map(item => Number(item[column.property]))
-          // 合计
-          if (!values.every(value => isNaN(value))) {
-            means[columnIndex] = values.reduce((prev, curr) => {
-              const value = Number(curr)
-              if (!isNaN(value)) {
-                return prev + curr
-              } else {
-                return prev
-              }
-            }, 0)
-            means[columnIndex] = (means[columnIndex] + '').includes('.') ? means[columnIndex].toFixed(2) : means[columnIndex]
+          if (columnIndex >= that.chart.data.fields.length - that.chart.data.series.length) {
+            const values = data.map(item => Number(item[column.property]))
+            // 合计
+            if (!values.every(value => isNaN(value))) {
+              means[columnIndex] = values.reduce((prev, curr) => {
+                const value = Number(curr)
+                if (!isNaN(value)) {
+                  return prev + curr
+                } else {
+                  return prev
+                }
+              }, 0)
+              means[columnIndex] = (means[columnIndex] + '').includes('.') ? means[columnIndex].toFixed(2) : means[columnIndex]
+            } else {
+              means[columnIndex] = ''
+            }
           } else {
             means[columnIndex] = ''
           }

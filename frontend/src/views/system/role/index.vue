@@ -7,19 +7,18 @@
           highlight-current-row
           :data="tableData"
           :columns="columns"
-          :buttons="buttons"
-          :header="header"
+
           :search-config="searchConfig"
           :pagination-config="paginationConfig"
           @search="search"
           @row-click="rowClick"
         >
-          <template #buttons>
+          <template #toolbar>
             <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" />
           </template>
 
           <el-table-column prop="name" label="名称" />
-          <el-table-column prop="code" label="代码" />
+          <!-- <el-table-column prop="code" label="代码" /> -->
           <el-table-column :show-overflow-tooltip="true" prop="createTime" label="创建日期">
             <template v-slot:default="scope">
               <span>{{ scope.row.createTime | timestampFormatDate }}</span>
@@ -62,9 +61,9 @@
           <el-input v-model="form.name" style="width: 380px;" />
         </el-form-item>
 
-        <el-form-item label="角色代码" prop="code">
+        <!-- <el-form-item label="角色代码" prop="code">
           <el-input v-model="form.code" style="width: 380px;" />
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item label="描述信息" prop="description">
           <el-input v-model="form.description" style="width: 380px;" rows="5" type="textarea" />
@@ -107,7 +106,8 @@ export default {
       rule: {
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' }
-        ]
+        ],
+        code: [{ required: true, message: '请输入代码', trigger: 'blur' }]
       },
       currentRow: null,
       permission: {
@@ -145,17 +145,20 @@ export default {
   watch: {
     currentRow: 'currentRowChange'
   },
-  activated() {
+  mounted() {
     this.search()
   },
   methods: {
     handleClick(tab, event) {
       console.log(tab, event)
     },
+    // create() {
+    //   this.form = {}
+    //   this.formType = 'add'
+    //   this.dialogVisible = true
+    // },
     create() {
-      this.form = {}
-      this.formType = 'add'
-      this.dialogVisible = true
+      this.$router.push({ name: '角色表单' })
     },
     search(condition) {
       const temp = formatCondition(condition)
@@ -167,10 +170,13 @@ export default {
       })
     },
 
+    // edit(row) {
+    //   this.formType = 'modify'
+    //   this.dialogVisible = true
+    //   this.form = Object.assign({}, row)
+    // },
     edit(row) {
-      this.formType = 'modify'
-      this.dialogVisible = true
-      this.form = Object.assign({}, row)
+      this.$router.push({ name: '角色表单', params: row })
     },
 
     saveRole(roleForm) {

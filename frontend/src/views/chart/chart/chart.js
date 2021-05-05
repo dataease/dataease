@@ -88,6 +88,9 @@ export const BASE_BAR = {
   title: {
     text: ''
   },
+  // grid: {
+  //   containLabel: true
+  // },
   tooltip: {},
   legend: {
     show: true,
@@ -114,6 +117,9 @@ export const HORIZONTAL_BAR = {
   title: {
     text: ''
   },
+  // grid: {
+  //   containLabel: true
+  // },
   tooltip: {},
   legend: {
     show: true,
@@ -141,6 +147,9 @@ export const BASE_LINE = {
   title: {
     text: ''
   },
+  // grid: {
+  //   containLabel: true
+  // },
   tooltip: {},
   legend: {
     show: true,
@@ -169,6 +178,9 @@ export const BASE_PIE = {
   title: {
     text: ''
   },
+  // grid: {
+  //   containLabel: true
+  // },
   tooltip: {},
   legend: {
     show: true,
@@ -199,6 +211,9 @@ export const BASE_FUNNEL = {
   title: {
     text: ''
   },
+  // grid: {
+  //   containLabel: true
+  // },
   tooltip: {
     trigger: 'item'
   },
@@ -252,6 +267,9 @@ export const BASE_RADAR = {
   title: {
     text: ''
   },
+  // grid: {
+  //   containLabel: true
+  // },
   tooltip: {},
   legend: {
     show: true,

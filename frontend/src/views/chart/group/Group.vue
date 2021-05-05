@@ -147,6 +147,7 @@
         node-key="id"
         :expand-on-click-node="true"
         class="tree-list"
+        highlight-current
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
@@ -275,7 +276,7 @@ export default {
   },
   computed: {
     sceneData: function() {
-      this.chartTree()
+      this.reviewChartList()
       return this.$store.state.chart.chartSceneData
     }
   },
@@ -483,6 +484,7 @@ export default {
         this.sceneMode = true
         this.currGroup = data
         this.$store.dispatch('chart/setSceneId', this.currGroup.id)
+        this.chartTree()
       }
       if (node.expanded) {
         this.expandedArray.push(data.id)
@@ -519,6 +521,17 @@ export default {
       // this.$store.dispatch('chart/setViewId', null)
       // this.$store.dispatch('chart/setViewId', data.id)
       this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
+    },
+
+    reviewChartList() {
+      if (this.$store.state.chart.chartSceneData) {
+        const that = this
+        this.chartData.forEach(function(ele) {
+          if (ele.id === that.$store.state.chart.chartSceneData.id) {
+            ele.type = that.$store.state.chart.chartSceneData.type
+          }
+        })
+      }
     },
 
     selectTable() {

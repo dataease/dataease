@@ -15,7 +15,6 @@
 
     <resultMap id="roleMap" type="io.dataease.auth.api.dto.CurrentRoleDto" >
         <id column="role_id" property="id"/>
-        <result column="code" jdbcType="VARCHAR" property="code"/>
         <result column="name" jdbcType="VARCHAR" property="name" />
     </resultMap>
 
@@ -29,7 +28,7 @@
     </select>
 
     <select id="roleCodes" resultType="String">
-        select r.code from sys_role r
+        select r.id from sys_role r
             left join sys_users_roles sur on sur.role_id = r.role_id
             where sur.user_id = #{userId}
     </select>
@@ -43,7 +42,7 @@
     </select>
 
     <select id="roles" resultMap="roleMap">
-        select r.role_id, r.code, r.name
+        select r.role_id, r.name
         from sys_role r
         left join sys_users_roles sur on sur.role_id = r.role_id
         where sur.user_id = #{userId}

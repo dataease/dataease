@@ -19,21 +19,26 @@
         <el-row>
           <el-col style="width: 500px;">
             <el-form :inline="true" size="mini" class="row-style">
-              <el-form-item>
+              <el-form-item class="form-item">
                 <el-input v-model="name" :placeholder="$t('commons.name')" />
               </el-form-item>
-              <el-form-item>
+              <el-form-item class="form-item">
                 <el-upload
                   :action="baseUrl+'dataset/table/excel/upload'"
                   :multiple="false"
                   :show-file-list="false"
                   :file-list="fileList"
                   accept=".xls,.xlsx,.csv"
+                  :before-upload="beforeUpload"
                   :on-success="uploadSuccess"
+                  :on-error="uploadFail"
                   name="file"
                   :headers="headers"
                 >
-                  <el-button size="mini" type="primary">{{ $t('dataset.upload_file') }}</el-button>
+                  <el-button size="mini" type="primary" :disabled="uploading">
+                    <span v-if="!uploading" style="font-size: 12px;">{{ $t('dataset.upload_file') }}</span>
+                    <span v-if="uploading" style="font-size: 12px;"><i class="el-icon-loading" /> {{ $t('dataset.uploading') }}</span>
+                  </el-button>
                 </el-upload>
               </el-form-item>
             </el-form>
@@ -41,7 +46,7 @@
         </el-row>
       </el-row>
 
-      <el-row>
+      <el-row style="margin-top: 10px;">
         <el-card class="box-card dataPreview" shadow="never">
           <div slot="header" class="clearfix">
             <span>{{ $t('dataset.data_preview') }}</span>
@@ -96,31 +101,18 @@ export default {
       fileList: [],
       headers: { Authorization: token },
       baseUrl: process.env.VUE_APP_BASE_API,
-      path: ''
+      path: '',
+      uploading: false
     }
   },
   watch: {
-    // dataSource(val) {
-    //   if (val) {
-    //     post('/datasource/getTables', { id: val }).then(response => {
-    //       this.tables = response.data
-    //       this.tableData = JSON.parse(JSON.stringify(this.tables))
-    //     })
-    //   }
-    // },
-    // searchTable(val) {
-    //   if (val && val !== '') {
-    //     this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.includes(val) })))
-    //   } else {
-    //     this.tableData = JSON.parse(JSON.stringify(this.tables))
-    //   }
-    // }
   },
   mounted() {
     // this.initDataSource()
-  },
-  activated() {
-    // this.initDataSource()
+    window.onresize = () => {
+      this.calHeight()
+    }
+    this.calHeight()
   },
   methods: {
     // initDataSource() {
@@ -128,6 +120,19 @@ export default {
     //     this.options = response.data
     //   })
     // },
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
+      }, 10)
+    },
+    beforeUpload(file) {
+      this.uploading = true
+    },
+    uploadFail(response, file, fileList) {
+      this.uploading = false
+    },
     uploadSuccess(response, file, fileList) {
       // console.log(response)
       // console.log(file)
@@ -142,6 +147,7 @@ export default {
         this.name = file.name.substring(0, file.name.lastIndexOf('.'))
       }
       this.fileList = fileList
+      this.uploading = false
     },
 
     save() {
@@ -186,7 +192,7 @@ export default {
   }
 
   .form-item {
-    margin-bottom: 6px;
+    margin-bottom: 6px !important;
   }
 
   .el-checkbox {

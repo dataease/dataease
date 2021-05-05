@@ -3,7 +3,6 @@
 <mapper namespace="io.dataease.base.mapper.SysRoleMapper">
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.SysRole">
     <id column="role_id" jdbcType="BIGINT" property="roleId" />
-    <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
@@ -70,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    role_id, code, `name`, description, create_by, update_by, create_time, update_time
+    role_id, `name`, description, create_by, update_by, create_time, update_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.SysRoleExample" resultMap="BaseResultMap">
     select
@@ -103,21 +102,18 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.SysRole">
-    insert into sys_role (role_id, code, `name`, 
-      description, create_by, update_by, 
-      create_time, update_time)
-    values (#{roleId,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{description,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT})
+    insert into sys_role (role_id, `name`, description, 
+      create_by, update_by, create_time, 
+      update_time)
+    values (#{roleId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
+      #{updateTime,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.SysRole">
     insert into sys_role
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="roleId != null">
         role_id,
-      </if>
-      <if test="code != null">
-        code,
       </if>
       <if test="name != null">
         `name`,
@@ -141,9 +137,6 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="roleId != null">
         #{roleId,jdbcType=BIGINT},
-      </if>
-      <if test="code != null">
-        #{code,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
@@ -177,9 +170,6 @@
       <if test="record.roleId != null">
         role_id = #{record.roleId,jdbcType=BIGINT},
       </if>
-      <if test="record.code != null">
-        code = #{record.code,jdbcType=VARCHAR},
-      </if>
       <if test="record.name != null">
         `name` = #{record.name,jdbcType=VARCHAR},
       </if>
@@ -206,7 +196,6 @@
   <update id="updateByExample" parameterType="map">
     update sys_role
     set role_id = #{record.roleId,jdbcType=BIGINT},
-      code = #{record.code,jdbcType=VARCHAR},
       `name` = #{record.name,jdbcType=VARCHAR},
       description = #{record.description,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
@@ -220,9 +209,6 @@
   <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.SysRole">
     update sys_role
     <set>
-      <if test="code != null">
-        code = #{code,jdbcType=VARCHAR},
-      </if>
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
       </if>
@@ -246,8 +232,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.SysRole">
     update sys_role
-    set code = #{code,jdbcType=VARCHAR},
-      `name` = #{name,jdbcType=VARCHAR},
+    set `name` = #{name,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       update_by = #{updateBy,jdbcType=VARCHAR},

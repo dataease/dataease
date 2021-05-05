@@ -6,6 +6,7 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.datasource.dto.DBTableDTO;
 import io.dataease.datasource.service.DatasourceService;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,7 @@ public class DatasourceController {
         return PageUtils.setPageInfo(page, datasourceService.gridQuery(request));
     }
 
-    @GetMapping("/delete/{datasourceID}")
+    @PostMapping("/delete/{datasourceID}")
     public void deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) {
         datasourceService.deleteDatasource(datasourceID);
     }
@@ -52,7 +53,7 @@ public class DatasourceController {
     }
 
     @PostMapping("/getTables")
-    public List<String> getTables(@RequestBody Datasource datasource) throws Exception {
+    public List<DBTableDTO> getTables(@RequestBody Datasource datasource) throws Exception {
         return datasourceService.getTables(datasource);
     }
 }
