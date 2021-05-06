@@ -54,7 +54,7 @@ export default {
       fields: [],
       height: 'auto',
       title_class: {
-        margin: '8px 0',
+        margin: '0 0',
         width: '100%',
         fontSize: '18px',
         color: '#303133',
