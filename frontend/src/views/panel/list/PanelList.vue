@@ -151,6 +151,19 @@ import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
 import { addGroup, delGroup, groupTree, defaultTree, get } from '@/api/panel/panel'
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_SIZE,
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_LEGEND_STYLE,
+  DEFAULT_LABEL,
+  DEFAULT_TOOLTIP,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_BACKGROUND_COLOR
+} from '@/views/chart/chart/chart'
+
+import { DEFAULT_PANEL_STYLE } from '@/views/panel/panel'
 
 export default {
   name: 'PanelList',
@@ -168,8 +181,34 @@ export default {
           level: null,
           nodeType: null,
           panelType: null,
-          panelStyle: null,
-          panelDate: null
+          panelStyle: JSON.stringify({
+            width: 1680,
+            height: 1050,
+            scale: 100,
+            openCommonStyle: true,
+            panel: DEFAULT_PANEL_STYLE,
+            chart: {
+              xaxis: '[]',
+              yaxis: '[]',
+              show: true,
+              type: 'panel',
+              title: '',
+              customAttr: JSON.stringify({
+                color: DEFAULT_COLOR_CASE,
+                size: DEFAULT_SIZE,
+                label: DEFAULT_LABEL,
+                tooltip: DEFAULT_TOOLTIP
+              }),
+              customStyle: JSON.stringify({
+                text: DEFAULT_TITLE_STYLE,
+                legend: DEFAULT_LEGEND_STYLE,
+                xAxis: DEFAULT_XAXIS_STYLE,
+                yAxis: DEFAULT_YAXIS_STYLE,
+                background: DEFAULT_BACKGROUND_COLOR
+              }),
+              customFilter: '[]'
+            }}),
+          panelData: '[]'
         }
       },
       editPanel: {
@@ -183,8 +222,34 @@ export default {
           level: null,
           nodeType: null,
           panelType: null,
-          panelStyle: null,
-          panelDate: null
+          panelStyle: JSON.stringify({
+            width: 1680,
+            height: 1050,
+            scale: 100,
+            openCommonStyle: true,
+            panel: DEFAULT_PANEL_STYLE,
+            chart: {
+              xaxis: '[]',
+              yaxis: '[]',
+              show: true,
+              type: 'panel',
+              title: '',
+              customAttr: JSON.stringify({
+                color: DEFAULT_COLOR_CASE,
+                size: DEFAULT_SIZE,
+                label: DEFAULT_LABEL,
+                tooltip: DEFAULT_TOOLTIP
+              }),
+              customStyle: JSON.stringify({
+                text: DEFAULT_TITLE_STYLE,
+                legend: DEFAULT_LEGEND_STYLE,
+                xAxis: DEFAULT_XAXIS_STYLE,
+                yAxis: DEFAULT_YAXIS_STYLE,
+                background: DEFAULT_BACKGROUND_COLOR
+              }),
+              customFilter: '[]'
+            }}),
+          panelData: '[]'
         }
       },
       linkTitle: '链接分享',
@@ -247,6 +312,7 @@ export default {
       this.tree(this.groupForm)
     },
     showEditPanel(param) {
+      debugger
       this.editPanel = JSON.parse(JSON.stringify(this.editPanelModel))
       this.editPanel.optType = param.optType
       this.editPanel.panelInfo.nodeType = param.type
@@ -399,8 +465,10 @@ export default {
       if (data.nodeType === 'panel') {
         // 加载视图数据
         get('panel/group/findOne/' + data.id).then(response => {
+          debugger
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-          this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
+          const temp = JSON.parse(response.data.panelStyle)
+          this.$store.commit('setCanvasStyle', temp)
           this.$store.dispatch('panel/setPanelInfo', data)
           this.currGroup = data
         })
@@ -447,7 +515,7 @@ export default {
       this.linkResourceId = null
     },
     resetID(data) {
-      if( data ) {
+      if (data) {
         data.forEach(item => {
           item.id = uuid.v1()
         })

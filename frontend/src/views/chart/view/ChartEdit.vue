@@ -75,7 +75,7 @@
         <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">
           <el-row>
             <span>{{ $t('chart.title') }}</span>
-            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>
+            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="saveWithSnapshot()">{{ $t('chart.confirm') }}</el-button>
           </el-row>
           <el-form>
             <el-form-item class="form-item">
@@ -125,21 +125,30 @@
           </el-row>
         </div>
         <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
-          <el-tabs type="card" :stretch="true" class="tab-header">
-            <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
-              <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-              <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-              <label-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-              <tooltip-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
-            </el-tab-pane>
-            <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
-              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
-              <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
-              <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
-              <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
-            </el-tab-pane>
-          </el-tabs>
+          <el-row class="padding-lr">
+            <span>样式优先级</span>
+            <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
+              <el-radio  style="margin-left: 20px" label="view"><span>视图</span></el-radio>
+              <el-radio  label="panel"><span>仪表盘</span></el-radio>
+            </el-radio-group>
+          </el-row>
+          <el-row>
+            <el-tabs type="card" :stretch="true" class="tab-header">
+              <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
+                <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+                <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+                <label-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+                <tooltip-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+              </el-tab-pane>
+              <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
+                <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+                <legend-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+                <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+                <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+                <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+              </el-tab-pane>
+            </el-tabs>
+          </el-row>
         </div>
         <div v-if="false" style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
           <span>{{ $t('chart.result_filter') }}</span>
@@ -195,8 +204,10 @@
             </el-row>
           </el-row>
 
-          <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
-          <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+          <div ref="imageWrapper" style="height: 100%">
+            <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+            <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+          </div>
         </el-row>
       </el-col>
     </el-row>
@@ -253,6 +264,7 @@ import FilterItem from '../components/drag-item/FilterItem'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
+import html2canvas from 'html2canvas'
 
 // shape attr,component style
 import {
@@ -294,6 +306,7 @@ export default {
       dimension: [],
       quota: [],
       view: {
+        stylePriority: 'panel',
         xaxis: [],
         yaxis: [],
         show: true,
@@ -373,7 +386,10 @@ export default {
         this.quota = response.data.quota
       })
     },
-    save() {
+    saveWithSnapshot(){
+      this.save('true')
+    },
+    save(withSnapshot) {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -415,12 +431,29 @@ export default {
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
       view.customFilter = JSON.stringify(view.customFilter)
-      post('/chart/view/save', view).then(response => {
-        // this.get(response.data.id);
-        this.getData(response.data.id)
-        this.$store.dispatch('chart/setChartSceneData', null)
-        this.$store.dispatch('chart/setChartSceneData', response.data)
-      })
+      debugger
+      if (withSnapshot==='true') {
+        html2canvas(this.$refs.imageWrapper).then(canvas => {
+          const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+          if (snapshot !== '') {
+            view.snapshot = snapshot
+            debugger
+            post('/chart/view/save', view).then(response => {
+              // this.get(response.data.id);
+              this.getData(response.data.id)
+              this.$store.dispatch('chart/setChartSceneData', null)
+              this.$store.dispatch('chart/setChartSceneData', response.data)
+            })
+          }
+        })
+      } else {
+        post('/chart/view/save', view).then(response => {
+          // this.get(response.data.id);
+          this.getData(response.data.id)
+          this.$store.dispatch('chart/setChartSceneData', null)
+          this.$store.dispatch('chart/setChartSceneData', response.data)
+        })
+      }
     },
     closeEdit() {
       // 从仪表盘入口关闭

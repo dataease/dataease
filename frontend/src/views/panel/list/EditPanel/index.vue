@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { post } from '@/api/panel/panel'
+import { post, panelSave } from '@/api/panel/panel'
 import TemplateAllList from './TemplateAllList'
 
 export default {
@@ -101,7 +101,8 @@ export default {
         this.$warning('名称不能为空')
         return false
       }
-      post('/panel/group/save', this.editPanel.panelInfo).then(response => {
+      panelSave(this.editPanel.panelInfo).then(response => {
+        debugger
         this.$message({
           message: '保存成功',
           type: 'success',

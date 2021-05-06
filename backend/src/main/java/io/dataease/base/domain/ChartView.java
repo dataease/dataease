@@ -23,5 +23,7 @@ public class ChartView implements Serializable {
 
     private Long updateTime;
 
+    private String stylePriority;
+
     private static final long serialVersionUID = 1L;
 }

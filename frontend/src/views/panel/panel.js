@@ -18,8 +18,8 @@ export const DEFAULT_PANEL_STYLE = {
 }
 
 export const DEFAULT_COMMON_CANVAS_STYLE = {
-  width: 1200,
-  height: 740,
+  width: 1680,
+  height: 1050,
   scale: 100,
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,

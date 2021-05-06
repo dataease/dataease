@@ -18,10 +18,19 @@ export function groupTree(data) {
   })
 }
 
-export function loadTable(data) {
+export function viewData(id, data) {
   return request({
-    url: '/panel/table/list',
+    url: '/chart/view/getData/' + id,
     method: 'post',
+    hideMsg: true,
+    data
+  })
+}
+export function panelSave(data) {
+  return request({
+    url: 'panel/group/save',
+    method: 'post',
+    loading: true,
     data
   })
 }
@@ -104,6 +113,7 @@ export function post(url, data) {
   return request({
     url: url,
     method: 'post',
+    loading: true,
     data
   })
 }
@@ -115,4 +125,4 @@ export function get(url) {
   })
 }
 
-export default { post, get, groupTree, defaultTree }
+export default { post, get, groupTree, defaultTree, viewData ,panelSave}

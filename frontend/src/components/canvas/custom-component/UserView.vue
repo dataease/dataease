@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="rect-shape">
+  <div v-loading="requestStatus==='waiting'" class="rect-shape">
     <div v-if="requestStatus==='error'" style=";width: 100%;height: 100%;background-color: #ece7e7; text-align: center">
       <div style="font-size: 12px; color: #9ea6b2;">
         获取数据出错 请联系管理员<br>
@@ -8,18 +8,16 @@
     </div>
     <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table')" :ref="element.propValue.id" class="chart-class" :chart="chart" />
     <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
-
   </div>
 </template>
 
 <script>
 
-import { post } from '@/api/panel/panel'
+import { viewData } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 
 import { mapState } from 'vuex'
-import { deepCopy } from '@/components/canvas/utils/utils'
 
 import {
   DEFAULT_COLOR_CASE,
@@ -58,14 +56,8 @@ export default {
     canvasStyleData: {
       handler(newVal, oldVla) {
         debugger
-        // this.chart.viewFirst == false 优先使用仪表盘样式
-        if (!this.chart.viewFirst) {
-          this.chart = {
-            ...this.chart,
-            customAttr: this.canvasStyleData.chart.customAttr,
-            customStyle: this.canvasStyleData.chart.customStyle
-          }
-        }
+        // this.chart.stylePriority == panel 优先使用仪表盘样式
+        this.mergeStyle()
       },
       deep: true
     }
@@ -76,26 +68,26 @@ export default {
   data() {
     return {
       chart: {
-        viewFirst: false,
-        xaxis: [],
-        yaxis: [],
+        stylePriority: 'panel',
+        xaxis: '[]',
+        yaxis: '[]',
         show: true,
         type: 'panel',
         title: '',
-        customAttr: {
+        customAttr: JSON.stringify({
           color: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE,
           label: DEFAULT_LABEL,
           tooltip: DEFAULT_TOOLTIP
-        },
-        customStyle: {
+        }),
+        customStyle: JSON.stringify({
           text: DEFAULT_TITLE_STYLE,
           legend: DEFAULT_LEGEND_STYLE,
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
           background: DEFAULT_BACKGROUND_COLOR
-        },
-        customFilter: []
+        }),
+        customFilter: '[]'
       },
       requestStatus: 'waiting',
       message: null
@@ -108,15 +100,39 @@ export default {
 
   },
   methods: {
+    mergeStyle() {
+      // this.chart.stylePriority == panel 优先使用仪表盘样式
+      if ((this.requestStatus === 'success' || this.requestStatus === 'merging') && this.chart.stylePriority === 'panel' && this.canvasStyleData.chart) {
+        const customAttrChart = JSON.parse(this.chart.customAttr)
+        const customStyleChart = JSON.parse(this.chart.customStyle)
+
+        const customAttrPanel = JSON.parse(this.canvasStyleData.chart.customAttr)
+        const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
+
+        // 组件样式-标题设置
+        customStyleChart.text = customAttrPanel.text
+        // 组件样式-背景设置
+        customStyleChart.background = customAttrPanel.background
+        // 图形属性-颜色设置
+        customAttrChart.color = customStylePanel.color
+
+        this.chart = {
+          ...this.chart,
+          customAttr: JSON.stringify(customAttrChart),
+          customStyle: JSON.stringify(customAttrChart)
+        }
+      }
+    },
     getData(id) {
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
-        post('/chart/view/getData/' + id, this.filter).then(response => {
+        viewData(id, this.filter).then(response => {
           // 将视图传入echart组件
-          debugger
           if (response.success) {
             this.chart = response.data
+            this.requestStatus = 'merging'
+            this.mergeStyle()
             this.requestStatus = 'success'
           } else {
             this.requestStatus = 'error'

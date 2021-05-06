@@ -111,19 +111,21 @@ export default {
       return value * parseInt(scale) / 100
     },
     handleScaleChange() {
-      const componentData = deepCopy(this.componentData)
-      componentData.forEach(component => {
-        Object.keys(component.style).forEach(key => {
-          if (this.needToChangeHeight.includes(key)) {
-            component.style[key] = this.format(component.style[key], this.scaleHeight)
-          }
-          if (this.needToChangeWidth.includes(key)) {
-            component.style[key] = this.format(component.style[key], this.scaleWidth)
-          }
+      if (this.componentData) {
+        const componentData = deepCopy(this.componentData)
+        componentData.forEach(component => {
+          Object.keys(component.style).forEach(key => {
+            if (this.needToChangeHeight.includes(key)) {
+              component.style[key] = this.format(component.style[key], this.scaleHeight)
+            }
+            if (this.needToChangeWidth.includes(key)) {
+              component.style[key] = this.format(component.style[key], this.scaleWidth)
+            }
+          })
         })
-      })
-      this.componentDataShow = componentData
-      this.$nextTick(() => (eventBus.$emit('resizing', '')))
+        this.componentDataShow = componentData
+        this.$nextTick(() => (eventBus.$emit('resizing', '')))
+      }
     }
   }
 }
@@ -136,7 +138,7 @@ export default {
     width: 100%;
     height: 100%;
     border: 1px solid #E6E6E6;
-    background-size: 100% !important;
+    background-size: 100% 100% !important;
     .canvas-container {
         width: 100%;
         height: 100%;

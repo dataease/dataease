@@ -1,73 +1,73 @@
 <template>
-  <el-container>
-    <el-header class="de-header">
-      <el-row class="panel-design-head">
-        <span style="float: left;line-height: 35px; color: gray">
-          名称：{{ panelInfo.name || '测试仪表板' }}
-        </span>
-        <!--横向工具栏-->
-        <Toolbar @showPanel="showPanel" />
-      </el-row>
-    </el-header>
-    <de-container>
-      <de-aside-container class="ms-aside-container">
-        <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
-          <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
-            <!-- 视图图表 -->
-            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
-              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
-            </div>
-            <!-- 视图文字 -->
-            <div style="position: relative; margin: 18px auto 30px">
-              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                视图
+  <el-row>
+    <el-row class="de-header">
+      <span style="float: left;line-height: 35px; color: gray">
+        名称：{{ panelInfo.name || '测试仪表板' }}
+      </span>
+      <!--横向工具栏-->
+      <Toolbar @showPanel="showPanel" />
+    </el-row>
+    <el-row>
+      <de-container>
+        <de-aside-container class="ms-aside-container">
+          <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
+            <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
+              <!-- 视图图表 -->
+              <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
+                <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
               </div>
-            </div>
-            <!-- 视图分割线 -->
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
-            </div>
-            <!-- 过滤组件 -->
-            <div tabindex="-1" style="position: relative; margin: 20px auto">
-              <div style="height: 60px; position: relative">
-                <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-                  <el-button circle class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
+              <!-- 视图文字 -->
+              <div style="position: relative; margin: 18px auto 30px">
+                <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                  视图
                 </div>
-                <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
-                  <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                    组件
+              </div>
+              <!-- 视图分割线 -->
+              <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+                <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+              </div>
+              <!-- 过滤组件 -->
+              <div tabindex="-1" style="position: relative; margin: 20px auto">
+                <div style="height: 60px; position: relative">
+                  <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
+                    <el-button circle class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
+                  </div>
+                  <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
+                    <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                      组件
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">
-          <div />
-          <div v-show="show" class="leftPanel">
+          <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">
+            <div />
+            <div v-show="show" class="leftPanel">
 
-            <div class="leftPanel-items">
-              <view-select v-show=" showIndex===0" />
-              <filter-group v-show="showIndex===1" />
-              <subject-setting v-show="showIndex===2" />
+              <div style="height:100%;overflow-y: auto">
+                <view-select v-show=" showIndex===0" />
+                <filter-group v-show="showIndex===1" />
+                <subject-setting v-show="showIndex===2" />
+              </div>
             </div>
           </div>
-        </div>
-      </de-aside-container>
+        </de-aside-container>
 
-      <!--画布区域-->
-      <de-main-container class="ms-main-container">
-        <div
-          class="content"
-          @drop="handleDrop"
-          @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
-          @mouseup="deselectCurComponent"
-        >
-          <Editor />
-        </div>
-      </de-main-container>
-    </de-container>
+        <!--画布区域-->
+        <de-main-container>
+          <div
+            class="content"
+            @drop="handleDrop"
+            @dragover="handleDragOver"
+            @mousedown="handleMouseDown"
+            @mouseup="deselectCurComponent"
+          >
+            <Editor />
+          </div>
+        </de-main-container>
+      </de-container>
+    </el-row>
 
     <el-dialog
       v-if="filterVisible && panelInfo.id"
@@ -103,7 +103,7 @@
       </div>
     </el-dialog>
 
-  </el-container>
+  </el-row>
 </template>
 
 <script>
@@ -365,14 +365,9 @@ export default {
 <style scoped>
   .ms-aside-container {
     height: calc(100vh - 91px);
-    padding: 15px;
-    min-width: 60px;
+    min-width: 40px;
     max-width: 60px;
     border: none;
-  }
-
-  .ms-main-container {
-    height: calc(100vh - 91px);
   }
 
   .de-header {
@@ -383,7 +378,7 @@ export default {
   .showLeftPanel {
   overflow: hidden;
   position: relative;
-  width: calc(100% - 15px);
+  width: 100%;
 }
 </style>
 

@@ -106,6 +106,7 @@ export default {
       this.panelId = this.$route.path.split('/')[2]
       // 加载视图数据
       get('panel/group/findOne/' + this.panelId).then(response => {
+        debugger
         this.componentDataSource = this.resetID(JSON.parse(response.data.panelData))
         this.canvasStyleData = JSON.parse(response.data.panelStyle)
         this.resize()
@@ -148,7 +149,7 @@ export default {
     min-height: 600px;
     width: 100%;
     height: 100%;
-    background-size: 100% !important;
+    background-size: 100% 100% !important;
     overflow: auto;
     position: relative;
     margin: 0;

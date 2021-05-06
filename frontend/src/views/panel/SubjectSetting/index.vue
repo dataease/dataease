@@ -14,34 +14,28 @@
             <component-gap class="attr-selector" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="组件样式" name="component" @click="testClick">
+        <el-collapse-item title="组件样式" name="component">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-            <legend-selector class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
-            <x-axis-selector class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
-            <y-axis-selector class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
             <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item title="图形属性" name="graphical">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-            <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-            <tooltip-selector class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+            <color-selector :source-type="'panelEchart'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item title="表格" name="table">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-            <tooltip-selector class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+            <color-selector :source-type="'panelTable'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="过滤组件" name="filter">
-          <el-row style="background-color: #f7f8fa; margin: 5px">
-            <background-selector class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />
-            <component-gap class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />
-          </el-row>
-        </el-collapse-item>
+        <!--        <el-collapse-item title="过滤组件" name="filter">-->
+        <!--          <el-row style="background-color: #f7f8fa; margin: 5px">-->
+        <!--            <background-selector class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />-->
+        <!--            <component-gap class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />-->
+        <!--          </el-row>-->
+        <!--        </el-collapse-item>-->
       </el-collapse>
     </div>
   </el-row>
@@ -53,17 +47,8 @@ import BackgroundSelector from './PanelStyle/BackgroundSelector'
 import ComponentGap from './PanelStyle/ComponentGap'
 
 import ColorSelector from '@/views/chart/components/shape-attr/ColorSelector'
-import SizeSelector from '@/views/chart/components/shape-attr/SizeSelector'
-import LabelSelector from '@/views/chart/components/shape-attr/LabelSelector'
 import TitleSelector from '@/views/chart/components/component-style/TitleSelector'
-import LegendSelector from '@/views/chart/components/component-style/LegendSelector'
-import TooltipSelector from '@/views/chart/components/shape-attr/TooltipSelector'
-import XAxisSelector from '@/views/chart/components/component-style/XAxisSelector'
-import YAxisSelector from '@/views/chart/components/component-style/YAxisSelector'
 import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
-import QuotaFilterEditor from '@/views/chart/components/filter/QuotaFilterEditor'
-import DimensionFilterEditor from '@/views/chart/components/filter/DimensionFilterEditor'
-import TableNormal from '@/views/chart/components/table/TableNormal'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 
@@ -73,17 +58,8 @@ export default {
     BackgroundSelector,
     ComponentGap,
     ColorSelector,
-    SizeSelector,
-    LabelSelector,
     TitleSelector,
-    LegendSelector,
-    TooltipSelector,
-    XAxisSelector,
-    YAxisSelector,
-    BackgroundColorSelector,
-    QuotaFilterEditor,
-    DimensionFilterEditor,
-    TableNormal
+    BackgroundColorSelector
   },
   data() {
     return {
@@ -118,8 +94,12 @@ export default {
     debugger
     // 初始化赋值
     const chart = deepCopy(this.canvasStyleData.chart)
-    chart.xaxis = JSON.parse(chart.xaxis)
-    chart.yaxis = JSON.parse(chart.yaxis)
+    if (chart.xaxis) {
+      chart.xaxis = JSON.parse(chart.xaxis)
+    }
+    if (chart.yaxis) {
+      chart.yaxis = JSON.parse(chart.yaxis)
+    }
     chart.customAttr = JSON.parse(chart.customAttr)
     chart.customStyle = JSON.parse(chart.customStyle)
     chart.customFilter = JSON.parse(chart.customFilter)
@@ -127,81 +107,21 @@ export default {
   },
 
   methods: {
-    testClick(val) {
-      debugger
-      console.log(JSON.stringify(this.chart))
-      console.log('message+>')
-    },
     handleChange(val) {
       console.log(val)
     },
     onChangePanelStyle(parma) {
       console.log('parma:' + JSON.stringify(parma))
     },
-
-    dimensionItemChange(item) {
-      this.save()
-    },
-
-    dimensionItemRemove(item) {
-      this.chart.xaxis.splice(item.index, 1)
-      this.save()
-    },
-
-    quotaItemChange(item) {
-      // 更新item
-      // this.view.yaxis.forEach(function(ele) {
-      //   if (ele.id === item.id) {
-      //     ele.summary = item.summary
-      //   }
-      // })
-      this.save()
-    },
-
-    quotaItemRemove(item) {
-      this.chart.yaxis.splice(item.index, 1)
-      this.save()
-    },
-
     onColorChange(val) {
       this.chart.customAttr.color = val
       this.save()
     },
-
-    onSizeChange(val) {
-      this.chart.customAttr.size = val
-      this.save()
-    },
     onTextChange(val) {
+      debugger
       this.chart.customStyle.text = val
       // this.save()
     },
-
-    onLegendChange(val) {
-      this.chart.customStyle.legend = val
-      this.save()
-    },
-
-    onLabelChange(val) {
-      this.chart.customAttr.label = val
-      this.save()
-    },
-
-    onTooltipChange(val) {
-      this.chart.customAttr.tooltip = val
-      this.save()
-    },
-
-    onChangeXAxisForm(val) {
-      this.chart.customStyle.xAxis = val
-      this.save()
-    },
-
-    onChangeYAxisForm(val) {
-      this.chart.customStyle.yAxis = val
-      this.save()
-    },
-
     onChangeBackgroundForm(val) {
       this.chart.customStyle.background = val
       this.save()

@@ -713,6 +713,76 @@ public class ChartViewExample {
             addCriterion("update_time not between", value1, value2, "updateTime");
             return (Criteria) this;
         }
+
+        public Criteria andStylePriorityIsNull() {
+            addCriterion("style_priority is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityIsNotNull() {
+            addCriterion("style_priority is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityEqualTo(String value) {
+            addCriterion("style_priority =", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityNotEqualTo(String value) {
+            addCriterion("style_priority <>", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityGreaterThan(String value) {
+            addCriterion("style_priority >", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityGreaterThanOrEqualTo(String value) {
+            addCriterion("style_priority >=", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityLessThan(String value) {
+            addCriterion("style_priority <", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityLessThanOrEqualTo(String value) {
+            addCriterion("style_priority <=", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityLike(String value) {
+            addCriterion("style_priority like", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityNotLike(String value) {
+            addCriterion("style_priority not like", value, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityIn(List<String> values) {
+            addCriterion("style_priority in", values, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityNotIn(List<String> values) {
+            addCriterion("style_priority not in", values, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityBetween(String value1, String value2) {
+            addCriterion("style_priority between", value1, value2, "stylePriority");
+            return (Criteria) this;
+        }
+
+        public Criteria andStylePriorityNotBetween(String value1, String value2) {
+            addCriterion("style_priority not between", value1, value2, "stylePriority");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

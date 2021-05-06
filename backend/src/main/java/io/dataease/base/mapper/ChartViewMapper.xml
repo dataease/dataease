@@ -11,6 +11,7 @@
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+    <result column="style_priority" jdbcType="VARCHAR" property="stylePriority" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.ChartViewWithBLOBs">
     <result column="x_axis" jdbcType="LONGVARCHAR" property="xAxis" />
@@ -18,6 +19,7 @@
     <result column="custom_attr" jdbcType="LONGVARCHAR" property="customAttr" />
     <result column="custom_style" jdbcType="LONGVARCHAR" property="customStyle" />
     <result column="custom_filter" jdbcType="LONGVARCHAR" property="customFilter" />
+    <result column="snapshot" jdbcType="LONGVARCHAR" property="snapshot" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -78,10 +80,11 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time
+    id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time, 
+    style_priority
   </sql>
   <sql id="Blob_Column_List">
-    x_axis, y_axis, custom_attr, custom_style, custom_filter
+    x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.ChartViewExample" resultMap="ResultMapWithBLOBs">
     select
@@ -135,13 +138,15 @@
     insert into chart_view (id, `name`, scene_id, 
       table_id, `type`, title, 
       create_by, create_time, update_time, 
-      x_axis, y_axis, custom_attr, 
-      custom_style, custom_filter)
+      style_priority, x_axis, y_axis, 
+      custom_attr, custom_style, custom_filter, 
+      snapshot)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
       #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{xAxis,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, 
-      #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR})
+      #{stylePriority,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, 
+      #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR}, 
+      #{snapshot,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
     insert into chart_view
@@ -173,6 +178,9 @@
       <if test="updateTime != null">
         update_time,
       </if>
+      <if test="stylePriority != null">
+        style_priority,
+      </if>
       <if test="xAxis != null">
         x_axis,
       </if>
@@ -187,6 +195,9 @@
       </if>
       <if test="customFilter != null">
         custom_filter,
+      </if>
+      <if test="snapshot != null">
+        snapshot,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -217,6 +228,9 @@
       <if test="updateTime != null">
         #{updateTime,jdbcType=BIGINT},
       </if>
+      <if test="stylePriority != null">
+        #{stylePriority,jdbcType=VARCHAR},
+      </if>
       <if test="xAxis != null">
         #{xAxis,jdbcType=LONGVARCHAR},
       </if>
@@ -231,6 +245,9 @@
       </if>
       <if test="customFilter != null">
         #{customFilter,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="snapshot != null">
+        #{snapshot,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -270,6 +287,9 @@
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=BIGINT},
       </if>
+      <if test="record.stylePriority != null">
+        style_priority = #{record.stylePriority,jdbcType=VARCHAR},
+      </if>
       <if test="record.xAxis != null">
         x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       </if>
@@ -284,6 +304,9 @@
       </if>
       <if test="record.customFilter != null">
         custom_filter = #{record.customFilter,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.snapshot != null">
+        snapshot = #{record.snapshot,jdbcType=LONGVARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -301,11 +324,13 @@
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
+      style_priority = #{record.stylePriority,jdbcType=VARCHAR},
       x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       y_axis = #{record.yAxis,jdbcType=LONGVARCHAR},
       custom_attr = #{record.customAttr,jdbcType=LONGVARCHAR},
       custom_style = #{record.customStyle,jdbcType=LONGVARCHAR},
-      custom_filter = #{record.customFilter,jdbcType=LONGVARCHAR}
+      custom_filter = #{record.customFilter,jdbcType=LONGVARCHAR},
+      snapshot = #{record.snapshot,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -320,7 +345,8 @@
       title = #{record.title,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
-      update_time = #{record.updateTime,jdbcType=BIGINT}
+      update_time = #{record.updateTime,jdbcType=BIGINT},
+      style_priority = #{record.stylePriority,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -352,6 +378,9 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=BIGINT},
       </if>
+      <if test="stylePriority != null">
+        style_priority = #{stylePriority,jdbcType=VARCHAR},
+      </if>
       <if test="xAxis != null">
         x_axis = #{xAxis,jdbcType=LONGVARCHAR},
       </if>
@@ -367,6 +396,9 @@
       <if test="customFilter != null">
         custom_filter = #{customFilter,jdbcType=LONGVARCHAR},
       </if>
+      <if test="snapshot != null">
+        snapshot = #{snapshot,jdbcType=LONGVARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -380,11 +412,13 @@
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
+      style_priority = #{stylePriority,jdbcType=VARCHAR},
       x_axis = #{xAxis,jdbcType=LONGVARCHAR},
       y_axis = #{yAxis,jdbcType=LONGVARCHAR},
       custom_attr = #{customAttr,jdbcType=LONGVARCHAR},
       custom_style = #{customStyle,jdbcType=LONGVARCHAR},
-      custom_filter = #{customFilter,jdbcType=LONGVARCHAR}
+      custom_filter = #{customFilter,jdbcType=LONGVARCHAR},
+      snapshot = #{snapshot,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.ChartView">
@@ -396,7 +430,8 @@
       title = #{title,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
-      update_time = #{updateTime,jdbcType=BIGINT}
+      update_time = #{updateTime,jdbcType=BIGINT},
+      style_priority = #{stylePriority,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

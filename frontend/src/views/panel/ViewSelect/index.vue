@@ -14,6 +14,7 @@
         draggable
         :allow-drop="allowDrop"
         :allow-drag="allowDrag"
+        :filter-node-method="filterNode"
         @node-drag-start="handleDragStart"
       />
     </div>

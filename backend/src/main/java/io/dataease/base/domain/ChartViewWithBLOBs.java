@@ -19,5 +19,7 @@ public class ChartViewWithBLOBs extends ChartView implements Serializable {
 
     private String customFilter;
 
+    private String snapshot;
+
     private static final long serialVersionUID = 1L;
 }
