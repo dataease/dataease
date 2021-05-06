@@ -140,6 +140,7 @@ service.interceptors.response.use(response => {
   checkAuth(response)
   return response.data
 }, error => {
+  error.response.config.loading && tryHideLoading(store.getters.currentPath)
   let msg
   if (error.response) {
     checkAuth(error.response)
