@@ -97,7 +97,7 @@
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
-                @change="save"
+                @change="save(false)"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                   <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
@@ -331,7 +331,8 @@ export default {
           { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
         ]
       },
-      tabStatus: false
+      tabStatus: false,
+      data: {}
     }
   },
   computed: {
@@ -373,7 +374,7 @@ export default {
         this.quota = response.data.quota
       })
     },
-    save() {
+    save(getData) {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -417,7 +418,14 @@ export default {
       view.customFilter = JSON.stringify(view.customFilter)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
-        this.getData(response.data.id)
+        // this.getData(response.data.id)
+
+        if (getData) {
+          this.getData(response.data.id)
+        } else {
+          this.getChart(response.data.id)
+        }
+
         this.$store.dispatch('chart/setChartSceneData', null)
         this.$store.dispatch('chart/setChartSceneData', response.data)
       })
@@ -441,7 +449,26 @@ export default {
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           // 将视图传入echart组件
           this.chart = response.data
-          console.log(JSON.stringify(this.chart))
+          this.data = response.data.data
+          // console.log(JSON.stringify(this.chart))
+        })
+      } else {
+        this.view = {}
+      }
+    },
+    getChart(id) {
+      if (id) {
+        post('/chart/view/get/' + id, {}).then(response => {
+          this.initTableData(response.data.tableId)
+          this.view = JSON.parse(JSON.stringify(response.data))
+          this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
+          this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
+          this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
+          this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+
+          response.data.data = this.data
+          this.chart = response.data
         })
       } else {
         this.view = {}
@@ -450,26 +477,26 @@ export default {
 
     // 左边往右边拖动时的事件
     start1(e) {
-      console.log(e)
+      // console.log(e)
       e.clone.className = 'item-on-move'
       e.item.className = 'item-on-move'
     },
     end1(e) {
-      console.log(e)
+      // console.log(e)
       e.clone.className = 'item'
       e.item.className = 'item'
       this.refuseMove(e)
       this.removeCheckedKey(e)
-      this.save()
+      this.save(true)
     },
     // 右边往左边拖动时的事件
     start2(e) {
-      console.log(e)
+      // console.log(e)
     },
     end2(e) {
-      console.log(e)
+      // console.log(e)
       this.removeDuplicateKey(e)
-      this.save()
+      this.save(true)
     },
     removeCheckedKey(e) {
       const that = this
@@ -518,7 +545,7 @@ export default {
     },
     // move回调方法
     onMove(e, originalEvent) {
-      console.log(e)
+      // console.log(e)
       this.moveId = e.draggedContext.element.id
       // //不允许停靠
       // if (e.relatedContext.element.id == 1) return false;
@@ -529,12 +556,12 @@ export default {
     },
 
     dimensionItemChange(item) {
-      this.save()
+      this.save(true)
     },
 
     dimensionItemRemove(item) {
       this.view.xaxis.splice(item.index, 1)
-      this.save()
+      this.save(true)
     },
 
     quotaItemChange(item) {
@@ -544,12 +571,12 @@ export default {
       //     ele.summary = item.summary
       //   }
       // })
-      this.save()
+      this.save(true)
     },
 
     quotaItemRemove(item) {
       this.view.yaxis.splice(item.index, 1)
-      this.save()
+      this.save(true)
     },
 
     onColorChange(val) {
@@ -606,7 +633,7 @@ export default {
     },
     saveDimensionFilter() {
       this.view.xaxis[this.dimensionItem.index].filter = this.dimensionItem.filter
-      this.save()
+      this.save(true)
       this.closeDimensionFilter()
     },
 
@@ -619,7 +646,7 @@ export default {
     },
     saveQuotaFilter() {
       this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
-      this.save()
+      this.save(true)
       this.closeQuotaFilter()
     },
 
@@ -633,7 +660,7 @@ export default {
       } else if (this.itemForm.renameType === 'dimension') {
         this.view.xaxis[this.itemForm.index].name = this.itemForm.name
       }
-      this.save()
+      this.save(true)
       this.closeRename()
     },
     closeRename() {
