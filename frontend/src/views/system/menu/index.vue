@@ -15,23 +15,23 @@
         :data="tableData"
         lazy
         :load="initTableData"
-        style="width: 100%"
+
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         row-key="menuId"
       >
 
         <!-- <el-table-column type="selection" fix /> -->
-        <el-table-column :show-overflow-tooltip="true" label="菜单标题" width="150px" prop="title" />
-        <el-table-column prop="icon" label="图标" align="center" width="60px">
+        <el-table-column :show-overflow-tooltip="true" label="菜单标题" prop="title" />
+        <el-table-column prop="icon" label="图标" align="center">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
           </template>
         </el-table-column>
 
-        <el-table-column :show-overflow-tooltip="true" prop="permission" label="权限标识" />
-        <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" />
+        <!-- <el-table-column :show-overflow-tooltip="true" prop="permission" label="权限标识" />
+        <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" /> -->
 
-        <el-table-column prop="createTime" label="创建日期" width="160px">
+        <el-table-column prop="createTime" label="创建日期">
           <template v-slot:default="scope">
             <span>{{ scope.row.createTime | timestampFormatDate }}</span>
           </template>

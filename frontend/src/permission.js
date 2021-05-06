@@ -84,7 +84,12 @@ const filterRouter = routers => {
   }
   const tempResults = routers.filter(router => hasPermission(router, user_permissions))
   // 如果是一级菜单(目录) 没有字菜单 那就移除
-  return tempResults.filter(item => item.children && item.children.length)
+  return tempResults.filter(item => {
+    if (item.type === 0 && (!item.children || item.children.length === 0)) {
+      return false
+    }
+    return true
+  })
 }
 const hasPermission = (router, user_permissions) => {
   // 菜单要求权限 但是当前用户权限没有包含菜单权限

@@ -8,7 +8,7 @@
           <el-radio-button label="2">按钮</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="form.type!== 2" label="菜单图标" prop="icon">
+      <el-form-item v-if="form.type=== 1 && form.icon" label="菜单图标" prop="icon">
         <el-popover
           placement="bottom-start"
           width="425"
@@ -29,21 +29,21 @@
       <el-form-item v-if="form.type === 2" label="按钮名称" prop="title">
         <el-input v-model="form.title" placeholder="按钮名称" />
       </el-form-item>
-      <el-form-item v-if="form.type !== 0" label="权限标识" prop="permission">
+      <!-- <el-form-item v-if="form.type !== 0" label="权限标识" prop="permission">
         <el-input v-model="form.permission" :disabled="form.iframe || formType!=='add'" placeholder="权限标识" />
       </el-form-item>
       <el-form-item v-if="form.type !== 2" label="路由地址" prop="path">
         <el-input v-model="form.path" placeholder="路由地址" :disabled="formType!=='add'" />
-      </el-form-item>
-      <el-form-item label="菜单排序" prop="menuSort">
+      </el-form-item> -->
+      <el-form-item v-if="form.type !== 2" label="菜单排序" prop="menuSort">
         <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" />
       </el-form-item>
-      <el-form-item v-if="!form.iframe && form.type === 1" label="组件名称" prop="componentName">
+      <!-- <el-form-item v-if="!form.iframe && form.type === 1" label="组件名称" prop="componentName">
         <el-input v-model="form.componentName" :disabled="formType!=='add'" placeholder="匹配组件内Name字段" />
       </el-form-item>
       <el-form-item v-if="!form.iframe && form.type === 1" label="组件路径" prop="component">
         <el-input v-model="form.component" :disabled="formType!=='add'" placeholder="组件路径" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="上级类目" prop="pid">
         <treeselect
           v-model="form.pid"

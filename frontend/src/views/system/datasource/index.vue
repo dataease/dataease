@@ -11,7 +11,8 @@
     >
 
       <template #toolbar>
-        <fu-table-button v-permission="['datasource:add']" icon="el-icon-circle-plus-outline" :label="$t('datasource.create')" @click="create" />
+        <!-- <fu-table-button v-permission="['datasource:add']" icon="el-icon-circle-plus-outline" :label="$t('datasource.create')" @click="create" /> -->
+        <el-button v-permission="['datasource:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('datasource.create') }}</el-button>
       </template>
 
       <!-- <el-table-column type="selection" fix /> -->

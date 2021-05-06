@@ -31,7 +31,11 @@ const actions = {
 }
 
 export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由字符串，转换为组件对象
-  return routers.filter(router => {
+  return routers.map(router => {
+    // 如果是菜单类型 且 是一级菜单 需要包装一层父级目录
+    if (router.type === 1 && router.pid === 0 && router.component && router.component !== 'Layout') {
+      router = decorate(router)
+    }
     if (router.component) {
       if (router.component === 'Layout') { // Layout组件特殊处理
         router.component = Layout
@@ -43,14 +47,32 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
     if (router.children && router.children.length) {
       router.children = filterAsyncRouter(router.children)
     }
-    return true
-  }).map(router => {
     router.hasOwnProperty('id') && delete router.id
+    router.hasOwnProperty('type') && delete router.type
     router.hasOwnProperty('pid') && delete router.pid
     router.hasOwnProperty('children') && (!router['children'] || !router['children'].length) && delete router.children
     router.hasOwnProperty('redirect') && !router['redirect'] && delete router.redirect
     return router
   })
+}
+
+// 包装一层父级目录
+export const decorate = (router) => {
+  const parent = {
+    id: router.id + 1000000,
+    path: router.path,
+    component: 'Layout'
+  }
+  const current = {}
+  Object.assign(current, router)
+  current.type = 1
+  current.path = 'index'
+  current.pid = parent.id
+  parent.children = [current]
+  if (router.hidden) {
+    parent.hidden = router.hidden
+  }
+  return parent
 }
 
 export const loadView = (view) => {

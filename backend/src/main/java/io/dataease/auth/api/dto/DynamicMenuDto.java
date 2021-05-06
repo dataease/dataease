@@ -27,6 +27,8 @@ public class DynamicMenuDto implements Serializable {
 
     private Boolean hidden;
 
+    private Integer type;
+
     private List<DynamicMenuDto> children;
 
 }

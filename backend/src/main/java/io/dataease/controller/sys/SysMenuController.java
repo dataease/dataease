@@ -31,6 +31,7 @@ public class SysMenuController {
     @PostMapping("/childNodes/{pid}")
     public List<MenuNodeResponse> childNodes(@PathVariable("pid") Long pid){
         List<SysMenu> nodes = menuService.nodesByPid(pid);
+        nodes = nodes.stream().filter(node -> !node.getHidden()).collect(Collectors.toList());
         return menuService.convert(nodes);
     }
 

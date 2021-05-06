@@ -36,6 +36,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         dynamicMenuDto.setName(sysMenu.getName());
         dynamicMenuDto.setPath(sysMenu.getPath());
         dynamicMenuDto.setRedirect(null);
+        dynamicMenuDto.setType(sysMenu.getType());
         dynamicMenuDto.setComponent(sysMenu.getComponent());
         MenuMeta menuMeta = new MenuMeta();
         menuMeta.setTitle(sysMenu.getTitle());

@@ -1,5 +1,5 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')" back-name="数据源1">
+  <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')" back-name="数据源">
     <el-form ref="dsForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item :label="$t('commons.name')" prop="name">
         <el-input v-model="form.name" autocomplete="off" />
@@ -128,7 +128,7 @@ export default {
       }
     },
     backToList() {
-      this.$router.push({ name: '数据源1' })
+      this.$router.push({ name: '数据源' })
     }
   }
 }
