@@ -10,7 +10,8 @@
       @search="search"
     >
       <template #toolbar>
-        <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" />
+        <el-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('user.create') }}</el-button>
+        <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
       </template>
 
       <el-table-column prop="username" label="ID" width="80" />

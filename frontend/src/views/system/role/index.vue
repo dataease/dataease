@@ -14,7 +14,8 @@
           @row-click="rowClick"
         >
           <template #toolbar>
-            <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" />
+            <!-- <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" /> -->
+            <el-button v-permission="['role:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('role.add') }}</el-button>
           </template>
 
           <el-table-column prop="name" label="名称" />

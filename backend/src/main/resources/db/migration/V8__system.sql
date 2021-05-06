@@ -8,28 +8,27 @@ CREATE TABLE `sys_dept` (
   `sub_count` int(5) DEFAULT '0' COMMENT '子部门数目',
   `name` varchar(255) NOT NULL COMMENT '名称',
   `dept_sort` int(5) DEFAULT '999' COMMENT '排序',
-  `enabled` bit(1) NOT NULL COMMENT '状态',
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',
   `update_by` varchar(255) DEFAULT NULL COMMENT '更新者',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`dept_id`) USING BTREE,
-  KEY `inx_pid` (`pid`),
-  KEY `inx_enabled` (`enabled`)
+  KEY `inx_pid` (`pid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='部门';
 
 -- ----------------------------
 -- Records of sys_dept
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_dept` VALUES (18, 0, 1, '上海飞致云', 1, b'1', NULL, NULL, 1614048906358, 1614048906358);
-INSERT INTO `sys_dept` VALUES (19, 0, 1, '北京飞致云', 2, b'1', NULL, NULL, 1614048918465, 1614048918465);
-INSERT INTO `sys_dept` VALUES (20, 18, 1, '营销部', 1, b'1', NULL, NULL, 1614048946370, 1614049006759);
-INSERT INTO `sys_dept` VALUES (21, 19, 0, '综合部', 3, b'1', NULL, NULL, 1614048963483, 1619667528267);
-INSERT INTO `sys_dept` VALUES (25, 20, 0, '售前组', 1, b'1', NULL, NULL, 1615791706945, 1615791706945);
+INSERT INTO `sys_dept` VALUES (18, 0, 1, '上海飞致云', 1, NULL, NULL, 1614048906358, 1614048906358);
+INSERT INTO `sys_dept` VALUES (19, 0, 1, '北京飞致云', 2, NULL, NULL, 1614048918465, 1614048918465);
+INSERT INTO `sys_dept` VALUES (20, 18, 1, '营销部', 1, NULL, NULL, 1614048946370, 1614049006759);
+INSERT INTO `sys_dept` VALUES (21, 19, 0, '综合部', 3, NULL, NULL, 1614048963483, 1619667528267);
+INSERT INTO `sys_dept` VALUES (25, 20, 0, '售前组', 1, NULL, NULL, 1615791706945, 1615791706945);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
 
 
 
