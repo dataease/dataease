@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasInfo" class="bg">
+  <div id="canvasInfo" :style="customStyle" class="bg">
     <ComponentWrapper
       v-for="(item, index) in componentDataInfo"
       :key="index"
@@ -51,6 +51,25 @@ export default {
     }
   },
   computed: {
+    customStyle() {
+      let style = {}
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image') {
+          style = {
+            width: '100%',
+            height: '100%',
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
+          }
+        } else {
+          style = {
+            width: '100%',
+            height: '100%',
+            background: this.canvasStyleData.panel.color
+          }
+        }
+      }
+      return style
+    },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
       return this.componentDataShow
@@ -81,7 +100,7 @@ export default {
       this.handleScaleChange()
     },
     resetID(data) {
-      if( data ) {
+      if (data) {
         data.forEach(item => {
           item.id = uuid.v1()
         })
@@ -104,7 +123,7 @@ export default {
         })
       })
       this.componentDataShow = componentData
-      eventBus.$emit('resizing', '')
+      this.$nextTick(() => (eventBus.$emit('resizing', '')))
     }
   }
 }
@@ -117,6 +136,7 @@ export default {
     width: 100%;
     height: 100%;
     border: 1px solid #E6E6E6;
+    background-size: 100% !important;
     .canvas-container {
         width: 100%;
         height: 100%;

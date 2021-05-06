@@ -121,7 +121,7 @@ export default {
           ...this.canvasStyleData,
           scale: this.scale
         })
-        eventBus.$emit('resizing', '')
+        this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }, 1000)
     },
 

@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasInfo" class="bg">
+  <div id="canvasInfo" :style="customStyle" class="bg">
     <ComponentWrapper
       v-for="(item, index) in componentDataInfo"
       :key="index"
@@ -47,13 +47,32 @@ export default {
       scaleWidth: '100',
       scaleHeight: '100',
       timer: null,
-      componentDataSource: {},
-      componentData: {},
+      componentDataSource: [],
+      componentData: [],
       canvasStyleData: {}
 
     }
   },
   computed: {
+    customStyle() {
+      let style = {}
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image') {
+          style = {
+            width: '100%',
+            height: '100%',
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
+          }
+        } else {
+          style = {
+            width: '100%',
+            height: '100%',
+            background: this.canvasStyleData.panel.color
+          }
+        }
+      }
+      return style
+    },
     componentDataInfo() {
       return this.componentData
     }
@@ -70,9 +89,6 @@ export default {
         _this.resize()
       })
     })
-    window.onresize = () => {
-      this.resize()
-    }
     // this.resize()
   },
   methods: {
@@ -96,7 +112,7 @@ export default {
       })
     },
     resetID(data) {
-      if( data ) {
+      if (data) {
         data.forEach(item => {
           item.id = uuid.v1()
         })
@@ -120,7 +136,7 @@ export default {
         })
       })
       this.componentData = componentData
-      eventBus.$emit('resizing', '')
+      this.$nextTick(() => (eventBus.$emit('resizing', '')))
     }
   }
 }
@@ -132,6 +148,7 @@ export default {
     min-height: 600px;
     width: 100%;
     height: 100%;
+    background-size: 100% !important;
     overflow: auto;
     position: relative;
     margin: 0;
