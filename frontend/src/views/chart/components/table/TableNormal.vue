@@ -113,7 +113,7 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 8 * 2 - 20
+        const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 20
         let tableHeight
         if (that.chart.data) {
           tableHeight = (that.chart.data.tableRow.length + 2) * 36

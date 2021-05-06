@@ -75,7 +75,7 @@
         <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">
           <el-row>
             <span>{{ $t('chart.title') }}</span>
-            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="saveWithSnapshot()">{{ $t('chart.confirm') }}</el-button>
+            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>
           </el-row>
           <el-form>
             <el-form-item class="form-item">
@@ -97,7 +97,7 @@
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
-                @change="save"
+                @change="save(false)"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                   <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
@@ -125,30 +125,21 @@
           </el-row>
         </div>
         <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
-          <el-row class="padding-lr">
-            <span>样式优先级</span>
-            <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
-              <el-radio  style="margin-left: 20px" label="view"><span>视图</span></el-radio>
-              <el-radio  label="panel"><span>仪表盘</span></el-radio>
-            </el-radio-group>
-          </el-row>
-          <el-row>
-            <el-tabs type="card" :stretch="true" class="tab-header">
-              <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
-                <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-                <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-                <label-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-                <tooltip-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
-              </el-tab-pane>
-              <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
-                <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-                <legend-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
-                <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
-                <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
-                <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
-              </el-tab-pane>
-            </el-tabs>
-          </el-row>
+          <el-tabs type="card" :stretch="true" class="tab-header">
+            <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
+              <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+              <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+              <label-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+              <tooltip-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+            </el-tab-pane>
+            <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
+              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+              <legend-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+              <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+              <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+            </el-tab-pane>
+          </el-tabs>
         </div>
         <div v-if="false" style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
           <span>{{ $t('chart.result_filter') }}</span>
@@ -204,10 +195,8 @@
             </el-row>
           </el-row>
 
-          <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
-            <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
-          </div>
+          <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+          <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
         </el-row>
       </el-col>
     </el-row>
@@ -264,7 +253,6 @@ import FilterItem from '../components/drag-item/FilterItem'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
-import html2canvas from 'html2canvas'
 
 // shape attr,component style
 import {
@@ -306,7 +294,6 @@ export default {
       dimension: [],
       quota: [],
       view: {
-        stylePriority: 'panel',
         xaxis: [],
         yaxis: [],
         show: true,
@@ -344,7 +331,8 @@ export default {
           { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
         ]
       },
-      tabStatus: false
+      tabStatus: false,
+      data: {}
     }
   },
   computed: {
@@ -386,10 +374,7 @@ export default {
         this.quota = response.data.quota
       })
     },
-    saveWithSnapshot(){
-      this.save('true')
-    },
-    save(withSnapshot) {
+    save(getData) {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -431,29 +416,19 @@ export default {
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
       view.customFilter = JSON.stringify(view.customFilter)
-      debugger
-      if (withSnapshot==='true') {
-        html2canvas(this.$refs.imageWrapper).then(canvas => {
-          const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
-          if (snapshot !== '') {
-            view.snapshot = snapshot
-            debugger
-            post('/chart/view/save', view).then(response => {
-              // this.get(response.data.id);
-              this.getData(response.data.id)
-              this.$store.dispatch('chart/setChartSceneData', null)
-              this.$store.dispatch('chart/setChartSceneData', response.data)
-            })
-          }
-        })
-      } else {
-        post('/chart/view/save', view).then(response => {
-          // this.get(response.data.id);
+      post('/chart/view/save', view).then(response => {
+        // this.get(response.data.id);
+        // this.getData(response.data.id)
+
+        if (getData) {
           this.getData(response.data.id)
-          this.$store.dispatch('chart/setChartSceneData', null)
-          this.$store.dispatch('chart/setChartSceneData', response.data)
-        })
-      }
+        } else {
+          this.getChart(response.data.id)
+        }
+
+        this.$store.dispatch('chart/setChartSceneData', null)
+        this.$store.dispatch('chart/setChartSceneData', response.data)
+      })
     },
     closeEdit() {
       // 从仪表盘入口关闭
@@ -474,7 +449,26 @@ export default {
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           // 将视图传入echart组件
           this.chart = response.data
-          console.log(JSON.stringify(this.chart))
+          this.data = response.data.data
+          // console.log(JSON.stringify(this.chart))
+        })
+      } else {
+        this.view = {}
+      }
+    },
+    getChart(id) {
+      if (id) {
+        post('/chart/view/get/' + id, {}).then(response => {
+          this.initTableData(response.data.tableId)
+          this.view = JSON.parse(JSON.stringify(response.data))
+          this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
+          this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
+          this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
+          this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+
+          response.data.data = this.data
+          this.chart = response.data
         })
       } else {
         this.view = {}
@@ -483,26 +477,26 @@ export default {
 
     // 左边往右边拖动时的事件
     start1(e) {
-      console.log(e)
+      // console.log(e)
       e.clone.className = 'item-on-move'
       e.item.className = 'item-on-move'
     },
     end1(e) {
-      console.log(e)
+      // console.log(e)
       e.clone.className = 'item'
       e.item.className = 'item'
       this.refuseMove(e)
       this.removeCheckedKey(e)
-      this.save()
+      this.save(true)
     },
     // 右边往左边拖动时的事件
     start2(e) {
-      console.log(e)
+      // console.log(e)
     },
     end2(e) {
-      console.log(e)
+      // console.log(e)
       this.removeDuplicateKey(e)
-      this.save()
+      this.save(true)
     },
     removeCheckedKey(e) {
       const that = this
@@ -551,7 +545,7 @@ export default {
     },
     // move回调方法
     onMove(e, originalEvent) {
-      console.log(e)
+      // console.log(e)
       this.moveId = e.draggedContext.element.id
       // //不允许停靠
       // if (e.relatedContext.element.id == 1) return false;
@@ -562,12 +556,12 @@ export default {
     },
 
     dimensionItemChange(item) {
-      this.save()
+      this.save(true)
     },
 
     dimensionItemRemove(item) {
       this.view.xaxis.splice(item.index, 1)
-      this.save()
+      this.save(true)
     },
 
     quotaItemChange(item) {
@@ -577,12 +571,12 @@ export default {
       //     ele.summary = item.summary
       //   }
       // })
-      this.save()
+      this.save(true)
     },
 
     quotaItemRemove(item) {
       this.view.yaxis.splice(item.index, 1)
-      this.save()
+      this.save(true)
     },
 
     onColorChange(val) {
@@ -639,7 +633,7 @@ export default {
     },
     saveDimensionFilter() {
       this.view.xaxis[this.dimensionItem.index].filter = this.dimensionItem.filter
-      this.save()
+      this.save(true)
       this.closeDimensionFilter()
     },
 
@@ -652,7 +646,7 @@ export default {
     },
     saveQuotaFilter() {
       this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
-      this.save()
+      this.save(true)
       this.closeQuotaFilter()
     },
 
@@ -666,7 +660,7 @@ export default {
       } else if (this.itemForm.renameType === 'dimension') {
         this.view.xaxis[this.itemForm.index].name = this.itemForm.name
       }
-      this.save()
+      this.save(true)
       this.closeRename()
     },
     closeRename() {
