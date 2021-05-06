@@ -7,7 +7,6 @@
     <result column="sub_count" jdbcType="INTEGER" property="subCount" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="dept_sort" jdbcType="INTEGER" property="deptSort" />
-    <result column="enabled" jdbcType="BIT" property="enabled" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
@@ -72,8 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    dept_id, pid, sub_count, `name`, dept_sort, enabled, create_by, update_by, create_time, 
-    update_time
+    dept_id, pid, sub_count, `name`, dept_sort, create_by, update_by, create_time, update_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.SysDeptExample" resultMap="BaseResultMap">
     select
@@ -107,13 +105,13 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.SysDept">
     insert into sys_dept (dept_id, pid, sub_count, 
-      `name`, dept_sort, enabled, 
-      create_by, update_by, create_time, 
-      update_time)
+      `name`, dept_sort, create_by, 
+      update_by, create_time, update_time
+      )
     values (#{deptId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER}, 
-      #{name,jdbcType=VARCHAR}, #{deptSort,jdbcType=INTEGER}, #{enabled,jdbcType=BIT}, 
-      #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
-      #{updateTime,jdbcType=BIGINT})
+      #{name,jdbcType=VARCHAR}, #{deptSort,jdbcType=INTEGER}, #{createBy,jdbcType=VARCHAR}, 
+      #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.SysDept">
     insert into sys_dept
@@ -132,9 +130,6 @@
       </if>
       <if test="deptSort != null">
         dept_sort,
-      </if>
-      <if test="enabled != null">
-        enabled,
       </if>
       <if test="createBy != null">
         create_by,
@@ -164,9 +159,6 @@
       </if>
       <if test="deptSort != null">
         #{deptSort,jdbcType=INTEGER},
-      </if>
-      <if test="enabled != null">
-        #{enabled,jdbcType=BIT},
       </if>
       <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
@@ -206,9 +198,6 @@
       <if test="record.deptSort != null">
         dept_sort = #{record.deptSort,jdbcType=INTEGER},
       </if>
-      <if test="record.enabled != null">
-        enabled = #{record.enabled,jdbcType=BIT},
-      </if>
       <if test="record.createBy != null">
         create_by = #{record.createBy,jdbcType=VARCHAR},
       </if>
@@ -233,7 +222,6 @@
       sub_count = #{record.subCount,jdbcType=INTEGER},
       `name` = #{record.name,jdbcType=VARCHAR},
       dept_sort = #{record.deptSort,jdbcType=INTEGER},
-      enabled = #{record.enabled,jdbcType=BIT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       update_by = #{record.updateBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
@@ -257,9 +245,6 @@
       <if test="deptSort != null">
         dept_sort = #{deptSort,jdbcType=INTEGER},
       </if>
-      <if test="enabled != null">
-        enabled = #{enabled,jdbcType=BIT},
-      </if>
       <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
       </if>
@@ -281,7 +266,6 @@
       sub_count = #{subCount,jdbcType=INTEGER},
       `name` = #{name,jdbcType=VARCHAR},
       dept_sort = #{deptSort,jdbcType=INTEGER},
-      enabled = #{enabled,jdbcType=BIT},
       create_by = #{createBy,jdbcType=VARCHAR},
       update_by = #{updateBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},

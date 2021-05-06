@@ -123,7 +123,6 @@ public class DeptService {
         boolean status = request.isStatus();
         SysDept sysDept = new SysDept();
         sysDept.setDeptId(deptId);
-        sysDept.setEnabled(status);
         return sysDeptMapper.updateByPrimaryKeySelective(sysDept);
     }
 

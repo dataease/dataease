@@ -15,8 +15,6 @@ public class SysDept implements Serializable {
 
     private Integer deptSort;
 
-    private Boolean enabled;
-
     private String createBy;
 
     private String updateBy;

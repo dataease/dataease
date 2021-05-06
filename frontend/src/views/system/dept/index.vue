@@ -23,7 +23,8 @@
       @search="search"
     >
       <template #toolbar>
-        <fu-table-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" />
+        <el-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('organization.create') }}</el-button>
+        <!-- <fu-table-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" /> -->
       </template>
       <el-table
         ref="table"

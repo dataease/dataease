@@ -21,14 +21,13 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="状态" prop="enabled">
+      <!-- <el-form-item label="状态" prop="enabled">
         <el-radio-group v-model="form.enabled" disabled>
           <el-radio :label="true">启用</el-radio>
           <el-radio :label="false">停用</el-radio>
         </el-radio-group>
 
-        <!-- <el-radio v-for="item in dict.dept_status" :key="item.id" v-model="form.enabled" :label="item.value">{{ item.label }}</el-radio> -->
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item v-if="!form.top" label="上级组织" prop="pid">
         <treeselect
           v-model="form.pid"
@@ -59,7 +58,7 @@ export default {
   components: { LayoutContent, Treeselect },
   data() {
     return {
-      defaultForm: { deptId: null, top: true, enabled: true, pid: null },
+      defaultForm: { deptId: null, top: true, pid: null },
       maps: new Map(),
       form: {},
       rule: {
