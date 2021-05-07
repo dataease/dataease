@@ -42,7 +42,7 @@
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span>
+              <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
                   <!--                    icon="el-icon-folder-opened"-->
@@ -51,7 +51,7 @@
                   <!--                  />-->
                   <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
               <span>
                 <span v-if="data.type ==='group'" @click.stop>
@@ -151,9 +151,9 @@
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
-          <span>
+          <span style="display: flex;flex: 1;width: 0;">
             <span><svg-icon :icon-class="data.type" /></span>
-            <span style="margin-left: 6px">{{ data.name }}</span>
+            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
           </span>
           <span>
             <span style="margin-left: 12px;" @click.stop>

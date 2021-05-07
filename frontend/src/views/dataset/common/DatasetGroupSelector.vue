@@ -33,7 +33,7 @@
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span>
+              <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
                   <!--                    icon="el-icon-folder-opened"-->
@@ -42,7 +42,7 @@
                   <!--                  />-->
                   <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
             </span>
           </el-tree>
@@ -83,7 +83,7 @@
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
-          <span>
+          <span style="display: flex;flex: 1;width: 0;">
             <span>
               <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
               <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
@@ -94,7 +94,7 @@
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
               <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
             </span>
-            <span style="margin-left: 6px">{{ data.name }}</span>
+            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
           </span>
         </span>
       </el-tree>
