@@ -5,7 +5,7 @@
         名称：{{ panelInfo.name || '测试仪表板' }}
       </span>
       <!--横向工具栏-->
-      <Toolbar @showPanel="showPanel" />
+      <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" />
     </el-row>
     <el-row>
       <de-container>
@@ -43,12 +43,11 @@
           </div>
           <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">
             <div />
-            <div v-show="show" class="leftPanel">
-
+            <div v-if="show" class="leftPanel">
               <div style="height:100%;overflow-y: auto">
-                <view-select v-show=" showIndex===0" />
-                <filter-group v-show="showIndex===1" />
-                <subject-setting v-show="showIndex===2" />
+                <view-select v-show=" show && showIndex===0" />
+                <filter-group v-show=" show &&showIndex===1" />
+                <subject-setting v-show=" show &&showIndex===2" />
               </div>
             </div>
           </div>
@@ -102,7 +101,6 @@
         </span>
       </div>
     </el-dialog>
-
   </el-row>
 </template>
 
@@ -154,7 +152,8 @@ export default {
       reSelectAnimateIndex: undefined,
       filterVisible: false,
       currentWidget: null,
-      currentFilterCom: null
+      currentFilterCom: null,
+      subjectVisible: false
     }
   },
 
@@ -216,7 +215,6 @@ export default {
         this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
       } else if (panelId) {
         get('panel/group/findOne/' + panelId).then(response => {
-          debugger
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', panelStyle)
@@ -357,6 +355,10 @@ export default {
       this.currentWidget = ApplicationContext.getService(serviceName)
       this.currentFilterCom = this.curComponent
       this.openFilterDiolog()
+    },
+    closeLeftPanel() {
+      this.show = false
+      this.beforeDestroy()
     }
   }
 }

@@ -38,8 +38,6 @@ export default {
   watch: {
     chart: {
       handler(newVal, oldVla) {
-        debugger
-        console.log('chart,watch')
         this.preDraw()
       },
       deep: true
@@ -59,7 +57,6 @@ export default {
   methods: {
     preDraw() {
       // 基于准备好的dom，初始化echarts实例
-      console.log('chartId:' + this.chartId)
       // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表盘有重复id情况
       new Promise((resolve) => { resolve() }).then(() => {
         //	此dom为echarts图标展示dom
@@ -95,7 +92,6 @@ export default {
       } else if (chart.type === 'radar') {
         chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart)
       }
-      console.log(chart_option)
       this.myEcharts(chart_option)
     },
     myEcharts(option) {

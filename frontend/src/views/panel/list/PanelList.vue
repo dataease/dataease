@@ -312,7 +312,6 @@ export default {
       this.tree(this.groupForm)
     },
     showEditPanel(param) {
-      debugger
       this.editPanel = JSON.parse(JSON.stringify(this.editPanelModel))
       this.editPanel.optType = param.optType
       this.editPanel.panelInfo.nodeType = param.type
@@ -465,7 +464,6 @@ export default {
       if (data.nodeType === 'panel') {
         // 加载视图数据
         get('panel/group/findOne/' + data.id).then(response => {
-          debugger
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const temp = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', temp)

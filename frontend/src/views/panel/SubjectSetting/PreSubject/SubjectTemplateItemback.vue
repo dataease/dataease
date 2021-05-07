@@ -1,12 +1,12 @@
 <template>
   <div class="subject-template">
-    <div class="vertical-layout" @click.stop="subjectChange">
-      <i v-if="subjectItem.type==='self'" class="el-icon-error" @click.stop="subjectDelete" />
-      <!--      <i class="el-icon-edit" />-->
+    <div class="vertical-layout">
+      <i class="el-icon-error" />
+      <i class="el-icon-edit" />
       <!-- 背景-->
-      <div class="allBack" :style="customBackground" style="inset: 1px; position: absolute;" />
+      <div style="inset: 0px; position: absolute;" :style="customBackground" />
       <!-- 视图组件 背景-->
-      <div style="inset: 17px 10px 10px; position: absolute;" :style="chartBackground" />
+      <div style="inset: 17px 10px 10px; position: absolute; background: 0% 0% / cover rgb(255, 255, 255);" />
       <!-- 视图组件 主题-->
       <div style="inset: 20px 13px 15px; position: absolute;">
         <div style="position: absolute; inset: 0px 4px; width: auto; height: auto;">
@@ -56,14 +56,14 @@
 
 <script>
 import { chartTransStr2Object } from '@/views/panel/panel'
-import { mapState } from 'vuex'
-
 export default {
   name: 'StyleTemplateItem',
   props: {
     subjectItem: {
       type: Object,
-      required: true
+      default() {
+        return null
+      }
     }
   },
   data() {
@@ -77,15 +77,14 @@ export default {
   computed: {
     customBackground() {
       let style = {
-        background: 'background: 0% 0% / cover rgb(255, 255, 255)'
+        background: '0% 0% / cover rgb(239, 241, 244)'
       }
       if (this.subjectItemDetails) {
         if (this.subjectItemDetails.panel.backgroundType === 'image') {
           style = {
             width: '100%',
             height: '100%',
-            background: `url(${this.subjectItemDetails.panel.imageUrl}) no-repeat`,
-            'background-size': '100% 100% !important'
+            background: `url(${this.subjectItemDetails.panel.imageUrl}) no-repeat`
           }
         } else {
           style = {
@@ -101,7 +100,6 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
           background: this.subjectItemDetails.chart.customAttr.color.colors[0]
         }
       }
@@ -111,7 +109,6 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
           background: this.subjectItemDetails.chart.customAttr.color.colors[1]
         }
       }
@@ -121,7 +118,6 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
           background: this.subjectItemDetails.chart.customAttr.color.colors[2]
         }
       }
@@ -131,7 +127,6 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
           background: this.subjectItemDetails.chart.customAttr.color.tableHeaderBgColor
         }
       }
@@ -145,26 +140,12 @@ export default {
         }
       }
       return style
-    },
-    chartBackground() {
-      let style = {}
-      if (this.subjectItemDetails) {
-        style = {
-          background: this.subjectItemDetails.chart.customStyle.background.color,
-          opacity: this.subjectItemDetails.chart.customStyle.background.alpha / 100
-        }
-      }
-      return style
-    },
-    ...mapState([
-      'canvasStyleData'
-    ])
+    }
   },
   watch: {
     subjectItem: {
       handler(newVal, oldVla) {
-        debugger
-        this.subjectItemDetails = chartTransStr2Object(JSON.parse(newVal.details), 'Y')
+        this.subjectItemDetails = chartTransStr2Object(newVal.details, 'Y')
       },
       deep: true
     },
@@ -172,23 +153,16 @@ export default {
       this.drawEcharts()
     }
   },
-  mounted() {
-    this.subjectItemDetails = chartTransStr2Object(JSON.parse(this.subjectItem.details), 'Y')
-  },
   methods: {
-    subjectDelete() {
-      this.$emit('subjectDelete', this.subjectItem.id)
-      // this.$alert('是否删除主题：' + this.subjectItem.name + '？', '', {
-      //   confirmButtonText: '确认',
-      //   callback: (action) => {
-      //     if (action === 'confirm') {
-      //       this.$emit('subjectDelete', this.subjectItem.id)
-      //     }
-      //   }
-      // })
-    },
-    subjectChange() {
-      this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
+    templateDelete() {
+      this.$alert('是否删除模板：' + this.template.name + '？', '', {
+        confirmButtonText: '确认',
+        callback: (action) => {
+          if (action === 'confirm') {
+            this.$emit('templateDelete', this.template.id)
+          }
+        }
+      })
     },
     templateEdit() {
       this.$emit('templateEdit', this.template)
@@ -202,9 +176,6 @@ export default {
 
 <style scoped>
 
-  .allBack {
-    background-size: 100% 100%!important;
-  }
   .subject-template {
     width: 110px;
     height: 90px;
@@ -256,18 +227,10 @@ export default {
 
   .vertical-layout:hover > .el-icon-error {
     z-index: 10;
-    display:block;
   }
 
   .vertical-layout:hover > .el-icon-edit {
     z-index: 10;
-    display:block;
-  }
-  .vertical-layout>>>.el-icon-error {
-    display:none
-  }
-  .vertical-layout>>>.el-icon-edit {
-    display:none
   }
 
 </style>

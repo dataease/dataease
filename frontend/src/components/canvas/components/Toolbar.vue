@@ -86,7 +86,10 @@ export default {
   },
   methods: {
     closePanelEdit() {
-      bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
+      this.$emit('close-left-panel')
+      this.$nextTick(() => {
+        bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
+      })
     },
     goFile() {
       this.$refs.files.click()
@@ -205,7 +208,6 @@ export default {
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
-      debugger
       post('panel/group/save', requestInfo, () => {})
       this.$message.success('保存成功')
     },

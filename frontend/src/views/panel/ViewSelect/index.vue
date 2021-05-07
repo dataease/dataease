@@ -18,18 +18,13 @@
         @node-drag-start="handleDragStart"
       />
     </div>
-
     <div v-if="showdetail" class="detail-class">
       <el-card class="filter-card-class">
         <div slot="header" class="button-div-class">
           <span>{{ detailItem.name }}</span>
-          <div style="float: right; padding: 1px 5px; cursor:pointer; " @click="closeDetail">
-            <i class="el-icon-close" />
-          </div>
         </div>
-        <img class="view-list-thumbnails" :src="'/common-files/images/'+detailItem.id+'/VIEW_DEFAULT_IMAGE'" alt="">
+        <img class="view-list-thumbnails" :src="detailItem.snapshot" alt="">
       </el-card>
-
     </div>
   </div>
 </template>
@@ -149,6 +144,7 @@ export default {
   }
   .detail-class {
     width: 100%;
+    min-height: 200px;
     position: fixed;
     bottom: 0px;
   }

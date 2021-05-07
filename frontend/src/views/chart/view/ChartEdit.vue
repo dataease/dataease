@@ -125,6 +125,13 @@
           </el-row>
         </div>
         <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
+          <el-row class="padding-lr">
+            <span>样式优先级</span>
+            <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
+              <el-radio style="margin-left: 20px" label="view"><span>视图</span></el-radio>
+              <el-radio label="panel"><span>仪表盘</span></el-radio>
+            </el-radio-group>
+          </el-row>
           <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
@@ -194,9 +201,10 @@
               </draggable>
             </el-row>
           </el-row>
-
-          <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
-          <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+          <div ref="imageWrapper" style="height: 100%">
+            <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+            <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+          </div>
         </el-row>
       </el-col>
     </el-row>
@@ -280,6 +288,7 @@ import BackgroundColorSelector from '../components/component-style/BackgroundCol
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
+import html2canvas from 'html2canvas'
 
 export default {
   name: 'ChartEdit',
@@ -425,6 +434,14 @@ export default {
         if (getData) {
           this.getData(response.data.id)
         } else {
+          debugger
+          html2canvas(this.$refs.imageWrapper).then(canvas => {
+            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+            if (snapshot !== '') {
+              view.snapshot = snapshot
+              post('/chart/view/save', view)
+            }
+          })
           this.getChart(response.data.id)
         }
 

@@ -166,3 +166,20 @@ CREATE TABLE `panel_link` (
   `pwd` varchar(255) DEFAULT NULL  COMMENT '密码',
   PRIMARY KEY (`resource_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板链接';
+
+DROP TABLE IF EXISTS `panel_template`;
+CREATE TABLE `panel_template` (
+  `id` varchar(50) NOT NULL,
+  `name` varchar(255) DEFAULT NULL COMMENT '名称',
+  `pid` varchar(255) DEFAULT NULL COMMENT '父级id',
+  `level` int(10) DEFAULT NULL COMMENT '层级',
+  `node_type` varchar(255) DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
+  `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+  `snapshot` longtext COMMENT '缩略图',
+  `template_type` varchar(255) DEFAULT NULL COMMENT '仪表盘类型 system 系统内置 self 用户自建 ',
+  `template_style` longtext COMMENT 'template 样式',
+  `template_data` longtext COMMENT 'template 数据',
+  `dynamic_data` longtext COMMENT '预存数据',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

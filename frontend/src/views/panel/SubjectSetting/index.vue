@@ -73,25 +73,8 @@ export default {
   ]),
 
   watch: {
-    // deep监听panel 如果改变 提交到 store
-    chart: {
-      handler(newVal, oldVla) {
-        debugger
-        const canvasStyleData = deepCopy(this.canvasStyleData)
-        const chart = deepCopy(this.chart)
-        chart.xaxis = JSON.stringify(this.chart.xaxis)
-        chart.yaxis = JSON.stringify(this.chart.yaxis)
-        chart.customAttr = JSON.stringify(this.chart.customAttr)
-        chart.customStyle = JSON.stringify(this.chart.customStyle)
-        chart.customFilter = JSON.stringify(this.chart.customFilter)
-        canvasStyleData.chart = chart
-        this.$store.commit('setCanvasStyle', canvasStyleData)
-      },
-      deep: true
-    }
   },
   created() {
-    debugger
     // 初始化赋值
     const chart = deepCopy(this.canvasStyleData.chart)
     if (chart.xaxis) {
@@ -118,16 +101,23 @@ export default {
       this.save()
     },
     onTextChange(val) {
-      debugger
       this.chart.customStyle.text = val
-      // this.save()
+      this.save()
     },
     onChangeBackgroundForm(val) {
       this.chart.customStyle.background = val
       this.save()
     },
     save() {
-      console.log('save')
+      const canvasStyleData = deepCopy(this.canvasStyleData)
+      const chart = deepCopy(this.chart)
+      chart.xaxis = JSON.stringify(this.chart.xaxis)
+      chart.yaxis = JSON.stringify(this.chart.yaxis)
+      chart.customAttr = JSON.stringify(this.chart.customAttr)
+      chart.customStyle = JSON.stringify(this.chart.customStyle)
+      chart.customFilter = JSON.stringify(this.chart.customFilter)
+      canvasStyleData.chart = chart
+      this.$store.commit('setCanvasStyle', canvasStyleData)
     }
   }
 }

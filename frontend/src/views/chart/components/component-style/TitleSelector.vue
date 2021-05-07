@@ -81,7 +81,6 @@ export default {
     }
   },
   created() {
-    debugger
     console.log(JSON.stringify(this.chart))
   },
   mounted() {

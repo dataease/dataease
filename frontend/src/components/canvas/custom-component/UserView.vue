@@ -55,7 +55,6 @@ export default {
     // deep监听panel 如果改变 提交到 store
     canvasStyleData: {
       handler(newVal, oldVla) {
-        debugger
         // this.chart.stylePriority == panel 优先使用仪表盘样式
         this.mergeStyle()
       },
@@ -110,21 +109,22 @@ export default {
         const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
 
         // 组件样式-标题设置
-        customStyleChart.text = customAttrPanel.text
+        customStyleChart.text = customStylePanel.text
         // 组件样式-背景设置
-        customStyleChart.background = customAttrPanel.background
+        customStyleChart.background = customStylePanel.background
         // 图形属性-颜色设置
-        customAttrChart.color = customStylePanel.color
+        customAttrChart.color = customAttrPanel.color
 
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
-          customStyle: JSON.stringify(customAttrChart)
+          customStyle: JSON.stringify(customStyleChart)
         }
       }
     },
     getData(id) {
       if (id) {
+        debugger
         this.requestStatus = 'waiting'
         this.message = null
         viewData(id, this.filter).then(response => {

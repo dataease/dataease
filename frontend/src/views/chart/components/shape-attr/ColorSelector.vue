@@ -35,7 +35,7 @@
               </el-form-item>
             </div>
 
-            <el-form-item v-if="sourceType==='view'" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
+            <el-form-item  :label="$t('chart.not_alpha')" class="form-item form-item-slider">
               <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
             </el-form-item>
           </el-form>

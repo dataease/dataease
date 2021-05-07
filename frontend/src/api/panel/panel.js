@@ -1,5 +1,40 @@
 import request from '@/utils/request'
 
+export function deleteSubject(id) {
+  return request({
+    url: '/panel/subject/delete/' + id,
+    method: 'delete',
+    loading: true
+  })
+}
+
+export function saveSubject(data) {
+  return request({
+    url: '/panel/subject/update',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function querySubject(data) {
+  return request({
+    url: '/panel/subject/query',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function querySubjectWithGroup(data) {
+  return request({
+    url: '/panel/subject/querySubjectWithGroup',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function defaultTree(data) {
   return request({
     url: '/panel/group/defaultTree',
@@ -32,50 +67,6 @@ export function panelSave(data) {
     method: 'post',
     loading: true,
     data
-  })
-}
-
-export function getScene(sceneId) {
-  return request({
-    url: '/panel/group/getScene/' + sceneId,
-    method: 'post'
-  })
-}
-
-export function addGroup(data) {
-  return request({
-    url: '/panel/group/save',
-    method: 'post',
-    data
-  })
-}
-
-export function delGroup(groupId) {
-  return request({
-    url: '/panel/group/deleteCircle/' + groupId,
-    method: 'post'
-  })
-}
-
-export function addTable(data) {
-  return request({
-    url: '/panel/table/update',
-    method: 'post',
-    data
-  })
-}
-
-export function delTable(tableId) {
-  return request({
-    url: '/panel/table/delete/' + tableId,
-    method: 'post'
-  })
-}
-
-export function listDatasource() {
-  return request({
-    url: '/datasource/list',
-    method: 'get'
   })
 }
 
@@ -125,4 +116,4 @@ export function get(url) {
   })
 }
 
-export default { post, get, groupTree, defaultTree, viewData ,panelSave}
+export default { post, get, groupTree, defaultTree, viewData, panelSave, querySubject, querySubjectWithGroup, saveSubject,deleteSubject }

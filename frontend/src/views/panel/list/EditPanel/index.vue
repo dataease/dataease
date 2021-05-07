@@ -102,7 +102,6 @@ export default {
         return false
       }
       panelSave(this.editPanel.panelInfo).then(response => {
-        debugger
         this.$message({
           message: '保存成功',
           type: 'success',

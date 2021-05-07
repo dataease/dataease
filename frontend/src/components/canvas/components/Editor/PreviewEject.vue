@@ -106,9 +106,11 @@ export default {
       this.panelId = this.$route.path.split('/')[2]
       // 加载视图数据
       get('panel/group/findOne/' + this.panelId).then(response => {
-        debugger
         this.componentDataSource = this.resetID(JSON.parse(response.data.panelData))
         this.canvasStyleData = JSON.parse(response.data.panelStyle)
+        this.$store.commit('setCanvasStyle', {
+          ...this.canvasStyleData
+        })
         this.resize()
       })
     },

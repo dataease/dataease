@@ -9,7 +9,7 @@
         <el-col>
           <el-row>
             <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="color">颜色</el-radio>
+              <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">颜色</el-radio>
             </el-col>
             <el-col :span="18">
               <colorPicker v-model="panel.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" />
@@ -17,7 +17,7 @@
           </el-row>
           <el-row style="height: 60px;margin-top:10px;overflow: hidden">
             <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="image">图片</el-radio>
+              <el-radio v-model="panel.backgroundType" label="image" @change="onChangeType">图片</el-radio>
             </el-col>
             <el-col :span="18">
               <el-upload
@@ -29,7 +29,7 @@
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
                 :http-request="upload"
-                :file-list="filesTmp"
+                :file-list="fileList"
                 :on-change="onChange"
               >
                 <i class="el-icon-plus" />
@@ -55,8 +55,7 @@ export default {
   name: 'BackgroundSelector',
   data() {
     return {
-      filesTmp: [],
-      imageUrl: '',
+      fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
       uploadDisabled: false,
@@ -68,37 +67,40 @@ export default {
   ]),
   watch: {
     // deep监听panel 如果改变 提交到 store
-    panel: {
-      handler(newVal, oldVla) {
-        debugger
-        const canvasStyleData = deepCopy(this.canvasStyleData)
-        canvasStyleData.panel = this.panel
-        this.$store.commit('setCanvasStyle', canvasStyleData)
-      },
-      deep: true
-    }
   },
   created() {
     // 初始化赋值
     this.panel = this.canvasStyleData.panel
+    if (this.panel.imageUrl) {
+      this.fileList.push({ url: this.panel.imageUrl })
+    }
   },
   methods: {
+    commitStyle() {
+      const canvasStyleData = deepCopy(this.canvasStyleData)
+      canvasStyleData.panel = this.panel
+      this.$store.commit('setCanvasStyle', canvasStyleData)
+    },
+    onChangeType() {
+      this.commitStyle()
+    },
     handleRemove(file, fileList) {
       this.uploadDisabled = false
       this.panel.imageUrl = null
-      console.log(file, fileList)
+      this.fileList = []
+      this.commitStyle()
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
     onChange(file, fileList) {
-      debugger
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()
       reader.onload = function() {
         _this.panel.imageUrl = reader.result
+        this.commitStyle()
       }
       reader.readAsDataURL(file.raw)
     },
