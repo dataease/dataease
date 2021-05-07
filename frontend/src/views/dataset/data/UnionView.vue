@@ -78,8 +78,8 @@
         <el-col :span="6">
           <el-radio-group v-model="union.sourceUnionRelation" size="mini" style="display: block;width: 100%;text-align: center;">
             <el-radio class="union-relation-css" label="1:1">1 : 1</el-radio>
-            <el-radio class="union-relation-css" label="1:N">1 : N</el-radio>
             <el-radio class="union-relation-css" label="N:1">N : 1</el-radio>
+            <el-radio class="union-relation-css" label="1:N">1 : N</el-radio>
           </el-radio-group>
         </el-col>
 

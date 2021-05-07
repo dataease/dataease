@@ -5,7 +5,7 @@
     </el-row>
     <el-col>
       <el-tabs v-if="tabStatus" v-model="tabActive" class="info-tab">
-        <el-tab-pane v-if="type === 'chart'" :label="$t('chart.datalist')" name="chart">
+        <el-tab-pane v-if="type === 'chart' && detail.chart" :label="$t('chart.datalist')" name="chart">
           <el-col class="info-item">
             <p class="info-title">{{ $t('commons.name') }}</p>
             <p class="info-content">{{ detail.chart.name }}</p>
@@ -28,7 +28,7 @@
           </el-col>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('dataset.datalist')" name="table">
+        <el-tab-pane v-if="detail.table" :label="$t('dataset.datalist')" name="table">
           <el-col class="info-item">
             <p class="info-title">{{ $t('commons.name') }}</p>
             <p class="info-content">{{ detail.table.name }}</p>
@@ -40,7 +40,7 @@
             <p v-if="detail.table.type === 'excel'" class="info-content">{{ $t('dataset.excel_data') }}</p>
             <p v-if="detail.table.type === 'custom'" class="info-content">{{ $t('dataset.custom_data') }}</p>
           </el-col>
-          <el-col class="info-item">
+          <el-col v-if="detail.table.type === 'db' || detail.table.type === 'sql'" class="info-item">
             <p class="info-title">{{ $t('dataset.mode') }}</p>
             <p v-if="detail.table.mode === 0" class="info-content">{{ $t('dataset.direct_connect') }}</p>
             <p v-if="detail.table.mode === 1" class="info-content">{{ $t('dataset.sync_data') }}</p>
@@ -55,7 +55,7 @@
           </el-col>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('datasource.datasource')" name="datasource">
+        <el-tab-pane v-if="detail.datasource" :label="$t('datasource.datasource')" name="datasource">
           <el-col class="info-item">
             <p class="info-title">{{ $t('commons.name') }}</p>
             <p class="info-content">{{ detail.datasource.name }}</p>
