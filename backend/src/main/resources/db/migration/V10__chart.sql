@@ -34,4 +34,8 @@ CREATE TABLE IF NOT EXISTS `chart_view`
     KEY `IDX_TABLE_ID` (`table_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+ALTER TABLE `data_ease`.`chart_view`
+ADD COLUMN `snapshot` longtext NULL COMMENT '缩略图 ' AFTER `update_time`,
+ADD COLUMN `style_priority` varchar(255) NULL COMMENT '样式优先级 panel 仪表盘 view 视图' AFTER `snapshot`;
 -- chart end
