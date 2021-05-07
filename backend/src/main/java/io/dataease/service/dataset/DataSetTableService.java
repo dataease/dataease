@@ -6,14 +6,12 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableIncrementalConfigMapper;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
-import io.dataease.commons.utils.AuthUtils;
-import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.CommonThreadPool;
-import io.dataease.commons.utils.Md5Utils;
+import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
+import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataSetPreviewPage;
@@ -194,7 +192,7 @@ public class DataSetTableService {
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
+        String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
@@ -249,7 +247,25 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+            Datasource ds =  (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);;
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
 
+            try {
+                data.addAll(jdbcProvider.getData(datasourceRequest));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                datasourceRequest.setQuery(createQueryCountSQL(ds.getType(), table));
+                dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
 
         }
