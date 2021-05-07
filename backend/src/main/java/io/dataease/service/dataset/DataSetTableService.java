@@ -647,12 +647,14 @@ public class DataSetTableService {
 
     private String saveFile(MultipartFile file) throws Exception {
         String filename = file.getOriginalFilename();
+        String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+        filename = Md5Utils.md5(filename.substring(0, filename.length() - suffix.length()));
         String dirPath = path + AuthUtils.getUser().getUsername() + "/";
         File p = new File(dirPath);
         if (!p.exists()) {
             p.mkdirs();
         }
-        String filePath = dirPath + filename;
+        String filePath = dirPath + filename + "." + suffix;
         File f = new File(filePath);
         FileOutputStream fileOutputStream = new FileOutputStream(f);
         fileOutputStream.write(file.getBytes());

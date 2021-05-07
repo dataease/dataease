@@ -273,11 +273,11 @@ public class ExtractDataService {
         jobExecutionConfiguration.setRepository(repository);
         String lastCarteObjectId = Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, repository, null);
         SlaveServerJobStatus jobStatus = null;
-        boolean running = true;
-        while(running) {
+        boolean executing = true;
+        while(executing) {
             jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), lastCarteObjectId, 0);
-            running = jobStatus.isRunning();
-            if(!running)
+            executing = jobStatus.isRunning() || jobStatus.isWaiting();
+            if(!executing)
                 break;
             Thread.sleep(1000);
         }
