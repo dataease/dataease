@@ -434,14 +434,6 @@ export default {
         if (getData) {
           this.getData(response.data.id)
         } else {
-          debugger
-          html2canvas(this.$refs.imageWrapper).then(canvas => {
-            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
-            if (snapshot !== '') {
-              view.snapshot = snapshot
-              post('/chart/view/save', view)
-            }
-          })
           this.getChart(response.data.id)
         }
 
@@ -450,6 +442,54 @@ export default {
       })
     },
     closeEdit() {
+      html2canvas(this.$refs.imageWrapper).then(canvas => {
+        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+        if (snapshot !== '') {
+          const view = JSON.parse(JSON.stringify(this.view))
+          view.id = this.view.id
+          view.sceneId = this.view.sceneId
+          view.name = this.view.name ? this.view.name : this.table.name
+          view.tableId = this.view.tableId
+          view.xaxis.forEach(function(ele) {
+            // if (!ele.summary || ele.summary === '') {
+            //   ele.summary = 'sum'
+            // }
+            if (!ele.sort || ele.sort === '') {
+              ele.sort = 'none'
+            }
+            if (!ele.filter) {
+              ele.filter = []
+            }
+          })
+          view.yaxis.forEach(function(ele) {
+            if (!ele.summary || ele.summary === '') {
+              if (ele.id === 'count') {
+                ele.summary = 'count'
+              } else {
+                ele.summary = 'sum'
+              }
+            }
+            if (!ele.sort || ele.sort === '') {
+              ele.sort = 'none'
+            }
+            if (!ele.filter) {
+              ele.filter = []
+            }
+          })
+          if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
+            if (view.yaxis.length > 1) {
+              view.yaxis.splice(1, view.yaxis.length)
+            }
+          }
+          view.xaxis = JSON.stringify(view.xaxis)
+          view.yaxis = JSON.stringify(view.yaxis)
+          view.customAttr = JSON.stringify(view.customAttr)
+          view.customStyle = JSON.stringify(view.customStyle)
+          view.customFilter = JSON.stringify(view.customFilter)
+          view.snapshot = snapshot
+          post('/chart/view/save', view)
+        }
+      })
       // 从仪表盘入口关闭
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
       this.$emit('switchComponent', { name: '' })

@@ -1,43 +1,67 @@
 <template>
-  <div>
-    <div class="my-top">
-      <el-input
-        v-model="filterText"
-        placeholder="按名称搜索"
-      />
-      <el-tree
-        ref="tree"
-        class="filter-tree"
-        :data="data"
-        :props="defaultProps"
-        :render-content="renderNode"
-        draggable
-        :allow-drop="allowDrop"
-        :allow-drag="allowDrag"
-        :filter-node-method="filterNode"
-        @node-drag-start="handleDragStart"
-      />
-    </div>
-    <div v-if="showdetail" class="detail-class">
-      <el-card class="filter-card-class">
-        <div slot="header" class="button-div-class">
-          <span>{{ detailItem.name }}</span>
-        </div>
-        <img class="view-list-thumbnails" :src="detailItem.snapshot" alt="">
-      </el-card>
-    </div>
-  </div>
+  <el-col>
+    <el-row style="margin-top: 5px">
+      <el-row style="margin-left: 5px;margin-right: 5px">
+        <el-input
+          v-model="templateFilterText"
+          placeholder="输入关键字进行过滤"
+          size="mini"
+          clearable
+          prefix-icon="el-icon-search"
+        />
+      </el-row>
+      <el-row style="margin-top: 5px">
+        <el-tree
+          ref="templateTree"
+          :default-expanded-keys="defaultExpandedKeys"
+          :data="data"
+          node-key="id"
+          :props="defaultProps"
+          draggable
+          :allow-drop="allowDrop"
+          :allow-drag="allowDrag"
+          :expand-on-click-node="true"
+          :filter-node-method="filterNode"
+          :highlight-current="true"
+          @node-drag-start="handleDragStart"
+          @node-click="nodeClick"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span>
+              <span v-if="data.type==='scene'">
+                <el-button
+                  icon="el-icon-folder"
+                  type="text"
+                />
+              </span>
+              <span v-else>
+                <svg-icon :icon-class="data.type" style="width: 14px;height: 14px" />
+              </span>
+              <span style="margin-left: 6px;font-size: 14px">{{ data.name }}</span>
+            </span>
+          </span>
+        </el-tree>
+      </el-row>
+      <el-row v-if="detailItem&&detailItem.snapshot" class="detail-class">
+        <el-card class="filter-card-class">
+          <div slot="header" class="button-div-class">
+            <span>{{ detailItem.name }}</span>
+          </div>
+          <img draggable="false" class="view-list-thumbnails" :src="detailItem.snapshot" alt="">
+        </el-card>
+      </el-row>
+    </el-row>
+  </el-col>
 </template>
 
 <script>
-import { tree } from '@/api/panel/view'
-import { addClass, removeClass } from '@/utils'
-import bus from '@/utils/bus'
+import { tree, findOne } from '@/api/panel/view'
 export default {
   name: 'ViewSelect',
   data() {
     return {
-      filterText: null,
+      templateFilterText: '',
+      defaultExpandedKeys: [],
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -48,16 +72,8 @@ export default {
     }
   },
   watch: {
-    filterText(val) {
-      this.$refs.tree.filter(val)
-    },
-    showdetail(val) {
-      const dom = document.querySelector('.my-top')
-      if (val) {
-        addClass(dom, 'top-div-class')
-      } else {
-        removeClass(dom, 'top-div-class')
-      }
+    templateFilterText(val) {
+      this.$refs.templateTree.filter(val)
     }
   },
   created() {
@@ -68,45 +84,16 @@ export default {
       if (!value) return true
       return data.name.indexOf(value) !== -1
     },
+    nodeClick(data, node) {
+      findOne(data.id).then(res => {
+        this.detailItem = res.data
+      })
+    },
     loadData() {
       const param = {}
       tree(param).then(res => {
-        // let arr = []
-        // for (let index = 0; index < 10; index++) {
-        //   arr = arr.concat(res.data)
-        // }
-        // this.data = arr
         this.data = res.data
       })
-    },
-    renderNode(h, { node, data, store }) {
-      return (
-        <div class='custom-tree-node' on-click={() => this.detail(data)} on-dblclick={() => this.addView2Drawing(data.id)}>
-          <span class='label-span' >{node.label}</span>
-          {data.type !== 'group' && data.type !== 'scene' ? (
-
-            <svg-icon icon-class={data.type} class='chart-icon' />
-          ) : (
-            ''
-          )}
-        </div>
-      )
-    },
-    detail(data) {
-      this.showdetail = true
-      this.detailItem = data
-    },
-    closeDetail() {
-      this.showdetail = false
-      this.detailItem = null
-    },
-    addView2Drawing(viewId) {
-      //   viewInfo(viewId).then(res => {
-      //     const info = res.data
-      //     this.$emit('panel-view-add', info)
-      //   })
-      bus.$emit('panel-view-add', { id: viewId })
-      //   this.$emit('panel-view-add', viewId)
     },
     handleDragStart(node, ev) {
       ev.dataTransfer.effectAllowed = 'copy'
@@ -115,7 +102,6 @@ export default {
         id: node.data.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
-      // bus.$emit('component-on-drag')
     },
 
     // 判断节点能否被拖拽
@@ -126,7 +112,6 @@ export default {
         return true
       }
     },
-
     allowDrop(draggingNode, dropNode, type) {
       return false
     }
@@ -144,7 +129,6 @@ export default {
   }
   .detail-class {
     width: 100%;
-    min-height: 200px;
     position: fixed;
     bottom: 0px;
   }

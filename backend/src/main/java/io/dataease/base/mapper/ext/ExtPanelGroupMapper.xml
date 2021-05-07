@@ -12,7 +12,7 @@
     </select>
 
     <select id="panelGroupList" resultMap="BaseResultMapDTO">
-        select panel_group.*,panel_group.name as label from panel_group
+        select id, `name`, pid, `level`, node_type, create_by, create_time, panel_type,`name` as label from panel_group
         <where>
             <if test="name != null">
                 and panel_group.name like CONCAT('%', #{name},'%')

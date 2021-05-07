@@ -392,4 +392,8 @@ public class ChartViewService {
         example.createCriteria().andIdIn(viewIds);
         return chartViewMapper.selectByExample(example);
     }
+
+    public ChartViewWithBLOBs findOne(String id) {
+        return chartViewMapper.selectByPrimaryKey(id);
+    }
 }

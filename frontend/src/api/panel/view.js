@@ -17,3 +17,12 @@ export function viewsWithIds(data) {
     data
   })
 }
+
+export function findOne(id) {
+  return request({
+    url: '/api/panelView/findOne/' + id,
+    method: 'get',
+    loading: true
+  })
+}
+

@@ -1,6 +1,7 @@
 package io.dataease.controller.panel.server;
 
 import io.dataease.base.domain.ChartView;
+import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.panel.api.ViewApi;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -49,7 +50,11 @@ public class ViewServer implements ViewApi {
 
     @Override
     public List<ChartView> viewsWithIds(@RequestBody List<String> viewIds) {
-
         return chartViewService.viewsByIds(viewIds);
+    }
+
+    @Override
+    public ChartViewWithBLOBs findOne(@PathVariable String id) {
+        return chartViewService.findOne(id);
     }
 }

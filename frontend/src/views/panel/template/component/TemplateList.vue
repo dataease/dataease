@@ -30,7 +30,7 @@
             <span>
               <span>
                 <el-button
-                  icon="el-icon-picture-outline"
+                  icon="el-icon-folder"
                   type="text"
                 />
               </span>
@@ -41,14 +41,14 @@
                 <el-dropdown trigger="click" size="small" @command="clickMore">
                   <span class="el-dropdown-link">
                     <el-button
-                      icon="el-icon-plus"
+                      icon="el-icon-more"
                       type="text"
                       size="small"
                     />
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
-                      编辑
+                      重命名
                     </el-dropdown-item>
                     <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
                       删除
