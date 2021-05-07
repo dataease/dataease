@@ -798,7 +798,17 @@ export default {
     pls_input_less_9: '请输入9位以内的正整数',
     field_edit: '编辑字段',
     table_already_add_to: '该表已添加至',
-    uploading: '上传中...'
+    uploading: '上传中...',
+    add_union: '添加关联',
+    union_setting: '关联设置',
+    pls_slc_union_field: '请选择关联字段',
+    pls_slc_union_table: '请选择关联表',
+    source_table: '关联表',
+    source_field: '关联字段',
+    target_table: '被关联表',
+    target_field: '被关联字段',
+    union_relation: '关联关系',
+    pls_setting_union_success: '请正确设置关联关系'
   },
   datasource: {
     datasource: '数据源',

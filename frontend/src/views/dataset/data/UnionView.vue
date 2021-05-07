@@ -1,0 +1,273 @@
+<template>
+  <el-row>
+    <el-button size="mini" @click="showUnionEdit">{{ $t('dataset.add_union') }}</el-button>
+    <el-row>
+      <el-table
+        size="mini"
+        :data="unionData"
+        style="width: 100%;margin-top: 10px;"
+      >
+        <el-table-column
+          prop="sourceTableName"
+          :label="$t('dataset.source_table')"
+        />
+        <el-table-column
+          prop="sourceTableFieldName"
+          :label="$t('dataset.source_field')"
+        />
+        <el-table-column
+          prop="sourceUnionRelation"
+          :label="$t('dataset.union_relation')"
+        />
+        <el-table-column
+          prop="targetTableName"
+          :label="$t('dataset.target_table')"
+        />
+        <el-table-column
+          prop="targetTableFieldName"
+          :label="$t('dataset.target_field')"
+        />
+        <el-table-column
+          fixed="right"
+          width="100"
+        >
+          <template slot-scope="scope">
+            <el-button type="text" size="mini" @click="edit(scope.row)">{{ $t('dataset.edit') }}</el-button>
+            <el-button type="text" size="mini" @click="deleteUnion(scope.row)">{{ $t('dataset.delete') }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-row>
+
+    <el-dialog
+      v-dialogDrag
+      :title="$t('dataset.union_setting')"
+      :visible="editUnion"
+      :show-close="false"
+      width="600px"
+      class="dialog-css"
+    >
+      <el-row style="display: flex;align-items: center;justify-content: center;">
+        <el-col :span="6">
+          <p class="table-name-css">{{ table.name }}</p>
+          <el-select v-model="union.sourceTableFieldId" :placeholder="$t('dataset.pls_slc_union_field')" filterable clearable size="mini">
+            <el-option
+              v-for="item in sourceFieldOption"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <span>
+                <span v-if="item.deType === 0">
+                  <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                </span>
+                <span v-if="item.deType === 1">
+                  <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                </span>
+                <span v-if="item.deType === 2 || item.deType === 3">
+                  <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                </span>
+              </span>
+              <span>
+                {{ item.name }}
+              </span>
+            </el-option>
+          </el-select>
+        </el-col>
+
+        <el-col :span="6">
+          <el-radio-group v-model="union.sourceUnionRelation" size="mini" style="display: block;width: 100%;text-align: center;">
+            <el-radio class="union-relation-css" label="1:1">1 : 1</el-radio>
+            <el-radio class="union-relation-css" label="1:N">1 : N</el-radio>
+            <el-radio class="union-relation-css" label="N:1">N : 1</el-radio>
+          </el-radio-group>
+        </el-col>
+
+        <el-col :span="6">
+          <el-popover
+            placement="bottom"
+            width="400"
+            trigger="hover"
+          >
+            <dataset-group-selector @getTable="getTable" />
+            <el-button slot="reference" size="mini">{{ $t('dataset.pls_slc_union_table') }}</el-button>
+          </el-popover>
+
+          <el-select v-model="union.targetTableFieldId" :placeholder="$t('dataset.pls_slc_union_field')" filterable clearable size="mini">
+            <el-option
+              v-for="item in targetFieldOption"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <span>
+                <span v-if="item.deType === 0">
+                  <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                </span>
+                <span v-if="item.deType === 1">
+                  <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                </span>
+                <span v-if="item.deType === 2 || item.deType === 3">
+                  <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                </span>
+              </span>
+              <span>
+                {{ item.name }}
+              </span>
+            </el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeUnion">{{ $t('dataset.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveUnion">{{ $t('dataset.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+  </el-row>
+</template>
+
+<script>
+import { post, fieldList } from '../../../api/dataset/dataset'
+import DatasetGroupSelector from '../common/DatasetGroupSelector'
+
+export default {
+  name: 'UnionView',
+  components: { DatasetGroupSelector },
+  props: {
+    table: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    return {
+      union: {
+        id: null,
+        sourceTableId: this.table.id,
+        sourceTableFieldId: '',
+        sourceUnionRelation: '',
+        targetTableId: '',
+        targetTableFieldId: '',
+        targetUnionRelation: ''
+      },
+      unionData: [],
+      editUnion: false,
+      sourceFieldOption: [],
+      targetFieldOption: []
+    }
+  },
+  watch: {
+    'table': function() {
+      this.initUnion()
+    }
+  },
+  mounted() {
+    this.initUnion()
+  },
+  methods: {
+    initUnion() {
+      post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
+        // console.log(response)
+        this.unionData = response.data
+      })
+    },
+
+    showUnionEdit() {
+      fieldList(this.table.id).then(response => {
+        this.sourceFieldOption = response.data
+      })
+      this.editUnion = true
+    },
+    saveUnion() {
+      console.log(this.union)
+      if (!this.union.sourceTableFieldId || !this.union.sourceUnionRelation || !this.union.targetTableId || !this.union.targetTableFieldId) {
+        this.$message({
+          type: 'error',
+          message: this.$t('dataset.pls_setting_union_success'),
+          showClose: true
+        })
+        return
+      }
+      this.union.targetUnionRelation = this.union.sourceUnionRelation.split('').reverse().join('')
+      post('dataset/union/save', this.union).then(response => {
+        this.$message({
+          type: 'success',
+          message: this.$t('dataset.save_success'),
+          showClose: true
+        })
+        this.closeUnion()
+        this.initUnion()
+      })
+    },
+    closeUnion() {
+      this.editUnion = false
+      this.resetUnion()
+    },
+    resetUnion() {
+      this.union = {
+        id: null,
+        sourceTableId: this.table.id,
+        sourceTableFieldId: '',
+        sourceUnionRelation: '',
+        targetTableId: '',
+        targetTableFieldId: '',
+        targetUnionRelation: ''
+      }
+    },
+
+    edit(item) {
+      this.union = JSON.parse(JSON.stringify(item))
+      fieldList(this.union.targetTableId).then(response => {
+        this.targetFieldOption = response.data
+        this.showUnionEdit()
+      })
+    },
+    deleteUnion(item) {
+      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
+        confirmButtonText: this.$t('dataset.confirm'),
+        cancelButtonText: this.$t('dataset.cancel'),
+        type: 'warning'
+      }).then(() => {
+        post('dataset/union/delete/' + item.id, {}).then(response => {
+          this.$message({
+            type: 'success',
+            message: this.$t('dataset.delete_success'),
+            showClose: true
+          })
+          this.initUnion()
+        })
+      })
+    },
+    getTable(param) {
+      // console.log(param)
+      this.union.targetTableId = param.id
+      this.union.targetTableFieldId = ''
+      fieldList(param.id).then(response => {
+        this.targetFieldOption = response.data
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .table-name-css{
+    margin: 4px 2px;
+  }
+  .union-relation-css{
+    display: block;
+    width: 100%;
+    padding: 4px 10px;
+  }
+
+  .dialog-css>>>.el-dialog__title {
+    font-size: 14px;
+  }
+  .dialog-css >>> .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px 20px;
+  }
+</style>

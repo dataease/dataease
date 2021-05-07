@@ -32,7 +32,7 @@
         <tab-data-preview :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
       <el-tab-pane :label="$t('dataset.join_view')" name="joinView">
-        关联视图 TODO
+        <union-view :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
         <update-info :table="table" />
@@ -46,10 +46,11 @@ import { getTable, post } from '@/api/dataset/dataset'
 import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
 import DatasetChartDetail from '../common/DatasetChartDetail'
+import UnionView from './UnionView'
 
 export default {
   name: 'ViewTable',
-  components: { DatasetChartDetail, UpdateInfo, TabDataPreview },
+  components: { UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
   props: {
     param: {
       type: String,

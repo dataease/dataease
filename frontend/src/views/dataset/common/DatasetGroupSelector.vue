@@ -79,6 +79,7 @@
         node-key="id"
         :expand-on-click-node="true"
         class="tree-list"
+        highlight-current
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
