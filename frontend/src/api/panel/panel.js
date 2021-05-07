@@ -116,4 +116,9 @@ export function get(url) {
   })
 }
 
-export default { post, get, groupTree, defaultTree, viewData, panelSave, querySubject, querySubjectWithGroup, saveSubject,deleteSubject }
+export function delGroup(groupId) {
+  return request({
+    url: '/panel/group/deleteCircle/' + groupId,
+    method: 'post'
+  })
+}
