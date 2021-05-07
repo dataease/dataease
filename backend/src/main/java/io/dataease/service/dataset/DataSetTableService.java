@@ -8,6 +8,8 @@ import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.CommonThreadPool;
+import io.dataease.commons.utils.Md5Utils;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.TableFiled;
@@ -54,6 +56,10 @@ public class DataSetTableService {
     @Resource
     private DataSetTableTaskService dataSetTableTaskService;
     @Resource
+    private CommonThreadPool commonThreadPool;
+    @Resource
+    private ExtractDataService extractDataService;
+    @Resource
     private DatasetTableIncrementalConfigMapper datasetTableIncrementalConfigMapper;
     @Value("${upload.file.path}")
     private String path;
@@ -79,6 +85,9 @@ public class DataSetTableService {
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
                 saveTableField(datasetTable);
+                commonThreadPool.addTask(()->{
+                    extractDataService.extractData(datasetTable.getId(), null, "all_scope");
+                });
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
@@ -330,6 +339,11 @@ public class DataSetTableService {
                 datasetTableField.setTableId(datasetTable.getId());
                 datasetTableField.setOriginName(filed.getFieldName());
                 datasetTableField.setName(filed.getRemarks());
+                if(StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")){
+                    datasetTableField.setDataeaseName("C_" + Md5Utils.md5(filed.getFieldName()));
+                }else {
+                    datasetTableField.setDataeaseName(filed.getFieldName());
+                }
                 datasetTableField.setType(filed.getFieldType());
                 if (ObjectUtils.isEmpty(ds)) {
                     datasetTableField.setDeType(transFieldType(filed.getFieldType()));
@@ -560,6 +574,7 @@ public class DataSetTableService {
                         tableFiled.setFieldName(readCell(row.getCell(j)));
                         tableFiled.setRemarks(readCell(row.getCell(j)));
                         tableFiled.setFieldType("TEXT");
+                        tableFiled.setFieldSize(1024);
                         fields.add(tableFiled);
                     } else {
                         r[j] = readCell(row.getCell(j));

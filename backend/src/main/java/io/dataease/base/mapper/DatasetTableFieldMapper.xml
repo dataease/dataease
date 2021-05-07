@@ -6,6 +6,7 @@
     <result column="table_id" jdbcType="VARCHAR" property="tableId" />
     <result column="origin_name" jdbcType="VARCHAR" property="originName" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="dataease_name" jdbcType="VARCHAR" property="dataeaseName" />
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="size" jdbcType="INTEGER" property="size" />
     <result column="de_type" jdbcType="INTEGER" property="deType" />
@@ -72,8 +73,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, origin_name, `name`, `type`, `size`, de_type, `checked`, column_index, 
-    last_sync_time
+    id, table_id, origin_name, `name`, dataease_name, `type`, `size`, de_type, `checked`, 
+    column_index, last_sync_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableFieldExample" resultMap="BaseResultMap">
     select
@@ -107,13 +108,13 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTableField">
     insert into dataset_table_field (id, table_id, origin_name, 
-      `name`, `type`, `size`, de_type, 
-      `checked`, column_index, last_sync_time
-      )
+      `name`, dataease_name, `type`, 
+      `size`, de_type, `checked`, 
+      column_index, last_sync_time)
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, 
-      #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT}
-      )
+      #{name,jdbcType=VARCHAR}, #{dataeaseName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, #{checked,jdbcType=BIT}, 
+      #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTableField">
     insert into dataset_table_field
@@ -129,6 +130,9 @@
       </if>
       <if test="name != null">
         `name`,
+      </if>
+      <if test="dataeaseName != null">
+        dataease_name,
       </if>
       <if test="type != null">
         `type`,
@@ -161,6 +165,9 @@
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="dataeaseName != null">
+        #{dataeaseName,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         #{type,jdbcType=VARCHAR},
@@ -203,6 +210,9 @@
       <if test="record.name != null">
         `name` = #{record.name,jdbcType=VARCHAR},
       </if>
+      <if test="record.dataeaseName != null">
+        dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
+      </if>
       <if test="record.type != null">
         `type` = #{record.type,jdbcType=VARCHAR},
       </if>
@@ -232,6 +242,7 @@
       table_id = #{record.tableId,jdbcType=VARCHAR},
       origin_name = #{record.originName,jdbcType=VARCHAR},
       `name` = #{record.name,jdbcType=VARCHAR},
+      dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
       `size` = #{record.size,jdbcType=INTEGER},
       de_type = #{record.deType,jdbcType=INTEGER},
@@ -253,6 +264,9 @@
       </if>
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="dataeaseName != null">
+        dataease_name = #{dataeaseName,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         `type` = #{type,jdbcType=VARCHAR},
@@ -280,6 +294,7 @@
     set table_id = #{tableId,jdbcType=VARCHAR},
       origin_name = #{originName,jdbcType=VARCHAR},
       `name` = #{name,jdbcType=VARCHAR},
+      dataease_name = #{dataeaseName,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
       `size` = #{size,jdbcType=INTEGER},
       de_type = #{deType,jdbcType=INTEGER},

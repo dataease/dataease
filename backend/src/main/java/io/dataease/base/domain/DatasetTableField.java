@@ -16,6 +16,8 @@ public class DatasetTableField implements Serializable {
 
     private String name;
 
+    private String dataeaseName;
+
     private String type;
 
     private Integer size;
