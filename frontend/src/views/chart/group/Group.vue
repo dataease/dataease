@@ -99,7 +99,7 @@
       </el-col>
 
       <!--group add/edit-->
-      <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
+      <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
@@ -180,7 +180,7 @@
       </el-tree>
 
       <!--rename chart-->
-      <el-dialog :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
+      <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
         <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="tableForm.name" />
@@ -194,6 +194,7 @@
 
       <!--添加视图-选择数据集-->
       <el-dialog
+        v-dialogDrag
         :title="$t('chart.add_chart')"
         :visible="selectTableFlag"
         :show-close="false"

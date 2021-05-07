@@ -16,6 +16,7 @@ import filter from '@/filter/filter'
 import directives from './directive'
 import VueClipboard from 'vue-clipboard2'
 import widgets from '@/components/widget'
+import './utils/dialog'
 
 import '@/components/canvas/custom-component' // 注册自定义组件
 Vue.config.productionTip = false

@@ -101,7 +101,7 @@
         </div>
       </el-col>
 
-      <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
+      <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
@@ -220,7 +220,7 @@
         </span>
       </el-tree>
 
-      <el-dialog :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
+      <el-dialog v-dialogDrag :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
         <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="tableForm.name" />

@@ -202,7 +202,7 @@
     </el-row>
 
     <!--显示名修改-->
-    <el-dialog :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
+    <el-dialog v-dialogDrag :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
       <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="itemForm.name" size="mini" clearable />
@@ -216,6 +216,7 @@
 
     <!--指标过滤器-->
     <el-dialog
+      v-dialogDrag
       :title="$t('chart.add_filter')"
       :visible="quotaFilterEdit"
       :show-close="false"
@@ -229,6 +230,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      v-dialogDrag
       :title="$t('chart.add_filter')"
       :visible="dimensionFilterEdit"
       :show-close="false"
