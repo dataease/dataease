@@ -98,7 +98,7 @@ export default {
         this.templateEditForm = JSON.parse(JSON.stringify(templateInfo))
       } else {
         this.dialogTitle = '新建'
-        this.templateEditForm = { name: '', nodeType: 'template', templateType: this.currentTemplateType, level: 0 }
+        this.templateEditForm = { name: '', nodeType: 'folder', templateType: this.currentTemplateType, level: 0 }
       }
       this.editTemplate = true
     },

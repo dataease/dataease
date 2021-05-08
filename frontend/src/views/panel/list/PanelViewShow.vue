@@ -110,7 +110,7 @@ export default {
             templateStyle: JSON.stringify(this.canvasStyleData),
             templateData: JSON.stringify(this.componentData),
             templateType: 'self',
-            nodeType: 'folder',
+            nodeType: 'template',
             level: 1,
             pid: null,
             dynamicData: ''
