@@ -58,8 +58,12 @@ export default {
   },
   computed: {
     classBackground() {
-      return {
-        background: `url(${this.importTemplateInfo.snapshot}) no-repeat`
+      if (this.importTemplateInfo.snapshot) {
+        return {
+          background: `url(${this.importTemplateInfo.snapshot}) no-repeat`
+        }
+      } else {
+        return {}
       }
     }
   },
