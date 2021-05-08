@@ -468,7 +468,6 @@ export default {
           const temp = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', temp)
           this.$store.dispatch('panel/setPanelInfo', data)
-          this.currGroup = data
         })
       }
       if (node.expanded) {

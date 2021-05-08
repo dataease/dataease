@@ -57,7 +57,7 @@ export default {
     customStyle() {
       let style = {}
       if (this.canvasStyleData.openCommonStyle) {
-        if (this.canvasStyleData.panel.backgroundType === 'image') {
+        if (this.canvasStyleData.panel.backgroundType === 'image'&&this.canvasStyleData.panel.imageUrl) {
           style = {
             width: '100%',
             height: '100%',

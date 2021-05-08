@@ -17,7 +17,6 @@ CREATE TABLE `panel_design` (
   `update_person` varchar(255) DEFAULT NULL COMMENT '修改人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='仪表盘和组件的关联关系 组件分为普通视图和系统组件';
-
 -- ----------------------------
 -- Table structure for panel_group
 -- ----------------------------
@@ -66,21 +65,32 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 
 
-DROP function IF EXISTS GET_PANEL_CHILDREN_CHILDREN;
+DROP function IF EXISTS GET_PANEL_GROUP_WITH_CHILDREN;
 DELIMITER $$
-CREATE  FUNCTION `GET_PANEL_CHILDREN_CHILDREN`(parentId varchar(8000)) RETURNS varchar(8000) CHARSET utf8
-READS SQL DATA
+CREATE  FUNCTION `GET_PANEL_GROUP_WITH_CHILDREN`(parentId varchar(8000)) RETURNS varchar(8000) CHARSET utf8
+    READS SQL DATA
 BEGIN
-    DECLARE oTemp VARCHAR(8000);
-    DECLARE oTempChild VARCHAR(8000);
-    SET oTemp = '';
-    SET oTempChild = CAST(parentId AS CHAR);
-    WHILE oTempChild IS NOT NULL
-        DO
-        SET oTemp = CONCAT(oTemp,',',oTempChild);
-        SELECT GROUP_CONCAT(id) INTO oTempChild FROM panel_group WHERE FIND_IN_SET(pid,oTempChild) > 0;
-    END WHILE;
-    RETURN oTemp;
+
+DECLARE oTemp VARCHAR(8000);
+
+DECLARE oTempChild VARCHAR(8000);
+
+SET oTemp = '';
+
+SET oTempChild = CAST(parentId AS CHAR);
+
+WHILE oTempChild IS NOT NULL
+
+DO
+
+SET oTemp = CONCAT(oTemp,',',oTempChild);
+
+SELECT GROUP_CONCAT(id) INTO oTempChild FROM panel_group WHERE FIND_IN_SET(pid,oTempChild) > 0;
+
+END WHILE;
+
+RETURN oTemp;
+
 END $$
 DELIMITER ;
 
@@ -183,3 +193,18 @@ CREATE TABLE `panel_template` (
   `dynamic_data` longtext COMMENT '预存数据',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+DROP TABLE IF EXISTS `panel_subject`;
+CREATE TABLE `panel_subject` (
+  `id` varchar(50) NOT NULL,
+  `name` varchar(255) DEFAULT NULL COMMENT '主题名称',
+  `type` varchar(255) DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
+  `details` longtext COMMENT '主题内容',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+  `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
+  `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
+  `update_by` varchar(255) DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

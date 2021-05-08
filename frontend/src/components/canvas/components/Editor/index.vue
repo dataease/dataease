@@ -109,7 +109,7 @@ export default {
         height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px'
       }
       if (this.canvasStyleData.openCommonStyle) {
-        if (this.canvasStyleData.panel.backgroundType === 'image') {
+        if (this.canvasStyleData.panel.backgroundType === 'image'&&this.canvasStyleData.panel.imageUrl) {
           style = {
             width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
             height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px',
