@@ -59,7 +59,7 @@ CREATE TABLE `sys_menu` (
   UNIQUE KEY `uniq_title` (`title`),
   UNIQUE KEY `uniq_name` (`name`),
   KEY `inx_pid` (`pid`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统菜单';
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统菜单';
 
 -- ----------------------------
 -- Records of sys_menu
@@ -71,7 +71,7 @@ INSERT INTO `sys_menu` VALUES (3, 1, 3, 1, '菜单管理', '菜单管理', 'syst
 INSERT INTO `sys_menu` VALUES (4, 1, 3, 1, '组织管理', '组织管理', 'system/dept/index', 3, 'dept', 'dept', NULL, b'0', b'0', 'dept:read', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (5, 1, 3, 1, '角色管理', '角色管理', 'system/role/index', 4, 'role', 'role', b'0', b'0', b'0', 'role:read', NULL, NULL, 1614683852133, 1614683852133);
 INSERT INTO `sys_menu` VALUES (6, 1, 0, 1, '参数管理', '参数管理', 'system/systemParamSettings/index', 5, 'sys-tools', 'systemParamSettings', NULL, b'0', b'0', 'sysparam:read', NULL, NULL, NULL, 1615790294169);
-INSERT INTO `sys_menu` VALUES (8, 0, 0, 1, '数据集', '数据集', 'dataset/index', 3, '', '/dataset', NULL, b'0', b'0', 'data:read', NULL, NULL, NULL, 1614916684821);
+INSERT INTO `sys_menu` VALUES (8, 0, 0, 1, '数据管理', '数据管理', 'dataset/index', 3, '', '/dataset', NULL, b'0', b'0', 'data:read', NULL, NULL, NULL, 1614916684821);
 INSERT INTO `sys_menu` VALUES (10, 0, 0, 1, '视图', '视图', 'chart/index', 2, '', '/chart', NULL, b'0', b'0', 'chart:read', NULL, NULL, NULL, 1614915491036);
 INSERT INTO `sys_menu` VALUES (12, 3, 0, 2, '创建菜单', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'menu:add', NULL, NULL, 1614924617327, 1614924617327);
 INSERT INTO `sys_menu` VALUES (13, 3, 0, 2, '删除菜单', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'menu:del', NULL, NULL, 1614924667808, 1614924667808);
@@ -97,6 +97,8 @@ INSERT INTO `sys_menu` VALUES (36, 1, 0, 1, '菜单表单', '菜单表单', 'sys
 INSERT INTO `sys_menu` VALUES (37, 1, 0, 1, '组织表单', '组织表单', 'system/dept/form', 12, '', 'dept-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (38, 1, 0, 1, '角色表单', '角色表单', 'system/role/form', 13, '', 'role-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (39, 0, 0, 1, '数据源表单', '数据源表单', 'system/datasource/form', 5, NULL, '/ds-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (40, 1, 0, 1, '模板管理', '模板管理', 'panel/template/index', 13, 'dashboard', 'panel/template/index', NULL, b'0', b'0', 'sysparam:read', NULL, NULL, NULL, 1620444227389);
+INSERT INTO `sys_menu` VALUES (41, 1, 0, 1, '权限管理', '权限管理', 'system/permission/index', 14, 'password', 'system/permission/index', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, 1620447312657);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
