@@ -85,12 +85,13 @@
 
         <el-col :span="6">
           <el-popover
+            ref="targetTable"
             placement="bottom"
-            width="400"
-            trigger="hover"
+            width="500"
+            trigger="click"
           >
             <dataset-group-selector @getTable="getTable" />
-            <el-button slot="reference" size="mini">{{ $t('dataset.pls_slc_union_table') }}</el-button>
+            <el-button slot="reference" size="mini">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</el-button>
           </el-popover>
 
           <el-select v-model="union.targetTableFieldId" :placeholder="$t('dataset.pls_slc_union_field')" filterable clearable size="mini">
@@ -154,7 +155,8 @@ export default {
       unionData: [],
       editUnion: false,
       sourceFieldOption: [],
-      targetFieldOption: []
+      targetFieldOption: [],
+      targetTable: {}
     }
   },
   watch: {
@@ -174,6 +176,7 @@ export default {
     },
 
     showUnionEdit() {
+      this.union.sourceTableId = this.table.id
       fieldList(this.table.id).then(response => {
         this.sourceFieldOption = response.data
       })
@@ -218,6 +221,7 @@ export default {
 
     edit(item) {
       this.union = JSON.parse(JSON.stringify(item))
+      this.targetTable.name = this.union.targetTableName
       fieldList(this.union.targetTableId).then(response => {
         this.targetFieldOption = response.data
         this.showUnionEdit()
@@ -241,11 +245,13 @@ export default {
     },
     getTable(param) {
       // console.log(param)
+      this.targetTable = param
       this.union.targetTableId = param.id
       this.union.targetTableFieldId = ''
       fieldList(param.id).then(response => {
         this.targetFieldOption = response.data
       })
+      this.$refs['targetTable'].doClose()
     }
   }
 }
