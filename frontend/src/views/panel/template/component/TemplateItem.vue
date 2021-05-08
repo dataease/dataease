@@ -22,9 +22,13 @@ export default {
   },
   computed: {
     classBackground() {
-      return {
-        background: `url(${this.template.snapshot}) no-repeat`,
-        'background-size': `100% 100%`
+      if (this.template.snapshot) {
+        return {
+          background: `url(${this.template.snapshot}) no-repeat`,
+          'background-size': `100% 100%`
+        }
+      } else {
+        return {}
       }
     }
   },
