@@ -101,7 +101,7 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        that.height = currentHeight - 56 - 15 - 26 - 25 - 43 - 10
+        that.height = currentHeight - 56 - 15 - 26 - 25 - 43 - 15
       }, 10)
     },
 
