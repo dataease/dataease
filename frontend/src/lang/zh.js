@@ -811,7 +811,9 @@ export default {
     target_table: '被关联表',
     target_field: '被关联字段',
     union_relation: '关联关系',
-    pls_setting_union_success: '请正确设置关联关系'
+    pls_setting_union_success: '请正确设置关联关系',
+    check_all: '全选',
+    can_not_union_self: '被关联表不能与关联表相同'
   },
   datasource: {
     datasource: '数据源',

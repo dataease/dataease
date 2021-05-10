@@ -1,37 +1,48 @@
 <template>
   <el-col>
-    <el-row>
-      <el-row style="height: 26px;">
-        <span style="line-height: 26px;">
-          {{ $t('dataset.add_custom_table') }}
-        </span>
-        <el-row style="float: right">
-          <el-button size="mini" @click="cancel">
-            {{ $t('dataset.cancel') }}
-          </el-button>
-          <el-button size="mini" type="primary" :disabled="checkTableList.length < 1" @click="save">
-            {{ $t('dataset.confirm') }}
-          </el-button>
-        </el-row>
-      </el-row>
-      <el-divider />
-      <el-row>
-        <el-col>
-          自助数据集
-        </el-col>
-        <el-col>
-          TODO
-        </el-col>
+    <el-row style="height: 26px;">
+      <span style="line-height: 26px;">
+        {{ $t('dataset.add_custom_table') }}
+      </span>
+      <el-row style="float: right">
+        <el-button size="mini" @click="cancel">
+          {{ $t('dataset.cancel') }}
+        </el-button>
+        <el-button :disabled="!name || checkedList.length === 0" size="mini" type="primary" @click="save">
+          {{ $t('dataset.confirm') }}
+        </el-button>
       </el-row>
     </el-row>
+    <el-divider />
+    <el-row>
+      <el-form :inline="true">
+        <el-form-item class="form-item">
+          <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
+        </el-form-item>
+      </el-form>
+    </el-row>
+    <el-col style="display: flex;flex-direction: row">
+      <el-col class="panel-height" style="width: 220px;border-right:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;">
+        <dataset-group-selector :mode="1" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
+      </el-col>
+      <el-col class="panel-height" style="width: 235px;border-right:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
+        <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
+      </el-col>
+      <el-col class="panel-height" style="flex: 1;">
+        123
+      </el-col>
+    </el-col>
   </el-col>
 </template>
 
 <script>
 import { post } from '@/api/dataset/dataset'
+import DatasetGroupSelector from '../common/DatasetGroupSelector'
+import DatasetCustomField from '../common/DatasetCustomField'
 
 export default {
   name: 'AddCustom',
+  components: { DatasetCustomField, DatasetGroupSelector },
   props: {
     param: {
       type: Object,
@@ -40,62 +51,85 @@ export default {
   },
   data() {
     return {
-      searchTable: '',
-      options: [],
-      dataSource: '',
-      tables: [],
-      checkTableList: [],
-      mode: '0',
-      tableData: []
+      name: '自助数据集',
+      table: {},
+      checkedList: [],
+      unionData: []
     }
   },
   watch: {
-    // dataSource(val) {
-    //   if (val) {
-    //     post('/datasource/getTables', { id: val }).then(response => {
-    //       this.tables = response.data
-    //       this.tableData = JSON.parse(JSON.stringify(this.tables))
-    //     })
-    //   }
-    // },
-    // searchTable(val) {
-    //   if (val && val !== '') {
-    //     this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.includes(val) })))
-    //   } else {
-    //     this.tableData = JSON.parse(JSON.stringify(this.tables))
-    //   }
-    // }
+    'checkedList': function() {
+      // console.log(this.checkedList)
+      if (this.checkedList && this.checkedList.length > 0) {
+        // 根据第一个选择的数据集找到关联视图
+        post('dataset/union/listByTableId/' + this.checkedList[0].tableId, {}).then(response => {
+          // console.log(response)
+          this.unionData = response.data
+        })
+      } else {
+        this.unionData = []
+      }
+    }
   },
   mounted() {
-    // this.initDataSource()
-  },
-  activated() {
-    // this.initDataSource()
   },
   methods: {
-    // initDataSource() {
-    //   listDatasource().then(response => {
-    //     this.options = response.data
-    //   })
-    // },
-
-    save() {
-      // console.log(this.checkTableList);
-      // console.log(this.scene);
-      const sceneId = this.param.id
-      const dataSourceId = this.dataSource
-      const tables = []
-      // const mode = this.mode
-      this.checkTableList.forEach(function(name) {
-        tables.push({
-          name: name,
-          sceneId: sceneId,
-          dataSourceId: dataSourceId,
-          type: 'excel',
-          mode: 1
+    getTable(table) {
+      // console.log(table)
+      this.table = table
+    },
+    getChecked(tableCheckedField) {
+      // console.log(tableCheckedField)
+      if (tableCheckedField.checkedFields && tableCheckedField.checkedFields.length > 0) {
+        if (!this.checkedList.some(ele => ele.tableId === tableCheckedField.tableId)) {
+          this.checkedList.push(tableCheckedField)
+        } else {
+          this.checkedList.forEach(ele => {
+            if (ele.tableId === tableCheckedField.tableId) {
+              ele.checkedFields = tableCheckedField.checkedFields
+            }
+          })
+        }
+      } else {
+        let index = -1
+        for (let i = 0; i < this.checkedList.length; i++) {
+          if (this.checkedList[i].tableId === tableCheckedField.tableId) {
+            index = i
+            break
+          }
+        }
+        if (index > -1) {
+          this.checkedList.splice(index, 1)
+        }
+      }
+      // console.log(this.checkedList)
+      // request to get data
+      if (this.checkedList.length > 0) {
+        const table = {
+          id: this.param.tableId,
+          name: this.name,
+          sceneId: this.param.id,
+          dataSourceId: null,
+          type: 'custom',
+          mode: 1,
+          info: '{"list":' + JSON.stringify(this.checkedList) + '}'
+        }
+        post('/dataset/table/customPreview', table).then(response => {
+          console.log(response)
         })
-      })
-      post('/dataset/table/batchAdd', tables).then(response => {
+      }
+    },
+    save() {
+      const table = {
+        id: this.param.tableId,
+        name: this.name,
+        sceneId: this.param.id,
+        dataSourceId: null,
+        type: 'custom',
+        mode: 1,
+        info: '{"list":' + JSON.stringify(this.checkedList) + '}'
+      }
+      post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())
         this.cancel()
       })
@@ -103,16 +137,11 @@ export default {
 
     cancel() {
       this.dataReset()
-      // this.$router.push('/dataset/home')
       this.$emit('switchComponent', { name: '' })
     },
 
     dataReset() {
-      this.searchTable = ''
-      this.options = []
-      this.dataSource = ''
-      this.tables = []
-      this.checkTableList = []
+
     }
   }
 
@@ -140,5 +169,9 @@ export default {
 
   span{
     font-size: 14px;
+  }
+
+  .panel-height{
+    height: calc(100vh - 56px - 15px - 26px - 25px - 43px);
   }
 </style>
