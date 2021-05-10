@@ -90,7 +90,7 @@
             width="500"
             trigger="click"
           >
-            <dataset-group-selector @getTable="getTable" />
+            <dataset-group-selector :mode="1" @getTable="getTable" />
             <el-button slot="reference" size="mini">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</el-button>
           </el-popover>
 
@@ -169,10 +169,12 @@ export default {
   },
   methods: {
     initUnion() {
-      post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
-        // console.log(response)
-        this.unionData = response.data
-      })
+      if (this.table.id) {
+        post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
+          // console.log(response)
+          this.unionData = response.data
+        })
+      }
     },
 
     showUnionEdit() {
@@ -183,7 +185,7 @@ export default {
       this.editUnion = true
     },
     saveUnion() {
-      console.log(this.union)
+      // console.log(this.union)
       if (!this.union.sourceTableFieldId || !this.union.sourceUnionRelation || !this.union.targetTableId || !this.union.targetTableFieldId) {
         this.$message({
           type: 'error',
@@ -245,6 +247,14 @@ export default {
     },
     getTable(param) {
       // console.log(param)
+      if (param.id === this.table.id) {
+        this.$message({
+          type: 'error',
+          message: this.$t('dataset.can_not_union_self'),
+          showClose: true
+        })
+        return
+      }
       this.targetTable = param
       this.union.targetTableId = param.id
       this.union.targetTableFieldId = ''

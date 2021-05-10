@@ -83,7 +83,7 @@
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
-          <span style="display: flex;flex: 1;width: 0;">
+          <span :id="data.id" style="display: flex;flex: 1;width: 0;">
             <span>
               <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
               <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
@@ -107,6 +107,23 @@ import {isKettleRunning, post} from '@/api/dataset/dataset'
 
 export default {
   name: 'DatasetGroupSelector',
+  props: {
+    mode: {
+      type: Number,
+      required: false,
+      default: -1
+    },
+    unionData: {
+      type: Array,
+      required: false,
+      default: null
+    },
+    checkedList: {
+      type: Array,
+      required: false,
+      default: null
+    }
+  },
   data() {
     return {
       isKettleRunning: false,
@@ -133,6 +150,9 @@ export default {
   },
   computed: {},
   watch: {
+    'unionData': function() {
+      this.unionDataChange()
+    },
     search(val) {
       if (val && val !== '') {
         this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
@@ -188,7 +208,8 @@ export default {
       if (this.currGroup) {
         post('/dataset/table/list', {
           sort: 'type asc,create_time desc,name asc',
-          sceneId: this.currGroup.id
+          sceneId: this.currGroup.id,
+          mode: this.mode < 0 ? null : this.mode
         }).then(response => {
           this.tables = response.data
           for (let i = 0; i < this.tables.length; i++) {
@@ -197,6 +218,10 @@ export default {
             }
           }
           this.tableData = JSON.parse(JSON.stringify(this.tables))
+
+          this.$nextTick(function() {
+            this.unionDataChange()
+          })
         })
       }
     },
@@ -232,6 +257,40 @@ export default {
         return
       }
       this.$emit('getTable', data)
+    },
+
+    unionDataChange() {
+      if (!this.sceneMode) {
+        return
+      }
+      if (!this.checkedList || this.checkedList.length === 0) {
+        this.tableData.forEach(ele => {
+          const span = document.getElementById(ele.id).parentNode
+          const div1 = span.parentNode
+          const div2 = div1.parentNode
+          span.style.removeProperty('color')
+          div1.style.removeProperty('cursor')
+          div2.style.removeProperty('pointer-events')
+        })
+        return
+      }
+      const tableList = this.tableData.map(ele => {
+        return ele.id
+      })
+      const unionList = this.unionData.map(ele => {
+        return ele.targetTableId
+      })
+      unionList.push(this.checkedList[0].tableId)
+      const notUnionList = tableList.concat(unionList).filter(v => tableList.includes(v) && !unionList.includes(v))
+
+      notUnionList.forEach(ele => {
+        const span = document.getElementById(ele).parentNode
+        const div1 = span.parentNode
+        const div2 = div1.parentNode
+        span.style.setProperty('color', '#c0c4cc')
+        div1.style.setProperty('cursor', 'not-allowed')
+        div2.style.setProperty('pointer-events', 'none')
+      })
     }
   }
 }

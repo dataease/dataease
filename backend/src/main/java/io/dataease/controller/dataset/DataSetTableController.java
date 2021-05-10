@@ -73,6 +73,11 @@ public class DataSetTableController {
         return dataSetTableService.getSQLPreview(dataSetTableRequest);
     }
 
+    @PostMapping("customPreview")
+    public Map<String, Object> customPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getCustomPreview(dataSetTableRequest);
+    }
+
     @PostMapping("incrementalConfig")
     public DatasetTableIncrementalConfig incrementalConfig(@RequestBody DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
         return dataSetTableService.incrementalConfig(datasetTableIncrementalConfig);
