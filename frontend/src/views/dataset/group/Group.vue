@@ -242,7 +242,7 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree } from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, isKettleRunning} from '@/api/dataset/dataset'
 
 export default {
   name: 'Group',
@@ -288,16 +288,11 @@ export default {
   },
   computed: {
     sceneData: function() {
-      console.log(this.$store.state.dataset.sceneData + ' do post')
       this.tableTree()
       return this.$store.state.dataset.sceneData
     }
   },
   watch: {
-    // search(val){
-    //   this.groupForm.name = val;
-    //   this.tree(this.groupForm);
-    // }
     search(val) {
       if (val && val !== '') {
         this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
@@ -310,9 +305,16 @@ export default {
     this.tree(this.groupForm)
     this.refresh()
     this.tableTree()
-    // this.$router.push('/dataset');
+  },
+  created(){
+    this.kettleRunning()
   },
   methods: {
+    kettleRunning(){
+      isKettleRunning().then(res => {
+        this.isKettleRunning = res.data
+      })
+    },
     clickAdd(param) {
       // console.log(param);
       this.add(param.type)
@@ -552,7 +554,7 @@ export default {
     },
 
     addData(name) {
-      this.$emit('switchComponent', { name: name, param: this.currGroup })
+      this.$emit('switchComponent', { name: name, param: this.currGroup, isKettleRunning: this.isKettleRunning})
     },
 
     sceneClick(data, node) {

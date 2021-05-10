@@ -103,12 +103,13 @@
 </template>
 
 <script>
-import { post } from '@/api/dataset/dataset'
+import {isKettleRunning, post} from '@/api/dataset/dataset'
 
 export default {
   name: 'DatasetGroupSelector',
   data() {
     return {
+      isKettleRunning: false,
       sceneMode: false,
       search: '',
       data: [],
@@ -132,10 +133,6 @@ export default {
   },
   computed: {},
   watch: {
-    // search(val){
-    //   this.groupForm.name = val;
-    //   this.tree(this.groupForm);
-    // }
     search(val) {
       if (val && val !== '') {
         this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
@@ -152,7 +149,15 @@ export default {
     this.tree(this.groupForm)
     this.tableTree()
   },
+  created(){
+    this.kettleRunning()
+  },
   methods: {
+    kettleRunning(){
+      isKettleRunning().then(res => {
+        this.isKettleRunning = res.data
+      })
+    },
     close() {
       this.editGroup = false
       this.groupForm = {
@@ -186,14 +191,17 @@ export default {
           sceneId: this.currGroup.id
         }).then(response => {
           this.tables = response.data
+          for (let i = 0; i < this.tables.length; i++) {
+            if(this.tables[i].mode===1 && this.isKettleRunning === false){
+              this.$set(this.tables[i],"disabled",true)
+            }
+          }
           this.tableData = JSON.parse(JSON.stringify(this.tables))
         })
       }
     },
 
     nodeClick(data, node) {
-      // console.log(data);
-      // console.log(node);
       if (data.type === 'scene') {
         this.sceneMode = true
         this.currGroup = data
@@ -215,7 +223,14 @@ export default {
     },
 
     sceneClick(data, node) {
-      // console.log(data);
+      if(data.disabled){
+        this.$message({
+          type: 'warning',
+          message: this.$t('dataset.invalid_dataset'),
+          showClose: true
+        })
+        return
+      }
       this.$emit('getTable', data)
     }
   }

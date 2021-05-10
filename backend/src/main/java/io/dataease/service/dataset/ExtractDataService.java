@@ -23,9 +23,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
@@ -54,7 +60,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.naming.AuthenticationException;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -527,6 +536,31 @@ public class ExtractDataService {
         userDefinedJavaClassStep.setLocation(300, 100);
         userDefinedJavaClassStep.setDraw(true);
         return  userDefinedJavaClassStep;
+    }
+
+    public boolean isKettleRunning(){
+        try {
+            if (InetAddress.getByName(carte).isReachable(1000)) {
+                HttpClient httpClient;
+                HttpGet getMethod = new HttpGet( "http://" + carte + ":" + port);
+                HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+                clientBuilder.setConnectionTimeout(1);
+                clientBuilder.setCredentials(user, passwd);
+                httpClient = clientBuilder.build();
+                HttpResponse httpResponse = httpClient.execute( getMethod );
+                int statusCode = httpResponse.getStatusLine().getStatusCode();
+                if ( statusCode != -1 ) {
+                    if ( statusCode == HttpStatus.SC_UNAUTHORIZED ) {
+                        return false;
+                    }
+                }
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            return false;
+        }
+        return false;
     }
 
     private static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +

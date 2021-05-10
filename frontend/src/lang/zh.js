@@ -811,7 +811,8 @@ export default {
     target_table: '被关联表',
     target_field: '被关联字段',
     union_relation: '关联关系',
-    pls_setting_union_success: '请正确设置关联关系'
+    pls_setting_union_success: '请正确设置关联关系',
+    invalid_dataset:'Kettle未运行，无效数据集'
   },
   datasource: {
     datasource: '数据源',

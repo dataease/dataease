@@ -33,7 +33,7 @@
           <el-form-item class="form-item">
             <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
               <el-option :label="$t('dataset.direct_connect')" value="0" />
-              <el-option :label="$t('dataset.sync_data')" value="1" />
+              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!isKettleRunning" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -121,6 +121,10 @@ export default {
     param: {
       type: Object,
       required: true
+    },
+    isKettleRunning: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
