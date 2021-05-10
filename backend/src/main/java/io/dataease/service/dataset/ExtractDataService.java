@@ -115,7 +115,11 @@ public class ExtractDataService {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
             switch (datasetTableField.getDeType()){
                 case 0:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    if(datasetTableField.getSize() > 65533){
+                        Column_Fields = Column_Fields + "String" + ",`";
+                    }else {
+                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    }
                     break;
                 case 1:
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
