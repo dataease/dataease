@@ -22,14 +22,30 @@
       </el-form>
     </el-row>
     <el-col style="display: flex;flex-direction: row">
-      <el-col class="panel-height" style="width: 220px;border-right:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;">
+      <el-col class="panel-height" style="width: 220px;border-right:solid 1px #dcdfe6;border-top:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;">
         <dataset-group-selector :mode="1" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
       </el-col>
-      <el-col class="panel-height" style="width: 235px;border-right:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
+      <el-col class="panel-height" style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
         <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
       </el-col>
       <el-col class="panel-height" style="flex: 1;">
-        123
+        <ux-grid
+          ref="plxTable"
+          size="mini"
+          style="width: 100%;"
+          :height="height"
+          :checkbox-config="{highlight: true}"
+          :width-resize="true"
+        >
+          <ux-table-column
+            v-for="field in fields"
+            :key="field.fieldName"
+            min-width="200px"
+            :field="field.fieldName"
+            :title="field.remarks"
+            :resizable="true"
+          />
+        </ux-grid>
       </el-col>
     </el-col>
   </el-col>
@@ -54,7 +70,10 @@ export default {
       name: '自助数据集',
       table: {},
       checkedList: [],
-      unionData: []
+      unionData: [],
+      height: 500,
+      data: [],
+      fields: []
     }
   },
   watch: {
@@ -72,8 +91,20 @@ export default {
     }
   },
   mounted() {
+    window.onresize = () => {
+      this.calHeight()
+    }
+    this.calHeight()
   },
   methods: {
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 15 - 26 - 25 - 43
+      }, 10)
+    },
+
     getTable(table) {
       // console.log(table)
       this.table = table
@@ -116,6 +147,10 @@ export default {
         }
         post('/dataset/table/customPreview', table).then(response => {
           console.log(response)
+          this.fields = response.data.fields
+          this.data = response.data.data
+          const datas = this.data
+          this.$refs.plxTable.reloadData(datas)
         })
       }
     },
