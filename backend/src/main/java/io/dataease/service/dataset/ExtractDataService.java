@@ -540,27 +540,25 @@ public class ExtractDataService {
 
     public boolean isKettleRunning(){
         try {
-            if (InetAddress.getByName(carte).isReachable(1000)) {
-                HttpClient httpClient;
-                HttpGet getMethod = new HttpGet( "http://" + carte + ":" + port);
-                HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
-                clientBuilder.setConnectionTimeout(1);
-                clientBuilder.setCredentials(user, passwd);
-                httpClient = clientBuilder.build();
-                HttpResponse httpResponse = httpClient.execute( getMethod );
-                int statusCode = httpResponse.getStatusLine().getStatusCode();
-                if ( statusCode != -1 ) {
-                    if ( statusCode == HttpStatus.SC_UNAUTHORIZED ) {
-                        return false;
-                    }
-                }
+            if (!InetAddress.getByName(carte).isReachable(1000)) {
+                return false;
+            }
+            HttpClient httpClient;
+            HttpGet getMethod = new HttpGet( "http://" + carte + ":" + port);
+            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+            clientBuilder.setConnectionTimeout(1);
+            clientBuilder.setCredentials(user, passwd);
+            httpClient = clientBuilder.build();
+            HttpResponse httpResponse = httpClient.execute( getMethod );
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if ( statusCode != -1 &&  statusCode < 400) {
+                return true;
             }else {
                 return false;
             }
         }catch (Exception e){
             return false;
         }
-        return false;
     }
 
     private static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
