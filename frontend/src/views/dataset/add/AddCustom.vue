@@ -152,6 +152,11 @@ export default {
           const datas = this.data
           this.$refs.plxTable.reloadData(datas)
         })
+      } else {
+        this.fields = []
+        this.data = []
+        const datas = this.data
+        this.$refs.plxTable.reloadData(datas)
       }
     },
     save() {
