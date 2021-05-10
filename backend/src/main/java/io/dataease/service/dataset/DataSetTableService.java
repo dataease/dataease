@@ -475,6 +475,9 @@ public class DataSetTableService {
             List<DatasetTableField> fieldList = new ArrayList<>();
             list.forEach(ele -> {
                 List<DatasetTableField> listByIds = dataSetTableFieldsService.getListByIds(ele.getCheckedFields());
+                listByIds.forEach(f -> {
+                    f.setDataeaseName(DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName()));
+                });
                 fieldList.addAll(listByIds);
             });
             for (int i = 0; i < fieldList.size(); i++) {
@@ -482,7 +485,6 @@ public class DataSetTableService {
                 datasetTableField.setId(null);
                 datasetTableField.setTableId(datasetTable.getId());
                 datasetTableField.setColumnIndex(i);
-                datasetTableField.setDataeaseName(DorisTableUtils.dorisFieldName(datasetTable.getId() + "_" + datasetTableField.getDataeaseName()));
             }
             dataSetTableFieldsService.batchEdit(fieldList);
             // custom 创建doris视图
