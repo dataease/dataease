@@ -86,7 +86,6 @@ export default {
   },
   methods: {
     initTable(id) {
-      console.log(id)
       this.tabActive = 'dataPreview'
       this.tableViewRowForm.row = 1000
       if (id !== null) {

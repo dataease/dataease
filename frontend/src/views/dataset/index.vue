@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     switchComponent(c) {
-      console.log(c)
       this.param = c.param
       switch (c.name) {
         case 'ViewTable':

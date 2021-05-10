@@ -480,6 +480,9 @@ public class DataSetTableService {
 
 
     public void saveIncrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig) {
+        if(datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())){
+            return;
+        }
         if (StringUtils.isEmpty(datasetTableIncrementalConfig.getId())) {
             datasetTableIncrementalConfig.setId(UUID.randomUUID().toString());
             datasetTableIncrementalConfigMapper.insertSelective(datasetTableIncrementalConfig);

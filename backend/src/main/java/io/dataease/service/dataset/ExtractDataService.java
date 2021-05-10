@@ -22,6 +22,7 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -167,10 +168,6 @@ public class ExtractDataService {
                 }
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
             });
-            for (DatasetTableField datasetTableField : datasetTableFields) {
-                System.out.println(new Gson().toJson(datasetTableField));
-            }
-
             String dorisTablColumnSql = createDorisTablColumnSql(datasetTableFields);
             switch (updateType) {
                 // 全量更新
@@ -227,9 +224,9 @@ public class ExtractDataService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            LogUtil.error("ExtractData error, dataaset: " + datasetTableId);
-            LogUtil.error(e.getMessage(), e);
+            LogUtil.error("Extract data error: " + datasetTableId, e);
             datasetTableTaskLog.setStatus(JobStatus.Error.name());
+            datasetTableTaskLog.setInfo(ExceptionUtils.getStackTrace(e));
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         } finally {
