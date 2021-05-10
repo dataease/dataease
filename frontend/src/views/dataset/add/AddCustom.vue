@@ -28,7 +28,7 @@
       <el-col class="panel-height" style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
         <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
       </el-col>
-      <el-col class="panel-height" style="flex: 1;">
+      <el-col class="panel-height" style="flex: 1;overflow: scroll;">
         <ux-grid
           ref="plxTable"
           size="mini"

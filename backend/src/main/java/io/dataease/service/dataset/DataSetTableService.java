@@ -371,6 +371,20 @@ public class DataSetTableService {
             }).collect(Collectors.toList());
         }
 
+        // 获取每个字段在当前de数据库中的name，作为sql查询后的remarks返回前端展示
+        List<DatasetTableField> checkedFieldList = new ArrayList<>();
+        dataTableInfoDTO.getList().forEach(ele -> {
+            checkedFieldList.addAll(dataSetTableFieldsService.getListByIds(ele.getCheckedFields()));
+        });
+        for (DatasetTableField datasetTableField : checkedFieldList) {
+            for (TableFiled tableFiled : fields) {
+                if (StringUtils.equalsIgnoreCase(tableFiled.getFieldName(), DorisTableUtils.dorisFieldName(datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))) {
+                    tableFiled.setRemarks(datasetTableField.getName());
+                    break;
+                }
+            }
+        }
+
         Map<String, Object> map = new HashMap<>();
         map.put("fields", fields);
         map.put("data", jsonArray);
@@ -379,11 +393,11 @@ public class DataSetTableService {
     }
 
     private String getCustomSQL(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list) {
-        Map<String, String[]> customInfo = new HashMap<>();
+        Map<String, String[]> customInfo = new TreeMap<>();
         dataTableInfoDTO.getList().forEach(ele -> {
             String table = DorisTableUtils.dorisName(ele.getTableId());
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIds(ele.getCheckedFields());
-            String[] array = fields.stream().map(f -> table + "." + f.getDataeaseName()).toArray(String[]::new);
+            String[] array = fields.stream().map(f -> table + "." + f.getDataeaseName() + " AS " + DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName())).toArray(String[]::new);
             customInfo.put(table, array);
         });
         DataTableInfoCustomUnion first = dataTableInfoDTO.getList().get(0);
@@ -468,6 +482,7 @@ public class DataSetTableService {
                 datasetTableField.setId(null);
                 datasetTableField.setTableId(datasetTable.getId());
                 datasetTableField.setColumnIndex(i);
+                datasetTableField.setDataeaseName(DorisTableUtils.dorisFieldName(datasetTable.getId() + "_" + datasetTableField.getDataeaseName()));
             }
             dataSetTableFieldsService.batchEdit(fieldList);
             // custom 创建doris视图
