@@ -326,10 +326,9 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
-        // 使用输入的sql先预执行一次
+        // 使用输入的sql先预执行一次,并拿到所有字段
         datasourceRequest.setQuery(sql);
-        Map<String, List> stringListMap = datasourceProvider.fetchResultAndField(datasourceRequest);
-        List<TableFiled> previewFields = stringListMap.get("fieldList");
+        List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
         // 正式执行
         datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
@@ -364,12 +363,12 @@ public class DataSetTableService {
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
-        // 使用输入的sql先预执行一次
-        datasourceRequest.setQuery(getCustomSQL(dataTableInfoDTO, list));
-        Map<String, List> stringListMap = jdbcProvider.fetchResultAndField(datasourceRequest);
-        List<TableFiled> previewFields = stringListMap.get("fieldList");
+        String sql = getCustomSQL(dataTableInfoDTO, list);
+        // 使用输入的sql先预执行一次,并拿到所有字段
+        datasourceRequest.setQuery(sql);
+        List<TableFiled> previewFields = jdbcProvider.fetchResultField(datasourceRequest);
 
-        datasourceRequest.setQuery("SELECT * FROM (" + getCustomSQL(dataTableInfoDTO, list) + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
+        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
         Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
