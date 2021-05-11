@@ -13,6 +13,9 @@ import io.dataease.auth.util.RsaUtil;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
+/*import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.dto.response.SysSettingDto;
+import io.dataease.plugins.xpack.service.DePluginXpackService;*/
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -105,6 +108,14 @@ public class AuthServer implements AuthApi {
         SysUserEntity userById = authUserService.getUserById(4L);
         String nickName = userById.getNickName();
         System.out.println(nickName);
+       /* Map<String, DePluginXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType(DePluginXpackService.class);
+        for (Map.Entry entry : beansOfType.entrySet()) {
+            Object key = entry.getKey();
+            DePluginXpackService value = (DePluginXpackService)entry.getValue();
+            List<SysSettingDto> sysSettingDtos = value.systemSettings();
+            String name = entry.getValue().getClass().getName();
+            System.out.println("key: "+ key + ",  value: "+ name);
+        }*/
         return "apple";
     }
 }
