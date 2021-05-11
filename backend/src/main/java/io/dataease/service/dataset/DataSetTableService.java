@@ -328,9 +328,10 @@ public class DataSetTableService {
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
         // 使用输入的sql先预执行一次
         datasourceRequest.setQuery(sql);
-        datasourceProvider.fetchResultAndField(datasourceRequest);
+        Map<String, List> stringListMap = datasourceProvider.fetchResultAndField(datasourceRequest);
+        List<TableFiled> previewFields = stringListMap.get("fieldList");
         // 正式执行
-        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp LIMIT 0,1000");
+        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
@@ -363,8 +364,12 @@ public class DataSetTableService {
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
+        // 使用输入的sql先预执行一次
+        datasourceRequest.setQuery(getCustomSQL(dataTableInfoDTO, list));
+        Map<String, List> stringListMap = jdbcProvider.fetchResultAndField(datasourceRequest);
+        List<TableFiled> previewFields = stringListMap.get("fieldList");
 
-        datasourceRequest.setQuery("SELECT * FROM (" + getCustomSQL(dataTableInfoDTO, list) + ") AS tmp LIMIT 0,1000");
+        datasourceRequest.setQuery("SELECT * FROM (" + getCustomSQL(dataTableInfoDTO, list) + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
         Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
@@ -553,11 +558,11 @@ public class DataSetTableService {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
-                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + fields[0], StringUtils.join(fields, ","), table);
             case sqlServer:
-                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + fields[0], StringUtils.join(fields, ","), table);
             default:
-                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + fields[0], StringUtils.join(fields, ","), table);
         }
     }
 
