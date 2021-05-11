@@ -33,7 +33,7 @@
           <el-form-item class="form-item">
             <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
               <el-option :label="$t('dataset.direct_connect')" value="0" />
-              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!isKettleRunning" />
+              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { post, listDatasource } from '@/api/dataset/dataset'
+import {post, listDatasource, isKettleRunning} from '@/api/dataset/dataset'
 import { codemirror } from 'vue-codemirror'
 import { getTable } from '@/api/dataset/dataset'
 // 核心样式
@@ -121,10 +121,6 @@ export default {
     param: {
       type: Object,
       required: true
-    },
-    isKettleRunning: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
@@ -147,7 +143,8 @@ export default {
       data: [],
       fields: [],
       mode: '0',
-      height: 500
+      height: 500,
+      kettleRunning: false
     }
   },
   computed: {
@@ -174,7 +171,15 @@ export default {
 
     this.initTableInfo()
   },
+  created(){
+    this.kettleState()
+  },
   methods: {
+    kettleState(){
+      isKettleRunning().then(res => {
+        this.kettleRunning = res.data
+      })
+    },
     calHeight() {
       const that = this
       setTimeout(function() {

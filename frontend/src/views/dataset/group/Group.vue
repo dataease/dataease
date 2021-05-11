@@ -306,15 +306,7 @@ export default {
     this.refresh()
     this.tableTree()
   },
-  created(){
-    this.kettleRunning()
-  },
   methods: {
-    kettleRunning(){
-      isKettleRunning().then(res => {
-        this.isKettleRunning = res.data
-      })
-    },
     clickAdd(param) {
       // console.log(param);
       this.add(param.type)
@@ -554,7 +546,7 @@ export default {
     },
 
     addData(name) {
-      this.$emit('switchComponent', { name: name, param: this.currGroup, isKettleRunning: this.isKettleRunning})
+      this.$emit('switchComponent', { name: name, param: this.currGroup})
     },
 
     sceneClick(data, node) {

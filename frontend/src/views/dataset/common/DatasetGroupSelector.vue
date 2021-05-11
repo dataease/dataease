@@ -126,7 +126,7 @@ export default {
   },
   data() {
     return {
-      isKettleRunning: false,
+      kettleRunning: false,
       sceneMode: false,
       search: '',
       data: [],
@@ -170,12 +170,12 @@ export default {
     this.tableTree()
   },
   created(){
-    this.kettleRunning()
+    this.kettleState()
   },
   methods: {
-    kettleRunning(){
+    kettleState(){
       isKettleRunning().then(res => {
-        this.isKettleRunning = res.data
+        this.kettleRunning = res.data
       })
     },
     close() {
@@ -213,7 +213,7 @@ export default {
         }).then(response => {
           this.tables = response.data
           for (let i = 0; i < this.tables.length; i++) {
-            if(this.tables[i].mode===1 && this.isKettleRunning === false){
+            if(this.tables[i].mode===1 && this.kettleRunning === false){
               this.$set(this.tables[i],"disabled",true)
             }
           }
