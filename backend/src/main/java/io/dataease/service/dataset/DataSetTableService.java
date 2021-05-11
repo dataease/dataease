@@ -354,7 +354,7 @@ public class DataSetTableService {
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
 
-        datasourceRequest.setQuery(getCustomSQL(dataTableInfoDTO, list));
+        datasourceRequest.setQuery("SELECT * FROM (" + getCustomSQL(dataTableInfoDTO, list) + ") AS tmp LIMIT 0,1000");
         Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
