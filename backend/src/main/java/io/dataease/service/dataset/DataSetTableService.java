@@ -557,11 +557,11 @@ public class DataSetTableService {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + fields[0], StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
             case sqlServer:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + fields[0], StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
             default:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + fields[0], StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
         }
     }
 
