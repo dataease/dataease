@@ -150,7 +150,7 @@ public class ChartViewService {
 //            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0], extFilterList);
 
             // 连接doris，构建doris数据源查询
-            Datasource ds =  (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
@@ -259,7 +259,7 @@ public class ChartViewService {
 
     public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
-        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getDataeaseName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())).toArray(String[]::new);
+        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getDataeaseName() + ") AS " + (y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)") + ") AS _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getDataeaseName).toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
                 .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
