@@ -32,7 +32,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sun.rmi.runtime.Log;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -169,6 +168,7 @@ public class DataSetTableService {
                 .tableId(dataSetTableRequest.getId())
                 .originName("*")
                 .name("记录数*")
+                .dataeaseName("*")
                 .type("INT")
                 .checked(true)
                 .columnIndex(999)
