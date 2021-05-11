@@ -150,7 +150,7 @@ public class ChartViewService {
 //            data = sparkCalc.getData(table.getId(), fields, xAxis, yAxis, "tmp_" + view.getId().split("-")[0], extFilterList);
 
             // 连接doris，构建doris数据源查询
-            Datasource ds =  (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
@@ -199,9 +199,9 @@ public class ChartViewService {
             for (int i = 0; i < fields.size(); i++) {
                 ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
-                    d.put(fields.get(i).getOriginName(), ele[i]);
+                    d.put(fields.get(i).getDataeaseName(), ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
-                    d.put(fields.get(i).getOriginName(), new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
+                    d.put(fields.get(i).getDataeaseName(), new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
                 }
             }
             tableRow.add(d);
@@ -231,7 +231,7 @@ public class ChartViewService {
             }
             DatasetTableField field = request.getDatasetTableField();
             filter.append(" AND ")
-                    .append(field.getOriginName())
+                    .append(field.getDataeaseName())
                     .append(" ")
                     .append(transMysqlFilterTerm(request.getOperator()))
                     .append(" ");
@@ -259,12 +259,12 @@ public class ChartViewService {
 
     public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
-        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getOriginName() + ") AS DECIMAL(20,2)) AS _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())).toArray(String[]::new);
-        String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
+        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getDataeaseName() + ") AS " + (y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)") + ") AS _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())).toArray(String[]::new);
+        String[] group = xAxis.stream().map(ChartViewFieldDTO::getDataeaseName).toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> f.getOriginName() + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
         String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getDataeaseName(), "*") ? "" : f.getDataeaseName()) + " " + f.getSort()).toArray(String[]::new);
         String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
         System.arraycopy(yOrder, 0, order, xOrder.length, yOrder.length);
 
@@ -272,7 +272,7 @@ public class ChartViewService {
                 .map(x -> {
                     String[] s = x.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
-                        filter.append(" AND ").append(x.getOriginName()).append(transMysqlFilterTerm(f.getTerm()));
+                        filter.append(" AND ").append(x.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
@@ -301,7 +301,7 @@ public class ChartViewService {
                 .map(y -> {
                     String[] s = y.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
-                        filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(transMysqlFilterTerm(f.getTerm()));
+                        filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");

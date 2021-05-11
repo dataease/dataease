@@ -812,9 +812,10 @@ export default {
     target_field: '被关联字段',
     union_relation: '关联关系',
     pls_setting_union_success: '请正确设置关联关系',
-    invalid_dataset:'Kettle未运行，无效数据集',
+    invalid_dataset: 'Kettle未运行，无效数据集',
     check_all: '全选',
-    can_not_union_self: '被关联表不能与关联表相同'
+    can_not_union_self: '被关联表不能与关联表相同',
+    float: '小数'
   },
   datasource: {
     datasource: '数据源',
@@ -887,5 +888,20 @@ export default {
     back: '返回',
     view: '视图',
     edit: '编辑'
+  },
+  plugin: {
+    local_install: '本地安装',
+    remote_install: '远程安装',
+    name: '插件名称',
+    free: '是否免费',
+    cost: '费用',
+    descript: '描述',
+    version: '版本',
+    creator: '作者',
+    install_time: '安装时间',
+    release_time: '时间',
+    un_install: '卸载',
+    uninstall_confirm: '确定卸载该插件',
+    uninstall_cancel: '取消卸载插件'
   }
 }

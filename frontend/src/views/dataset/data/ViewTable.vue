@@ -31,7 +31,7 @@
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
-      <el-tab-pane v-if="table.type !== 'custom'" :label="$t('dataset.join_view')" name="joinView">
+      <el-tab-pane v-if="table.type !== 'custom' && table.mode === 1" :label="$t('dataset.join_view')" name="joinView">
         <union-view :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">

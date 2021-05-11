@@ -28,24 +28,34 @@
       <el-col class="panel-height" style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
         <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
       </el-col>
-      <el-col class="panel-height" style="flex: 1;overflow: scroll;">
-        <ux-grid
-          ref="plxTable"
-          size="mini"
-          style="width: 100%;"
-          :height="height"
-          :checkbox-config="{highlight: true}"
-          :width-resize="true"
-        >
-          <ux-table-column
-            v-for="field in fields"
-            :key="field.fieldName"
-            min-width="200px"
-            :field="field.fieldName"
-            :title="field.remarks"
-            :resizable="true"
-          />
-        </ux-grid>
+      <el-col class="panel-height" style="flex: 1;overflow: hidden;">
+        <el-card class="box-card dataPreview" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>{{ $t('dataset.data_preview') }}</span>
+          </div>
+          <ux-grid
+            ref="plxTable"
+            size="mini"
+            style="width: 100%;"
+            :height="height"
+            :checkbox-config="{highlight: true}"
+            :width-resize="true"
+          >
+            <ux-table-column
+              v-for="field in fields"
+              :key="field.fieldName"
+              min-width="200px"
+              :field="field.fieldName"
+              :title="field.remarks"
+              :resizable="true"
+            />
+          </ux-grid>
+          <span class="table-count">
+            {{ $t('dataset.preview_show') }}
+            <span class="span-number">1000</span>
+            {{ $t('dataset.preview_item') }}
+          </span>
+        </el-card>
       </el-col>
     </el-col>
   </el-col>
@@ -101,7 +111,7 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        that.height = currentHeight - 56 - 15 - 26 - 25 - 43 - 15
+        that.height = currentHeight - 56 - 15 - 26 - 25 - 43 - 16 - 37 - 20 - 10
       }, 10)
     },
 
@@ -207,11 +217,26 @@ export default {
     margin-left: 0;
   }
 
+  .dataPreview>>>.el-card__header{
+    padding: 6px 8px;
+  }
+
+  .dataPreview>>>.el-card__body{
+    padding:10px;
+  }
+
   span{
     font-size: 14px;
   }
 
   .panel-height{
     height: calc(100vh - 56px - 15px - 26px - 25px - 43px);
+  }
+
+  .span-number{
+    color: #f18126;
+  }
+  .table-count{
+    color: #606266;
   }
 </style>

@@ -74,6 +74,11 @@ public class DataSetTableService {
 
     public DatasetTable save(DatasetTable datasetTable) throws Exception {
         checkName(datasetTable);
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
+            DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
+            BeanUtils.copyBean(dataSetTableRequest, datasetTable);
+            getSQLPreview(dataSetTableRequest);
+        }
         if (StringUtils.isEmpty(datasetTable.getId())) {
             datasetTable.setId(UUID.randomUUID().toString());
             datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
@@ -163,6 +168,7 @@ public class DataSetTableService {
                 .tableId(dataSetTableRequest.getId())
                 .originName("*")
                 .name("记录数*")
+                .dataeaseName("*")
                 .type("INT")
                 .checked(true)
                 .columnIndex(999)
@@ -221,7 +227,7 @@ public class DataSetTableService {
 
             String table = dataTableInfoDTO.getTable();
             datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
-
+            LogUtil.info(datasourceRequest.getQuery());
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -241,7 +247,7 @@ public class DataSetTableService {
 
             String sql = dataTableInfoDTO.getSql();
             datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
-
+            LogUtil.info(datasourceRequest.getQuery());
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -260,7 +266,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
             datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
-
+            LogUtil.info(datasourceRequest.getQuery());
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -280,7 +286,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
             datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
-
+            LogUtil.info(datasourceRequest.getQuery());
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -320,7 +326,11 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
-        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp LIMIT 0,1000");
+        // 使用输入的sql先预执行一次,并拿到所有字段
+        datasourceRequest.setQuery(sql);
+        List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
+        // 正式执行
+        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
@@ -353,8 +363,12 @@ public class DataSetTableService {
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
+        String sql = getCustomSQL(dataTableInfoDTO, list);
+        // 使用输入的sql先预执行一次,并拿到所有字段
+        datasourceRequest.setQuery(sql);
+        List<TableFiled> previewFields = jdbcProvider.fetchResultField(datasourceRequest);
 
-        datasourceRequest.setQuery(getCustomSQL(dataTableInfoDTO, list));
+        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
         Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
@@ -543,11 +557,11 @@ public class DataSetTableService {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
-                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
             case sqlServer:
-                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
             default:
-                return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
         }
     }
 
