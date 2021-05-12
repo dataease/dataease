@@ -122,6 +122,11 @@ export default {
       type: Array,
       required: false,
       default: null
+    },
+    table: {
+      type: Object,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -153,6 +158,18 @@ export default {
     'unionData': function() {
       this.unionDataChange()
     },
+    'table': function() {
+      if (this.table && this.table.sceneId) {
+        post('dataset/group/getScene/' + this.table.sceneId, {}).then(response => {
+          this.currGroup = response.data
+
+          this.$nextTick(function() {
+            this.sceneMode = true
+            this.tableTree()
+          })
+        })
+      }
+    },
     search(val) {
       if (val && val !== '') {
         this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
@@ -162,10 +179,6 @@ export default {
     }
   },
   mounted() {
-    this.tree(this.groupForm)
-    this.tableTree()
-  },
-  activated() {
     this.tree(this.groupForm)
     this.tableTree()
   },
