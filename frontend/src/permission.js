@@ -7,6 +7,7 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 import { buildMenus } from '@/api/system/menu'
 import { filterAsyncRouter } from '@/store/modules/permission'
+import { valid } from 'mockjs'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -79,11 +80,36 @@ export const loadMenus = (next, to) => {
     asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)
-      next({ ...to, replace: true })
+      if (pathValid(to.path, asyncRouter)) {
+        next({ ...to, replace: true })
+      } else {
+        next('/')
+      }
     })
   })
 }
 
+const pathValid = (path, routers) => {
+  const temp = path.startsWith('/') ? path.substr(1) : path
+  const locations = temp.split('/')
+  if (locations.length === 0) {
+    return false
+  }
+
+  return hasCurrentRouter(locations, routers, 0)
+}
+const hasCurrentRouter = (locations, routers, index) => {
+  const location = locations[index]
+  let kids = []
+  const valid = routers.some(router => {
+    kids = router.children
+    return (router.path === location || ('/' + location) === router.path)
+  })
+  if (valid && index < locations.length - 1) {
+    return hasCurrentRouter(locations, kids, index + 1)
+  }
+  return valid
+}
 // 根据权限过滤菜单
 const filterRouter = routers => {
   const user_permissions = store.getters.permissions
