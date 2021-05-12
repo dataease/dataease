@@ -552,7 +552,7 @@ public class DataSetTableService {
         // 先删除表
         datasourceRequest.setQuery("DROP VIEW IF EXISTS " + dorisTableName);
         jdbcProvider.exec(datasourceRequest);
-        datasourceRequest.setQuery("CREATE VIEW IF NOT EXISTS" + dorisTableName + " AS (" + customSql + ")");
+        datasourceRequest.setQuery("CREATE VIEW IF NOT EXISTS " + dorisTableName + " AS (" + customSql + ")");
         jdbcProvider.exec(datasourceRequest);
     }
 
