@@ -127,7 +127,6 @@ export default {
   },
   methods: {
     subjectDelete(id) {
-      debugger
       deleteSubject(id).then(response => {
         this.$message({
           message: '删除成功',
@@ -141,7 +140,6 @@ export default {
       const request = {
         details: JSON.stringify(this.canvasStyleData)
       }
-      debugger
       saveSubject(request).then(response => {
         this.$message({
           message: '保存成功',
