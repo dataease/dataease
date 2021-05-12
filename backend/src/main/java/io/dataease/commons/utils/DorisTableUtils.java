@@ -17,4 +17,8 @@ public class DorisTableUtils {
     public static String dorisFieldName(String dorisName) {
         return "f_" + Md5Utils.md5(dorisName);
     }
+
+    public static String excelColumnName(String filedName) {
+        return "C_" + Md5Utils.md5(filedName);
+    }
 }

@@ -34,7 +34,7 @@ public class DataSetTableController {
     }
 
     @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable String id)throws Exception {
         dataSetTableService.delete(id);
     }
 

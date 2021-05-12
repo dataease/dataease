@@ -112,11 +112,24 @@ public class DataSetTableService {
         return datasetTable;
     }
 
-    public void delete(String id) {
+    public void delete(String id) throws Exception{
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
         dataSetTableTaskService.deleteByTableId(id);
+        deleteDorisTable(id);
+    }
+
+    private void deleteDorisTable(String datasetId) throws Exception{
+        String dorisTableName = DorisTableUtils.dorisName(datasetId);
+        Datasource dorisDatasource =  (Datasource)CommonBeanFactory.getBean("DorisDatasource");
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);;
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(dorisDatasource);
+        datasourceRequest.setQuery("drop table if exists " + dorisTableName);
+        jdbcProvider.exec(datasourceRequest);
+        datasourceRequest.setQuery("drop table if exists " + DorisTableUtils.dorisTmpName(dorisTableName));
+        jdbcProvider.exec(datasourceRequest);
     }
 
     public List<DatasetTable> list(DataSetTableRequest dataSetTableRequest) {
@@ -515,7 +528,7 @@ public class DataSetTableService {
                 datasetTableField.setOriginName(filed.getFieldName());
                 datasetTableField.setName(filed.getRemarks());
                 if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-                    datasetTableField.setDataeaseName("C_" + Md5Utils.md5(filed.getFieldName()));
+                    datasetTableField.setDataeaseName(DorisTableUtils.excelColumnName(filed.getFieldName()));
                 } else {
                     datasetTableField.setDataeaseName(filed.getFieldName());
                 }

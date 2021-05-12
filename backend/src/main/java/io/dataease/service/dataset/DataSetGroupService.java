@@ -47,7 +47,7 @@ public class DataSetGroupService {
         return dataSetGroupDTO;
     }
 
-    public void delete(String id) {
+    public void delete(String id) throws Exception{
         DataSetGroupRequest datasetGroup = new DataSetGroupRequest();
         datasetGroup.setId(id);
         List<DataSetGroupDTO> tree = tree(datasetGroup);
@@ -64,7 +64,7 @@ public class DataSetGroupService {
         return datasetGroupMapper.selectByPrimaryKey(id);
     }
 
-    public void deleteTableAndField(List<String> sceneIds) {
+    public void deleteTableAndField(List<String> sceneIds) throws Exception{
         for (String sceneId : sceneIds) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             dataSetTableRequest.setSceneId(sceneId);

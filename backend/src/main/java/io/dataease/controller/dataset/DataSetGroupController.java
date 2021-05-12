@@ -32,7 +32,7 @@ public class DataSetGroupController {
     }
 
     @PostMapping("/delete/{id}")
-    public void tree(@PathVariable String id) {
+    public void tree(@PathVariable String id) throws Exception{
         dataSetGroupService.delete(id);
     }
 
