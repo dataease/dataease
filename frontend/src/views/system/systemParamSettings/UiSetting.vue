@@ -122,6 +122,7 @@
           </el-form-item>
           <!--favicon upload-->
           <el-form-item
+            v-show="showfavicon"
             v-if="param.paramKey==='ui.favicon'"
             :label="$t('display.favicon')"
           >
@@ -211,7 +212,8 @@ export default {
             trigger: ['change', 'blur']
           }
         ]
-      }
+      },
+      showfavicon: false
     }
   },
   created() {

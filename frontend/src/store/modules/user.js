@@ -1,6 +1,7 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout, getInfo, getUIinfo } from '@/api/user'
+import { getToken, setToken, removeToken, setSysUI } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import { format } from '@/utils/formatUi'
 
 const getDefaultState = () => {
   return {
@@ -12,7 +13,9 @@ const getDefaultState = () => {
     // 第一次加载菜单时用到
     loadMenus: false,
     // 当前用户拥有哪些资源权限
-    permissions: []
+    permissions: [],
+
+    uiInfo: null
   }
 }
 
@@ -45,6 +48,9 @@ const mutations = {
   },
   SET_LOGIN_MSG: (state, msg) => {
     state.loginMsg = msg
+  },
+  SET_UI_INFO: (state, info) => {
+    state.uiInfo = info
   }
 }
 
@@ -89,6 +95,20 @@ const actions = {
 
         commit('SET_PERMISSIONS', permissions)
         resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getUI({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getUIinfo().then(response => {
+        const { data } = response
+        const uiInfo = format(data)
+        commit('SET_UI_INFO', uiInfo)
+        setSysUI(uiInfo)
+        resolve(uiInfo)
       }).catch(error => {
         reject(error)
       })

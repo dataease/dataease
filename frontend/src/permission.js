@@ -36,7 +36,11 @@ router.beforeEach(async(to, from, next) => {
         if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
           // get user info
           store.dispatch('user/getInfo').then(() => {
-            loadMenus(next, to)
+            store.dispatch('lic/getLicInfo').then(() => {
+              loadMenus(next, to)
+            }).catch(() => {
+              loadMenus(next, to)
+            })
           }).catch(() => {
             store.dispatch('user/logout').then(() => {
               location.reload() // 为了重新实例化vue-router对象 避免bug
@@ -45,7 +49,11 @@ router.beforeEach(async(to, from, next) => {
         } else if (store.getters.loadMenus) {
           // 修改成false，防止死循环
           store.dispatch('user/updateLoadMenus')
-          loadMenus(next, to)
+          store.dispatch('lic/getLicInfo').then(() => {
+            loadMenus(next, to)
+          }).catch(() => {
+            loadMenus(next, to)
+          })
         } else {
           next()
         }
@@ -96,11 +104,21 @@ const hasPermission = (router, user_permissions) => {
   if (router.permission && !user_permissions.includes(router.permission)) {
     return false
   }
+  if (!filterLic(router)) {
+    return false
+  }
   // 如果有字菜单 则 判断是否满足 ‘任意一个子菜单有权限’
   if (router.children && router.children.length) {
     const permissionChilds = router.children.filter(item => hasPermission(item, user_permissions))
     router.children = permissionChilds
     return router.children.length > 0
+  }
+  return true
+}
+const xpackMenuNames = ['参数管理', '插件管理']
+const filterLic = (router) => {
+  if (xpackMenuNames.some(name => name === router.name) && !store.getters.validate) {
+    return false
   }
   return true
 }

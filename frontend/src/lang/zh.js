@@ -74,7 +74,7 @@ export default {
   },
   login: {
     title: '系统登录',
-    welcome: '欢迎使用DataEase',
+    welcome: '欢迎使用',
     logIn: '登录',
     username: '账号',
     password: '密码',
@@ -905,5 +905,12 @@ export default {
     un_install: '卸载',
     uninstall_confirm: '确定卸载该插件',
     uninstall_cancel: '取消卸载插件'
+  },
+  display: {
+    logo: '头部系统logo',
+    loginLogo: '登录页面头部logo',
+    loginImage: '登录页面右侧图片',
+    loginTitle: '登录页面标题',
+    title: '系统名称'
   }
 }

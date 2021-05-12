@@ -5,14 +5,15 @@
         <el-col :span="12">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
-              <img src="@/assets/DataEase-black.png" alt="">
+              <img v-if="!loginLogoUrl" src="@/assets/DataEase-black.png" alt="">
+              <img v-else :src="loginLogoUrl" alt="">
             </div>
             <div class="login-title">
-              {{ $t('login.title') }}
+              {{ uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue || $t('login.title') }}
             </div>
             <div class="login-border" />
             <div class="login-welcome">
-              {{ $t('login.welcome') }}
+              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || 'DATAEASE') }}
             </div>
             <div class="login-form">
               <el-form-item prop="username">
@@ -41,7 +42,8 @@
           </el-form>
         </el-col>
         <el-col :span="12">
-          <div class="login-image" />
+          <div v-if="!loginImageUrl" class="login-image" />
+          <div v-else class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'cover'}" />
         </el-col>
       </el-row>
     </div>
@@ -52,6 +54,7 @@
 
 import { encrypt } from '@/utils/rsaEncrypt'
 import { validateUserName } from '@/api/user'
+import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Login',
   data() {
@@ -90,7 +93,10 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      uiInfo: null,
+      loginImageUrl: null,
+      loginLogoUrl: null
     }
   },
   computed: {
@@ -105,6 +111,21 @@ export default {
       },
       immediate: true
     }
+  },
+  created() {
+    this.$store.dispatch('user/getUI').then(() => {
+      // const uiLists = this.$store.state.user.uiInfo
+      // this.uiInfo = format(uiLists)
+      this.uiInfo = getSysUI()
+      if (this.uiInfo['ui.loginImage'] && this.uiInfo['ui.loginImage'].paramValue) {
+        this.loginImageUrl = '/system/ui/image/' + this.uiInfo['ui.loginImage'].paramValue
+      }
+      if (this.uiInfo['ui.loginLogo'] && this.uiInfo['ui.loginLogo'].paramValue) {
+        this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
+      }
+    }).catch(err => {
+      console.error(err)
+    })
   },
   methods: {
     handleLogin() {
@@ -238,6 +259,14 @@ export default {
 
   .login-image {
     background: url(../../assets/login-desc.png) no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 520px;
+    @media only screen and (max-width: 1280px) {
+      height: 380px;
+    }
+  }
+  .login-image-de {
     background-size: cover;
     width: 100%;
     height: 520px;

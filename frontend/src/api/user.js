@@ -29,3 +29,17 @@ export function validateUserName(data) {
     data
   })
 }
+
+export function getUIinfo() {
+  return request({
+    url: '/system/ui/info',
+    method: 'get'
+  })
+}
+
+export function uiImage(imageId) {
+  return request({
+    url: '/display/file/' + imageId,
+    method: 'get'
+  })
+}

@@ -1,0 +1,56 @@
+<template>
+  <div v-if="!licstatus" class="lic">
+    <strong>{{ msg }}</strong>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Licbar',
+  components: {
+
+  },
+  data() {
+    return {
+      lic: true,
+      msg: 'Cannot run program "/usr/local/bin/validator_darwin_amd64": error=2, No such file or directory'
+    }
+  },
+  computed: {
+    theme() {
+      return this.$store.state.settings.theme
+    },
+    licstatus() {
+      return this.$store.state.lic.validate
+    }
+
+  },
+
+  mounted() {
+    // this.validate()
+  },
+  methods: {
+    // validate() {
+    //   validateLic().then(res => {
+    //     this.lic = true
+    //     this.$store.dispatch('lic/setValidate', true)
+    //   }).catch((e) => {
+    //     this.msg = e.response.data.message
+    //     this.lic = false
+    //     this.$store.dispatch('lic/setValidate', false)
+    //   })
+    // }
+  }
+}
+</script>
+<style lang="scss" scoped>
+
+    .lic {
+        height: 24px;
+        background-color: #c92100;
+        color: #fff;
+        text-align: center;
+        padding: 6px 11px;
+    }
+
+</style>

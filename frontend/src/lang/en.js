@@ -74,7 +74,7 @@ export default {
   },
   login: {
     title: 'Login Form',
-    welcome: 'welcome To DataEase',
+    welcome: 'welcome To ',
     logIn: 'Login',
     username: 'Username',
     password: 'Password',
