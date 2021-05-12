@@ -664,9 +664,7 @@ public class DataSetTableService {
             datasetTableIncrementalConfig.setId(UUID.randomUUID().toString());
             datasetTableIncrementalConfigMapper.insertSelective(datasetTableIncrementalConfig);
         } else {
-            DatasetTableIncrementalConfigExample example = new DatasetTableIncrementalConfigExample();
-            example.createCriteria().andTableIdEqualTo(datasetTableIncrementalConfig.getTableId());
-            datasetTableIncrementalConfigMapper.updateByExample(datasetTableIncrementalConfig, example);
+            datasetTableIncrementalConfigMapper.updateByPrimaryKey(datasetTableIncrementalConfig);
         }
     }
 

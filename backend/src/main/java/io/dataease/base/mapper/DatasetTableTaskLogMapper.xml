@@ -8,8 +8,10 @@
     <result column="start_time" jdbcType="BIGINT" property="startTime" />
     <result column="end_time" jdbcType="BIGINT" property="endTime" />
     <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="info" jdbcType="VARCHAR" property="info" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.DatasetTableTaskLog">
+    <result column="info" jdbcType="LONGVARCHAR" property="info" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,8 +72,27 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, task_id, start_time, end_time, `status`, info, create_time
+    id, table_id, task_id, start_time, end_time, `status`, create_time
   </sql>
+  <sql id="Blob_Column_List">
+    info
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.DatasetTableTaskLogExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from dataset_table_task_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableTaskLogExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -86,9 +107,11 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from dataset_table_task_log
     where id = #{id,jdbcType=VARCHAR}
   </select>
@@ -105,10 +128,10 @@
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTableTaskLog">
     insert into dataset_table_task_log (id, table_id, task_id, 
       start_time, end_time, `status`, 
-      info, create_time)
+      create_time, info)
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR}, 
       #{startTime,jdbcType=BIGINT}, #{endTime,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, 
-      #{info,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT})
+      #{createTime,jdbcType=BIGINT}, #{info,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTableTaskLog">
     insert into dataset_table_task_log
@@ -131,11 +154,11 @@
       <if test="status != null">
         `status`,
       </if>
-      <if test="info != null">
-        info,
-      </if>
       <if test="createTime != null">
         create_time,
+      </if>
+      <if test="info != null">
+        info,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -157,11 +180,11 @@
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
       </if>
-      <if test="info != null">
-        #{info,jdbcType=VARCHAR},
-      </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -192,13 +215,27 @@
       <if test="record.status != null">
         `status` = #{record.status,jdbcType=VARCHAR},
       </if>
-      <if test="record.info != null">
-        info = #{record.info,jdbcType=VARCHAR},
-      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
       </if>
+      <if test="record.info != null">
+        info = #{record.info,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update dataset_table_task_log
+    set id = #{record.id,jdbcType=VARCHAR},
+      table_id = #{record.tableId,jdbcType=VARCHAR},
+      task_id = #{record.taskId,jdbcType=VARCHAR},
+      start_time = #{record.startTime,jdbcType=BIGINT},
+      end_time = #{record.endTime,jdbcType=BIGINT},
+      `status` = #{record.status,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      info = #{record.info,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -211,7 +248,6 @@
       start_time = #{record.startTime,jdbcType=BIGINT},
       end_time = #{record.endTime,jdbcType=BIGINT},
       `status` = #{record.status,jdbcType=VARCHAR},
-      info = #{record.info,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -235,13 +271,24 @@
       <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
       </if>
-      <if test="info != null">
-        info = #{info,jdbcType=VARCHAR},
-      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
+      <if test="info != null">
+        info = #{info,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.base.domain.DatasetTableTaskLog">
+    update dataset_table_task_log
+    set table_id = #{tableId,jdbcType=VARCHAR},
+      task_id = #{taskId,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=BIGINT},
+      end_time = #{endTime,jdbcType=BIGINT},
+      `status` = #{status,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      info = #{info,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.DatasetTableTaskLog">
@@ -251,7 +298,6 @@
       start_time = #{startTime,jdbcType=BIGINT},
       end_time = #{endTime,jdbcType=BIGINT},
       `status` = #{status,jdbcType=VARCHAR},
-      info = #{info,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=VARCHAR}
   </update>

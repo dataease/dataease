@@ -16,15 +16,21 @@ public interface DatasetTableTaskLogMapper {
 
     int insertSelective(DatasetTableTaskLog record);
 
+    List<DatasetTableTaskLog> selectByExampleWithBLOBs(DatasetTableTaskLogExample example);
+
     List<DatasetTableTaskLog> selectByExample(DatasetTableTaskLogExample example);
 
     DatasetTableTaskLog selectByPrimaryKey(String id);
 
     int updateByExampleSelective(@Param("record") DatasetTableTaskLog record, @Param("example") DatasetTableTaskLogExample example);
 
+    int updateByExampleWithBLOBs(@Param("record") DatasetTableTaskLog record, @Param("example") DatasetTableTaskLogExample example);
+
     int updateByExample(@Param("record") DatasetTableTaskLog record, @Param("example") DatasetTableTaskLogExample example);
 
     int updateByPrimaryKeySelective(DatasetTableTaskLog record);
+
+    int updateByPrimaryKeyWithBLOBs(DatasetTableTaskLog record);
 
     int updateByPrimaryKey(DatasetTableTaskLog record);
 }

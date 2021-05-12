@@ -64,11 +64,12 @@
 
         <!--要生成的数据库表 -->
 
-        <!--        <table tableName="datasource"/>-->
-<!--        <table tableName="sys_dict"/>-->
-<!--        <table tableName="sys_dict_item"/>-->
-        <table tableName="my_plugin"/>
-<!--        <table tableName="panel_design"/>-->
+
+        <table tableName="dataset_table_incremental_config">
+            <columnOverride column="incremental_delete" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="incremental_add" javaType="java.lang.String" jdbcType="VARCHAR" />
+        </table>
+
 
 
     </context>

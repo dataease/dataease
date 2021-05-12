@@ -468,8 +468,6 @@ export default {
         this.incrementalConfig.incrementalDelete = this.sql
       }
       this.incrementalConfig.tableId = this.table.id
-      console.log(this.incrementalConfig)
-
       task.startTime = new Date(task.startTime).getTime()
       task.endTime = new Date(task.endTime).getTime()
       task.tableId = this.table.id
