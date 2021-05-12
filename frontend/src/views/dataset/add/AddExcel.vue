@@ -28,7 +28,7 @@
                   :multiple="false"
                   :show-file-list="false"
                   :file-list="fileList"
-                  accept=".xls,.xlsx,.csv"
+                  accept=".xls,.xlsx,"
                   :before-upload="beforeUpload"
                   :on-success="uploadSuccess"
                   :on-error="uploadFail"

@@ -2,7 +2,7 @@
   <el-col>
     <el-row style="height: 26px;">
       <span style="line-height: 26px;">
-        {{ $t('dataset.add_custom_table') }}
+        {{ param.tableId?$t('dataset.edit_custom_table'):$t('dataset.add_custom_table') }}
       </span>
       <el-row style="float: right">
         <el-button size="mini" @click="cancel">
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { post } from '@/api/dataset/dataset'
+import { post, getTable } from '@/api/dataset/dataset'
 import DatasetGroupSelector from '../common/DatasetGroupSelector'
 import DatasetCustomField from '../common/DatasetCustomField'
 
@@ -89,15 +89,7 @@ export default {
   watch: {
     'checkedList': function() {
       // console.log(this.checkedList)
-      if (this.checkedList && this.checkedList.length > 0) {
-        // 根据第一个选择的数据集找到关联视图
-        post('dataset/union/listByTableId/' + this.checkedList[0].tableId, {}).then(response => {
-          // console.log(response)
-          this.unionData = response.data
-        })
-      } else {
-        this.unionData = []
-      }
+      this.getUnionData()
     }
   },
   mounted() {
@@ -105,6 +97,11 @@ export default {
       this.calHeight()
     }
     this.calHeight()
+
+    if (this.param && this.param.id && this.param.tableId) {
+      this.getCustomTable()
+      this.getUnionData()
+    }
   },
   methods: {
     calHeight() {
@@ -144,6 +141,9 @@ export default {
         }
       }
       // console.log(this.checkedList)
+      this.getData()
+    },
+    getData() {
       // request to get data
       if (this.checkedList.length > 0) {
         const table = {
@@ -169,6 +169,17 @@ export default {
         this.$refs.plxTable.reloadData(datas)
       }
     },
+    getUnionData() {
+      if (this.checkedList && this.checkedList.length > 0) {
+        // 根据第一个选择的数据集找到关联视图
+        post('dataset/union/listByTableId/' + this.checkedList[0].tableId, {}).then(response => {
+          // console.log(response)
+          this.unionData = response.data
+        })
+      } else {
+        this.unionData = []
+      }
+    },
     save() {
       const table = {
         id: this.param.tableId,
@@ -182,6 +193,22 @@ export default {
       post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())
         this.cancel()
+      })
+    },
+
+    getCustomTable() {
+      getTable(this.param.tableId).then(response => {
+        const table = response.data
+        this.name = table.name
+        this.checkedList = JSON.parse(table.info).list
+
+        this.getCheckTable(this.checkedList[0].tableId)
+        this.getData()
+      })
+    },
+    getCheckTable(tableId) {
+      getTable(tableId).then(response => {
+        this.table = response.data
       })
     },
 
