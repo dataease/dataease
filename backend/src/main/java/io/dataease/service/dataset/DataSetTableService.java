@@ -92,9 +92,11 @@ public class DataSetTableService {
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
                 saveTableField(datasetTable);
-                commonThreadPool.addTask(() -> {
-                    extractDataService.extractData(datasetTable.getId(), null, "all_scope");
-                });
+                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+                    commonThreadPool.addTask(() -> {
+                        extractDataService.extractData(datasetTable.getId(), null, "all_scope");
+                    });
+                }
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
