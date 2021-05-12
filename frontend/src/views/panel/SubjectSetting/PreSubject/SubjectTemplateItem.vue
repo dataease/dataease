@@ -163,7 +163,6 @@ export default {
   watch: {
     subjectItem: {
       handler(newVal, oldVla) {
-        debugger
         this.subjectItemDetails = chartTransStr2Object(JSON.parse(newVal.details), 'Y')
       },
       deep: true

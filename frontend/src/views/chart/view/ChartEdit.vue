@@ -356,7 +356,6 @@ export default {
   },
   watch: {
     'param': function() {
-      console.log(this.param)
       this.getData(this.param.id)
     }
   },

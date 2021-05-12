@@ -43,7 +43,6 @@ service.interceptors.request.use(
   error => {
     error.config.loading && tryHideLoading(store.getters.currentPath)
     // do something with request error
-    console.log(error) // for debug
     return Promise.reject(error)
   }
 )
@@ -147,7 +146,6 @@ service.interceptors.response.use(response => {
     checkPermission(error.response)
     msg = error.response.data.message || error.response.data
   } else {
-    console.log('error: ' + error) // for debug
     msg = error.message
   }
   !error.config.hideMsg && $error(msg)

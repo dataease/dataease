@@ -95,7 +95,6 @@ export default {
       })
     },
     handleExceed(file) {
-      console.log(file.name)
     },
     cancel() {
       this.$emit('closeEditPanelDialog')
@@ -123,7 +122,6 @@ export default {
         this.editPanel.panelInfo.name = this.importTemplateInfo.name
         this.editPanel.panelInfo.panelStyle = this.importTemplateInfo.panelStyle
         this.editPanel.panelInfo.panelData = this.importTemplateInfo.panelData
-        console.log(this.importTemplateInfo)
       }
       reader.readAsText(file)
     },

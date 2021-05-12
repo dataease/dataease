@@ -124,7 +124,6 @@ export default {
     },
     getData(id) {
       if (id) {
-        debugger
         this.requestStatus = 'waiting'
         this.message = null
         viewData(id, this.filter).then(response => {
