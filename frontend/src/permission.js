@@ -7,7 +7,6 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 import { buildMenus } from '@/api/system/menu'
 import { filterAsyncRouter } from '@/store/modules/permission'
-import { valid } from 'mockjs'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -88,7 +87,12 @@ export const loadMenus = (next, to) => {
     })
   })
 }
-
+/**
+ * 验证path是否有效
+ * @param {*} path
+ * @param {*} routers
+ * @returns
+ */
 const pathValid = (path, routers) => {
   const temp = path.startsWith('/') ? path.substr(1) : path
   const locations = temp.split('/')
@@ -98,17 +102,24 @@ const pathValid = (path, routers) => {
 
   return hasCurrentRouter(locations, routers, 0)
 }
+/**
+ * 递归验证every level
+ * @param {*} locations
+ * @param {*} routers
+ * @param {*} index
+ * @returns
+ */
 const hasCurrentRouter = (locations, routers, index) => {
   const location = locations[index]
   let kids = []
-  const valid = routers.some(router => {
+  const isvalid = routers.some(router => {
     kids = router.children
     return (router.path === location || ('/' + location) === router.path)
   })
-  if (valid && index < locations.length - 1) {
+  if (isvalid && index < locations.length - 1) {
     return hasCurrentRouter(locations, kids, index + 1)
   }
-  return valid
+  return isvalid
 }
 // 根据权限过滤菜单
 const filterRouter = routers => {
