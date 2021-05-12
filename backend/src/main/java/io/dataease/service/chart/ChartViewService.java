@@ -8,6 +8,7 @@ import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -143,6 +144,7 @@ public class ChartViewService {
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
                 datasourceRequest.setQuery(getSQL(ds.getType(), " (" + dataTableInfoDTO.getSql() + ") AS tmp ", xAxis, yAxis, extFilterList));
             }
+            LogUtil.info(datasourceRequest.getQuery());
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             // 获取数据集de字段
@@ -157,6 +159,7 @@ public class ChartViewService {
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             datasourceRequest.setQuery(getSQL(ds.getType(), tableName, xAxis, yAxis, extFilterList));
+            LogUtil.info(datasourceRequest.getQuery());
             data = datasourceProvider.getData(datasourceRequest);
         }
 
@@ -199,9 +202,9 @@ public class ChartViewService {
             for (int i = 0; i < fields.size(); i++) {
                 ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
-                    d.put(fields.get(i).getDataeaseName(), ele[i]);
+                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
-                    d.put(fields.get(i).getDataeaseName(), new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
+                    d.put(fields.get(i).getDataeaseName(), new BigDecimal(StringUtils.isEmpty(ele[i]) ? "0" : ele[i]).setScale(2, RoundingMode.HALF_UP));
                 }
             }
             tableRow.add(d);
