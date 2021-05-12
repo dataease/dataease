@@ -262,7 +262,16 @@ public class ChartViewService {
 
     public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
-        String[] field = yAxis.stream().map(y -> "CAST(" + y.getSummary() + "(" + y.getDataeaseName() + ") AS " + (y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)") + ") AS _" + y.getSummary() + "_" + (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())).toArray(String[]::new);
+        String[] field = yAxis.stream().map(y -> {
+            StringBuilder f = new StringBuilder();
+            if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
+                f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
+            } else {
+                f.append(y.getSummary()).append("(").append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append("))");
+            }
+            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+            return f.toString();
+        }).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getDataeaseName).toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
                 .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
