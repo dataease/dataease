@@ -102,7 +102,7 @@ public class DataSetTableService {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
             // sql 更新
             if (update == 1) {
-                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
+                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
                     // 删除所有字段，重新抽象
                     dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
                     saveTableField(datasetTable);
