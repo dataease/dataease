@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import {isKettleRunning, post} from '@/api/dataset/dataset'
+import { isKettleRunning, post } from '@/api/dataset/dataset'
 
 export default {
   name: 'DatasetGroupSelector',
@@ -169,11 +169,11 @@ export default {
     this.tree(this.groupForm)
     this.tableTree()
   },
-  created(){
+  created() {
     this.kettleState()
   },
   methods: {
-    kettleState(){
+    kettleState() {
       isKettleRunning().then(res => {
         this.kettleRunning = res.data
       })
@@ -213,8 +213,8 @@ export default {
         }).then(response => {
           this.tables = response.data
           for (let i = 0; i < this.tables.length; i++) {
-            if(this.tables[i].mode===1 && this.kettleRunning === false){
-              this.$set(this.tables[i],"disabled",true)
+            if (this.tables[i].mode === 1 && this.kettleRunning === false) {
+              this.$set(this.tables[i], 'disabled', true)
             }
           }
           this.tableData = JSON.parse(JSON.stringify(this.tables))
@@ -248,7 +248,7 @@ export default {
     },
 
     sceneClick(data, node) {
-      if(data.disabled){
+      if (data.disabled) {
         this.$message({
           type: 'warning',
           message: this.$t('dataset.invalid_dataset'),
