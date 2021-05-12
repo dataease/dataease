@@ -545,7 +545,6 @@ export default {
     },
 
     createChart() {
-      console.log(this.table)
       if (!this.table.name) {
         this.$message({
           message: this.$t('chart.name_can_not_empty'),

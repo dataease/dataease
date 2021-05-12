@@ -122,19 +122,6 @@ export default {
       this.uploading = false
     },
     uploadSuccess(response, file, fileList) {
-      console.log(response)
-      console.log(file)
-      console.log(fileList)
-      //   this.path = response.data.path
-      //   this.fields = response.data.fields
-      //   this.data = response.data.data
-      //   const datas = this.data
-      //   this.$refs.plxTable.reloadData(datas)
-
-      //   if (file.name.lastIndexOf('.') > 0) {
-      //     this.name = file.name.substring(0, file.name.lastIndexOf('.'))
-      //   }
-      //   this.fileList = fileList
       this.uploading = false
     },
 
@@ -144,10 +131,6 @@ export default {
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
-        // delUser(encodeURIComponent(row.userId)).then(res => {
-        //   this.$success(this.$t('commons.delete_success'))
-        //   this.search()
-        // })
       }).catch(() => {
         this.$info(this.$t('commons.delete_cancel'))
       })

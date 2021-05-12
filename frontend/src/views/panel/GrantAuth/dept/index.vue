@@ -73,7 +73,6 @@ export default {
             value: this.keyWord
           }
           this.search(condition)
-          console.log('start execute search')
         }
         this.destryTimeMachine()
       }, 1500)
@@ -169,10 +168,8 @@ export default {
         this.$error(err.message)
         return false
       })
-      console.log('dept save')
     },
     cancel() {
-      console.log('dept cancel')
     },
 
     buildRequest(rows) {

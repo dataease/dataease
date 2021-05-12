@@ -394,7 +394,6 @@ export default {
     },
 
     saveGroup(group) {
-      // console.log(group);
       this.$refs['groupForm'].validate((valid) => {
         if (valid) {
           addGroup(group).then(res => {

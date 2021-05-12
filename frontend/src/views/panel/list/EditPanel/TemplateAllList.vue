@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     clickMore(param) {
-      console.log(param)
       switch (param.type) {
         case 'edit':
           this.templateEdit(param.data)
