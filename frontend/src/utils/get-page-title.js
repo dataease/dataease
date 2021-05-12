@@ -5,7 +5,7 @@ let title = defaultSettings.title || 'Vue Admin Template'
 
 export default function getPageTitle(pageTitle) {
   const uiInfo = getSysUI()
-  if (uiInfo['ui.title'] && uiInfo['ui.title'].paramValue) {
+  if (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue) {
     title = uiInfo['ui.title'].paramValue
   }
   if (pageTitle) {
