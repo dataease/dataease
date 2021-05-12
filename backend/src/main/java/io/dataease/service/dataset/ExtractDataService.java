@@ -494,6 +494,7 @@ public class ExtractDataService {
         excelInputMeta.setPassword("Encrypted");
         excelInputMeta.setFileName(new String[]{filePath});
         excelInputMeta.setStartsWithHeader(true);
+        excelInputMeta.setIgnoreEmptyRows(true);
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
         for (int i=0; i<datasetTableFields.size();i++) {
             ExcelInputField field = new ExcelInputField();
