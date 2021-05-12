@@ -28,8 +28,8 @@
         </el-form-item>
         <el-form-item class="form-item">
           <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-            <el-option :label="$t('dataset.direct_connect')" value="0"  />
-            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning"/>
+            <el-option :label="$t('dataset.direct_connect')" value="0" />
+            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning" />
           </el-select>
         </el-form-item>
         <el-form-item class="form-item" style="float: right;">
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import {listDatasource, post, isKettleRunning} from '@/api/dataset/dataset'
+import { listDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
 
 export default {
   name: 'AddDB',
@@ -103,7 +103,7 @@ export default {
   activated() {
     this.initDataSource()
   },
-  created(){
+  created() {
     this.kettleState()
   },
   methods: {
@@ -112,7 +112,7 @@ export default {
         this.options = response.data
       })
     },
-    kettleState(){
+    kettleState() {
       isKettleRunning().then(res => {
         this.kettleRunning = res.data
       })

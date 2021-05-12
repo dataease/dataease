@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import {post, listDatasource, isKettleRunning} from '@/api/dataset/dataset'
+import { post, listDatasource, isKettleRunning } from '@/api/dataset/dataset'
 import { codemirror } from 'vue-codemirror'
 import { getTable } from '@/api/dataset/dataset'
 // 核心样式
@@ -171,11 +171,11 @@ export default {
 
     this.initTableInfo()
   },
-  created(){
+  created() {
     this.kettleState()
   },
   methods: {
-    kettleState(){
+    kettleState() {
       isKettleRunning().then(res => {
         this.kettleRunning = res.data
       })

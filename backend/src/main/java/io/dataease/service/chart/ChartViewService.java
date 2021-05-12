@@ -144,7 +144,6 @@ public class ChartViewService {
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
                 datasourceRequest.setQuery(getSQL(ds.getType(), " (" + dataTableInfoDTO.getSql() + ") AS tmp ", xAxis, yAxis, extFilterList));
             }
-            LogUtil.info(datasourceRequest.getQuery());
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             // 获取数据集de字段
@@ -159,7 +158,6 @@ public class ChartViewService {
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             datasourceRequest.setQuery(getSQL(ds.getType(), tableName, xAxis, yAxis, extFilterList));
-            LogUtil.info(datasourceRequest.getQuery());
             data = datasourceProvider.getData(datasourceRequest);
         }
 

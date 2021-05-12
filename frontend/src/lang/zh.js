@@ -815,7 +815,9 @@ export default {
     invalid_dataset: 'Kettle未运行，无效数据集',
     check_all: '全选',
     can_not_union_self: '被关联表不能与关联表相同',
-    float: '小数'
+    float: '小数',
+    edit_custom_table: '编辑自助数据集',
+    edit_field: '编辑字段'
   },
   datasource: {
     datasource: '数据源',

@@ -14,11 +14,14 @@
         </span>
       </el-popover>
       <el-row style="float: right">
+        <el-button v-if="table.type ==='custom'" size="mini" @click="editCustom">
+          {{ $t('dataset.edit_custom_table') }}
+        </el-button>
         <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
           {{ $t('dataset.edit_sql') }}
         </el-button>
         <el-button size="mini" @click="edit">
-          {{ $t('dataset.edit') }}
+          {{ $t('dataset.edit_field') }}
         </el-button>
         <!--        <el-button size="mini" type="primary" @click="createChart">-->
         <!--          {{$t('dataset.create_view')}}-->
@@ -115,6 +118,9 @@ export default {
 
     editSql() {
       this.$emit('switchComponent', { name: 'AddSQL', param: { id: this.table.sceneId, tableId: this.table.id }})
+    },
+    editCustom() {
+      this.$emit('switchComponent', { name: 'AddCustom', param: { id: this.table.sceneId, tableId: this.table.id }})
     },
 
     reSearch(val) {

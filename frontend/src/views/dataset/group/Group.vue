@@ -242,7 +242,7 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, isKettleRunning} from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, isKettleRunning } from '@/api/dataset/dataset'
 
 export default {
   name: 'Group',
@@ -546,7 +546,7 @@ export default {
     },
 
     addData(name) {
-      this.$emit('switchComponent', { name: name, param: this.currGroup})
+      this.$emit('switchComponent', { name: name, param: this.currGroup })
     },
 
     sceneClick(data, node) {
