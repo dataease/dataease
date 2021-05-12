@@ -13,6 +13,7 @@
         size="mini"
         :data="taskLogData"
         border
+        :height="height"
         style="width: 100%"
       >
         <el-table-column
@@ -32,18 +33,18 @@
           :label="$t('dataset.end_time')"
         >
           <template slot-scope="scope">
-            <span>{{scope.row.endTime | timestampFormatDate }}</span>
+            <span>{{ scope.row.endTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" :label="$t('dataset.status')" >
+        <el-table-column prop="status" :label="$t('dataset.status')">
           <template slot-scope="scope">
-            <span v-if="scope.row.status === 'Completed'"  style="color: green">{{ $t('dataset.completed') }}</span>
-            <span v-if="scope.row.status === 'Underway'"  style="color: blue">
-              <i class="el-icon-loading"></i>
+            <span v-if="scope.row.status === 'Completed'" style="color: green">{{ $t('dataset.completed') }}</span>
+            <span v-if="scope.row.status === 'Underway'" style="color: blue">
+              <i class="el-icon-loading" />
               {{ $t('dataset.underway') }}
             </span>
-            <span v-if="scope.row.status === 'Error'" style="color: red" >
+            <span v-if="scope.row.status === 'Error'" style="color: red">
               <el-link type="danger" style="font-size: 12px" @click="showErrorMassage(scope.row.info)">{{ $t('dataset.error') }}</el-link>
             </span>
           </template>
@@ -67,8 +68,9 @@
       :visible="show_error_massage"
       :show-close="false"
       width="50%"
-      class="dialog-css">
-      <span>{{error_massage}}</span>
+      class="dialog-css"
+    >
+      <span>{{ error_massage }}</span>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
       </span>
@@ -161,7 +163,7 @@
           <el-button type="primary" size="mini" @click="saveTask(taskForm)">{{ $t('dataset.confirm') }}</el-button>
         </div>
       </el-dialog>
-      <el-row >
+      <el-row>
         <el-button icon="el-icon-plus" size="mini" @click="addTask(undefined)">
           {{ $t('dataset.add_task') }}
         </el-button>
@@ -295,6 +297,7 @@ export default {
   },
   data() {
     return {
+      height: 500,
       update_setting: false,
       update_task: false,
       show_error_massage: false,
@@ -355,8 +358,7 @@ export default {
   },
   watch: {
     table: {
-      handler()
-      {
+      handler() {
         this.listTask()
         this.listTaskLog()
       },
@@ -364,21 +366,23 @@ export default {
     }
   },
   mounted() {
-    window.onresize = () => {
-      return (() => {
-        this.height = window.innerHeight / 2
-      })()
-    }
-    this.height = window.innerHeight / 2
+    this.calHeight()
   },
   methods: {
-    cellStyle ({row, column}) {
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
+      }, 10)
+    },
+    cellStyle({ row, column }) {
       // 状态列字体颜色
       if (row.status === 'Underway' && column === 'status') {
         return 'color: blue'
       } else if (row.status === 'Completed' && column === 'status') {
         return 'color: green'
-      }else if (row.status === 'Error' && column === 'status') {
+      } else if (row.status === 'Error' && column === 'status') {
         return 'color: red'
       }
     },
@@ -414,10 +418,10 @@ export default {
       this.listTask()
       this.getIncrementalConfig()
     },
-    refreshLog(){
+    refreshLog() {
       this.listTaskLog()
     },
-    showErrorMassage(massage){
+    showErrorMassage(massage) {
       this.show_error_massage = true
       this.error_massage = massage
     },
