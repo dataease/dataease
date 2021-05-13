@@ -1,5 +1,5 @@
 <template>
-  <div :style="bg_class">
+  <div ref="tableContainer" :style="bg_class">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <ux-grid
       ref="plxTable"
@@ -112,8 +112,10 @@ export default {
     calcHeight() {
       const that = this
       setTimeout(function() {
-        const currentHeight = document.documentElement.clientHeight
-        const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 20
+        // const currentHeight = document.documentElement.clientHeight
+        // const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 20
+        const currentHeight = that.$refs.tableContainer.offsetHeight
+        const tableMaxHeight = currentHeight - that.$refs.title.offsetHeight
         let tableHeight
         if (that.chart.data) {
           tableHeight = (that.chart.data.tableRow.length + 2) * 36
