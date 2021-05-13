@@ -113,7 +113,7 @@ public class ExtractDataService {
         String Column_Fields = "dataease_uuid  varchar(50), `";
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
-            switch (datasetTableField.getDeType()){
+            switch (datasetTableField.getDeExtractType()){
                 case 0:
                     if(datasetTableField.getSize() > 65533){
                         Column_Fields = Column_Fields + "String" + ",`";
@@ -531,7 +531,7 @@ public class ExtractDataService {
     private StepMeta udjc(List<DatasetTableField> datasetTableFields){
         String needToChangeolumnType = "";
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            if(datasetTableField.getDeType() != null && datasetTableField.getDeType() == 4){
+            if(datasetTableField.getDeExtractType() != null && datasetTableField.getDeExtractType() == 4){
                 needToChangeolumnType = needToChangeolumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getOriginName());
             }
         }

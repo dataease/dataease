@@ -514,8 +514,10 @@ public class DataSetTableService {
                 datasetTableField.setType(filed.getFieldType());
                 if (ObjectUtils.isEmpty(ds)) {
                     datasetTableField.setDeType(transFieldType(filed.getFieldType()));
+                    datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
                 } else {
                     datasetTableField.setDeType(transFieldType(ds.getType(), filed.getFieldType()));
+                    datasetTableField.setDeExtractType(transFieldType(ds.getType(), filed.getFieldType()));
                 }
                 datasetTableField.setSize(filed.getFieldSize());
                 datasetTableField.setChecked(true);

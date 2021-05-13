@@ -65,9 +65,9 @@
         <!--要生成的数据库表 -->
 
 
-        <table tableName="dataset_table_incremental_config">
-            <columnOverride column="incremental_delete" javaType="java.lang.String" jdbcType="VARCHAR" />
-            <columnOverride column="incremental_add" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <table tableName="dataset_table_field">
+<!--            <columnOverride column="incremental_delete" javaType="java.lang.String" jdbcType="VARCHAR" />-->
+<!--            <columnOverride column="incremental_add" javaType="java.lang.String" jdbcType="VARCHAR" />-->
         </table>
 
 
