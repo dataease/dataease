@@ -362,10 +362,13 @@ public class ChartViewService {
             if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
                 f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
             } else {
-                f.append("CAST(")
-                        .append(y.getSummary()).append("(")
+//                f.append("CAST(")
+//                        .append(y.getSummary()).append("(")
+//                        .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+//                        .append(") AS DECIMAL(20,2)").append(")");
+                f.append(y.getSummary()).append("(")
                         .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                        .append(") AS DECIMAL(20,2)").append(")");
+                        .append(")");
             }
             f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
             return f.toString();
