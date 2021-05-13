@@ -270,6 +270,15 @@ public class ChartViewService {
             f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
             return f.toString();
         }).toArray(String[]::new);
+        String[] groupField = xAxis.stream().map(x -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (x.getDeType() == 1) {
+                stringBuilder.append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(x.getDataeaseName());
+            } else {
+                stringBuilder.append(x.getDataeaseName());
+            }
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
         String[] group = xAxis.stream().map(ChartViewFieldDTO::getDataeaseName).toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
                 .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
@@ -297,7 +306,7 @@ public class ChartViewService {
                 }).toArray(String[]::new);
 
         String sql = MessageFormat.format("SELECT {0},{1} FROM {2} WHERE 1=1 {3} GROUP BY {4} ORDER BY null,{5}",
-                StringUtils.join(group, ","),
+                StringUtils.join(groupField, ","),
                 StringUtils.join(field, ","),
                 table,
                 xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "" + transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter

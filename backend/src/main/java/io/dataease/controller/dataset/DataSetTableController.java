@@ -58,11 +58,6 @@ public class DataSetTableController {
         return dataSetTableService.getFieldsFromDE(dataSetTableRequest);
     }
 
-    @PostMapping("getData")
-    public List<String[]> getData(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
-        return dataSetTableService.getData(dataSetTableRequest);
-    }
-
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize);

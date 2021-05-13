@@ -124,7 +124,6 @@ public class DataSetTableService {
         String dorisTableName = DorisTableUtils.dorisName(datasetId);
         Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-        ;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         datasourceRequest.setQuery("drop table if exists " + dorisTableName);
@@ -199,23 +198,6 @@ public class DataSetTableService {
         return map;
     }
 
-    public List<String[]> getData(DataSetTableRequest dataSetTableRequest) throws Exception {
-        Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        String table = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable();
-
-        DatasetTableField datasetTableField = DatasetTableField.builder().build();
-        datasetTableField.setTableId(dataSetTableRequest.getId());
-        datasetTableField.setChecked(Boolean.TRUE);
-        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        String[] fieldArray = fields.stream().map(DatasetTableField::getOriginName).toArray(String[]::new);
-        datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray));
-
-        return datasourceProvider.getData(datasourceRequest);
-    }
-
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize) throws Exception {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
@@ -242,7 +224,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
 
             String table = dataTableInfoDTO.getTable();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -261,7 +243,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
 
             String sql = dataTableInfoDTO.getSql();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -279,7 +261,7 @@ public class DataSetTableService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -298,7 +280,7 @@ public class DataSetTableService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fieldArray) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -568,15 +550,25 @@ public class DataSetTableService {
         }
     }
 
-    public String createQuerySQL(String type, String table, String[] fields) {
+    public String createQuerySQL(String type, String table, List<DatasetTableField> fields) {
+        String[] array = fields.stream().map(f -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (f.getDeType() == 1) {
+                stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getDataeaseName());
+            } else {
+                stringBuilder.append(f.getDataeaseName());
+            }
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
+
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
             case sqlServer:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
             default:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.length > 0 ? fields[0] : "null"), StringUtils.join(fields, ","), table);
+                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
         }
     }
 

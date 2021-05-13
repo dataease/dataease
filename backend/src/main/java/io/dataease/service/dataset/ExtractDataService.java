@@ -435,7 +435,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 if(extractType.equalsIgnoreCase("all_scope")){
                     String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
-                    selectSQL = dataSetTableService.createQuerySQL(datasource.getType(), tableName, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new));
+                    selectSQL = dataSetTableService.createQuerySQL(datasource.getType(), tableName, datasetTableFields);
                 }
                 inputStep = inputStep(transMeta, selectSQL);
                 break;
