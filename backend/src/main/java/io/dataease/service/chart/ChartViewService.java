@@ -157,7 +157,7 @@ public class ChartViewService {
             datasourceRequest.setDatasource(ds);
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
-            datasourceRequest.setQuery(getSQL(ds.getType(), tableName, xAxis, yAxis, extFilterList));
+            datasourceRequest.setQuery(transDorisSQL(tableName, xAxis, yAxis, extFilterList));
             data = datasourceProvider.getData(datasourceRequest);
         }
 
@@ -258,6 +258,103 @@ public class ChartViewService {
         }
     }
 
+    public String transDorisSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
+        // 字段汇总 排序等
+        String[] field = yAxis.stream().map(y -> {
+            StringBuilder f = new StringBuilder();
+            if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
+                f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
+            } else {
+                f.append("ROUND(")
+                        .append(y.getSummary()).append("(")
+                        .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                        .append("),2").append(")");
+            }
+            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+            return f.toString();
+        }).toArray(String[]::new);
+        String[] groupField = xAxis.stream().map(x -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            // 如果原始类型为时间
+            if (x.getDeExtractType() == 1) {
+                if (x.getDeType() == 2 || x.getDeType() == 3) {
+                    stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as ").append(x.getDataeaseName());
+                } else {
+                    stringBuilder.append(x.getDataeaseName());
+                }
+            } else {
+                if (x.getDeType() == 1) {
+                    stringBuilder.append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(x.getDataeaseName());
+                } else {
+                    stringBuilder.append(x.getDataeaseName());
+                }
+            }
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
+        String[] group = xAxis.stream().map(ChartViewFieldDTO::getDataeaseName).toArray(String[]::new);
+        String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
+                .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
+        String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
+                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getDataeaseName(), "*") ? "" : f.getDataeaseName()) + " " + f.getSort()).toArray(String[]::new);
+        String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
+        System.arraycopy(yOrder, 0, order, xOrder.length, yOrder.length);
+
+        String[] xFilter = xAxis.stream().filter(x -> CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0)
+                .map(x -> {
+                    String[] s = x.getFilter().stream().map(f -> {
+                        StringBuilder filter = new StringBuilder();
+                        filter.append(" AND ").append(x.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
+                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                            filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                            filter.append("%").append(f.getValue()).append("%");
+                        } else {
+                            filter.append("'" + f.getValue() + "'");
+                        }
+                        return filter.toString();
+                    }).toArray(String[]::new);
+                    return StringUtils.join(s, " ");
+                }).toArray(String[]::new);
+
+        String sql = MessageFormat.format("SELECT {0},{1} FROM {2} WHERE 1=1 {3} GROUP BY {4} ORDER BY null,{5}",
+                StringUtils.join(groupField, ","),
+                StringUtils.join(field, ","),
+                table,
+                xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "" + transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter
+                StringUtils.join(group, ","),
+                StringUtils.join(order, ","));
+        if (sql.endsWith(",")) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        // 如果是对结果字段过滤，则再包裹一层sql
+        String[] resultFilter = yAxis.stream().filter(y -> CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0)
+                .map(y -> {
+                    String[] s = y.getFilter().stream().map(f -> {
+                        StringBuilder filter = new StringBuilder();
+                        filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
+                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                            filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
+                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                            filter.append("%").append(f.getValue()).append("%");
+                        } else {
+                            filter.append("'" + f.getValue() + "'");
+                        }
+                        return filter.toString();
+                    }).toArray(String[]::new);
+                    return StringUtils.join(s, " ");
+                }).toArray(String[]::new);
+        if (resultFilter.length == 0) {
+            return sql;
+        } else {
+            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1}",
+                    "(" + sql + ") AS tmp",
+                    StringUtils.join(resultFilter, " "));
+            return filterSql;
+        }
+    }
+
     public String transMysqlSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> {
@@ -268,7 +365,7 @@ public class ChartViewService {
                 f.append("CAST(")
                         .append(y.getSummary()).append("(")
                         .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                        .append(") AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")");
+                        .append(") AS DECIMAL(20,2)").append(")");
             }
             f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
             return f.toString();
