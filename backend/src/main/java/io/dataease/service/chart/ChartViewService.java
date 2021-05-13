@@ -265,17 +265,29 @@ public class ChartViewService {
             if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
                 f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
             } else {
-                f.append(y.getSummary()).append("(").append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append("))");
+                f.append("CAST(")
+                        .append(y.getSummary()).append("(")
+                        .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                        .append(") AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")");
             }
             f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
             return f.toString();
         }).toArray(String[]::new);
         String[] groupField = xAxis.stream().map(x -> {
             StringBuilder stringBuilder = new StringBuilder();
-            if (x.getDeType() == 1) {
-                stringBuilder.append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(x.getDataeaseName());
+            // 如果原始类型为时间
+            if (x.getDeExtractType() == 1) {
+                if (x.getDeType() == 2 || x.getDeType() == 3) {
+                    stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as ").append(x.getDataeaseName());
+                } else {
+                    stringBuilder.append(x.getDataeaseName());
+                }
             } else {
-                stringBuilder.append(x.getDataeaseName());
+                if (x.getDeType() == 1) {
+                    stringBuilder.append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(x.getDataeaseName());
+                } else {
+                    stringBuilder.append(x.getDataeaseName());
+                }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);

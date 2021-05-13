@@ -516,8 +516,9 @@ public class DataSetTableService {
                     datasetTableField.setDeType(transFieldType(filed.getFieldType()));
                     datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
                 } else {
-                    datasetTableField.setDeType(transFieldType(ds.getType(), filed.getFieldType()));
-                    datasetTableField.setDeExtractType(transFieldType(ds.getType(), filed.getFieldType()));
+                    Integer fieldType = transFieldType(ds.getType(), filed.getFieldType());
+                    datasetTableField.setDeType(fieldType == 4 ? 2 : fieldType);
+                    datasetTableField.setDeExtractType(fieldType);
                 }
                 datasetTableField.setSize(filed.getFieldSize());
                 datasetTableField.setChecked(true);
@@ -555,10 +556,19 @@ public class DataSetTableService {
     public String createQuerySQL(String type, String table, List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            if (f.getDeType() == 1) {
-                stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getDataeaseName());
+            // 如果原始类型为时间
+            if (f.getDeExtractType() == 1) {
+                if (f.getDeType() == 2 || f.getDeType() == 3) {
+                    stringBuilder.append("unix_timestamp(").append(f.getDataeaseName()).append(")*1000 as ").append(f.getDataeaseName());
+                } else {
+                    stringBuilder.append(f.getDataeaseName());
+                }
             } else {
-                stringBuilder.append(f.getDataeaseName());
+                if (f.getDeType() == 1) {
+                    stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getDataeaseName());
+                } else {
+                    stringBuilder.append(f.getDataeaseName());
+                }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
