@@ -310,7 +310,7 @@ public class ChartViewService {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                             filter.append("%").append(f.getValue()).append("%");
                         } else {
-                            filter.append(f.getValue());
+                            filter.append("'" + f.getValue() + "'");
                         }
                         return filter.toString();
                     }).toArray(String[]::new);
@@ -339,7 +339,7 @@ public class ChartViewService {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                             filter.append("%").append(f.getValue()).append("%");
                         } else {
-                            filter.append(f.getValue());
+                            filter.append("'" + f.getValue() + "'");
                         }
                         return filter.toString();
                     }).toArray(String[]::new);
