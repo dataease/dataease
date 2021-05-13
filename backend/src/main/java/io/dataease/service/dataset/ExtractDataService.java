@@ -130,8 +130,11 @@ public class ExtractDataService {
                 case 3:
                     Column_Fields = Column_Fields + "DOUBLE" + ",`";
                     break;
+                case 4:
+                    Column_Fields = Column_Fields + "TINYINT(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    break;
                 default:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",";
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
                     break;
             }
         }
@@ -182,6 +185,7 @@ public class ExtractDataService {
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
             });
             String dorisTablColumnSql = createDorisTablColumnSql(datasetTableFields);
+            System.out.println(dorisTablColumnSql);
             switch (updateType) {
                 // 全量更新
                 case all_scope:
@@ -525,6 +529,13 @@ public class ExtractDataService {
     }
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields){
+        String needToChangeolumnType = "";
+        for (DatasetTableField datasetTableField : datasetTableFields) {
+            if(datasetTableField.getDeType() != null && datasetTableField.getDeType() == 4){
+                needToChangeolumnType = needToChangeolumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getOriginName());
+            }
+        }
+
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
         UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
@@ -532,7 +543,8 @@ public class ExtractDataService {
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor",
-                code.replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()))));
+                code.replace("alterColumnTypeCode", needToChangeolumnType).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()))));
+
         userDefinedJavaClassDef.setActive(true);
         definitions.add(userDefinedJavaClassDef);
         userDefinedJavaClassMeta.replaceDefinitions(definitions);
@@ -566,6 +578,16 @@ public class ExtractDataService {
         }
     }
 
+    private static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
+            "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
+            "         get(Fields.Out, filed).setValue(r, 1);\n" +
+            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+            "       }else{\n" +
+            "         get(Fields.Out, filed).setValue(r, 0);\n" +
+            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+            "       }\n" +
+            "     }\n";
+
     private static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
             "import java.io.File;\n" +
@@ -595,6 +617,7 @@ public class ExtractDataService {
             "    List<String> fileds = Arrays.asList(\"Column_Fields\".split(\",\"));\n" +
             "    for (String filed : fileds) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
+            "alterColumnTypeCode \n" +
             "        str = str + tmp;\n" +
             "    }\n" +
             "\n" +

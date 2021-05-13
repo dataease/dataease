@@ -619,8 +619,6 @@ public class DataSetTableService {
             case "TIMESTAMP":
                 return 1;// 时间
             case "INT":
-            case "BIT":
-            case "TINYINT":
             case "SMALLINT":
             case "MEDIUMINT":
             case "INTEGER":
@@ -630,6 +628,9 @@ public class DataSetTableService {
             case "DOUBLE":
             case "DECIMAL":
                 return 3;// 浮点
+            case "BIT":
+            case "TINYINT":
+                return 4;// 布尔
             default:
                 return 0;
         }
