@@ -37,9 +37,46 @@
 
         <lang-select class="right-menu-item hover-effect" />
       </template>
-      <el-dropdown class="avatar-container" trigger="click">
+
+      <el-dropdown class="top-dropdown">
+        <span class="el-dropdown-link">
+          {{ name }}<i class="el-icon-arrow-down el-icon--right" />
+        </span>
+        <el-dropdown-menu slot="dropdown">
+
+          <router-link to="/person-info/index">
+            <el-dropdown-item>个人信息</el-dropdown-item>
+          </router-link>
+          <router-link to="/person-pwd/index">
+            <el-dropdown-item>重置密码</el-dropdown-item>
+          </router-link>
+
+          <a href="https://panjiachen.github.io/vue-element-admin-site/#/" target="_blank">
+            <el-dropdown-item>Docs</el-dropdown-item>
+          </a>
+
+          <a href="https://fit2cloud.com/" target="_blank">
+            <el-dropdown-item>关于</el-dropdown-item>
+          </a>
+          <el-dropdown-item divided @click.native="logout">
+            <span style="display:block;">退出</span>
+          </el-dropdown-item>
+          <!-- <el-dropdown-item>黄金糕</el-dropdown-item>
+          <el-dropdown-item>狮子头</el-dropdown-item>
+          <el-dropdown-item>螺蛳粉</el-dropdown-item>
+          <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+          <el-dropdown-item divided>蚵仔煎</el-dropdown-item> -->
+        </el-dropdown-menu>
+      </el-dropdown>
+      <!-- <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img src="@/assets/avatar.jpeg" class="user-avatar">
+          <div class="de-user-avatar">
+            <span>
+              {{ name }}
+
+            </span>
+          </div>
+
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
@@ -55,7 +92,7 @@
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
     </div>
   </div>
 </template>
@@ -113,7 +150,8 @@ export default {
     },
     ...mapGetters([
       'avatar',
-      'permission_routes'
+      'permission_routes',
+      'name'
     ])
   },
 
@@ -222,5 +260,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #ffffff;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
 
+  .top-dropdown {
+    display: inline-block;
+    padding: 10px 8px;
+    height: 100%;
+    font-size: 16px;
+    color: rgba(255,255,255,.87);
+    vertical-align: text-bottom;
+    margin-right: 30px;
+  }
 </style>

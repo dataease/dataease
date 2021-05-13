@@ -87,6 +87,14 @@
             height: 40px;
             border-radius: 10px;
           }
+          .de-user-avatar {
+            cursor: pointer;
+            height: 40px;
+            border-radius: 10px;
+            span {
+                color: #ffffff;
+            }
+          }
 
           .el-icon-caret-bottom {
             cursor: pointer;
