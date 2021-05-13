@@ -220,6 +220,7 @@ public class SystemParameterService {
 
     public void saveUIInfo(Map<String,List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles) throws IOException {
         List<SystemParameterDTO> parameters = request.get("systemParams");
+        if (null != bodyFiles)
         for (MultipartFile multipartFile : bodyFiles) {
             if (!multipartFile.isEmpty()) {
                 //防止添加非图片文件

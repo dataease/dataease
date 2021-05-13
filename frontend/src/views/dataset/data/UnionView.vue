@@ -5,6 +5,8 @@
       <el-table
         size="mini"
         :data="unionData"
+        :height="height"
+        border
         style="width: 100%;margin-top: 10px;"
       >
         <el-table-column
@@ -28,8 +30,8 @@
           :label="$t('dataset.target_field')"
         />
         <el-table-column
-          fixed="right"
-          width="100"
+          align="left"
+          :label="$t('dataset.operate')"
         >
           <template slot-scope="scope">
             <el-button type="text" size="mini" @click="edit(scope.row)">{{ $t('dataset.edit') }}</el-button>
@@ -143,6 +145,7 @@ export default {
   },
   data() {
     return {
+      height: 500,
       union: {
         id: null,
         sourceTableId: this.table.id,
@@ -165,9 +168,17 @@ export default {
     }
   },
   mounted() {
+    this.calHeight()
     this.initUnion()
   },
   methods: {
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
+      }, 10)
+    },
     initUnion() {
       if (this.table.id) {
         post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {

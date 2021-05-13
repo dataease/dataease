@@ -112,7 +112,7 @@ public class DataSetTableService {
         return datasetTable;
     }
 
-    public void delete(String id) throws Exception{
+    public void delete(String id) throws Exception {
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
@@ -120,10 +120,11 @@ public class DataSetTableService {
         deleteDorisTable(id);
     }
 
-    private void deleteDorisTable(String datasetId) throws Exception{
+    private void deleteDorisTable(String datasetId) throws Exception {
         String dorisTableName = DorisTableUtils.dorisName(datasetId);
-        Datasource dorisDatasource =  (Datasource)CommonBeanFactory.getBean("DorisDatasource");
-        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);;
+        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+        ;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         datasourceRequest.setQuery("drop table if exists " + dorisTableName);
@@ -548,7 +549,10 @@ public class DataSetTableService {
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
-        datasourceRequest.setQuery("CREATE VIEW " + dorisTableName + " AS (" + customSql + ")");
+        // 先删除表
+        datasourceRequest.setQuery("DROP VIEW IF EXISTS " + dorisTableName);
+        jdbcProvider.exec(datasourceRequest);
+        datasourceRequest.setQuery("CREATE VIEW IF NOT EXISTS " + dorisTableName + " AS (" + customSql + ")");
         jdbcProvider.exec(datasourceRequest);
     }
 

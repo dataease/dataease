@@ -1,7 +1,8 @@
 <template>
   <div class="top-nav" :style="{'background-color': theme}">
     <div class="log">
-      <img src="@/assets/DataEase-white.png" width="160" alt="" style="padding-top: 8px;">
+      <img v-if="!logoUrl" src="@/assets/DataEase-white.png" width="160" alt="" style="padding-top: 8px;">
+      <img v-else :src="logoUrl" width="160" alt="" style="padding-top: 8px;">
     </div>
     <el-menu
       :active-text-color="variables.topMenuActiveText"
@@ -68,6 +69,7 @@ import Doc from '@/components/Doc'
 import Screenfull from '@/components/Screenfull'
 // import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
+import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Topbar',
   components: {
@@ -79,9 +81,11 @@ export default {
   },
   data() {
     return {
-
+      uiInfo: null,
+      logoUrl: null
     }
   },
+
   computed: {
     theme() {
       return this.$store.state.settings.theme
@@ -115,6 +119,14 @@ export default {
 
   mounted() {
     this.initCurrentRoutes()
+  },
+  created() {
+    this.$store.dispatch('user/getUI').then(() => {
+      this.uiInfo = getSysUI()
+      if (this.uiInfo['ui.logo'] && this.uiInfo['ui.logo'].paramValue) {
+        this.logoUrl = '/system/ui/image/' + this.uiInfo['ui.logo'].paramValue
+      }
+    })
   },
   methods: {
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单

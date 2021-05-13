@@ -21,6 +21,8 @@ const getters = {
   beanMap: state => state.application.beanMap,
   leftWidgetMap: state => state.application.leftWidgetMap,
   dialogWidgetMap: state => state.application.dialogWidgetMap,
-  drawWidgetMap: state => state.application.drawWidgetMap
+  drawWidgetMap: state => state.application.drawWidgetMap,
+  validate: state => state.lic.validate,
+  uiInfo: state => state.user.uiInfo
 }
 export default getters

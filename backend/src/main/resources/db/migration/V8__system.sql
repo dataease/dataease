@@ -271,3 +271,20 @@ BEGIN;
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for license
+-- ----------------------------
+DROP TABLE IF EXISTS `license`;
+CREATE TABLE `license` (
+  `id` varchar(50) NOT NULL,
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `license` longtext COMMENT 'license',
+  `f2c_license` longtext COMMENT 'F2C License',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+SET FOREIGN_KEY_CHECKS = 1;
