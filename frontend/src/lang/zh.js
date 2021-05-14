@@ -708,7 +708,9 @@ export default {
     table_item_font_color: '字体颜色',
     stripe: '斑马纹',
     start_angle: '起始角度',
-    end_angle: '结束角度'
+    end_angle: '结束角度',
+    style_priority: '样式优先级',
+    dashboard: '仪表盘'
   },
   dataset: {
     datalist: '数据集',

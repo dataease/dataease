@@ -93,7 +93,7 @@
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
             <div class="chart-type">
-              <!--TODO 这里要替换好看点的图标，UI标签可以重新定义-->
+              <!--这里要替换好看点的图标，UI标签可以重新定义-->
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
@@ -127,10 +127,10 @@
         </div>
         <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
           <el-row class="padding-lr">
-            <span>样式优先级</span>
+            <span>{{ $t('chart.style_priority') }}</span>
             <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
-              <el-radio style="margin-left: 20px" label="view"><span>视图</span></el-radio>
-              <el-radio label="panel"><span>仪表盘</span></el-radio>
+              <el-radio style="margin-left: 20px" label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
+              <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
             </el-radio-group>
           </el-row>
           <el-tabs type="card" :stretch="true" class="tab-header">
@@ -476,7 +476,7 @@ export default {
               ele.filter = []
             }
           })
-          if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
+          if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('gauge')) {
             if (view.yaxis.length > 1) {
               view.yaxis.splice(1, view.yaxis.length)
             }
