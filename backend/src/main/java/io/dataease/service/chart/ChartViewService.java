@@ -231,9 +231,14 @@ public class ChartViewService {
                 continue;
             }
             DatasetTableField field = request.getDatasetTableField();
-            filter.append(" AND ")
-                    .append(field.getDataeaseName())
-                    .append(" ")
+            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
+                filter.append(" AND FROM_UNIXTIME(cast(")
+                        .append(field.getDataeaseName())
+                        .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+            } else {
+                filter.append(" AND ").append(field.getDataeaseName());
+            }
+            filter.append(" ")
                     .append(transMysqlFilterTerm(request.getOperator()))
                     .append(" ");
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
@@ -303,7 +308,14 @@ public class ChartViewService {
                 .map(x -> {
                     String[] s = x.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
-                        filter.append(" AND ").append(x.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
+                        if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
+                            filter.append(" AND FROM_UNIXTIME(cast(")
+                                    .append(x.getDataeaseName())
+                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                        } else {
+                            filter.append(" AND ").append(x.getDataeaseName());
+                        }
+                        filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
@@ -332,7 +344,14 @@ public class ChartViewService {
                 .map(y -> {
                     String[] s = y.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
-                        filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
+                        if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
+                            filter.append(" AND FROM_UNIXTIME(cast(_")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
+                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                        } else {
+                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+                        }
+                        filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
@@ -362,13 +381,16 @@ public class ChartViewService {
             if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
                 f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
             } else {
-//                f.append("CAST(")
-//                        .append(y.getSummary()).append("(")
-//                        .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-//                        .append(") AS DECIMAL(20,2)").append(")");
-                f.append(y.getSummary()).append("(")
-                        .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                        .append(")");
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
+                    f.append("CAST(")
+                            .append(y.getSummary()).append("(")
+                            .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append(") AS DECIMAL(20,2)").append(")");
+                } else {
+                    f.append(y.getSummary()).append("(")
+                            .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append(")");
+                }
             }
             f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
             return f.toString();
@@ -403,14 +425,21 @@ public class ChartViewService {
                 .map(x -> {
                     String[] s = x.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
-                        filter.append(" AND ").append(x.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
+                        if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
+                            filter.append(" AND FROM_UNIXTIME(cast(")
+                                    .append(x.getDataeaseName())
+                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                        } else {
+                            filter.append(" AND ").append(x.getDataeaseName());
+                        }
+                        filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                             filter.append("%").append(f.getValue()).append("%");
                         } else {
-                            filter.append("'" + f.getValue() + "'");
+                            filter.append("'").append(f.getValue()).append("'");
                         }
                         return filter.toString();
                     }).toArray(String[]::new);
@@ -432,14 +461,22 @@ public class ChartViewService {
                 .map(y -> {
                     String[] s = y.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
-                        filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName()).append(transMysqlFilterTerm(f.getTerm()));
+                        // 原始类型不是时间，在de中被转成时间的字段做处理
+                        if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
+                            filter.append(" AND FROM_UNIXTIME(cast(_")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
+                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                        } else {
+                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+                        }
+                        filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                             filter.append("%").append(f.getValue()).append("%");
                         } else {
-                            filter.append("'" + f.getValue() + "'");
+                            filter.append("'").append(f.getValue()).append("'");
                         }
                         return filter.toString();
                     }).toArray(String[]::new);
