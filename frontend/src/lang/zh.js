@@ -706,7 +706,9 @@ export default {
     table_header_bg: '表头背景',
     table_item_bg: '表格背景',
     table_item_font_color: '字体颜色',
-    stripe: '斑马纹'
+    stripe: '斑马纹',
+    start_angle: '起始角度',
+    end_angle: '结束角度'
   },
   dataset: {
     datalist: '数据集',

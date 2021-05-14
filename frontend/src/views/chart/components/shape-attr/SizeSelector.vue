@@ -98,6 +98,21 @@
               </el-select>
             </el-form-item>
           </el-form>
+
+          <el-form v-show="chart.type && chart.type.includes('gauge')" ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
+            <el-form-item :label="$t('chart.min')" class="form-item form-item-slider">
+              <el-input-number v-model="sizeForm.gaugeMin" size="mini" @change="changeBarSizeCase" />
+            </el-form-item>
+            <el-form-item :label="$t('chart.max')" class="form-item form-item-slider">
+              <el-input-number v-model="sizeForm.gaugeMax" size="mini" @change="changeBarSizeCase" />
+            </el-form-item>
+            <el-form-item :label="$t('chart.start_angle')" class="form-item form-item-slider">
+              <el-slider v-model="sizeForm.gaugeStartAngle" show-input :show-input-controls="false" input-size="mini" :min="-360" :max="360" @change="changeBarSizeCase" />
+            </el-form-item>
+            <el-form-item :label="$t('chart.end_angle')" class="form-item form-item-slider">
+              <el-slider v-model="sizeForm.gaugeEndAngle" show-input :show-input-controls="false" input-size="mini" :min="-360" :max="360" @change="changeBarSizeCase" />
+            </el-form-item>
+          </el-form>
         </el-col>
 
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>

@@ -24,14 +24,19 @@ export const DEFAULT_SIZE = {
   funnelWidth: 80,
   radarShape: 'polygon',
   tableTitleFontSize: 12,
-  tableItemFontSize: 12
+  tableItemFontSize: 12,
+  gaugeMin: 0,
+  gaugeMax: 100,
+  gaugeStartAngle: 225,
+  gaugeEndAngle: -45
 }
 export const DEFAULT_LABEL = {
   show: false,
   position: 'top',
   color: '#909399',
   fontSize: '10',
-  formatter: '{c}'
+  formatter: '{c}',
+  gaugeFormatter: '{value}'
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
@@ -296,4 +301,40 @@ export const BASE_RADAR = {
     // areaStyle: {normal: {}},
     data: []
   }]
+}
+
+export const BASE_GAUGE = {
+  title: {
+    text: ''
+  },
+  // grid: {
+  //   containLabel: true
+  // },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect'
+  },
+  series: [
+    {
+      name: '',
+      type: 'gauge',
+      startAngle: 225,
+      endAngle: -45,
+      min: 0,
+      max: 100,
+      progress: {
+        show: true
+      },
+      detail: {
+        show: true,
+        valueAnimation: true,
+        formatter: '{value}'
+      },
+      data: []
+    }
+  ]
 }
