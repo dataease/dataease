@@ -97,7 +97,7 @@
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
-                @change="save(false)"
+                @change="save(true)"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                   <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
