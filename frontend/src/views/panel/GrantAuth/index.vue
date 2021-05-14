@@ -8,14 +8,14 @@
     </div>
 
     <el-tabs v-model="activeName" :class="{'de-search-header': showSearchInput}" @tab-click="handleClick">
-      <el-tab-pane :lazy="true" class="de-tab" label="部门" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" label="角色" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" label="用户" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
     </el-tabs>
     <div class="auth-root-class">
       <span slot="footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button @click="cancel">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
       </span>
     </div>
   </div>

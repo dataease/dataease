@@ -3,15 +3,15 @@
     <de-aside-container>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
-          <span slot="label"><i class="el-icon-document" />列表</span>
+          <span slot="label"><i class="el-icon-document" />{{ $t('panel.panel_list')}}</span>
           <panel-list />
         </el-tab-pane>
         <el-tab-pane name="panels_star" :lazy="true">
-          <span slot="label"><i class="el-icon-star-off" />收藏</span>
+          <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.store')}}</span>
           <enshrine v-if="showEnshrine" />
         </el-tab-pane>
         <el-tab-pane name="panels_share" :lazy="true">
-          <span slot="label"><i class="el-icon-share" />分享</span>
+          <span slot="label"><i class="el-icon-share" />{{ $t('panel.share')}}</span>
           <share-tree v-if="showShare" />
         </el-tab-pane>
       </el-tabs>

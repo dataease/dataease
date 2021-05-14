@@ -12,14 +12,6 @@
               </el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          <!-- <div class="component-search filter-common">
-            <el-input
-              placeholder="请输入内容"
-              prefix-icon="el-icon-search"
-            />
-          </div> -->
-
-          <!-- <div class="component-result-content filter-common" @dragstart="handleDragStart" @dragend="handleDragEnd"> -->
           <div class="component-result-content filter-common">
             <el-tree
               v-if="showDomType === 'tree'"
@@ -38,7 +30,7 @@
               :highlight-current-row="true"
               style="width: 100%"
             >
-              <el-table-column prop="name" label="名称">
+              <el-table-column prop="name" :label="$t('commons.name')">
                 <template v-if="showDomType === 'db'" :id="scope.row.id" slot-scope="scope">
                   <div class="filter-db-row" @click="showFieldDatas(scope.row)">
                     <i class="el-icon-s-data" />
@@ -68,7 +60,7 @@
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane :lazy="true" class="de-tab" label="按组件选择" name="assembly">
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_module')" name="assembly">
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item v-for="bread in componentSetBreads" :key="bread.label">
@@ -77,12 +69,7 @@
               </el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          <!-- <div class="component-search filter-common">
-            <el-input
-              placeholder="请输入内容"
-              prefix-icon="el-icon-search"
-            />
-          </div> -->
+
           <div class="component-result-content filter-common">
             <el-table
               v-if="comShowDomType === 'view'"
@@ -93,7 +80,7 @@
               :highlight-current-row="true"
               style="width: 100%"
             >
-              <el-table-column prop="name" label="名称">
+              <el-table-column prop="name" :label="$t('commons.name')">
                 <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
                   <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
                     <i class="el-icon-s-data" />

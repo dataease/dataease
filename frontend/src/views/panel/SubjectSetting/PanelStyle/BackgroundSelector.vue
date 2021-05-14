@@ -9,7 +9,7 @@
         <el-col>
           <el-row>
             <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">颜色</el-radio>
+              <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">{{$t('chart.color')}}</el-radio>
             </el-col>
             <el-col :span="18">
               <colorPicker v-model="panel.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" />
@@ -17,7 +17,7 @@
           </el-row>
           <el-row style="height: 60px;margin-top:10px;overflow: hidden">
             <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="image" @change="onChangeType">图片</el-radio>
+              <el-radio v-model="panel.backgroundType" label="image" @change="onChangeType">{{$t('panel.photo')}}</el-radio>
             </el-col>
             <el-col :span="18">
               <el-upload
@@ -40,7 +40,7 @@
             </el-col>
           </el-row>
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">背景<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">{{$t('chart.background')}} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>

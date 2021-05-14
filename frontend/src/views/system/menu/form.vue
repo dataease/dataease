@@ -3,12 +3,12 @@
     <el-form ref="menuForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item label="菜单类型" prop="type">
         <el-radio-group v-model="form.type" size="mini" :disabled="formType!=='add'">
-          <el-radio-button label="0">目录</el-radio-button>
-          <el-radio-button label="1">菜单</el-radio-button>
-          <el-radio-button label="2">按钮</el-radio-button>
+          <el-radio-button label="0">{{ $t('commons.catalogue') }}</el-radio-button>
+          <el-radio-button label="1">{{ $t('commons.menu') }}</el-radio-button>
+          <el-radio-button label="2">{{ $t('commons.button') }}</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="form.type=== 1 && form.icon" label="菜单图标" prop="icon">
+      <el-form-item v-if="form.type=== 1 && form.icon" :label="$t('commons.icon')" prop="icon">
         <el-popover
           placement="bottom-start"
           width="425"
@@ -16,47 +16,34 @@
           @show="$refs['iconSelect'].reset()"
         >
           <IconSelect ref="iconSelect" @selected="selected" />
-          <el-input slot="reference" v-model="form.icon" placeholder="点击选择图标" readonly>
+          <el-input slot="reference" v-model="form.icon" :placeholder="$t('menu.select_icon')" readonly>
             <svg-icon v-if="form.icon" slot="prefix" :icon-class="form.icon" class="el-input__icon" style="height: 32px;width: 16px;" />
             <i v-else slot="prefix" class="el-icon-search el-input__icon" />
           </el-input>
         </el-popover>
       </el-form-item>
 
-      <el-form-item v-if="form.type !== 2" label="菜单标题" prop="title">
-        <el-input v-model="form.title" placeholder="菜单标题" />
+      <el-form-item v-if="form.type !== 2" :label="$t('menu.tile')" prop="title">
+        <el-input v-model="form.title" :placeholder="$t('menu.tile')" />
       </el-form-item>
-      <el-form-item v-if="form.type === 2" label="按钮名称" prop="title">
-        <el-input v-model="form.title" placeholder="按钮名称" />
+      <el-form-item v-if="form.type === 2" label="$t('menu.button_name')" prop="title">
+        <el-input v-model="form.title" :placeholder="$t('menu.button_name')" />
       </el-form-item>
-      <!-- <el-form-item v-if="form.type !== 0" label="权限标识" prop="permission">
-        <el-input v-model="form.permission" :disabled="form.iframe || formType!=='add'" placeholder="权限标识" />
-      </el-form-item>
-      <el-form-item v-if="form.type !== 2" label="路由地址" prop="path">
-        <el-input v-model="form.path" placeholder="路由地址" :disabled="formType!=='add'" />
-      </el-form-item> -->
-      <el-form-item v-if="form.type !== 2" label="菜单排序" prop="menuSort">
+      <el-form-item v-if="form.type !== 2" label="$t('menu.menu_sort')" prop="menuSort">
         <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" />
       </el-form-item>
-      <!-- <el-form-item v-if="!form.iframe && form.type === 1" label="组件名称" prop="componentName">
-        <el-input v-model="form.componentName" :disabled="formType!=='add'" placeholder="匹配组件内Name字段" />
-      </el-form-item>
-      <el-form-item v-if="!form.iframe && form.type === 1" label="组件路径" prop="component">
-        <el-input v-model="form.component" :disabled="formType!=='add'" placeholder="组件路径" />
-      </el-form-item> -->
-      <el-form-item label="上级类目" prop="pid">
+      <el-form-item :label="$t('menu.parent_category')" prop="pid">
         <treeselect
           v-model="form.pid"
           :disabled="formType!=='add'"
           :options="menus"
           :load-options="loadMenus"
-
-          placeholder="选择上级类目"
+          :placeholder="$t('menu.parent_category')"
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="save">保存</el-button>
-        <el-button @click="reset">重置</el-button>
+        <el-button type="primary" @click="save">{{ $t('commons.reset') }}</el-button>
+        <el-button @click="reset">{{ $t('commons.confirm') }}</el-button>
       </el-form-item>
     </el-form>
 

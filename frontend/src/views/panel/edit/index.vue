@@ -2,7 +2,7 @@
   <el-row>
     <el-row class="de-header">
       <span style="float: left;line-height: 35px; color: gray">
-        名称：{{ panelInfo.name || '测试仪表板' }}
+        {{ $t('commons.name') }} ：{{ panelInfo.name || '测试仪表板' }}
       </span>
       <!--横向工具栏-->
       <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" />
@@ -19,7 +19,7 @@
               <!-- 视图文字 -->
               <div style="position: relative; margin: 18px auto 30px">
                 <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                  视图
+                  {{ $t('panel.view') }}
                 </div>
               </div>
               <!-- 视图分割线 -->
@@ -34,7 +34,7 @@
                   </div>
                   <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
                     <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                      组件
+                      {{ $t('panel.module') }}
                     </div>
                   </div>
                 </div>
@@ -70,17 +70,11 @@
 
     <el-dialog
       v-if="filterVisible && panelInfo.id"
-      title="过滤组件"
+      :title="$t('panel.module')"
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >
       <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" :component-info="currentFilterCom" @re-fresh-component="reFreshComponent">
-        <!-- <de-drawing-widget
-          v-if="filterVisible"
-          style="width: 100% !important;"
-          class="component"
-          :service-name="currentWidget.name"
-        /> -->
         <component
           :is="currentFilterCom.component"
           :id="'component' + currentFilterCom.id"
@@ -90,14 +84,10 @@
           :in-draw="false"
         />
       </filter-dialog>
-      <!-- <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="editPasswordVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="editUserPassword('editPasswordForm')">确认</el-button>
-      </div> -->
       <div style="text-align: end !important;margin: 0 15px !important;">
         <span slot="footer">
-          <el-button @click="cancelFilter">取 消</el-button>
-          <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" @click="sureFilter">确 定</el-button>
+          <el-button @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
+          <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </el-dialog>

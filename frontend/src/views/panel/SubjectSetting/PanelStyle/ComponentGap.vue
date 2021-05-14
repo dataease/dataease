@@ -7,10 +7,10 @@
         trigger="click"
       >
         <el-col>
-          <el-radio v-model="panelStyleForm.gap" label="yes" @change="onChangePanelStyle">有间隙</el-radio>
-          <el-radio v-model="panelStyleForm.gap" label="no" @change="onChangePanelStyle">无间隙</el-radio>
+          <el-radio v-model="panelStyleForm.gap" label="yes" @change="onChangePanelStyle">{{ $t('panel.gap') }} </el-radio>
+          <el-radio v-model="panelStyleForm.gap" label="no" @change="onChangePanelStyle">{{ $t('panel.no_gap') }}</el-radio>
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">组件间隙<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.component_gap') }} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>

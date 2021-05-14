@@ -1,6 +1,6 @@
 <template>
   <el-row class="slider-container">
-    <div style="height: 40px; line-height: 40px; padding-left: 15px; text-align: left; white-space: pre; text-overflow: ellipsis; left: 0px; right: 0px; top: 0px; font-weight: 700">仪表盘主题</div>
+    <div style="height: 40px; line-height: 40px; padding-left: 15px; text-align: left; white-space: pre; text-overflow: ellipsis; left: 0px; right: 0px; top: 0px; font-weight: 700">{{ $t('panel.dashboard_theme') }} </div>
     <div style="height: 1px; position: absolute; left: 15px; right: 15px; top: 40px; box-sizing:border-box;border-bottom: 1px solid #e8eaed" />
     <div>
       <slider />
@@ -8,34 +8,28 @@
     <!--折叠面板-->
     <div style="margin: 10px;overflow-y: auto">
       <el-collapse v-model="activeNames" @change="handleChange">
-        <el-collapse-item title="仪表盘" name="panel">
+        <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="组件样式" name="component">
+        <el-collapse-item :title="$t('chart.module_style')" name="component">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
             <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="图形属性" name="graphical">
+        <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <color-selector :source-type="'panelEchart'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="表格" name="table">
+        <el-collapse-item :title="$t('panel.table')" name="table">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <color-selector :source-type="'panelTable'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
           </el-row>
         </el-collapse-item>
-        <!--        <el-collapse-item title="过滤组件" name="filter">-->
-        <!--          <el-row style="background-color: #f7f8fa; margin: 5px">-->
-        <!--            <background-selector class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />-->
-        <!--            <component-gap class="attr-selector" @onChangePanelStyle="onChangePanelStyle" />-->
-        <!--          </el-row>-->
-        <!--        </el-collapse-item>-->
       </el-collapse>
     </div>
   </el-row>

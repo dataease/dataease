@@ -1,31 +1,13 @@
 <template>
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-
-    <!-- <complex-table
-      ref="table"
-      :data="tableData"
-      :lazy="isLazy"
-      :load="loadExpandDatas"
-      :columns="columns"
-      :buttons="buttons"
-      :header="header"
-      :search-config="searchConfig"
-      :pagination-config="paginationConfig"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      :default-expand-all="isTableExpand"
-      row-key="deptId"
-      @search="search"
-    > -->
     <tree-table
       :columns="columns"
-
       :search-config="searchConfig"
       @search="search"
     >
       <template #toolbar>
         <el-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('organization.create') }}</el-button>
-        <!-- <fu-table-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" :label="$t('organization.create')" @click="create" /> -->
-      </template>
+     </template>
       <el-table
         ref="table"
         :data="tableData"
@@ -35,28 +17,15 @@
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         row-key="deptId"
       >
-
-        <!-- <el-table-column type="selection" fix /> -->
-        <el-table-column label="名称" prop="name" />
-        <el-table-column label="下属组织数" prop="subCount" />
-        <!-- <el-table-column label="状态" align="center" prop="enabled">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.enabled"
-            :disabled="scope.row.id === 1"
-            active-color="#409EFF"
-            inactive-color="#F56C6C"
-            @change="changeEnabled(scope.row, scope.row.enabled,)"
-          />
-        </template>
-      </el-table-column> -->
-        <el-table-column prop="createTime" label="创建日期">
+        <el-table-column :label="$t('organization.name')" prop="name" />
+        <el-table-column :label="$t('organization.sub_organizations')" prop="subCount" />
+        <el-table-column prop="createTime" :label="$t('organization.create_time')">
           <template v-slot:default="scope">
             <span>{{ scope.row.createTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
 
-        <fu-table-operations :buttons="buttons" label="操作" fix />
+        <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
       </el-table>
     </tree-table>
     <!-- </complex-table> -->
@@ -72,10 +41,10 @@
     >
       <el-form ref="createOrganization" inline :model="form" :rules="rule" size="small" label-width="80px">
 
-        <el-form-item label="组织名称" prop="name">
+        <el-form-item :label="$t('organization.name')" prop="name">
           <el-input v-model="form.name" style="width: 370px;" />
         </el-form-item>
-        <el-form-item label="组织排序" prop="deptSort">
+        <el-form-item :label="$t('organization.sort')" prop="deptSort">
           <el-input-number
             v-model.number="form.deptSort"
             :min="0"
@@ -85,36 +54,34 @@
           />
         </el-form-item>
 
-        <el-form-item label="顶级组织" prop="top">
+        <el-form-item :label="$t('organization.top_org')" prop="top">
           <el-radio-group v-model="form.top" style="width: 140px" @change="topChange">
-            <el-radio :label="true">是</el-radio>
-            <el-radio :label="false">否</el-radio>
+            <el-radio :label="true">{{ $t('commons.yes') }}</el-radio>
+            <el-radio :label="false">{{ $t('commons.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="状态" prop="enabled">
+        <el-form-item label="$t('commons.status')" prop="enabled">
           <el-radio-group v-model="form.enabled" style="width: 140px" disabled>
-            <el-radio :label="true">启用</el-radio>
-            <el-radio :label="false">停用</el-radio>
+            <el-radio :label="true">{{ $t('commons.enable') }}</el-radio>
+            <el-radio :label="false">{{ $t('commons.disable') }}</el-radio>
           </el-radio-group>
-
-          <!-- <el-radio v-for="item in dict.dept_status" :key="item.id" v-model="form.enabled" :label="item.value">{{ item.label }}</el-radio> -->
         </el-form-item>
-        <el-form-item v-if="!form.top" style="margin-bottom: 0;" label="上级组织" prop="pid">
+        <el-form-item v-if="!form.top" style="margin-bottom: 0;" :label="$t('organization.parent_org')" prop="pid">
           <treeselect
             v-model="form.pid"
             :auto-load-root-options="false"
             :load-options="loadDepts"
             :options="depts"
             style="width: 370px;"
-            placeholder="选择上级类目"
+            :placeholder="$t('organization.select_parent_org')"
           />
         </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="dialogOrgAddVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="createDept('createOrganization')">确认</el-button>
+        <el-button type="primary" @click="createDept('createOrganization')">{{ $t('commons.confirm') }}</el-button>
       </div>
 
     </el-dialog>

@@ -3,7 +3,7 @@
     <!-- panel list -->
     <el-col>
       <el-row>
-        <span class="header-title">默认仪表盘</span>
+        <span class="header-title">{{ $t('panel.default_panel') }}</span>
         <div class="block">
           <el-tree
             :default-expanded-keys="expandedArray"
@@ -28,7 +28,7 @@
       </el-row>
 
       <el-row>
-        <span class="header-title">仪表盘列表</span>
+        <span class="header-title">{{ $t('panel.panel') }}</span>
       </el-row>
       <el-col class="custom-tree-container">
         <div class="block">
@@ -91,9 +91,8 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
                         {{ $t('panel.edit') }}
                       </el-dropdown-item>
-
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
-                        创建公共链接
+                       {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -132,9 +131,6 @@
         @closed="removeLink"
       >
         <link-generate v-if="linkVisible" :resource-id="linkResourceId" />
-        <!-- <span slot="footer" class="dialog-footer">
-          <el-button @click="copyUri">复制链接</el-button>
-        </span> -->
       </el-dialog>
       <!--新建仪表盘dialog-->
       <el-dialog :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">

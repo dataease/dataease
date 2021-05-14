@@ -8,7 +8,7 @@
       :highlight-current-row="true"
       style="width: 100%"
     >
-      <el-table-column prop="name" label="名称">
+      <el-table-column prop="name" :label="$t('commons.name')">
         <template :id="scope.row.storeId" slot-scope="scope">
           <div class="start-item">
             <div class="filter-db-row star-item-content" @click="showPanel(scope.row)">

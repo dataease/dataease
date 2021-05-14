@@ -14,23 +14,21 @@
           @row-click="rowClick"
         >
           <template #toolbar>
-            <!-- <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" /> -->
             <el-button v-permission="['role:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('role.add') }}</el-button>
           </template>
 
-          <el-table-column prop="name" label="名称" />
-          <!-- <el-table-column prop="code" label="代码" /> -->
-          <el-table-column :show-overflow-tooltip="true" prop="createTime" label="创建日期">
+          <el-table-column prop="name" :label="$t('commons.name')" />
+          <el-table-column :show-overflow-tooltip="true" prop="createTime" :label="$t('commons.create_time')">
             <template v-slot:default="scope">
               <span>{{ scope.row.createTime | timestampFormatDate }}</span>
             </template>
           </el-table-column>
-          <fu-table-operations :buttons="buttons" label="操作" fix />
+          <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
         </complex-table>
       </el-aside>
       <el-main style="padding: 8px 20px;">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="菜单授权" name="first">
+          <el-tab-pane :label="$t('role.menu_authorization')" name="first">
             <el-tree
               ref="menu"
               lazy
@@ -44,7 +42,7 @@
               @check="menuChange"
             />
           </el-tab-pane>
-          <el-tab-pane label="数据授权" name="second">玩命开发中...</el-tab-pane>
+          <el-tab-pane :label="$t('role.data_authorization')" name="second">玩命开发中...</el-tab-pane>
         </el-tabs>
       </el-main>
     </el-container>
@@ -72,7 +70,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="saveRole('roleForm')">确认</el-button>
+        <el-button type="primary" @click="saveRole('roleForm')">{{ $t('commons.confirm') }}</el-button>
       </div>
     </el-dialog>
 

@@ -3,13 +3,17 @@
     <de-aside-container>
       <el-tabs v-model="currentTemplateType" @tab-click="handleClick">
         <el-tab-pane name="system">
-          <span slot="label"><i class="el-icon-document" />系统模板</span>
-          <template-list v-if="currentTemplateType==='system'" :template-type="currentTemplateType" :template-list="templateList" @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate" @showTemplateEditDialog="showTemplateEditDialog" />
+          <span slot="label"><i class="el-icon-document" /> {{ $t('panel.sys_template') }}</span>
+          <template-list v-if="currentTemplateType==='system'" :template-type="currentTemplateType" :template-list="templateList"
+                         @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate"
+                         @showTemplateEditDialog="showTemplateEditDialog" />
         </el-tab-pane>
         <el-tab-pane name="self">
-          <span slot="label"><i class="el-icon-star-off" />用户模板</span>
+          <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.user_template') }}</span>
           <!--v-if 重新渲染 强制刷新首行高亮属性-->
-          <template-list v-if="currentTemplateType==='self'" :template-type="currentTemplateType" :template-list="templateList" @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate" @showTemplateEditDialog="showTemplateEditDialog" />
+          <template-list v-if="currentTemplateType==='self'" :template-type="currentTemplateType" :template-list="templateList"
+                         @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate"
+                         @showTemplateEditDialog="showTemplateEditDialog" />
         </el-tab-pane>
       </el-tabs>
     </de-aside-container>
@@ -24,13 +28,13 @@
     </de-main-container>
     <el-dialog :title="dialogTitle" :visible="editTemplate" :show-close="false" width="30%">
       <el-form ref="templateEditForm" :model="templateEditForm" :rules="templateEditFormRules">
-        <el-form-item label="名称" prop="name">
+        <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="templateEditForm.name" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="close()">{{ $t('panel.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="saveTemplateEdit(templateEditForm)">{{ $t('panel.confirm') }}
+        <el-button size="mini" @click="close()">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveTemplateEdit(templateEditForm)">{{ $t('commons.confirm') }}
         </el-button>
       </div>
     </el-dialog>
