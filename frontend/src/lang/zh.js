@@ -717,7 +717,9 @@ export default {
     quota_font_size: '指标字体大小',
     space_split: '维度/指标间隔',
     only_one_quota: '仅支持1个指标',
-    only_one_result: '仅显示第1个计算结果'
+    only_one_result: '仅显示第1个计算结果',
+    dimension_show: '维度显示',
+    quota_show: '指标显示'
   },
   dataset: {
     datalist: '数据集',

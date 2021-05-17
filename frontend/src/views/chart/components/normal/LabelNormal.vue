@@ -6,10 +6,10 @@
       id="label-content"
       :style="content_class"
     >
-      <p :style="label_class">
+      <p v-if="dimensionShow" :style="label_class">
         {{ chart.data.x[0] }}
       </p>
-      <span :style="label_space">
+      <span v-if="quotaShow" :style="label_space">
         <p v-for="item in chart.data.series" :key="item.name" :style="label_content_class">
           {{ item.data[0] }}
         </p>
@@ -40,6 +40,8 @@ export default {
     return {
       height: 'auto',
       splitHeight: '10px',
+      dimensionShow: true,
+      quotaShow: true,
       title_class: {
         margin: '0 0',
         width: '100%',
@@ -109,9 +111,15 @@ export default {
           this.label_content_class.color = customAttr.color.quotaColor
         }
         if (customAttr.size) {
+          this.dimensionShow = customAttr.size.dimensionShow
+          this.quotaShow = customAttr.size.quotaShow
           this.label_class.fontSize = customAttr.size.dimensionFontSize + 'px'
           this.label_content_class.fontSize = customAttr.size.quotaFontSize + 'px'
-          this.label_space.marginTop = customAttr.size.spaceSplit + 'px'
+          if (!this.dimensionShow) {
+            this.label_space.marginTop = '0px'
+          } else {
+            this.label_space.marginTop = customAttr.size.spaceSplit + 'px'
+          }
         }
       }
       if (this.chart.customStyle) {

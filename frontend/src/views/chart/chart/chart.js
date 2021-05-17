@@ -33,7 +33,9 @@ export const DEFAULT_SIZE = {
   gaugeEndAngle: -45,
   dimensionFontSize: 18,
   quotaFontSize: 18,
-  spaceSplit: 10
+  spaceSplit: 10,
+  dimensionShow: true,
+  quotaShow: true
 }
 export const DEFAULT_LABEL = {
   show: false,
