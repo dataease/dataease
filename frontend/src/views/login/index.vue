@@ -33,7 +33,7 @@
             </div>
             <div class="login-btn">
               <el-button type="primary" class="submit" size="default" @click.native.prevent="handleLogin">
-                {{ $t('commons.button.login') }}
+                {{ $t('commons.login') }}
               </el-button>
             </div>
             <div class="login-msg">
@@ -163,7 +163,7 @@ export default {
 
 .login-background {
   background-color: $--background-color-base;
-  height: 100%;
+  height: 100vh;
   @include login-center;
 }
 

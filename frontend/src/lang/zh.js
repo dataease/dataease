@@ -852,7 +852,7 @@ export default {
     field: '字段',
     unshared_people: '未分享人员',
     shared_people: '已分享人员',
-    error_data: '获取数据出错 请联系管理员 Error getting data, please contact administrator',
+    error_data: '获取数据出错，请联系管理员',
     canvas_size: '画布大小',
     canvas_scale: '画布比例',
     style: '样式',

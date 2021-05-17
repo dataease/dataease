@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%;height: 100%;">
+  <div style="width: 100%;height: 100vh;">
     <span style="line-height: 35px; position: absolute; top:10px;right: 20px;z-index:100000">
       <el-button size="mini" @click="toDir">
         关闭

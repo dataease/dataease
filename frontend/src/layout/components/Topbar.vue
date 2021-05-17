@@ -39,7 +39,7 @@
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center;">
-        <span class="el-dropdown-link" style="font-size: 13px;">
+        <span class="el-dropdown-link" style="font-size: 14px;">
           {{ name }}<i class="el-icon-arrow-down el-icon--right" />
         </span>
         <el-dropdown-menu slot="dropdown">

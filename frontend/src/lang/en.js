@@ -73,8 +73,8 @@ export default {
     size: 'Global Size'
   },
   login: {
-    title: 'Login Form',
-    welcome: 'welcome To ',
+    title: 'Login',
+    welcome: 'Welcome To ',
     logIn: 'Login',
     username: 'Username',
     password: 'Password',

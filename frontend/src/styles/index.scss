@@ -13,7 +13,7 @@
 
 
 body {
-  height: $contentHeight;
+  //height: $contentHeight;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -30,7 +30,7 @@ html {
 }
 
 #app {
-  height: $contentHeight;
+  //height: $contentHeight;
 }
 
 *,
