@@ -104,7 +104,7 @@ export default {
       form: {},
       rule: {
         name: [
-          { required: true, message: '请输入名称', trigger: 'blur' }
+          { required: true, message: this.$t('role.pls_input_name'), trigger: 'blur' }
         ],
         code: [{ required: true, message: '请输入代码', trigger: 'blur' }]
       },
@@ -125,13 +125,9 @@ export default {
       ],
       searchConfig: {
         useQuickSearch: false,
-        quickPlaceholder: '按名称搜索',
+        quickPlaceholder: this.$t('role.search_by_name'),
         components: [
-        //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
-          { field: 'name', label: '角色名称', component: 'FuComplexInput' },
-
-          { field: 'code', label: '角色代码', component: 'FuComplexInput', defaultOperator: 'eq' }
-        //   { field: 'deptId', label: '组织', component: conditionTable }
+          { field: 'name', label: this.$t('role.role_name'), component: 'FuComplexInput' }
         ]
       },
       paginationConfig: {
@@ -151,11 +147,6 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
     },
-    // create() {
-    //   this.form = {}
-    //   this.formType = 'add'
-    //   this.dialogVisible = true
-    // },
     create() {
       this.$router.push({ name: '角色表单' })
     },
@@ -168,12 +159,6 @@ export default {
         this.tableData = data.listObject
       })
     },
-
-    // edit(row) {
-    //   this.formType = 'modify'
-    //   this.dialogVisible = true
-    //   this.form = Object.assign({}, row)
-    // },
     edit(row) {
       this.$router.push({ name: '角色表单', params: row })
     },
@@ -266,9 +251,9 @@ export default {
       this.$refs.menu.setCheckedKeys(this.menuIds)
     },
     handleDelete(row) {
-      this.$confirm('确认删除角色[' + row.name + ']？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm( this.$t('commons.confirm_delete') + ": " + row.name + '？', this.$t('role.tips'), {
+        confirmButtonText: this.$t('commons.confirm'),
+        cancelButtonText:  this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
         delRole(row.roleId).then(res => {

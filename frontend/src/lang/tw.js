@@ -432,7 +432,12 @@ export default {
     org_member: '組織成員',
     add: '添加角色',
     delete: '删除角色',
-    modify: '修改角色'
+    modify: '修改角色',
+    tips: '提示',
+    confirm_delete: '確認删除角色 ',
+    role_name: '角色名稱',
+    search_by_name: '按名稱搜索',
+    pls_input_name: '請輸入名稱'
   },
   menu: {
     parent_category: '上級目錄',

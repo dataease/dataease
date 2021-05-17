@@ -432,7 +432,12 @@ export default {
     org_member: 'Organization Member',
     add: 'Add Role',
     delete: 'Delete Role',
-    modify: 'Modify Role'
+    modify: 'Modify Role',
+    tips: 'Tips',
+    confirm_delete: 'Confirm delete role ',
+    role_name: 'Role Name ',
+    search_by_name: 'Search by name',
+    pls_input_name: 'please input name'
   },
   menu: {
     parent_category: 'Parent Category',
