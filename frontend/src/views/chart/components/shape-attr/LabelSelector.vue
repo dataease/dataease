@@ -7,7 +7,7 @@
         trigger="click"
       >
         <el-col>
-          <el-form ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+          <el-form v-show="chart.type && !chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
             <el-form-item :label="$t('chart.show')" class="form-item">
               <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
             </el-form-item>
@@ -41,6 +41,28 @@
                 </span>
               </span>
               <el-input v-model="labelForm.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr" />
+            </el-form-item>
+          </el-form>
+
+          <el-form v-show="chart.type && chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+            <el-form-item :label="$t('chart.show')" class="form-item">
+              <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
+            </el-form-item>
+            <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
+              <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('chart.text_color')" class="form-item">
+              <colorPicker v-model="labelForm.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeLabelAttr" />
+            </el-form-item>
+            <el-form-item class="form-item">
+              <span slot="label">
+                <span class="span-box">
+                  <span>{{ $t('chart.content_formatter') }}</span>
+                </span>
+              </span>
+              <el-input v-model="labelForm.gaugeFormatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr" />
             </el-form-item>
           </el-form>
         </el-col>

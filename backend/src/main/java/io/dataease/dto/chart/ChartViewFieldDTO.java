@@ -36,4 +36,6 @@ public class ChartViewFieldDTO implements Serializable {
     private String sort;
 
     private List<ChartViewFieldFilterDTO> filter;
+
+    private Integer deExtractType;
 }

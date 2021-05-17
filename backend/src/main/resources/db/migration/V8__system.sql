@@ -99,6 +99,8 @@ INSERT INTO `sys_menu` VALUES (38, 1, 0, 1, '角色表单', '角色表单', 'sys
 INSERT INTO `sys_menu` VALUES (39, 0, 0, 1, '数据源表单', '数据源表单', 'system/datasource/form', 5, NULL, '/ds-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (40, 1, 0, 1, '模板管理', '模板管理', 'panel/template/index', 13, 'dashboard', 'panel/template/index', NULL, b'0', b'0', 'sysparam:read', NULL, NULL, NULL, 1620444227389);
 INSERT INTO `sys_menu` VALUES (41, 1, 0, 1, '权限管理', '权限管理', 'system/permission/index', 14, 'password', 'system/permission/index', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, 1620447312657);
+INSERT INTO `sys_menu` VALUES (50, 0, 0, 1, '个人信息', '个人信息', 'system/user/privateForm', 999, NULL, '/person-info', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (51, 0, 0, 1, '重置密码', '重置密码', 'system/user/personPwd', 999, NULL, '/person-pwd', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
