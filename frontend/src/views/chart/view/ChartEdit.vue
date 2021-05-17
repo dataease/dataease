@@ -89,7 +89,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div style="height: 30%;overflow:auto" class="padding-lr">
+        <div style="height: 25%;overflow:auto" class="padding-lr">
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
             <div class="chart-type">
@@ -125,6 +125,19 @@
             </div>
           </el-row>
         </div>
+        <el-row style="padding: 4px 6px;color: #909399;">
+          <span>
+            <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel'))">
+              Tips: {{ $t('chart.only_one_quota') }}
+            </span>
+            <span v-show="chart.type && (chart.type.includes('text'))">
+              Tips: {{ $t('chart.only_one_result') }}
+            </span>
+            <span v-show="chart.type && chart.type.includes('gauge')">
+              Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}
+            </span>
+          </span>
+        </el-row>
         <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
           <el-row class="padding-lr">
             <span>{{ $t('chart.style_priority') }}</span>
@@ -137,12 +150,12 @@
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
               <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
               <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-              <label-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-              <tooltip-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+              <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+              <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
               <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector v-show="!view.type.includes('table')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
               <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
               <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
@@ -203,8 +216,9 @@
             </el-row>
           </el-row>
           <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="chart.type && !chart.type.includes('table')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+            <chart-component v-if="chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
             <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+            <label-normal v-if="chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
           </div>
         </el-row>
       </el-col>
@@ -289,11 +303,12 @@ import BackgroundColorSelector from '../components/component-style/BackgroundCol
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
+import LabelNormal from '../components/normal/LabelNormal'
 import html2canvas from 'html2canvas'
 
 export default {
   name: 'ChartEdit',
-  components: { DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,

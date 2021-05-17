@@ -710,7 +710,14 @@ export default {
     start_angle: '起始角度',
     end_angle: '结束角度',
     style_priority: '样式优先级',
-    dashboard: '仪表盘'
+    dashboard: '仪表盘',
+    dimension_color: '维度颜色',
+    quota_color: '指标颜色',
+    dimension_font_size: '维度字体大小',
+    quota_font_size: '指标字体大小',
+    space_split: '维度/指标间隔',
+    only_one_quota: '仅支持1个指标',
+    only_one_result: '仅显示第1个计算结果'
   },
   dataset: {
     datalist: '数据集',

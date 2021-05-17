@@ -32,8 +32,10 @@ export function baseGaugeOption(chart_option, chart) {
       // detail
       if (customAttr.label) {
         const label = JSON.parse(JSON.stringify(customAttr.label))
-        label.formatter = label.gaugeFormatter
-        chart_option.series[0].detail = label
+        chart_option.series[0].detail.show = label.show
+        chart_option.series[0].detail.fontSize = label.fontSize
+        chart_option.series[0].detail.color = label.color
+        chart_option.series[0].detail.formatter = label.gaugeFormatter
       }
       chart_option.series[0].type = 'gauge'
       // color

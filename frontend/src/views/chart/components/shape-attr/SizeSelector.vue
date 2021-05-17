@@ -113,6 +113,22 @@
               <el-slider v-model="sizeForm.gaugeEndAngle" show-input :show-input-controls="false" input-size="mini" :min="-360" :max="360" @change="changeBarSizeCase" />
             </el-form-item>
           </el-form>
+
+          <el-form v-show="chart.type && chart.type.includes('text')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+            <el-form-item :label="$t('chart.dimension_font_size')" class="form-item">
+              <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
+              <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('chart.space_split')" class="form-item">
+              <el-input-number v-model="sizeForm.spaceSplit" size="mini" @change="changeBarSizeCase" />
+            </el-form-item>
+          </el-form>
         </el-col>
 
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>

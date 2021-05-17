@@ -5,7 +5,9 @@ export const DEFAULT_COLOR_CASE = {
   tableHeaderBgColor: '#4e81bb',
   tableItemBgColor: '#c6d9f0',
   tableFontColor: '#000000',
-  tableStripe: true
+  tableStripe: true,
+  dimensionColor: '#000000',
+  quotaColor: '#000000'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -28,7 +30,10 @@ export const DEFAULT_SIZE = {
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
-  gaugeEndAngle: -45
+  gaugeEndAngle: -45,
+  dimensionFontSize: 18,
+  quotaFontSize: 18,
+  spaceSplit: 10
 }
 export const DEFAULT_LABEL = {
   show: false,
