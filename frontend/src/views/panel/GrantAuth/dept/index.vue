@@ -11,7 +11,7 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       row-key="deptId"
     >
-      <el-table-column label="所有组织" prop="name" />
+      <el-table-column :label="$t('panel.all_org')" prop="name" />
       <el-table-column type="selection" fixd />
       <!-- <el-table-column label="分享给" prop="deptId" width="80" fixed="right">
         <template slot-scope="scope">

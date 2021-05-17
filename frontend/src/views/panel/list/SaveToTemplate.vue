@@ -49,7 +49,7 @@ export default {
       fieldName: 'name',
       tableRadio: null,
       keyWordSearch: '',
-      columnLabel: '所属类别'
+      columnLabel: this.$t('panel.belong_to_category')
     }
   },
   created() {
@@ -74,16 +74,16 @@ export default {
     },
     save() {
       if (!this.templateInfo.pid) {
-        this.$warning('请选择所属类别')
+        this.$warning(this.$t(panel.pls_select_belong_to_category))
         return false
       }
       if (!this.templateInfo.name) {
-        this.$warning('模板名称不能为空')
+        this.$warning(this.$t('panel.template_name_cannot_be_empty'))
         return false
       }
       post('/template/save', this.templateInfo).then(response => {
         this.$message({
-          message: '保存成功',
+          message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })

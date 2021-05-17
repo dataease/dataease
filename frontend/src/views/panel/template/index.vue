@@ -88,7 +88,7 @@ export default {
       if (id) {
         post('/template/delete/' + id, null).then(response => {
           this.$message({
-            message: '删除成功',
+            message: this.$t('commons.delete_success'),
             type: 'success',
             showClose: true
           })
@@ -98,10 +98,10 @@ export default {
     },
     showTemplateEditDialog(type, templateInfo) {
       if (type === 'edit') {
-        this.dialogTitle = '编辑'
+        this.dialogTitle = this.$t('commons.edit')
         this.templateEditForm = JSON.parse(JSON.stringify(templateInfo))
       } else {
-        this.dialogTitle = '新建'
+        this.dialogTitle = this.$t('commons.create')
         this.templateEditForm = { name: '', nodeType: 'folder', templateType: this.currentTemplateType, level: 0 }
       }
       this.editTemplate = true
@@ -112,7 +112,7 @@ export default {
     saveTemplateEdit(templateEditForm) {
       post('/template/save', templateEditForm).then(response => {
         this.$message({
-          message: '保存成功',
+          message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })

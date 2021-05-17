@@ -314,24 +314,24 @@ export default {
       this.editPanel.visible = true
       switch (param.optType) {
         case 'new':
-          this.editPanel.titlePre = '新建'
-          this.editPanel.panelInfo.name = '新建仪表盘'
+          this.editPanel.titlePre = this.$t('commons.create')
+          this.editPanel.panelInfo.name = this.$t('panel.panelAdd')
           this.editPanel.panelInfo.pid = param.data.id
           this.editPanel.panelInfo.level = param.data.level + 1
           break
         case 'edit':
         case 'rename':
-          this.editPanel.titlePre = '编辑'
+          this.editPanel.titlePre = this.$t('commons.edit')
           this.editPanel.panelInfo.id = param.data.id
           this.editPanel.panelInfo.name = param.data.name
           break
       }
       switch (param.type) {
         case 'folder':
-          this.editPanel.titleSuf = '目录'
+          this.editPanel.titleSuf = this.$t('panel.group')
           break
         case 'panel':
-          this.editPanel.titleSuf = '仪表盘'
+          this.editPanel.titleSuf = this.$t('panel.panel')
           break
       }
     },

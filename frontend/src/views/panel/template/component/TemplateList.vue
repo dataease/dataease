@@ -129,8 +129,8 @@ export default {
       this.$emit('showTemplateEditDialog', 'new')
     },
     templateDelete(template) {
-      this.$alert('是否删除分类：' + template.name + '？', '', {
-        confirmButtonText: '确认',
+      this.$alert(this.$t('panel.confirm_delete') +  this.$t('panel.category') + ': ' + template.name + '？', '', {
+        confirmButtonText: this.$t('panel.confirm_delete'),
         callback: (action) => {
           if (action === 'confirm') {
             this.$emit('templateDelete', template.id)

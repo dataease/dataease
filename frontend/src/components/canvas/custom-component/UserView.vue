@@ -2,7 +2,7 @@
   <div v-loading="requestStatus==='waiting'" class="rect-shape">
     <div v-if="requestStatus==='error'" style=";width: 100%;height: 100%;background-color: #ece7e7; text-align: center">
       <div style="font-size: 12px; color: #9ea6b2;">
-        获取数据出错 请联系管理员<br>
+        {{ $t(panel.error_data) }}<br>
         {{ message }}
       </div>
     </div>

@@ -4,7 +4,7 @@
       <el-row>
         <el-input
           v-model="templateFilterText"
-          placeholder="输入关键字进行过滤"
+          :placeholder="$t('panel.filter_keywords')"
           size="mini"
           clearable
           prefix-icon="el-icon-search"
