@@ -217,7 +217,6 @@ export default {
             }
           }
         }
-        console.log(this.menuIds)
         this.$refs.menu.setCheckedKeys(this.menuIds)
         this.saveMenus()
       })
