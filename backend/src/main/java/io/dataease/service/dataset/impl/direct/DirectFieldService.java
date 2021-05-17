@@ -7,6 +7,7 @@ import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
+import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -58,7 +59,8 @@ public class DirectFieldService implements DataSetFieldService {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        String querySQL = dataSetTableService.createQuerySQL(ds.getType(), tableName, Collections.singletonList(field));
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+        String querySQL = qp.createQuerySQL(tableName, Collections.singletonList(field));
         datasourceRequest.setQuery(querySQL);
         try {
             List<String[]> rows = datasourceProvider.getData(datasourceRequest);
