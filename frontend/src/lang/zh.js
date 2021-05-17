@@ -768,7 +768,8 @@ export default {
     can_not_union_self: '被关联表不能与关联表相同',
     float: '小数',
     edit_custom_table: '编辑自助数据集',
-    edit_field: '编辑字段'
+    edit_field: '编辑字段',
+    preview_100_data: '显示前100行数据'
   },
   datasource: {
     datasource: '数据源',

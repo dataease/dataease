@@ -49,7 +49,11 @@
 
     .right-menu {
       float: right;
-      height: 100%;
+      height: 56px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
 
       &:focus {
         outline: none;

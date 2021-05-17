@@ -141,10 +141,12 @@
         <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
           <el-row class="padding-lr">
             <span>{{ $t('chart.style_priority') }}</span>
-            <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
-              <el-radio style="margin-left: 20px" label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
-              <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
-            </el-radio-group>
+            <el-row>
+              <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
+                <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
+                <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
+              </el-radio-group>
+            </el-row>
           </el-row>
           <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">

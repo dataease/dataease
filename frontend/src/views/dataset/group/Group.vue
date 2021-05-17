@@ -10,10 +10,10 @@
       <el-divider />
 
       <el-row>
-        <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
+        <el-button type="primary" size="mini" @click="add('group')">
           {{ $t('dataset.add_group') }}
         </el-button>
-        <el-button icon="el-icon-folder-add" type="primary" size="mini" @click="add('scene')">
+        <el-button type="primary" size="mini" @click="add('scene')">
           {{ $t('dataset.add_scene') }}
         </el-button>
       </el-row>
