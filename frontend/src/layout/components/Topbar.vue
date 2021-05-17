@@ -23,13 +23,13 @@
 
     <div class="right-menu">
       <template>
-        <el-tooltip content="项目文档" effect="dark" placement="bottom">
-          <doc class="right-menu-item hover-effect" />
-        </el-tooltip>
+<!--        <el-tooltip content="项目文档" effect="dark" placement="bottom">-->
+<!--          <doc class="right-menu-item hover-effect" />-->
+<!--        </el-tooltip>-->
 
-        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">
-          <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        </el-tooltip>
+<!--        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">-->
+<!--          <screenfull id="screenfull" class="right-menu-item hover-effect" />-->
+<!--        </el-tooltip>-->
 
         <!-- <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
@@ -61,11 +61,6 @@
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出</span>
           </el-dropdown-item>
-          <!-- <el-dropdown-item>黄金糕</el-dropdown-item>
-          <el-dropdown-item>狮子头</el-dropdown-item>
-          <el-dropdown-item>螺蛳粉</el-dropdown-item>
-          <el-dropdown-item disabled>双皮奶</el-dropdown-item>
-          <el-dropdown-item divided>蚵仔煎</el-dropdown-item> -->
         </el-dropdown-menu>
       </el-dropdown>
       <!-- <el-dropdown class="avatar-container" trigger="click">
@@ -102,8 +97,8 @@ import { mapGetters } from 'vuex'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
-import Doc from '@/components/Doc'
-import Screenfull from '@/components/Screenfull'
+// import Doc from '@/components/Doc'
+// import Screenfull from '@/components/Screenfull'
 // import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import { getSysUI } from '@/utils/auth'
@@ -111,10 +106,10 @@ export default {
   name: 'Topbar',
   components: {
     AppLink,
-    Screenfull,
+    // Screenfull,
     // SizeSelect,
     LangSelect,
-    Doc
+    // Doc
   },
   data() {
     return {
