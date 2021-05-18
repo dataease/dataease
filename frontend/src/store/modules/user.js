@@ -1,8 +1,9 @@
-import { login, logout, getInfo, getUIinfo } from '@/api/user'
+import { login, logout, getInfo, getUIinfo, languageApi } from '@/api/user'
 import { getToken, setToken, removeToken, setSysUI } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import { format } from '@/utils/formatUi'
-
+import { getLanguage } from '@/lang/index'
+import Cookies from 'js-cookie'
 const getDefaultState = () => {
   return {
     token: getToken(),
@@ -14,7 +15,7 @@ const getDefaultState = () => {
     loadMenus: false,
     // 当前用户拥有哪些资源权限
     permissions: [],
-
+    language: getLanguage(),
     uiInfo: null
   }
 }
@@ -51,6 +52,10 @@ const mutations = {
   },
   SET_UI_INFO: (state, info) => {
     state.uiInfo = info
+  },
+  SET_LANGUAGE: (state, language) => {
+    state.language = language
+    Cookies.set('language', language)
   }
 }
 
@@ -87,13 +92,15 @@ const actions = {
         const currentUser = data
         commit('SET_USER', currentUser)
 
-        const { roles, nickName, permissions } = data
+        const { roles, nickName, permissions, language } = data
         commit('SET_ROLES', roles)
 
         commit('SET_NAME', nickName)
         // commit('SET_AVATAR', avatar)
 
         commit('SET_PERMISSIONS', permissions)
+
+        commit('SET_LANGUAGE', language)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -144,6 +151,11 @@ const actions = {
   },
   setLoginMsg({ commit, msg }) {
     commit('SET_LOGIN_MSG', msg)
+  },
+  setLanguage({ commit }, language) {
+    languageApi(language).then(() => {
+      commit('SET_LANGUAGE', language)
+    })
   }
 }
 

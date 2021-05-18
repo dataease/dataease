@@ -201,4 +201,12 @@ public class SysUserService {
         return userIds.stream().map(sysUserMapper::selectByPrimaryKey).collect(Collectors.toList());
     }
 
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
+    public void setLanguage(Long userId,String language) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(userId);
+        sysUser.setLanguage(language);
+        sysUserMapper.updateByPrimaryKeySelective(sysUser);
+    }
+
 }

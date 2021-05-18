@@ -20,11 +20,11 @@
 
 
     <select id="findUser" resultMap="baseMap">
-        select user_id, username,nick_name, dept_id, password, enabled,email, phone from sys_user where user_id = #{userId}
+        select user_id, username,nick_name, dept_id, password, enabled,email, phone, language from sys_user where user_id = #{userId}
     </select>
 
     <select id="findUserByName" resultMap="baseMap">
-        select user_id, username,nick_name, dept_id, password, enabled,email, phone from sys_user where username = #{username}
+        select user_id, username,nick_name, dept_id, password, enabled,email, phone, language from sys_user where username = #{username}
     </select>
 
     <select id="roleCodes" resultType="String">

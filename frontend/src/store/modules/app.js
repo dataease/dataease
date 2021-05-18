@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import { getLanguage } from '@/lang/index'
+
 const state = {
   sidebar: {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
@@ -7,7 +7,7 @@ const state = {
     hide: false
   },
   device: 'desktop',
-  language: getLanguage(),
+
   size: Cookies.get('size') || 'small'
 }
 
@@ -32,10 +32,7 @@ const mutations = {
   SET_SIDEBAR_HIDE: (state, status) => {
     state.sidebar.hide = status
   },
-  SET_LANGUAGE: (state, language) => {
-    state.language = language
-    Cookies.set('language', language)
-  },
+
   SET_SIZE: (state, size) => {
     state.size = size
     Cookies.set('size', size)
@@ -57,9 +54,6 @@ const actions = {
   },
   setSize({ commit }, size) {
     commit('SET_SIZE', size)
-  },
-  setLanguage({ commit }, language) {
-    commit('SET_LANGUAGE', language)
   }
 }
 

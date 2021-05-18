@@ -23,4 +23,6 @@ public class SysUserEntity implements Serializable {
     private String email;
 
     private String phone;
+
+    private String language;
 }

@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Api(tags = "系统：用户管理")
@@ -88,5 +89,16 @@ public class SysUserController {
     @PostMapping("/updatePersonInfo")
     public void updatePersonInfo(@RequestBody SysUserCreateRequest request){
         sysUserService.updatePersonInfo(request);
+    }
+
+    @ApiOperation("设置语言")
+    @PostMapping("/setLanguage/{language}")
+    public void setLanguage(@PathVariable String language) {
+        CurrentUserDto user = AuthUtils.getUser();
+        Optional.ofNullable(language).ifPresent(currentLanguage -> {
+            if (!currentLanguage.equals(user.getLanguage())) {
+                sysUserService.setLanguage(user.getUserId(), currentLanguage);
+            }
+        });
     }
 }

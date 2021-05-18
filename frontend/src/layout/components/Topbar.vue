@@ -35,7 +35,7 @@
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip> -->
 
-<!--        <lang-select class="right-menu-item hover-effect" />-->
+        <lang-select class="right-menu-item hover-effect" />
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center;">
@@ -72,15 +72,15 @@ import { isExternal } from '@/utils/validate'
 // import Doc from '@/components/Doc'
 // import Screenfull from '@/components/Screenfull'
 // import SizeSelect from '@/components/SizeSelect'
-// import LangSelect from '@/components/LangSelect'
+import LangSelect from '@/components/LangSelect'
 import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Topbar',
   components: {
-    AppLink
+    AppLink,
     // Screenfull,
     // SizeSelect,
-    // LangSelect
+    LangSelect
     // Doc
   },
   data() {
