@@ -23,13 +23,13 @@
 
     <div class="right-menu">
       <template>
-<!--        <el-tooltip content="项目文档" effect="dark" placement="bottom">-->
-<!--          <doc class="right-menu-item hover-effect" />-->
-<!--        </el-tooltip>-->
+        <!--        <el-tooltip content="项目文档" effect="dark" placement="bottom">-->
+        <!--          <doc class="right-menu-item hover-effect" />-->
+        <!--        </el-tooltip>-->
 
-<!--        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">-->
-<!--          <screenfull id="screenfull" class="right-menu-item hover-effect" />-->
-<!--        </el-tooltip>-->
+        <!--        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">-->
+        <!--          <screenfull id="screenfull" class="right-menu-item hover-effect" />-->
+        <!--        </el-tooltip>-->
 
         <!-- <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
@@ -38,8 +38,8 @@
         <lang-select class="right-menu-item hover-effect" />
       </template>
 
-      <el-dropdown class="top-dropdown">
-        <span class="el-dropdown-link">
+      <el-dropdown class="top-dropdown" style="display: flex;align-items: center;">
+        <span class="el-dropdown-link" style="font-size: 14px;">
           {{ name }}<i class="el-icon-arrow-down el-icon--right" />
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -108,7 +108,7 @@ export default {
     AppLink,
     // Screenfull,
     // SizeSelect,
-    LangSelect,
+    LangSelect
     // Doc
   },
   data() {
@@ -270,6 +270,6 @@ export default {
     font-size: 16px;
     color: rgba(255,255,255,.87);
     vertical-align: text-bottom;
-    margin-right: 30px;
+    margin-right: 10px;
   }
 </style>

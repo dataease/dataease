@@ -3,13 +3,13 @@
     <div class="toolbar">
 
       <div class="canvas-config">
-        <span> {{ $t(panel.canvas_size)}} </span>
+        <span> {{ $t('panel.canvas_size') }} </span>
         <input v-model="canvasStyleData.width">
         <span>*</span>
         <input v-model="canvasStyleData.height">
       </div>
       <div class="canvas-config" style="margin-right: 10px">
-        <span> {{ $t(panel.canvas_scale)}} </span>
+        <span> {{ $t('panel.canvas_scale') }} </span>
         <input v-model="scale" @input="handleScaleChange"> %
       </div>
 
@@ -38,7 +38,7 @@
 
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" @click="closePanelEdit">
-          {{ $t(commons.close) }}
+          {{ $t('commons.close') }}
         </el-button>
       </span>
     </div>

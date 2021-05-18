@@ -20,6 +20,7 @@ public class JdbcProvider extends DatasourceProvider {
     private static Map<String, ComboPooledDataSource> jdbcConnection = new HashMap<>();
     private static int initPoolSize = 5;
     private static int maxConnections = 200;
+
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         List<String[]> list = new LinkedList<>();
@@ -33,7 +34,7 @@ public class JdbcProvider extends DatasourceProvider {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
-        }finally {
+        } finally {
             connection.close();
         }
         return list;
@@ -50,7 +51,7 @@ public class JdbcProvider extends DatasourceProvider {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
-        }finally {
+        } finally {
             connection.close();
         }
     }
@@ -68,7 +69,7 @@ public class JdbcProvider extends DatasourceProvider {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
-        }finally {
+        } finally {
             connection.close();
         }
     }
@@ -108,7 +109,7 @@ public class JdbcProvider extends DatasourceProvider {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
-        }finally {
+        } finally {
             connection.close();
         }
     }
@@ -133,7 +134,7 @@ public class JdbcProvider extends DatasourceProvider {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
-        }finally {
+        } finally {
             connection.close();
         }
     }
@@ -173,7 +174,7 @@ public class JdbcProvider extends DatasourceProvider {
             return tables;
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
-        }finally {
+        } finally {
             con.close();
         }
     }
@@ -209,7 +210,7 @@ public class JdbcProvider extends DatasourceProvider {
             throw new Exception("ERROR:" + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("ERROR:" + e.getMessage(), e);
-        }finally {
+        } finally {
             connection.close();
         }
         return list;
@@ -227,7 +228,7 @@ public class JdbcProvider extends DatasourceProvider {
             ps.close();
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
-        }finally {
+        } finally {
             con.close();
         }
     }
@@ -236,20 +237,21 @@ public class JdbcProvider extends DatasourceProvider {
     public Long count(DatasourceRequest datasourceRequest) throws Exception {
         Connection con = null;
         try {
-            con = getConnectionFromPool(datasourceRequest); Statement ps = con.createStatement();
+            con = getConnectionFromPool(datasourceRequest);
+            Statement ps = con.createStatement();
             ResultSet resultSet = ps.executeQuery(datasourceRequest.getQuery());
             while (resultSet.next()) {
                 return resultSet.getLong(1);
             }
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
-        }finally {
+        } finally {
             con.close();
         }
         return 0L;
     }
 
-    private Connection getConnectionFromPool(DatasourceRequest datasourceRequest)throws Exception {
+    private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
         ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
             initDataSource(datasourceRequest);
@@ -260,7 +262,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public void initDataSource(DatasourceRequest datasourceRequest)throws Exception{
+    public void initDataSource(DatasourceRequest datasourceRequest) throws Exception {
         ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
             dataSource = new ComboPooledDataSource();
@@ -298,6 +300,13 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = mysqlConfigration.getDriver();
                 jdbcurl = mysqlConfigration.getJdbc();
                 break;
+            case doris:
+                MysqlConfigration dorisConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
+                username = dorisConfigration.getUsername();
+                password = dorisConfigration.getPassword();
+                driver = dorisConfigration.getDriver();
+                jdbcurl = dorisConfigration.getJdbc();
+                break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 username = sqlServerConfigration.getUsername();
@@ -319,26 +328,33 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
 
-    private void setCredential(DatasourceRequest datasourceRequest,  ComboPooledDataSource dataSource) throws PropertyVetoException {
-            DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
-            switch (datasourceType) {
-                case mysql:
-                    MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
-                    dataSource.setUser(mysqlConfigration.getUsername());
-                    dataSource.setDriverClass(mysqlConfigration.getDriver());
-                    dataSource.setPassword(mysqlConfigration.getPassword());
-                    dataSource.setJdbcUrl(mysqlConfigration.getJdbc());
-                    break;
-                case sqlServer:
-                    SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                    dataSource.setUser(sqlServerConfigration.getUsername());
-                    dataSource.setDriverClass(sqlServerConfigration.getDriver());
-                    dataSource.setPassword(sqlServerConfigration.getPassword());
-                    dataSource.setJdbcUrl(sqlServerConfigration.getJdbc());
-                    break;
-                default:
-                    break;
-            }
+    private void setCredential(DatasourceRequest datasourceRequest, ComboPooledDataSource dataSource) throws PropertyVetoException {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType) {
+            case mysql:
+                MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
+                dataSource.setUser(mysqlConfigration.getUsername());
+                dataSource.setDriverClass(mysqlConfigration.getDriver());
+                dataSource.setPassword(mysqlConfigration.getPassword());
+                dataSource.setJdbcUrl(mysqlConfigration.getJdbc());
+                break;
+            case doris:
+                MysqlConfigration dorisConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
+                dataSource.setUser(dorisConfigration.getUsername());
+                dataSource.setDriverClass(dorisConfigration.getDriver());
+                dataSource.setPassword(dorisConfigration.getPassword());
+                dataSource.setJdbcUrl(dorisConfigration.getJdbc());
+                break;
+            case sqlServer:
+                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                dataSource.setUser(sqlServerConfigration.getUsername());
+                dataSource.setDriverClass(sqlServerConfigration.getDriver());
+                dataSource.setPassword(sqlServerConfigration.getPassword());
+                dataSource.setJdbcUrl(sqlServerConfigration.getJdbc());
+                break;
+            default:
+                break;
+        }
     }
 
     private String getDatabase(DatasourceRequest datasourceRequest) {
@@ -347,6 +363,9 @@ public class JdbcProvider extends DatasourceProvider {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
                 return mysqlConfigration.getDataBase();
+            case doris:
+                MysqlConfigration dorisConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
+                return dorisConfigration.getDataBase();
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 return sqlServerConfigration.getDataBase();
@@ -359,6 +378,8 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
+                return "show tables;";
+            case doris:
                 return "show tables;";
             case sqlServer:
                 return "SELECT TABLE_NAME FROM fit2cloud2.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';";

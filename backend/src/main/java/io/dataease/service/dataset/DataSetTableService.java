@@ -8,7 +8,6 @@ import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
-import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
@@ -18,6 +17,8 @@ import io.dataease.dto.dataset.DataSetPreviewPage;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoCustomUnion;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.provider.DDLProvider;
+import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -126,9 +127,10 @@ public class DataSetTableService {
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
-        datasourceRequest.setQuery("drop table if exists " + dorisTableName);
+        DDLProvider ddlProvider = ProviderFactory.getDDLProvider(dorisDatasource.getType());
+        datasourceRequest.setQuery(ddlProvider.dropTableOrView(dorisTableName));
         jdbcProvider.exec(datasourceRequest);
-        datasourceRequest.setQuery("drop table if exists " + DorisTableUtils.dorisTmpName(dorisTableName));
+        datasourceRequest.setQuery(ddlProvider.dropTableOrView(DorisTableUtils.dorisTmpName(dorisTableName)));
         jdbcProvider.exec(datasourceRequest);
     }
 
@@ -224,14 +226,15 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
 
             String table = dataTableInfoDTO.getTable();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(createQueryCountSQL(ds.getType(), table));
+                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
                 dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -243,14 +246,15 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
 
             String sql = dataTableInfoDTO.getSql();
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), " (" + sql + ") AS tmp ", fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize));
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(createQueryCountSQL(ds.getType(), " (" + sql + ") AS tmp "));
+                datasourceRequest.setQuery(qp.createQueryCountSQLAsTmp(sql));
                 dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -261,7 +265,8 @@ public class DataSetTableService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -269,7 +274,7 @@ public class DataSetTableService {
             }
 
             try {
-                datasourceRequest.setQuery(createQueryCountSQL(ds.getType(), table));
+                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
                 dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -280,7 +285,8 @@ public class DataSetTableService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-            datasourceRequest.setQuery(createQuerySQL(ds.getType(), table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -288,7 +294,7 @@ public class DataSetTableService {
             }
 
             try {
-                datasourceRequest.setQuery(createQueryCountSQL(ds.getType(), table));
+                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
                 dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -324,7 +330,8 @@ public class DataSetTableService {
         datasourceRequest.setQuery(sql);
         List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
         // 正式执行
-        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+        datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
@@ -362,7 +369,8 @@ public class DataSetTableService {
         datasourceRequest.setQuery(sql);
         List<TableFiled> previewFields = jdbcProvider.fetchResultField(datasourceRequest);
 
-        datasourceRequest.setQuery("SELECT * FROM (" + sql + ") AS tmp ORDER BY " + previewFields.get(0).getFieldName() + " LIMIT 0,1000");
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+        datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
         Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
@@ -400,6 +408,7 @@ public class DataSetTableService {
         return map;
     }
 
+    // 自助数据集从doris里预览数据
     private String getCustomSQL(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list) {
         Map<String, String[]> customInfo = new TreeMap<>();
         dataTableInfoDTO.getList().forEach(ele -> {
@@ -499,6 +508,7 @@ public class DataSetTableService {
             createDorisView(DorisTableUtils.dorisName(datasetTable.getId()), getCustomSQL(dataTableInfoDTO, dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
             return;
         }
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
@@ -516,7 +526,7 @@ public class DataSetTableService {
                     datasetTableField.setDeType(transFieldType(filed.getFieldType()));
                     datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
                 } else {
-                    Integer fieldType = transFieldType(ds.getType(), filed.getFieldType());
+                    Integer fieldType = qp.transFieldType(filed.getFieldType());
                     datasetTableField.setDeType(fieldType == 4 ? 2 : fieldType);
                     datasetTableField.setDeExtractType(fieldType);
                 }
@@ -534,54 +544,12 @@ public class DataSetTableService {
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
+        DDLProvider ddlProvider = ProviderFactory.getDDLProvider(dorisDatasource.getType());
         // 先删除表
-        datasourceRequest.setQuery("DROP VIEW IF EXISTS " + dorisTableName);
+        datasourceRequest.setQuery(ddlProvider.dropTableOrView(dorisTableName));
         jdbcProvider.exec(datasourceRequest);
-        datasourceRequest.setQuery("CREATE VIEW IF NOT EXISTS " + dorisTableName + " AS (" + customSql + ")");
+        datasourceRequest.setQuery(ddlProvider.createView(dorisTableName, customSql));
         jdbcProvider.exec(datasourceRequest);
-    }
-
-    public String createQueryCountSQL(String type, String table) {
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
-        switch (datasourceType) {
-            case mysql:
-                return MessageFormat.format("SELECT count(*) FROM {0}", table);
-            case sqlServer:
-                return MessageFormat.format("SELECT count(*) FROM {0}", table);
-            default:
-                return MessageFormat.format("SELECT count(*) FROM {0}", table);
-        }
-    }
-
-    public String createQuerySQL(String type, String table, List<DatasetTableField> fields) {
-        String[] array = fields.stream().map(f -> {
-            StringBuilder stringBuilder = new StringBuilder();
-            // 如果原始类型为时间
-            if (f.getDeExtractType() == 1) {
-                if (f.getDeType() == 2 || f.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(f.getDataeaseName()).append(")*1000 as ").append(f.getDataeaseName());
-                } else {
-                    stringBuilder.append(f.getDataeaseName());
-                }
-            } else {
-                if (f.getDeType() == 1) {
-                    stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getDataeaseName());
-                } else {
-                    stringBuilder.append(f.getDataeaseName());
-                }
-            }
-            return stringBuilder.toString();
-        }).toArray(String[]::new);
-
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
-        switch (datasourceType) {
-            case mysql:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
-            case sqlServer:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
-            default:
-                return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
-        }
     }
 
     public Integer transFieldType(String field) {
@@ -594,51 +562,6 @@ public class DataSetTableService {
                 return 2;
             case "DOUBLE":
                 return 3;
-            default:
-                return 0;
-        }
-    }
-
-    public Integer transFieldType(String type, String field) {
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
-        switch (datasourceType) {
-            case mysql:
-                return transMysqlField(field);
-            case sqlServer:
-            default:
-                return 0;
-        }
-    }
-
-    public Integer transMysqlField(String field) {
-        switch (field) {
-            case "CHAR":
-            case "VARCHAR":
-            case "TEXT":
-            case "TINYTEXT":
-            case "MEDIUMTEXT":
-            case "LONGTEXT":
-            case "ENUM":
-                return 0;// 文本
-            case "DATE":
-            case "TIME":
-            case "YEAR":
-            case "DATETIME":
-            case "TIMESTAMP":
-                return 1;// 时间
-            case "INT":
-            case "SMALLINT":
-            case "MEDIUMINT":
-            case "INTEGER":
-            case "BIGINT":
-                return 2;// 整型
-            case "FLOAT":
-            case "DOUBLE":
-            case "DECIMAL":
-                return 3;// 浮点
-            case "BIT":
-            case "TINYINT":
-                return 4;// 布尔
             default:
                 return 0;
         }

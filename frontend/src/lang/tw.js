@@ -645,7 +645,20 @@ export default {
     table_header_bg: '表頭背景',
     table_item_bg: '表格背景',
     table_item_font_color: '字體顏色',
-    stripe: '斑馬紋'
+    stripe: '斑馬紋',
+    start_angle: '起始角度',
+    end_angle: '結束角度',
+    style_priority: '樣式優先級',
+    dashboard: '儀表盤',
+    dimension_color: '維度顏色',
+    quota_color: '指標顏色',
+    dimension_font_size: '維度字體大小',
+    quota_font_size: '指標字體大小',
+    space_split: '維度/指標間隔',
+    only_one_quota: '僅支持1個指標',
+    only_one_result: '僅顯示第1個計算結果',
+    dimension_show: '維度顯示',
+    quota_show: '指標顯示'
   },
   dataset: {
     datalist: '數據集',
@@ -755,7 +768,8 @@ export default {
     can_not_union_self: '被關聯表不能與關聯表相同',
     float: '小數',
     edit_custom_table: '編輯自助數據集',
-    edit_field: '編輯自斷'
+    edit_field: '編輯自斷',
+    preview_100_data: '顯示前100行數據'
   },
   datasource: {
     datasource: '數據源',

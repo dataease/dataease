@@ -768,7 +768,8 @@ export default {
     can_not_union_self: '被关联表不能与关联表相同',
     float: '小数',
     edit_custom_table: '编辑自助数据集',
-    edit_field: '编辑字段'
+    edit_field: '编辑字段',
+    preview_100_data: '显示前100行数据'
   },
   datasource: {
     datasource: '数据源',
@@ -851,7 +852,7 @@ export default {
     field: '字段',
     unshared_people: '未分享人员',
     shared_people: '已分享人员',
-    error_data: '获取数据出错 请联系管理员 Error getting data, please contact administrator',
+    error_data: '获取数据出错，请联系管理员',
     canvas_size: '画布大小',
     canvas_scale: '画布比例',
     style: '样式',
