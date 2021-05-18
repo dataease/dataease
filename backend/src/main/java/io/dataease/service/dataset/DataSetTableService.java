@@ -664,6 +664,7 @@ public class DataSetTableService {
                         tableFiled.setFieldName(readCell(row.getCell(j)));
                         tableFiled.setRemarks(readCell(row.getCell(j)));
                         tableFiled.setFieldType("TEXT");
+                        tableFiled.setFieldSize(1024);
                         if(StringUtils.isEmpty(tableFiled.getFieldName())){
                             continue;
                         }
@@ -698,6 +699,9 @@ public class DataSetTableService {
                         tableFiled.setRemarks(readCell(row.getCell(j)));
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setFieldSize(1024);
+                        if(StringUtils.isEmpty(tableFiled.getFieldName())){
+                            continue;
+                        }
                         fields.add(tableFiled);
                     } else {
                         r[j] = readCell(row.getCell(j));

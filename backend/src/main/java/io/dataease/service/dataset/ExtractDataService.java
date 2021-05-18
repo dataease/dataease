@@ -497,8 +497,14 @@ public class ExtractDataService {
     }
 
     private StepMeta excelInputStep(String filePath, List<DatasetTableField> datasetTableFields) {
+        String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
         ExcelInputMeta excelInputMeta = new ExcelInputMeta();
-        excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
+        if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+            excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
+        }
+        if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
+            excelInputMeta.setSpreadSheetType(SpreadSheetType.JXL);
+        }
         excelInputMeta.setPassword("Encrypted");
         excelInputMeta.setFileName(new String[]{filePath});
         excelInputMeta.setStartsWithHeader(true);
