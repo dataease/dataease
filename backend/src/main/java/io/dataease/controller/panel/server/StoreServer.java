@@ -16,7 +16,7 @@ public class StoreServer implements StoreApi {
     private StoreService storeService;
 
     @Override
-    public void store( String id) {
+    public void store(String id) {
         storeService.save(id);
     }
 
@@ -26,7 +26,12 @@ public class StoreServer implements StoreApi {
     }
 
     @Override
-    public void remove( Long storeId) {
-        storeService.remove(storeId);
+    public void remove(String storeId) {
+        try {
+            Long id = Long.parseLong(storeId);
+            storeService.remove(id);
+        } catch (Exception e) {
+            storeService.removeByPanelId(storeId);
+        }
     }
 }

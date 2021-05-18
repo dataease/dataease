@@ -33,6 +33,7 @@
 
 <script>
 import { hexColorToRGBA } from '../../chart/util'
+import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   name: 'TableNormal',
@@ -91,6 +92,10 @@ export default {
   mounted() {
     this.init()
     this.calcHeight()
+    // 监听元素变动事件
+    eventBus.$on('resizing', (componentId) => {
+      this.chartResize()
+    })
   },
   methods: {
     init() {
@@ -111,23 +116,23 @@ export default {
     },
     calcHeight() {
       const that = this
-      setTimeout(function() {
-        // const currentHeight = document.documentElement.clientHeight
-        // const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 20
-        const currentHeight = that.$refs.tableContainer.offsetHeight
-        const tableMaxHeight = currentHeight - that.$refs.title.offsetHeight
-        let tableHeight
-        if (that.chart.data) {
-          tableHeight = (that.chart.data.tableRow.length + 2) * 36
-        } else {
-          tableHeight = 0
+      this.$nextTick(function() {
+        if (that.$refs.tableContainer) {
+          const currentHeight = that.$refs.tableContainer.offsetHeight
+          const tableMaxHeight = currentHeight - that.$refs.title.offsetHeight
+          let tableHeight
+          if (that.chart.data) {
+            tableHeight = (that.chart.data.tableRow.length + 2) * 36
+          } else {
+            tableHeight = 0
+          }
+          if (tableHeight > tableMaxHeight) {
+            that.height = tableMaxHeight + 'px'
+          } else {
+            that.height = 'auto'
+          }
         }
-        if (tableHeight > tableMaxHeight) {
-          that.height = tableMaxHeight + 'px'
-        } else {
-          that.height = 'auto'
-        }
-      }, 10)
+      })
     },
     initStyle() {
       if (this.chart.customAttr) {
@@ -207,6 +212,11 @@ export default {
       })
       // 返回一个二维数组的表尾合计(不要平均值，就不要在数组中添加)
       return [means]
+    },
+
+    chartResize() {
+      // 指定图表的配置项和数据
+      this.calcHeight()
     }
   }
 }
