@@ -28,11 +28,13 @@
       </el-form-item>
       <el-form-item :label="$t('commons.organization')" prop="dept">
         <treeselect
+          ref="deptTreeSelect"
           v-model="form.deptId"
           :options="depts"
           :load-options="loadDepts"
           :auto-load-root-options="false"
           :placeholder="$t('user.choose_org')"
+          @open="testOpen"
         />
       </el-form-item>
       <el-form-item :label="$t('commons.role')" prop="roleIds">
@@ -257,6 +259,15 @@ export default {
     },
     backToList() {
       this.$router.push({ name: '用户管理' })
+    },
+    testOpen(instanceId) {
+      const results = this.depts.map(node => {
+        if (node.hasChildren) {
+          node.children = null
+        }
+        return node
+      })
+      this.depts = results
     }
   }
 }
