@@ -508,7 +508,10 @@ public class DataSetTableService {
             createDorisView(DorisTableUtils.dorisName(datasetTable.getId()), getCustomSQL(dataTableInfoDTO, dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
             return;
         }
-        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+        QueryProvider qp = null;
+        if(!ObjectUtils.isEmpty(ds)) {
+            qp = ProviderFactory.getQueryProvider(ds.getType());
+        }
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
