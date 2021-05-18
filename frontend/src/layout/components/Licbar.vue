@@ -1,6 +1,6 @@
 <template>
   <div v-if="!licstatus" class="lic">
-    <strong>{{ msg }}</strong>
+    <strong>{{ licMsg }}</strong>
   </div>
 </template>
 
@@ -22,6 +22,9 @@ export default {
     },
     licstatus() {
       return this.$store.state.lic.validate
+    },
+    licMsg() {
+      return this.$store.state.lic.licMsg
     }
 
   },
