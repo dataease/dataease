@@ -6,6 +6,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
   </resultMap>
@@ -71,7 +72,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, `desc`, `type`, create_time, update_time
+    id, `name`, `desc`, `type`, create_by, create_time, update_time
   </sql>
   <sql id="Blob_Column_List">
     configuration
@@ -126,11 +127,11 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.Datasource">
     insert into datasource (id, `name`, `desc`, 
-      `type`, create_time, update_time, 
-      configuration)
+      `type`, create_by, create_time, 
+      update_time, configuration)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
-      #{type,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{configuration,jdbcType=LONGVARCHAR})
+      #{type,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
+      #{updateTime,jdbcType=BIGINT}, #{configuration,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.Datasource">
     insert into datasource
@@ -146,6 +147,9 @@
       </if>
       <if test="type != null">
         `type`,
+      </if>
+      <if test="createBy != null">
+        create_by,
       </if>
       <if test="createTime != null">
         create_time,
@@ -169,6 +173,9 @@
       </if>
       <if test="type != null">
         #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
@@ -202,6 +209,9 @@
       <if test="record.type != null">
         `type` = #{record.type,jdbcType=VARCHAR},
       </if>
+      <if test="record.createBy != null">
+        create_by = #{record.createBy,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
       </if>
@@ -222,6 +232,7 @@
       `name` = #{record.name,jdbcType=VARCHAR},
       `desc` = #{record.desc,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
       configuration = #{record.configuration,jdbcType=LONGVARCHAR}
@@ -235,6 +246,7 @@
       `name` = #{record.name,jdbcType=VARCHAR},
       `desc` = #{record.desc,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT}
     <if test="_parameter != null">
@@ -253,6 +265,9 @@
       <if test="type != null">
         `type` = #{type,jdbcType=VARCHAR},
       </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
@@ -270,6 +285,7 @@
     set `name` = #{name,jdbcType=VARCHAR},
       `desc` = #{desc,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
       configuration = #{configuration,jdbcType=LONGVARCHAR}
@@ -280,6 +296,7 @@
     set `name` = #{name,jdbcType=VARCHAR},
       `desc` = #{desc,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=VARCHAR}

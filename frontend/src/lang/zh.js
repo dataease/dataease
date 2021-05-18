@@ -895,5 +895,27 @@ export default {
     loginImage: '登录页面右侧图片',
     loginTitle: '登录页面标题',
     title: '系统名称'
+  },
+  auth: {
+    authConfig: '权限配置',
+    authQuickConfig: '权限快捷配置',
+    dept: '部门',
+    role: '角色',
+    user: '用户',
+    linkAuth: '数据源权限',
+    datasetAuth: '数据权限',
+    chartAuth: '视图权限',
+    panelAuth: '仪表盘权限',
+    deptHead: '所有部门',
+    roleHead: '所有角色',
+    userHead: '所有用户',
+    linkAuthHead: '所有数据源',
+    datasetAuthHead: '所有数据',
+    chartAuthHead: '所有视图',
+    panelAuthHead: '所有仪表盘',
+    view: '查看',
+    use: '使用',
+    export: '导出',
+    manage: '管理'
   }
 }

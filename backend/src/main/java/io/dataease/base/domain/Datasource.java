@@ -13,6 +13,8 @@ public class Datasource implements Serializable {
 
     private String type;
 
+    private String createBy;
+
     private Long createTime;
 
     private Long updateTime;

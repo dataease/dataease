@@ -894,5 +894,27 @@ export default {
     loginImage: 'Picture on the right side of the login page',
     loginTitle: 'Login page title',
     title: 'System name'
+  },
+  auth: {
+    authConfig: 'Auth Config',
+    authQuickConfig: 'Auth Quick Config',
+    dept: 'Dept',
+    role: 'Role',
+    user: 'User',
+    linkAuth: 'Datasource Permissions',
+    datasetAuth: 'Data Permissions',
+    chartAuth: 'Chart Permissions',
+    panelAuth: 'Panel Permissions',
+    deptHead: 'All Dept',
+    roleHead: 'All Role',
+    userHead: 'All User',
+    linkAuthHead: 'All Datasource',
+    datasetAuthHead: 'All Data',
+    chartAuthHead: 'All Chart',
+    panelAuthHead: 'All Chart',
+    view: 'View',
+    use: 'Use',
+    export: 'Export',
+    manage: 'Manage'
   }
 }

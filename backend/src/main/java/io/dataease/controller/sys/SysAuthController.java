@@ -4,6 +4,7 @@ import io.dataease.base.domain.SysAuth;
 import io.dataease.base.domain.SysAuthDetail;
 import io.dataease.base.domain.SysDept;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.BaseTreeRequest;
 import io.dataease.controller.request.SysAuthDetailRequest;
 import io.dataease.controller.request.SysAuthRequest;
@@ -49,6 +50,7 @@ public class SysAuthController {
 
     @ApiOperation("查询授权模板")
     @GetMapping("/authDetailsModel/{authType}")
+    @I18n
     public List<SysAuthDetail>authDetailsModel(@PathVariable String authType){
         return sysAuthService.searchAuthDetailsModel(authType);
     }

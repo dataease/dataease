@@ -1,44 +1,45 @@
 <template>
   <de-container>
-    <de-aside-container>
-      <el-button v-show="!showSourceSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSourceSearchWidget" />
-      <div v-show="showSourceSearchInput" class="de-input">
-        <el-input v-model="sourceFilterText">
-          <el-button slot="append" icon="el-icon-close" @click="closeSourceSearchWidget" />
-        </el-input>
-      </div>
-      <el-tabs v-model="sourceActiveName" :class="{'de-search-header': showSourceSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(sourceInfo, index) in sourceInfoArray" :key="index" :lazy="true" :label="sourceInfo.tabName" :name="sourceInfo.authType">
-          <lazy-tree
-            v-if="authCondition"
-            :active-name="sourceActiveName"
-            :filter-text="sourceFilterText"
-            :data-info="sourceInfo"
-            highlight-current
-            @nodeClick="authNodeClick"
-          />
-        </el-tab-pane>
-      </el-tabs>
-    </de-aside-container>
-    <de-main-container class="de-main-container-auth">
-      <el-button v-show="!showTargetSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showTargetSearchWidget" />
-      <div v-show="showTargetSearchInput" class="de-input">
-        <el-input v-model="targetFilterText">
-          <el-button slot="append" icon="el-icon-close" @click="closeTargetSearchWidget" />
-        </el-input>
-      </div>
-      <el-tabs v-model="targetActiveName" :class="{'de-search-header': showTargetSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
-          <lazy-tree
-            :active-name="targetActiveName"
-            :filter-text="targetFilterText"
-            :data-info="targetInfo"
-            show-extent
-            :auth-condition="authCondition"
-          />
-        </el-tab-pane>
-      </el-tabs>
-    </de-main-container>
+    <span>敬请期待</span>
+    <!--    <de-aside-container>-->
+    <!--      <el-button v-show="!showSourceSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSourceSearchWidget" />-->
+    <!--      <div v-show="showSourceSearchInput" class="de-input">-->
+    <!--        <el-input v-model="sourceFilterText">-->
+    <!--          <el-button slot="append" icon="el-icon-close" @click="closeSourceSearchWidget" />-->
+    <!--        </el-input>-->
+    <!--      </div>-->
+    <!--      <el-tabs v-model="sourceActiveName" :class="{'de-search-header': showSourceSearchInput}" @tab-click="handleClick">-->
+    <!--        <el-tab-pane v-for="(sourceInfo, index) in sourceInfoArray" :key="index" :lazy="true" :label="sourceInfo.tabName" :name="sourceInfo.authType">-->
+    <!--          <lazy-tree-->
+    <!--            v-if="authCondition"-->
+    <!--            :active-name="sourceActiveName"-->
+    <!--            :filter-text="sourceFilterText"-->
+    <!--            :data-info="sourceInfo"-->
+    <!--            highlight-current-->
+    <!--            @nodeClick="authNodeClick"-->
+    <!--          />-->
+    <!--        </el-tab-pane>-->
+    <!--      </el-tabs>-->
+    <!--    </de-aside-container>-->
+    <!--    <de-main-container class="de-main-container-auth">-->
+    <!--      <el-button v-show="!showTargetSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showTargetSearchWidget" />-->
+    <!--      <div v-show="showTargetSearchInput" class="de-input">-->
+    <!--        <el-input v-model="targetFilterText">-->
+    <!--          <el-button slot="append" icon="el-icon-close" @click="closeTargetSearchWidget" />-->
+    <!--        </el-input>-->
+    <!--      </div>-->
+    <!--      <el-tabs v-model="targetActiveName" :class="{'de-search-header': showTargetSearchInput}" @tab-click="handleClick">-->
+    <!--        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">-->
+    <!--          <lazy-tree-->
+    <!--            :active-name="targetActiveName"-->
+    <!--            :filter-text="targetFilterText"-->
+    <!--            :data-info="targetInfo"-->
+    <!--            show-extent-->
+    <!--            :auth-condition="authCondition"-->
+    <!--          />-->
+    <!--        </el-tab-pane>-->
+    <!--      </el-tabs>-->
+    <!--    </de-main-container>-->
   </de-container>
 
 </template>

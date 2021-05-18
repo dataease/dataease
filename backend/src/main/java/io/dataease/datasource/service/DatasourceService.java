@@ -51,6 +51,7 @@ public class DatasourceService {
         datasource.setId(UUID.randomUUID().toString());
         datasource.setUpdateTime(currentTimeMillis);
         datasource.setCreateTime(currentTimeMillis);
+        datasource.setCreateBy(String.valueOf(AuthUtils.getUser().getUserId()));
         datasourceMapper.insertSelective(datasource);
         return datasource;
     }

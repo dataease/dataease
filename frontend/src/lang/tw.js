@@ -894,5 +894,27 @@ export default {
     loginImage: '登陸頁面右側圖片',
     loginTitle: '登陸頁面標題',
     title: '系統名稱'
+  },
+  auth: {
+    authConfig: '權限配置',
+    authQuickConfig: '權限快捷配置',
+    dept: '部門',
+    role: '角色',
+    user: '用戶',
+    linkAuth: '數據源權限',
+    datasetAuth: '數據權限',
+    chartAuth: '視圖權限',
+    panelAuth: '儀表盤權限',
+    deptHead: '所有部門',
+    roleHead: '所有角色',
+    userHead: '所有用戶',
+    linkAuthHead: '所有數據源',
+    datasetAuthHead: '所有數據',
+    chartAuthHead: '所有視圖',
+    panelAuthHead: '所有儀表盤',
+    view: '查看',
+    use: '使用',
+    export: '導出',
+    manage: '管理'
   }
 }

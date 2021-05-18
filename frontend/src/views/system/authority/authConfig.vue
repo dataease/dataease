@@ -1,6 +1,6 @@
 <template>
-  <de-container>
-    <de-aside-container>
+  <de-container style="height: auto">
+    <de-aside-container style="height: auto">
       <el-button v-show="!showTargetSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showTargetSearchWidget" />
       <div v-show="showTargetSearchInput" class="de-input">
         <el-input v-model="targetFilterText">
@@ -63,46 +63,46 @@ export default {
       targetInfoArray:
         [
           {
-            tabName: '部门',
-            head: '所有部门',
+            tabName: this.$t('auth.dept'),
+            head: this.$t('auth.deptHead'),
             direction: 'target',
             authType: 'dept'
           },
           {
-            tabName: '角色',
-            head: '所有角色',
+            tabName: this.$t('auth.role'),
+            head: this.$t('auth.roleHead'),
             direction: 'target',
             authType: 'role'
           },
           {
-            tabName: '用户',
-            head: '所有用户',
+            tabName: this.$t('auth.user'),
+            head: this.$t('auth.userHead'),
             direction: 'target',
             authType: 'user'
           }],
       sourceInfoArray:
         [
           {
-            tabName: '数据源权限',
-            head: '所有数据源',
+            tabName: this.$t('auth.linkAuth'),
+            head: this.$t('auth.linkAuthHead'),
             direction: 'source',
             authType: 'link'
           },
           {
-            tabName: '数据集权限',
-            head: '所有数据集',
+            tabName: this.$t('auth.datasetAuth'),
+            head: this.$t('auth.datasetAuthHead'),
             direction: 'source',
             authType: 'dataset'
           },
           {
-            tabName: '视图权限',
-            head: '所有视图',
+            tabName: this.$t('auth.chartAuth'),
+            head: this.$t('auth.linkAuthHead'),
             direction: 'source',
             authType: 'chart'
           },
           {
-            tabName: '仪表盘权限',
-            head: '所有仪表板',
+            tabName: this.$t('auth.panelAuth'),
+            head: this.$t('auth.panelAuthHead'),
             direction: 'source',
             authType: 'panel'
           }],
@@ -182,6 +182,7 @@ export default {
   }
   .de-main-container-auth{
     border: 1px solid #E6E6E6;
+    height: auto;
   }
 
   // ::-webkit-scrollbar {

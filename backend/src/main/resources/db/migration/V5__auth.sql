@@ -1,3 +1,18 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : A-LOCAL-本机数据库
+ Source Server Type    : MySQL
+ Source Server Version : 50726
+ Source Host           : localhost:3306
+ Source Schema         : data_ease
+
+ Target Server Type    : MySQL
+ Target Server Version : 50726
+ File Encoding         : 65001
+
+ Date: 18/05/2021 18:37:45
+*/
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -41,7 +56,7 @@ CREATE TABLE `sys_auth_detail`  (
 -- Records of sys_auth_detail
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_auth_detail` VALUES ('chart_manage', 'chart', '管理', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('chart_use', 'chart', '使用', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('dataset_manege', 'dataset', '管理', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('dataset_use', 'dataset', '使用', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('link_manage', 'link', '管理', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('link_user', 'link', '使用', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('panel_export', 'panel', '导出', 3, 0, 'export', '基础权限-导出', 'system', NULL, NULL), ('panel_manage', 'panel', '编辑', 5, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('panel_user', 'panel', '查看', 1, 0, 'view', '基础权限-查看', 'system', NULL, NULL);
+INSERT INTO `sys_auth_detail` VALUES ('chart_manage', 'chart', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('chart_use', 'chart', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('dataset_manege', 'dataset', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('dataset_use', 'dataset', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('link_manage', 'link', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('link_user', 'link', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('panel_export', 'panel', 'i18n_auth_export', 3, 0, 'export', '基础权限-导出', 'system', NULL, NULL), ('panel_manage', 'panel', 'i18n_auth_manage', 5, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('panel_user', 'panel', 'i18n_auth_view', 1, 0, 'view', '基础权限-查看', 'system', NULL, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -114,7 +129,7 @@ VALUES
         authId AS auth_id,
         sys_auth_detail.privilege_name,
         sys_auth_detail.privilege_type,
-        if(sys_auth_detail.privilege_type=1,1,sys_auth_detail.privilege_value),
+        1,
         sys_auth_detail.privilege_extend,
         sys_auth_detail.remark,
         'auto' AS create_user,
@@ -143,7 +158,7 @@ select id from  sys_auth where sys_auth.auth_source=authSource and sys_auth.auth
 
 delete from sys_auth where sys_auth.auth_source=authSource and sys_auth.auth_source_type=authSourceType;
 
-RETURN 'success';
+RETURN 'sucess';
 
 END
 ;;
@@ -165,7 +180,7 @@ select id from  sys_auth where sys_auth.auth_target=authTarget and sys_auth.auth
 
 delete from sys_auth where sys_auth.auth_target=authTarget and sys_auth.auth_target_type=authTargetType;
 
-RETURN 'success';
+RETURN 'sucess';
 
 END
 ;;
@@ -465,42 +480,3 @@ END
 delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;
-
-
-
-DROP TRIGGER if exists`new_auth_link`;
-DROP TRIGGER if exists`delete_auth_link`;
-CREATE TRIGGER `new_auth_link` AFTER INSERT ON `datasource` FOR EACH ROW select copy_auth(NEW.id,'link',NEW.create_by) into @ee;
-CREATE TRIGGER `delete_auth_link` AFTER DELETE ON `datasource` FOR EACH ROW select delete_auth_source(OLD.id,'link') into @ee;
-
-DROP TRIGGER if exists`new_auth_dataset_group`;
-DROP TRIGGER if exists`delete_auth_dataset_group`;
-DROP TRIGGER if exists`new_auth_dataset_table`;
-DROP TRIGGER if exists`delete_auth_dataset_table`;
-CREATE TRIGGER `new_auth_dataset_group` AFTER INSERT ON `dataset_group` FOR EACH ROW select copy_auth(NEW.id,'dataset',NEW.create_by) into @ee;
-CREATE TRIGGER `delete_auth_dataset_group` AFTER DELETE ON `dataset_group` FOR EACH ROW select delete_auth_source(OLD.id,'dataset') into @ee;
-CREATE TRIGGER `new_auth_dataset_table` AFTER INSERT ON `dataset_table` FOR EACH ROW select copy_auth(NEW.id,'dataset',NEW.create_by) into @ee;
-CREATE TRIGGER `delete_auth_dataset_table` AFTER DELETE ON `dataset_table` FOR EACH ROW select delete_auth_source(OLD.id,'dataset') into @ee;
-
-
-DROP TRIGGER if exists `new_auth_chart_group`;
-DROP TRIGGER if exists`delete_auth_chart_group`;
-DROP TRIGGER if exists`new_auth_chart_view`;
-DROP TRIGGER if exists`delete_auth_chart_view`;
-CREATE TRIGGER `new_auth_chart_group` AFTER INSERT ON `chart_group` FOR EACH ROW select copy_auth(NEW.id,'chart',NEW.create_by) into @ee;
-CREATE TRIGGER `delete_auth_chart_group` AFTER DELETE ON `chart_group` FOR EACH ROW select delete_auth_source(OLD.id,'chart') into @ee;
-CREATE TRIGGER `new_auth_chart_view` AFTER INSERT ON `chart_view` FOR EACH ROW select copy_auth(NEW.id,'chart',NEW.create_by) into @ee;
-CREATE TRIGGER `delete_auth_chart_view` AFTER DELETE ON `chart_view` FOR EACH ROW select delete_auth_source(OLD.id,'chart') into @ee;
-
-DROP TRIGGER if exists`new_auth_panel`;
-DROP TRIGGER if exists`delete_auth_panel`;
-CREATE TRIGGER `new_auth_panel` AFTER INSERT ON `panel_group` FOR EACH ROW select copy_auth(NEW.id,'panel',NEW.create_by) into @ee;
-CREATE TRIGGER `delete_auth_panel` AFTER DELETE ON `panel_group` FOR EACH ROW select delete_auth_source(OLD.id,'panel') into @ee;
-
-
-DROP TRIGGER if exists`delete_auth_user_target`;
-DROP TRIGGER if exists`delete_auth_role_target`;
-DROP TRIGGER if exists`delete_auth_dept_target`;
-CREATE TRIGGER `delete_auth_user_target` AFTER DELETE ON `sys_user` FOR EACH ROW select delete_auth_target(OLD.user_id,'user') into @ee;
-CREATE TRIGGER `delete_auth_role_target` AFTER DELETE ON `sys_role` FOR EACH ROW select delete_auth_target(OLD.role_id,'role') into @ee;
-CREATE TRIGGER `delete_auth_dept_target` AFTER DELETE ON `sys_dept` FOR EACH ROW select delete_auth_target(OLD.dept_id,'dept') into @ee;
