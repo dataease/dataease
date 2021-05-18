@@ -60,12 +60,12 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sql + ") AS tmp ");
+        return createQueryCountSQL(" (" + sqlFix(sql) + ") AS tmp ");
     }
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sql + ") AS tmp ORDER BY " + orderBy + " LIMIT 0,1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY " + orderBy + " LIMIT 0,1000";
     }
 
     @Override
@@ -94,7 +94,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createQuerySQL(" (" + sql + ") AS tmp ", fields);
+        return createQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields);
     }
 
     @Override
@@ -228,7 +228,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
-        return getSQL(" (" + sql + ") AS tmp ", xAxis, yAxis, extFilterRequestList);
+        return getSQL(" (" + sqlFix(sql) + ") AS tmp ", xAxis, yAxis, extFilterRequestList);
     }
 
     @Override
@@ -297,5 +297,12 @@ public class MysqlQueryProvider extends QueryProvider {
             }
         }
         return filter.toString();
+    }
+
+    private String sqlFix(String sql) {
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        return sql;
     }
 }
