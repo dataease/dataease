@@ -20,6 +20,7 @@
 
 <script>
 import { hexColorToRGBA } from '../../chart/util'
+import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   name: 'LabelNormal',
@@ -83,6 +84,10 @@ export default {
   mounted() {
     this.init()
     this.calcHeight()
+    // 监听元素变动事件
+    eventBus.$on('resizing', (componentId) => {
+      this.chartResize()
+    })
   },
   methods: {
     init() {
@@ -94,14 +99,14 @@ export default {
     },
     calcHeight() {
       const that = this
-      setTimeout(function() {
-        // const currentHeight = document.documentElement.clientHeight
-        // const tableMaxHeight = currentHeight - 56 - 40 - 84 - that.$refs.title.offsetHeight - 20
-        const currentHeight = that.$refs.tableContainer.offsetHeight
-        const contentHeight = currentHeight - that.$refs.title.offsetHeight
-        that.height = contentHeight + 'px'
-        that.content_class.height = that.height
-      }, 10)
+      this.$nextTick(function() {
+        if (that.$refs.tableContainer) {
+          const currentHeight = that.$refs.tableContainer.offsetHeight
+          const contentHeight = currentHeight - that.$refs.title.offsetHeight
+          that.height = contentHeight + 'px'
+          that.content_class.height = that.height
+        }
+      })
     },
     initStyle() {
       if (this.chart.customAttr) {
@@ -135,6 +140,10 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+    },
+    chartResize() {
+      // 指定图表的配置项和数据
+      this.calcHeight()
     }
   }
 }
