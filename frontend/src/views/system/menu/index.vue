@@ -27,7 +27,7 @@
             <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" :label="$t('menu.create_time')" >
+        <el-table-column prop="createTime" :label="$t('menu.create_time')">
           <template v-slot:default="scope">
             <span>{{ scope.row.createTime | timestampFormatDate }}</span>
           </template>
@@ -76,7 +76,7 @@
           <el-input v-model="form.title" :placeholder="$t('menu.button_name')" style="width: 179px;" />
         </el-form-item>
         <el-form-item v-show="form.type !== 0" :label="$t('menu.authority_identification')" prop="permission">
-          <el-input v-model="form.permission" :disabled="form.iframe || formType!=='add'" :placeholder="$t('menu.authority_identification')"  style="width: 179px;" />
+          <el-input v-model="form.permission" :disabled="form.iframe || formType!=='add'" :placeholder="$t('menu.authority_identification')" style="width: 179px;" />
         </el-form-item>
         <el-form-item v-if="form.type !== 2" label="$t('menu.route_addr')" prop="path">
           <el-input v-model="form.path" :placeholder="$t('menu.route_addr')" :disabled="formType!=='add'" style="width: 179px;" />
@@ -85,7 +85,7 @@
           <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" style="width: 179px;" />
         </el-form-item>
         <el-form-item v-show="!form.iframe && form.type === 1" :label="$t('menu.module_name')" prop="componentName">
-          <el-input v-model="form.componentName" :disabled="formType!=='add'" style="width: 179px;" :placeholder="匹配组件内Name字段" />
+          <el-input v-model="form.componentName" :disabled="formType!=='add'" style="width: 179px;" placeholder="匹配组件内Name字段" />
         </el-form-item>
         <el-form-item v-show="!form.iframe && form.type === 1" label="$t('menu.path')" prop="component">
           <el-input v-model="form.component" :disabled="formType!=='add'" style="width: 179px;" :placeholder="$t('menu.path')" />
