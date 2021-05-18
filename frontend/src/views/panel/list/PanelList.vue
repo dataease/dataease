@@ -30,7 +30,10 @@
       <el-row>
         <span class="header-title">
           {{ $t('panel.panel') }}
-          <el-button style="float: right;padding-right: 7px;" type="text" icon="el-icon-circle-plus" @click="showEditPanel(newFolder)" />
+          <!--          <el-button style="float: right;padding-right: 7px;" type="text" @click="showEditPanel(newFolder)" />-->
+          <el-button style="float: right;" type="primary" size="mini" @click="showEditPanel(newFolder)">
+            {{ $t('panel.groupAdd') }}
+          </el-button>
         </span>
       </el-row>
       <el-col class="custom-tree-container">
@@ -331,12 +334,14 @@ export default {
           this.editPanel.panelInfo.name = this.$t('panel.panelAdd')
           this.editPanel.panelInfo.pid = param.data.id
           this.editPanel.panelInfo.level = param.data.level + 1
+          this.editPanel.panelInfo.panelType = 'self'
           break
         case 'newFirstFolder':
           this.editPanel.titlePre = this.$t('commons.create')
           this.editPanel.panelInfo.name = ''
           this.editPanel.panelInfo.pid = null
           this.editPanel.panelInfo.level = 0
+          this.editPanel.panelInfo.panelType = 'self'
           break
         case 'edit':
         case 'rename':
