@@ -34,7 +34,7 @@
           :load-options="loadDepts"
           :auto-load-root-options="false"
           :placeholder="$t('user.choose_org')"
-          @open="testOpen"
+          @open="filterData"
         />
       </el-form-item>
       <el-form-item :label="$t('commons.role')" prop="roleIds">
@@ -260,7 +260,7 @@ export default {
     backToList() {
       this.$router.push({ name: '用户管理' })
     },
-    testOpen(instanceId) {
+    filterData(instanceId) {
       const results = this.depts.map(node => {
         if (node.hasChildren) {
           node.children = null
