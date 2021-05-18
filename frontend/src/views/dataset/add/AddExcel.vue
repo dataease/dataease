@@ -132,6 +132,11 @@ export default {
     },
     uploadFail(response, file, fileList) {
       this.uploading = false
+      this.$message({
+        type: 'error',
+        message: this.$t('dataset.parse_error'),
+        showClose: true
+      })
     },
     uploadSuccess(response, file, fileList) {
       // console.log(response)

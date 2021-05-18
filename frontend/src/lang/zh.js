@@ -770,7 +770,8 @@ export default {
     edit_custom_table: '编辑自助数据集',
     edit_field: '编辑字段',
     preview_100_data: '显示前100行数据',
-    invalid_table_check: '非直连数据集请先完成数据同步'
+    invalid_table_check: '非直连数据集请先完成数据同步',
+    parse_error: '解析错误'
   },
   datasource: {
     datasource: '数据源',
