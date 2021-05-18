@@ -481,10 +481,8 @@ public class DataSetTableService {
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
             String path = dataTableInfoDTO.getData();
             File file = new File(path);
-            // save field
             Map<String, Object> map = parseExcel(path.substring(path.lastIndexOf("/") + 1), new FileInputStream(file), false);
             fields = (List<TableFiled>) map.get("fields");
-//            List<Map<String, Object>> data = (List<Map<String, Object>>) map.get("data");
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             // save field
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
@@ -508,7 +506,10 @@ public class DataSetTableService {
             createDorisView(DorisTableUtils.dorisName(datasetTable.getId()), getCustomSQL(dataTableInfoDTO, dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
             return;
         }
-        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+        QueryProvider qp = null;
+        if(!ObjectUtils.isEmpty(ds)) {
+            qp = ProviderFactory.getQueryProvider(ds.getType());
+        }
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
@@ -670,6 +671,9 @@ public class DataSetTableService {
                         tableFiled.setFieldName(readCell(row.getCell(j)));
                         tableFiled.setRemarks(readCell(row.getCell(j)));
                         tableFiled.setFieldType("TEXT");
+                        if(StringUtils.isEmpty(tableFiled.getFieldName())){
+                            continue;
+                        }
                         fields.add(tableFiled);
                     } else {
                         r[j] = readCell(row.getCell(j));
