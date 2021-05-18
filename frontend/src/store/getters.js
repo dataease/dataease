@@ -23,6 +23,7 @@ const getters = {
   dialogWidgetMap: state => state.application.dialogWidgetMap,
   drawWidgetMap: state => state.application.drawWidgetMap,
   validate: state => state.lic.validate,
+  licMsg: state => state.lic.licMsg,
   uiInfo: state => state.user.uiInfo
 }
 export default getters
