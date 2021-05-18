@@ -5,12 +5,12 @@
         <el-col :span="12">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
-              <img v-if="!loginLogoUrl" src="@/assets/DataEase-black.png" alt="">
+              <img v-if="!loginLogoUrl" src="@/assets/DataEase-color.png" alt="">
               <img v-else :src="loginLogoUrl" alt="">
             </div>
-            <div class="login-title">
-              {{ uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue || $t('login.title') }}
-            </div>
+            <!--            <div class="login-title">-->
+            <!--              &lt;!&ndash;              {{ uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue || $t('login.title') }}&ndash;&gt;-->
+            <!--            </div>-->
             <div class="login-border" />
             <div class="login-welcome">
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || 'DATAEASE') }}
@@ -64,10 +64,10 @@ export default {
         if (res.data) {
           callback()
         } else {
-          callback(new Error('Please enter the correct user name'))
+          callback(this.$t('login.username_error'))
         }
       }).catch(() => {
-        callback(new Error('Please enter the correct user name'))
+        callback(this.$t('login.username_error'))
       })
     //   if (!validUsername(value)) {
     //     callback(new Error('Please enter the correct user name'))
@@ -77,7 +77,7 @@ export default {
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(this.$t('login.password_error'))
       } else {
         callback()
       }
@@ -178,8 +178,8 @@ export default {
   }
 
   .login-logo {
-    margin-top: 30px;
-    margin-left: 30px;
+    margin-top: 50px;
+    text-align: center;
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
@@ -208,7 +208,7 @@ export default {
     width: 80px;
     background: $--color-primary;
     @media only screen and (max-width: 1280px) {
-      margin: 10px auto 10px;
+      margin: 20px auto 20px;
     }
   }
 
@@ -225,11 +225,11 @@ export default {
   }
 
   .login-form {
-    margin-top: 30px;
+    margin-top: 40px;
     padding: 0 40px;
 
     @media only screen and (max-width: 1280px) {
-      margin-top: 10px;
+      margin-top: 20px;
     }
 
     & ::v-deep .el-input__inner {

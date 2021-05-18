@@ -82,7 +82,9 @@ export default {
     thirdparty: '第三方登录',
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
     expires: '登录token过期，请重新登录',
-    tokenError: 'token错误，请重新登录'
+    tokenError: 'token错误，请重新登录',
+    username_error: '请输入正确的用户名',
+    password_error: '密码不小于6位'
   },
   commons: {
     all: '全部',

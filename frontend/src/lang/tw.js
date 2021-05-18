@@ -82,7 +82,9 @@ export default {
     thirdparty: '第三方登陸',
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
     expires: '登陸信息过期，请重新登陸',
-    tokenError: '信息错误，请重新登陸'
+    tokenError: '信息错误，请重新登陸',
+    username_error: '請輸入正確的用戶名',
+    password_error: '密碼不小於6位'
   },
   commons: {
     all: '全部',
