@@ -27,8 +27,6 @@ public class I18nController {
     @Value("${run.mode:release}")
     private String runMode;
 
-//    @Resource
-//    private UserService userService;
 
     @GetMapping("lang/change/{lang}")
     public void changeLang(@PathVariable String lang, HttpServletRequest request, HttpServletResponse response) {
@@ -38,14 +36,13 @@ public class I18nController {
             LogUtil.error("Invalid parameter: " + lang);
             DEException.throwException(Translator.get("error_lang_invalid"));
         }
-//        userService.setLanguage(targetLang.getDesc());
         Cookie cookie = new Cookie(I18nConstants.LANG_COOKIE_NAME, targetLang.getDesc());
         cookie.setPath("/");
         cookie.setMaxAge(FOR_EVER);
         response.addCookie(cookie);
         //重新登录
         if ("release".equals(runMode)) {
-            Cookie f2cCookie = new Cookie("MS_SESSION_ID", "deleteMe");
+            Cookie f2cCookie = new Cookie("DE_SESSION_ID", "deleteMe");
             f2cCookie.setPath("/");
             f2cCookie.setMaxAge(0);
             response.addCookie(f2cCookie);

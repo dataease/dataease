@@ -41,7 +41,7 @@
     </el-col>
     <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
       <el-row style="height: 100%;" class="custom-position">
-        {{ $t('panle.select_panel_from_left') }}
+        {{ $t('panel.select_panel_from_left') }}
       </el-row>
     </el-col>
 
