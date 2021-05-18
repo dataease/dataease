@@ -43,3 +43,10 @@ export function uiImage(imageId) {
     method: 'get'
   })
 }
+
+export function languageApi(language) {
+  return request({
+    url: '/api/user/setLanguage/' + language,
+    method: 'post'
+  })
+}

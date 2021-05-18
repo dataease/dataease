@@ -35,5 +35,7 @@ public class SysUser implements Serializable {
 
     private Long updateTime;
 
+    private String language;
+
     private static final long serialVersionUID = 1L;
 }
