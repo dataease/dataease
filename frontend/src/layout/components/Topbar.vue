@@ -77,7 +77,7 @@ import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Topbar',
   components: {
-    AppLink,
+    AppLink
     // Screenfull,
     // SizeSelect,
     // LangSelect
