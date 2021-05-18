@@ -370,6 +370,8 @@ export default {
     sidebarLogo: '侧边栏 Logo'
   },
   license: {
+    i18n_no_license_record: '没有 License 记录',
+    i18n_license_is_empty: 'License 为空',
     title: '授权管理',
     corporation: '客户名称',
     time: '授权时间',

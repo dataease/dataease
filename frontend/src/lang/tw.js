@@ -369,6 +369,8 @@ export default {
     sidebarLogo: '側邊欄 Logo'
   },
   license: {
+    i18n_no_license_record: '沒有 License 紀錄',
+    i18n_license_is_empty: 'License 為空',
     title: '授權管理',
     corporation: '客户名稱',
     time: '授權時間',

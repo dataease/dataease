@@ -369,6 +369,8 @@ export default {
     sidebarLogo: 'Sidebar Logo'
   },
   license: {
+    i18n_no_license_record: 'No License Record',
+    i18n_license_is_empty: 'License is empty.',
     title: 'Authorization Management',
     corporation: 'Customer Name',
     time: 'Authorization Time',

@@ -46,6 +46,7 @@ INSERT INTO `sys_menu` VALUES (40, 1, 0, 1, '模板管理', '模板管理', 'pan
 INSERT INTO `sys_menu` VALUES (41, 1, 0, 1, '权限管理', '权限管理', 'system/permission/index', 14, 'password', 'system/permission/index', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, 1620447312657);
 INSERT INTO `sys_menu` VALUES (50, 0, 0, 1, '个人信息', '个人信息', 'system/user/privateForm', 999, NULL, '/person-info', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (51, 0, 0, 1, '重置密码', '重置密码', 'system/user/personPwd', 999, NULL, '/person-pwd', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (52, 1, 0, 1, '关于', '关于', 'system/about/index', 16, 'system', 'about', b'0', b'0', b'0', NULL, NULL, NULL, NULL, 1620897406691);
 COMMIT;
 
 BEGIN;

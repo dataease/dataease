@@ -120,6 +120,7 @@ CREATE TABLE `sys_user` (
     `pwd_reset_time` bigint(13) DEFAULT NULL COMMENT '修改密码的时间',
     `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
     `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
+    `language` varchar(20) DEFAULT NULL COMMENT '语言',
     PRIMARY KEY (`user_id`) USING BTREE,
     UNIQUE KEY `UK_kpubos9gc2cvtkb0thktkbkes` (`email`) USING BTREE,
     UNIQUE KEY `username` (`username`) USING BTREE,
