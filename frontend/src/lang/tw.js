@@ -807,7 +807,7 @@ export default {
     datalist: '視圖列表',
     group: '目錄',
     panel: '儀表盤',
-    panel_list: '儀表盤列表',
+    panel_list: '儀表盤',
     groupAdd: '新建目錄',
     panelAdd: '新建儀表盤',
     delete: '刪除',

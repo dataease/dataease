@@ -808,7 +808,7 @@ export default {
     datalist: '视图列表',
     group: '目录',
     panel: '仪表盘',
-    panel_list: '仪表盘列表',
+    panel_list: '仪表盘',
     groupAdd: '新建目录',
     panelAdd: '新建仪表盘',
     delete: '删除',
