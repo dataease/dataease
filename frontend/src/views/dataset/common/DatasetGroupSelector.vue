@@ -269,7 +269,24 @@ export default {
         })
         return
       }
-      this.$emit('getTable', data)
+      // check mode=1的数据集是否创建doris表
+      if (data.mode === 1) {
+        post('/dataset/table/checkDorisTableIsExists/' + data.id, {}).then(response => {
+          if (response.data) {
+            this.$nextTick(function() {
+              this.$emit('getTable', data)
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: this.$t('dataset.invalid_table_check'),
+              showClose: true
+            })
+          }
+        })
+      } else {
+        this.$emit('getTable', data)
+      }
     },
 
     unionDataChange() {

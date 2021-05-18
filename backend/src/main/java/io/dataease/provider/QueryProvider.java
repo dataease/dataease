@@ -11,7 +11,7 @@ import java.util.List;
  * @Date 2021/5/17 2:42 下午
  */
 public abstract class QueryProvider {
-    public abstract Integer transFieldType( String field);
+    public abstract Integer transFieldType(String field);
 
     public abstract String createQueryCountSQL(String table);
 
@@ -30,4 +30,6 @@ public abstract class QueryProvider {
     public abstract String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList);
 
     public abstract String getSQLAsTmp(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList);
+
+    public abstract String searchTable(String table);
 }

@@ -769,7 +769,8 @@ export default {
     float: '小數',
     edit_custom_table: '編輯自助數據集',
     edit_field: '編輯自斷',
-    preview_100_data: '顯示前100行數據'
+    preview_100_data: '顯示前100行數據',
+    invalid_table_check: '非直連數據集請先完成數據同步'
   },
   datasource: {
     datasource: '數據源',

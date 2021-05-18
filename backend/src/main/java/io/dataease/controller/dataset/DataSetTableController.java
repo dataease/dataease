@@ -34,7 +34,7 @@ public class DataSetTableController {
     }
 
     @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id)throws Exception {
+    public void delete(@PathVariable String id) throws Exception {
         dataSetTableService.delete(id);
     }
 
@@ -91,5 +91,10 @@ public class DataSetTableController {
     @PostMapping("excel/upload")
     public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file) throws Exception {
         return dataSetTableService.excelSaveAndParse(file);
+    }
+
+    @PostMapping("checkDorisTableIsExists/{id}")
+    public Boolean checkDorisTableIsExists(@PathVariable String id) throws Exception {
+        return dataSetTableService.checkDorisTableIsExists(id);
     }
 }

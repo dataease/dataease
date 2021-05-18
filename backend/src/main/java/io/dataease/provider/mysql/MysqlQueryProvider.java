@@ -231,6 +231,11 @@ public class MysqlQueryProvider extends QueryProvider {
         return getSQL(" (" + sql + ") AS tmp ", xAxis, yAxis, extFilterRequestList);
     }
 
+    @Override
+    public String searchTable(String table) {
+        return "SELECT table_name FROM information_schema.TABLES WHERE table_name ='" + table + "'";
+    }
+
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":

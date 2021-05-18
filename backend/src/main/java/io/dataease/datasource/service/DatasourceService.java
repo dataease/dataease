@@ -6,6 +6,7 @@ import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.datasource.dto.DBTableDTO;
@@ -108,7 +109,7 @@ public class DatasourceService {
             dbTableDTO.setDatasetPath(null);
             for (DatasetTable datasetTable : datasetTables) {
                 DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
-                if (StringUtils.equals(name, dataTableInfoDTO.getTable())) {
+                if (StringUtils.equals(name, dataTableInfoDTO.getTable()) && StringUtils.equals(datasetTable.getCreateBy(), AuthUtils.getUser().getUsername())) {
                     dbTableDTO.setEnableCheck(false);
 
                     List<DatasetGroup> parents = dataSetGroupService.getParents(datasetTable.getSceneId());

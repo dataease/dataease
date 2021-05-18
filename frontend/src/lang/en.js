@@ -769,7 +769,8 @@ export default {
     float: 'Decimal',
     edit_custom_table: 'Edit self help dataset',
     edit_field: 'Edit Field',
-    preview_100_data: 'Show 100 lines data'
+    preview_100_data: 'Show 100 lines data',
+    invalid_table_check: 'Please sync data first.'
   },
   datasource: {
     datasource: 'Data Source',
