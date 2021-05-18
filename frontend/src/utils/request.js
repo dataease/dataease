@@ -34,6 +34,10 @@ service.interceptors.request.use(
     if ((linkToken = getLinkToken()) !== null) {
       config.headers[LinkTokenKey] = linkToken
     }
+
+    if (store.getters.language) {
+      config.headers['Accept-Language'] = store.getters.language
+    }
     // 增加loading
 
     config.loading && tryShowLoading(store.getters.currentPath)
