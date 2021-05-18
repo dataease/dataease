@@ -382,7 +382,8 @@ public class JdbcProvider extends DatasourceProvider {
             case doris:
                 return "show tables;";
             case sqlServer:
-                return "SELECT TABLE_NAME FROM fit2cloud2.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';";
+                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';".replace("DATABASE", sqlServerConfigration.getDataBase());
             default:
                 return "show tables;";
         }
