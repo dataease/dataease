@@ -422,7 +422,12 @@ export default {
     apikey_delete_confirm: 'Confirm to delete this API key?',
     input_id_placeholder: 'Please enter ID (Chinese is not supported)',
     source: 'User Source',
-    choose_org: 'Choose Organization'
+    choose_org: 'Choose Organization',
+    reset_password: 'Reset Password',
+    current_user: 'Current User',
+    origin_passwd: 'Origin Password',
+    new_passwd: 'New Password',
+    confirm_passwd: 'Confirm Password'
   },
   role: {
     menu_authorization: 'Menu Authorization',

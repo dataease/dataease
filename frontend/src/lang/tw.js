@@ -422,7 +422,12 @@ export default {
     apikey_delete_confirm: '这个 API Key 確定要删除吗?',
     input_id_placeholder: '請輸入ID (不支持中文)',
     source: '用戶來源',
-    choose_org: '選擇組織'
+    choose_org: '選擇組織',
+    reset_password: '重置密碼',
+    current_user: '當前用戶',
+    origin_passwd: '原始密碼',
+    new_passwd: '新密碼',
+    confirm_passwd: '確認密碼'
   },
   role: {
     menu_authorization: '菜單授權',
