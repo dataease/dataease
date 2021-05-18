@@ -27,7 +27,7 @@
         </span>
 
         <span v-if="hasStar && panelInfo" style="float: right;margin-right: 10px">
-          <el-tooltip :content="$t('commons.cancle')">
+          <el-tooltip :content="$t('commons.cancel')">
             <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
           </el-tooltip>
         </span>

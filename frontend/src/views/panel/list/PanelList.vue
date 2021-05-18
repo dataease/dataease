@@ -1,5 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col>
+  <el-col style="padding: 0 10px 0 10px;">
     <!-- panel list -->
     <el-col>
       <el-row>
@@ -28,7 +28,10 @@
       </el-row>
 
       <el-row>
-        <span class="header-title">{{ $t('panel.panel') }}</span>
+        <span class="header-title">
+          {{ $t('panel.panel') }}
+          <el-button style="float: right;padding-right: 7px;" type="text" icon="el-icon-circle-plus" @click="showEditPanel(newFolder)" />
+        </span>
       </el-row>
       <el-col class="custom-tree-container">
         <div class="block">
@@ -92,7 +95,7 @@
                         {{ $t('panel.edit') }}
                       </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
-                       {{ $t('panel.create_public_links') }}
+                        {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -248,6 +251,16 @@ export default {
           panelData: '[]'
         }
       },
+      newFolder: {
+        type: 'folder',
+        data: {
+          id: null,
+          pid: null,
+          level: 0
+        },
+        node: {},
+        optType: 'newFirstFolder'
+      },
       linkTitle: '链接分享',
       linkVisible: false,
       linkResourceId: null,
@@ -318,6 +331,12 @@ export default {
           this.editPanel.panelInfo.name = this.$t('panel.panelAdd')
           this.editPanel.panelInfo.pid = param.data.id
           this.editPanel.panelInfo.level = param.data.level + 1
+          break
+        case 'newFirstFolder':
+          this.editPanel.titlePre = this.$t('commons.create')
+          this.editPanel.panelInfo.name = ''
+          this.editPanel.panelInfo.pid = null
+          this.editPanel.panelInfo.level = 0
           break
         case 'edit':
         case 'rename':
@@ -525,7 +544,9 @@ export default {
     flex: 1;
     color: #606266;
     font-weight: bold;
-
+    display: block;
+    height: 100%;
+    line-height: 36px;
   }
 
   .el-divider--horizontal {

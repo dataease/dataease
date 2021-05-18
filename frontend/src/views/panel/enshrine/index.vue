@@ -1,7 +1,6 @@
 <template>
   <div>
     <el-table
-
       class="de-filter-data-table"
       :data="starDatas"
       :show-header="false"
@@ -52,7 +51,7 @@ export default {
       })
     },
     resetID(data) {
-      if( data ) {
+      if (data) {
         data.forEach(item => {
           item.id = uuid.v1()
         })
