@@ -4,13 +4,11 @@ import Cookies from 'js-cookie'
 import elementEnLocale from 'element-ui/lib/locale/lang/en' // element-ui lang
 import elementZhLocale from 'element-ui/lib/locale/lang/zh-CN'// element-ui lang
 import elementTWLocale from 'element-ui/lib/locale/lang/zh-TW'// element-ui lang
-import elementEsLocale from 'element-ui/lib/locale/lang/es'// element-ui lang
-import elementJaLocale from 'element-ui/lib/locale/lang/ja'// element-ui lang
+
 import enLocale from './en'
 import zhLocale from './zh'
 import twLocale from './tw'
-import esLocale from './es'
-import jaLocale from './ja'
+
 import fuZh from 'fit2cloud-ui/src/locale/lang/zh-CN' // 加载fit2cloud的内容
 
 import fuEn from 'fit2cloud-ui/src/locale/lang/en_US' // 加载fit2cloud的内容
@@ -18,27 +16,19 @@ import fuEn from 'fit2cloud-ui/src/locale/lang/en_US' // 加载fit2cloud的内�
 Vue.use(VueI18n)
 
 const messages = {
-  en: {
+  en_US: {
     ...enLocale,
     ...elementEnLocale,
     ...fuEn
   },
-  zh: {
+  zh_CN: {
     ...zhLocale,
     ...elementZhLocale,
     ...fuZh
   },
-  tw: {
+  zh_TW: {
     ...twLocale,
     ...elementTWLocale
-  },
-  es: {
-    ...esLocale,
-    ...elementEsLocale
-  },
-  ja: {
-    ...jaLocale,
-    ...elementJaLocale
   }
 }
 export function getLanguage() {
@@ -53,7 +43,7 @@ export function getLanguage() {
       return locale
     }
   }
-  return 'zh'
+  return 'zh_CN'
 }
 const i18n = new VueI18n({
   // set locale
