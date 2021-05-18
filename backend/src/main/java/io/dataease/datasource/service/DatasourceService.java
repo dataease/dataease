@@ -5,10 +5,8 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
-import io.dataease.commons.constants.TestCaseConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
-import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
@@ -20,7 +18,6 @@ import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.service.dataset.DataSetGroupService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +34,6 @@ public class DatasourceService {
 
     @Resource
     private DatasourceMapper datasourceMapper;
-    @Resource
-    private CommonThreadPool commonThreadPool;
     @Resource
     private ExtDataSourceMapper extDataSourceMapper;
     @Resource
