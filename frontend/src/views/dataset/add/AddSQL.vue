@@ -245,6 +245,14 @@ export default {
         })
         return
       }
+      if (this.name.length > 50) {
+        this.$message({
+          showClose: true,
+          message: this.$t('commons.char_can_not_more_50'),
+          type: 'error'
+        })
+        return
+      }
       const table = {
         id: this.param.tableId,
         name: this.name,

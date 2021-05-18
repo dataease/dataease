@@ -158,6 +158,22 @@ export default {
     save() {
       // console.log(this.checkTableList);
       // console.log(this.scene);
+      if (!this.name || this.name === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_input_name'),
+          type: 'error'
+        })
+        return
+      }
+      if (this.name.length > 50) {
+        this.$message({
+          showClose: true,
+          message: this.$t('commons.char_can_not_more_50'),
+          type: 'error'
+        })
+        return
+      }
       const table = {
         id: this.param.tableId,
         name: this.name,

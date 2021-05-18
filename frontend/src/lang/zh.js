@@ -275,7 +275,8 @@ export default {
       select_module: '选择模块',
       default_module: '默认模块'
     },
-    datasource: '数据连接'
+    datasource: '数据连接',
+    char_can_not_more_50: '名称不能超过50字符'
   },
   documentation: {
     documentation: '文档',
