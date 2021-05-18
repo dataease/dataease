@@ -43,51 +43,23 @@
           {{ name }}<i class="el-icon-arrow-down el-icon--right" />
         </span>
         <el-dropdown-menu slot="dropdown">
-
           <router-link to="/person-info/index">
             <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
           </router-link>
           <router-link to="/person-pwd/index">
             <el-dropdown-item>{{ $t('user.reset_password') }}</el-dropdown-item>
           </router-link>
-
           <a href="https://panjiachen.github.io/vue-element-admin-site/#/" target="_blank">
             <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>
           </a>
-
-          <a href="https://fit2cloud.com/" target="_blank">
-            <el-dropdown-item>{{ $t('commons.about_us') }} </el-dropdown-item>
-          </a>
+          <router-link to="/system/about">
+            <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
+          </router-link>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <!-- <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <div class="de-user-avatar">
-            <span>
-              {{ name }}
-
-            </span>
-          </div>
-
-        </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>Home</el-dropdown-item>
-          </router-link>
-          <a href="https://github.com/PanJiaChen/vue-admin-template/" target="_blank">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a href="https://panjiachen.github.io/vue-element-admin-site/#/" target="_blank">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown> -->
     </div>
   </div>
 </template>

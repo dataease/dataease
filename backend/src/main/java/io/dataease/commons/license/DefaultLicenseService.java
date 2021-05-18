@@ -21,8 +21,8 @@ public class DefaultLicenseService {
 
     private static final String LICENSE_ID = "fit2cloud_license";
     private static final String validatorUtil = "/usr/bin/validator";
-    private static final String product = "cmp";
-    private static final String[] NO_PLU_LIMIT_MODULES = new String[]{"dashboard", "gateway"};
+    private static final String product = "dataease";
+    /*private static final String[] NO_PLU_LIMIT_MODULES = new String[]{"dashboard", "gateway"};*/
 
     public F2CLicenseResponse validateLicense(String product, String licenseKey){
         List<String> command = new ArrayList<String>();

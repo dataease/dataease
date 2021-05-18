@@ -14,18 +14,18 @@
         <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
       </template>
 
-      <el-table-column prop="username" :label="$t('commons.name')"   />
-      <el-table-column prop="nickName" :label="$t('commons.nick_name')"   />
-      <el-table-column prop="gender" :label="$t('commons.gender')"   />
+      <el-table-column prop="username" :label="$t('commons.name')" />
+      <el-table-column prop="nickName" :label="$t('commons.nick_name')" />
+      <el-table-column prop="gender" :label="$t('commons.gender')" />
 
-      <el-table-column :show-overflow-tooltip="true" prop="phone"   :label="$t('commons.phone')" />
-      <el-table-column :show-overflow-tooltip="true"   prop="email" :label="$t('commons.email')" />
+      <el-table-column :show-overflow-tooltip="true" prop="phone" :label="$t('commons.phone')" />
+      <el-table-column :show-overflow-tooltip="true" prop="email" :label="$t('commons.email')" />
       <el-table-column :show-overflow-tooltip="true" prop="dept" :label="$t('commons.organization')">
         <template slot-scope="scope">
-          <div>{{ scope.row.dept.deptName }}</div>
+          <div>{{ scope.row.dept && scope.row.dept.deptName }}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="status" :label="$t('commons.status')" >
+      <el-table-column prop="status" :label="$t('commons.status')">
         <template v-slot:default="scope">
           <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
         </template>
@@ -64,11 +64,11 @@
 
         <el-form-item :label="$t('commons.gender')">
           <el-radio-group v-model="form.gender" style="width: 178px">
-            <el-radio  :label="$t('commons.man')">{{ $t('commons.man') }}</el-radio>
-            <el-radio  :label="$t('commons.woman')">{{ $t('commons.woman') }}</el-radio>
+            <el-radio :label="$t('commons.man')">{{ $t('commons.man') }}</el-radio>
+            <el-radio :label="$t('commons.woman')">{{ $t('commons.woman') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('commons.status')" >
+        <el-form-item :label="$t('commons.status')">
           <el-radio-group v-model="form.enabled" style="width: 140px">
             <el-radio :label="1">{{ $t('commons.enable') }} </el-radio>
             <el-radio :label="0"> {{ $t('commons.disable') }} </el-radio>

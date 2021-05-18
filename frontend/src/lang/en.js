@@ -82,7 +82,9 @@ export default {
     thirdparty: 'Or connect with',
     thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !',
     expires: 'Login token expired, please login again',
-    tokenError: 'Token error, please login again'
+    tokenError: 'Token error, please login again',
+    username_error: 'Please enter the correct user name',
+    password_error: 'The password can not be less than 6 digits'
   },
   commons: {
     icon: 'Icon',
@@ -776,7 +778,8 @@ export default {
     edit_custom_table: 'Edit self help dataset',
     edit_field: 'Edit Field',
     preview_100_data: 'Show 100 lines data',
-    invalid_table_check: 'Please sync data first.'
+    invalid_table_check: 'Please sync data first.',
+    parse_error: 'Parse Error'
   },
   datasource: {
     datasource: 'Data Source',
