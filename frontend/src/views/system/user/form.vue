@@ -22,8 +22,8 @@
       </el-form-item>
       <el-form-item :label="$t('commons.status')">
         <el-radio-group v-model="form.enabled" style="width: 140px">
-          <el-radio :label="1">{{ $t('user.enable') }}</el-radio>
-          <el-radio :label="0">{{ $t('user.disable') }}</el-radio>
+          <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
+          <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item :label="$t('commons.organization')" prop="dept">

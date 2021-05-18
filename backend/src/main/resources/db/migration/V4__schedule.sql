@@ -164,12 +164,3 @@ CREATE TABLE IF NOT EXISTS `schedule` (
   PRIMARY KEY (`id`),
   KEY `resource_id` ( `resource_id` )
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
-
-ALTER TABLE `api_test` DROP COLUMN `schedule`;
-ALTER TABLE `load_test` DROP COLUMN `schedule`;
-ALTER TABLE `api_test_report` ADD `trigger_mode` varchar(64) NULL;
-ALTER TABLE `load_test_report` ADD `trigger_mode` varchar(64) NULL;
-UPDATE `api_test_report`  SET `trigger_mode` = 'MANUAL' WHERE 1;
-UPDATE `load_test_report`  SET `trigger_mode` = 'MANUAL' WHERE 1;
-
-alter table test_case add sort int null comment 'Import test case sort';
