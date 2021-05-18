@@ -13,7 +13,7 @@ export default {
 <style scoped>
 
   .ms-main-container {
-    padding: 15px;
+    padding: 10px;
     height: 100vh;
   }
 

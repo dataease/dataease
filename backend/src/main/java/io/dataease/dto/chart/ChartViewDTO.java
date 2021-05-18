@@ -14,4 +14,6 @@ import java.util.Map;
 @Getter
 public class ChartViewDTO extends ChartViewWithBLOBs {
     private Map<String, Object> data;
+
+    private String privileges;
 }

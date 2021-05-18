@@ -5,6 +5,7 @@ import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableIncrementalConfig;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.service.dataset.DataSetTableService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +40,7 @@ public class DataSetTableController {
     }
 
     @PostMapping("list")
-    public List<DatasetTable> list(@RequestBody DataSetTableRequest dataSetTableRequest) {
+    public List<DataSetTableDTO> list(@RequestBody DataSetTableRequest dataSetTableRequest) {
         return dataSetTableService.list(dataSetTableRequest);
     }
 

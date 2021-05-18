@@ -82,7 +82,7 @@
                         size="small"
                       />
                     </span>
-                    <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-menu v-if="hasDataPermission('manage',data.privileges)" slot="dropdown">
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
@@ -203,7 +203,7 @@
                     size="small"
                   />
                 </span>
-                <el-dropdown-menu slot="dropdown">
+                <el-dropdown-menu v-if="hasDataPermission('manage',data.privileges)" slot="dropdown">
                   <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
                     {{ $t('dataset.rename') }}
                   </el-dropdown-item>

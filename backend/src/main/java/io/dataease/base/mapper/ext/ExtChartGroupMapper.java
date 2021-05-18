@@ -1,0 +1,11 @@
+package io.dataease.base.mapper.ext;
+
+import io.dataease.controller.request.BaseTreeRequest;
+import io.dataease.controller.request.chart.ChartGroupRequest;
+import io.dataease.dto.chart.ChartGroupDTO;
+
+import java.util.List;
+
+public interface ExtChartGroupMapper {
+    List<ChartGroupDTO> search(ChartGroupRequest ChartGroup);
+}

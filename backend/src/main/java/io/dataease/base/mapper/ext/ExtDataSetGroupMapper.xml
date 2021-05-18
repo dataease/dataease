@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtDataSetGroupMapper">
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.dataset.DataSetGroupDTO"
+               extends="io.dataease.base.mapper.DatasetGroupMapper.BaseResultMap">
+        <result column="label" property="label"/>
+        <result column="privileges" property="privileges"/>
+    </resultMap>
+
+
+    <select id="search" resultMap="BaseResultMapDTO">
+        select
+        id, `name`, pid, `level`, `type`, create_by, create_time,`name` as label,
+        get_auths(id,'dataset',#{userId}) as `privileges`
+        from dataset_group
+        <where>
+            FIND_IN_SET(dataset_group.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'dataset'))
+            <if test="id != null">
+                and dataset_group.id = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null and name != ''">
+                and dataset_group.`name` = CONCAT('%', #{name},'%')
+            </if>
+            <if test="pid != null">
+                and dataset_group.pid = #{pid,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and dataset_group.`level` = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="type != null and type != ''">
+                and dataset_group.`type` = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and dataset_group.create_by = #{createBy,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and dataset_group.create_time = #{createTime,jdbcType=BIGINT}
+            </if>
+        </where>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+
+
+    </select>
+</mapper>

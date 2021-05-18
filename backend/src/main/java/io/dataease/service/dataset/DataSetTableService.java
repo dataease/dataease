@@ -6,6 +6,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableIncrementalConfigMapper;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
+import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.constants.DatasourceTypes;
@@ -15,6 +16,7 @@ import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataSetPreviewPage;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,6 +59,8 @@ public class DataSetTableService {
     private CommonThreadPool commonThreadPool;
     @Resource
     private ExtractDataService extractDataService;
+    @Resource
+    private ExtDataSetTableMapper extDataSetTableMapper;
     @Resource
     private DatasetTableIncrementalConfigMapper datasetTableIncrementalConfigMapper;
     @Value("${upload.file.path}")
@@ -108,17 +112,9 @@ public class DataSetTableService {
         dataSetTableTaskService.deleteByTableId(id);
     }
 
-    public List<DatasetTable> list(DataSetTableRequest dataSetTableRequest) {
-        DatasetTableExample datasetTableExample = new DatasetTableExample();
-        DatasetTableExample.Criteria criteria = datasetTableExample.createCriteria();
-        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
-        if (StringUtils.isNotEmpty(dataSetTableRequest.getSceneId())) {
-            criteria.andSceneIdEqualTo(dataSetTableRequest.getSceneId());
-        }
-        if (StringUtils.isNotEmpty(dataSetTableRequest.getSort())) {
-            datasetTableExample.setOrderByClause(dataSetTableRequest.getSort());
-        }
-        return datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
+    public List<DataSetTableDTO> list(DataSetTableRequest dataSetTableRequest) {
+        dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        return extDataSetTableMapper.search(dataSetTableRequest);
     }
 
     public DatasetTable get(String id) {

@@ -3,11 +3,15 @@ package io.dataease.datasource.controller;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.base.domain.Datasource;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.datasource.dto.DBTableDTO;
+import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
+import io.dataease.dto.DatasourceDTO;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,12 +35,14 @@ public class DatasourceController {
     }
 
     @GetMapping("/list")
-    public List<Datasource> getDatasourceList() throws Exception {
-        return datasourceService.getDatasourceList(new Datasource());
+    public List<DatasourceDTO> getDatasourceList() throws Exception {
+        DatasourceUnionRequest request = new DatasourceUnionRequest();
+        request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        return datasourceService.getDatasourceList(request);
     }
 
     @PostMapping("/list/{goPage}/{pageSize}")
-    public Pager<List<Datasource>> getDatasourceList(@RequestBody BaseGridRequest request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception {
+    public Pager<List<DatasourceDTO>> getDatasourceList(@RequestBody BaseGridRequest request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         // return PageUtils.setPageInfo(page, datasourceService.getDatasourceList(request));
         return PageUtils.setPageInfo(page, datasourceService.gridQuery(request));

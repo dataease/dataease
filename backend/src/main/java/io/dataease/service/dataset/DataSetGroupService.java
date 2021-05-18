@@ -4,11 +4,13 @@ import io.dataease.base.domain.DatasetGroup;
 import io.dataease.base.domain.DatasetGroupExample;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.mapper.DatasetGroupMapper;
+import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class DataSetGroupService {
     private DatasetGroupMapper datasetGroupMapper;
     @Resource
     private DataSetTableService dataSetTableService;
+    @Resource
+    private ExtDataSetGroupMapper extDataSetGroupMapper;
 
     public DataSetGroupDTO save(DatasetGroup datasetGroup) {
         checkName(datasetGroup);
@@ -68,63 +72,35 @@ public class DataSetGroupService {
         for (String sceneId : sceneIds) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             dataSetTableRequest.setSceneId(sceneId);
-            List<DatasetTable> list = dataSetTableService.list(dataSetTableRequest);
-            for (DatasetTable table : list) {
+            List<DataSetTableDTO> list = dataSetTableService.list(dataSetTableRequest);
+            for (DataSetTableDTO table : list) {
                 dataSetTableService.delete(table.getId());
             }
         }
     }
 
     public List<DataSetGroupDTO> tree(DataSetGroupRequest datasetGroup) {
-        DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
-        DatasetGroupExample.Criteria criteria = datasetGroupExample.createCriteria();
-        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
-        if (StringUtils.isNotEmpty(datasetGroup.getName())) {
-            criteria.andNameLike("%" + datasetGroup.getName() + "%");
+        datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        if(datasetGroup.getLevel() == null){
+            datasetGroup.setLevel(0);
         }
-        if (StringUtils.isNotEmpty(datasetGroup.getType())) {
-            criteria.andTypeEqualTo(datasetGroup.getType());
-        }
-        if (StringUtils.isNotEmpty(datasetGroup.getId())) {
-            criteria.andIdEqualTo(datasetGroup.getId());
-        } else {
-            criteria.andLevelEqualTo(0);
-        }
-        datasetGroupExample.setOrderByClause(datasetGroup.getSort());
-        List<DatasetGroup> datasetGroups = datasetGroupMapper.selectByExample(datasetGroupExample);
-        List<DataSetGroupDTO> DTOs = datasetGroups.stream().map(ele -> {
-            DataSetGroupDTO dto = new DataSetGroupDTO();
-            BeanUtils.copyBean(dto, ele);
-            dto.setLabel(ele.getName());
-            return dto;
-        }).collect(Collectors.toList());
-        getAll(DTOs, datasetGroup);
-        return DTOs;
+        List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(datasetGroup);
+        getAll(treeInfo, datasetGroup);
+        return treeInfo;
     }
 
     public void getAll(List<DataSetGroupDTO> list, DataSetGroupRequest datasetGroup) {
         for (DataSetGroupDTO obj : list) {
-            DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
-            DatasetGroupExample.Criteria criteria = datasetGroupExample.createCriteria();
-            criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
-            if (StringUtils.isNotEmpty(datasetGroup.getName())) {
-                criteria.andNameLike("%" + datasetGroup.getName() + "%");
-            }
-            if (StringUtils.isNotEmpty(datasetGroup.getType())) {
-                criteria.andTypeEqualTo(datasetGroup.getType());
-            }
-            criteria.andPidEqualTo(obj.getId());
-            datasetGroupExample.setOrderByClause(datasetGroup.getSort());
-            List<DatasetGroup> datasetGroups = datasetGroupMapper.selectByExample(datasetGroupExample);
-            List<DataSetGroupDTO> DTOs = datasetGroups.stream().map(ele -> {
-                DataSetGroupDTO dto = new DataSetGroupDTO();
-                BeanUtils.copyBean(dto, ele);
-                dto.setLabel(ele.getName());
-                return dto;
-            }).collect(Collectors.toList());
-            obj.setChildren(DTOs);
-            if (CollectionUtils.isNotEmpty(DTOs)) {
-                getAll(DTOs, datasetGroup);
+            DataSetGroupRequest newDataSetGroup = new DataSetGroupRequest();
+            newDataSetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+            newDataSetGroup.setName(datasetGroup.getName());
+            newDataSetGroup.setType(datasetGroup.getType());
+            newDataSetGroup.setPid(obj.getId());
+            newDataSetGroup.setSort(datasetGroup.getSort());
+            List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(newDataSetGroup);
+            obj.setChildren(treeInfo);
+            if (CollectionUtils.isNotEmpty(treeInfo)) {
+                getAll(treeInfo, datasetGroup);
             }
         }
     }

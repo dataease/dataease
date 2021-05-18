@@ -67,8 +67,13 @@
         <!--        <table tableName="datasource"/>-->
 <!--        <table tableName="sys_dict"/>-->
 <!--        <table tableName="sys_dict_item"/>-->
-        <table tableName="dataset_table_field"/>
-<!--        <table tableName="panel_design"/>-->
+<!--        <table tableName="dataset_table_field"/>-->
+<!--        <table tableName="v_chart">-->
+<!--        </table>-->
+        <table tableName="v_auth_model">
+        </table>
+<!--        <table tableName="v_dataset"/>-->
+<!--        <table tableName="sys_auth_detail"/>-->
 
 
     </context>

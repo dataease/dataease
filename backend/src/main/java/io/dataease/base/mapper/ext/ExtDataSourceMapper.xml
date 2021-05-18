@@ -2,22 +2,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.dataease.base.mapper.ext.ExtDataSourceMapper">
 
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.DatasourceDTO"
+               extends="io.dataease.base.mapper.DatasourceMapper.ResultMapWithBLOBs">
+        <result column="privileges" property="privileges"/>
+    </resultMap>
 
-
-
-
-
-    <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="io.dataease.base.mapper.DatasourceMapper.BaseResultMap">
-        select id , name , `desc` ,`type` , configuration ,create_time ,update_time from datasource
-
+    <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="BaseResultMapDTO">
+        select id , name , `desc` ,`type` , configuration ,create_time ,update_time,
+        get_auths(id,'link',#{extendCondition}) as `privileges`
+         from datasource
         <if test="_parameter != null">
             <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
         </if>
+        and FIND_IN_SET(datasource.id,GET_V_AUTH_MODEL_ID_P_USE(#{extendCondition},'link'))
         <if test="orderByClause != null">
             order by ${orderByClause}
         </if>
         <if test="orderByClause == null">
             order by update_time desc
+        </if>
+    </select>
+
+    <select id="queryUnion"  resultMap="BaseResultMapDTO">
+        select id , name , `desc` ,`type` , configuration ,create_time ,update_time
+        from datasource
+        <where>
+            FIND_IN_SET(datasource.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'link'))
+        <if test="id != null">
+            id = #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null">
+            `name` = concat('%',#{name,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="desc != null">
+            `desc` = #{desc,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null">
+            `type` = #{type,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=BIGINT}
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=BIGINT}
+        </if>
+        <if test="configuration != null">
+            configuration = #{configuration,jdbcType=LONGVARCHAR}
+        </if>
+        </where>
+        <if test="sort == null">
+            order by ${sort}
         </if>
     </select>
 

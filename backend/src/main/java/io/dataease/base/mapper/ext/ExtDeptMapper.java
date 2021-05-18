@@ -1,7 +1,9 @@
 package io.dataease.base.mapper.ext;
 
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.controller.request.BaseTreeRequest;
 import io.dataease.controller.sys.request.SimpleTreeNode;
+import io.dataease.dto.SysDeptDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -26,4 +28,7 @@ public interface ExtDeptMapper {
     List<SimpleTreeNode> allNodes();
 
     List<SimpleTreeNode> nodesByExample(GridExample example);
+
+    List<SysDeptDTO> searchTree(BaseTreeRequest request);
+
 }

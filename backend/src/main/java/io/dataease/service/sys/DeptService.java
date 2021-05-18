@@ -132,6 +132,9 @@ public class DeptService {
         //DeptService proxy = proxy();
         List<SimpleTreeNode> allNodes = allNodes();
         List<SimpleTreeNode> targetNodes = nodeByCondition(request);
+        if(CollectionUtils.isEmpty(targetNodes)){
+            return new ArrayList<>();
+        }
         List<Long> ids = upTree(allNodes, targetNodes);
         SysDeptExample example = new SysDeptExample();
         if (CollectionUtils.isNotEmpty(ids)){

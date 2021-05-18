@@ -10,4 +10,6 @@ import lombok.Data;
 @Data
 public class DataSetGroupRequest extends DatasetGroup {
     private String sort;
+
+    private String userId;
 }

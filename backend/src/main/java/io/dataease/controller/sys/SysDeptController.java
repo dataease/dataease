@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/dept")
 public class SysDeptController extends ResultHolder {
 
-
     @Autowired
     private DeptService deptService;
 
@@ -35,6 +34,7 @@ public class SysDeptController extends ResultHolder {
         List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
             deptNodeResponse.setHasChildren(node.getSubCount() > 0);
+            deptNodeResponse.setLeaf(node.getSubCount() == 0);
             deptNodeResponse.setTop(node.getPid() == deptService.DEPT_ROOT_PID);
             return deptNodeResponse;
         }).collect(Collectors.toList());
@@ -48,6 +48,7 @@ public class SysDeptController extends ResultHolder {
         List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
             deptNodeResponse.setHasChildren(node.getSubCount() > 0);
+            deptNodeResponse.setLeaf(node.getSubCount() == 0);
             deptNodeResponse.setTop(node.getPid() == deptService.DEPT_ROOT_PID);
             return deptNodeResponse;
         }).collect(Collectors.toList());

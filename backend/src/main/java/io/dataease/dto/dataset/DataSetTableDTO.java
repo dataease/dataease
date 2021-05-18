@@ -14,4 +14,5 @@ import java.util.List;
 @Getter
 public class DataSetTableDTO extends DatasetTable {
     private List<DataSetTableDTO> children;
+    private String privileges;
 }

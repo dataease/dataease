@@ -13,10 +13,13 @@ import lombok.Data;
 public class PanelGroupRequest extends PanelGroupDTO {
     private String sort;
 
+    private String userId;
+
     public PanelGroupRequest() {
     }
 
-    public PanelGroupRequest(String pid) {
+    public PanelGroupRequest(String pid,String userId) {
         super.setPid(pid);
+        this.userId= userId;
     }
 }

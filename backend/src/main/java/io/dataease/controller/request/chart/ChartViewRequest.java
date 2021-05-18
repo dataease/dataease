@@ -12,4 +12,6 @@ import lombok.Setter;
 @Getter
 public class ChartViewRequest extends ChartViewWithBLOBs {
     private String sort;
+
+    private String userId;
 }

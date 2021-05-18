@@ -13,8 +13,18 @@ public class GridExample {
 
     protected List<Criteria> oredCriteria;
 
+    protected String extendCondition;
+
     public GridExample() {
         oredCriteria = new ArrayList<Criteria>();
+    }
+
+    public String getExtendCondition() {
+        return extendCondition;
+    }
+
+    public void setExtendCondition(String extendCondition) {
+        this.extendCondition = extendCondition;
     }
 
     public void setOrderByClause(String orderByClause) {

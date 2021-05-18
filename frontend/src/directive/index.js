@@ -1,4 +1,5 @@
 import permission from '@/directive/Permission'
+// import dataPermission from '@/directive/DataPermission'
 
 export const left2RightDrag = {
   inserted(el, binding) {
@@ -62,6 +63,7 @@ export const bottom2TopDrag = {
 
 export default {
   install(Vue) {
+    // Vue.directive('data-permission', dataPermission)
     Vue.directive('permission', permission)
     Vue.directive('left-to-right-drag', left2RightDrag)
     Vue.directive('right-to-left-drag', right2LeftDrag)

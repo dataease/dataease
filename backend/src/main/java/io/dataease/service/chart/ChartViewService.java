@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
+import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -42,6 +43,8 @@ public class ChartViewService {
     @Resource
     private ChartViewMapper chartViewMapper;
     @Resource
+    private ExtChartViewMapper extChartViewMapper;
+    @Resource
     private DataSetTableService dataSetTableService;
     @Resource
     private DatasourceService datasourceService;
@@ -65,17 +68,9 @@ public class ChartViewService {
         return chartView;
     }
 
-    public List<ChartViewWithBLOBs> list(ChartViewRequest chartViewRequest) {
-        ChartViewExample chartViewExample = new ChartViewExample();
-        ChartViewExample.Criteria criteria = chartViewExample.createCriteria();
-        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
-        if (StringUtils.isNotEmpty(chartViewRequest.getSceneId())) {
-            criteria.andSceneIdEqualTo(chartViewRequest.getSceneId());
-        }
-        if (StringUtils.isNotEmpty(chartViewRequest.getSort())) {
-            chartViewExample.setOrderByClause(chartViewRequest.getSort());
-        }
-        return chartViewMapper.selectByExampleWithBLOBs(chartViewExample);
+    public List<ChartViewDTO> list(ChartViewRequest chartViewRequest) {
+        chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        return extChartViewMapper.search(chartViewRequest);
     }
 
     public ChartViewWithBLOBs get(String id) {

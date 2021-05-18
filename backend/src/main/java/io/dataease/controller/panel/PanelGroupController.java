@@ -52,9 +52,5 @@ public class PanelGroupController {
         return panelGroupService.findOne(id);
     }
 
-    @PostMapping("/saveGroupWithDesign")
-    public void saveGroupWithDesign(@RequestBody PanelGroupRequest request) {
-        panelGroupService.saveGroupWithDesign(request);
-    }
 
 }

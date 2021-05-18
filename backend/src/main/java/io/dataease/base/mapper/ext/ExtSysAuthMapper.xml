@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtSysAuthMapper">
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.SysAuthDTO"
+               extends="io.dataease.base.mapper.SysAuthMapper.BaseResultMap">
+        <collection property="sysAuthDetails" ofType="io.dataease.base.domain.SysAuthDetail" javaType="list">
+            <result column="auth_id" property="authId"/>
+            <result column="privilege_name" property="privilegeName"/>
+            <result column="privilege_type" property="privilegeType"/>
+            <result column="privilege_value" property="privilegeValue"/>
+            <result column="privilege_extend" property="privilegeExtend"/>
+        </collection>
+    </resultMap>
+    <select id="searchAuth" resultMap="BaseResultMapDTO">
+        select
+        sys_auth.id,
+        sys_auth.auth_source,
+        sys_auth.auth_source_type,
+        sys_auth.auth_target,
+        sys_auth.auth_target_type,
+        sys_auth.auth_time,
+        sys_auth.auth_details,
+        sys_auth.auth_user,
+        sys_auth.update_time,
+        sys_auth_detail.auth_id,
+        sys_auth_detail.auth_id ,
+        sys_auth_detail.privilege_name ,
+        sys_auth_detail.privilege_type ,
+        sys_auth_detail.privilege_value ,
+        sys_auth_detail.privilege_extend
+        from sys_auth left join sys_auth_detail on sys_auth.id = sys_auth_detail.auth_id
+        <where>
+            sys_auth_detail.auth_id is not null
+            <if test="authSources != null and authSources.size > 0">
+                and sys_auth.auth_source in
+                <foreach collection="authSources" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="authTargets != null and authTargets.size > 0">
+                and sys_auth.auth_target in
+                <foreach collection="authTargets" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="authSource != null">
+                and sys_auth.auth_source=#{authSource}
+            </if>
+            <if test="authSourceType != null">
+                and sys_auth.auth_source_type=#{authSourceType}
+            </if>
+
+            <if test="authTarget != null">
+                and sys_auth.auth_target=#{authTarget}
+            </if>
+            <if test="authTargetType != null">
+                and sys_auth.auth_target_type=#{authTargetType}
+            </if>
+
+        </where>
+        order by sys_auth_detail.privilege_type desc
+
+    </select>
+
+    <select id="authExist" resultType="Boolean">
+        select if(count(1)=0,0,1)  from sys_auth where auth_source=#{authSource} and auth_target=#{authTarget}
+    </select>
+
+
+    <select id="findAuthId" resultType="String">
+        select id  from sys_auth where auth_source=#{authSource} and auth_source_type=#{authSourceType} and auth_target=#{authTarget} and auth_target_type=#{authTargetType} limit 1
+    </select>
+
+</mapper>

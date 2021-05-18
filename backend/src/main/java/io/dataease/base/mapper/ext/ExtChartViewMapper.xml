@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtChartViewMapper">
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.chart.ChartViewDTO"
+               extends="io.dataease.base.mapper.ChartViewMapper.ResultMapWithBLOBs">
+        <result column="label" property="label"/>
+        <result column="privileges" property="privileges"/>
+    </resultMap>
+
+
+    <select id="search" resultMap="BaseResultMapDTO">
+        select
+        id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,
+        style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot,
+        get_auths(id,'chart',#{userId}) as `privileges`
+        from chart_view
+        <where>
+            FIND_IN_SET(chart_view.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'chart'))
+            <if test="sceneId != null">
+               and scene_id = #{sceneId,jdbcType=VARCHAR}
+            </if>
+        </where>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+
+
+    </select>
+</mapper>

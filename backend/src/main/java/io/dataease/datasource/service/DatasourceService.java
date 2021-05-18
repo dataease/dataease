@@ -5,22 +5,29 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.constants.TestCaseConstants;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonThreadPool;
+import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.datasource.dto.DBTableDTO;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.service.dataset.DataSetGroupService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,21 +60,22 @@ public class DatasourceService {
         return datasource;
     }
 
-    public List<Datasource> getDatasourceList(Datasource request) throws Exception {
-        DatasourceExample example = new DatasourceExample();
-        DatasourceExample.Criteria criteria = example.createCriteria();
-        if (StringUtils.isNotBlank(request.getName())) {
-            criteria.andNameLike(StringUtils.wrapIfMissing(request.getName(), "%"));
-        }
-        if (StringUtils.isNotBlank(request.getType())) {
-            criteria.andTypeEqualTo(request.getType());
-        }
-        example.setOrderByClause("update_time desc");
-        return datasourceMapper.selectByExampleWithBLOBs(example);
+    public List<DatasourceDTO> getDatasourceList(DatasourceUnionRequest request) throws Exception {
+        request.setSort("update_time desc");
+        return extDataSourceMapper.queryUnion(request);
     }
 
-    public List<Datasource> gridQuery(BaseGridRequest request) {
+    public List<DatasourceDTO> gridQuery(BaseGridRequest request) {
+        //如果没有查询条件增加一个默认的条件
+        if(CollectionUtils.isEmpty(request.getConditions())){
+            ConditionEntity conditionEntity = new ConditionEntity();
+            conditionEntity.setField("1");
+            conditionEntity.setOperator("eq");
+            conditionEntity.setValue("1");
+            request.setConditions(Arrays.asList(conditionEntity));
+        }
         GridExample gridExample = request.convertExample();
+        gridExample.setExtendCondition(String.valueOf(AuthUtils.getUser().getUserId()));
         return extDataSourceMapper.query(gridExample);
     }
 

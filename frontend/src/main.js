@@ -64,6 +64,13 @@ Vue.use(directives)
 Vue.use(message)
 Vue.config.productionTip = false
 
+Vue.prototype.hasDataPermission = function(pTarget, pSource) {
+  debugger
+  if (pSource && pTarget) {
+    return pSource.indexOf(pTarget) > -1
+  }
+  return false
+}
 new Vue({
 
   router,

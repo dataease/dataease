@@ -8,4 +8,5 @@ import lombok.Data;
 @Data
 public class ChartGroupRequest extends ChartGroup {
     private String sort;
+    private String userId;
 }

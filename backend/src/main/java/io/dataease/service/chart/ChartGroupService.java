@@ -2,6 +2,7 @@ package io.dataease.service.chart;
 
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartGroupMapper;
+import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.chart.ChartGroupRequest;
@@ -24,6 +25,9 @@ public class ChartGroupService {
     private ChartGroupMapper chartGroupMapper;
     @Resource
     private ChartViewService chartViewService;
+
+    @Resource
+    private ExtChartGroupMapper extChartGroupMapper;
 
     public ChartGroupDTO save(ChartGroup chartGroup) {
         checkName(chartGroup);
@@ -64,56 +68,28 @@ public class ChartGroupService {
         return chartGroupMapper.selectByPrimaryKey(id);
     }
 
-    public List<ChartGroupDTO> tree(ChartGroupRequest ChartGroup) {
-        ChartGroupExample ChartGroupExample = new ChartGroupExample();
-        ChartGroupExample.Criteria criteria = ChartGroupExample.createCriteria();
-        criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
-        if (StringUtils.isNotEmpty(ChartGroup.getName())) {
-            criteria.andNameLike("%" + ChartGroup.getName() + "%");
+    public List<ChartGroupDTO> tree(ChartGroupRequest chartGroup) {
+        chartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        if(chartGroup.getLevel() == null){
+            chartGroup.setLevel(0);
         }
-        if (StringUtils.isNotEmpty(ChartGroup.getType())) {
-            criteria.andTypeEqualTo(ChartGroup.getType());
-        }
-        if (StringUtils.isNotEmpty(ChartGroup.getId())) {
-            criteria.andIdEqualTo(ChartGroup.getId());
-        } else {
-            criteria.andLevelEqualTo(0);
-        }
-        ChartGroupExample.setOrderByClause(ChartGroup.getSort());
-        List<ChartGroup> ChartGroups = chartGroupMapper.selectByExample(ChartGroupExample);
-        List<ChartGroupDTO> DTOs = ChartGroups.stream().map(ele -> {
-            ChartGroupDTO dto = new ChartGroupDTO();
-            BeanUtils.copyBean(dto, ele);
-            dto.setLabel(ele.getName());
-            return dto;
-        }).collect(Collectors.toList());
-        getAll(DTOs, ChartGroup);
-        return DTOs;
+        List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(chartGroup);
+        getAll(treeInfo, chartGroup);
+        return treeInfo;
     }
 
-    public void getAll(List<ChartGroupDTO> list, ChartGroupRequest ChartGroup) {
+    public void getAll(List<ChartGroupDTO> list, ChartGroupRequest chartGroup) {
         for (ChartGroupDTO obj : list) {
-            ChartGroupExample ChartGroupExample = new ChartGroupExample();
-            ChartGroupExample.Criteria criteria = ChartGroupExample.createCriteria();
-            criteria.andCreateByEqualTo(AuthUtils.getUser().getUsername());
-            if (StringUtils.isNotEmpty(ChartGroup.getName())) {
-                criteria.andNameLike("%" + ChartGroup.getName() + "%");
-            }
-            if (StringUtils.isNotEmpty(ChartGroup.getType())) {
-                criteria.andTypeEqualTo(ChartGroup.getType());
-            }
-            criteria.andPidEqualTo(obj.getId());
-            ChartGroupExample.setOrderByClause(ChartGroup.getSort());
-            List<ChartGroup> ChartGroups = chartGroupMapper.selectByExample(ChartGroupExample);
-            List<ChartGroupDTO> DTOs = ChartGroups.stream().map(ele -> {
-                ChartGroupDTO dto = new ChartGroupDTO();
-                BeanUtils.copyBean(dto, ele);
-                dto.setLabel(ele.getName());
-                return dto;
-            }).collect(Collectors.toList());
-            obj.setChildren(DTOs);
-            if (CollectionUtils.isNotEmpty(DTOs)) {
-                getAll(DTOs, ChartGroup);
+            ChartGroupRequest newChartGroup = new ChartGroupRequest();
+            newChartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+            newChartGroup.setName(chartGroup.getName());
+            newChartGroup.setType(chartGroup.getType());
+            newChartGroup.setPid(obj.getId());
+            newChartGroup.setSort(chartGroup.getSort());
+            List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(newChartGroup);
+            obj.setChildren(treeInfo);
+            if (CollectionUtils.isNotEmpty(treeInfo)) {
+                getAll(treeInfo, chartGroup);
             }
         }
     }

@@ -28,7 +28,7 @@ public class ChartViewController {
     }
 
     @PostMapping("/list")
-    public List<ChartViewWithBLOBs> list(@RequestBody ChartViewRequest chartViewRequest) {
+    public List<ChartViewDTO> list(@RequestBody ChartViewRequest chartViewRequest) {
         return chartViewService.list(chartViewRequest);
     }
 

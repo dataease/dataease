@@ -13,4 +13,6 @@ import java.util.List;
 public class DataSetGroupDTO extends DatasetGroup {
     private String label;
     private List<DataSetGroupDTO> children;
+
+    private String privileges;
 }

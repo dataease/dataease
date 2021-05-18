@@ -4,12 +4,12 @@
       <el-row class="panel-design-head">
         <!--TODO 仪表盘头部区域-->
         <span>{{ panelInfo.name || '测试仪表板' }}</span>
-        <span style="float: right;margin-right: 10px">
+        <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
           <el-tooltip content="保存为模板">
             <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
           </el-tooltip>
         </span>
-        <span style="float: right;margin-right: 10px">
+        <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
           <el-tooltip content="导出为模板">
             <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
           </el-tooltip>

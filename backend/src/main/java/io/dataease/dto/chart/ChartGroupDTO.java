@@ -9,5 +9,8 @@ import java.util.List;
 @Data
 public class ChartGroupDTO extends DatasetGroup {
     private String label;
+
     private List<ChartGroupDTO> children;
+
+    private String privileges;
 }

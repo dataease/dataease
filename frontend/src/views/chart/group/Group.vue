@@ -74,7 +74,7 @@
                   </el-dropdown>
                 </span>
                 <span style="margin-left: 12px;" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="clickMore">
+                  <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"
@@ -157,7 +157,7 @@
           </span>
           <span>
             <span style="margin-left: 12px;" @click.stop>
-              <el-dropdown trigger="click" size="small" @command="clickMore">
+              <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
                 <span class="el-dropdown-link">
                   <el-button
                     icon="el-icon-more"

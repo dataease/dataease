@@ -20,9 +20,8 @@ public class PanelGroupDTO extends PanelGroupWithBLOBs {
 
     private List<PanelGroupDTO> children;
 
-    //仪表盘组件样式设计
-    private List<PanelDesignDTO> panelDesigns = new ArrayList<>();
+    private Boolean leaf;
 
-    private List<ChartViewDTO> viewsUsable = new ArrayList<>();
+    private String privileges;
 
 }

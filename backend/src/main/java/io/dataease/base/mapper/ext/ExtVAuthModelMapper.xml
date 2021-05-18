@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtVAuthModelMapper">
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.VAuthModelDTO"
+               extends="io.dataease.base.mapper.VAuthModelMapper.BaseResultMap">
+        <result column="children_count" property="childrenCount"/>
+        <result column="leaf" property="leaf"/>
+    </resultMap>
+
+    <select id="searchTree" resultMap="BaseResultMapDTO">
+        SELECT
+        auth.*,
+        authCount.children_count AS children_count,
+        IF
+        (( authCount.children_count > 0 ), 0, 1 ) AS leaf
+        FROM
+        ( SELECT * FROM v_auth_model
+        <where>
+            model_type = #{modelType}
+            <if test="createBy != null">
+               and  ( v_auth_model.type ='spine'  OR ( v_auth_model.create_by = #{createBy} AND v_auth_model.type = 'leaf'))
+            </if>
+            <if test="pid !=null">
+                and v_auth_model.pid = #{pid}
+            </if>
+
+            <if test="withExtend == null and id != null">
+                and v_auth_model.id = #{id}
+            </if>
+            <if test="withExtend == 'parent' and id != null">
+                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT(#{id},#{modelType}))
+            </if>
+            <if test="withExtend == 'children' and id != null">
+                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_CHILDREN(#{id},#{modelType}))
+            </if>
+
+            <if test="name != null and name !='' and withExtend == 'parent'">
+               and  FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from v_auth_model where model_type = #{modelType} and `name`  like CONCAT('%', #{name},'%')) ,#{modelType}))
+            </if>
+
+            <if test="name != null and name =='' and withExtend == 'parent'">
+                and v_auth_model.pid = '0'
+            </if>
+
+        </where>
+        ) auth
+        LEFT JOIN (
+        SELECT
+        count( 1 ) AS `children_count`,
+        `authTemp`.`pid` AS `pid`
+        FROM
+        ( SELECT * FROM v_auth_model
+        <where>
+            model_type = #{modelType}
+            <if test="createBy != null">
+                and  ( v_auth_model.type ='spine'  OR ( v_auth_model.create_by = #{createBy} AND v_auth_model.type = 'leaf'))
+            </if>
+        </where>
+        ) authTemp
+        GROUP BY
+        authTemp.pid
+        ) authCount ON
+        auth.id = authCount.pid
+        <where>
+            <if test="createBy != null">
+                (chartcount.children_count>0 or chart.create_by = #{createBy})
+            </if>
+        </where>
+
+    </select>
+</mapper>
