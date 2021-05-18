@@ -480,3 +480,43 @@ END
 delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+
+DROP TRIGGER if exists`new_auth_link`;
+DROP TRIGGER if exists`delete_auth_link`;
+CREATE TRIGGER `new_auth_link` AFTER INSERT ON `datasource` FOR EACH ROW select copy_auth(NEW.id,'link',NEW.create_by) into @ee;
+CREATE TRIGGER `delete_auth_link` AFTER DELETE ON `datasource` FOR EACH ROW select delete_auth_source(OLD.id,'link') into @ee;
+
+DROP TRIGGER if exists`new_auth_dataset_group`;
+DROP TRIGGER if exists`delete_auth_dataset_group`;
+DROP TRIGGER if exists`new_auth_dataset_table`;
+DROP TRIGGER if exists`delete_auth_dataset_table`;
+CREATE TRIGGER `new_auth_dataset_group` AFTER INSERT ON `dataset_group` FOR EACH ROW select copy_auth(NEW.id,'dataset',NEW.create_by) into @ee;
+CREATE TRIGGER `delete_auth_dataset_group` AFTER DELETE ON `dataset_group` FOR EACH ROW select delete_auth_source(OLD.id,'dataset') into @ee;
+CREATE TRIGGER `new_auth_dataset_table` AFTER INSERT ON `dataset_table` FOR EACH ROW select copy_auth(NEW.id,'dataset',NEW.create_by) into @ee;
+CREATE TRIGGER `delete_auth_dataset_table` AFTER DELETE ON `dataset_table` FOR EACH ROW select delete_auth_source(OLD.id,'dataset') into @ee;
+
+
+DROP TRIGGER if exists `new_auth_chart_group`;
+DROP TRIGGER if exists`delete_auth_chart_group`;
+DROP TRIGGER if exists`new_auth_chart_view`;
+DROP TRIGGER if exists`delete_auth_chart_view`;
+CREATE TRIGGER `new_auth_chart_group` AFTER INSERT ON `chart_group` FOR EACH ROW select copy_auth(NEW.id,'chart',NEW.create_by) into @ee;
+CREATE TRIGGER `delete_auth_chart_group` AFTER DELETE ON `chart_group` FOR EACH ROW select delete_auth_source(OLD.id,'chart') into @ee;
+CREATE TRIGGER `new_auth_chart_view` AFTER INSERT ON `chart_view` FOR EACH ROW select copy_auth(NEW.id,'chart',NEW.create_by) into @ee;
+CREATE TRIGGER `delete_auth_chart_view` AFTER DELETE ON `chart_view` FOR EACH ROW select delete_auth_source(OLD.id,'chart') into @ee;
+
+DROP TRIGGER if exists`new_auth_panel`;
+DROP TRIGGER if exists`delete_auth_panel`;
+CREATE TRIGGER `new_auth_panel` AFTER INSERT ON `panel_group` FOR EACH ROW select copy_auth(NEW.id,'panel',NEW.create_by) into @ee;
+CREATE TRIGGER `delete_auth_panel` AFTER DELETE ON `panel_group` FOR EACH ROW select delete_auth_source(OLD.id,'panel') into @ee;
+
+
+DROP TRIGGER if exists`delete_auth_user_target`;
+DROP TRIGGER if exists`delete_auth_role_target`;
+DROP TRIGGER if exists`delete_auth_dept_target`;
+CREATE TRIGGER `delete_auth_user_target` AFTER DELETE ON `sys_user` FOR EACH ROW select delete_auth_target(OLD.user_id,'user') into @ee;
+CREATE TRIGGER `delete_auth_role_target` AFTER DELETE ON `sys_role` FOR EACH ROW select delete_auth_target(OLD.role_id,'role') into @ee;
+CREATE TRIGGER `delete_auth_dept_target` AFTER DELETE ON `sys_dept` FOR EACH ROW select delete_auth_target(OLD.dept_id,'dept') into @ee;
