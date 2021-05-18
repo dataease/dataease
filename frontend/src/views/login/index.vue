@@ -5,14 +5,15 @@
         <el-col :span="12">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
-              <img src="@/assets/DataEase-black.png" alt="">
+              <img v-if="!loginLogoUrl" src="@/assets/DataEase-color.png" alt="">
+              <img v-else :src="loginLogoUrl" alt="">
             </div>
-            <div class="login-title">
-              {{ $t('login.title') }}
-            </div>
+            <!--            <div class="login-title">-->
+            <!--              &lt;!&ndash;              {{ uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue || $t('login.title') }}&ndash;&gt;-->
+            <!--            </div>-->
             <div class="login-border" />
             <div class="login-welcome">
-              {{ $t('login.welcome') }}
+              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || 'DATAEASE') }}
             </div>
             <div class="login-form">
               <el-form-item prop="username">
@@ -32,7 +33,7 @@
             </div>
             <div class="login-btn">
               <el-button type="primary" class="submit" size="default" @click.native.prevent="handleLogin">
-                {{ $t('commons.button.login') }}
+                {{ $t('commons.login') }}
               </el-button>
             </div>
             <div class="login-msg">
@@ -41,7 +42,8 @@
           </el-form>
         </el-col>
         <el-col :span="12">
-          <div class="login-image" />
+          <div v-if="!loginImageUrl" class="login-image" />
+          <div v-else class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'cover'}" />
         </el-col>
       </el-row>
     </div>
@@ -52,6 +54,7 @@
 
 import { encrypt } from '@/utils/rsaEncrypt'
 import { validateUserName } from '@/api/user'
+import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Login',
   data() {
@@ -61,10 +64,10 @@ export default {
         if (res.data) {
           callback()
         } else {
-          callback(new Error('Please enter the correct user name'))
+          callback(this.$t('login.username_error'))
         }
       }).catch(() => {
-        callback(new Error('Please enter the correct user name'))
+        callback(this.$t('login.username_error'))
       })
     //   if (!validUsername(value)) {
     //     callback(new Error('Please enter the correct user name'))
@@ -74,7 +77,7 @@ export default {
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(this.$t('login.password_error'))
       } else {
         callback()
       }
@@ -90,7 +93,10 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      uiInfo: null,
+      loginImageUrl: null,
+      loginLogoUrl: null
     }
   },
   computed: {
@@ -105,6 +111,21 @@ export default {
       },
       immediate: true
     }
+  },
+  created() {
+    this.$store.dispatch('user/getUI').then(() => {
+      // const uiLists = this.$store.state.user.uiInfo
+      // this.uiInfo = format(uiLists)
+      this.uiInfo = getSysUI()
+      if (this.uiInfo['ui.loginImage'] && this.uiInfo['ui.loginImage'].paramValue) {
+        this.loginImageUrl = '/system/ui/image/' + this.uiInfo['ui.loginImage'].paramValue
+      }
+      if (this.uiInfo['ui.loginLogo'] && this.uiInfo['ui.loginLogo'].paramValue) {
+        this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
+      }
+    }).catch(err => {
+      console.error(err)
+    })
   },
   methods: {
     handleLogin() {
@@ -123,7 +144,6 @@ export default {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -143,7 +163,7 @@ export default {
 
 .login-background {
   background-color: $--background-color-base;
-  height: 100%;
+  height: 100vh;
   @include login-center;
 }
 
@@ -158,8 +178,8 @@ export default {
   }
 
   .login-logo {
-    margin-top: 30px;
-    margin-left: 30px;
+    margin-top: 50px;
+    text-align: center;
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
@@ -188,7 +208,7 @@ export default {
     width: 80px;
     background: $--color-primary;
     @media only screen and (max-width: 1280px) {
-      margin: 10px auto 10px;
+      margin: 20px auto 20px;
     }
   }
 
@@ -205,11 +225,11 @@ export default {
   }
 
   .login-form {
-    margin-top: 30px;
+    margin-top: 40px;
     padding: 0 40px;
 
     @media only screen and (max-width: 1280px) {
-      margin-top: 10px;
+      margin-top: 20px;
     }
 
     & ::v-deep .el-input__inner {
@@ -239,6 +259,14 @@ export default {
 
   .login-image {
     background: url(../../assets/login-desc.png) no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 520px;
+    @media only screen and (max-width: 1280px) {
+      height: 380px;
+    }
+  }
+  .login-image-de {
     background-size: cover;
     width: 100%;
     height: 520px;

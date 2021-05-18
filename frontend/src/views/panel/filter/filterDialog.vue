@@ -3,7 +3,7 @@
   <de-container class="de-dialog-container">
     <de-aside-container :show-drag-bar="false" class="ms-aside-container">
       <el-tabs v-model="activeName" class="filter-dialog-tabs">
-        <el-tab-pane :lazy="true" class="de-tab" label="按表选择" name="dataset">
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_table')" name="dataset">
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item v-for="bread in dataSetBreads" :key="bread.label">
@@ -12,14 +12,6 @@
               </el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          <!-- <div class="component-search filter-common">
-            <el-input
-              placeholder="请输入内容"
-              prefix-icon="el-icon-search"
-            />
-          </div> -->
-
-          <!-- <div class="component-result-content filter-common" @dragstart="handleDragStart" @dragend="handleDragEnd"> -->
           <div class="component-result-content filter-common">
             <el-tree
               v-if="showDomType === 'tree'"
@@ -38,7 +30,7 @@
               :highlight-current-row="true"
               style="width: 100%"
             >
-              <el-table-column prop="name" label="名称">
+              <el-table-column prop="name" :label="$t('commons.name')">
                 <template v-if="showDomType === 'db'" :id="scope.row.id" slot-scope="scope">
                   <div class="filter-db-row" @click="showFieldDatas(scope.row)">
                     <i class="el-icon-s-data" />
@@ -68,7 +60,7 @@
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane :lazy="true" class="de-tab" label="按组件选择" name="assembly">
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_module')" name="assembly">
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item v-for="bread in componentSetBreads" :key="bread.label">
@@ -77,12 +69,7 @@
               </el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          <!-- <div class="component-search filter-common">
-            <el-input
-              placeholder="请输入内容"
-              prefix-icon="el-icon-search"
-            />
-          </div> -->
+
           <div class="component-result-content filter-common">
             <el-table
               v-if="comShowDomType === 'view'"
@@ -93,7 +80,7 @@
               :highlight-current-row="true"
               style="width: 100%"
             >
-              <el-table-column prop="name" label="名称">
+              <el-table-column prop="name" :label="$t('commons.name')">
                 <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
                   <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
                     <i class="el-icon-s-data" />
@@ -133,7 +120,7 @@
             <div class="filter-field">
               <div class="field-content">
                 <div class="field-content-left">
-                  <div class="field-content-text">字段</div>
+                  <div class="field-content-text">{{ $t(panel.field) }} </div>
                 </div>
 
                 <div class="field-content-right">
@@ -162,14 +149,14 @@
               <el-switch
                 v-if="widget.showSwitch"
                 v-model="componentInfo.options.attrs.multiple"
-                active-text="多选"
-                inactive-text="单选"
+                :active-text="$t('panel.multiple_choice')"
+                :inactive-text="$t('panel.single_choice')"
                 @change="multipleChange"
               />
             </div>
           </el-col>
           <el-col :span="16"><div class="filter-options-right">
-            <el-checkbox v-model="customRange"><span> 自定义控制范围 </span> </el-checkbox>
+            <el-checkbox v-model="customRange"><span>  {{ $t(panel.custom_scope) }} </span> </el-checkbox>
 
             <el-popover
               v-model="popovervisible"
@@ -188,10 +175,6 @@
                 </el-checkbox-group>
               </div>
 
-              <!-- <div style="text-align: right; margin: 0">
-                <el-button size="mini" type="text" @click="popovervisible=false">取消</el-button>
-                <el-button type="primary" size="mini" @click="popovervisible=false">确定</el-button>
-              </div> -->
               <i slot="reference" :class="{'i-filter-active': customRange, 'i-filter-inactive': !customRange}" class="el-icon-setting i-filter" />
             </el-popover>
             <!-- <el-checkbox disabled>备选项</el-checkbox> -->
@@ -256,10 +239,10 @@ export default {
       showDomType: 'tree',
       comShowDomType: 'view',
       dataSetBreads: [
-        { label: '数据列表', link: false, type: 'root' }
+        { label: this.$t('panel.data_list') , link: false, type: 'root' }
       ],
       componentSetBreads: [
-        { label: '组件列表', link: false, type: 'root' }
+        { label: this.$t('panel.component_list'), link: false, type: 'root' }
       ],
       data: [],
       sceneDatas: [],
@@ -334,12 +317,6 @@ export default {
         .map(item => item.propValue.viewId)
       viewsWithIds(viewIds).then(res => {
         const datas = res.data
-
-        // for (let index = 0; index < 4; index++) {
-        //   datas = datas.concat(datas)
-        // }
-        // datas.forEach(item => item.name += 'aaaaaaaaabbbbb')
-
         this.viewInfos = datas
       })
     },

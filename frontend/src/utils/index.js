@@ -157,7 +157,6 @@ export function formatCondition(param) {
   }
   const result = { conditions: [] }
   for (const [key, value] of Object.entries(param)) {
-    console.log(`${key}`)
     result.conditions.push(value)
   }
   return result

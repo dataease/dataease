@@ -35,6 +35,7 @@
     "umy-ui": "^1.1.6",
     "vcolorpicker": "^1.1.0",
     "vue": "2.6.10",
+    "vue-axios": "3.2.4",
     "vue-clipboard2": "0.3.1",
     "vue-codemirror": "^4.0.6",
     "vue-i18n": "7.3.2",

@@ -8,7 +8,8 @@
       :row-style="{height: '35px'}"
       @filter-change="filterChange"
     >
-      <el-table-column :column-key="fieldName" :label="columnLabel" :prop="fieldName" filter-placement="right-start" :filters="filter_options" :filter-multiple="false" :filter-method="filterHandler" />
+      <el-table-column :column-key="fieldName" :label="columnLabel" :prop="fieldName" filter-placement="right-start"
+                       :filters="filter_options" :filter-multiple="false" :filter-method="filterHandler" />
       <el-table-column type="selection" fixd />
     </el-table>
   </div>
@@ -33,9 +34,9 @@ export default {
   data() {
     return {
       data: [],
-      defaultHeadName: '全部',
+      defaultHeadName: this.$t('commons.all'),
       columnLabel: null,
-      filter_options: [{ text: '未分享人员', value: 0 }, { text: '已分享人员', value: 1 }],
+      filter_options: [{ text: this.$t('panel.unshared_people'), value: 0 }, { text: this.$t('panel.shared_people'), value: 1 }],
       fieldName: 'nickName',
       type: 0, // 类型0代表用户
       shares: []
@@ -79,7 +80,7 @@ export default {
       const rows = this.$refs.table.store.states.selection
       const request = this.buildRequest(rows)
       saveShare(request).then(res => {
-        this.$success('保存成功')
+        this.$success(this.$t('commons.save_success'))
         return true
       }).catch(err => {
         this.$error(err.message)

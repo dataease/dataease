@@ -1,46 +1,46 @@
 <template>
   <layout-content :header="formType=='add' ? $t('user.create') : $t('user.modify')" back-name="用户管理">
     <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-      <el-form-item label="用户名" prop="username">
+      <el-form-item :label="$t('commons.name')" prop="username">
         <el-input v-model="form.username" />
       </el-form-item>
-      <el-form-item label="电话" prop="phone">
+      <el-form-item :label="$t('commons.phone')" prop="phone">
         <el-input v-model="form.phone" />
       </el-form-item>
-      <el-form-item label="昵称" prop="nickName">
+      <el-form-item :label="$t('commons.nick_name')" prop="nickName">
         <el-input v-model="form.nickName" />
       </el-form-item>
-      <el-form-item label="邮箱" prop="email">
+      <el-form-item :label="$t('commons.email')" prop="email">
         <el-input v-model="form.email" />
       </el-form-item>
 
-      <el-form-item label="性别">
+      <el-form-item :label="$t('commons.gender')">
         <el-radio-group v-model="form.gender" style="width: 178px">
-          <el-radio label="男">男</el-radio>
-          <el-radio label="女">女</el-radio>
+          <el-radio :label="$t('commons.man')">{{ $t('commons.man') }}</el-radio>
+          <el-radio :label="$t('commons.woman')">{{ $t('commons.woman') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item :label="$t('commons.status')">
         <el-radio-group v-model="form.enabled" style="width: 140px">
-          <el-radio :label="1">启用</el-radio>
-          <el-radio :label="0">停用</el-radio>
+          <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
+          <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="部门" prop="dept">
+      <el-form-item :label="$t('commons.organization')" prop="dept">
         <treeselect
           v-model="form.deptId"
           :options="depts"
           :load-options="loadDepts"
           :auto-load-root-options="false"
-          placeholder="选择部门"
+          :placeholder="$t('user.choose_org')"
         />
       </el-form-item>
-      <el-form-item label="角色" prop="roleIds">
+      <el-form-item :label="$t('commons.role')" prop="roleIds">
         <el-select
           v-model="form.roleIds"
           style="width: 100%"
           multiple
-          placeholder="请选择"
+          :placeholder="$t('commons.please_select')"
           @remove-tag="deleteTag"
           @change="changeRole"
         >
@@ -53,8 +53,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="save">保存</el-button>
-        <el-button @click="reset">重置</el-button>
+        <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
+        <el-button @click="reset">{{ $t('commons.reset') }}</el-button>
       </el-form-item>
     </el-form>
 

@@ -1,5 +1,8 @@
 import request from '@/utils/request'
 const pathMap = {
+  userUpdatePwdPath: '/api/user/updatePwd/',
+  personInfoPath: '/api/user/personInfo/',
+  piupdatePath: '/api/user/updatePersonInfo/',
   queryPath: '/api/user/userGrid/',
   deletePath: '/api/user/delete/',
   createPath: '/api/user/create',
@@ -55,4 +58,27 @@ export const editStatus = (data) => {
   })
 }
 
-export default { editPassword, delUser, editUser, addUser, userLists, editStatus }
+export const persionInfo = () => {
+  return request({
+    url: pathMap.personInfoPath,
+    method: 'post'
+  })
+}
+
+export const updatePerson = (data) => {
+  return request({
+    url: pathMap.piupdatePath,
+    method: 'post',
+    data
+  })
+}
+
+export const updatePersonPwd = (data) => {
+  return request({
+    url: pathMap.userUpdatePwdPath,
+    method: 'post',
+    data
+  })
+}
+
+export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd }

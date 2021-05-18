@@ -2,17 +2,17 @@
   <el-row>
     <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel'">
       <el-col :span="18" style="height: 40px">
-        <el-radio v-model="inputType" label="self">自定义</el-radio>
-        <el-radio v-model="inputType" label="import">导入模板</el-radio>
-        <el-radio v-model="inputType" label="copy">复用模板</el-radio>
+        <el-radio v-model="inputType" label="self"> {{ $t('panel.custom') }}</el-radio>
+        <el-radio v-model="inputType" label="import">{{ $t('panel.import_template') }}  </el-radio>
+        <el-radio v-model="inputType" label="copy">{{ $t('panel.copy_template') }}  </el-radio>
       </el-col>
       <el-col v-if="inputType==='import'" :span="6">
-        <el-button class="el-icon-upload" size="small" type="primary" @click="goFile">上传模板</el-button>
+        <el-button class="el-icon-upload" size="small" type="primary" @click="goFile">{{ $t('panel.upload_template') }}</el-button>
         <input id="input" ref="files" type="file" accept=".DE" hidden @change="handleFileChange">
       </el-col>
     </el-row>
     <el-row style="margin-top: 5px">
-      <el-col :span="4">{{ editPanel.titleSuf }}名称</el-col>
+      <el-col :span="4">{{ editPanel.titleSuf }} {{ $t('commons.name') }}</el-col>
       <el-col :span="20">
         <el-input v-model="editPanel.panelInfo.name" clearable size="mini" />
       </el-col>
@@ -25,8 +25,8 @@
     </el-row>
     <el-row v-if="inputType==='import'" class="preview" :style="classBackground" />
     <el-row class="root-class">
-      <el-button @click="cancel()">取 消</el-button>
-      <el-button type="primary" @click="save()">确 定</el-button>
+      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
+      <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
     </el-row>
   </el-row>
 </template>
@@ -49,7 +49,7 @@ export default {
       fieldName: 'name',
       tableRadio: null,
       keyWordSearch: '',
-      columnLabel: '所属类别',
+      columnLabel: this.$t('panel.belong_to_category'),
       templateList: [],
       importTemplateInfo: {
         snapshot: ''
@@ -95,19 +95,18 @@ export default {
       })
     },
     handleExceed(file) {
-      console.log(file.name)
     },
     cancel() {
       this.$emit('closeEditPanelDialog')
     },
     save() {
       if (!this.editPanel.panelInfo.name) {
-        this.$warning('名称不能为空')
+        this.$warning(this.$t('chart.name_can_not_empty'))
         return false
       }
       panelSave(this.editPanel.panelInfo).then(response => {
         this.$message({
-          message: '保存成功',
+          message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })
@@ -123,7 +122,6 @@ export default {
         this.editPanel.panelInfo.name = this.importTemplateInfo.name
         this.editPanel.panelInfo.panelStyle = this.importTemplateInfo.panelStyle
         this.editPanel.panelInfo.panelData = this.importTemplateInfo.panelData
-        console.log(this.importTemplateInfo)
       }
       reader.readAsText(file)
     },

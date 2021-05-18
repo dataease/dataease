@@ -10,10 +10,10 @@
       <el-divider />
 
       <el-row>
-        <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
+        <el-button type="primary" size="mini" @click="add('group')">
           {{ $t('dataset.add_group') }}
         </el-button>
-        <el-button icon="el-icon-folder-add" type="primary" size="mini" @click="add('scene')">
+        <el-button type="primary" size="mini" @click="add('scene')">
           {{ $t('dataset.add_scene') }}
         </el-button>
       </el-row>
@@ -273,31 +273,25 @@ export default {
       },
       groupFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       },
       tableFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
-        ],
-        mode: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       }
     }
   },
   computed: {
     sceneData: function() {
-      console.log(this.$store.state.dataset.sceneData + ' do post')
       this.tableTree()
       return this.$store.state.dataset.sceneData
     }
   },
   watch: {
-    // search(val){
-    //   this.groupForm.name = val;
-    //   this.tree(this.groupForm);
-    // }
     search(val) {
       if (val && val !== '') {
         this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
@@ -310,7 +304,6 @@ export default {
     this.tree(this.groupForm)
     this.refresh()
     this.tableTree()
-    // this.$router.push('/dataset');
   },
   methods: {
     clickAdd(param) {
@@ -387,11 +380,11 @@ export default {
             this.tree(this.groupForm)
           })
         } else {
-          this.$message({
-            message: this.$t('commons.input_content'),
-            type: 'error',
-            showClose: true
-          })
+          // this.$message({
+          //   message: this.$t('commons.input_error'),
+          //   type: 'error',
+          //   showClose: true
+          // })
           return false
         }
       })
@@ -415,11 +408,11 @@ export default {
             this.$store.dispatch('dataset/setTable', null)
           })
         } else {
-          this.$message({
-            message: this.$t('commons.input_content'),
-            type: 'error',
-            showClose: true
-          })
+          // this.$message({
+          //   message: this.$t('commons.input_content'),
+          //   type: 'error',
+          //   showClose: true
+          // })
           return false
         }
       })

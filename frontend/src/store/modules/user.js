@@ -1,7 +1,9 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout, getInfo, getUIinfo, languageApi } from '@/api/user'
+import { getToken, setToken, removeToken, setSysUI } from '@/utils/auth'
 import { resetRouter } from '@/router'
-
+import { format } from '@/utils/formatUi'
+import { getLanguage } from '@/lang/index'
+import Cookies from 'js-cookie'
 const getDefaultState = () => {
   return {
     token: getToken(),
@@ -12,7 +14,9 @@ const getDefaultState = () => {
     // 第一次加载菜单时用到
     loadMenus: false,
     // 当前用户拥有哪些资源权限
-    permissions: []
+    permissions: [],
+    language: getLanguage(),
+    uiInfo: null
   }
 }
 
@@ -45,6 +49,13 @@ const mutations = {
   },
   SET_LOGIN_MSG: (state, msg) => {
     state.loginMsg = msg
+  },
+  SET_UI_INFO: (state, info) => {
+    state.uiInfo = info
+  },
+  SET_LANGUAGE: (state, language) => {
+    state.language = language
+    Cookies.set('language', language)
   }
 }
 
@@ -81,14 +92,30 @@ const actions = {
         const currentUser = data
         commit('SET_USER', currentUser)
 
-        const { roles, nickName, permissions } = data
+        const { roles, nickName, permissions, language } = data
         commit('SET_ROLES', roles)
 
         commit('SET_NAME', nickName)
         // commit('SET_AVATAR', avatar)
 
         commit('SET_PERMISSIONS', permissions)
+
+        commit('SET_LANGUAGE', language)
         resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getUI({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getUIinfo().then(response => {
+        const { data } = response
+        const uiInfo = format(data)
+        commit('SET_UI_INFO', uiInfo)
+        setSysUI(uiInfo)
+        resolve(uiInfo)
       }).catch(error => {
         reject(error)
       })
@@ -124,6 +151,11 @@ const actions = {
   },
   setLoginMsg({ commit, msg }) {
     commit('SET_LOGIN_MSG', msg)
+  },
+  setLanguage({ commit }, language) {
+    languageApi(language).then(() => {
+      commit('SET_LANGUAGE', language)
+    })
   }
 }
 

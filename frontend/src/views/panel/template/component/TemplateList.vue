@@ -2,14 +2,14 @@
   <el-col>
     <el-row>
       <el-button icon="el-icon-folder-add" type="primary" size="mini" @click="add()">
-        添加分类
+        {{ $t('panel.add_category') }}
       </el-button>
     </el-row>
     <el-row style="margin-top: 5px">
       <el-row>
         <el-input
           v-model="templateFilterText"
-          placeholder="输入关键字进行过滤"
+          :placeholder="$t('panel.filter_keywords')"
           size="mini"
           clearable
           prefix-icon="el-icon-search"
@@ -48,10 +48,10 @@
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
-                      重命名
+                       {{ $t('panel.rename') }}
                     </el-dropdown-item>
                     <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
-                      删除
+                      {{ $t('panel.delete') }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -101,7 +101,6 @@ export default {
 
     },
     clickMore(param) {
-      console.log(param)
       switch (param.type) {
         case 'edit':
           this.templateEdit(param.data)
@@ -130,8 +129,8 @@ export default {
       this.$emit('showTemplateEditDialog', 'new')
     },
     templateDelete(template) {
-      this.$alert('是否删除分类：' + template.name + '？', '', {
-        confirmButtonText: '确认',
+      this.$alert(this.$t('panel.confirm_delete') +  this.$t('panel.category') + ': ' + template.name + '？', '', {
+        confirmButtonText: this.$t('panel.confirm_delete'),
         callback: (action) => {
           if (action === 'confirm') {
             this.$emit('templateDelete', template.id)

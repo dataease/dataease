@@ -14,11 +14,14 @@
         </span>
       </el-popover>
       <el-row style="float: right">
+        <el-button v-if="table.type ==='custom'" size="mini" @click="editCustom">
+          {{ $t('dataset.edit_custom_table') }}
+        </el-button>
         <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
           {{ $t('dataset.edit_sql') }}
         </el-button>
         <el-button size="mini" @click="edit">
-          {{ $t('dataset.edit') }}
+          {{ $t('dataset.edit_field') }}
         </el-button>
         <!--        <el-button size="mini" type="primary" @click="createChart">-->
         <!--          {{$t('dataset.create_view')}}-->
@@ -31,7 +34,7 @@
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
-      <el-tab-pane :label="$t('dataset.join_view')" name="joinView">
+      <el-tab-pane v-if="table.type !== 'custom' && table.mode === 1" :label="$t('dataset.join_view')" name="joinView">
         <union-view :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
@@ -86,7 +89,6 @@ export default {
   },
   methods: {
     initTable(id) {
-      console.log(id)
       this.tabActive = 'dataPreview'
       this.tableViewRowForm.row = 1000
       if (id !== null) {
@@ -116,6 +118,9 @@ export default {
 
     editSql() {
       this.$emit('switchComponent', { name: 'AddSQL', param: { id: this.table.sceneId, tableId: this.table.id }})
+    },
+    editCustom() {
+      this.$emit('switchComponent', { name: 'AddCustom', param: { id: this.table.sceneId, tableId: this.table.id }})
     },
 
     reSearch(val) {

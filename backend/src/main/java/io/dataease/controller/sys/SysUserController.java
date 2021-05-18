@@ -3,6 +3,8 @@ package io.dataease.controller.sys;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -17,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Api(tags = "系统：用户管理")
@@ -72,5 +75,30 @@ public class SysUserController {
     @PostMapping("/adminUpdatePwd")
     public void adminUpdatePwd(@RequestBody SysUserPwdRequest request){
         sysUserService.adminUpdatePwd(request);
+    }
+
+
+    @ApiOperation("个人信息")
+    @PostMapping("/personInfo")
+    public CurrentUserDto personInfo() {
+        CurrentUserDto user = AuthUtils.getUser();
+        return user;
+    }
+
+    @ApiOperation("更新个人信息")
+    @PostMapping("/updatePersonInfo")
+    public void updatePersonInfo(@RequestBody SysUserCreateRequest request){
+        sysUserService.updatePersonInfo(request);
+    }
+
+    @ApiOperation("设置语言")
+    @PostMapping("/setLanguage/{language}")
+    public void setLanguage(@PathVariable String language) {
+        CurrentUserDto user = AuthUtils.getUser();
+        Optional.ofNullable(language).ifPresent(currentLanguage -> {
+            if (!currentLanguage.equals(user.getLanguage())) {
+                sysUserService.setLanguage(user.getUserId(), currentLanguage);
+            }
+        });
     }
 }

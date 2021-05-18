@@ -1,5 +1,6 @@
 package io.dataease.service.sys;
 
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.base.domain.SysUser;
 import io.dataease.base.domain.SysUserExample;
 import io.dataease.base.domain.SysUsersRolesExample;
@@ -9,6 +10,7 @@ import io.dataease.base.mapper.SysUsersRolesMapper;
 import io.dataease.base.mapper.ext.ExtSysUserMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -89,6 +91,22 @@ public class SysUserService {
         deleteUserRoles(user.getUserId());//先删除用户角色关联
         saveUserRoles(user.getUserId(), request.getRoleIds());//再插入角色关联
         return sysUserMapper.updateByPrimaryKey(user);
+
+    }
+
+    /**
+     * 用户修改个人信息
+     * @param request
+     * @return
+     */
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
+    @Transactional
+    public int updatePersonInfo(SysUserCreateRequest request){
+        SysUser user = BeanUtils.copyBean(new SysUser(), request);
+        long now = System.currentTimeMillis();
+        user.setUpdateTime(now);
+        return sysUserMapper.updateByPrimaryKeySelective(user);
+
     }
 
 
@@ -107,20 +125,16 @@ public class SysUserService {
      */
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     public int updatePwd(SysUserPwdRequest request) {
-        if (!StringUtils.equals(request.getPassword(), request.getRepeatPassword())){
-            throw new RuntimeException("两次密码不一致");
-        }
-        SysUser temp = new SysUser();
-        temp.setUserId(request.getUserId());
-        SysUser user = findOne(temp);
+        CurrentUserDto user = AuthUtils.getUser();
+
         if (ObjectUtils.isEmpty(user)) {
             throw new RuntimeException("用户不存在");
         }
-        if (!StringUtils.equals(request.getPassword(), user.getPassword())){
+        if (!StringUtils.equals(CodingUtil.md5(request.getPassword()), user.getPassword())){
             throw new RuntimeException("密码错误");
         }
         SysUser sysUser = new SysUser();
-        sysUser.setUserId(request.getUserId());
+        sysUser.setUserId(user.getUserId());
         sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
@@ -185,6 +199,14 @@ public class SysUserService {
 
     public List<SysUser> users(List<Long> userIds){
         return userIds.stream().map(sysUserMapper::selectByPrimaryKey).collect(Collectors.toList());
+    }
+
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
+    public void setLanguage(Long userId,String language) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(userId);
+        sysUser.setLanguage(language);
+        sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
 }

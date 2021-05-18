@@ -13,7 +13,6 @@ export function hexColorToRGBA(hex, alpha) {
     })
     return `rgba(${rgb.join(',')},${alpha / 100})` // 输出RGB格式颜色
   } else {
-    console.log(`Input ${hex} is wrong!`)
     return 'rgb(0,0,0)'
   }
 }

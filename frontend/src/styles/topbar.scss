@@ -49,7 +49,11 @@
 
     .right-menu {
       float: right;
-      height: 100%;
+      height: 56px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
 
       &:focus {
         outline: none;
@@ -86,6 +90,14 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
+          }
+          .de-user-avatar {
+            cursor: pointer;
+            height: 40px;
+            border-radius: 10px;
+            span {
+                color: #ffffff;
+            }
           }
 
           .el-icon-caret-bottom {

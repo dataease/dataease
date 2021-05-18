@@ -1,7 +1,7 @@
 <template>
   <el-row>
     <el-row>
-      <el-col :span="4">模板名称</el-col>
+      <el-col :span="4"> {{ $t('panel.template_nale')}}</el-col>
       <el-col :span="20">
         <el-input v-model="templateInfo.name" clearable size="mini" />
       </el-col>
@@ -18,9 +18,6 @@
         >
           <el-table-column :label="columnLabel" :column-key="fieldName" :prop="fieldName" />
           <el-table-column align="right">
-            <!--            <template slot="header">-->
-            <!--              <el-input v-model="keyWordSearch" size="mini" placeholder="输入关键字搜索" />-->
-            <!--            </template>-->
             <template slot-scope="scope">
               <el-radio v-model="tableRadio" :label="scope.row"><i /></el-radio>
             </template>
@@ -29,8 +26,8 @@
       </div>
     </el-row>
     <el-row class="root-class">
-      <el-button @click="cancel()">取 消</el-button>
-      <el-button type="primary" @click="save()">确 定</el-button>
+      <el-button @click="cancel()">{{ $t('commons.cancle')}}</el-button>
+      <el-button type="primary" @click="save()">{{ $t('commons.save')}}</el-button>
     </el-row>
   </el-row>
 </template>
@@ -52,7 +49,7 @@ export default {
       fieldName: 'name',
       tableRadio: null,
       keyWordSearch: '',
-      columnLabel: '所属类别'
+      columnLabel: this.$t('panel.belong_to_category')
     }
   },
   created() {
@@ -77,16 +74,16 @@ export default {
     },
     save() {
       if (!this.templateInfo.pid) {
-        this.$warning('请选择所属类别')
+        this.$warning(this.$t(panel.pls_select_belong_to_category))
         return false
       }
       if (!this.templateInfo.name) {
-        this.$warning('模板名称不能为空')
+        this.$warning(this.$t('panel.template_name_cannot_be_empty'))
         return false
       }
       post('/template/save', this.templateInfo).then(response => {
         this.$message({
-          message: '保存成功',
+          message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })

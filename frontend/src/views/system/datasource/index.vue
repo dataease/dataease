@@ -132,15 +132,13 @@ export default {
       ],
       searchConfig: {
         useQuickSearch: true,
-        quickPlaceholder: '按名称搜索',
+        quickPlaceholder: this.$t('commons.search_by_name'),
         combine: false,
         components: [
-        //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
-          { field: 'name', label: '名称', component: 'FuComplexInput' },
-
+          { field: 'name', label: this.$t('commons.name'), component: 'FuComplexInput' },
           {
             field: 'type',
-            label: '类型',
+            label: this.$t('datasource.type'),
             component: 'FuComplexSelect',
             options: [{ label: 'mysql', value: 'mysql' }, { label: 'sqlServer', value: 'sqlServer' }],
             multiple: false

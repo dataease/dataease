@@ -2,6 +2,7 @@ package io.dataease.auth.api;
 
 
 import io.dataease.auth.api.dto.DynamicMenuDto;
+import io.dataease.controller.handler.annotation.I18n;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ public interface DynamicMenuApi {
      * @return
      */
     @PostMapping("/menus")
+    @I18n
     List<DynamicMenuDto> menus();
 
 }

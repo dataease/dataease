@@ -6,8 +6,13 @@ import io.dataease.commons.constants.RoleConstants;
 import io.dataease.dto.BaseSystemConfigDTO;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.notice.domain.MailInfo;
+import io.dataease.service.FileService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +27,9 @@ import java.util.Map;
 public class SystemParameterController {
     @Resource
     private SystemParameterService systemParameterService;
+
+    @Resource
+    private FileService fileService;
 
     @PostMapping("/edit/email")
     public void editMail(@RequestBody List<SystemParameter> systemParameter) {
@@ -54,8 +62,16 @@ public class SystemParameterController {
         return systemParameterService.getSystemParameterInfo(ParamConstants.Classify.UI.getValue());
     }
 
+    @GetMapping(value="/ui/image/{imageId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> image(@PathVariable("imageId") String imageId) {
+        byte[] bytes = fileService.loadFileAsBytes(imageId);
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+    }
+
     @PostMapping(value="/save/ui", consumes = {"multipart/form-data"})
-    public void saveUIInfo (@RequestPart("request") Map<String,List<SystemParameterDTO>> systemParameterMap,@RequestPart(value = "files") List<MultipartFile> bodyFiles) throws IOException {
+    public void saveUIInfo (@RequestPart("request") Map<String,List<SystemParameterDTO>> systemParameterMap,@RequestPart(value = "files", required = false) List<MultipartFile> bodyFiles) throws IOException {
         systemParameterService.saveUIInfo(systemParameterMap,bodyFiles);
     }
 

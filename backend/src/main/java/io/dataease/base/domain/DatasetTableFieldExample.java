@@ -644,6 +644,66 @@ public class DatasetTableFieldExample {
             return (Criteria) this;
         }
 
+        public Criteria andDeExtractTypeIsNull() {
+            addCriterion("de_extract_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeIsNotNull() {
+            addCriterion("de_extract_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeEqualTo(Integer value) {
+            addCriterion("de_extract_type =", value, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeNotEqualTo(Integer value) {
+            addCriterion("de_extract_type <>", value, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeGreaterThan(Integer value) {
+            addCriterion("de_extract_type >", value, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("de_extract_type >=", value, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeLessThan(Integer value) {
+            addCriterion("de_extract_type <", value, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("de_extract_type <=", value, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeIn(List<Integer> values) {
+            addCriterion("de_extract_type in", values, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeNotIn(List<Integer> values) {
+            addCriterion("de_extract_type not in", values, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeBetween(Integer value1, Integer value2) {
+            addCriterion("de_extract_type between", value1, value2, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeExtractTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("de_extract_type not between", value1, value2, "deExtractType");
+            return (Criteria) this;
+        }
+
         public Criteria andCheckedIsNull() {
             addCriterion("`checked` is null");
             return (Criteria) this;

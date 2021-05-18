@@ -11,9 +11,9 @@
     >
       <ux-table-column
         v-for="field in fields"
-        :key="field.originName"
+        :key="field.dataeaseName"
         min-width="200px"
-        :field="field.originName"
+        :field="field.dataeaseName"
         :title="field.name"
         :resizable="true"
       />

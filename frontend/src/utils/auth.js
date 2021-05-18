@@ -29,3 +29,12 @@ export function removeLinkToken() {
   return Cookies.remove(linkTokenKey)
 }
 
+export function setSysUI(uiInfo) {
+  return Cookies.set('sysUiInfo', uiInfo ? JSON.stringify(uiInfo) : null)
+}
+
+export function getSysUI() {
+  const json = Cookies.get('sysUiInfo')
+  return json ? JSON.parse(json) : null
+}
+

@@ -10,7 +10,7 @@ import chart from './modules/chart'
 import request from './modules/request'
 import panel from './modules/panel'
 import application from './modules/application'
-
+import lic from './modules/lic'
 import animation from '@/components/canvas/store/animation'
 import compose from '@/components/canvas/store/compose'
 import contextmenu from '@/components/canvas/store/contextmenu'
@@ -134,7 +134,8 @@ const data = {
     chart,
     request,
     panel,
-    application
+    application,
+    lic
   },
   getters
 }

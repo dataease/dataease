@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.dataease.base.mapper.DatasetTableIncrementalConfigMapper">
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.DatasetTableIncrementalConfig">
-    <result column="id" jdbcType="VARCHAR" property="id" />
+    <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="table_id" jdbcType="VARCHAR" property="tableId" />
     <result column="incremental_delete" jdbcType="VARCHAR" property="incrementalDelete" />
     <result column="incremental_add" jdbcType="VARCHAR" property="incrementalAdd" />
@@ -82,6 +82,16 @@
       order by ${orderByClause}
     </if>
   </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from dataset_table_incremental_config
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from dataset_table_incremental_config
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
   <delete id="deleteByExample" parameterType="io.dataease.base.domain.DatasetTableIncrementalConfigExample">
     delete from dataset_table_incremental_config
     <if test="_parameter != null">
@@ -160,5 +170,27 @@
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.DatasetTableIncrementalConfig">
+    update dataset_table_incremental_config
+    <set>
+      <if test="tableId != null">
+        table_id = #{tableId,jdbcType=VARCHAR},
+      </if>
+      <if test="incrementalDelete != null">
+        incremental_delete = #{incrementalDelete,jdbcType=VARCHAR},
+      </if>
+      <if test="incrementalAdd != null">
+        incremental_add = #{incrementalAdd,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.DatasetTableIncrementalConfig">
+    update dataset_table_incremental_config
+    set table_id = #{tableId,jdbcType=VARCHAR},
+      incremental_delete = #{incrementalDelete,jdbcType=VARCHAR},
+      incremental_add = #{incrementalAdd,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

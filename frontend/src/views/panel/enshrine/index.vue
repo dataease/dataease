@@ -1,14 +1,13 @@
 <template>
   <div>
     <el-table
-
       class="de-filter-data-table"
       :data="starDatas"
       :show-header="false"
       :highlight-current-row="true"
       style="width: 100%"
     >
-      <el-table-column prop="name" label="名称">
+      <el-table-column prop="name" :label="$t('commons.name')">
         <template :id="scope.row.storeId" slot-scope="scope">
           <div class="start-item">
             <div class="filter-db-row star-item-content" @click="showPanel(scope.row)">
@@ -52,7 +51,7 @@ export default {
       })
     },
     resetID(data) {
-      if( data ) {
+      if (data) {
         data.forEach(item => {
           item.id = uuid.v1()
         })

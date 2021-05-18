@@ -1,9 +1,9 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col>
+  <el-col style="padding: 0 10px 0 10px;">
     <!-- panel list -->
     <el-col>
       <el-row>
-        <span class="header-title">默认仪表盘</span>
+        <span class="header-title">{{ $t('panel.default_panel') }}</span>
         <div class="block">
           <el-tree
             :default-expanded-keys="expandedArray"
@@ -28,7 +28,10 @@
       </el-row>
 
       <el-row>
-        <span class="header-title">仪表盘列表</span>
+        <span class="header-title">
+          {{ $t('panel.panel') }}
+          <el-button style="float: right;padding-right: 7px;" type="text" icon="el-icon-circle-plus" @click="showEditPanel(newFolder)" />
+        </span>
       </el-row>
       <el-col class="custom-tree-container">
         <div class="block">
@@ -91,9 +94,8 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
                         {{ $t('panel.edit') }}
                       </el-dropdown-item>
-
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
-                        创建公共链接
+                        {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -132,9 +134,6 @@
         @closed="removeLink"
       >
         <link-generate v-if="linkVisible" :resource-id="linkResourceId" />
-        <!-- <span slot="footer" class="dialog-footer">
-          <el-button @click="copyUri">复制链接</el-button>
-        </span> -->
       </el-dialog>
       <!--新建仪表盘dialog-->
       <el-dialog :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
@@ -252,6 +251,16 @@ export default {
           panelData: '[]'
         }
       },
+      newFolder: {
+        type: 'folder',
+        data: {
+          id: null,
+          pid: null,
+          level: 0
+        },
+        node: {},
+        optType: 'newFirstFolder'
+      },
       linkTitle: '链接分享',
       linkVisible: false,
       linkResourceId: null,
@@ -318,24 +327,30 @@ export default {
       this.editPanel.visible = true
       switch (param.optType) {
         case 'new':
-          this.editPanel.titlePre = '新建'
-          this.editPanel.panelInfo.name = '新建仪表盘'
+          this.editPanel.titlePre = this.$t('commons.create')
+          this.editPanel.panelInfo.name = this.$t('panel.panelAdd')
           this.editPanel.panelInfo.pid = param.data.id
           this.editPanel.panelInfo.level = param.data.level + 1
           break
+        case 'newFirstFolder':
+          this.editPanel.titlePre = this.$t('commons.create')
+          this.editPanel.panelInfo.name = ''
+          this.editPanel.panelInfo.pid = null
+          this.editPanel.panelInfo.level = 0
+          break
         case 'edit':
         case 'rename':
-          this.editPanel.titlePre = '编辑'
+          this.editPanel.titlePre = this.$t('commons.edit')
           this.editPanel.panelInfo.id = param.data.id
           this.editPanel.panelInfo.name = param.data.name
           break
       }
       switch (param.type) {
         case 'folder':
-          this.editPanel.titleSuf = '目录'
+          this.editPanel.titleSuf = this.$t('panel.group')
           break
         case 'panel':
-          this.editPanel.titleSuf = '仪表盘'
+          this.editPanel.titleSuf = this.$t('panel.panel')
           break
       }
     },
@@ -394,7 +409,6 @@ export default {
     },
 
     saveGroup(group) {
-      // console.log(group);
       this.$refs['groupForm'].validate((valid) => {
         if (valid) {
           addGroup(group).then(res => {
@@ -530,7 +544,9 @@ export default {
     flex: 1;
     color: #606266;
     font-weight: bold;
-
+    display: block;
+    height: 100%;
+    line-height: 36px;
   }
 
   .el-divider--horizontal {

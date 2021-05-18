@@ -35,7 +35,7 @@ public class DataSetTableController {
     }
 
     @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable String id) throws Exception {
         dataSetTableService.delete(id);
     }
 
@@ -59,11 +59,6 @@ public class DataSetTableController {
         return dataSetTableService.getFieldsFromDE(dataSetTableRequest);
     }
 
-    @PostMapping("getData")
-    public List<String[]> getData(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
-        return dataSetTableService.getData(dataSetTableRequest);
-    }
-
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize);
@@ -72,6 +67,11 @@ public class DataSetTableController {
     @PostMapping("sqlPreview")
     public Map<String, Object> getSQLPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getSQLPreview(dataSetTableRequest);
+    }
+
+    @PostMapping("customPreview")
+    public Map<String, Object> customPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getCustomPreview(dataSetTableRequest);
     }
 
     @PostMapping("incrementalConfig")
@@ -92,5 +92,10 @@ public class DataSetTableController {
     @PostMapping("excel/upload")
     public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file) throws Exception {
         return dataSetTableService.excelSaveAndParse(file);
+    }
+
+    @PostMapping("checkDorisTableIsExists/{id}")
+    public Boolean checkDorisTableIsExists(@PathVariable String id) throws Exception {
+        return dataSetTableService.checkDorisTableIsExists(id);
     }
 }

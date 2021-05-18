@@ -34,8 +34,8 @@ export default {
   },
   methods: {
     templateDelete() {
-      this.$alert('是否删除模板：' + this.template.name + '？', '', {
-        confirmButtonText: '确认',
+      this.$alert(this.$t('panel.confirm_delete') +  this.$t('panel.template') + ': ' + this.template.name + '？', '', {
+        confirmButtonText: this.$t('panel.confirm'),
         callback: (action) => {
           if (action === 'confirm') {
             this.$emit('templateDelete', this.template.id)

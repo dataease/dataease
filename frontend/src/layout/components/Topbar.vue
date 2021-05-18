@@ -1,7 +1,8 @@
 <template>
   <div class="top-nav" :style="{'background-color': theme}">
     <div class="log">
-      <img src="@/assets/DataEase-white.png" width="160" alt="" style="padding-top: 8px;">
+      <img v-if="!logoUrl" src="@/assets/DataEase-white.png" width="160" alt="" style="padding-top: 8px;">
+      <img v-else :src="logoUrl" width="160" alt="" style="padding-top: 8px;">
     </div>
     <el-menu
       :active-text-color="variables.topMenuActiveText"
@@ -22,13 +23,13 @@
 
     <div class="right-menu">
       <template>
-        <el-tooltip content="项目文档" effect="dark" placement="bottom">
-          <doc class="right-menu-item hover-effect" />
-        </el-tooltip>
+        <!--        <el-tooltip content="项目文档" effect="dark" placement="bottom">-->
+        <!--          <doc class="right-menu-item hover-effect" />-->
+        <!--        </el-tooltip>-->
 
-        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">
-          <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        <!--        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">-->
+        <!--          <screenfull id="screenfull" class="right-menu-item hover-effect" />-->
+        <!--        </el-tooltip>-->
 
         <!-- <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
@@ -36,22 +37,26 @@
 
         <lang-select class="right-menu-item hover-effect" />
       </template>
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img src="@/assets/avatar.jpeg" class="user-avatar">
-        </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>Home</el-dropdown-item>
+
+      <el-dropdown class="top-dropdown" style="display: flex;align-items: center;">
+        <span class="el-dropdown-link" style="font-size: 14px;">
+          {{ name }}<i class="el-icon-arrow-down el-icon--right" />
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <router-link to="/person-info/index">
+            <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
           </router-link>
-          <a href="https://github.com/PanJiaChen/vue-admin-template/" target="_blank">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
+          <router-link to="/person-pwd/index">
+            <el-dropdown-item>{{ $t('user.reset_password') }}</el-dropdown-item>
+          </router-link>
           <a href="https://panjiachen.github.io/vue-element-admin-site/#/" target="_blank">
-            <el-dropdown-item>Docs</el-dropdown-item>
+            <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>
           </a>
+          <router-link to="/system/about">
+            <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
+          </router-link>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+            <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -64,24 +69,27 @@ import { mapGetters } from 'vuex'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
-import Doc from '@/components/Doc'
-import Screenfull from '@/components/Screenfull'
+// import Doc from '@/components/Doc'
+// import Screenfull from '@/components/Screenfull'
 // import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
+import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Topbar',
   components: {
     AppLink,
-    Screenfull,
+    // Screenfull,
     // SizeSelect,
-    LangSelect,
-    Doc
+    LangSelect
+    // Doc
   },
   data() {
     return {
-
+      uiInfo: null,
+      logoUrl: null
     }
   },
+
   computed: {
     theme() {
       return this.$store.state.settings.theme
@@ -109,12 +117,21 @@ export default {
     },
     ...mapGetters([
       'avatar',
-      'permission_routes'
+      'permission_routes',
+      'name'
     ])
   },
 
   mounted() {
     this.initCurrentRoutes()
+  },
+  created() {
+    this.$store.dispatch('user/getUI').then(() => {
+      this.uiInfo = getSysUI()
+      if (this.uiInfo['ui.logo'] && this.uiInfo['ui.logo'].paramValue) {
+        this.logoUrl = '/system/ui/image/' + this.uiInfo['ui.logo'].paramValue
+      }
+    })
   },
   methods: {
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单
@@ -210,5 +227,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #ffffff;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
 
+  .top-dropdown {
+    display: inline-block;
+    padding: 10px 8px;
+    height: 100%;
+    font-size: 16px;
+    color: rgba(255,255,255,.87);
+    vertical-align: text-bottom;
+    margin-right: 10px;
+  }
 </style>

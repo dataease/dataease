@@ -4,7 +4,7 @@
       <el-row>
         <el-input
           v-model="templateFilterText"
-          placeholder="输入关键字进行过滤"
+          :placeholder="$t('panel.filter_keywords')"
           size="mini"
           clearable
           prefix-icon="el-icon-search"
@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     clickMore(param) {
-      console.log(param)
       switch (param.type) {
         case 'edit':
           this.templateEdit(param.data)

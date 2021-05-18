@@ -70,7 +70,7 @@
         </ul>
       </el-col>
       <el-col :span="7" style="margin: auto;height: 30px;font-size:12px;color:#3685f2">
-        <span><a @click="saveSelfSubject">保存个人主题</a></span>
+        <span><a @click="saveSelfSubject">{{ $t('commons.save') }}</a></span>
       </el-col>
     </el-row>
   </el-row>
@@ -127,7 +127,6 @@ export default {
   },
   methods: {
     subjectDelete(id) {
-      debugger
       deleteSubject(id).then(response => {
         this.$message({
           message: '删除成功',
@@ -141,7 +140,6 @@ export default {
       const request = {
         details: JSON.stringify(this.canvasStyleData)
       }
-      debugger
       saveSubject(request).then(response => {
         this.$message({
           message: '保存成功',

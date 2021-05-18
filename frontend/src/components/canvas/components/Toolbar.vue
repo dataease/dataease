@@ -3,42 +3,42 @@
     <div class="toolbar">
 
       <div class="canvas-config">
-        <span>画布大小</span>
+        <span> {{ $t('panel.canvas_size') }} </span>
         <input v-model="canvasStyleData.width">
         <span>*</span>
         <input v-model="canvasStyleData.height">
       </div>
       <div class="canvas-config" style="margin-right: 10px">
-        <span>画布比例</span>
+        <span> {{ $t('panel.canvas_scale') }} </span>
         <input v-model="scale" @input="handleScaleChange"> %
       </div>
 
-      <el-tooltip content="样式">
+      <el-tooltip :content="$t('panel.style')">
         <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
       </el-tooltip>
-      <el-tooltip content="撤消">
+      <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
       </el-tooltip>
-      <el-tooltip content="重做">
+      <el-tooltip :content="$t('panel.redo') ">
         <el-button class="el-icon-refresh-left" size="mini" circle @click="redo" />
       </el-tooltip>
-      <el-tooltip content="插入图片">
+      <el-tooltip :content="$t('panel.insert_picture') ">
         <el-button class="el-icon-upload" size="mini" circle @click="goFile" />
       </el-tooltip>
-      <el-tooltip content="清空画布" style="margin-right: 10px">
+      <el-tooltip :content="$t('panel.clean_canvas')" style="margin-right: 10px">
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>
       <input id="input" ref="files" type="file" hidden @change="handleFileChange">
-      <el-tooltip content="保存">
+      <el-tooltip :content="$t('commons.save') ">
         <el-button class="el-icon-circle-check" size="mini" circle @click="save" />
       </el-tooltip>
-      <el-tooltip content="预览">
+      <el-tooltip :content="$t('panel.preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
 
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" @click="closePanelEdit">
-          关闭
+          {{ $t('commons.close') }}
         </el-button>
       </span>
     </div>

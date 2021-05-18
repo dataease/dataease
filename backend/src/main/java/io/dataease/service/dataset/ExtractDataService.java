@@ -19,12 +19,20 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
@@ -53,7 +61,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.naming.AuthenticationException;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -99,13 +110,17 @@ public class ExtractDataService {
     private static String shellScript = "curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load\n" +
             "rm -rf %s\n";
 
-    private String createDorisTablColumnSql( List<DatasetTableField> datasetTableFields){
+    private String createDorisTablColumnSql(List<DatasetTableField> datasetTableFields) {
         String Column_Fields = "dataease_uuid  varchar(50), `";
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
-            switch (datasetTableField.getDeType()){
+            switch (datasetTableField.getDeExtractType()) {
                 case 0:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    if (datasetTableField.getSize() > 65533) {
+                        Column_Fields = Column_Fields + "String" + ",`";
+                    } else {
+                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    }
                     break;
                 case 1:
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
@@ -116,28 +131,33 @@ public class ExtractDataService {
                 case 3:
                     Column_Fields = Column_Fields + "DOUBLE" + ",`";
                     break;
+                case 4:
+                    Column_Fields = Column_Fields + "TINYINT(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    break;
                 default:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",";
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
                     break;
             }
         }
-        Column_Fields = Column_Fields.substring(0, Column_Fields.length() -2);
-        Column_Fields =  "(" + Column_Fields + ")\n";
+        Column_Fields = Column_Fields.substring(0, Column_Fields.length() - 2);
+        Column_Fields = "(" + Column_Fields + ")\n";
         return Column_Fields;
     }
 
-    private void createDorisTable(String dorisTableName, String dorisTablColumnSql) throws Exception{
-        Datasource dorisDatasource =  (Datasource)CommonBeanFactory.getBean("DorisDatasource");
-        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);;
+    private void createDorisTable(String dorisTableName, String dorisTablColumnSql) throws Exception {
+        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+        ;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         datasourceRequest.setQuery(creatTableSql.replace("TABLE_NAME", dorisTableName).replace("Column_Fields", dorisTablColumnSql));
         jdbcProvider.exec(datasourceRequest);
     }
 
-    private void replaceTable (String dorisTableName) throws Exception{
-        Datasource dorisDatasource =  (Datasource)CommonBeanFactory.getBean("DorisDatasource");
-        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);;
+    private void replaceTable(String dorisTableName) throws Exception {
+        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+        ;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         datasourceRequest.setQuery("ALTER TABLE DORIS_TABLE  REPLACE WITH TABLE DORIS_TMP_TABLE PROPERTIES('swap' = 'false');".replace("DORIS_TABLE", dorisTableName).replace("DORIS_TMP_TABLE", DorisTableUtils.dorisTmpName(dorisTableName)));
@@ -151,9 +171,9 @@ public class ExtractDataService {
         Datasource datasource = new Datasource();
         try {
             datasetTable = dataSetTableService.get(datasetTableId);
-            if(StringUtils.isNotEmpty(datasetTable.getDataSourceId())){
+            if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
                 datasource = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
-            }else {
+            } else {
                 datasource.setType(datasetTable.getType());
             }
 
@@ -167,11 +187,8 @@ public class ExtractDataService {
                 }
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
             });
-            for (DatasetTableField datasetTableField : datasetTableFields) {
-                System.out.println(new Gson().toJson(datasetTableField));
-            }
-
             String dorisTablColumnSql = createDorisTablColumnSql(datasetTableFields);
+            System.out.println(dorisTablColumnSql);
             switch (updateType) {
                 // 全量更新
                 case all_scope:
@@ -227,9 +244,9 @@ public class ExtractDataService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            LogUtil.error("ExtractData error, dataaset: " + datasetTableId);
-            LogUtil.error(e.getMessage(), e);
+            LogUtil.error("Extract data error: " + datasetTableId, e);
             datasetTableTaskLog.setStatus(JobStatus.Error.name());
+            datasetTableTaskLog.setInfo(ExceptionUtils.getStackTrace(e));
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         } finally {
@@ -274,10 +291,10 @@ public class ExtractDataService {
         String lastCarteObjectId = Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, repository, null);
         SlaveServerJobStatus jobStatus = null;
         boolean executing = true;
-        while(executing) {
+        while (executing) {
             jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), lastCarteObjectId, 0);
             executing = jobStatus.isRunning() || jobStatus.isWaiting();
-            if(!executing)
+            if (!executing)
                 break;
             Thread.sleep(1000);
         }
@@ -306,7 +323,7 @@ public class ExtractDataService {
         String dorisOutputTable = null;
         String jobName = null;
         String script = null;
-        Datasource dorisDatasource =  (Datasource)CommonBeanFactory.getBean("DorisDatasource");
+        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
         DorisConfigration dorisConfigration = new Gson().fromJson(dorisDatasource.getConfiguration(), DorisConfigration.class);
         String columns = columnFeilds + ",dataease_uuid";
         String transName = null;
@@ -315,18 +332,18 @@ public class ExtractDataService {
                 transName = "trans_" + datasetTable.getId();
                 dorisOutputTable = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId()));
                 jobName = "job_" + datasetTable.getId();
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND",root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(),dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), dorisOutputTable, root_path + dorisOutputTable + "." + extention);
+                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), dorisOutputTable, root_path + dorisOutputTable + "." + extention);
                 break;
             case "incremental_add":
                 transName = "trans_add_" + datasetTable.getId();
                 dorisOutputTable = DorisTableUtils.dorisName(datasetTable.getId());
                 jobName = "job_add_" + datasetTable.getId();
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(),dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), dorisOutputTable, root_path + dorisOutputTable + "." + extention);
+                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), dorisOutputTable, root_path + dorisOutputTable + "." + extention);
                 break;
             case "incremental_delete":
                 transName = "trans_delete_" + datasetTable.getId();
                 dorisOutputTable = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(datasetTable.getId()));
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "DELETE", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(),dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + dorisOutputTable + "." + extention);
+                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "DELETE", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + dorisOutputTable + "." + extention);
                 jobName = "job_delete_" + datasetTable.getId();
                 break;
             default:
@@ -388,14 +405,14 @@ public class ExtractDataService {
         FileUtils.writeStringToFile(file, jobXml, "UTF-8");
     }
 
-    private String fetchSqlField(String sql, Datasource ds)throws Exception{
+    private String fetchSqlField(String sql, Datasource ds) throws Exception {
         String tmpSql = sql;
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        if(tmpSql.trim().endsWith(";")){
-            tmpSql = tmpSql.substring(0, tmpSql.length() -1 ) + " limit 0";
-        }else {
+        if (tmpSql.trim().endsWith(";")) {
+            tmpSql = tmpSql.substring(0, tmpSql.length() - 1) + " limit 0";
+        } else {
             tmpSql = tmpSql + " limit 0";
         }
         datasourceRequest.setQuery(tmpSql);
@@ -419,9 +436,10 @@ public class ExtractDataService {
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost(), mysqlConfigration.getDataBase(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
-                if(extractType.equalsIgnoreCase("all_scope")){
+                if (extractType.equalsIgnoreCase("all_scope")) {
                     String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
-                    selectSQL = dataSetTableService.createQuerySQL(datasource.getType(), tableName, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new));
+                    QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
+                    selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
                 }
                 inputStep = inputStep(transMeta, selectSQL);
                 break;
@@ -467,7 +485,7 @@ public class ExtractDataService {
         FileUtils.writeStringToFile(file, transXml, "UTF-8");
     }
 
-    private StepMeta inputStep(TransMeta transMeta, String selectSQL){
+    private StepMeta inputStep(TransMeta transMeta, String selectSQL) {
         TableInputMeta tableInput = new TableInputMeta();
         DatabaseMeta database = transMeta.findDatabase("db");
         tableInput.setDatabaseMeta(database);
@@ -478,14 +496,15 @@ public class ExtractDataService {
         return fromStep;
     }
 
-    private StepMeta excelInputStep(String filePath, List<DatasetTableField> datasetTableFields){
+    private StepMeta excelInputStep(String filePath, List<DatasetTableField> datasetTableFields) {
         ExcelInputMeta excelInputMeta = new ExcelInputMeta();
         excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
         excelInputMeta.setPassword("Encrypted");
         excelInputMeta.setFileName(new String[]{filePath});
         excelInputMeta.setStartsWithHeader(true);
+        excelInputMeta.setIgnoreEmptyRows(true);
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
-        for (int i=0; i<datasetTableFields.size();i++) {
+        for (int i = 0; i < datasetTableFields.size(); i++) {
             ExcelInputField field = new ExcelInputField();
             field.setName(datasetTableFields.get(i).getOriginName());
             field.setType("String");
@@ -499,7 +518,7 @@ public class ExtractDataService {
         return fromStep;
     }
 
-    private StepMeta outputStep(String dorisOutputTable){
+    private StepMeta outputStep(String dorisOutputTable) {
         TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
         textFileOutputMeta.setEncoding("UTF-8");
         textFileOutputMeta.setHeaderEnabled(false);
@@ -513,7 +532,14 @@ public class ExtractDataService {
         return outputStep;
     }
 
-    private StepMeta udjc(List<DatasetTableField> datasetTableFields){
+    private StepMeta udjc(List<DatasetTableField> datasetTableFields) {
+        String needToChangeolumnType = "";
+        for (DatasetTableField datasetTableField : datasetTableFields) {
+            if (datasetTableField.getDeExtractType() != null && datasetTableField.getDeExtractType() == 4) {
+                needToChangeolumnType = needToChangeolumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getOriginName());
+            }
+        }
+
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
         UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
@@ -521,7 +547,8 @@ public class ExtractDataService {
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor",
-                code.replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()))));
+                code.replace("alterColumnTypeCode", needToChangeolumnType).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()))));
+
         userDefinedJavaClassDef.setActive(true);
         definitions.add(userDefinedJavaClassDef);
         userDefinedJavaClassMeta.replaceDefinitions(definitions);
@@ -529,8 +556,41 @@ public class ExtractDataService {
         StepMeta userDefinedJavaClassStep = new StepMeta("UserDefinedJavaClass", "UserDefinedJavaClass", userDefinedJavaClassMeta);
         userDefinedJavaClassStep.setLocation(300, 100);
         userDefinedJavaClassStep.setDraw(true);
-        return  userDefinedJavaClassStep;
+        return userDefinedJavaClassStep;
     }
+
+    public boolean isKettleRunning() {
+        try {
+            if (!InetAddress.getByName(carte).isReachable(1000)) {
+                return false;
+            }
+            HttpClient httpClient;
+            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
+            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+            clientBuilder.setConnectionTimeout(1);
+            clientBuilder.setCredentials(user, passwd);
+            httpClient = clientBuilder.build();
+            HttpResponse httpResponse = httpClient.execute(getMethod);
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if (statusCode != -1 && statusCode < 400) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
+            "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
+            "         get(Fields.Out, filed).setValue(r, 1);\n" +
+            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+            "       }else{\n" +
+            "         get(Fields.Out, filed).setValue(r, 0);\n" +
+            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+            "       }\n" +
+            "     }\n";
 
     private static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
@@ -561,6 +621,7 @@ public class ExtractDataService {
             "    List<String> fileds = Arrays.asList(\"Column_Fields\".split(\",\"));\n" +
             "    for (String filed : fileds) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
+            "alterColumnTypeCode \n" +
             "        str = str + tmp;\n" +
             "    }\n" +
             "\n" +

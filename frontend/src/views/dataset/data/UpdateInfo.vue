@@ -4,12 +4,16 @@
       <el-button icon="el-icon-setting" size="mini" @click="showConfig">
         {{ $t('dataset.update_setting') }}
       </el-button>
+      <el-button icon="el-icon-refresh" size="mini" @click="refreshLog">
+        {{ $t('commons.refresh') }}
+      </el-button>
     </el-row>
     <el-row style="margin-top: 10px;">
       <el-table
         size="mini"
         :data="taskLogData"
         border
+        :height="height"
         style="width: 100%"
       >
         <el-table-column
@@ -32,10 +36,19 @@
             <span>{{ scope.row.endTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="status"
-          :label="$t('dataset.status')"
-        />
+
+        <el-table-column prop="status" :label="$t('dataset.status')">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 'Completed'" style="color: green">{{ $t('dataset.completed') }}</span>
+            <span v-if="scope.row.status === 'Underway'" style="color: blue">
+              <i class="el-icon-loading" />
+              {{ $t('dataset.underway') }}
+            </span>
+            <span v-if="scope.row.status === 'Error'" style="color: red">
+              <el-link type="danger" style="font-size: 12px" @click="showErrorMassage(scope.row.info)">{{ $t('dataset.error') }}</el-link>
+            </span>
+          </template>
+        </el-table-column>
       </el-table>
       <el-row style="margin-top: 10px;text-align: right;">
         <el-pagination
@@ -49,6 +62,19 @@
         />
       </el-row>
     </el-row>
+
+    <el-dialog
+      :title="$t('dataset.detail')"
+      :visible="show_error_massage"
+      :show-close="false"
+      width="50%"
+      class="dialog-css"
+    >
+      <span>{{ error_massage }}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
+      </span>
+    </el-dialog>
 
     <el-dialog
       :title="table.name+' '+$t('dataset.update_setting')"
@@ -138,9 +164,6 @@
         </div>
       </el-dialog>
       <el-row>
-        <!--        <el-button icon="el-icon-download" size="mini">-->
-        <!--          {{ $t('dataset.sync_now') }}-->
-        <!--        </el-button>-->
         <el-button icon="el-icon-plus" size="mini" @click="addTask(undefined)">
           {{ $t('dataset.add_task') }}
         </el-button>
@@ -155,7 +178,7 @@
         >
           <el-table-column
             prop="name"
-            :label="$t('dataset.start_time')"
+            :label="$t('dataset.task_name')"
           />
           <el-table-column
             prop="rate"
@@ -274,8 +297,11 @@ export default {
   },
   data() {
     return {
+      height: 500,
       update_setting: false,
       update_task: false,
+      show_error_massage: false,
+      error_massage: '',
       taskForm: {
         name: '',
         type: 'all_scope',
@@ -331,24 +357,41 @@ export default {
     }
   },
   watch: {
-    table() {
-      this.listTask()
-      this.listTaskLog()
+    table: {
+      handler() {
+        this.listTask()
+        this.listTaskLog()
+      },
+      immediate: true
     }
   },
   mounted() {
-    window.onresize = () => {
-      return (() => {
-        this.height = window.innerHeight / 2
-      })()
-    }
-    this.height = window.innerHeight / 2
+    this.calHeight()
   },
   methods: {
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
+      }, 10)
+    },
+    cellStyle({ row, column }) {
+      // 状态列字体颜色
+      if (row.status === 'Underway' && column === 'status') {
+        return 'color: blue'
+      } else if (row.status === 'Completed' && column === 'status') {
+        return 'color: green'
+      } else if (row.status === 'Error' && column === 'status') {
+        return 'color: red'
+      }
+    },
     incrementalUpdateTypeChange: function() {
       if (this.incrementalUpdateType === 'incrementalAdd') {
         if (this.sql) {
           this.incrementalConfig.incrementalDelete = this.sql
+        } else {
+          this.incrementalConfig.incrementalDelete = ''
         }
         if (this.incrementalConfig.incrementalAdd) {
           this.sql = this.incrementalConfig.incrementalAdd
@@ -360,6 +403,8 @@ export default {
       if (this.incrementalUpdateType === 'incrementalDelete') {
         if (this.sql) {
           this.incrementalConfig.incrementalAdd = this.sql
+        } else {
+          this.incrementalConfig.incrementalAdd = ''
         }
         if (this.incrementalConfig.incrementalDelete) {
           this.sql = this.incrementalConfig.incrementalDelete
@@ -372,6 +417,13 @@ export default {
       this.update_setting = true
       this.listTask()
       this.getIncrementalConfig()
+    },
+    refreshLog() {
+      this.listTaskLog()
+    },
+    showErrorMassage(massage) {
+      this.show_error_massage = true
+      this.error_massage = massage
     },
     addTask(task) {
       if (!task) {
@@ -414,10 +466,20 @@ export default {
       })
     },
     saveTask(task) {
+      if (this.incrementalUpdateType === 'incrementalAdd') {
+        this.incrementalConfig.incrementalAdd = this.sql
+      } else {
+        this.incrementalConfig.incrementalDelete = this.sql
+      }
+      this.incrementalConfig.tableId = this.table.id
       task.startTime = new Date(task.startTime).getTime()
       task.endTime = new Date(task.endTime).getTime()
       task.tableId = this.table.id
-      post('/dataset/task/save', task).then(response => {
+      const dataSetTaskRequest = {
+        datasetTableTask: task,
+        datasetTableIncrementalConfig: this.incrementalConfig
+      }
+      post('/dataset/task/save', dataSetTaskRequest).then(response => {
         this.$message({
           message: this.$t('dataset.save_success'),
           type: 'success',

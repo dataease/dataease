@@ -21,23 +21,19 @@
       >
 
         <!-- <el-table-column type="selection" fix /> -->
-        <el-table-column :show-overflow-tooltip="true" label="菜单标题" prop="title" />
-        <el-table-column prop="icon" label="图标" align="center">
+        <el-table-column :show-overflow-tooltip="true" :label="$t('menu.tile')" prop="title" />
+        <el-table-column prop="icon" :label="$t('commons.icon')" align="center">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
           </template>
         </el-table-column>
-
-        <!-- <el-table-column :show-overflow-tooltip="true" prop="permission" label="权限标识" />
-        <el-table-column :show-overflow-tooltip="true" prop="component" label="组件路径" /> -->
-
-        <el-table-column prop="createTime" label="创建日期">
+        <el-table-column prop="createTime" :label="$t('menu.create_time')">
           <template v-slot:default="scope">
             <span>{{ scope.row.createTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
 
-        <fu-table-operations :buttons="buttons" label="操作" fix />
+        <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
       </el-table>
     </tree-table>
 
@@ -53,12 +49,12 @@
 
         <el-form-item label="菜单类型" prop="type">
           <el-radio-group v-model="form.type" size="mini" :disabled="formType!=='add'" style="width: 179px">
-            <el-radio-button label="0">目录</el-radio-button>
-            <el-radio-button label="1">菜单</el-radio-button>
-            <el-radio-button label="2">按钮</el-radio-button>
+            <el-radio-button label="0">{{ $t('commons.catalogue') }} </el-radio-button>
+            <el-radio-button label="1">{{ $t('commons.menu') }} </el-radio-button>
+            <el-radio-button label="2">{{ $t('commons.button') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-show="form.type!== 2" label="菜单图标" prop="icon">
+        <el-form-item v-show="form.type!== 2" :label="$t('commons.icon')" prop="icon">
           <el-popover
             placement="bottom-start"
             width="425"
@@ -66,48 +62,48 @@
             @show="$refs['iconSelect'].reset()"
           >
             <IconSelect ref="iconSelect" @selected="selected" />
-            <el-input slot="reference" v-model="form.icon" style="width: 450px;" placeholder="点击选择图标" readonly>
+            <el-input slot="reference" v-model="form.icon" style="width: 450px;" :placeholder="$t('menu.select_icon')" readonly>
               <svg-icon v-if="form.icon" slot="prefix" :icon-class="form.icon" class="el-input__icon" style="height: 32px;width: 16px;" />
               <i v-else slot="prefix" class="el-icon-search el-input__icon" />
             </el-input>
           </el-popover>
         </el-form-item>
 
-        <el-form-item v-if="form.type !== 2" label="菜单标题" prop="title">
-          <el-input v-model="form.title" :style=" form.type === '0' ? 'width: 450px' : 'width: 179px'" placeholder="菜单标题" />
+        <el-form-item v-if="form.type !== 2" :label="$t('menu.tile')" prop="title">
+          <el-input v-model="form.title" :style=" form.type === '0' ? 'width: 450px' : 'width: 179px'" :placeholder="$t('menu.tile')" />
         </el-form-item>
-        <el-form-item v-if="form.type === 2" label="按钮名称" prop="title">
-          <el-input v-model="form.title" placeholder="按钮名称" style="width: 179px;" />
+        <el-form-item v-if="form.type === 2" :label="$t('menu.button_name')" prop="title">
+          <el-input v-model="form.title" :placeholder="$t('menu.button_name')" style="width: 179px;" />
         </el-form-item>
-        <el-form-item v-show="form.type !== 0" label="权限标识" prop="permission">
-          <el-input v-model="form.permission" :disabled="form.iframe || formType!=='add'" placeholder="权限标识" style="width: 179px;" />
+        <el-form-item v-show="form.type !== 0" :label="$t('menu.authority_identification')" prop="permission">
+          <el-input v-model="form.permission" :disabled="form.iframe || formType!=='add'" :placeholder="$t('menu.authority_identification')" style="width: 179px;" />
         </el-form-item>
-        <el-form-item v-if="form.type !== 2" label="路由地址" prop="path">
-          <el-input v-model="form.path" placeholder="路由地址" :disabled="formType!=='add'" style="width: 179px;" />
+        <el-form-item v-if="form.type !== 2" label="$t('menu.route_addr')" prop="path">
+          <el-input v-model="form.path" :placeholder="$t('menu.route_addr')" :disabled="formType!=='add'" style="width: 179px;" />
         </el-form-item>
-        <el-form-item label="菜单排序" prop="menuSort">
+        <el-form-item :label="$t('menu.menu_sort')" prop="menuSort">
           <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" style="width: 179px;" />
         </el-form-item>
-        <el-form-item v-show="!form.iframe && form.type === 1" label="组件名称" prop="componentName">
+        <el-form-item v-show="!form.iframe && form.type === 1" :label="$t('menu.module_name')" prop="componentName">
           <el-input v-model="form.componentName" :disabled="formType!=='add'" style="width: 179px;" placeholder="匹配组件内Name字段" />
         </el-form-item>
-        <el-form-item v-show="!form.iframe && form.type === 1" label="组件路径" prop="component">
-          <el-input v-model="form.component" :disabled="formType!=='add'" style="width: 179px;" placeholder="组件路径" />
+        <el-form-item v-show="!form.iframe && form.type === 1" label="$t('menu.path')" prop="component">
+          <el-input v-model="form.component" :disabled="formType!=='add'" style="width: 179px;" :placeholder="$t('menu.path')" />
         </el-form-item>
-        <el-form-item label="上级类目" prop="pid">
+        <el-form-item :label="$t('menu.parent_category')" prop="pid">
           <treeselect
             v-model="form.pid"
             :disabled="formType!=='add'"
             :options="menus"
             :load-options="loadMenus"
             style="width: 450px;"
-            placeholder="选择上级类目"
+            :placeholder="$t('menu.parent_category')"
           />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="createMenu('menuForm')">确认</el-button>
+        <el-button type="primary" @click="createMenu('menuForm')">{{ $t('commons.confirm') }}</el-button>
       </div>
 
     </el-dialog>

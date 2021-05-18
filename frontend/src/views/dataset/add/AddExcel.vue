@@ -28,7 +28,7 @@
                   :multiple="false"
                   :show-file-list="false"
                   :file-list="fileList"
-                  accept=".xls,.xlsx,.csv"
+                  accept=".xls,.xlsx,"
                   :before-upload="beforeUpload"
                   :on-success="uploadSuccess"
                   :on-error="uploadFail"
@@ -132,6 +132,11 @@ export default {
     },
     uploadFail(response, file, fileList) {
       this.uploading = false
+      this.$message({
+        type: 'error',
+        message: this.$t('dataset.parse_error'),
+        showClose: true
+      })
     },
     uploadSuccess(response, file, fileList) {
       // console.log(response)
@@ -153,6 +158,22 @@ export default {
     save() {
       // console.log(this.checkTableList);
       // console.log(this.scene);
+      if (!this.name || this.name === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_input_name'),
+          type: 'error'
+        })
+        return
+      }
+      if (this.name.length > 50) {
+        this.$message({
+          showClose: true,
+          message: this.$t('commons.char_can_not_more_50'),
+          type: 'error'
+        })
+        return
+      }
       const table = {
         id: this.param.tableId,
         name: this.name,

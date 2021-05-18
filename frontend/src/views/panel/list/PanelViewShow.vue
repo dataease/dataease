@@ -5,29 +5,29 @@
         <!--TODO 仪表盘头部区域-->
         <span>{{ panelInfo.name || '测试仪表板' }}</span>
         <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-          <el-tooltip content="保存为模板">
+          <el-tooltip content="$t('panel.save_to_panel')">
             <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
           </el-tooltip>
         </span>
         <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-          <el-tooltip content="导出为模板">
+          <el-tooltip content="$t('panel.save_to_panel')">
             <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
           </el-tooltip>
         </span>
         <span style="float: right;margin-right: 10px">
-          <el-tooltip content="预览">
+          <el-tooltip :content="$t('panel.preview')">
             <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
           </el-tooltip>
         </span>
 
         <span v-if="!hasStar && panelInfo" style="float: right;margin-right: 10px">
-          <el-tooltip content="收藏">
+          <el-tooltip :content="$t('panel.store')">
             <el-button class="el-icon-star-off" size="mini" circle @click="star" />
           </el-tooltip>
         </span>
 
         <span v-if="hasStar && panelInfo" style="float: right;margin-right: 10px">
-          <el-tooltip content="取消">
+          <el-tooltip :content="$t('commons.cancel')">
             <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
           </el-tooltip>
         </span>
@@ -41,7 +41,7 @@
     </el-col>
     <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
       <el-row style="height: 100%;" class="custom-position">
-        请从左侧选择仪表盘
+        {{ $t('panel.select_panel_from_left') }}
       </el-row>
     </el-col>
 

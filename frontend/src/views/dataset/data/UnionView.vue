@@ -5,6 +5,8 @@
       <el-table
         size="mini"
         :data="unionData"
+        :height="height"
+        border
         style="width: 100%;margin-top: 10px;"
       >
         <el-table-column
@@ -28,8 +30,8 @@
           :label="$t('dataset.target_field')"
         />
         <el-table-column
-          fixed="right"
-          width="100"
+          align="left"
+          :label="$t('dataset.operate')"
         >
           <template slot-scope="scope">
             <el-button type="text" size="mini" @click="edit(scope.row)">{{ $t('dataset.edit') }}</el-button>
@@ -90,7 +92,7 @@
             width="500"
             trigger="click"
           >
-            <dataset-group-selector @getTable="getTable" />
+            <dataset-group-selector :mode="1" @getTable="getTable" />
             <el-button slot="reference" size="mini">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</el-button>
           </el-popover>
 
@@ -143,6 +145,7 @@ export default {
   },
   data() {
     return {
+      height: 500,
       union: {
         id: null,
         sourceTableId: this.table.id,
@@ -165,14 +168,24 @@ export default {
     }
   },
   mounted() {
+    this.calHeight()
     this.initUnion()
   },
   methods: {
+    calHeight() {
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
+      }, 10)
+    },
     initUnion() {
-      post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
-        // console.log(response)
-        this.unionData = response.data
-      })
+      if (this.table.id) {
+        post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
+          // console.log(response)
+          this.unionData = response.data
+        })
+      }
     },
 
     showUnionEdit() {
@@ -183,7 +196,7 @@ export default {
       this.editUnion = true
     },
     saveUnion() {
-      console.log(this.union)
+      // console.log(this.union)
       if (!this.union.sourceTableFieldId || !this.union.sourceUnionRelation || !this.union.targetTableId || !this.union.targetTableFieldId) {
         this.$message({
           type: 'error',
@@ -245,6 +258,14 @@ export default {
     },
     getTable(param) {
       // console.log(param)
+      if (param.id === this.table.id) {
+        this.$message({
+          type: 'error',
+          message: this.$t('dataset.can_not_union_self'),
+          showClose: true
+        })
+        return
+      }
       this.targetTable = param
       this.union.targetTableId = param.id
       this.union.targetTableFieldId = ''

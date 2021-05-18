@@ -10,6 +10,7 @@
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="size" jdbcType="INTEGER" property="size" />
     <result column="de_type" jdbcType="INTEGER" property="deType" />
+    <result column="de_extract_type" jdbcType="INTEGER" property="deExtractType" />
     <result column="checked" jdbcType="BIT" property="checked" />
     <result column="column_index" jdbcType="INTEGER" property="columnIndex" />
     <result column="last_sync_time" jdbcType="BIGINT" property="lastSyncTime" />
@@ -73,8 +74,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, origin_name, `name`, dataease_name, `type`, `size`, de_type, `checked`, 
-    column_index, last_sync_time
+    id, table_id, origin_name, `name`, dataease_name, `type`, `size`, de_type, de_extract_type, 
+    `checked`, column_index, last_sync_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableFieldExample" resultMap="BaseResultMap">
     select
@@ -109,12 +110,14 @@
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTableField">
     insert into dataset_table_field (id, table_id, origin_name, 
       `name`, dataease_name, `type`, 
-      `size`, de_type, `checked`, 
-      column_index, last_sync_time)
+      `size`, de_type, de_extract_type, 
+      `checked`, column_index, last_sync_time
+      )
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR}, 
       #{name,jdbcType=VARCHAR}, #{dataeaseName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
-      #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, #{checked,jdbcType=BIT}, 
-      #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT})
+      #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, 
+      #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTableField">
     insert into dataset_table_field
@@ -142,6 +145,9 @@
       </if>
       <if test="deType != null">
         de_type,
+      </if>
+      <if test="deExtractType != null">
+        de_extract_type,
       </if>
       <if test="checked != null">
         `checked`,
@@ -177,6 +183,9 @@
       </if>
       <if test="deType != null">
         #{deType,jdbcType=INTEGER},
+      </if>
+      <if test="deExtractType != null">
+        #{deExtractType,jdbcType=INTEGER},
       </if>
       <if test="checked != null">
         #{checked,jdbcType=BIT},
@@ -222,6 +231,9 @@
       <if test="record.deType != null">
         de_type = #{record.deType,jdbcType=INTEGER},
       </if>
+      <if test="record.deExtractType != null">
+        de_extract_type = #{record.deExtractType,jdbcType=INTEGER},
+      </if>
       <if test="record.checked != null">
         `checked` = #{record.checked,jdbcType=BIT},
       </if>
@@ -246,6 +258,7 @@
       `type` = #{record.type,jdbcType=VARCHAR},
       `size` = #{record.size,jdbcType=INTEGER},
       de_type = #{record.deType,jdbcType=INTEGER},
+      de_extract_type = #{record.deExtractType,jdbcType=INTEGER},
       `checked` = #{record.checked,jdbcType=BIT},
       column_index = #{record.columnIndex,jdbcType=INTEGER},
       last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT}
@@ -277,6 +290,9 @@
       <if test="deType != null">
         de_type = #{deType,jdbcType=INTEGER},
       </if>
+      <if test="deExtractType != null">
+        de_extract_type = #{deExtractType,jdbcType=INTEGER},
+      </if>
       <if test="checked != null">
         `checked` = #{checked,jdbcType=BIT},
       </if>
@@ -298,6 +314,7 @@
       `type` = #{type,jdbcType=VARCHAR},
       `size` = #{size,jdbcType=INTEGER},
       de_type = #{deType,jdbcType=INTEGER},
+      de_extract_type = #{deExtractType,jdbcType=INTEGER},
       `checked` = #{checked,jdbcType=BIT},
       column_index = #{columnIndex,jdbcType=INTEGER},
       last_sync_time = #{lastSyncTime,jdbcType=BIGINT}

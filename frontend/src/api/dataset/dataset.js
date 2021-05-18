@@ -119,4 +119,12 @@ export function fieldValues(fieldId) {
   })
 }
 
+export function isKettleRunning() {
+  return request({
+    url: '/dataset/group/isKettleRunning',
+    method: 'post',
+    loading: true
+  })
+}
+
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree }

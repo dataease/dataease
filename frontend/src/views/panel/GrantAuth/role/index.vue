@@ -79,7 +79,7 @@ export default {
       const rows = this.$refs.table.store.states.selection
       const request = this.buildRequest(rows)
       saveShare(request).then(res => {
-        this.$success('保存成功')
+        this.$success(this.$t('commons.save_success'))
         return true
       }).catch(err => {
         this.$error(err.message)
@@ -88,7 +88,6 @@ export default {
     },
 
     cancel() {
-      console.log('role cancel')
     },
     buildRequest(rows) {
       const targetIds = rows.map(row => row.roleId)

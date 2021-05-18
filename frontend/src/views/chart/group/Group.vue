@@ -10,10 +10,10 @@
       <el-divider />
 
       <el-row>
-        <el-button icon="el-icon-circle-plus" type="primary" size="mini" @click="add('group')">
+        <el-button type="primary" size="mini" @click="add('group')">
           {{ $t('chart.add_group') }}
         </el-button>
-        <el-button icon="el-icon-folder-add" type="primary" size="mini" @click="add('scene')">
+        <el-button type="primary" size="mini" @click="add('scene')">
           {{ $t('chart.add_scene') }}
         </el-button>
       </el-row>
@@ -262,12 +262,14 @@ export default {
       },
       groupFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       },
       tableFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       },
       selectTableFlag: false,
@@ -366,11 +368,11 @@ export default {
             this.groupTree(this.groupForm)
           })
         } else {
-          this.$message({
-            message: this.$t('commons.input_content'),
-            type: 'error',
-            showClose: true
-          })
+          // this.$message({
+          //   message: this.$t('commons.input_content'),
+          //   type: 'error',
+          //   showClose: true
+          // })
           return false
         }
       })
@@ -392,11 +394,11 @@ export default {
             this.$store.dispatch('chart/setTable', null)
           })
         } else {
-          this.$message({
-            message: this.$t('commons.input_content'),
-            type: 'error',
-            showClose: true
-          })
+          // this.$message({
+          //   message: this.$t('commons.input_content'),
+          //   type: 'error',
+          //   showClose: true
+          // })
           return false
         }
       })
@@ -545,12 +547,19 @@ export default {
     },
 
     createChart() {
-      console.log(this.table)
-      if (!this.table.name) {
+      if (!this.table.name || this.table.name === '') {
         this.$message({
           message: this.$t('chart.name_can_not_empty'),
           type: 'error',
           showClose: true
+        })
+        return
+      }
+      if (this.table.name.length > 50) {
+        this.$message({
+          showClose: true,
+          message: this.$t('commons.char_can_not_more_50'),
+          type: 'error'
         })
         return
       }

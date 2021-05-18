@@ -14,23 +14,21 @@
           @row-click="rowClick"
         >
           <template #toolbar>
-            <!-- <fu-table-button icon="el-icon-circle-plus-outline" :label="$t('role.add')" @click="create" /> -->
             <el-button v-permission="['role:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('role.add') }}</el-button>
           </template>
 
-          <el-table-column prop="name" label="名称" />
-          <!-- <el-table-column prop="code" label="代码" /> -->
-          <el-table-column :show-overflow-tooltip="true" prop="createTime" label="创建日期">
+          <el-table-column prop="name" :label="$t('commons.name')" />
+          <el-table-column :show-overflow-tooltip="true" prop="createTime" :label="$t('commons.create_time')">
             <template v-slot:default="scope">
               <span>{{ scope.row.createTime | timestampFormatDate }}</span>
             </template>
           </el-table-column>
-          <fu-table-operations :buttons="buttons" label="操作" fix />
+          <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
         </complex-table>
       </el-aside>
       <el-main style="padding: 8px 20px;">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="菜单授权" name="first">
+          <el-tab-pane :label="$t('role.menu_authorization')" name="first">
             <el-tree
               ref="menu"
               lazy
@@ -44,7 +42,7 @@
               @check="menuChange"
             />
           </el-tab-pane>
-          <el-tab-pane label="数据授权" name="second">玩命开发中...</el-tab-pane>
+          <el-tab-pane :label="$t('role.data_authorization')" name="second">玩命开发中...</el-tab-pane>
         </el-tabs>
       </el-main>
     </el-container>
@@ -72,7 +70,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="saveRole('roleForm')">确认</el-button>
+        <el-button type="primary" @click="saveRole('roleForm')">{{ $t('commons.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -106,7 +104,7 @@ export default {
       form: {},
       rule: {
         name: [
-          { required: true, message: '请输入名称', trigger: 'blur' }
+          { required: true, message: this.$t('role.pls_input_name'), trigger: 'blur' }
         ],
         code: [{ required: true, message: '请输入代码', trigger: 'blur' }]
       },
@@ -127,13 +125,9 @@ export default {
       ],
       searchConfig: {
         useQuickSearch: false,
-        quickPlaceholder: '按名称搜索',
+        quickPlaceholder: this.$t('role.search_by_name'),
         components: [
-        //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
-          { field: 'name', label: '角色名称', component: 'FuComplexInput' },
-
-          { field: 'code', label: '角色代码', component: 'FuComplexInput', defaultOperator: 'eq' }
-        //   { field: 'deptId', label: '组织', component: conditionTable }
+          { field: 'name', label: this.$t('role.role_name'), component: 'FuComplexInput' }
         ]
       },
       paginationConfig: {
@@ -153,11 +147,6 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
     },
-    // create() {
-    //   this.form = {}
-    //   this.formType = 'add'
-    //   this.dialogVisible = true
-    // },
     create() {
       this.$router.push({ name: '角色表单' })
     },
@@ -170,12 +159,6 @@ export default {
         this.tableData = data.listObject
       })
     },
-
-    // edit(row) {
-    //   this.formType = 'modify'
-    //   this.dialogVisible = true
-    //   this.form = Object.assign({}, row)
-    // },
     edit(row) {
       this.$router.push({ name: '角色表单', params: row })
     },
@@ -234,7 +217,6 @@ export default {
             }
           }
         }
-        console.log(this.menuIds)
         this.$refs.menu.setCheckedKeys(this.menuIds)
         this.saveMenus()
       })
@@ -268,9 +250,9 @@ export default {
       this.$refs.menu.setCheckedKeys(this.menuIds)
     },
     handleDelete(row) {
-      this.$confirm('确认删除角色[' + row.name + ']？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm( this.$t('commons.confirm_delete') + ": " + row.name + '？', this.$t('role.tips'), {
+        confirmButtonText: this.$t('commons.confirm'),
+        cancelButtonText:  this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
         delRole(row.roleId).then(res => {

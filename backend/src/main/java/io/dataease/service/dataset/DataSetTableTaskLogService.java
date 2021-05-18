@@ -39,12 +39,6 @@ public class DataSetTableTaskLogService {
     }
 
     public List<DataSetTaskLogDTO> list(DatasetTableTaskLog request) {
-        DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
-        DatasetTableTaskLogExample.Criteria criteria = datasetTableTaskLogExample.createCriteria();
-        if (StringUtils.isNotEmpty(request.getTableId())) {
-            criteria.andTableIdEqualTo(request.getTableId());
-        }
-        datasetTableTaskLogExample.setOrderByClause("create_time desc");
         return extDataSetTaskMapper.list(request);
     }
 

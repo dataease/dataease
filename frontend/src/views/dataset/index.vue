@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     switchComponent(c) {
-      console.log(c)
       this.param = c.param
       switch (c.name) {
         case 'ViewTable':
@@ -77,6 +76,7 @@ export default {
 
   .ms-main-container {
     height: calc(100vh - 56px);
+    padding: 15px 15px 0 15px;
   }
 
 </style>

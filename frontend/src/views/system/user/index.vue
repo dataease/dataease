@@ -14,28 +14,28 @@
         <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
       </template>
 
-      <el-table-column prop="username" label="ID" width="80" />
-      <el-table-column prop="nickName" :label="$t('commons.name')" width="140" />
-      <el-table-column prop="gender" label="性别" width="50" />
+      <el-table-column prop="username" :label="$t('commons.name')" />
+      <el-table-column prop="nickName" :label="$t('commons.nick_name')" />
+      <el-table-column prop="gender" :label="$t('commons.gender')" />
 
-      <el-table-column :show-overflow-tooltip="true" prop="phone" width="200" label="电话" />
-      <el-table-column :show-overflow-tooltip="true" width="200" prop="email" :label="$t('commons.email')" />
+      <el-table-column :show-overflow-tooltip="true" prop="phone" :label="$t('commons.phone')" />
+      <el-table-column :show-overflow-tooltip="true" prop="email" :label="$t('commons.email')" />
       <el-table-column :show-overflow-tooltip="true" prop="dept" :label="$t('commons.organization')">
         <template slot-scope="scope">
-          <div>{{ scope.row.dept.deptName }}</div>
+          <div>{{ scope.row.dept && scope.row.dept.deptName }}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="status" :label="$t('commons.status')" width="60">
+      <el-table-column prop="status" :label="$t('commons.status')">
         <template v-slot:default="scope">
           <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" :label="$t('commons.create_time')" width="160">
+      <el-table-column prop="createTime" :label="$t('commons.create_time')">
         <template v-slot:default="scope">
           <span>{{ scope.row.createTime | timestampFormatDate }}</span>
         </template>
       </el-table-column>
-      <fu-table-operations :buttons="buttons" label="操作" fix />
+      <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
     </complex-table>
 
     <el-dialog
@@ -49,47 +49,47 @@
     >
       <el-form ref="createUserForm" :inline="true" :model="form" :rules="rule" size="small" label-width="66px">
 
-        <el-form-item label="用户名" prop="username">
+        <el-form-item :label="$t('commons.name')" prop="username">
           <el-input v-model="form.username" />
         </el-form-item>
-        <el-form-item label="电话" prop="phone">
+        <el-form-item :label="$t('commons.phone')" prop="phone">
           <el-input v-model="form.phone" />
         </el-form-item>
-        <el-form-item label="昵称" prop="nickName">
+        <el-form-item :label="$t('commons.nick_name')" prop="nickName">
           <el-input v-model="form.nickName" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
+        <el-form-item :label="$t('commons.email')" prop="email">
           <el-input v-model="form.email" />
         </el-form-item>
 
-        <el-form-item label="性别">
+        <el-form-item :label="$t('commons.gender')">
           <el-radio-group v-model="form.gender" style="width: 178px">
-            <el-radio label="男">男</el-radio>
-            <el-radio label="女">女</el-radio>
+            <el-radio :label="$t('commons.man')">{{ $t('commons.man') }}</el-radio>
+            <el-radio :label="$t('commons.woman')">{{ $t('commons.woman') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item :label="$t('commons.status')">
           <el-radio-group v-model="form.enabled" style="width: 140px">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">停用</el-radio>
+            <el-radio :label="1">{{ $t('commons.enable') }} </el-radio>
+            <el-radio :label="0"> {{ $t('commons.disable') }} </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="部门" prop="dept">
+        <el-form-item :label="$t('commons.organization')" prop="dept">
           <treeselect
             v-model="form.deptId"
             :options="depts"
             :load-options="loadDepts"
             style="width: 430px"
-            placeholder="选择部门"
+            :placeholder="$t('user.choose_org')"
           />
         </el-form-item>
-        <el-form-item style="margin-bottom: 0;" label="角色" prop="roleIds">
+        <el-form-item style="margin-bottom: 0;" :label="$t('commons.role')" prop="roleIds">
           <el-select
             v-model="form.roleIds"
             style="width: 430px"
             multiple
             required="true"
-            placeholder="请选择"
+            :placeholder="$t('commons.please_select')"
             @remove-tag="deleteTag"
             @change="changeRole"
           >
@@ -104,7 +104,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="dialogVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="createUser('createUserForm')">确认</el-button>
+        <el-button type="primary" @click="createUser('createUserForm')">{{ $t('commons.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -134,7 +134,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="editPasswordVisible = false">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="editUserPassword('editPasswordForm')">确认</el-button>
+        <el-button type="primary" @click="editUserPassword('editPasswordForm')">{{ $t('commons.confirm') }}</el-button>
       </div>
     </el-dialog>
   </layout-content>
@@ -178,9 +178,7 @@ export default {
         useQuickSearch: false,
         quickPlaceholder: '按姓名搜索',
         components: [
-        //   { field: 'name', label: '姓名', component: 'FuComplexInput', defaultOperator: 'eq' },
           { field: 'nick_name', label: '姓名', component: 'FuComplexInput' },
-
           {
             field: 'u.enabled',
             label: '状态',
@@ -289,11 +287,9 @@ export default {
 
   methods: {
     select(selection) {
-      console.log(selection)
     },
 
     search(condition) {
-      console.log(condition) // demo只查看搜索条件，没有搜索的实现
       const temp = formatCondition(condition)
       const param = temp || {}
       const { currentPage, pageSize } = this.paginationConfig

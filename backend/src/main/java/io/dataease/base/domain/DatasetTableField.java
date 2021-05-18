@@ -24,6 +24,8 @@ public class DatasetTableField implements Serializable {
 
     private Integer deType;
 
+    private Integer deExtractType;
+
     private Boolean checked;
 
     private Integer columnIndex;

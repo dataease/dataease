@@ -1,6 +1,6 @@
 const getters = {
   sidebar: state => state.app.sidebar,
-  language: state => state.app.language,
+  language: state => state.user.language,
   size: state => state.app.size,
   device: state => state.app.device,
   token: state => state.user.token,
@@ -21,6 +21,9 @@ const getters = {
   beanMap: state => state.application.beanMap,
   leftWidgetMap: state => state.application.leftWidgetMap,
   dialogWidgetMap: state => state.application.dialogWidgetMap,
-  drawWidgetMap: state => state.application.drawWidgetMap
+  drawWidgetMap: state => state.application.drawWidgetMap,
+  validate: state => state.lic.validate,
+  licMsg: state => state.lic.licMsg,
+  uiInfo: state => state.user.uiInfo
 }
 export default getters

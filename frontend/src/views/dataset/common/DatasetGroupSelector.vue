@@ -83,7 +83,7 @@
         @node-click="sceneClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
-          <span style="display: flex;flex: 1;width: 0;">
+          <span :id="data.id" style="display: flex;flex: 1;width: 0;">
             <span>
               <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
               <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
@@ -103,12 +103,35 @@
 </template>
 
 <script>
-import { post } from '@/api/dataset/dataset'
+import { isKettleRunning, post } from '@/api/dataset/dataset'
 
 export default {
   name: 'DatasetGroupSelector',
+  props: {
+    mode: {
+      type: Number,
+      required: false,
+      default: -1
+    },
+    unionData: {
+      type: Array,
+      required: false,
+      default: null
+    },
+    checkedList: {
+      type: Array,
+      required: false,
+      default: null
+    },
+    table: {
+      type: Object,
+      required: false,
+      default: null
+    }
+  },
   data() {
     return {
+      kettleRunning: false,
       sceneMode: false,
       search: '',
       data: [],
@@ -132,10 +155,21 @@ export default {
   },
   computed: {},
   watch: {
-    // search(val){
-    //   this.groupForm.name = val;
-    //   this.tree(this.groupForm);
-    // }
+    'unionData': function() {
+      this.unionDataChange()
+    },
+    'table': function() {
+      if (this.table && this.table.sceneId) {
+        post('dataset/group/getScene/' + this.table.sceneId, {}).then(response => {
+          this.currGroup = response.data
+
+          this.$nextTick(function() {
+            this.sceneMode = true
+            this.tableTree()
+          })
+        })
+      }
+    },
     search(val) {
       if (val && val !== '') {
         this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
@@ -148,11 +182,15 @@ export default {
     this.tree(this.groupForm)
     this.tableTree()
   },
-  activated() {
-    this.tree(this.groupForm)
-    this.tableTree()
+  created() {
+    this.kettleState()
   },
   methods: {
+    kettleState() {
+      isKettleRunning().then(res => {
+        this.kettleRunning = res.data
+      })
+    },
     close() {
       this.editGroup = false
       this.groupForm = {
@@ -183,17 +221,25 @@ export default {
       if (this.currGroup) {
         post('/dataset/table/list', {
           sort: 'type asc,create_time desc,name asc',
-          sceneId: this.currGroup.id
+          sceneId: this.currGroup.id,
+          mode: this.mode < 0 ? null : this.mode
         }).then(response => {
           this.tables = response.data
+          for (let i = 0; i < this.tables.length; i++) {
+            if (this.tables[i].mode === 1 && this.kettleRunning === false) {
+              this.$set(this.tables[i], 'disabled', true)
+            }
+          }
           this.tableData = JSON.parse(JSON.stringify(this.tables))
+
+          this.$nextTick(function() {
+            this.unionDataChange()
+          })
         })
       }
     },
 
     nodeClick(data, node) {
-      // console.log(data);
-      // console.log(node);
       if (data.type === 'scene') {
         this.sceneMode = true
         this.currGroup = data
@@ -215,8 +261,66 @@ export default {
     },
 
     sceneClick(data, node) {
-      // console.log(data);
-      this.$emit('getTable', data)
+      if (data.disabled) {
+        this.$message({
+          type: 'warning',
+          message: this.$t('dataset.invalid_dataset'),
+          showClose: true
+        })
+        return
+      }
+      // check mode=1的数据集是否创建doris表
+      if (data.mode === 1) {
+        post('/dataset/table/checkDorisTableIsExists/' + data.id, {}).then(response => {
+          if (response.data) {
+            this.$nextTick(function() {
+              this.$emit('getTable', data)
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: this.$t('dataset.invalid_table_check'),
+              showClose: true
+            })
+          }
+        })
+      } else {
+        this.$emit('getTable', data)
+      }
+    },
+
+    unionDataChange() {
+      if (!this.sceneMode) {
+        return
+      }
+      if (!this.checkedList || this.checkedList.length === 0) {
+        this.tableData.forEach(ele => {
+          const span = document.getElementById(ele.id).parentNode
+          const div1 = span.parentNode
+          const div2 = div1.parentNode
+          span.style.removeProperty('color')
+          div1.style.removeProperty('cursor')
+          div2.style.removeProperty('pointer-events')
+        })
+        return
+      }
+      const tableList = this.tableData.map(ele => {
+        return ele.id
+      })
+      const unionList = this.unionData.map(ele => {
+        return ele.targetTableId
+      })
+      unionList.push(this.checkedList[0].tableId)
+      const notUnionList = tableList.concat(unionList).filter(v => tableList.includes(v) && !unionList.includes(v))
+
+      notUnionList.forEach(ele => {
+        const span = document.getElementById(ele).parentNode
+        const div1 = span.parentNode
+        const div2 = div1.parentNode
+        span.style.setProperty('color', '#c0c4cc')
+        div1.style.setProperty('cursor', 'not-allowed')
+        div2.style.setProperty('pointer-events', 'none')
+      })
     }
   }
 }
