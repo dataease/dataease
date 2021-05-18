@@ -85,6 +85,7 @@ export default {
     tokenError: '信息错误，请重新登陸'
   },
   commons: {
+    icon: '圖標',
     all: '全部',
     enable: '啟用',
     disable: '停用',

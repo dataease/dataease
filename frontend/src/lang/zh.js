@@ -85,6 +85,7 @@ export default {
     tokenError: 'token错误，请重新登录'
   },
   commons: {
+    icon: '图标',
     all: '全部',
     enable: '启用',
     disable: '停用',
@@ -421,7 +422,12 @@ export default {
     apikey_delete_confirm: '这个 API Key 确定要删除吗?',
     input_id_placeholder: '请输入ID (不支持中文)',
     source: '用户来源',
-    choose_org: '选择组织'
+    choose_org: '选择组织',
+    reset_password: '重置密码',
+    current_user: '当前用户',
+    origin_passwd: '原始密码',
+    new_passwd: '新密码',
+    confirm_passwd: '确认密码'
   },
   role: {
     menu_authorization: '菜单授权',

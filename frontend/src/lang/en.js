@@ -85,6 +85,7 @@ export default {
     tokenError: 'Token error, please login again'
   },
   commons: {
+    icon: 'Icon',
     all: 'All',
     enable: 'Enable',
     disable: 'Disable',

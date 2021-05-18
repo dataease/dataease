@@ -35,7 +35,7 @@
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip> -->
 
-        <lang-select class="right-menu-item hover-effect" />
+<!--        <lang-select class="right-menu-item hover-effect" />-->
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center;">
@@ -45,21 +45,21 @@
         <el-dropdown-menu slot="dropdown">
 
           <router-link to="/person-info/index">
-            <el-dropdown-item>个人信息</el-dropdown-item>
+            <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
           </router-link>
           <router-link to="/person-pwd/index">
-            <el-dropdown-item>重置密码</el-dropdown-item>
+            <el-dropdown-item>{{ $t('user.reset_password') }}</el-dropdown-item>
           </router-link>
 
           <a href="https://panjiachen.github.io/vue-element-admin-site/#/" target="_blank">
-            <el-dropdown-item>Docs</el-dropdown-item>
+            <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>
           </a>
 
           <a href="https://fit2cloud.com/" target="_blank">
-            <el-dropdown-item>关于</el-dropdown-item>
+            <el-dropdown-item>{{ $t('commons.about_us') }} </el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">退出</span>
+            <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -100,7 +100,7 @@ import { isExternal } from '@/utils/validate'
 // import Doc from '@/components/Doc'
 // import Screenfull from '@/components/Screenfull'
 // import SizeSelect from '@/components/SizeSelect'
-import LangSelect from '@/components/LangSelect'
+// import LangSelect from '@/components/LangSelect'
 import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Topbar',
@@ -108,7 +108,7 @@ export default {
     AppLink,
     // Screenfull,
     // SizeSelect,
-    LangSelect
+    // LangSelect
     // Doc
   },
   data() {

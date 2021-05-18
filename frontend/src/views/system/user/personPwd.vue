@@ -1,19 +1,19 @@
 <template>
-  <layout-content header="修改密码">
+  <layout-content :header="$t('member.edit_password')">
 
     <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-      <el-form-item label="原始密码" prop="oldPwd">
+      <el-form-item :label="$t('user.origin_passwd')" prop="oldPwd">
         <el-input v-model="form.oldPwd" type="password" />
       </el-form-item>
-      <el-form-item label="新密码" prop="newPwd">
+      <el-form-item :label="$t('user.new_passwd')" prop="newPwd">
         <el-input v-model="form.newPwd" type="password" />
       </el-form-item>
-      <el-form-item label="确认密码" prop="repeatPwd">
+      <el-form-item :label="$t('user.confirm_passwd')" prop="repeatPwd">
         <el-input v-model="form.repeatPwd" type="password" />
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="save">保存</el-button>
+        <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
       </el-form-item>
     </el-form>
 
@@ -35,12 +35,6 @@ export default {
 
         oldPwd: [
           { required: true, message: this.$t('user.input_password'), trigger: 'blur' }
-        //   {
-        //     required: true,
-        //     pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{6,30}$/,
-        //     message: this.$t('member.password_format_is_incorrect'),
-        //     trigger: 'blur'
-        //   }
         ],
         newPwd: [
           { required: true, message: this.$t('user.input_password'), trigger: 'blur' }

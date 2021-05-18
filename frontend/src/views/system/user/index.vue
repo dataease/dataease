@@ -287,11 +287,9 @@ export default {
 
   methods: {
     select(selection) {
-      console.log(selection)
     },
 
     search(condition) {
-      console.log(condition) // demo只查看搜索条件，没有搜索的实现
       const temp = formatCondition(condition)
       const param = temp || {}
       const { currentPage, pageSize } = this.paginationConfig
