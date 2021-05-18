@@ -32,8 +32,8 @@
       <div v-if="valid" class="auth-root-class">
         <span slot="footer">
 
-          <el-button v-if="!form.enablePwd" v-clipboard:copy="form.uri" v-clipboard:success="onCopy" v-clipboard:error="onError" type="primary">复制链接</el-button>
-          <el-button v-if="form.enablePwd" v-clipboard:copy="form.uri + ' 密码: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" type="primary">复制链接及密码</el-button>
+          <el-button v-if="!form.enablePwd" v-clipboard:copy="form.uri" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">复制链接</el-button>
+          <el-button v-if="form.enablePwd" v-clipboard:copy="form.uri + ' 密码: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">复制链接及密码</el-button>
 
         </span>
       </div>
