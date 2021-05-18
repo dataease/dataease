@@ -50,7 +50,11 @@ export default {
         background-color: #c92100;
         color: #fff;
         text-align: center;
-        padding: 6px 11px;
+        /* padding: 6px 11px; */
+        position: fixed;
+        z-index: 1002;
+        top: 0;
+        width: 100%;
     }
 
 </style>

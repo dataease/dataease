@@ -51,13 +51,16 @@
             <el-dropdown-item>重置密码</el-dropdown-item>
           </router-link>
 
-          <a href="https://panjiachen.github.io/vue-element-admin-site/#/" target="_blank">
+          <a href="/swagger-ui/index.html" target="_blank">
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>
 
-          <a href="https://fit2cloud.com/" target="_blank">
+          <!-- <a href="https://fit2cloud.com/" target="_blank">
             <el-dropdown-item>关于</el-dropdown-item>
-          </a>
+          </a> -->
+          <router-link to="/system/about">
+            <el-dropdown-item>关于</el-dropdown-item>
+          </router-link>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出</span>
           </el-dropdown-item>

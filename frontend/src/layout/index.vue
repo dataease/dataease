@@ -1,6 +1,6 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <!-- <licbar /> -->
+    <licbar />
     <topbar />
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <sidebar v-if="!sidebar.hide" class="sidebar-container" />
@@ -18,8 +18,8 @@
 
 <script>
 import RightPanel from '@/components/RightPanel'
-// import { Sidebar, Settings, AppMain, Topbar, Licbar } from './components'
-import { Sidebar, Settings, AppMain, Topbar } from './components'
+import { Sidebar, Settings, AppMain, Topbar, Licbar } from './components'
+// import { Sidebar, Settings, AppMain, Topbar } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 
 export default {
@@ -29,8 +29,8 @@ export default {
     Sidebar,
     Settings,
     AppMain,
-    Topbar
-    // Licbar
+    Topbar,
+    Licbar
   },
   mixins: [ResizeMixin],
   computed: {
