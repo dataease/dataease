@@ -362,6 +362,10 @@ export default {
     border: none;
   }
 
+  .ms-main-container {
+    height: calc(100vh - 91px);
+  }
+
   .de-header {
     height: 35px !important;
     border-bottom: 1px solid #E6E6E6;

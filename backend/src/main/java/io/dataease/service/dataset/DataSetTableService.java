@@ -661,12 +661,15 @@ public class DataSetTableService {
                 for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
                     if (i == 0) {
                         TableFiled tableFiled = new TableFiled();
-                        tableFiled.setFieldName(readCell(row.getCell(j)));
-                        tableFiled.setRemarks(readCell(row.getCell(j)));
                         tableFiled.setFieldType("TEXT");
-                        if(StringUtils.isEmpty(tableFiled.getFieldName())){
-                            continue;
+                        tableFiled.setFieldSize(1024);
+                        String columnName = readCell(row.getCell(j));
+                        if(StringUtils.isEmpty(columnName)){
+                            columnName = "NONE_" + String.valueOf(j);
                         }
+                        tableFiled.setFieldName(columnName);
+                        tableFiled.setRemarks(columnName);
+
                         fields.add(tableFiled);
                     } else {
                         r[j] = readCell(row.getCell(j));
@@ -694,10 +697,14 @@ public class DataSetTableService {
                 for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
                     if (i == 0) {
                         TableFiled tableFiled = new TableFiled();
-                        tableFiled.setFieldName(readCell(row.getCell(j)));
-                        tableFiled.setRemarks(readCell(row.getCell(j)));
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setFieldSize(1024);
+                        String columnName = readCell(row.getCell(j));
+                        if(StringUtils.isEmpty(columnName)){
+                            columnName = "NONE_" + String.valueOf(j);
+                        }
+                        tableFiled.setFieldName(columnName);
+                        tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
                     } else {
                         r[j] = readCell(row.getCell(j));

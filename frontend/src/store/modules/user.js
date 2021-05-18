@@ -4,6 +4,7 @@ import { resetRouter } from '@/router'
 import { format } from '@/utils/formatUi'
 import { getLanguage } from '@/lang/index'
 import Cookies from 'js-cookie'
+import router from '@/router'
 const getDefaultState = () => {
   return {
     token: getToken(),
@@ -101,6 +102,9 @@ const actions = {
         commit('SET_PERMISSIONS', permissions)
 
         commit('SET_LANGUAGE', language)
+
+        // axios.defaults.headers.common['Accept-Language'] = language || 'zh_CN'
+        // document.querySelector('html').setAttribute('lang', language || 'zh_CN')
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -155,6 +159,7 @@ const actions = {
   setLanguage({ commit }, language) {
     languageApi(language).then(() => {
       commit('SET_LANGUAGE', language)
+      router.go(0)
     })
   }
 }

@@ -14,8 +14,8 @@
     </el-tabs>
     <div class="auth-root-class">
       <span slot="footer">
-        <el-button @click="cancel">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
+        <el-button size="mini" @click="cancel">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="save">{{ $t('commons.confirm') }}</el-button>
       </span>
     </div>
   </div>

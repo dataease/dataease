@@ -50,8 +50,8 @@ INSERT INTO `sys_menu` VALUES (52, 1, 0, 1, '关于', '关于', 'system/about/in
 COMMIT;
 
 BEGIN;
-INSERT INTO `sys_user` VALUES (4, 0, 'admin', '管理员', '男', NULL, 'admin@fit2cloud.com', 'e10adc3949ba59abbe56e057f20f883e', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534,NULL);
-INSERT INTO `sys_user` VALUES (19, 25, 'demo', 'demo', '男', NULL, 'demo@fit2cloud.com', 'e10adc3949ba59abbe56e057f20f883e', b'0', 0, NULL, NULL, NULL, 1619086036234, 1619086036234,NULL);
+INSERT INTO `sys_user` VALUES (4, 0, 'admin', '管理员', '男', NULL, 'admin@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534,NULL);
+INSERT INTO `sys_user` VALUES (19, 25, 'demo', 'demo', '男', NULL, 'demo@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'0', 0, NULL, NULL, NULL, 1619086036234, 1619086036234,NULL);
 COMMIT;
 
 

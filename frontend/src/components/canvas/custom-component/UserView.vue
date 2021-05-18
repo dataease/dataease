@@ -6,8 +6,9 @@
         {{ message }}
       </div>
     </div>
-    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table')" :ref="element.propValue.id" class="chart-class" :chart="chart" />
-    <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" />
+    <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <label-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
   </div>
 </template>
 
@@ -16,6 +17,7 @@
 import { viewData } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
+import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 
 import { mapState } from 'vuex'
 
@@ -33,7 +35,7 @@ import {
 
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal },
+  components: { ChartComponent, TableNormal, LabelNormal },
   props: {
     element: {
       type: Object

@@ -31,6 +31,6 @@ public interface StoreApi {
 
     @ApiOperation("移除收藏")
     @PostMapping("/remove/{storeId}")
-    void remove(@PathVariable("storeId") Long storeId);
+    void remove(@PathVariable("storeId") String storeId);
 
 }

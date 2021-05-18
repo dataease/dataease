@@ -87,6 +87,7 @@ export default {
     password_error: '密码不小于6位'
   },
   commons: {
+    close: '关闭',
     icon: '图标',
     all: '全部',
     enable: '启用',
