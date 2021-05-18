@@ -25,8 +25,8 @@
     </el-row>
     <el-row v-if="inputType==='import'" class="preview" :style="classBackground" />
     <el-row class="root-class">
-      <el-button @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" @click="save()">{{ $t('commons.confirm') }}</el-button>
+      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
+      <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
     </el-row>
   </el-row>
 </template>
