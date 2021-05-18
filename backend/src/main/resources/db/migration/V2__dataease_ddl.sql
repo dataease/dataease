@@ -44,6 +44,7 @@ CREATE TABLE `datasource` (
   `configuration`  longtext NOT NULL COMMENT '详细信息',
   `create_time` bigint(13)  NOT NULL COMMENT 'Create timestamp',
   `update_time` bigint(13) NOT NULL COMMENT 'Update timestamp',
+  `create_by` varchar(50)  COMMENT '创建人ID',
   PRIMARY KEY (`id`)
 )ENGINE = InnoDB
 DEFAULT CHARSET = utf8mb4;
