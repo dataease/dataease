@@ -86,9 +86,6 @@
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
-                      <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
-                      <!--                    {{$t('dataset.move_to')}}-->
-                      <!--                  </el-dropdown-item>-->
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
@@ -150,12 +147,6 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <!-- <el-button type="primary" size="mini" plain>
-          {{ $t('dataset.update') }}
-        </el-button>
-        <el-button type="primary" size="mini" plain>
-          {{ $t('dataset.process') }}
-        </el-button> -->
       </el-row>
       <el-row>
         <el-form>
@@ -207,9 +198,6 @@
                   <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
                     {{ $t('dataset.rename') }}
                   </el-dropdown-item>
-                  <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
-                  <!--                    {{$t('dataset.move_to')}}-->
-                  <!--                  </el-dropdown-item>-->
                   <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteTable',data,node)">
                     {{ $t('dataset.delete') }}
                   </el-dropdown-item>
@@ -225,10 +213,6 @@
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="tableForm.name" />
           </el-form-item>
-          <!--          <el-form-item :label="$t('dataset.mode')" prop="mode">-->
-          <!--            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>-->
-          <!--            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>-->
-          <!--          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="mini" @click="closeTable()">{{ $t('dataset.cancel') }}</el-button>
@@ -278,7 +262,8 @@ export default {
       },
       tableFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { min: 2, max: 50, message: this.$t('commons.input_limit', [2, 50]), trigger: 'blur' }
         ],
         mode: [
           { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
@@ -409,11 +394,6 @@ export default {
             this.$store.dispatch('dataset/setTable', null)
           })
         } else {
-          this.$message({
-            message: this.$t('commons.input_content'),
-            type: 'error',
-            showClose: true
-          })
           return false
         }
       })
