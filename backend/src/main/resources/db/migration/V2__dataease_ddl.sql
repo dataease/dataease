@@ -43,6 +43,7 @@ CREATE TABLE `datasource` (
   `type`  varchar(50) NOT NULL COMMENT '类型',
   `configuration`  longtext NOT NULL COMMENT '详细信息',
   `create_time` bigint(13)  NOT NULL COMMENT 'Create timestamp',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人ID',
   `update_time` bigint(13) NOT NULL COMMENT 'Update timestamp',
   PRIMARY KEY (`id`)
 )ENGINE = InnoDB
