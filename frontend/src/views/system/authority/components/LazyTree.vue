@@ -181,7 +181,7 @@ export default {
           })
         }
       } else {
-        resolve([])
+        resolve(node.data.children)
       }
     },
     filterNode(index) {
@@ -197,7 +197,6 @@ export default {
             // 高亮显示
             this.highlights(res.data)
             this.treeData = this.buildTree(res.data)
-
             // 恢复searchStatus 状态 可以允许继续展开父级
             this.$nextTick(() => (this.searchStatus = false))
           })

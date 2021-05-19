@@ -46,8 +46,9 @@ public class ChartGroupService {
     }
 
     public void delete(String id) {
+        ChartGroup cg = chartGroupMapper.selectByPrimaryKey(id);
         ChartGroupRequest ChartGroup = new ChartGroupRequest();
-        ChartGroup.setId(id);
+        BeanUtils.copyBean(ChartGroup, cg);
         List<ChartGroupDTO> tree = tree(ChartGroup);
         List<String> ids = new ArrayList<>();
         getAllId(tree, ids);
@@ -70,7 +71,7 @@ public class ChartGroupService {
 
     public List<ChartGroupDTO> tree(ChartGroupRequest chartGroup) {
         chartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        if(chartGroup.getLevel() == null){
+        if (chartGroup.getLevel() == null) {
             chartGroup.setLevel(0);
         }
         List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(chartGroup);

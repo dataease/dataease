@@ -51,9 +51,10 @@ public class DataSetGroupService {
         return dataSetGroupDTO;
     }
 
-    public void delete(String id) throws Exception{
+    public void delete(String id) throws Exception {
+        DatasetGroup dg = datasetGroupMapper.selectByPrimaryKey(id);
         DataSetGroupRequest datasetGroup = new DataSetGroupRequest();
-        datasetGroup.setId(id);
+        BeanUtils.copyBean(datasetGroup, dg);
         List<DataSetGroupDTO> tree = tree(datasetGroup);
         List<String> ids = new ArrayList<>();
         getAllId(tree, ids);
@@ -68,7 +69,7 @@ public class DataSetGroupService {
         return datasetGroupMapper.selectByPrimaryKey(id);
     }
 
-    public void deleteTableAndField(List<String> sceneIds) throws Exception{
+    public void deleteTableAndField(List<String> sceneIds) throws Exception {
         for (String sceneId : sceneIds) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             dataSetTableRequest.setSceneId(sceneId);
@@ -81,7 +82,7 @@ public class DataSetGroupService {
 
     public List<DataSetGroupDTO> tree(DataSetGroupRequest datasetGroup) {
         datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        if(datasetGroup.getLevel() == null){
+        if (datasetGroup.getLevel() == null) {
             datasetGroup.setLevel(0);
         }
         List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(datasetGroup);

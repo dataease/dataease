@@ -19,7 +19,7 @@
         <where>
             model_type = #{modelType}
             <if test="createBy != null">
-               and  ( v_auth_model.type ='spine'  OR ( v_auth_model.create_by = #{createBy} AND v_auth_model.type = 'leaf'))
+               and  FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from v_auth_model where model_type = #{modelType} and create_by =#{createBy}) ,#{modelType}))
             </if>
             <if test="pid !=null">
                 and v_auth_model.pid = #{pid}
@@ -54,7 +54,7 @@
         <where>
             model_type = #{modelType}
             <if test="createBy != null">
-                and  ( v_auth_model.type ='spine'  OR ( v_auth_model.create_by = #{createBy} AND v_auth_model.type = 'leaf'))
+                and   FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from v_auth_model where model_type = #{modelType} and create_by =#{createBy}) ,#{modelType}))
             </if>
         </where>
         ) authTemp
@@ -64,7 +64,7 @@
         auth.id = authCount.pid
         <where>
             <if test="createBy != null">
-                (chartcount.children_count>0 or chart.create_by = #{createBy})
+                (authCount.children_count>0 or auth.create_by = #{createBy})
             </if>
         </where>
 

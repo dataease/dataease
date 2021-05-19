@@ -5,10 +5,10 @@
         <span slot="label">{{$t('auth.authConfig')}}</span>
         <auth-config />
       </el-tab-pane>
-      <el-tab-pane name="authQuickConfig">
-        <span slot="label">{{$t('auth.authQuickConfig')}}</span>
-        <auth-quick-config />
-      </el-tab-pane>
+<!--      <el-tab-pane name="authQuickConfig">-->
+<!--        <span slot="label">{{$t('auth.authQuickConfig')}}</span>-->
+<!--        <auth-quick-config />-->
+<!--      </el-tab-pane>-->
     </el-tabs>
   </de-main-container>
 </template>
