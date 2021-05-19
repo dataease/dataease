@@ -148,7 +148,7 @@ export default {
       console.log(tab, event)
     },
     create() {
-      this.$router.push({ name: '角色表单' })
+      this.$router.push({ name: 'system-role-form' })
     },
     search(condition) {
       const temp = formatCondition(condition)
@@ -160,7 +160,7 @@ export default {
       })
     },
     edit(row) {
-      this.$router.push({ name: '角色表单', params: row })
+      this.$router.push({ name: 'system-role-form', params: row })
     },
 
     saveRole(roleForm) {
@@ -250,9 +250,9 @@ export default {
       this.$refs.menu.setCheckedKeys(this.menuIds)
     },
     handleDelete(row) {
-      this.$confirm( this.$t('commons.confirm_delete') + ": " + row.name + '？', this.$t('role.tips'), {
+      this.$confirm(this.$t('commons.confirm_delete') + ': ' + row.name + '？', this.$t('role.tips'), {
         confirmButtonText: this.$t('commons.confirm'),
-        cancelButtonText:  this.$t('commons.cancel'),
+        cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
         delRole(row.roleId).then(res => {

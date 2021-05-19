@@ -45,7 +45,7 @@ export default {
         return false
       }
       //   return name.trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
-      return name.trim().toLocaleLowerCase() === '仪表板'.toLocaleLowerCase()
+      return name.trim().toLocaleLowerCase() === 'panel'.toLocaleLowerCase()
     },
     pathCompile(path) {
       // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561

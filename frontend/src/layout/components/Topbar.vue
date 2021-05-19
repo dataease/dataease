@@ -49,10 +49,10 @@
           <router-link to="/person-pwd/index">
             <el-dropdown-item>{{ $t('user.reset_password') }}</el-dropdown-item>
           </router-link>
-          <a href="https://panjiachen.github.io/vue-element-admin-site/#/" target="_blank">
+          <a href="/swagger-ui.html" target="_blank">
             <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>
           </a>
-          <router-link to="/system/about">
+          <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided @click.native="logout">

@@ -165,7 +165,7 @@ export default {
     //   this.dialogVisible = true
     // },
     create() {
-      this.$router.push({ name: '数据源表单' })
+      this.$router.push({ name: 'datasource-form' })
     },
 
     // edit(row) {
@@ -175,7 +175,7 @@ export default {
     //   this.form.configuration = JSON.parse(this.form.configuration)
     // },
     edit(row) {
-      this.$router.push({ name: '数据源表单', params: row })
+      this.$router.push({ name: 'datasource-form', params: row })
     },
 
     _handleDelete(datasource) {

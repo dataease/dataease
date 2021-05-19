@@ -299,7 +299,7 @@ export default {
       })
     },
     create() {
-      this.$router.push({ name: '用户表单' })
+      this.$router.push({ name: 'system-user-form' })
     },
     // create() {
     //   this.depts = null
@@ -308,7 +308,7 @@ export default {
     //   this.dialogVisible = true
     // },
     edit(row) {
-      this.$router.push({ name: '用户表单', params: row })
+      this.$router.push({ name: 'system-user-form', params: row })
     },
     // edit(row) {
     //   this.depts = null

@@ -1,5 +1,5 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('menu.create') : $t('menu.modify')" back-name="菜单管理">
+  <layout-content :header="formType=='add' ? $t('menu.create') : $t('menu.modify')" back-name="system-menu">
     <el-form ref="menuForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item label="菜单类型" prop="type">
         <el-radio-group v-model="form.type" size="mini" :disabled="formType!=='add'">
@@ -167,7 +167,7 @@ export default {
       })
     },
     backToList() {
-      this.$router.push({ name: '菜单管理' })
+      this.$router.push({ name: 'system-menu' })
     }
   }
 }

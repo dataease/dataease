@@ -112,7 +112,7 @@ public class DatasourceService {
             dbTableDTO.setDatasetPath(null);
             for (DatasetTable datasetTable : datasetTables) {
                 DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
-                if (StringUtils.equals(name, dataTableInfoDTO.getTable()) && StringUtils.equals(datasetTable.getCreateBy(), AuthUtils.getUser().getUsername())) {
+                if (StringUtils.equals(name, dataTableInfoDTO.getTable())) {
                     dbTableDTO.setEnableCheck(false);
 
                     List<DatasetGroup> parents = dataSetGroupService.getParents(datasetTable.getSceneId());
