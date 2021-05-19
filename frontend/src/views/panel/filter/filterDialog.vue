@@ -120,7 +120,8 @@
             <div class="filter-field">
               <div class="field-content">
                 <div class="field-content-left">
-                  <div class="field-content-text">{{ $t('panel.field') }} </div>
+                  <!-- <div class="field-content-text">{{ $t('panel.field') }} </div> -->
+                  <div class="field-content-text">字段</div>
                 </div>
 
                 <div class="field-content-right">
