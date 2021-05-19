@@ -98,7 +98,10 @@ export const DEFAULT_BACKGROUND_COLOR = {
 // chart config
 export const BASE_BAR = {
   title: {
-    text: ''
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
   },
   // grid: {
   //   containLabel: true
@@ -127,7 +130,10 @@ export const BASE_BAR = {
 }
 export const HORIZONTAL_BAR = {
   title: {
-    text: ''
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
   },
   // grid: {
   //   containLabel: true
@@ -157,7 +163,10 @@ export const HORIZONTAL_BAR = {
 
 export const BASE_LINE = {
   title: {
-    text: ''
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
   },
   // grid: {
   //   containLabel: true
@@ -188,7 +197,10 @@ export const BASE_LINE = {
 
 export const BASE_PIE = {
   title: {
-    text: ''
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
   },
   // grid: {
   //   containLabel: true
@@ -221,7 +233,10 @@ export const BASE_PIE = {
 
 export const BASE_FUNNEL = {
   title: {
-    text: ''
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
   },
   // grid: {
   //   containLabel: true
@@ -277,7 +292,10 @@ export const BASE_FUNNEL = {
 
 export const BASE_RADAR = {
   title: {
-    text: ''
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
   },
   // grid: {
   //   containLabel: true
@@ -312,7 +330,10 @@ export const BASE_RADAR = {
 
 export const BASE_GAUGE = {
   title: {
-    text: ''
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
   },
   // grid: {
   //   containLabel: true
