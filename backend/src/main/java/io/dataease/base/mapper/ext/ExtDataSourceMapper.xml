@@ -27,12 +27,12 @@
         select id , name , `desc` ,`type` , configuration ,create_time ,update_time
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'link') cids) t,datasource
         <where>
-            FIND_IN_SET(datasource.id,cids))
+            FIND_IN_SET(datasource.id,cids)
         <if test="id != null">
             id = #{id,jdbcType=VARCHAR}
         </if>
         <if test="name != null">
-            `name` = concat('%',#{name,jdbcType=VARCHAR},'%')
+            `name` like concat('%',#{name,jdbcType=VARCHAR},'%')
         </if>
         <if test="desc != null">
             `desc` = #{desc,jdbcType=VARCHAR}
