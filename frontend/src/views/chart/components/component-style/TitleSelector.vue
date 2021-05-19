@@ -73,8 +73,8 @@ export default {
           } else {
             customStyle = JSON.parse(chart.customStyle)
           }
-          if (customStyle.background) {
-            this.colorForm = customStyle.background
+          if (customStyle.text) {
+            this.titleForm = customStyle.text
           }
         }
       }
