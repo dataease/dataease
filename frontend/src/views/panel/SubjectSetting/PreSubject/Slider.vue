@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-row>
+    <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
       <el-col :span="2">
         <span>&nbsp</span>
         <ul class="direction">
@@ -14,7 +14,7 @@
           <div class="window">
             <ul class="container" :style="containerStyle">
               <li>
-                <div style="width:240px; height: 208px;">
+                <div style="width:240px; height: 208px;overflow: hidden">
                   <subject-template-item
                     v-for="item in sliders[sliders.length - 1]"
                     :key="item.id"
