@@ -44,7 +44,7 @@
           </div>
 
           <div class="md-padding" />
-          <div layout="row" layout-align="space-between center" class="lic_rooter">
+          <div v-if="user.isAdmin" layout="row" layout-align="space-between center" class="lic_rooter">
             <el-upload
               action=""
               :multiple="false"
@@ -71,6 +71,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import { validate, buildVersion, updateInfo } from '@/api/system/about'
 import { getToken } from '@/utils/auth'
+import { mapGetters } from 'vuex'
 export default {
 
   components: { LayoutContent },
@@ -84,7 +85,11 @@ export default {
       headers: { Authorization: getToken() }
     }
   },
-
+  computed: {
+    ...mapGetters([
+      'user'
+    ])
+  },
   created() {
     this.initVersion()
     this.getLicenseInfo()
