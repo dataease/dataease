@@ -805,7 +805,7 @@ export default {
     validate_success: '校验成功',
     validate: '校验',
     search_by_name: '根据名称搜索',
-    delete_warning: '删除该数据源将同步删除该数据源下所有相关的数据集, 确定要删除吗?'
+    delete_warning: '确定要删除吗?'
   },
   panel: {
     share: '分享',

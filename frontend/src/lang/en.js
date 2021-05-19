@@ -803,7 +803,7 @@ export default {
     validate_success: 'Verification successful',
     validate: 'Validate',
     search_by_name: 'Search by name',
-    delete_warning: 'Deleting this data connection will delete all related data sets under this data connection synchronously. Confirm to delete?'
+    delete_warning: 'Confirm to delete?'
   },
   panel: {
     share: 'Share',
