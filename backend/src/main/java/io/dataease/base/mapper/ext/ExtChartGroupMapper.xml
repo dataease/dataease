@@ -13,9 +13,9 @@
         select
         id, `name`, pid, `level`, `type`, create_by, create_time,`name` as label,
         get_auths(id,'chart',#{userId}) as `privileges`
-        from chart_group
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_group
         <where>
-            FIND_IN_SET(chart_group.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'chart'))
+            FIND_IN_SET(chart_group.id,cids)
             <if test="id != null">
                 and chart_group.id = #{id,jdbcType=VARCHAR}
             </if>

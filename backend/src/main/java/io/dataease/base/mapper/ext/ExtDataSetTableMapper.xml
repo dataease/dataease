@@ -12,9 +12,9 @@
         select
         id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
         get_auths(id,'dataset',#{userId}) as `privileges`
-        from dataset_table
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_table
         <where>
-            FIND_IN_SET(dataset_table.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'dataset'))
+            FIND_IN_SET(dataset_table.id,cids)
             <if test="sceneId != null">
                and scene_id = #{sceneId,jdbcType=VARCHAR}
             </if>

@@ -10,11 +10,11 @@
     <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="BaseResultMapDTO">
         select id , name , `desc` ,`type` , configuration ,create_time ,update_time,
         get_auths(id,'link',#{extendCondition}) as `privileges`
-         from datasource
+         from (select GET_V_AUTH_MODEL_ID_P_USE (#{extendCondition}, 'link') cids) t,datasource
         <if test="_parameter != null">
             <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
         </if>
-        and FIND_IN_SET(datasource.id,GET_V_AUTH_MODEL_ID_P_USE(#{extendCondition},'link'))
+        and FIND_IN_SET(datasource.id,cids)
         <if test="orderByClause != null">
             order by ${orderByClause}
         </if>
@@ -25,9 +25,9 @@
 
     <select id="queryUnion"  resultMap="BaseResultMapDTO">
         select id , name , `desc` ,`type` , configuration ,create_time ,update_time
-        from datasource
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'link') cids) t,datasource
         <where>
-            FIND_IN_SET(datasource.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'link'))
+            FIND_IN_SET(datasource.id,cids))
         <if test="id != null">
             id = #{id,jdbcType=VARCHAR}
         </if>

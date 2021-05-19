@@ -87,6 +87,7 @@ export default {
     password_error: 'The password can not be less than 6 digits'
   },
   commons: {
+    close: 'Close',
     icon: 'Icon',
     all: 'All',
     enable: 'Enable',
@@ -872,7 +873,7 @@ export default {
     clean_canvas: 'Clean Canvas',
     insert_picture: 'Insert Picture',
     redo: 'Redo',
-    undo: 'UToolbar.vuendo',
+    undo: 'Undo',
     panel_null: 'This is a Empty Panel，You Can Edit and Enrich It'
   },
   plugin: {

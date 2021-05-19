@@ -14,9 +14,9 @@
         id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,
         style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot,
         get_auths(id,'chart',#{userId}) as `privileges`
-        from chart_view
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_view
         <where>
-            FIND_IN_SET(chart_view.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'chart'))
+            FIND_IN_SET(chart_view.id,cids)
             <if test="sceneId != null">
                and scene_id = #{sceneId,jdbcType=VARCHAR}
             </if>

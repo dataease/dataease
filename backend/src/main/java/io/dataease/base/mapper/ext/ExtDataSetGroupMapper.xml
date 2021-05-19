@@ -13,9 +13,9 @@
         select
         id, `name`, pid, `level`, `type`, create_by, create_time,`name` as label,
         get_auths(id,'dataset',#{userId}) as `privileges`
-        from dataset_group
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_group
         <where>
-            FIND_IN_SET(dataset_group.id,GET_V_AUTH_MODEL_ID_P_USE(#{userId},'dataset'))
+            FIND_IN_SET(dataset_group.id,cids)
             <if test="id != null">
                 and dataset_group.id = #{id,jdbcType=VARCHAR}
             </if>
