@@ -916,5 +916,18 @@ export default {
     use: 'Use',
     export: 'Export',
     manage: 'Manage'
+  },
+  about: {
+    auth_to: 'Authorized to',
+    invalid_license: 'Invalid License',
+    update_license: 'Update License',
+    expiration_time: 'Expiration Time',
+    expirationed: '(Expired)',
+    auth_num: 'Authorized quantity',
+    version: 'Version',
+    version_num: 'Version number',
+    standard: 'Standard',
+    enterprise: 'Enterprise',
+    suport: 'Get technical support'
   }
 }

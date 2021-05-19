@@ -918,5 +918,18 @@ export default {
     use: '使用',
     export: '导出',
     manage: '管理'
+  },
+  about: {
+    auth_to: '授权给',
+    invalid_license: 'License 无效',
+    update_license: '更新 License',
+    expiration_time: '过期时间',
+    expirationed: '(已过期)',
+    auth_num: '授权数量',
+    version: '版本',
+    version_num: '版本号',
+    standard: '标准版',
+    enterprise: '企业版',
+    suport: '获取技术支持'
   }
 }

@@ -7,35 +7,35 @@
           <img src="@/assets/DataEase-white.png" alt="" style="height: 80px;width: 400px;padding-top: 15px;">
         </div>
         <div class="license-content">
-          <div v-if="license.status === 'Fail'">License 无效</div>
+          <div v-if="license.status === 'Fail'">{{ $t('about.invalid_license') }}</div>
           <div v-if="license.status !== 'Fail'">
             <table>
               <tr>
-                <th>授权给</th>
+                <th>{{ $t('about.auth_to') }}</th>
                 <td>{{ license.corporation }}</td>
               </tr>
               <tr>
-                <th>过期时间</th>
+                <th>{{ $t('about.expiration_time') }}</th>
                 <td>
-                  <label v-if="license.status === 'expired'" style="color: red">{{ license.expired }} (已过期)</label>
+                  <label v-if="license.status === 'expired'" style="color: red">{{ license.expired }} {{ $t('about.expirationed') }}</label>
                   <label v-if="license.status === 'valid'">{{ license.expired }}</label>
                 </td>
               </tr>
               <tr>
-                <th>授权数量</th>
+                <th>{{ $t('about.auth_num') }}</th>
                 <td>{{ license.count }}</td>
               </tr>
               <tr>
-                <th>版本</th>
+                <th>{{ $t('about.version') }}</th>
                 <td>
                   <span v-if="license.edition">
-                    <span v-if="license.edition === 'Standard'">标准版</span>
-                    <span v-if="license.edition === 'Enterprise'">企业版</span>
+                    <span v-if="license.edition === 'Standard'">{{ $t('about.standard') }}</span>
+                    <span v-if="license.edition === 'Enterprise'">{{ $t('about.enterprise') }}</span>
                   </span>
                 </td>
               </tr>
               <tr>
-                <th>版本号</th>
+                <th>{{ $t('about.version_num') }}</th>
                 <td>
                   <span>{{ build }}</span>
                 </td>
@@ -54,11 +54,11 @@
               name="file"
               :before-upload="beforeUpload"
             >
-              <a class="md-primary pointer">更新 License</a>
+              <a class="md-primary pointer">{{ $t('about.update_license') }}</a>
 
             </el-upload>
 
-            <a class="md-primary pointer" @click="support">获取技术支持</a>
+            <a class="md-primary pointer" @click="support">{{ $t('about.suport') }}</a>
 
           </div>
         </div>
