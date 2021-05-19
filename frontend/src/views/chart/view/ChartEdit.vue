@@ -483,7 +483,7 @@ export default {
       })
     },
     closeEdit() {
-      if (this.view.title.length > 50) {
+      if (this.view.title && this.view.title.length > 50) {
         this.$warning(this.$t('chart.title_limit'))
         return
       }
