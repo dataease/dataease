@@ -4,6 +4,7 @@ package io.dataease.controller.sys;
 import io.dataease.base.domain.SysMenu;
 import io.dataease.commons.utils.BeanUtils;
 
+import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.sys.request.MenuCreateRequest;
 import io.dataease.controller.sys.request.MenuDeleteRequest;
 import io.dataease.controller.sys.response.MenuNodeResponse;
@@ -28,6 +29,7 @@ public class SysMenuController {
     private MenuService menuService;
 
     @ApiOperation("查询跟节点菜单")
+    @I18n
     @PostMapping("/childNodes/{pid}")
     public List<MenuNodeResponse> childNodes(@PathVariable("pid") Long pid){
         List<SysMenu> nodes = menuService.nodesByPid(pid);
