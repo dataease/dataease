@@ -8,6 +8,7 @@
     left: 0;
     z-index: 1001;
     overflow: hidden;
+    border-bottom: 1px solid #DCDFE6;
 
     .log {
       padding: 0 16px;
@@ -29,7 +30,7 @@
         display: inline-block;
         .el-menu-item {
           // color: rgb(191, 203, 217);
-          color: rgba(255,255,255,0.87);
+          color: $menuText;
           &:hover {
             background-color: $subMenuHover !important;
             color: $subMenuActiveText !important;
@@ -65,7 +66,7 @@
         height: 100%;
         font-size: 18px;
         // color: #5a5e66;
-        color: $menuText;
+        color: #606266;
         vertical-align: text-bottom;
 
         &.hover-effect {

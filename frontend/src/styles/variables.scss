@@ -4,7 +4,7 @@
 **/
 
 /* theme color */
-$--color-primary: #f1a826;
+$--color-primary: #0a7be0;
 $--color-success: #13ce66;
 $--color-warning: #ffba00;
 $--color-danger: #ff4949;
@@ -26,8 +26,8 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 @import "~fit2cloud-ui/src/styles/common/variables";
 
 // sidebar
-$menuText:rgba(255,255,255,0.87);
-$menuActiveText:#f18126;
+$menuText:#1e212a;
+$menuActiveText:#0a7be0;
 $topMenuActiveText:#f4f4f5;
 $subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
 
@@ -38,7 +38,7 @@ $menuHover: rgba(158, 158, 158, 0.2);
 
 $subMenuBg:#1f2d3d;
 // $subMenuHover:#001528;
-$subMenuHover:#f18126;
+$subMenuHover:#0a7be0;
 
 $sideBarWidth: 210px;
 $topBarHeight: 56px;

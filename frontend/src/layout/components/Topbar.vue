@@ -1,14 +1,14 @@
 <template>
-  <div class="top-nav" :style="{'background-color': theme}">
+  <div class="top-nav" :style="{'background-color': '#f1f3f8'}">
     <div class="log">
-      <img v-if="!logoUrl" src="@/assets/DataEase-white.png" width="160" alt="" style="padding-top: 8px;">
+      <img v-if="!logoUrl" src="@/assets/DataEase-color.png" width="160" alt="" style="padding-top: 8px;">
       <img v-else :src="logoUrl" width="160" alt="" style="padding-top: 8px;">
     </div>
     <el-menu
       :active-text-color="variables.topMenuActiveText"
       :default-active="activeMenu"
       mode="horizontal"
-      :style="{'background-color': theme}"
+      :style="{'background-color': '#f1f3f8'}"
       @select="handleSelect"
     >
       <div v-for="item in permission_routes" :key="item.path" class="nav-item">
@@ -229,7 +229,7 @@ export default {
 <style lang="scss" scoped>
   .el-dropdown-link {
     cursor: pointer;
-    color: #ffffff;
+    color: #1e212a;
   }
   .el-icon-arrow-down {
     font-size: 12px;
@@ -240,7 +240,7 @@ export default {
     padding: 10px 8px;
     height: 100%;
     font-size: 16px;
-    color: rgba(255,255,255,.87);
+    color: #1e212a;
     vertical-align: text-bottom;
     margin-right: 10px;
   }
