@@ -120,7 +120,8 @@
             <div class="filter-field">
               <div class="field-content">
                 <div class="field-content-left">
-                  <div class="field-content-text">{{ $t(panel.field) }} </div>
+                  <!-- <div class="field-content-text">{{ $t('panel.field') }} </div> -->
+                  <div class="field-content-text">字段</div>
                 </div>
 
                 <div class="field-content-right">
@@ -156,7 +157,7 @@
             </div>
           </el-col>
           <el-col :span="16"><div class="filter-options-right">
-            <el-checkbox v-model="customRange"><span>  {{ $t(panel.custom_scope) }} </span> </el-checkbox>
+            <el-checkbox v-model="customRange"><span>  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
 
             <el-popover
               v-model="popovervisible"
@@ -239,7 +240,7 @@ export default {
       showDomType: 'tree',
       comShowDomType: 'view',
       dataSetBreads: [
-        { label: this.$t('panel.data_list') , link: false, type: 'root' }
+        { label: this.$t('panel.data_list'), link: false, type: 'root' }
       ],
       componentSetBreads: [
         { label: this.$t('panel.component_list'), link: false, type: 'root' }
@@ -577,6 +578,7 @@ export default {
 
   .filter-dialog-tabs {
       border: 1px solid #E6E6E6;
+      height: 100%;
   }
 
   .filter-common {
