@@ -118,6 +118,7 @@ export default {
   },
   created() {
     this.targetActiveName = this.targetInfoArray[0].authType
+    this.sourceActiveName = this.sourceInfoArray[0].authType
   },
 
   methods: {

@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `user_role` (
 )ENGINE = InnoDB
 DEFAULT CHARSET = utf8mb4;
 
+DROP TABLE IF EXISTS `datasource`;
 CREATE TABLE `datasource` (
   `id`          varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
   `name`     varchar(50) NOT NULL COMMENT '名称',
