@@ -12,6 +12,7 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.DorisConfigration;
 import io.dataease.datasource.dto.MysqlConfigration;
+import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
@@ -188,7 +189,6 @@ public class ExtractDataService {
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
             });
             String dorisTablColumnSql = createDorisTablColumnSql(datasetTableFields);
-            System.out.println(dorisTablColumnSql);
             switch (updateType) {
                 // 全量更新
                 case all_scope:
@@ -435,6 +435,17 @@ public class ExtractDataService {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost(), mysqlConfigration.getDataBase(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
+                transMeta.addDatabase(dataMeta);
+                if (extractType.equalsIgnoreCase("all_scope")) {
+                    String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
+                    QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
+                    selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
+                }
+                inputStep = inputStep(transMeta, selectSQL);
+                break;
+            case sqlServer:
+                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfigration.class);
+                dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 if (extractType.equalsIgnoreCase("all_scope")) {
                     String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();

@@ -41,7 +41,7 @@ public class ProviderFactory implements ApplicationContextAware {
             case doris:
                 return context.getBean("dorisQuery", QueryProvider.class);
             case sqlServer:
-                return context.getBean("mysqlQuery", QueryProvider.class);
+                return context.getBean("sqlserverQuery", QueryProvider.class);
             default:
                 return context.getBean("mysqlQuery", QueryProvider.class);
         }

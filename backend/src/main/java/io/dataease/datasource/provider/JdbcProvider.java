@@ -202,6 +202,9 @@ public class JdbcProvider extends DatasourceProvider {
                     tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
                     String dbType = resultSet.getString("TYPE_NAME");
                     tableFiled.setFieldType(dbType);
+                    if(StringUtils.isNotEmpty(dbType) && dbType.equalsIgnoreCase("date") && tableFiled.getFieldSize() < 50 ){
+                        tableFiled.setFieldSize(50);
+                    }
                     list.add(tableFiled);
                 }
             }
