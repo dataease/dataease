@@ -89,7 +89,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div style="height: 25%;overflow:auto" class="padding-lr">
+        <div style="height: 25vh;overflow:auto" class="padding-lr">
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
             <div class="chart-type">
@@ -138,7 +138,7 @@
             </span>
           </span>
         </el-row>
-        <div style="height: 40%;overflow:hidden;border-top: 1px solid #e6e6e6">
+        <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style">
           <el-row class="padding-lr">
             <span>{{ $t('chart.style_priority') }}</span>
             <el-row>
@@ -407,6 +407,10 @@ export default {
       view.id = this.view.id
       view.sceneId = this.view.sceneId
       view.name = this.view.name ? this.view.name : this.table.name
+      if (view.title.length > 50) {
+        this.$warning(this.$t('chart.title_limit'))
+        return
+      }
       view.tableId = this.view.tableId
       view.xaxis.forEach(function(ele) {
         // if (!ele.summary || ele.summary === '') {
@@ -459,6 +463,10 @@ export default {
       })
     },
     closeEdit() {
+      if (this.view.title.length > 50) {
+        this.$warning(this.$t('chart.title_limit'))
+        return
+      }
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
         if (snapshot !== '') {
@@ -872,6 +880,10 @@ export default {
 
   .el-radio>>>.el-radio__label{
     padding-left: 0;
+  }
+
+  .attr-style{
+    height: calc(100vh - 56px - 25vh - 40px - 62px - 10px);
   }
 
   .attr-selector{

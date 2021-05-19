@@ -668,7 +668,8 @@ export default {
     only_one_quota: 'Only support 1 quota',
     only_one_result: 'Only show first result',
     dimension_show: 'Dimension Show',
-    quota_show: 'Quota Show'
+    quota_show: 'Quota Show',
+    title_limit: 'Title cannot be greater than 50 characters'
   },
   dataset: {
     datalist: 'Data Set',

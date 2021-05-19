@@ -668,7 +668,8 @@ export default {
     only_one_quota: '僅支持1個指標',
     only_one_result: '僅顯示第1個計算結果',
     dimension_show: '維度顯示',
-    quota_show: '指標顯示'
+    quota_show: '指標顯示',
+    title_limit: '標題不能大於50個字符'
   },
   dataset: {
     datalist: '數據集',
