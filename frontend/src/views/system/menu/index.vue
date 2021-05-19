@@ -2,9 +2,8 @@
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <tree-table
       :columns="columns"
-
       :search-config="searchConfig"
-      @search="initTableData"
+      @search="search"
     >
       <template #toolbar>
         <fu-table-button v-permission="['menu:add']" icon="el-icon-circle-plus-outline" :label="$t('menu.create')" @click="create" />
@@ -15,7 +14,6 @@
         :data="tableData"
         lazy
         :load="initTableData"
-
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         row-key="menuId"
       >
@@ -120,7 +118,8 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import { checkPermission } from '@/utils/permission'
-import { addMenu, editMenu, delMenu, getMenusTree } from '@/api/system/menu'
+import { addMenu, editMenu, delMenu, getMenusTree, queryCondition } from '@/api/system/menu'
+import { formatCondition, formatQuickCondition } from '@/utils/index'
 
 export default {
   components: {
@@ -169,11 +168,10 @@ export default {
       ],
       searchConfig: {
         useQuickSearch: true,
-        useComplexSearch: false,
-        quickPlaceholder: '按姓名搜索',
+        quickPlaceholder: '按标题搜索',
         components: [
 
-          //   { field: 'name', label: '姓名', component: 'FuComplexInput' },
+          { field: 'title', label: this.$t('menu.tile'), component: 'FuComplexInput' }
 
         //   {
         //     field: 'enabled',
@@ -204,7 +202,61 @@ export default {
       this.$router.push({ name: 'system-menu-form' })
     },
     search(condition) {
-      console.log(condition)
+      condition = formatQuickCondition(condition, 'title')
+      const temp = formatCondition(condition)
+      if (!temp || !temp.conditions || temp.conditions.length === 0) {
+        this.initTableData()
+        this.$nextTick(() => {
+          this.tableData.forEach(node => {
+            this.$refs.table.toggleRowExpansion(node, false)
+          })
+        })
+        return
+      }
+      const param = temp || {}
+      queryCondition(param).then(res => {
+        let data = res.data
+        data = data.map(obj => {
+          if (obj.subCount > 0) {
+            obj.hasChildren = true
+          }
+          return obj
+        })
+
+        if (condition) {
+          data = data.map(node => {
+            delete (node.hasChildren)
+            return node
+          })
+          this.tableData = this.buildTree(data)
+          this.$nextTick(() => {
+            data.forEach(node => {
+              this.$refs.table.toggleRowExpansion(node, true)
+            })
+          })
+        } else {
+          this.tableData = data
+        }
+      })
+    },
+    buildTree(arrs) {
+      const idMapping = arrs.reduce((acc, el, i) => {
+        acc[el.menuId] = i
+        return acc
+      }, {})
+      const roots = []
+      arrs.forEach(el => {
+        // 判断根节点
+        if (el.pid === null || el.pid === 0) {
+          roots.push(el)
+          return
+        }
+        // 用映射表找到父元素
+        const parentEl = arrs[idMapping[el.pid]]
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el]
+      })
+      return roots
     },
 
     // edit(row) {

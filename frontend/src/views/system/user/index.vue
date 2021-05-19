@@ -145,7 +145,7 @@ import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 
 import { checkPermission } from '@/utils/permission'
-import { formatCondition } from '@/utils/index'
+import { formatCondition, formatQuickCondition } from '@/utils/index'
 import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import Treeselect from '@riophae/vue-treeselect'
@@ -176,7 +176,8 @@ export default {
       ],
       searchConfig: {
         useQuickSearch: true,
-        quickPlaceholder: '按姓名搜索',
+        useComplexSearch: true,
+        quickPlaceholder: '按名称搜索',
         components: [
           { field: 'nick_name', label: '姓名', component: 'FuComplexInput' },
           {
@@ -290,6 +291,7 @@ export default {
     },
 
     search(condition) {
+      condition = formatQuickCondition(condition, 'username')
       const temp = formatCondition(condition)
       const param = temp || {}
       const { currentPage, pageSize } = this.paginationConfig

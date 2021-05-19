@@ -81,7 +81,7 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import { formatCondition } from '@/utils/index'
+import { formatCondition, formatQuickCondition } from '@/utils/index'
 import { addRole, editRole, delRole, roleGrid, addRoleMenus, menuIds } from '@/api/system/role'
 
 import { getMenusTree, getChild } from '@/api/system/menu'
@@ -124,7 +124,7 @@ export default {
         }
       ],
       searchConfig: {
-        useQuickSearch: false,
+        useQuickSearch: true,
         quickPlaceholder: this.$t('role.search_by_name'),
         components: [
           { field: 'name', label: this.$t('role.role_name'), component: 'FuComplexInput' }
@@ -151,6 +151,7 @@ export default {
       this.$router.push({ name: 'system-role-form' })
     },
     search(condition) {
+      condition = formatQuickCondition(condition, 'name')
       const temp = formatCondition(condition)
       const param = temp || {}
       roleGrid(this.paginationConfig.currentPage, this.paginationConfig.pageSize, param).then(response => {
