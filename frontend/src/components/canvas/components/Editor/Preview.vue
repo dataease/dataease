@@ -1,5 +1,8 @@
 <template>
   <div id="canvasInfo" :style="customStyle" class="bg">
+    <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
+      {{ $t('panel.panel_null') }}
+    </el-row>
     <ComponentWrapper
       v-for="(item, index) in componentDataInfo"
       :key="index"
@@ -147,5 +150,14 @@ export default {
             margin: auto;
         }
     }
+}
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
 }
 </style>

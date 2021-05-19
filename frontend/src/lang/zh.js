@@ -880,7 +880,8 @@ export default {
     clean_canvas: '清空画布',
     insert_picture: '插入图片',
     redo: '重做',
-    undo: '撤销'
+    undo: '撤销',
+    panel_null: '这是个空的仪表板，可以通过编辑来丰富内容'
   },
   plugin: {
     local_install: '本地安装',

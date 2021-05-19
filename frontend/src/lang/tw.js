@@ -806,6 +806,12 @@ export default {
     delete_warning: '確認刪除？'
   },
   panel: {
+    copy_link_passwd: '複製鏈接及密碼',
+    copy_link: '複製鏈接',
+    passwd_protect: '密碼保護',
+    link: '鏈接',
+    link_share: '鏈接分享',
+    link_share_desc: '開啟鏈接後，任何人可通過此鏈接訪問儀表板。',
     share: '分享',
     datalist: '視圖列表',
     group: '目錄',
@@ -872,7 +878,8 @@ export default {
     clean_canvas: '清空畫布',
     insert_picture: '插入圖片',
     redo: '重做',
-    undo: '撤銷'
+    undo: '撤銷',
+    panel_null: '这是个空的儀表盤，可以通过编辑来丰富内容'
   },
   plugin: {
     local_install: '本地安裝',

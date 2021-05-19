@@ -80,7 +80,7 @@ export default {
         background: 'background: 0% 0% / cover rgb(255, 255, 255)'
       }
       if (this.subjectItemDetails) {
-        if (this.subjectItemDetails.panel.backgroundType === 'image'&&this.subjectItemDetails.panel.imageUrl) {
+        if (this.subjectItemDetails.panel.backgroundType === 'image' && this.subjectItemDetails.panel.imageUrl) {
           style = {
             width: '100%',
             height: '100%',
@@ -224,7 +224,7 @@ export default {
   }
 
   .vertical-layout {
-    overflow: hidden auto;
+    overflow: hidden;
     position: absolute;
     inset: 0px 0px 30px;
     width: 108px; height: 58px;

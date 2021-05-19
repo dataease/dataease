@@ -184,8 +184,8 @@ export default {
           nodeType: null,
           panelType: null,
           panelStyle: JSON.stringify({
-            width: 1680,
-            height: 1050,
+            width: 1280,
+            height: 720,
             scale: 100,
             openCommonStyle: true,
             panel: DEFAULT_PANEL_STYLE,
@@ -225,8 +225,8 @@ export default {
           nodeType: null,
           panelType: null,
           panelStyle: JSON.stringify({
-            width: 1680,
-            height: 1050,
+            width: 1280,
+            height: 720,
             scale: 100,
             openCommonStyle: true,
             panel: DEFAULT_PANEL_STYLE,
