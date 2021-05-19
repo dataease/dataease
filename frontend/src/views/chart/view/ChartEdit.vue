@@ -363,7 +363,8 @@ export default {
       },
       itemFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       },
       tabStatus: false,
@@ -772,13 +773,19 @@ export default {
       this.renameItem = true
     },
     saveRename() {
-      if (this.itemForm.renameType === 'quota') {
-        this.view.yaxis[this.itemForm.index].name = this.itemForm.name
-      } else if (this.itemForm.renameType === 'dimension') {
-        this.view.xaxis[this.itemForm.index].name = this.itemForm.name
-      }
-      this.save(true)
-      this.closeRename()
+      this.$refs['itemForm'].validate((valid) => {
+        if (valid) {
+          if (this.itemForm.renameType === 'quota') {
+            this.view.yaxis[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'dimension') {
+            this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+          }
+          this.save(true)
+          this.closeRename()
+        } else {
+          return false
+        }
+      })
     },
     closeRename() {
       this.renameItem = false
