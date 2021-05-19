@@ -5,12 +5,12 @@
         <!--TODO 仪表盘头部区域-->
         <span>{{ panelInfo.name || '测试仪表板' }}</span>
         <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-          <el-tooltip content="$t('panel.save_to_panel')">
+          <el-tooltip :content="$t('panel.save_to_panel')">
             <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
           </el-tooltip>
         </span>
         <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-          <el-tooltip content="$t('panel.save_to_panel')">
+          <el-tooltip :content="$t('panel.export_to_panel')">
             <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
           </el-tooltip>
         </span>
