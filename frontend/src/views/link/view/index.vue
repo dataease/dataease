@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%;height: 100%;background-color: #f7f8fa">
+  <div style="width: 100%;height: 100vh;background-color: #f7f8fa">
     <Preview v-if="show" />
   </div>
 </template>
@@ -36,7 +36,7 @@ export default {
       })
     },
     resetID(data) {
-      if( data ) {
+      if (data) {
         data.forEach(item => {
           item.id = uuid.v1()
         })
