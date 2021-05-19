@@ -7,7 +7,7 @@
     >
       <template #toolbar>
         <el-button v-permission="['dept:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('organization.create') }}</el-button>
-     </template>
+      </template>
       <el-table
         ref="table"
         :data="tableData"
@@ -184,10 +184,10 @@ export default {
     //   this.treeByRow(row)
     // },
     create() {
-      this.$router.push({ name: '组织表单' })
+      this.$router.push({ name: 'system-dept-form' })
     },
     edit(row) {
-      this.$router.push({ name: '组织表单', params: row })
+      this.$router.push({ name: 'system-dept-form', params: row })
     },
 
     treeByRow(row) {

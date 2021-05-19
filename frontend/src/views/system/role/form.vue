@@ -1,10 +1,10 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('role.add') : $t('role.modify')" back-name="角色管理">
+  <layout-content :header="formType=='add' ? $t('role.add') : $t('role.modify')" back-name="system-role">
     <el-form ref="roleForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item :label="$t('commons.name')" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item :label="$t('commons.description')"  prop="description">
+      <el-form-item :label="$t('commons.description')" prop="description">
         <el-input v-model="form.description" type="textarea" />
       </el-form-item>
       <el-form-item>
@@ -97,7 +97,7 @@ export default {
       }
     },
     backToList() {
-      this.$router.push({ name: '角色管理' })
+      this.$router.push({ name: 'system-role' })
     }
   }
 }

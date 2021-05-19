@@ -1,5 +1,5 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('user.create') : $t('user.modify')" back-name="用户管理">
+  <layout-content :header="formType=='add' ? $t('user.create') : $t('user.modify')" back-name="system-user">
     <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item :label="$t('commons.name')" prop="username">
         <el-input v-model="form.username" />
@@ -258,7 +258,7 @@ export default {
       })
     },
     backToList() {
-      this.$router.push({ name: '用户管理' })
+      this.$router.push({ name: 'system-user' })
     },
     filterData(instanceId) {
       const results = this.depts.map(node => {

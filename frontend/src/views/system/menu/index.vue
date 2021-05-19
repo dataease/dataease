@@ -201,7 +201,7 @@ export default {
     //   this.formType = 'add'
     // },
     create() {
-      this.$router.push({ name: '菜单表单' })
+      this.$router.push({ name: 'system-menu-form' })
     },
     search(condition) {
       console.log(condition)
@@ -215,7 +215,7 @@ export default {
     //   this.treeByRow(row)
     // },
     edit(row) {
-      this.$router.push({ name: '菜单表单', params: row })
+      this.$router.push({ name: 'system-menu-form', params: row })
     },
 
     treeByRow(row) {
