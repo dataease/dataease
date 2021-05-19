@@ -1,13 +1,17 @@
 <template>
   <el-row>
-    <el-row class="de-header">
-      <span style="float: left;line-height: 35px; color: gray">
-        {{ $t('commons.name') }} ：{{ panelInfo.name || '测试仪表板' }}
-      </span>
+    <el-header class="de-header">
+      <el-col :span="8" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;color: #606266;font-size: 16px">
+        <span style="line-height: 35px;">
+          {{ $t('commons.name') }} ：{{ panelInfo.name || '测试仪表板' }}
+        </span>
+      </el-col>
       <!--横向工具栏-->
-      <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" />
-    </el-row>
-    <el-row>
+      <el-col :span="16">
+        <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" />
+      </el-col>
+    </el-header>
+    <el-main style="padding: 0px">
       <de-container>
         <de-aside-container class="ms-aside-container">
           <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
@@ -66,7 +70,7 @@
           </div>
         </de-main-container>
       </de-container>
-    </el-row>
+    </el-main>
 
     <el-dialog
       v-if="filterVisible && panelInfo.id"

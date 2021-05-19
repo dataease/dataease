@@ -13,14 +13,11 @@
             @node-click="nodeClick"
           >
             <span slot-scope="{ data }" class="custom-tree-node">
-              <span>
+              <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span>
-                  <el-button
-                    icon="el-icon-picture-outline"
-                    type="text"
-                  />
+                  <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
             </span>
           </el-tree>
@@ -45,15 +42,15 @@
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span>
+            <span slot-scope="{ node, data }" class="custom-tree-node-list">
+              <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span v-if="data.nodeType === 'panel'">
-                  <el-button
-                    icon="el-icon-picture-outline"
-                    type="text"
-                  />
+                  <svg-icon icon-class="panel" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px">{{ data.name }}</span>
+                <span v-if="data.nodeType === 'folder'">
+                  <svg-icon icon-class="folder" class="ds-icon-scene" />
+                </span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)">
                 <span v-if="data.nodeType ==='folder'" @click.stop>
@@ -66,11 +63,11 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickEdit('folder','new',data,node)">
-                        {{ $t('panel.groupAdd') }}
+                      <el-dropdown-item :command="beforeClickEdit('folder','new',data,node)">
+                        <svg-icon icon-class="folder" class="ds-icon-scene" /> &nbsp <span>{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickEdit('panel','new',data,node)">
-                        {{ $t('panel.panelAdd') }}
+                      <el-dropdown-item :command="beforeClickEdit('panel','new',data,node)">
+                        <svg-icon icon-class="panel" class="ds-icon-scene" /> &nbsp <span>{{ $t('panel.panelAdd') }}</span>
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -345,9 +342,14 @@ export default {
           break
         case 'edit':
         case 'rename':
-          this.editPanel.titlePre = this.$t('commons.edit')
-          this.editPanel.panelInfo.id = param.data.id
-          this.editPanel.panelInfo.name = param.data.name
+          this.editPanel = {
+            visible: true,
+            titlePre: this.$t('commons.edit'),
+            panelInfo: {
+              id: param.data.id,
+              name: param.data.name
+            }
+          }
           break
       }
       switch (param.type) {
@@ -551,7 +553,7 @@ export default {
     font-weight: bold;
     display: block;
     height: 100%;
-    line-height: 36px;
+    /*line-height: 36px;*/
   }
 
   .el-divider--horizontal {
@@ -568,7 +570,16 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding-right: 8px;
+    padding-right:8px;
+  }
+
+  .custom-tree-node-list {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding:0 8px;
   }
 
   .custom-position {
