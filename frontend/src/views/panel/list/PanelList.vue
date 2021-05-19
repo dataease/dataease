@@ -30,10 +30,10 @@
       <el-row>
         <span class="header-title">
           {{ $t('panel.panel') }}
-          <!--          <el-button style="float: right;padding-right: 7px;" type="text" @click="showEditPanel(newFolder)" />-->
-          <el-button style="float: right;" type="primary" size="mini" @click="showEditPanel(newFolder)">
-            {{ $t('panel.groupAdd') }}
-          </el-button>
+          <el-button style="float: right;padding-right: 7px;" icon="el-icon-plus" type="text" @click="showEditPanel(newFolder)" />
+          <!--          <el-button style="float: right;" type="primary" size="mini" @click="showEditPanel(newFolder)">-->
+          <!--            {{ $t('panel.groupAdd') }}-->
+          <!--          </el-button>-->
         </span>
       </el-row>
       <el-col class="custom-tree-container">
