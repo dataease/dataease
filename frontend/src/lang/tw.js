@@ -803,7 +803,7 @@ export default {
     validate_success: '校驗成功',
     validate: '校驗',
     search_by_name: '根據名稱搜索',
-    delete_warning: '刪除該數據源將同步刪除該數據源下所有的相關資源，確認刪除？'
+    delete_warning: '確認刪除？'
   },
   panel: {
     share: '分享',

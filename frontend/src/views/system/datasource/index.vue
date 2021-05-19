@@ -179,7 +179,7 @@ export default {
     },
 
     _handleDelete(datasource) {
-      this.$confirm(this.$t('datasource.delete_confirm'), '', {
+      this.$confirm(this.$t('datasource.delete_warning'), '', {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
