@@ -152,7 +152,7 @@ const hasPermission = (router, user_permissions) => {
   }
   return true
 }
-const xpackMenuNames = ['参数管理', '插件管理']
+const xpackMenuNames = ['system-param', 'system-plugin']
 const filterLic = (router) => {
   if (xpackMenuNames.some(name => name === router.name) && !store.getters.validate) {
     return false

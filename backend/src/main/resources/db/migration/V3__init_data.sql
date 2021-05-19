@@ -47,7 +47,7 @@ INSERT INTO `sys_menu` VALUES (41, 1, 0, 1, '权限管理', 'system-auth', 'syst
 INSERT INTO `sys_menu` VALUES (42, 1, 0, 1, '插件管理', 'system-plugin', 'system/plugin/index', 15, 'sys-tools', '/plugin', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (50, 0, 0, 1, '个人信息', 'person-info', 'system/user/privateForm', 999, NULL, '/person-info', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (51, 0, 0, 1, '重置密码', 'person-pwd-reset', 'system/user/personPwd', 999, NULL, '/person-pwd', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `sys_menu` VALUES (52, 1, 0, 1, '关于', 'about', 'system/about/index', 16, 'system', 'about', b'0', b'0', b'0', NULL, NULL, NULL, NULL, 1620897406691);
+INSERT INTO `sys_menu` VALUES (52, 0, 0, 1, '关于', 'about', 'system/about/index', 16, 'system', '/about', b'0', b'0', b'1', NULL, NULL, NULL, NULL, 1620897406691);
 COMMIT;
 
 BEGIN;
