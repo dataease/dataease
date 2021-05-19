@@ -305,32 +305,22 @@ delimiter ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_ID_P_USE`;
 delimiter ;;
-CREATE FUNCTION `GET_V_AUTH_MODEL_ID_P_USE`(userId longtext,modelType varchar(255))
- RETURNS longtext CHARSET utf8
-  READS SQL DATA
+CREATE DEFINER=`root`@`%` FUNCTION `GET_V_AUTH_MODEL_ID_P_USE`(userId longtext,modelType varchar(255)) RETURNS longtext CHARSET utf8
+    READS SQL DATA
 BEGIN
 
-DECLARE oTempIds longtext;
+DECLARE oTempLeafIds longtext;
+DECLARE oTempAllIds longtext;
+select GROUP_CONCAT(auth_source) into oTempLeafIds from (
 SELECT
-	GROUP_CONCAT(mainInfo.id) into oTempIds
-FROM
-	(
-	SELECT
-		v_auth_model.*,
-		authTemp.used_auth
-	FROM
-		v_auth_model
-		LEFT JOIN (
-		SELECT
 			sys_auth.auth_source_type,
-			sys_auth.auth_source,
-		IF
-			( sum( privilege_value )> 0, 1, 0 ) used_auth
+			sys_auth.auth_source
 		FROM
 			sys_auth
 			LEFT JOIN sys_auth_detail ON sys_auth.id = sys_auth_detail.auth_id
 		WHERE
 			sys_auth_detail.privilege_type = 1
+			and sys_auth.auth_source_type = modelType
 			AND (
 				(
 					sys_auth.auth_target_type = 'dept'
@@ -348,65 +338,11 @@ FROM
 		GROUP BY
 			sys_auth.auth_source_type,
 			sys_auth.auth_source
-		) authTemp ON v_auth_model.model_type = authTemp.auth_source_type
-		AND v_auth_model.id = authTemp.auth_source
-	WHERE authTemp.auth_source_type=modelType and
-		(
-			v_auth_model.node_type = 'spine'
-			OR (
-				v_auth_model.node_type = 'leaf'
-				AND authTemp.used_auth = 1
-			))) mainInfo
-	LEFT JOIN (
-	SELECT
-		count( 1 ) AS `children_count`,
-		v_auth_model.pid
-	FROM
-		v_auth_model
-		LEFT JOIN (
-		SELECT
-			sys_auth.auth_source_type,
-			sys_auth.auth_source,
-		IF
-			( sum( privilege_value )> 0, 1, 0 ) used_auth
-		FROM
-			sys_auth
-			LEFT JOIN sys_auth_detail ON sys_auth.id = sys_auth_detail.auth_id
-		WHERE
-			sys_auth_detail.privilege_type = 1
-			AND (
-				(
-					sys_auth.auth_target_type = 'dept'
-					AND sys_auth.auth_target = ( SELECT dept_id FROM sys_user WHERE user_id = userId )
-				)
-				OR (
-					sys_auth.auth_target_type = 'user'
-					AND sys_auth.auth_target = userId
-				)
-				OR (
-					sys_auth.auth_target_type = 'role'
-					AND sys_auth.auth_target = ( SELECT role_id FROM sys_users_roles WHERE user_id = userId )
-				)
-			)
-		GROUP BY
-			sys_auth.auth_source_type,
-			sys_auth.auth_source
-		) authTemp ON v_auth_model.model_type = authTemp.auth_source_type
-		AND v_auth_model.id = authTemp.auth_source
-	WHERE
-	  authTemp.auth_source_type=modelType and
-		(
-			v_auth_model.node_type = 'spine'
-			OR (
-				v_auth_model.node_type = 'leaf'
-				AND authTemp.used_auth = 1
-			))
-	GROUP BY
-	v_auth_model.pid
-	) countTemp ON mainInfo.id = countTemp.pid
-	where
-	 (countTemp.children_count>0 or mainInfo.used_auth=1);
-RETURN oTempIds;
+			having  sum( sys_auth_detail.privilege_value )> 0) temp;
+
+			select GROUP_CONCAT(id) into oTempAllIds from v_auth_model where v_auth_model.model_type=modelType and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( oTempLeafIds ,modelType));
+
+RETURN oTempAllIds;
 END
 ;;
 delimiter ;

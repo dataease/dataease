@@ -55,7 +55,7 @@
                 </span>
                 <span style="margin-left: 6px">{{ data.name }}</span>
               </span>
-              <span>
+              <span v-if="hasDataPermission('manage',data.privileges)">
                 <span v-if="data.nodeType ==='folder'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="showEditPanel">
                     <span class="el-dropdown-link">
@@ -76,7 +76,7 @@
                   </el-dropdown>
                 </span>
                 <span style="margin-left: 12px;" @click.stop>
-                  <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
+                  <el-dropdown trigger="click" size="small" @command="clickMore">
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"

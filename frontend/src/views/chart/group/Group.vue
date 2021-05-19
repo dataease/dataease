@@ -53,7 +53,7 @@
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
-              <span>
+              <span v-if="hasDataPermission('manage',data.privileges)">
                 <span v-if="data.type ==='group'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickAdd">
                     <span class="el-dropdown-link">
@@ -73,8 +73,8 @@
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
-                <span style="margin-left: 12px;" @click.stop>
-                  <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
+                <span style="margin-left: 12px;" @click.stop >
+                  <el-dropdown  trigger="click" size="small" @command="clickMore">
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"
@@ -155,9 +155,9 @@
             <span><svg-icon :icon-class="data.type" /></span>
             <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
           </span>
-          <span>
-            <span style="margin-left: 12px;" @click.stop>
-              <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
+          <span v-if="hasDataPermission('manage',data.privileges)">
+            <span style="margin-left: 12px;" @click.stop >
+              <el-dropdown  trigger="click" size="small" @command="clickMore">
                 <span class="el-dropdown-link">
                   <el-button
                     icon="el-icon-more"

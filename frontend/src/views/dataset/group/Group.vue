@@ -53,7 +53,7 @@
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
-              <span>
+              <span v-if="hasDataPermission('manage',data.privileges)">
                 <span v-if="data.type ==='group'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickAdd">
                     <span class="el-dropdown-link">
@@ -73,7 +73,7 @@
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
-                <span style="margin-left: 12px;" @click.stop>
+                <span style="margin-left: 12px;" @click.stop >
                   <el-dropdown trigger="click" size="small" @command="clickMore">
                     <span class="el-dropdown-link">
                       <el-button
@@ -82,7 +82,7 @@
                         size="small"
                       />
                     </span>
-                    <el-dropdown-menu v-if="hasDataPermission('manage',data.privileges)" slot="dropdown">
+                    <el-dropdown-menu  slot="dropdown">
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
@@ -193,8 +193,8 @@
             </span>
             <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
           </span>
-          <span>
-            <span style="margin-left: 12px;" @click.stop>
+          <span v-if="hasDataPermission('manage',data.privileges)">
+            <span style="margin-left: 12px;" @click.stop >
               <el-dropdown trigger="click" size="small" @command="clickMore">
                 <span class="el-dropdown-link">
                   <el-button
@@ -203,7 +203,7 @@
                     size="small"
                   />
                 </span>
-                <el-dropdown-menu v-if="hasDataPermission('manage',data.privileges)" slot="dropdown">
+                <el-dropdown-menu  slot="dropdown">
                   <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
                     {{ $t('dataset.rename') }}
                   </el-dropdown-item>
