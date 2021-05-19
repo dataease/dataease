@@ -36,7 +36,6 @@ public class Translator {
      * 单Key翻译
      */
     public static String get(String key) {
-        System.out.println(LocaleContextHolder.getLocale());
         return messageSource.getMessage(key, null, key, LocaleContextHolder.getLocale());
     }
 

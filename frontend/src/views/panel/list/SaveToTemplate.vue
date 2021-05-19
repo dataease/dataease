@@ -26,7 +26,7 @@
       </div>
     </el-row>
     <el-row class="root-class">
-      <el-button @click="cancel()">{{ $t('commons.cancle')}}</el-button>
+      <el-button @click="cancel()">{{ $t('commons.cancel')}}</el-button>
       <el-button type="primary" @click="save()">{{ $t('commons.save')}}</el-button>
     </el-row>
   </el-row>
