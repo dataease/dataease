@@ -184,7 +184,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 StringUtils.join(groupField, ","),
                 StringUtils.join(field, ","),
                 table,
-                xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "" + transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter
+                (xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "") + transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter
                 StringUtils.join(group, ","),
                 StringUtils.join(order, ","));
         if (sql.endsWith(",")) {
