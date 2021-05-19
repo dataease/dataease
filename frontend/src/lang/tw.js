@@ -916,5 +916,18 @@ export default {
     use: '使用',
     export: '導出',
     manage: '管理'
+  },
+  about: {
+    auth_to: '授權給',
+    invalid_license: 'License 無效',
+    update_license: '更新 License',
+    expiration_time: '過期時間',
+    expirationed: '(已過期)',
+    auth_num: '授權數量',
+    version: '版本',
+    version_num: '版本號',
+    standard: '標準版',
+    enterprise: '企業版',
+    suport: '獲取技術支持'
   }
 }
