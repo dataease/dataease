@@ -20,7 +20,7 @@
                 and chart_group.id = #{id,jdbcType=VARCHAR}
             </if>
             <if test="name != null and name != ''">
-                and chart_group.`name` = CONCAT('%', #{name},'%')
+                and chart_group.`name` like CONCAT('%', #{name},'%')
             </if>
             <if test="pid != null">
                 and chart_group.pid = #{pid,jdbcType=VARCHAR}

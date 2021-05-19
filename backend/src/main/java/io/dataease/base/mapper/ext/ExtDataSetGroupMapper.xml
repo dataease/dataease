@@ -20,7 +20,7 @@
                 and dataset_group.id = #{id,jdbcType=VARCHAR}
             </if>
             <if test="name != null and name != ''">
-                and dataset_group.`name` = CONCAT('%', #{name},'%')
+                and dataset_group.`name` like CONCAT('%', #{name},'%')
             </if>
             <if test="pid != null">
                 and dataset_group.pid = #{pid,jdbcType=VARCHAR}
