@@ -807,6 +807,12 @@ export default {
     delete_warning: 'Confirm to delete?'
   },
   panel: {
+    copy_link_passwd: 'Copy link and password',
+    copy_link: 'Copy link',
+    passwd_protect: 'Password Protect',
+    link: 'Link',
+    link_share: 'Share Link',
+    link_share_desc: 'After opening the link, anyone can access the dashboard through this link.',
     share: 'Share',
     datalist: 'Chart List',
     group: 'Catalogue',

@@ -1,7 +1,7 @@
 <template>
   <div id="canvasInfo" :style="customStyle" class="bg">
     <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
-      {{ $t('panel.panel_null') }}
+      <!-- {{ $t('panel.panel_null') }} -->
     </el-row>
     <ComponentWrapper
       v-for="(item, index) in componentDataInfo"

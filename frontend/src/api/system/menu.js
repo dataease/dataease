@@ -53,4 +53,12 @@ export function treeByMenuId(menuId) {
   })
 }
 
-export default { addMenu, editMenu, delMenu, getMenusTree, getChild, treeByMenuId }
+export function queryCondition(data) {
+  return request({
+    url: '/api/menu/search',
+    method: 'post',
+    data
+  })
+}
+
+export default { addMenu, editMenu, delMenu, getMenusTree, getChild, treeByMenuId, queryCondition }

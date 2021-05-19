@@ -48,6 +48,7 @@ export const DEFAULT_LABEL = {
 export const DEFAULT_TOOLTIP = {
   show: true,
   trigger: 'item',
+  confine: true,
   textStyle: {
     fontSize: '10',
     color: '#909399'

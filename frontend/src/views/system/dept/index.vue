@@ -93,7 +93,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import TreeTable from '@/components/business/tree-table'
 import Treeselect from '@riophae/vue-treeselect'
-import { formatCondition } from '@/utils/index'
+import { formatCondition, formatQuickCondition } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import { checkPermission } from '@/utils/permission'
@@ -149,10 +149,9 @@ export default {
       ],
       searchConfig: {
         useQuickSearch: true,
-        useComplexSearch: false,
         quickPlaceholder: '按名称搜索',
         components: [
-
+          { field: 'name', label: this.$t('organization.name'), component: 'FuComplexInput' }
         ]
       },
 
@@ -260,17 +259,18 @@ export default {
     },
     // 加载表格数据
     search(condition) {
-      // this.setTableAttr()
+      condition = formatQuickCondition(condition, 'name')
+      let conditionExist = false
+      const temp = formatCondition(condition)
       this.tableData = []
       let param = {}
-      if (condition && condition.quick) {
-        const con = this.quick_condition(condition)
-        param = formatCondition(con)
+      if (temp && temp.conditions && temp.conditions.length !== 0) {
+        conditionExist = true
+        param = temp
       } else {
         param = { conditions: [this.defaultCondition] }
       }
 
-      // param.conditions.push(this.defaultCondition)
       loadTable(param).then(res => {
         let data = res.data
         data = data.map(obj => {
@@ -280,11 +280,15 @@ export default {
           return obj
         })
 
-        if (condition && condition.quick) {
+        if (conditionExist) {
           data = this.buildTree(data)
-          // this.setTableAttr(true)
         }
         this.tableData = data
+        this.$nextTick(() => {
+          this.tableData.forEach(node => {
+            this.$refs.table.toggleRowExpansion(node, conditionExist)
+          })
+        })
         this.depts = null
       })
     },

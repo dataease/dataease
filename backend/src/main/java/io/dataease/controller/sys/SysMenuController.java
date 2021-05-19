@@ -5,8 +5,11 @@ import io.dataease.base.domain.SysMenu;
 import io.dataease.commons.utils.BeanUtils;
 
 import io.dataease.controller.handler.annotation.I18n;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.MenuCreateRequest;
 import io.dataease.controller.sys.request.MenuDeleteRequest;
+import io.dataease.controller.sys.request.SimpleTreeNode;
+import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.controller.sys.response.MenuNodeResponse;
 import io.dataease.controller.sys.response.MenuTreeNode;
 import io.dataease.service.sys.MenuService;
@@ -35,6 +38,20 @@ public class SysMenuController {
         List<SysMenu> nodes = menuService.nodesByPid(pid);
         nodes = nodes.stream().filter(node -> !node.getHidden()).collect(Collectors.toList());
         return menuService.convert(nodes);
+    }
+
+    @ApiOperation("搜索菜单树")
+    @I18n
+    @PostMapping("/search")
+    public List<MenuNodeResponse> search(@RequestBody BaseGridRequest request) {
+        List<SysMenu> nodes = menuService.nodesTreeByCondition(request);
+        List<MenuNodeResponse> nodeResponses = nodes.stream().map(node -> {
+            MenuNodeResponse menuNodeResponse = BeanUtils.copyBean(new MenuNodeResponse(), node);
+            menuNodeResponse.setHasChildren(node.getSubCount() > 0);
+            menuNodeResponse.setTop(node.getPid() == menuService.MENU_ROOT_PID);
+            return menuNodeResponse;
+        }).collect(Collectors.toList());
+        return nodeResponses;
     }
 
 

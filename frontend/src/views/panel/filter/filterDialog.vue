@@ -316,7 +316,7 @@ export default {
       const viewIds = this.componentData
         .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
         .map(item => item.propValue.viewId)
-      viewsWithIds(viewIds).then(res => {
+      viewIds && viewIds.length > 0 && viewsWithIds(viewIds).then(res => {
         const datas = res.data
         this.viewInfos = datas
       })

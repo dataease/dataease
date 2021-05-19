@@ -218,9 +218,15 @@
             </el-row>
           </el-row>
           <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
-            <table-normal v-if="chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
-            <label-normal v-if="chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
+            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+            <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+            <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
+            <div v-if="!httpRequest.status" style=";width: 100%;height: 100%;background-color: #ece7e7; text-align: center">
+              <div style="font-size: 12px; color: #9ea6b2;">
+                {{ $t('panel.error_data') }}<br>
+                {{ httpRequest.msg }}
+              </div>
+            </div>
           </div>
         </el-row>
       </el-col>
@@ -272,7 +278,7 @@
 </template>
 
 <script>
-import { post } from '@/api/dataset/dataset'
+import { post, ajaxGetData } from '@/api/chart/chart'
 import draggable from 'vuedraggable'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
@@ -357,11 +363,16 @@ export default {
       },
       itemFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       },
       tabStatus: false,
-      data: {}
+      data: {},
+      httpRequest: {
+        status: true,
+        msg: ''
+      }
     }
   },
   computed: {
@@ -393,6 +404,11 @@ export default {
         post('/dataset/table/get/' + id, null).then(response => {
           this.table = response.data
           this.initTableField(id)
+        }).catch(err => {
+          this.resetView()
+          this.httpRequest.status = false
+          this.httpRequest.msg = err
+          return true
         })
       }
     },
@@ -400,6 +416,11 @@ export default {
       post('/dataset/table/getFieldsFromDE', this.table).then(response => {
         this.dimension = response.data.dimension
         this.quota = response.data.quota
+      }).catch(err => {
+        this.resetView()
+        this.httpRequest.status = false
+        this.httpRequest.msg = err
+        return true
       })
     },
     save(getData) {
@@ -463,7 +484,7 @@ export default {
       })
     },
     closeEdit() {
-      if (this.view.title.length > 50) {
+      if (this.view.title && this.view.title.length > 50) {
         this.$warning(this.$t('chart.title_limit'))
         return
       }
@@ -521,7 +542,7 @@ export default {
     },
     getData(id) {
       if (id) {
-        post('/chart/view/getData/' + id, {
+        ajaxGetData(id, {
           filter: []
         }).then(response => {
           this.initTableData(response.data.tableId)
@@ -535,6 +556,12 @@ export default {
           this.chart = response.data
           this.data = response.data.data
           // console.log(JSON.stringify(this.chart))
+          this.httpRequest.status = true
+        }).catch(err => {
+          this.resetView()
+          this.httpRequest.status = false
+          this.httpRequest.msg = err
+          return true
         })
       } else {
         this.view = {}
@@ -553,6 +580,13 @@ export default {
 
           response.data.data = this.data
           this.chart = response.data
+
+          this.httpRequest.status = true
+        }).catch(err => {
+          this.resetView()
+          this.httpRequest.status = false
+          this.httpRequest.msg = err
+          return true
         })
       } else {
         this.view = {}
@@ -739,13 +773,19 @@ export default {
       this.renameItem = true
     },
     saveRename() {
-      if (this.itemForm.renameType === 'quota') {
-        this.view.yaxis[this.itemForm.index].name = this.itemForm.name
-      } else if (this.itemForm.renameType === 'dimension') {
-        this.view.xaxis[this.itemForm.index].name = this.itemForm.name
-      }
-      this.save(true)
-      this.closeRename()
+      this.$refs['itemForm'].validate((valid) => {
+        if (valid) {
+          if (this.itemForm.renameType === 'quota') {
+            this.view.yaxis[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'dimension') {
+            this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+          }
+          this.save(true)
+          this.closeRename()
+        } else {
+          return false
+        }
+      })
     },
     closeRename() {
       this.renameItem = false
@@ -760,6 +800,15 @@ export default {
     },
     hideTab() {
       this.tabStatus = false
+    },
+    resetView() {
+      this.dimension = []
+      this.quota = []
+      this.view = {
+        xAxis: [],
+        yAxis: [],
+        type: ''
+      }
     }
   }
 }

@@ -808,6 +808,12 @@ export default {
     delete_warning: '确定要删除吗?'
   },
   panel: {
+    copy_link_passwd: '复制链接及密码',
+    copy_link: '复制链接',
+    passwd_protect: '密码保护',
+    link: '链接',
+    link_share: '链接分享',
+    link_share_desc: '开启链接后，任何人可通过此链接访问仪表板。',
     share: '分享',
     datalist: '视图列表',
     group: '目录',

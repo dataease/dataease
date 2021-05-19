@@ -162,6 +162,21 @@ export function formatCondition(param) {
   return result
 }
 
+export function formatQuickCondition(param, quickField) {
+  let quickObj = null
+  if (!param || !(quickObj = param.quick) || !quickField) {
+    quickObj && delete param.quick
+    return param
+  }
+  param[quickField] = {
+    field: quickField,
+    operator: 'like',
+    value: quickObj.value
+  }
+  delete param.quick
+  return param
+}
+
 export function getQueryVariable(variable) {
   const query = window.location.search.substring(1)
   const vars = query.split('&')

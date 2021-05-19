@@ -2,7 +2,7 @@
   <div>
     <el-form ref="createOrganization" inline :model="form" size="small" label-width="80px">
 
-      <el-form-item label="链接分享">
+      <el-form-item :label="$t('panel.link_share')">
         <el-switch
           v-model="valid"
           style="width: 370px;"
@@ -12,9 +12,9 @@
         />
       </el-form-item>
       <el-form-item label=" ">
-        <el-link class="de-link" style="width: 370px;" disabled>开启链接后，任何人可通过此链接访问仪表板。</el-link>
+        <el-link class="de-link" style="width: 370px;" disabled>{{ $t('panel.link_share_desc') }}</el-link>
       </el-form-item>
-      <el-form-item v-if="valid" label="链接">
+      <el-form-item v-if="valid" :label="$t('panel.link')">
         <el-input
           v-model.number="form.uri"
           disabled
@@ -23,17 +23,17 @@
       </el-form-item>
 
       <el-form-item v-if="valid" label=" ">
-        <el-checkbox v-model="form.enablePwd" @change="resetEnablePwd">密码保护</el-checkbox>
+        <el-checkbox v-model="form.enablePwd" @change="resetEnablePwd">{{ $t('panel.passwd_protect') }}  </el-checkbox>
 
         <span v-if="form.enablePwd" class="de-span">{{ form.pwd }}</span>
-        <span v-if="form.enablePwd" class="de-span" @click="resetPwd"><el-link :underline="false" type="primary">重置</el-link></span>
+        <span v-if="form.enablePwd" class="de-span" @click="resetPwd"><el-link :underline="false" type="primary">{{ $t('commons.reset') }}</el-link></span>
       </el-form-item>
 
       <div v-if="valid" class="auth-root-class">
         <span slot="footer">
 
-          <el-button v-if="!form.enablePwd" v-clipboard:copy="form.uri" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">复制链接</el-button>
-          <el-button v-if="form.enablePwd" v-clipboard:copy="form.uri + ' 密码: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">复制链接及密码</el-button>
+          <el-button v-if="!form.enablePwd" v-clipboard:copy="form.uri" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link') }}</el-button>
+          <el-button v-if="form.enablePwd" v-clipboard:copy="form.uri + ' Password: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link_passwd') }}</el-button>
 
         </span>
       </div>

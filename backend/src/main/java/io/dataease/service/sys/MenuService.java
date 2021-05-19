@@ -1,26 +1,24 @@
 package io.dataease.service.sys;
 
-import io.dataease.base.domain.SysDept;
+
 import io.dataease.base.domain.SysMenu;
 import io.dataease.base.domain.SysMenuExample;
 import io.dataease.base.mapper.SysMenuMapper;
 import io.dataease.base.mapper.ext.ExtMenuMapper;
+import io.dataease.base.mapper.ext.ExtSysMenuMapper;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.MenuCreateRequest;
 import io.dataease.controller.sys.request.MenuDeleteRequest;
-import io.dataease.controller.sys.response.DeptTreeNode;
+import io.dataease.controller.sys.request.SimpleTreeNode;
 import io.dataease.controller.sys.response.MenuNodeResponse;
-
 import io.dataease.controller.sys.response.MenuTreeNode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +32,8 @@ public class MenuService {
     @Resource
     private SysMenuMapper sysMenuMapper;
 
+    @Resource
+    private ExtSysMenuMapper extSysMenuMapper;
 
     @Resource
     private ExtMenuMapper extMenuMapper;
@@ -170,6 +170,56 @@ public class MenuService {
             menuNodeResponse.setTop(node.getPid() == MENU_ROOT_PID);
             return menuNodeResponse;
         }).collect(Collectors.toList());
+    }
+
+
+
+    public List<SysMenu> nodesTreeByCondition(BaseGridRequest request){
+        List<SimpleTreeNode> allNodes = allNodes();
+        List<SimpleTreeNode> targetNodes = nodeByCondition(request);
+        if(org.apache.commons.collections.CollectionUtils.isEmpty(targetNodes)){
+            return new ArrayList<>();
+        }
+        List<Long> ids = upTree(allNodes, targetNodes);
+        SysMenuExample example = new SysMenuExample();
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(ids)){
+            SysMenuExample.Criteria criteria = example.createCriteria();
+            criteria.andMenuIdIn(ids);
+        }
+        List<SysMenu> sysMenus = sysMenuMapper.selectByExample(example);
+        return sysMenus;
+    }
+
+    public List<SimpleTreeNode> allNodes() {
+        List<SimpleTreeNode> allNodes = extSysMenuMapper.allNodes();
+        return allNodes;
+    }
+
+    public List<SimpleTreeNode> nodeByCondition(BaseGridRequest request) {
+        List<SimpleTreeNode> simpleTreeNodes = extSysMenuMapper.nodesByExample(request.convertExample());
+        return simpleTreeNodes;
+    }
+
+    /**
+     * 找出目标节点所在路径上的所有节点 向上找
+     * @param allNodes 所有节点
+     * @param targetNodes 目标节点
+     * @return
+     */
+    private List<Long> upTree(List<SimpleTreeNode> allNodes, List<SimpleTreeNode> targetNodes){
+        final Map<Long, SimpleTreeNode> map = allNodes.stream().collect(Collectors.toMap(SimpleTreeNode::getId, node -> node));
+        List<Long> results = targetNodes.parallelStream().flatMap(targetNode -> {
+            //向上逐级找爹
+            List<Long> ids = new ArrayList<>();
+            SimpleTreeNode node = targetNode;
+            while (node != null) {
+                ids.add(node.getId());
+                Long pid = node.getPid();
+                node = map.get(pid);
+            }
+            return ids.stream();
+        }).distinct().collect(Collectors.toList());
+        return results;
     }
 
 
