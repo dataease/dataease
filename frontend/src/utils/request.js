@@ -36,7 +36,8 @@ service.interceptors.request.use(
     }
 
     if (i18n.locale) {
-      config.headers['Accept-Language'] = i18n.locale
+      const lang = i18n.locale.replace('_', '-')
+      config.headers['Accept-Language'] = lang
     }
     // 增加loading
 

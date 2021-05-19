@@ -5,6 +5,7 @@ import { format } from '@/utils/formatUi'
 import { getLanguage } from '@/lang/index'
 import Cookies from 'js-cookie'
 import router from '@/router'
+import i18n from '@/lang'
 const getDefaultState = () => {
   return {
     token: getToken(),
@@ -57,6 +58,9 @@ const mutations = {
   SET_LANGUAGE: (state, language) => {
     state.language = language
     Cookies.set('language', language)
+    if (language && i18n.locale !== language) {
+      i18n.locale = language
+    }
   }
 }
 
