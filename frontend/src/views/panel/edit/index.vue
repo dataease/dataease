@@ -86,8 +86,8 @@
       </filter-dialog>
       <div style="text-align: end !important;margin: 0 15px !important;">
         <span slot="footer">
-          <el-button @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
-          <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
+          <el-button size="mini" @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
+          <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </el-dialog>
