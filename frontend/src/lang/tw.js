@@ -872,7 +872,8 @@ export default {
     clean_canvas: '清空畫布',
     insert_picture: '插入圖片',
     redo: '重做',
-    undo: '撤銷'
+    undo: '撤銷',
+    panel_null: '这是个空的儀表盤，可以通过编辑来丰富内容'
   },
   plugin: {
     local_install: '本地安裝',

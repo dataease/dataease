@@ -872,7 +872,8 @@ export default {
     clean_canvas: 'Clean Canvas',
     insert_picture: 'Insert Picture',
     redo: 'Redo',
-    undo: 'UToolbar.vuendo'
+    undo: 'UToolbar.vuendo',
+    panel_null: 'This is a Empty Panel，You Can Edit and Enrich It'
   },
   plugin: {
     local_install: 'Local installation',
