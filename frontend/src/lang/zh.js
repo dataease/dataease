@@ -670,7 +670,8 @@ export default {
     only_one_quota: '仅支持1个指标',
     only_one_result: '仅显示第1个计算结果',
     dimension_show: '维度显示',
-    quota_show: '指标显示'
+    quota_show: '指标显示',
+    title_limit: '标题不能大于50个字符'
   },
   dataset: {
     datalist: '数据集',

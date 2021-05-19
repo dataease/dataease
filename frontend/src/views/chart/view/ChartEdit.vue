@@ -407,6 +407,10 @@ export default {
       view.id = this.view.id
       view.sceneId = this.view.sceneId
       view.name = this.view.name ? this.view.name : this.table.name
+      if (view.title.length > 50) {
+        this.$warning(this.$t('chart.title_limit'))
+        return
+      }
       view.tableId = this.view.tableId
       view.xaxis.forEach(function(ele) {
         // if (!ele.summary || ele.summary === '') {
@@ -459,6 +463,10 @@ export default {
       })
     },
     closeEdit() {
+      if (this.view.title.length > 50) {
+        this.$warning(this.$t('chart.title_limit'))
+        return
+      }
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
         if (snapshot !== '') {
