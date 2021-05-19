@@ -59,7 +59,7 @@ public class ChartViewService {
             chartView.setCreateBy(AuthUtils.getUser().getUsername());
             chartView.setCreateTime(timestamp);
             chartView.setUpdateTime(timestamp);
-            chartViewMapper.insert(chartView);
+            chartViewMapper.insertSelective(chartView);
         }
         return chartView;
     }
