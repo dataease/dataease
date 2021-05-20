@@ -29,6 +29,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -64,6 +68,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.naming.AuthenticationException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -512,9 +518,23 @@ public class ExtractDataService {
         ExcelInputMeta excelInputMeta = new ExcelInputMeta();
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
+            try{
+                InputStream inputStream = new FileInputStream(filePath);
+                XSSFWorkbook xssfWorkbook = new XSSFWorkbook(inputStream);
+                XSSFSheet sheet0 = xssfWorkbook.getSheetAt(0);
+                excelInputMeta.setSheetName(new String[]{sheet0.getSheetName()});
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.JXL);
+            try{
+                InputStream inputStream = new FileInputStream(filePath);
+                HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
+                HSSFSheet sheet0 = workbook.getSheetAt(0);
+                excelInputMeta.setSheetName(new String[]{sheet0.getSheetName()});
+            }catch (Exception e){e.printStackTrace();}
         }
         excelInputMeta.setPassword("Encrypted");
         excelInputMeta.setFileName(new String[]{filePath});

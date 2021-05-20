@@ -14,7 +14,7 @@
       </el-popover>
       <span style="float: right;line-height: 40px;">
         <el-button size="mini" @click="closeEdit">
-          {{ $t('chart.close') }}
+          {{ $t('commons.save') }}
         </el-button>
         <!--        <el-button type="primary" size="mini" @click="save">-->
         <!--          {{ $t('chart.confirm') }}-->
