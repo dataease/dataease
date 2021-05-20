@@ -642,10 +642,14 @@ public class DataSetTableService {
         List<TableFiled> fields = new ArrayList<>();
         List<String[]> data = new ArrayList<>();
         List<Map<String, Object>> jsonArray = new ArrayList<>();
+        List<String> sheets = new ArrayList<>();
 
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
             HSSFSheet sheet0 = workbook.getSheetAt(0);
+            for (int i=0;i<workbook.getNumberOfSheets();i++){
+                sheets.add(workbook.getSheetAt(i).getSheetName());
+            }
             if (sheet0.getNumMergedRegions() > 0) {
                 throw new RuntimeException("Sheet have merged regions.");
             }
@@ -682,6 +686,9 @@ public class DataSetTableService {
         } else if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             XSSFWorkbook xssfWorkbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet0 = xssfWorkbook.getSheetAt(0);
+            for (int i=0;i<xssfWorkbook.getNumberOfSheets();i++){
+                sheets.add(xssfWorkbook.getSheetAt(i).getSheetName());
+            }
             if (sheet0.getNumMergedRegions() > 0) {
                 throw new RuntimeException("Sheet have merged regions.");
             }
@@ -753,6 +760,7 @@ public class DataSetTableService {
         Map<String, Object> map = new HashMap<>();
         map.put("fields", fields);
         map.put("data", jsonArray);
+        map.put("sheets", sheets);
         return map;
     }
 

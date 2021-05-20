@@ -672,6 +672,7 @@ export default {
     title_limit: '標題不能大於50個字符'
   },
   dataset: {
+    sheet_warn: '有多個sheet頁面，默認抽取第一個',
     datalist: '數據集',
     add_group: '添加分組',
     add_scene: '添加場景',

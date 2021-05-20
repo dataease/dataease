@@ -673,6 +673,7 @@ export default {
     title_limit: 'Title cannot be greater than 50 characters'
   },
   dataset: {
+    sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
     datalist: 'Data Set',
     add_group: 'Add Group',
     add_scene: 'Add Scene',
