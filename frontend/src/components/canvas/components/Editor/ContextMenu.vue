@@ -89,6 +89,7 @@ export default {
 
     deleteCurCondition() {
       if (this.curComponent.type === 'custom') {
+        this.$store.dispatch('conditions/delete', { componentId: this.curComponent.id })
         bus.$emit('delete-condition', { componentId: this.curComponent.id })
       }
     },

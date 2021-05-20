@@ -44,6 +44,7 @@ export default {
 
   created() {
     this.options = this.element.options
+    this.setCondition()
   },
   mounted() {
     this.$nextTick(() => {
@@ -52,8 +53,12 @@ export default {
   },
   methods: {
     changeValue(value) {
-      this.inDraw && this.$store.dispatch('conditions/add', { component: this.element, value: [this.options.value], operator: this.operator })
+      this.setCondition()
       this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
+    },
+
+    setCondition() {
+      this.inDraw && this.$store.dispatch('conditions/add', { component: this.element, value: [this.options.value], operator: this.operator })
     }
   }
 }

@@ -5,11 +5,13 @@ const state = {
 
 const mutations = {
   ADD_CONDITION: (state, condition) => {
-    !condition && (condition = [])
-    state.conditions.push(condition)
+    condition && valueValid(condition) && state.conditions.push(condition)
   },
   REDUCE_CONDITION: (state, index) => {
     state.conditions && state.conditions.length > index && state.conditions.splice(index, 1)
+  },
+  CLEAR: (state) => {
+    state.conditions = []
   }
 }
 
@@ -30,6 +32,17 @@ const actions = {
   },
   reduce({ commit }, index) {
     commit('ADD_CONDITION', index)
+  },
+  delete({ commit }, component) {
+    for (let index = 0; index < state.conditions.length; index++) {
+      const element = state.conditions[index]
+      if (element.componentId === component.componentId) {
+        commit('REDUCE_CONDITION', index)
+      }
+    }
+  },
+  clear({ commit }) {
+    commit('CLEAR')
   }
 
 }
@@ -59,6 +72,10 @@ const isValid = condition => {
     }
   }
   return validResult
+}
+
+const valueValid = condition => {
+  return condition && condition.value && condition.value.length > 0 && condition.value[0]
 }
 
 const formatCondition = obj => {

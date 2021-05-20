@@ -92,6 +92,10 @@ export default {
       })
     })
   },
+  created() {
+    // 先清除查询条件
+    this.$store.dispatch('conditions/clear')
+  },
   methods: {
     changeStyleWithScale,
     getStyle,
@@ -105,7 +109,7 @@ export default {
     resetID(data) {
       if (data) {
         data.forEach(item => {
-          item.id = uuid.v1()
+          item.type !== 'custom' && (item.id = uuid.v1())
         })
       }
       return data

@@ -51,9 +51,9 @@ export default {
       })
     },
     resetID(data) {
-      if( data ) {
+      if (data) {
         data.forEach(item => {
-          item.id = uuid.v1()
+          item.type !== 'custom' && (item.id = uuid.v1())
         })
       }
 

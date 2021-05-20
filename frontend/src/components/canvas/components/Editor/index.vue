@@ -29,7 +29,6 @@
         class="component"
         :style="item.style"
         :element="item"
-        @set-condition-value="setConditionValue"
       />
 
       <component
@@ -109,7 +108,7 @@ export default {
         height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px'
       }
       if (this.canvasStyleData.openCommonStyle) {
-        if (this.canvasStyleData.panel.backgroundType === 'image'&&this.canvasStyleData.panel.imageUrl) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
             width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
             height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px',
@@ -147,6 +146,9 @@ export default {
     bus.$on('delete-condition', condition => {
       this.deleteCondition(condition)
     })
+  },
+  created() {
+    this.$store.dispatch('conditions/clear')
   },
   methods: {
     changeStyleWithScale,

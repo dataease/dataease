@@ -486,6 +486,7 @@ export default {
         // 加载视图数据
         get('panel/group/findOne/' + data.id).then(response => {
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+          //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', temp)
           this.$store.dispatch('panel/setPanelInfo', data)
@@ -535,7 +536,7 @@ export default {
     resetID(data) {
       if (data) {
         data.forEach(item => {
-          item.id = uuid.v1()
+          item.type !== 'custom' && (item.id = uuid.v1())
         })
       }
 
