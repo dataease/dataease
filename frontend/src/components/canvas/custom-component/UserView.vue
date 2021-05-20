@@ -51,6 +51,10 @@ export default {
     }
   },
   watch: {
+    '$store.getters.conditions': function(newVal, oldVal) {
+      this.filter.filter = newVal
+      this.getData(this.element.propValue.viewId)
+    },
     filter(val) {
       this.getData(this.element.propValue.viewId)
     },
@@ -95,6 +99,7 @@ export default {
     }
   },
   created() {
+    this.filter.filter = this.$store.getters.conditions
     this.getData(this.element.propValue.viewId)
   },
   mounted() {
