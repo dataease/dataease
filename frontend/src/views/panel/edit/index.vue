@@ -11,66 +11,81 @@
         <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" />
       </el-col>
     </el-header>
-    <el-main style="padding: 0px">
-      <de-container>
-        <de-aside-container class="ms-aside-container">
-          <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
-            <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
-              <!-- 视图图表 -->
-              <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
-                <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
+    <de-container>
+      <de-aside-container class="ms-aside-container">
+        <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
+          <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
+            <!-- 视图图表 -->
+            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
+              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
+            </div>
+            <!-- 视图文字 -->
+            <div style="position: relative; margin: 18px auto 30px">
+              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                {{ $t('panel.view') }}
               </div>
-              <!-- 视图文字 -->
-              <div style="position: relative; margin: 18px auto 30px">
-                <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                  {{ $t('panel.view') }}
+            </div>
+            <!-- 视图分割线 -->
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+            </div>
+            <!-- 过滤组件 -->
+            <div tabindex="-1" style="position: relative; margin: 20px auto">
+              <div style="height: 60px; position: relative">
+                <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
+                  <el-button circle class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
                 </div>
-              </div>
-              <!-- 视图分割线 -->
-              <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-                <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
-              </div>
-              <!-- 过滤组件 -->
-              <div tabindex="-1" style="position: relative; margin: 20px auto">
-                <div style="height: 60px; position: relative">
-                  <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-                    <el-button circle class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
-                  </div>
-                  <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
-                    <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                      {{ $t('panel.module') }}
-                    </div>
+                <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
+                  <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                    {{ $t('panel.module') }}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">
-            <div />
-            <div v-if="show" class="leftPanel">
-              <div style="height:100%;overflow-y: auto">
-                <view-select v-show=" show && showIndex===0" />
-                <filter-group v-show=" show &&showIndex===1" />
-                <subject-setting v-show=" show &&showIndex===2" />
-              </div>
-            </div>
-          </div>
-        </de-aside-container>
+        </div>
+        <!--        <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">-->
+        <!--          <div />-->
+        <!--          <div v-if="show" class="leftPanel">-->
+        <!--            <div style="height:100%;overflow-y: auto">-->
+        <!--              <view-select v-show=" show && showIndex===0" />-->
+        <!--              <filter-group v-show=" show &&showIndex===1" />-->
+        <!--              <subject-setting v-show=" show &&showIndex===2" />-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--        </div>-->
+      </de-aside-container>
 
-        <!--画布区域-->
-        <de-main-container>
-          <div
-            class="content"
-            @drop="handleDrop"
-            @dragover="handleDragOver"
-            @mousedown="handleMouseDown"
-            @mouseup="deselectCurComponent"
-          >
-            <Editor />
-          </div>
-        </de-main-container>
-      </de-container>
-    </el-main>
+      <!--画布区域-->
+      <el-main>
+        <el-drawer
+          title="我是标题"
+          :visible.sync="show"
+          :with-header="false"
+          style="position: absolute;"
+          direction="ltr"
+          :modal="false"
+          :size="drawerSize"
+          :wrapper-closable="false"
+          :close-on-press-escape="false"
+          :modal-append-to-body="true"
+        >
+          <view-select v-show=" show && showIndex===0" />
+          <filter-group v-show=" show &&showIndex===1" />
+          <subject-setting v-show=" show &&showIndex===2" />
+        </el-drawer>
+
+        <div
+          class="content this_canvas"
+          @drop="handleDrop"
+          @dragover="handleDragOver"
+          @mousedown="handleMouseDown"
+          @mouseup="deselectCurComponent"
+        >
+          <Editor />
+        </div>
+      </el-main>
+    </de-container>
 
     <el-dialog
       v-if="filterVisible && panelInfo.id"
@@ -138,6 +153,8 @@ export default {
   },
   data() {
     return {
+      drawerSize: '300px',
+      visible: false,
       show: false,
       editView: false,
       clickNotClose: false,
@@ -186,7 +203,7 @@ export default {
     listenGlobalKeyDown()
   },
   mounted() {
-    this.insertToBody()
+    // this.insertToBody()
     bus.$on('component-on-drag', () => {
       this.show = false
     })
@@ -222,7 +239,10 @@ export default {
       this.$router.replace('/panel/index')
     },
     showPanel(type) {
-      this.show = !this.show
+      debugger
+      if (this.showIndex === -1 || this.showIndex === type) {
+        this.show = !this.show
+      }
       this.showIndex = type
     },
     addEventClick() {
@@ -230,7 +250,7 @@ export default {
     },
     closeSidebar(evt) {
       const parent = evt.target.closest('.button-div-class')
-      const self = evt.target.closest('.leftPanel')
+      const self = evt.target.closest('.el-drawer__wrapper')
       // 点击样式按钮 排除
       const stick = evt.target.closest('.el-icon-magic-stick')
       if (!parent && !self && !stick) {
@@ -239,13 +259,13 @@ export default {
         this.showIndex = -1
       }
     },
-    insertToBody() {
-      this.$nextTick(() => {
-        const elx = this.$refs.leftPanel
-        const body = document.querySelector('body')
-        body.insertBefore(elx, body.firstChild)
-      })
-    },
+    // insertToBody() {
+    //   this.$nextTick(() => {
+    //     const elx = this.$refs.leftPanel
+    //     const body = document.querySelector('body')
+    //     body.insertBefore(elx, body.firstChild)
+    //   })
+    // },
 
     resetID(data) {
       if (data) {
@@ -420,6 +440,21 @@ export default {
   .leftPanel {
     transform: translate(0);
   }
+}
+
+.this_canvas{
+  height: calc(100vh - 91px);
+  overflow: auto;
+}
+.el-main{
+  height: calc(100vh - 91px);
+  padding: 0!important;
+  overflow: auto;
+  position: relative;
+}
+
+.el-main >>> .el-drawer__wrapper{
+  width: 310px!important;
 }
 
 </style>

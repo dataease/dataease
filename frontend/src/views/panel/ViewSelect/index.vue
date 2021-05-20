@@ -128,7 +128,7 @@ export default {
     overflow-y : auto
   }
   .detail-class {
-    width: 100%;
+    width: 300px;
     position: fixed;
     bottom: 0px;
   }
