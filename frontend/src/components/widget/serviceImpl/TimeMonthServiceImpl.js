@@ -10,7 +10,8 @@ const dialogPanel = {
   options: {
     attrs: {
       type: 'month',
-      placeholder: '请选择年月'
+      placeholder: '请选择年月',
+      viewIds: []
     },
     value: ''
   },

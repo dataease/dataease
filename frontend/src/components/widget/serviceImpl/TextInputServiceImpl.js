@@ -9,7 +9,8 @@ const leftPanel = {
 const dialogPanel = {
   options: {
     attrs: {
-      placeholder: '请选择'
+      placeholder: '请输入关键字',
+      viewIds: []
 
     },
     value: ''

@@ -12,7 +12,8 @@ const dialogPanel = {
       type: 'daterange',
       rangeSeparator: '至',
       startPlaceholder: '开始日期',
-      endPlaceholder: '结束日期'
+      endPlaceholder: '结束日期',
+      viewIds: []
     },
     value: ''
   },

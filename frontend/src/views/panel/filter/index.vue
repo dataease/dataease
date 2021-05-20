@@ -56,10 +56,10 @@ export default {
         ],
         '数字过滤组件': [
           'numberSelectWidget'
-        ],
-        '按钮': [
-          'buttonSureWidget'
         ]
+        // '按钮': [
+        //   'buttonSureWidget'
+        // ]
       }
     }
   },

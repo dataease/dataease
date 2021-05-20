@@ -1,8 +1,14 @@
 <template>
 
-  <el-input v-if="options!== null && options.attrs!==null" v-model="options.value" style="width: 260px" :placeholder="options.attrs.placeholder">
+  <el-input
+    v-if="options!== null && options.attrs!==null"
+    v-model="options.value"
+    style="width: 260px"
+    :placeholder="options.attrs.placeholder"
+    @keyup.enter.native="search"
+  >
 
-    <el-button slot="append" icon="el-icon-search" />
+    <el-button slot="append" icon="el-icon-search" @click="search" />
   </el-input>
 
 </template>
@@ -23,12 +29,26 @@ export default {
   data() {
     return {
       options: null,
-      operator: 'eq',
+      operator: 'like',
       values: null
     }
   },
   created() {
     this.options = this.element.options
+  },
+  methods: {
+    search() {
+    //   this.options.value && this.setCondition()
+      this.setCondition()
+    },
+    setCondition() {
+      const param = {
+        component: this.element,
+        value: [this.options.value],
+        operator: this.operator
+      }
+      this.inDraw && this.$store.dispatch('conditions/add', param)
+    }
   }
 }
 </script>

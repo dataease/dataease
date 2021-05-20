@@ -7,6 +7,7 @@
     :start-placeholder="options.attrs.startPlaceholder"
     :end-placeholder="options.attrs.endPlaceholder"
     :placeholder="options.attrs.placeholder"
+    @change="dateChange"
   />
 </template>
 
@@ -32,6 +33,22 @@ export default {
   },
   created() {
     this.options = this.element.options
+  },
+  methods: {
+    search() {
+      this.setCondition()
+    },
+    setCondition() {
+      const param = {
+        component: this.element,
+        value: Array.isArray(this.options.value) ? this.options.value : [this.options.value],
+        operator: this.operator
+      }
+      this.inDraw && this.$store.dispatch('conditions/add', param)
+    },
+    dateChange(value) {
+      this.setCondition()
+    }
   }
 }
 </script>

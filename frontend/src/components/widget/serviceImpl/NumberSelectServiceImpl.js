@@ -68,7 +68,7 @@ class NumberSelectServiceImpl extends WidgetService {
 
   optionDatas(datas) {
     if (!datas) return null
-    return datas.map(item => {
+    return datas.filter(item => !!item).map(item => {
       return {
         id: item,
         text: item
