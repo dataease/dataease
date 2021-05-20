@@ -205,9 +205,9 @@ public class ChartViewService {
     }
 
     private void checkName(ChartViewWithBLOBs chartView) {
-        if (StringUtils.isEmpty(chartView.getId())) {
-            return;
-        }
+//        if (StringUtils.isEmpty(chartView.getId())) {
+//            return;
+//        }
         ChartViewExample chartViewExample = new ChartViewExample();
         ChartViewExample.Criteria criteria = chartViewExample.createCriteria();
         if (StringUtils.isNotEmpty(chartView.getId())) {

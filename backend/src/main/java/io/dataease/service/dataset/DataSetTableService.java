@@ -595,9 +595,9 @@ public class DataSetTableService {
     }
 
     private void checkName(DatasetTable datasetTable) {
-        if (StringUtils.isEmpty(datasetTable.getId()) && StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
-            return;
-        }
+//        if (StringUtils.isEmpty(datasetTable.getId()) && StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
+//            return;
+//        }
         DatasetTableExample datasetTableExample = new DatasetTableExample();
         DatasetTableExample.Criteria criteria = datasetTableExample.createCriteria();
         if (StringUtils.isNotEmpty(datasetTable.getId())) {
