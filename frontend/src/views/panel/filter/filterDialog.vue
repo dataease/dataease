@@ -157,16 +157,16 @@
             </div>
           </el-col>
           <el-col :span="16"><div class="filter-options-right">
-            <el-checkbox v-model="customRange"><span>  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
+            <el-checkbox v-model="componentInfo.options.attrs.enableRange" @change="enableRangeChange"><span>  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
 
             <el-popover
               v-model="popovervisible"
               placement="bottom-end"
-              :disabled="!customRange"
+              :disabled="!componentInfo.options.attrs.enableRange"
               width="200"
             >
               <div class="view-container-class">
-                <el-checkbox-group v-model="checkedViews" @change="checkedViewsChange">
+                <el-checkbox-group v-model="componentInfo.options.attrs.viewIds" @change="checkedViewsChange">
                   <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id">
                     <span>
                       <svg-icon :icon-class="item.type" class="chart-icon" />
@@ -176,7 +176,7 @@
                 </el-checkbox-group>
               </div>
 
-              <i slot="reference" :class="{'i-filter-active': customRange, 'i-filter-inactive': !customRange}" class="el-icon-setting i-filter" />
+              <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.enableRange, 'i-filter-inactive': !componentInfo.options.attrs.enableRange}" class="el-icon-setting i-filter" />
             </el-popover>
             <!-- <el-checkbox disabled>备选项</el-checkbox> -->
           </div>
@@ -257,10 +257,8 @@ export default {
       selectField: [],
       widget: null,
       fieldValues: [],
-      customRange: false,
       popovervisible: false,
-      viewInfos: [],
-      checkedViews: []
+      viewInfos: []
     }
   },
   computed: {
@@ -478,7 +476,14 @@ export default {
     },
 
     checkedViewsChange(values) {
-      this.componentInfo.options.attrs.viewIds = values
+      // this.componentInfo.options.attrs.viewIds = values
+      this.$emit('re-fresh-component', this.componentInfo)
+    },
+    enableRangeChange(value) {
+      if (!value) {
+        this.componentInfo.options.attrs.viewIds = []
+      }
+      // this.componentInfo.options.attrs.enableRange = value
       this.$emit('re-fresh-component', this.componentInfo)
     }
   }

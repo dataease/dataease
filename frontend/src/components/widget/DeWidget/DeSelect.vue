@@ -1,6 +1,6 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" clearable :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder" @change="changeValue">
+  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :clearable="!options.attrs.multiple" :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder" @change="changeValue">
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"
@@ -28,8 +28,13 @@ export default {
   data() {
     return {
       options: null,
-      operator: 'eq',
+      //   operator: 'eq',
       values: null
+    }
+  },
+  computed: {
+    operator() {
+      return this.options.attrs.multiple ? 'in' : 'eq'
     }
   },
   watch: {
@@ -41,7 +46,6 @@ export default {
       }
     }
   },
-
   created() {
     this.options = this.element.options
     this.setCondition()
@@ -54,11 +58,16 @@ export default {
   methods: {
     changeValue(value) {
       this.setCondition()
-      this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
+      // this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
     },
 
     setCondition() {
-      this.inDraw && this.$store.dispatch('conditions/add', { component: this.element, value: [this.options.value], operator: this.operator })
+      const param = {
+        component: this.element,
+        value: Array.isArray(this.options.value) ? this.options.value : [this.options.value],
+        operator: this.operator
+      }
+      this.inDraw && this.$store.dispatch('conditions/add', param)
     }
   }
 }
