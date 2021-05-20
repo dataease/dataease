@@ -55,9 +55,8 @@ export default {
       form: { configuration: {}},
       rule: {
         name: [{ required: true, message: this.$t('datasource.input_name'), trigger: 'blur' },
-          { min: 2, max: 25, message: this.$t('commons.input_limit', [2, 25]), trigger: 'blur' }],
-        desc: [{ required: true, message: this.$t('datasource.input_desc'), trigger: 'blur' },
-          { min: 2, max: 50, message: this.$t('commons.input_limit', [2, 50]), trigger: 'blur' }],
+          { min: 2, max: 25, message: this.$t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        desc: [{ min: 0, max: 50, message: this.$t('datasource.input_limit_0_50'), trigger: 'blur' }],
         type: [{ required: true, message: this.$t('datasource.please_choose_type'), trigger: 'change' }],
 
         'configuration.dataBase': [{ required: true, message: this.$t('datasource.please_input_data_base'), trigger: 'blur' }],

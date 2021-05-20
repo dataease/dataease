@@ -807,7 +807,10 @@ export default {
     validate_success: '校验成功',
     validate: '校验',
     search_by_name: '根据名称搜索',
-    delete_warning: '确定要删除吗?'
+    delete_warning: '确定要删除吗?',
+    input_name: '请输入名称',
+    input_limit_2_25: '2-25字符',
+    input_limit_0_50: '0-50字符'
   },
   panel: {
     copy_link_passwd: '复制链接及密码',
