@@ -15,7 +15,6 @@
       <de-aside-container class="ms-aside-container">
         <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
-            <i class="el-icon-s-unfold" @click="visible = true">test</i>
             <!-- 视图图表 -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
               <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
