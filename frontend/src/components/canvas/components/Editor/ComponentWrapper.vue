@@ -2,6 +2,15 @@
   <div @click="handleClick">
     <component
       :is="config.component"
+      v-if="config.type==='custom'"
+      :id="'component' + config.id"
+      class="component"
+      :style="getStyle(config.style)"
+      :element="config"
+    />
+    <component
+      :is="config.component"
+      v-else
       class="component"
       :style="getStyle(config.style)"
       :prop-value="config.propValue"

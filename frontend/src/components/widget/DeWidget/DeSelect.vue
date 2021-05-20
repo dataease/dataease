@@ -1,6 +1,6 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="values" :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder" @change="changeValue">
+  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" clearable :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder" @change="changeValue">
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"
@@ -52,6 +52,7 @@ export default {
   },
   methods: {
     changeValue(value) {
+      this.inDraw && this.$store.dispatch('conditions/add', { component: this.element, value: [this.options.value], operator: this.operator })
       this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
     }
   }

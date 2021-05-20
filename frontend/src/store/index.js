@@ -11,6 +11,7 @@ import request from './modules/request'
 import panel from './modules/panel'
 import application from './modules/application'
 import lic from './modules/lic'
+import conditions from './modules/conditions'
 import animation from '@/components/canvas/store/animation'
 import compose from '@/components/canvas/store/compose'
 import contextmenu from '@/components/canvas/store/contextmenu'
@@ -135,7 +136,8 @@ const data = {
     request,
     panel,
     application,
-    lic
+    lic,
+    conditions
   },
   getters
 }

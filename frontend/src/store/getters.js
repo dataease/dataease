@@ -24,6 +24,7 @@ const getters = {
   drawWidgetMap: state => state.application.drawWidgetMap,
   validate: state => state.lic.validate,
   licMsg: state => state.lic.licMsg,
-  uiInfo: state => state.user.uiInfo
+  uiInfo: state => state.user.uiInfo,
+  conditions: state => state.conditions.conditions
 }
 export default getters
