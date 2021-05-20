@@ -675,6 +675,7 @@ export default {
     title_limit: '标题不能大于50个字符'
   },
   dataset: {
+    sheet_warn: '有多个Sheet页，默认抽取第一个',
     datalist: '数据集',
     add_group: '添加分组',
     add_scene: '添加场景',

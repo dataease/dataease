@@ -95,6 +95,7 @@ export default {
     return {
       name: '',
       fields: [],
+      sheets: [],
       data: [],
       mode: '1',
       height: 600,
@@ -139,11 +140,12 @@ export default {
       })
     },
     uploadSuccess(response, file, fileList) {
-      // console.log(response)
-      // console.log(file)
-      // console.log(fileList)
       this.path = response.data.path
       this.fields = response.data.fields
+      this.sheets = response.data.sheets
+      if (this.sheets.length > 1) {
+        this.$warning(this.$t('dataset.sheet_warn'))
+      }
       this.data = response.data.data
       const datas = this.data
       this.$refs.plxTable.reloadData(datas)
