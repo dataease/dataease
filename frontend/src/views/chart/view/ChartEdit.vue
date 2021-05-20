@@ -1,5 +1,5 @@
 <template>
-  <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
+  <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
     <!--    <span v-show="false">{{ vId }}</span>-->
     <el-row style="height: 40px;background-color: white" class="padding-lr">
       <el-popover
@@ -13,9 +13,13 @@
         <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
+        <el-button size="mini" :loading="loading" @click="saveSnapshot">
+          {{ $t('chart.save_snapshot') }}
+        </el-button>
         <el-button size="mini" @click="closeEdit">
           {{ $t('commons.save') }}
         </el-button>
+
         <!--        <el-button type="primary" size="mini" @click="save">-->
         <!--          {{ $t('chart.confirm') }}-->
         <!--        </el-button>-->
@@ -325,6 +329,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       table: {},
       dimension: [],
       quota: [],
@@ -483,11 +488,16 @@ export default {
         this.$store.dispatch('chart/setChartSceneData', response.data)
       })
     },
-    closeEdit() {
+
+    saveSnapshot() {
       if (this.view.title && this.view.title.length > 50) {
         this.$warning(this.$t('chart.title_limit'))
         return
       }
+      if (this.loading) {
+        return
+      }
+      this.loading = true
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
         if (snapshot !== '') {
@@ -533,9 +543,18 @@ export default {
           view.customStyle = JSON.stringify(view.customStyle)
           view.customFilter = JSON.stringify(view.customFilter)
           view.snapshot = snapshot
-          post('/chart/view/save', view)
+          post('/chart/view/save', view).then(response => {
+            this.loading = false
+            this.$success(this.$t('commons.save_success'))
+          })
         }
       })
+    },
+    closeEdit() {
+      if (this.view.title && this.view.title.length > 50) {
+        this.$warning(this.$t('chart.title_limit'))
+        return
+      }
       // 从仪表盘入口关闭
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
       this.$emit('switchComponent', { name: '' })

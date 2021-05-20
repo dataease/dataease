@@ -502,6 +502,7 @@ export default {
     tip: 'Tip: use as test mail recipient only'
   },
   chart: {
+    save_snapshot: 'Save Snapshot',
     datalist: 'Chart',
     add_group: 'Add Group',
     add_scene: 'Add Scene',
