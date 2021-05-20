@@ -2,7 +2,6 @@ package io.dataease.datasource.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
@@ -10,7 +9,11 @@ public class MysqlConfigration extends JdbcDTO {
 
     private String driver = "com.mysql.cj.jdbc.Driver";
 
-    public String getJdbc(){
-        return "jdbc:mysql://HOSTNAME:PORT/DATABASE".replace("HOSTNAME", getHost()).replace("PORT", getPort().toString()).replace("DATABASE", getDataBase());
+    public String getJdbc() {
+        // 连接参数先写死，后边要把编码、时区等参数放到数据源的设置中
+        return "jdbc:mysql://HOSTNAME:PORT/DATABASE?characterEncoding=UTF-8"
+                .replace("HOSTNAME", getHost())
+                .replace("PORT", getPort().toString())
+                .replace("DATABASE", getDataBase());
     }
 }
