@@ -501,6 +501,7 @@ export default {
     tip: ' 提示: 僅用來作為測試郵件收件人'
   },
   chart: {
+    save_snapshot: '保存缩略图',
     datalist: '視圖',
     add_group: '添加分組',
     add_scene: '添加場景',

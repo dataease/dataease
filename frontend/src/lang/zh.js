@@ -503,6 +503,7 @@ export default {
     tip: '提示：仅用来作为测试邮件收件人'
   },
   chart: {
+    save_snapshot: '保存缩略图',
     datalist: '视图',
     add_group: '添加分组',
     add_scene: '添加场景',
