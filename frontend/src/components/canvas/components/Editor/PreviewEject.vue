@@ -57,7 +57,7 @@ export default {
     customStyle() {
       let style = {}
       if (this.canvasStyleData.openCommonStyle) {
-        if (this.canvasStyleData.panel.backgroundType === 'image'&&this.canvasStyleData.panel.imageUrl) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
             width: '100%',
             height: '100%',
@@ -80,6 +80,7 @@ export default {
   mounted() {
     const _this = this
 
+    debugger
     // 加载数据
     _this.restore()
     const erd = elementResizeDetectorMaker()
