@@ -1,7 +1,7 @@
 <template>
   <layout-content :header="formType=='add' ? $t('menu.create') : $t('menu.modify')" back-name="system-menu">
     <el-form ref="menuForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-      <el-form-item label="菜单类型" prop="type">
+      <el-form-item :label="$t('menu.menu_type')" prop="type">
         <el-radio-group v-model="form.type" size="mini" :disabled="formType!=='add'">
           <el-radio-button label="0">{{ $t('commons.catalogue') }}</el-radio-button>
           <el-radio-button label="1">{{ $t('commons.menu') }}</el-radio-button>
@@ -26,10 +26,10 @@
       <el-form-item v-if="form.type !== 2" :label="$t('menu.tile')" prop="title">
         <el-input v-model="form.title" :placeholder="$t('menu.tile')" />
       </el-form-item>
-      <el-form-item v-if="form.type === 2" label="$t('menu.button_name')" prop="title">
+      <el-form-item v-if="form.type === 2" :label="$t('menu.button_name')" prop="title">
         <el-input v-model="form.title" :placeholder="$t('menu.button_name')" />
       </el-form-item>
-      <el-form-item v-if="form.type !== 2" label="$t('menu.menu_sort')" prop="menuSort">
+      <el-form-item v-if="form.type !== 2" :label="$t('menu.menu_sort')" prop="menuSort">
         <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" />
       </el-form-item>
       <el-form-item :label="$t('menu.parent_category')" prop="pid">

@@ -464,7 +464,8 @@ export default {
     create: 'Create Menu',
     modify: 'Modify Menu',
     delete: 'Delete Menu',
-    delete_confirm: 'Confirm to delete Menu?'
+    delete_confirm: 'Confirm to delete Menu?',
+    menu_type: 'Menu Type'
   },
   organization: {
     parent_org: 'Parent Organization',
@@ -806,7 +807,10 @@ export default {
     validate_success: 'Verification successful',
     validate: 'Validate',
     search_by_name: 'Search by name',
-    delete_warning: 'Confirm to delete?'
+    delete_warning: 'Confirm to delete?',
+    input_name: 'Please input name',
+    input_limit_2_25: '2-25 chars',
+    input_limit_0_50: '0-50 chars'
   },
   panel: {
     copy_link_passwd: 'Copy link and password',

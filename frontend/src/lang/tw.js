@@ -463,7 +463,8 @@ export default {
     create: '創建菜單',
     modify: '修改菜單',
     delete: '删除菜單',
-    delete_confirm: '確定删除菜單吗？'
+    delete_confirm: '確定删除菜單吗？',
+    menu_type: '菜單類型'
   },
   organization: {
     parent_org: '上級組織',
@@ -805,7 +806,10 @@ export default {
     validate_success: '校驗成功',
     validate: '校驗',
     search_by_name: '根據名稱搜索',
-    delete_warning: '確認刪除？'
+    delete_warning: '確認刪除？',
+    input_name: '請輸入名稱',
+    input_limit_2_25: '2-25字符',
+    input_limit_0_50: '0-50字符'
   },
   panel: {
     copy_link_passwd: '複製鏈接及密碼',
