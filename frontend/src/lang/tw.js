@@ -828,6 +828,7 @@ export default {
     delete: '刪除',
     move_to: '移動到',
     rename: '重命名',
+    import: '导入模板',
     tips: '提示',
     confirm_delete: '確認刪除',
     delete_success: '刪除成功',

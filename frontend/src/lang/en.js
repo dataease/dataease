@@ -828,6 +828,7 @@ export default {
     delete: 'Delete',
     move_to: 'Move',
     rename: 'Rename',
+    import: 'Import',
     tips: 'Tips',
     confirm_delete: 'Confirm Delete',
     delete_success: 'Delete Success',

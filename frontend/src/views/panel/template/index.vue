@@ -4,16 +4,28 @@
       <el-tabs v-model="currentTemplateType" @tab-click="handleClick">
         <el-tab-pane name="system">
           <span slot="label"><i class="el-icon-document" /> {{ $t('panel.sys_template') }}</span>
-          <template-list v-if="currentTemplateType==='system'" :template-type="currentTemplateType" :template-list="templateList"
-                         @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate"
-                         @showTemplateEditDialog="showTemplateEditDialog" />
+          <template-list
+            v-if="currentTemplateType==='system'"
+            :template-type="currentTemplateType"
+            :template-list="templateList"
+            @templateDelete="templateDelete"
+            @templateEdit="templateEdit"
+            @showCurrentTemplate="showCurrentTemplate"
+            @templateImport="templateImport"
+          />
         </el-tab-pane>
         <el-tab-pane name="self">
           <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.user_template') }}</span>
           <!--v-if 重新渲染 强制刷新首行高亮属性-->
-          <template-list v-if="currentTemplateType==='self'" :template-type="currentTemplateType" :template-list="templateList"
-                         @templateDelete="templateDelete" @templateEdit="templateEdit" @showCurrentTemplate="showCurrentTemplate"
-                         @showTemplateEditDialog="showTemplateEditDialog" />
+          <template-list
+            v-if="currentTemplateType==='self'"
+            :template-type="currentTemplateType"
+            :template-list="templateList"
+            @templateDelete="templateDelete"
+            @templateEdit="templateEdit"
+            @showCurrentTemplate="showCurrentTemplate"
+            @templateImport="templateImport"
+          />
         </el-tab-pane>
       </el-tabs>
     </de-aside-container>
@@ -38,6 +50,15 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <!--导入templatedialog-->
+    <el-dialog :title="templateDialog.title" :visible.sync="templateDialog.visible" :show-close="true" width="600px">
+      <template-import
+        v-if="templateDialog.visible"
+        :pid="templateDialog.pid"
+        @closeEditTemplateDialog="closeEditTemplateDialog"
+      />
+    </el-dialog>
   </de-container>
 </template>
 
@@ -47,11 +68,12 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import TemplateList from './component/TemplateList'
 import TemplateItem from './component/TemplateItem'
-import { get, post } from '@/api/panel/panel'
+import TemplateImport from './component/TemplateImport'
+import { save, templateDelete, showTemplateList } from '@/api/system/template'
 
 export default {
   name: 'PanelMain',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, TemplateList, TemplateItem },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, TemplateList, TemplateItem, TemplateImport },
   data() {
     return {
       showShare: false,
@@ -66,7 +88,12 @@ export default {
       templateEditForm: {},
       editTemplate: false,
       dialogTitle: '',
-      templateList: []
+      templateList: [],
+      templateDialog: {
+        title: this.$t('panel.import_template'),
+        visible: false,
+        pid: ''
+      }
     }
   },
   mounted() {
@@ -79,14 +106,14 @@ export default {
     showCurrentTemplate(pid) {
       this.currentTemplateId = pid
       if (this.currentTemplateId) {
-        post('/template/templateList', { pid: this.currentTemplateId }).then(response => {
+        showTemplateList({ pid: this.currentTemplateId }).then(response => {
           this.currentTemplateShowList = response.data
         })
       }
     },
     templateDelete(id) {
       if (id) {
-        post('/template/delete/' + id, null).then(response => {
+        templateDelete(id).then(response => {
           this.$message({
             message: this.$t('commons.delete_success'),
             type: 'success',
@@ -110,7 +137,7 @@ export default {
       this.showTemplateEditDialog('edit', templateInfo)
     },
     saveTemplateEdit(templateEditForm) {
-      post('/template/save', templateEditForm).then(response => {
+      save(templateEditForm).then(response => {
         this.$message({
           message: this.$t('commons.save_success'),
           type: 'success',
@@ -128,7 +155,7 @@ export default {
         templateType: this.currentTemplateType,
         level: '0'
       }
-      post('/template/templateList', request).then(res => {
+      showTemplateList(request).then(res => {
         this.templateList = res.data
         this.showFirst()
       })
@@ -153,6 +180,15 @@ export default {
       } else {
         this.currentTemplateShowList = []
       }
+    },
+    closeEditTemplateDialog() {
+      debugger
+      this.templateDialog.visible = false
+      this.showCurrentTemplate(this.templateDialog.pid)
+    },
+    templateImport(pid) {
+      this.templateDialog.visible = true
+      this.templateDialog.pid = pid
     }
   }
 }
