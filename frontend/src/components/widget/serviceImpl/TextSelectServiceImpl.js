@@ -12,6 +12,7 @@ const dialogPanel = {
     attrs: {
       multiple: false,
       placeholder: '请选择',
+      viewIds: [],
       datas: [],
       key: 'id',
       label: 'text',
