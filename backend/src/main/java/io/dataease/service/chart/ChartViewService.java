@@ -15,6 +15,7 @@ import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
+import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.chart.Series;
@@ -31,6 +32,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author gin
@@ -89,6 +91,9 @@ public class ChartViewService {
         }.getType());
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        List<ChartCustomFilterDTO> customFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartCustomFilterDTO>>() {
+        }.getType());
+        customFilter.forEach(ele -> ele.setField(dataSetTableFieldsService.get(ele.getFieldId())));
 
         if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
             ChartViewDTO dto = new ChartViewDTO();
@@ -127,9 +132,9 @@ public class ChartViewService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, extFilterList));
+                datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList));
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
-                datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, extFilterList));
+                datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList));
             }
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
@@ -141,7 +146,7 @@ public class ChartViewService {
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, extFilterList));
+            datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList));
             data = datasourceProvider.getData(datasourceRequest);
         }
 

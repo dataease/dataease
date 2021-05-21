@@ -42,14 +42,14 @@
           </span>
         </el-tree>
       </el-row>
-      <el-row v-if="detailItem&&detailItem.snapshot" class="detail-class">
-        <el-card class="filter-card-class">
-          <div slot="header" class="button-div-class">
-            <span>{{ detailItem.name }}</span>
-          </div>
-          <img draggable="false" class="view-list-thumbnails" :src="detailItem.snapshot" alt="">
-        </el-card>
-      </el-row>
+<!--      <el-row v-if="detailItem&&detailItem.snapshot" class="detail-class">-->
+<!--        <el-card class="filter-card-class">-->
+<!--          <div slot="header" class="button-div-class">-->
+<!--            <span>{{ detailItem.name }}</span>-->
+<!--          </div>-->
+<!--          <img draggable="false" class="view-list-thumbnails" :src="detailItem.snapshot" alt="">-->
+<!--        </el-card>-->
+<!--      </el-row>-->
     </el-row>
   </el-col>
 </template>

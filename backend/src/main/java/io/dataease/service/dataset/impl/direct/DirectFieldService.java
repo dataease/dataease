@@ -1,12 +1,15 @@
 package io.dataease.service.dataset.impl.direct;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
+import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
@@ -53,15 +56,34 @@ public class DirectFieldService implements DataSetFieldService {
         if (ObjectUtils.isEmpty(datasetTable) || StringUtils.isEmpty(datasetTable.getName())) return null;
         String tableName = datasetTable.getName();
 
-        String dataSourceId = datasetTable.getDataSourceId();
-        if (StringUtils.isEmpty(dataSourceId)) return null;
-        Datasource ds = datasourceService.get(dataSourceId);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        String querySQL = qp.createQuerySQL(tableName, Collections.singletonList(field));
-        datasourceRequest.setQuery(querySQL);
+        DatasourceProvider datasourceProvider = null;
+        if (datasetTable.getMode() == 0) {// 直连
+            if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
+            Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
+            datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
+                datasourceRequest.setTable(dataTableInfoDTO.getTable());
+                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), Collections.singletonList(field)));
+            } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(dataTableInfoDTO.getSql(), Collections.singletonList(field)));
+            }
+        } else if (datasetTable.getMode() == 1) {// 抽取
+            // 连接doris，构建doris数据源查询
+            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
+            datasourceRequest.setTable(tableName);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createQuerySQL(tableName, Collections.singletonList(field)));
+        }
+
         try {
             List<String[]> rows = datasourceProvider.getData(datasourceRequest);
             List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());

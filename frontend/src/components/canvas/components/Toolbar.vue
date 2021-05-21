@@ -221,8 +221,7 @@ export default {
     },
 
     clickPreview() {
-      // 编辑时临时保存 当前修改的画布
-      this.$router.replace('/PreviewFullScreen')
+      this.$emit('previewFullScreen')
     }
   }
 }

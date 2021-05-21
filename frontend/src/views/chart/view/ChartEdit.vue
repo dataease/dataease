@@ -13,9 +13,6 @@
         <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini" :loading="loading" @click="saveSnapshot">
-          {{ $t('chart.save_snapshot') }}
-        </el-button>
         <el-button size="mini" @click="closeEdit">
           {{ $t('commons.save') }}
         </el-button>
@@ -168,22 +165,11 @@
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div v-if="false" style="overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
+        <div style="height:60px;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
           <span>{{ $t('chart.result_filter') }}</span>
-          <div style="margin: 8px" class="filter-inner-class">
-            <draggable
-              v-model="view.customFilter"
-              group="drag"
-              animation="300"
-              :move="onMove"
-              style="height:100%;margin:0;overflow-x: auto;background-color: white;"
-              @end="end2"
-            >
-              <transition-group class="draggable-group">
-                <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :index="index" :item="item" />
-              </transition-group>
-            </draggable>
-          </div>
+          <el-button size="mini" class="filter-btn-class" @click="showResultFilter">
+            {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon--right" />
+          </el-button>
         </div>
       </el-col>
 
@@ -191,7 +177,7 @@
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <el-row style="margin-top: 10px;">
             <el-row style="display:flex;height: 32px;">
-              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.dimension') }}</span>
+              <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.dimension') }}</span>
               <draggable
                 v-model="view.xaxis"
                 group="dimension"
@@ -206,7 +192,7 @@
               </draggable>
             </el-row>
             <el-row style="display:flex;height: 32px;margin-top: 10px;">
-              <span style="line-height: 32px;width: 60px;text-align: right;">{{ $t('chart.quota') }}</span>
+              <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.quota') }}</span>
               <draggable
                 v-model="view.yaxis"
                 group="quota"
@@ -278,6 +264,20 @@
         <el-button type="primary" size="mini" @click="saveDimensionFilter">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      v-dialogDrag
+      :title="$t('chart.add_filter')"
+      :visible="resultFilterEdit"
+      :show-close="false"
+      width="800px"
+      class="dialog-css"
+    >
+      <result-filter-editor :chart="chartForFilter" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeResultFilter">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveResultFilter">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -286,7 +286,7 @@ import { post, ajaxGetData } from '@/api/chart/chart'
 import draggable from 'vuedraggable'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
-import FilterItem from '../components/drag-item/FilterItem'
+import ResultFilterEditor from '../components/filter/ResultFilterEditor'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
@@ -320,7 +320,7 @@ import html2canvas from 'html2canvas'
 
 export default {
   name: 'ChartEdit',
-  components: { LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, FilterItem, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,
@@ -362,6 +362,8 @@ export default {
       dimensionItem: {},
       quotaFilterEdit: false,
       quotaItem: {},
+      resultFilterEdit: false,
+      chartForFilter: {},
       renameItem: false,
       itemForm: {
         name: ''
@@ -787,6 +789,30 @@ export default {
       this.closeQuotaFilter()
     },
 
+    showResultFilter() {
+      this.chartForFilter = JSON.parse(JSON.stringify(this.view))
+      this.resultFilterEdit = true
+    },
+    closeResultFilter() {
+      this.resultFilterEdit = false
+    },
+    saveResultFilter() {
+      for (let i = 0; i < this.chartForFilter.customFilter.length; i++) {
+        const f = this.chartForFilter.customFilter[i]
+        if (!f.fieldId || f.fieldId === '') {
+          this.$message({
+            message: this.$t('chart.filter_field_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
+      this.view.customFilter = this.chartForFilter.customFilter
+      this.save(true)
+      this.closeResultFilter()
+    },
+
     showRename(val) {
       this.itemForm = JSON.parse(JSON.stringify(val))
       this.renameItem = true
@@ -951,7 +977,7 @@ export default {
   }
 
   .attr-style{
-    height: calc(100vh - 56px - 25vh - 40px - 62px - 10px);
+    height: calc(100vh - 56px - 25vh - 40px - 62px - 10px - 60px);
   }
 
   .attr-selector{
@@ -994,5 +1020,14 @@ export default {
   }
   .dialog-css >>> .el-dialog__body {
     padding: 10px 20px 20px;
+  }
+
+  .filter-btn-class{
+    padding: 6px;
+    border: none;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 </style>
