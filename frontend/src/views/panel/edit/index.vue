@@ -241,7 +241,7 @@ export default {
     showPanel(type) {
       debugger
       if (this.showIndex === -1 || this.showIndex === type) {
-        this.show = !this.show
+        this.$nextTick(() => (this.show = !this.show))
       }
       this.showIndex = type
     },
@@ -254,6 +254,7 @@ export default {
       // 点击样式按钮 排除
       const stick = evt.target.closest('.el-icon-magic-stick')
       if (!parent && !self && !stick) {
+        debugger
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
@@ -371,6 +372,7 @@ export default {
       this.openFilterDiolog()
     },
     closeLeftPanel() {
+      debugger
       this.show = false
       // this.beforeDestroy()
     }
