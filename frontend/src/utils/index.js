@@ -1,7 +1,47 @@
+
 /**
  * Created by PanJiaChen on 16/11/18.
  */
+export function timeSection(date, type) {
+  if (!date) {
+    return null
+  }
+  const timeRanger = new Array(2)
 
+  date.setHours(0)
+  date.setMinutes(0)
+  date.setSeconds(0)
+  date.setMilliseconds(0)
+  const end = new Date(date)
+  if (type === 'year') {
+    date.setDate(1)
+    date.setMonth(0)
+    end.setFullYear(date.getFullYear() + 1)
+    timeRanger[1] = end.getTime() - 1
+  }
+  if (type === 'month') {
+    date.setDate(1)
+    const currentMonth = date.getMonth()
+    if (currentMonth === 11) {
+      end.setFullYear(date.getFullYear() + 1)
+      end.setMonth(0)
+    } else {
+      end.setMonth(date.getMonth() + 1)
+    }
+    timeRanger[1] = end.getTime() - 1
+  }
+
+  if (type === 'date') {
+    end.setHours(23)
+    end.setMinutes(59)
+    end.setSeconds(59)
+    end.setMilliseconds(999)
+    timeRanger[1] = end.getTime()
+  }
+  timeRanger[0] = date.getTime()
+
+  return timeRanger
+}
 export function dateFormat(date, fmt) {
   let ret
   const opt = {

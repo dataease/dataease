@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { dateFormat } from '@/utils'
+import { timeSection } from '@/utils'
 export default {
 
   props: {
@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       options: null,
-      operator: 'eq',
+      operator: 'in',
       values: null
     }
   },
@@ -50,37 +50,26 @@ export default {
       this.inDraw && this.$store.dispatch('conditions/add', param)
     },
     dateChange(value) {
-    //   const nvalue = dateFormat(value, this.getFormat())
-    //   console.log(nvalue)
       this.setCondition()
     },
     formatValues(values) {
       if (!values || values.length === 0) {
         return []
       }
-      return values.map(value => dateFormat(value, this.getFormat()))
-    },
-    getFormat() {
-      let format = 'yyyy'
-      switch (this.options.attrs.type) {
-        case 'year':
-          format = 'yyyy'
-          break
-        case 'month':
-          format = 'yyyy-MM'
-          break
-        case 'date':
-          format = 'yyyy-MM-dd'
-          break
-        case 'daterange':
-          format = 'yyyy-MM-dd'
-          this.operator = 'in'
-          break
-        default:
-          format = 'yyyy'
-          break
+      if (this.options.attrs.type === 'daterange') {
+        if (values.length !== 2) {
+          return null
+        }
+        let start = values[0]
+        let end = values[1]
+        start = timeSection(start, 'date')[0]
+        end = timeSection(end, 'date')[1]
+        const results = [start, end]
+        return results
+      } else {
+        const value = values[0]
+        return timeSection(value, this.options.attrs.type)
       }
-      return format
     }
   }
 }
