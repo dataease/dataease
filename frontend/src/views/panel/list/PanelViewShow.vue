@@ -51,6 +51,7 @@
     </el-col>
 
     <el-dialog
+      v-if="templateSaveShow"
       :title="templateSaveTitle"
       :visible.sync="templateSaveShow"
       custom-class="de-dialog"
