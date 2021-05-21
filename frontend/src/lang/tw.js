@@ -942,6 +942,7 @@ export default {
     version_num: '版本號',
     standard: '標準版',
     enterprise: '企業版',
-    suport: '獲取技術支持'
+    suport: '獲取技術支持',
+    update_success: '更新成功'
   }
 }

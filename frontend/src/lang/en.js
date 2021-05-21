@@ -943,6 +943,7 @@ export default {
     version_num: 'Version number',
     standard: 'Standard',
     enterprise: 'Enterprise',
-    suport: 'Get technical support'
+    suport: 'Get technical support',
+    update_success: 'Update Success'
   }
 }
