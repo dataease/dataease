@@ -4,7 +4,9 @@
       <i class="el-icon-error" @click.stop="templateDelete" />
       <i class="el-icon-edit" @click.stop="templateEdit" />
     </div>
-    <span class="demonstration">{{ template.name }}</span>
+    <el-tooltip class="item" effect="light" :content="template.name" placement="bottom">
+      <span class="demonstration">{{ template.name }}</span>
+    </el-tooltip>
   </div>
 </template>
 
@@ -34,7 +36,7 @@ export default {
   },
   methods: {
     templateDelete() {
-      this.$alert(this.$t('panel.confirm_delete') +  this.$t('panel.template') + ': ' + this.template.name + '？', '', {
+      this.$alert(this.$t('panel.confirm_delete') + this.$t('panel.template') + ': ' + this.template.name + '？', '', {
         confirmButtonText: this.$t('panel.confirm'),
         callback: (action) => {
           if (action === 'confirm') {
@@ -63,6 +65,8 @@ export default {
 
   .demonstration {
     display: block;
+    font-size: 14px;
+    color: gray;
     text-align: center;
     margin: 10px auto;
     width: 150px;

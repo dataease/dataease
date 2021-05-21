@@ -160,6 +160,7 @@ COMMIT;
 INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('self', '用户模板', '', -1, 'folder', NULL, NULL, '', 'self', '', '', NULL);
 INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('system', '系统模板', '', -1, 'folder', NULL, NULL, NULL, 'system', NULL, NULL, NULL);
 
+
 -- ----------------------------
 
 
