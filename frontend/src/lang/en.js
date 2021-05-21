@@ -887,7 +887,7 @@ export default {
     insert_picture: 'Insert Picture',
     redo: 'Redo',
     undo: 'Undo',
-    panel_null: 'This is a Empty Panel，You Can Edit and Enrich It'
+    panelNull: 'This is a Empty Panel，You Can Edit and Enrich It'
   },
   plugin: {
     local_install: 'Local installation',
