@@ -107,7 +107,7 @@ public class AuthServer implements AuthApi {
     public String test() {
         SysUserEntity userById = authUserService.getUserById(4L);
         String nickName = userById.getNickName();
-        System.out.println(nickName);
+//        System.out.println(nickName);
        /* Map<String, DePluginXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType(DePluginXpackService.class);
         for (Map.Entry entry : beansOfType.entrySet()) {
             Object key = entry.getKey();

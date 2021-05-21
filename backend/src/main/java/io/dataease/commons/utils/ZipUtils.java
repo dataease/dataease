@@ -30,15 +30,12 @@ public class ZipUtils {
             while (ze != null) {
                 String fileName = ze.getName();
                 File newFile = new File(outputFolder + File.separator + fileName);
-                System.out.println("file unzip : " + newFile.getAbsoluteFile());
                 //大部分网络上的源码，这里没有判断子目录
                 if (ze.isDirectory()) {
                     if (!newFile.mkdirs()) {
-                        System.out.println("was not successful.");
                     }
                 } else {
                     if (!new File(newFile.getParent()).mkdirs()) {
-                        System.out.println("was not successful.");
                     }
                     FileOutputStream fos = new FileOutputStream(newFile);
                     int len;
@@ -51,7 +48,6 @@ public class ZipUtils {
             }
             zis.closeEntry();
             zis.close();
-            System.out.println("Done");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,14 +64,12 @@ public class ZipUtils {
 
                 if (entry.isDirectory()) {
                     if (!file.mkdirs()) {
-                        System.out.println("was not successful.");
                     }
                 } else {
                     File parent = file.getParentFile();
 
                     if (!parent.exists()) {
                         if (!parent.mkdirs()) {
-                            System.out.println("was not successful.");
                         }
                     }
 
@@ -107,7 +101,6 @@ public class ZipUtils {
         File desDir = new File(folderPath);
         if (!desDir.exists()) {
             if (!desDir.mkdirs()) {
-                System.out.println("was not successful.");
             }
         }
         ZipFile zf = new ZipFile(zipFile);
@@ -120,7 +113,6 @@ public class ZipUtils {
                 File fileParentDir = desFile.getParentFile();
                 if (!fileParentDir.exists()) {
                     if (!fileParentDir.mkdirs()) {
-                        System.out.println("was not successful.");
                     }
                 }
             }

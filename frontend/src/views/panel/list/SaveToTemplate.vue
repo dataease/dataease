@@ -74,7 +74,7 @@ export default {
     },
     save() {
       if (!this.templateInfo.pid) {
-        this.$warning(this.$t(panel.pls_select_belong_to_category))
+        this.$warning(this.$t('panel.pls_select_belong_to_category'))
         return false
       }
       if (!this.templateInfo.name) {
