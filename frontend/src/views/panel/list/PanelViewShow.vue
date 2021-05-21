@@ -162,13 +162,13 @@ export default {
     star() {
       this.panelInfo && saveEnshrine(this.panelInfo.id).then(res => {
         this.hasStar = true
-        this.refreshStarList()
+        this.refreshStarList(true)
       })
     },
     unstar() {
       this.panelInfo && deleteEnshrine(this.panelInfo.id).then(res => {
         this.hasStar = false
-        this.refreshStarList()
+        this.refreshStarList(false)
       })
     },
     initHasStar() {
@@ -177,8 +177,8 @@ export default {
         this.hasStar = res.data && res.data.some(item => item.panelGroupId === this.panelInfo.id)
       })
     },
-    refreshStarList() {
-      bus.$emit('panle_start_list_refresh')
+    refreshStarList(isStar) {
+      bus.$emit('panle_start_list_refresh', isStar)
     }
 
   }
