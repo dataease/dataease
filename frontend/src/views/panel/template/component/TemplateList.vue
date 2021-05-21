@@ -27,14 +27,11 @@
           @node-click="nodeClick"
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
-            <span>
+            <span style="display: flex; flex: 1 1 0%; width: 0px;">
               <span>
-                <el-button
-                  icon="el-icon-folder"
-                  type="text"
-                />
+                <i class="el-icon-folder" />
               </span>
-              <span style="margin-left: 6px">{{ data.name }}</span>
+              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
             </span>
             <span>
               <span @click.stop>
@@ -47,8 +44,11 @@
                     />
                   </span>
                   <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item icon="el-icon-upload2" :command="beforeClickMore('import',data,node)">
+                      {{ $t('panel.import') }}
+                    </el-dropdown-item>
                     <el-dropdown-item icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
-                       {{ $t('panel.rename') }}
+                      {{ $t('panel.rename') }}
                     </el-dropdown-item>
                     <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
                       {{ $t('panel.delete') }}
@@ -108,6 +108,9 @@ export default {
         case 'delete':
           this.templateDelete(param.data)
           break
+        case 'import':
+          this.templateImport(param.data)
+          break
       }
     },
     beforeClickMore(type, data, node) {
@@ -129,7 +132,7 @@ export default {
       this.$emit('showTemplateEditDialog', 'new')
     },
     templateDelete(template) {
-      this.$alert(this.$t('panel.confirm_delete') +  this.$t('panel.category') + ': ' + template.name + '？', '', {
+      this.$alert(this.$t('panel.confirm_delete') + this.$t('panel.category') + ': ' + template.name + '？', '', {
         confirmButtonText: this.$t('panel.confirm_delete'),
         callback: (action) => {
           if (action === 'confirm') {
@@ -140,6 +143,9 @@ export default {
     },
     templateEdit(template) {
       this.$emit('templateEdit', template)
+    },
+    templateImport(template) {
+      this.$emit('templateImport', template.id)
     }
   }
 }

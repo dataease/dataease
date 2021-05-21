@@ -1,6 +1,7 @@
 package io.dataease.controller.panel;
 
 import io.dataease.base.domain.PanelTemplateWithBLOBs;
+import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.panel.PanelTemplateRequest;
 import io.dataease.dto.panel.PanelTemplateDTO;
 import io.dataease.service.panel.PanelTemplateService;
@@ -22,6 +23,7 @@ public class PanelTemplateController {
     private PanelTemplateService panelTemplateService;
 
     @PostMapping("/templateList")
+    @I18n
     public List<PanelTemplateDTO> templateList(@RequestBody PanelTemplateRequest request) {
         return panelTemplateService.templateList(request);
     }
@@ -31,7 +33,7 @@ public class PanelTemplateController {
         return panelTemplateService.save(request);
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable String id) {
         panelTemplateService.delete(id);
     }

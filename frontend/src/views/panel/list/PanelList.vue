@@ -48,7 +48,7 @@
                   <svg-icon icon-class="panel" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
-                  <svg-icon icon-class="folder" class="ds-icon-scene" />
+                  <i class="el-icon-folder" />
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
@@ -64,7 +64,7 @@
                     </span>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item :command="beforeClickEdit('folder','new',data,node)">
-                        <svg-icon icon-class="folder" class="ds-icon-scene" /> &nbsp <span>{{ $t('panel.groupAdd') }}</span>
+                        <i class="el-icon-folder" /> &nbsp <span>{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
                       <el-dropdown-item :command="beforeClickEdit('panel','new',data,node)">
                         <svg-icon icon-class="panel" class="ds-icon-scene" /> &nbsp <span>{{ $t('panel.panelAdd') }}</span>

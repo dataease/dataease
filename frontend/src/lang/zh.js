@@ -830,6 +830,7 @@ export default {
     delete: '删除',
     move_to: '移动到',
     rename: '重命名',
+    import: '导入模板',
     tips: '提示',
     confirm_delete: '确认删除',
     delete_success: '删除成功',

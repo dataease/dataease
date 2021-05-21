@@ -3,7 +3,7 @@
     <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel'">
       <el-col :span="18" style="height: 40px">
         <el-radio v-model="inputType" label="self"> {{ $t('panel.custom') }}</el-radio>
-        <el-radio v-model="inputType" label="import">{{ $t('panel.import_template') }}  </el-radio>
+        <!--        <el-radio v-model="inputType" label="import">{{ $t('panel.import_template') }}  </el-radio>-->
         <el-radio v-model="inputType" label="copy">{{ $t('panel.copy_template') }}  </el-radio>
       </el-col>
       <el-col v-if="inputType==='import'" :span="6">
@@ -18,7 +18,7 @@
       </el-col>
     </el-row>
     <el-row v-if="inputType==='copy'" class="preview">
-      <el-col :span="8" style="overflow: auto">
+      <el-col :span="8" style="overflow-y: auto">
         <template-all-list :template-list="templateList" @showCurrentTemplateInfo="showCurrentTemplateInfo" />
       </el-col>
       <el-col :span="16" :style="classBackground" class="preview-show" />
@@ -157,7 +157,7 @@ export default {
     margin-top: 5px;
     border:1px solid #E6E6E6;
     height:300px !important;
-    overflow:auto;
+    overflow:hidden;
     background-size: 100% 100% !important;
   }
   .preview-show {
