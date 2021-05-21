@@ -67,6 +67,7 @@ import { mapState } from 'vuex'
 import html2canvas from 'html2canvas'
 import FileSaver from 'file-saver'
 import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
+import bus from '@/utils/bus'
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate },
@@ -161,11 +162,13 @@ export default {
     star() {
       this.panelInfo && saveEnshrine(this.panelInfo.id).then(res => {
         this.hasStar = true
+        this.refreshStarList()
       })
     },
     unstar() {
       this.panelInfo && deleteEnshrine(this.panelInfo.id).then(res => {
         this.hasStar = false
+        this.refreshStarList()
       })
     },
     initHasStar() {
@@ -173,6 +176,9 @@ export default {
       enshrineList(param).then(res => {
         this.hasStar = res.data && res.data.some(item => item.panelGroupId === this.panelInfo.id)
       })
+    },
+    refreshStarList() {
+      bus.$emit('panle_start_list_refresh')
     }
 
   }
