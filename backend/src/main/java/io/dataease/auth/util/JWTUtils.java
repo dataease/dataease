@@ -97,10 +97,10 @@ public class JWTUtils {
             isExpire = now - lastOperateTime > Login_Interval;
         }
         if (isExpire) {
-            System.out.println("-----------------------");
-            System.out.println("-----上次操作时间是["+lastOperateTime+"]-----");
-            System.out.println("-----当前操作时间是["+now+"]-----");
-            System.out.println("-----------------------");
+//            System.out.println("-----------------------");
+//            System.out.println("-----上次操作时间是["+lastOperateTime+"]-----");
+//            System.out.println("-----当前操作时间是["+now+"]-----");
+//            System.out.println("-----------------------");
         }
         return isExpire;
     }

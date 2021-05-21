@@ -139,7 +139,7 @@ public class ModuleClassLoader extends URLClassLoader {
 
                 SpringContextUtil.getBeanFactory().registerBeanDefinition(beanName,beanDefinition);
                 registeredBean.add(beanName);
-                System.out.println("注册bean:"+beanName);
+//                System.out.println("注册bean:"+beanName);
             }
 
         }

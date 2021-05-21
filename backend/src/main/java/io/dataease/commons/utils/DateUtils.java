@@ -96,19 +96,19 @@ public class DateUtils {
 
 
     public static void main(String[] args) throws Exception {
-        System.out.println("start:");
+//        System.out.println("start:");
         Date paramTime = getTime(getTimeString(new Long("1607672440731")));
 
         Map<String, Date> weekDate = getWeedFirstTimeAndLastTime(paramTime);
 
         for (Map.Entry<String, Date> entry :
                 weekDate.entrySet()) {
-            System.out.println(entry.getKey() + ":" + getTimeString(entry.getValue())+":"+entry.getValue().getTime());
+//            System.out.println(entry.getKey() + ":" + getTimeString(entry.getValue())+":"+entry.getValue().getTime());
         }
 
         long countTimeLong = new Long("1607672440731");
 
-        System.out.println(getTimeString(--countTimeLong));
+//        System.out.println(getTimeString(--countTimeLong));
 
     }
 

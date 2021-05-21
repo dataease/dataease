@@ -9,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -262,6 +264,8 @@ public class MysqlQueryProvider extends QueryProvider {
                 return " IS NULL ";
             case "not_null":
                 return " IS NOT NULL ";
+            case "between":
+                return " BETWEEN ";
             default:
                 return "";
         }
@@ -292,6 +296,11 @@ public class MysqlQueryProvider extends QueryProvider {
                 filter.append("('").append(StringUtils.join(value, "','")).append("')");
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 filter.append("'%").append(value.get(0)).append("%'");
+            } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
+                String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
+                filter.append("'").append(startTime).append("' AND '").append(endTime).append("'");
             } else {
                 filter.append("'").append(value.get(0)).append("'");
             }
