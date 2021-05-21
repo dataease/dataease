@@ -2,6 +2,7 @@ package io.dataease.provider.mysql;
 
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
+import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -110,7 +111,7 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
+    public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
@@ -186,7 +187,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 StringUtils.join(groupField, ","),
                 StringUtils.join(field, ","),
                 table,
-                (xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "") + transMysqlExtFilter(extFilterRequestList),// origin field filter and panel field filter
+                (xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "") + transCustomFilter(customFilter) + transExtFilter(extFilterRequestList),// origin field filter and panel field filter
                 StringUtils.join(group, ","),
                 StringUtils.join(order, ","));
         if (sql.endsWith(",")) {
@@ -229,8 +230,8 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartExtFilterRequest> extFilterRequestList) {
-        return getSQL(" (" + sqlFix(sql) + ") AS tmp ", xAxis, yAxis, extFilterRequestList);
+    public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
+        return getSQL(" (" + sqlFix(sql) + ") AS tmp ", xAxis, yAxis, customFilter, extFilterRequestList);
     }
 
     @Override
@@ -271,7 +272,36 @@ public class MysqlQueryProvider extends QueryProvider {
         }
     }
 
-    public String transMysqlExtFilter(List<ChartExtFilterRequest> requestList) {
+    public String transCustomFilter(List<ChartCustomFilterDTO> requestList) {
+        if (CollectionUtils.isEmpty(requestList)) {
+            return "";
+        }
+        StringBuilder filter = new StringBuilder();
+        for (ChartCustomFilterDTO request : requestList) {
+            String value = request.getValue();
+            DatasetTableField field = request.getField();
+            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
+                filter.append(" AND FROM_UNIXTIME(cast(")
+                        .append(field.getDataeaseName())
+                        .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+            } else {
+                filter.append(" AND ").append(field.getDataeaseName());
+            }
+            filter.append(" ")
+                    .append(transMysqlFilterTerm(request.getTerm()))
+                    .append(" ");
+            if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
+                filter.append("('").append(StringUtils.join(value, "','")).append("')");
+            } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
+                filter.append("'%").append(value).append("%'");
+            } else {
+                filter.append("'").append(value).append("'");
+            }
+        }
+        return filter.toString();
+    }
+
+    public String transExtFilter(List<ChartExtFilterRequest> requestList) {
         if (CollectionUtils.isEmpty(requestList)) {
             return "";
         }

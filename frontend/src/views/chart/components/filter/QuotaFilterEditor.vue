@@ -1,33 +1,35 @@
 <template>
   <el-col>
     <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
-    <el-row v-for="(f,index) in item.filter" :key="index" class="filter-item">
-      <el-col :span="4">
-        <span>{{ item.name }} ({{ $t('chart.'+item.summary) }})</span>
-      </el-col>
-      <el-col :span="8">
-        <el-select v-model="f.term" size="mini">
-          <el-option-group
-            v-for="(group,idx) in options"
-            :key="idx"
-            :label="group.label"
-          >
-            <el-option
-              v-for="opt in group.options"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
-            />
-          </el-option-group>
-        </el-select>
-      </el-col>
-      <el-col :span="6">
-        <el-input v-model="f.value" class="value-item" :placeholder="$t('chart.no_limit')" size="mini" clearable />
-      </el-col>
-      <el-col :span="6">
-        <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeFilter(index)" />
-      </el-col>
-    </el-row>
+    <div style="max-height: 50vh;overflow-y: auto;">
+      <el-row v-for="(f,index) in item.filter" :key="index" class="filter-item">
+        <el-col :span="4">
+          <span>{{ item.name }} ({{ $t('chart.'+item.summary) }})</span>
+        </el-col>
+        <el-col :span="8">
+          <el-select v-model="f.term" size="mini">
+            <el-option-group
+              v-for="(group,idx) in options"
+              :key="idx"
+              :label="group.label"
+            >
+              <el-option
+                v-for="opt in group.options"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
+              />
+            </el-option-group>
+          </el-select>
+        </el-col>
+        <el-col :span="6">
+          <el-input v-model="f.value" class="value-item" :placeholder="$t('chart.no_limit')" size="mini" clearable />
+        </el-col>
+        <el-col :span="6">
+          <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeFilter(index)" />
+        </el-col>
+      </el-row>
+    </div>
   </el-col>
 </template>
 
