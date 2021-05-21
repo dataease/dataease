@@ -8,7 +8,7 @@
       </el-col>
       <!--横向工具栏-->
       <el-col :span="16">
-        <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" />
+        <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" @previewFullScreen="previewFullScreen" />
       </el-col>
     </el-header>
     <de-container>
@@ -110,6 +110,15 @@
         </span>
       </div>
     </el-dialog>
+
+    <el-dialog
+      v-if="previewVisible"
+      :visible.sync="previewVisible"
+      :fullscreen="true"
+      custom-class="preview-dialog"
+    >
+      <PreviewFullScreen />
+    </el-dialog>
   </el-row>
 </template>
 
@@ -130,6 +139,7 @@ import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import { get } from '@/api/panel/panel'
+import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -149,7 +159,8 @@ export default {
     Editor,
     Toolbar,
     FilterDialog,
-    SubjectSetting
+    SubjectSetting,
+    PreviewFullScreen
   },
   data() {
     return {
@@ -164,7 +175,8 @@ export default {
       filterVisible: false,
       currentWidget: null,
       currentFilterCom: null,
-      subjectVisible: false
+      subjectVisible: false,
+      previewVisible: false
     }
   },
 
@@ -210,6 +222,10 @@ export default {
 
     bus.$on('component-dialog-edit', () => {
       this.eidtDialog()
+    })
+
+    bus.$on('previewFullScreenClose', () => {
+      this.previewVisible = false
     })
   },
   beforeDestroy() {
@@ -375,7 +391,11 @@ export default {
       debugger
       this.show = false
       // this.beforeDestroy()
+    },
+    previewFullScreen() {
+      this.previewVisible = true
     }
+
   }
 }
 </script>

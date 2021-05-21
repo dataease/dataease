@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%;height: 100vh;">
     <span style="line-height: 35px; position: absolute; top:10px;right: 20px;z-index:100000">
-      <el-button size="mini" @click="toDir">
+      <el-button size="mini" @click="close">
         关闭
       </el-button>
     </span>
@@ -18,9 +18,8 @@ export default {
   components: { Preview },
 
   methods: {
-    toDir() {
-      this.$router.replace('/panel/index')
-      bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
+    close() {
+      bus.$emit('previewFullScreenClose')
     }
   }
 }

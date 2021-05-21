@@ -99,6 +99,22 @@ div:focus {
     }
 }
 
+.preview-dialog {
+  padding: 0px!important;
+  .el-dialog--center{
+    padding: 0px!important;
+  }
+
+  .el-dialog__header{
+    display:none!important;
+
+  }
+  .el-dialog__body{
+    padding: 0px!important;
+    height: 100vh!important;
+  }
+}
+
 .de-search-header {
     .el-tabs__header{
         display: none !important;;

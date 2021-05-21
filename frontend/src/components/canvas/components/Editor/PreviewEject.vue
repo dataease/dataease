@@ -148,6 +148,7 @@ export default {
 
 <style lang="scss" scoped>
   .bg {
+    height: 100vh!important;
     min-width: 800px;
     min-height: 600px;
     width: 100%;
