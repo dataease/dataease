@@ -71,6 +71,9 @@ public class SysUserService {
         }else{
             user.setPassword(CodingUtil.md5(user.getPassword()));
         }
+        if(StringUtils.isEmpty(user.getLanguage())){
+            user.setLanguage("zh_CN");
+        }
         int insert = sysUserMapper.insert(user);
         SysUser dbUser = findOne(user);
         saveUserRoles(dbUser.getUserId(), request.getRoleIds());//插入用户角色关联
