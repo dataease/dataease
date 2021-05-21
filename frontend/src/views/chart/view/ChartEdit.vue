@@ -13,9 +13,6 @@
         <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini" :loading="loading" @click="saveSnapshot">
-          {{ $t('chart.save_snapshot') }}
-        </el-button>
         <el-button size="mini" @click="closeEdit">
           {{ $t('commons.save') }}
         </el-button>
