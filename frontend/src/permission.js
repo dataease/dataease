@@ -29,7 +29,7 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo) {
+      if (hasGetUserInfo || to.path.indexOf('/preview/') > -1) {
         next()
         store.dispatch('permission/setCurrentPath', to.path)
       } else {
