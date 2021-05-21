@@ -797,6 +797,17 @@ export default {
       this.resultFilterEdit = false
     },
     saveResultFilter() {
+      for (let i = 0; i < this.chartForFilter.customFilter.length; i++) {
+        const f = this.chartForFilter.customFilter[i]
+        if (!f.fieldId || f.fieldId === '') {
+          this.$message({
+            message: this.$t('chart.filter_field_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.view.customFilter = this.chartForFilter.customFilter
       this.save(true)
       this.closeResultFilter()
