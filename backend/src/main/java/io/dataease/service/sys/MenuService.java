@@ -157,7 +157,7 @@ public class MenuService {
     private MenuTreeNode format(SysMenu sysMenu) {
         MenuTreeNode menuTreeNode = new MenuTreeNode();
         menuTreeNode.setId(sysMenu.getMenuId());
-        menuTreeNode.setLabel(sysMenu.getName());
+        menuTreeNode.setLabel(sysMenu.getTitle());
         menuTreeNode.setHasChildren(false);
         Optional.ofNullable(sysMenu.getMenuSort()).ifPresent(num -> menuTreeNode.setHasChildren(num > 0));
         return menuTreeNode;

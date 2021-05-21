@@ -8,13 +8,14 @@
     </resultMap>
 
     <select id="allNodes" resultMap="simpleNode">
-        select menu_id as id, pid from sys_menu
+        select menu_id as id, pid from sys_menu where hidden != 1
     </select>
 
 
     <select id="nodesByExample" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="simpleNode">
         select menu_id as id, pid from sys_menu
         <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+        and hidden != 1
     </select>
 
 

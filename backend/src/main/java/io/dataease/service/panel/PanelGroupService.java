@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -45,14 +46,15 @@ public class PanelGroupService {
     @Resource
     private ExtPanelGroupMapper extPanelGroupMapper;
     @Resource
-    private PanelDesignMapper panelDesignMapper;
-    @Resource
     private ChartViewService chartViewService;
     @Resource
     private ChartViewMapper chartViewMapper;
     @Resource
-    private ExtPanelDesignMapper extPanelDesignMapper;
-
+    private StoreService storeService;
+    @Resource
+    private ShareService shareService;
+    @Resource
+    private PanelLinkService panelLinkService;
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
@@ -93,6 +95,9 @@ public class PanelGroupService {
     public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
         extPanelGroupMapper.deleteCircle(id);
+        storeService.removeByPanelId(id);
+        shareService.delete(id, null);
+        panelLinkService.deleteByResourceId(id);
     }
 
 
