@@ -73,6 +73,10 @@ public class PanelLinkService {
         return convertDto(one);
     }
 
+    public void deleteByResourceId(String resourceId){
+        mapper.deleteByPrimaryKey(resourceId);
+    }
+
     public String decryptParam(String text) throws Exception {
         return RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, text);
     }
@@ -100,7 +104,6 @@ public class PanelLinkService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(s);
         return encrypt;
     }
     private GenerateDto convertDto(PanelLink linl){

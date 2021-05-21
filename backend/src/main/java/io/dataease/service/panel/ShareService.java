@@ -76,7 +76,11 @@ public class ShareService {
     @Transactional
     public void delete(String panel_group_id, Integer type){
         PanelShareExample example = new PanelShareExample();
-        example.createCriteria().andPanelGroupIdEqualTo(panel_group_id).andTypeEqualTo(type);
+        PanelShareExample.Criteria criteria = example.createCriteria();
+        criteria.andPanelGroupIdEqualTo(panel_group_id);
+        if(type != null){
+            criteria.andTypeEqualTo(type);
+        }
         mapper.deleteByExample(example);
     }
 
