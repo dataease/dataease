@@ -3,6 +3,7 @@ package io.dataease.service.dataset.impl.direct;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -53,15 +54,26 @@ public class DirectFieldService implements DataSetFieldService {
         if (ObjectUtils.isEmpty(datasetTable) || StringUtils.isEmpty(datasetTable.getName())) return null;
         String tableName = datasetTable.getName();
 
-        String dataSourceId = datasetTable.getDataSourceId();
-        if (StringUtils.isEmpty(dataSourceId)) return null;
-        Datasource ds = datasourceService.get(dataSourceId);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        String querySQL = qp.createQuerySQL(tableName, Collections.singletonList(field));
-        datasourceRequest.setQuery(querySQL);
+        DatasourceProvider datasourceProvider;
+        if (datasetTable.getMode() == 0) {
+            String dataSourceId = datasetTable.getDataSourceId();
+            if (StringUtils.isEmpty(dataSourceId)) return null;
+            Datasource ds = datasourceService.get(dataSourceId);
+            datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            datasourceRequest.setDatasource(ds);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            String querySQL = qp.createQuerySQL(tableName, Collections.singletonList(field));
+            datasourceRequest.setQuery(querySQL);
+        } else {
+            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            datasourceRequest.setDatasource(ds);
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            String querySQL = qp.createQuerySQL(tableName, Collections.singletonList(field));
+            datasourceRequest.setQuery(querySQL);
+        }
+
         try {
             List<String[]> rows = datasourceProvider.getData(datasourceRequest);
             List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
