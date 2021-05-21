@@ -945,6 +945,7 @@ export default {
     version_num: '版本号',
     standard: '标准版',
     enterprise: '企业版',
-    suport: '获取技术支持'
+    suport: '获取技术支持',
+    update_success: '更新成功'
   }
 }

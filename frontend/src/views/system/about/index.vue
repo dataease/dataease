@@ -138,7 +138,7 @@ export default {
       const param = { license: this.licenseKey }
       updateInfo(param).then(response => {
         if (response.data.status === 'valid') {
-          this.$success(this.$t('i18n_mc_update_success'))
+          this.$success(this.$t('about.update_success'))
           this.license = this.getLicense(response.data)
         } else {
           this.$warning(response.data.message)
