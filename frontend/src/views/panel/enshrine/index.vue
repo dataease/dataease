@@ -28,6 +28,7 @@
 import { deleteEnshrine, enshrineList } from '@/api/panel/enshrine'
 import { uuid } from 'vue-uuid'
 import { get } from '@/api/panel/panel'
+import bus from '@/utils/bus'
 export default {
   name: 'Enshrine',
   data() {
@@ -36,6 +37,7 @@ export default {
     }
   },
   created() {
+    bus.$on('panle_start_list_refresh', this.initData)
     this.initData()
   },
   methods: {
