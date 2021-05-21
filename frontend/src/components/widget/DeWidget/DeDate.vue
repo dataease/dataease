@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       options: null,
-      operator: 'in',
+      operator: 'between',
       values: null
     }
   },
