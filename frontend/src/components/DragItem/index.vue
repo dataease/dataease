@@ -6,7 +6,7 @@
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
+          <el-dropdown-item icon="el-icon-delete" :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
           <slot />

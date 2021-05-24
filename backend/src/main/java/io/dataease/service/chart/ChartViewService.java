@@ -20,6 +20,7 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.chart.Series;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -226,7 +227,7 @@ public class ChartViewService {
         }
         List<ChartViewWithBLOBs> list = chartViewMapper.selectByExampleWithBLOBs(chartViewExample);
         if (list.size() > 0) {
-            throw new RuntimeException("Name can't repeat in same group.");
+            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
         }
     }
 

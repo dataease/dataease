@@ -11,6 +11,7 @@ import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
+import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -133,7 +134,7 @@ public class DataSetGroupService {
         }
         List<DatasetGroup> list = datasetGroupMapper.selectByExample(datasetGroupExample);
         if (list.size() > 0) {
-            throw new RuntimeException("Name can't repeat in same group.");
+            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
         }
     }
 
