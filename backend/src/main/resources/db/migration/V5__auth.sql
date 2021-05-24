@@ -191,9 +191,8 @@ delimiter ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `get_auths`;
 delimiter ;;
-CREATE FUNCTION `get_auths`(authSource varchar(255),modelType varchar(255),userId varchar(255))
- RETURNS longtext CHARSET utf8
-  READS SQL DATA
+CREATE DEFINER=`root`@`%` FUNCTION `get_auths`(authSource varchar(255),modelType varchar(255),userId varchar(255)) RETURNS longtext CHARSET utf8
+    READS SQL DATA
 BEGIN
 
 DECLARE oTemp longtext;
@@ -211,7 +210,7 @@ FROM
 			AND (
 				(
 					sys_auth.auth_target_type = 'dept'
-					AND sys_auth.auth_target = ( SELECT dept_id FROM sys_user WHERE user_id = userId )
+					AND sys_auth.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = userId )
 				)
 				OR (
 					sys_auth.auth_target_type = 'user'
@@ -219,7 +218,7 @@ FROM
 				)
 				OR (
 					sys_auth.auth_target_type = 'role'
-					AND sys_auth.auth_target = ( SELECT role_id FROM sys_users_roles WHERE user_id = userId )
+					AND sys_auth.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = userId )
 				)
 			)
 GROUP BY
@@ -303,8 +302,6 @@ delimiter ;
 -- ----------------------------
 -- Function structure for GET_V_AUTH_MODEL_ID_P_USE
 -- ----------------------------
-DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_ID_P_USE`;
-delimiter ;;
 CREATE DEFINER=`root`@`%` FUNCTION `GET_V_AUTH_MODEL_ID_P_USE`(userId longtext,modelType varchar(255)) RETURNS longtext CHARSET utf8
     READS SQL DATA
 BEGIN
@@ -324,7 +321,7 @@ SELECT
 			AND (
 				(
 					sys_auth.auth_target_type = 'dept'
-					AND sys_auth.auth_target = ( SELECT dept_id FROM sys_user WHERE user_id = userId )
+					AND sys_auth.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = userId )
 				)
 				OR (
 					sys_auth.auth_target_type = 'user'
@@ -332,7 +329,7 @@ SELECT
 				)
 				OR (
 					sys_auth.auth_target_type = 'role'
-					AND sys_auth.auth_target = ( SELECT role_id FROM sys_users_roles WHERE user_id = userId )
+					AND sys_auth.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = userId )
 				)
 			)
 		GROUP BY

@@ -38,38 +38,8 @@
         create_time,
         panel_type,
         `name` AS label,
-        authInfo.`privileges`
+        get_auths(id,'panel',#{userId}) as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
-        left join
-        (SELECT
-            `sys_auth`.`auth_source` AS `auth_source`,
-            `sys_auth`.`auth_source_type` AS `auth_source_type`,
-            group_concat( sys_auth_detail.privilege_extend) AS `privileges`
-            FROM
-            (
-            `sys_auth`
-            LEFT JOIN `sys_auth_detail` ON ((
-            `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
-            )))
-            where sys_auth_detail.privilege_value =1
-            AND (
-            (
-            sys_auth.auth_target_type = 'dept'
-            AND sys_auth.auth_target = ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
-            )
-            OR (
-            sys_auth.auth_target_type = 'user'
-            AND sys_auth.auth_target = #{userId}
-            )
-            OR (
-            sys_auth.auth_target_type = 'role'
-            AND sys_auth.auth_target = ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
-            )
-            )
-            GROUP BY
-            `sys_auth`.`auth_source`,
-            `sys_auth`.`auth_source_type`) authInfo
-        on panel_group.id = authInfo.auth_source and authInfo.auth_source_type='panel'
         <where>
             FIND_IN_SET(panel_group.id,cids)
             <if test="name != null">
