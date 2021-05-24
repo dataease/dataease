@@ -125,20 +125,20 @@
               </el-radio-group>
             </div>
           </el-row>
+          <el-row style="color: #909399;">
+            <span>
+              <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel'))">
+                Tips: {{ $t('chart.only_one_quota') }}
+              </span>
+              <span v-show="chart.type && (chart.type.includes('text'))">
+                Tips: {{ $t('chart.only_one_result') }}
+              </span>
+              <span v-show="chart.type && chart.type.includes('gauge')">
+                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}
+              </span>
+            </span>
+          </el-row>
         </div>
-        <el-row style="padding: 4px 6px;color: #909399;">
-          <span>
-            <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel'))">
-              Tips: {{ $t('chart.only_one_quota') }}
-            </span>
-            <span v-show="chart.type && (chart.type.includes('text'))">
-              Tips: {{ $t('chart.only_one_result') }}
-            </span>
-            <span v-show="chart.type && chart.type.includes('gauge')">
-              Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}
-            </span>
-          </span>
-        </el-row>
         <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style">
           <el-row class="padding-lr">
             <span>{{ $t('chart.style_priority') }}</span>
@@ -902,6 +902,8 @@ export default {
     /*background-color: rgba(35,46,64,.05);*/
     background-color: white;
     display: block;
+    word-break: break-all;
+    white-space: normal;
   }
 
   .item-on-move {
@@ -977,7 +979,7 @@ export default {
   }
 
   .attr-style{
-    height: calc(100vh - 56px - 25vh - 40px - 62px - 10px - 60px);
+    height: calc(100vh - 56px - 25vh - 40px - 62px - 60px);
   }
 
   .attr-selector{
