@@ -8,9 +8,6 @@
               <img v-if="!loginLogoUrl" src="@/assets/DataEase-color.png" alt="">
               <img v-else :src="loginLogoUrl" alt="">
             </div>
-            <!--            <div class="login-title">-->
-            <!--              &lt;!&ndash;              {{ uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue || $t('login.title') }}&ndash;&gt;-->
-            <!--            </div>-->
             <div class="login-border" />
             <div class="login-welcome">
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || 'DATAEASE') }}
