@@ -29,14 +29,14 @@
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>
       <input id="input" ref="files" type="file" hidden @change="handleFileChange">
-      <el-tooltip :content="$t('commons.save') ">
-        <el-button class="el-icon-circle-check" size="mini" circle @click="save" />
-      </el-tooltip>
       <el-tooltip :content="$t('panel.preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
 
       <span style="float: right;margin-left: 10px">
+         <el-button size="mini" @click="save">
+          {{ $t('commons.save') }}
+        </el-button>
         <el-button size="mini" @click="closePanelEdit">
           {{ $t('commons.close') }}
         </el-button>
@@ -209,7 +209,7 @@ export default {
         panelData: JSON.stringify(this.componentData)
       }
       post('panel/group/save', requestInfo, () => {})
-      this.$message.success('保存成功')
+      this.$message.success(this.$t('commons.save_success'))
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
