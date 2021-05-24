@@ -12,7 +12,7 @@
       </el-col>
     </el-row>
     <el-row style="margin-top: 5px">
-      <el-col :span="4">{{ editPanel.titleSuf }} {{ $t('commons.name') }}</el-col>
+      <el-col :span="4">{{ editPanel.titleSuf }}{{ $t('commons.name') }}</el-col>
       <el-col :span="20">
         <el-input v-model="editPanel.panelInfo.name" clearable size="mini" />
       </el-col>

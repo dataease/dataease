@@ -12,6 +12,21 @@
         select panel_group.*,panel_group.name as label from panel_group where id =#{id}
     </select>
 
+    <select id="panelGroupListDefault" resultMap="BaseResultMapDTO">
+        SELECT
+        id,
+        `name`,
+        pid,
+        `level`,
+        node_type,
+        create_by,
+        create_time,
+        panel_type,
+        `name` AS label
+        from panel_group
+        where panel_group.panel_type=#{panelType}
+    </select>
+
     <select id="panelGroupList" resultMap="BaseResultMapDTO">
         SELECT
         id,

@@ -15,6 +15,8 @@ public class PanelGroupRequest extends PanelGroupDTO {
 
     private String userId;
 
+    private String optType;
+
     public PanelGroupRequest() {
     }
 

@@ -72,7 +72,7 @@ public class PanelGroupService {
     }
 
     public List<PanelGroupDTO> getDefaultTree(PanelGroupRequest panelGroupRequest) {
-        return extPanelGroupMapper.panelGroupList(panelGroupRequest);
+        return extPanelGroupMapper.panelGroupListDefault(panelGroupRequest);
     }
 
 
@@ -83,7 +83,19 @@ public class PanelGroupService {
             request.setCreateBy(AuthUtils.getUser().getUsername());
             panelGroupMapper.insert(request);
         } else {
-            panelGroupMapper.updateByPrimaryKeySelective(request);
+            // 复制为默认仪表盘
+            if("toDefaultPanel".equals(request.getOptType())){
+                PanelGroupWithBLOBs newDefaultPanel =  panelGroupMapper.selectByPrimaryKey(request.getId());
+                newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE_SYSTEM);
+                newDefaultPanel.setNodeType(PanelConstants.PANEL_NODE_TYPE_PANEL);
+                newDefaultPanel.setName(request.getName());
+                newDefaultPanel.setId(UUID.randomUUID().toString());
+                newDefaultPanel.setPid(null);
+                newDefaultPanel.setLevel(0);
+                panelGroupMapper.insertSelective(newDefaultPanel);
+            }else{
+                panelGroupMapper.updateByPrimaryKeySelective(request);
+            }
         }
         PanelGroupDTO panelGroupDTO = new PanelGroupDTO();
         BeanUtils.copyBean(panelGroupDTO, request);

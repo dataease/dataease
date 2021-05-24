@@ -158,7 +158,7 @@ export default {
               value: rotate !== 0 ? this.translatecurComponentShift(key, condition, curComponentStyle) : condition.dragShift
             })
 
-            condition.lineNode && (condition.lineNode.style[key] = `${condition.lineShift}px`)
+            condition.lineNode.style[key] = `${condition.lineShift}px`
             needToShow.push(condition.line)
           })
         })
@@ -230,20 +230,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.mark-line {
+  .mark-line {
     height: 100%;
-}
-.line {
+  }
+  .line {
     background: #59c7f9;
     position: absolute;
     z-index: 1000;
-}
-.xline {
+  }
+  .xline {
     width: 100%;
     height: 1px;
-}
-.yline {
+  }
+  .yline {
     width: 1px;
     height: 100%;
-}
+  }
 </style>

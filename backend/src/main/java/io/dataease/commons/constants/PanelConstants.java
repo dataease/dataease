@@ -16,5 +16,13 @@ public class PanelConstants {
 
     public final static String TEMPLATE_TYPE_SELF = "self";
 
+    public final static String PANEL_TYPE_SYSTEM = "system";
+
+    public final static String PANEL_TYPE_SELF = "self";
+
+    public final static String PANEL_NODE_TYPE_FOlDER = "folder";
+
+    public final static String PANEL_NODE_TYPE_PANEL = "panel";
+
 
 }

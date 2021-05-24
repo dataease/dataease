@@ -1,6 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col style="padding: 0 10px 0 10px;">
-    <!-- panel list -->
     <el-col>
       <el-row>
         <span class="header-title">{{ $t('panel.default_panel') }}</span>
@@ -12,12 +11,31 @@
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ data }" class="custom-tree-node">
+            <span slot-scope="{ node, data }" class="custom-tree-node">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span>
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
+                  <svg-icon icon-class="panel" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+              </span>
+              <span style="margin-left: 12px;" @click.stop>
+                <el-dropdown trigger="click" size="small" @command="clickMore">
+                  <span class="el-dropdown-link">
+                    <el-button
+                      icon="el-icon-more"
+                      type="text"
+                      size="small"
+                    />
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                      {{ $t('panel.rename') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                      {{ $t('panel.delete') }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
               </span>
             </span>
           </el-tree>
@@ -26,7 +44,7 @@
 
       <el-row>
         <span class="header-title">
-          {{ $t('panel.panel') }}
+          {{ $t('panel.panel_list') }}
           <el-button style="float: right;padding-right: 7px;" icon="el-icon-plus" type="text" @click="showEditPanel(newFolder)" />
           <!--          <el-button style="float: right;" type="primary" size="mini" @click="showEditPanel(newFolder)">-->
           <!--            {{ $t('panel.groupAdd') }}-->
@@ -64,10 +82,10 @@
                     </span>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item :command="beforeClickEdit('folder','new',data,node)">
-                        <i class="el-icon-folder" /> &nbsp <span>{{ $t('panel.groupAdd') }}</span>
+                        <i class="el-icon-folder" /> &nbsp; <span>{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
                       <el-dropdown-item :command="beforeClickEdit('panel','new',data,node)">
-                        <svg-icon icon-class="panel" class="ds-icon-scene" /> &nbsp <span>{{ $t('panel.panelAdd') }}</span>
+                        <svg-icon icon-class="panel" class="ds-icon-scene" /> &nbsp; <span>{{ $t('panel.panelAdd') }}</span>
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -90,6 +108,9 @@
                       </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
                         {{ $t('panel.share') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('toDefaultPanel',data,node)">
+                        {{ $t('panel.to_default_panel') }}
                       </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
                         {{ $t('panel.edit') }}
@@ -318,6 +339,7 @@ export default {
   methods: {
     closeEditPanelDialog() {
       this.editPanel.visible = false
+      this.defaultTree()
       this.tree(this.groupForm)
     },
     showEditPanel(param) {
@@ -351,6 +373,17 @@ export default {
             }
           }
           break
+        case 'toDefaultPanel':
+          this.editPanel = {
+            visible: true,
+            titlePre: this.$t('panel.to_default'),
+            panelInfo: {
+              id: param.data.id,
+              name: param.data.name,
+              optType: 'toDefaultPanel'
+            }
+          }
+          break
       }
       switch (param.type) {
         case 'folder':
@@ -372,6 +405,7 @@ export default {
 
     clickMore(param) {
       switch (param.optType) {
+        case 'toDefaultPanel':
         case 'rename':
           this.showEditPanel(param)
           break
@@ -426,6 +460,7 @@ export default {
               showClose: true
             })
             this.tree(this.groupForm)
+            this.defaultTree()
           })
         } else {
           this.$message({
@@ -451,6 +486,7 @@ export default {
             showClose: true
           })
           this.tree(this.groupForm)
+          this.defaultTree()
         })
       }).catch(() => {
       })
@@ -539,7 +575,6 @@ export default {
           item.type !== 'custom' && (item.id = uuid.v1())
         })
       }
-
       return data
     }
   }
@@ -555,14 +590,6 @@ export default {
     display: block;
     height: 100%;
     /*line-height: 36px;*/
-  }
-
-  .el-divider--horizontal {
-    margin: 12px 0
-  }
-
-  .search-input {
-    padding: 12px 0;
   }
 
   .custom-tree-node {
@@ -581,26 +608,6 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     padding:0 8px;
-  }
-
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    flex-flow: row nowrap;
-  }
-
-  .form-item {
-    margin-bottom: 0;
-  }
-
-  .title-css {
-    height: 26px;
-  }
-
-  .title-text {
-    line-height: 26px;
   }
 
 </style>

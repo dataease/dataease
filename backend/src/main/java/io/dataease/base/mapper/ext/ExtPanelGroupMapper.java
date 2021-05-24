@@ -10,6 +10,10 @@ public interface ExtPanelGroupMapper {
 
     List<PanelGroupDTO> panelGroupList(PanelGroupRequest request);
 
+    List<PanelGroupDTO> panelGroupListDefault(PanelGroupRequest request);
+
+
+
     //会级联删除pid 下的所有数据
     int deleteCircle(@Param("pid") String pid);
 
