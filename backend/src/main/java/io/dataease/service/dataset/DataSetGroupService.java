@@ -7,6 +7,7 @@ import io.dataease.base.mapper.DatasetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
@@ -82,28 +83,9 @@ public class DataSetGroupService {
 
     public List<DataSetGroupDTO> tree(DataSetGroupRequest datasetGroup) {
         datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        if (datasetGroup.getLevel() == null) {
-            datasetGroup.setLevel(0);
-        }
         List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(datasetGroup);
-        getAll(treeInfo, datasetGroup);
-        return treeInfo;
-    }
-
-    public void getAll(List<DataSetGroupDTO> list, DataSetGroupRequest datasetGroup) {
-        for (DataSetGroupDTO obj : list) {
-            DataSetGroupRequest newDataSetGroup = new DataSetGroupRequest();
-            newDataSetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-            newDataSetGroup.setName(datasetGroup.getName());
-            newDataSetGroup.setType(datasetGroup.getType());
-            newDataSetGroup.setPid(obj.getId());
-            newDataSetGroup.setSort(datasetGroup.getSort());
-            List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(newDataSetGroup);
-            obj.setChildren(treeInfo);
-            if (CollectionUtils.isNotEmpty(treeInfo)) {
-                getAll(treeInfo, datasetGroup);
-            }
-        }
+        List<DataSetGroupDTO> result = TreeUtils.mergeTree(treeInfo);
+        return result;
     }
 
     public List<String> getAllId(List<DataSetGroupDTO> list, List<String> ids) {

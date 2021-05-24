@@ -1,7 +1,9 @@
 package io.dataease.controller.panel;
 
 import io.dataease.base.domain.DatasetGroup;
+import io.dataease.base.domain.PanelGroup;
 import io.dataease.base.domain.PanelGroupWithBLOBs;
+import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
@@ -28,18 +30,18 @@ public class PanelGroupController {
 
     @PostMapping("/tree")
     public List<PanelGroupDTO> tree(@RequestBody PanelGroupRequest request) {
-        request.setLevel(0);
         return panelGroupService.tree(request);
     }
 
     @PostMapping("/defaultTree")
     public List<PanelGroupDTO> defaultTree(@RequestBody PanelGroupRequest request) {
-        return panelGroupService.getDefaultTree(request);
+        return panelGroupService.defaultTree(request);
     }
 
     @PostMapping("/save")
-    public PanelGroupDTO save(@RequestBody PanelGroupRequest request) {
-        return panelGroupService.save(request);
+    @I18n
+    public PanelGroup saveOrUpdate(@RequestBody PanelGroupRequest request) {
+        return panelGroupService.saveOrUpdate(request);
     }
 
     @PostMapping("/deleteCircle/{id}")

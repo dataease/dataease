@@ -11,7 +11,7 @@
 
     <select id="search" resultMap="BaseResultMapDTO">
         select
-        id, `name`, pid, `level`, `type`, create_by, create_time,`name` as label,
+        id, `name`, ifnull(pid,0) as pid, `level`, `type`, create_by, create_time,`name` as label,
         get_auths(id,'dataset',#{userId}) as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_group
         <where>

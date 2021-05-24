@@ -64,7 +64,7 @@
 
         <!--要生成的数据库表 -->
 
-                <table tableName="datasource"/>
+<!--                <table tableName="datasource"/>-->
 <!--        <table tableName="sys_dict"/>-->
 <!--        <table tableName="sys_dict_item"/>-->
 <!--        <table tableName="dataset_table_field"/>-->
@@ -74,6 +74,7 @@
 <!--        </table>-->
 <!--        <table tableName="v_dataset"/>-->
 <!--        <table tableName="sys_auth_detail"/>-->
+        <table tableName="panel_group"/>
 
 
     </context>

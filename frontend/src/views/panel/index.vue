@@ -1,7 +1,10 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
     <de-main-container>
-      <component :is="component" :param="param" />
+      <panel-main v-show="componentName==='PanelMain'" />
+      <chart-edit v-if="componentName==='ChartEdit'" />
+      <panel-edit v-if="componentName==='PanelEdit'" />
+      <!--      <component :is="component" :param="param" />-->
     </de-main-container>
   </de-container>
 </template>
@@ -20,23 +23,29 @@ export default {
   data() {
     return {
       component: PanelMain,
+      componentName: 'PanelMain',
       param: {}
     }
   },
   mounted() {
     bus.$on('PanelSwitchComponent', (c) => {
       this.param = c.param
-      switch (c.name) {
-        case 'PanelEdit':
-          this.component = PanelEdit
-          break
-        case 'ChartEdit':
-          this.component = ChartEdit
-          break
-        default:
-          this.component = PanelMain
-          break
-      }
+      this.componentName = c.name
+      this.$store.dispatch('panel/setMainActiveName', c.name)
+      // switch (c.name) {
+      //   case 'PanelEdit':
+      //     this.component = PanelEdit
+      //     this.componentName = 'PanelEdit'
+      //     break
+      //   case 'ChartEdit':
+      //     this.component = ChartEdit
+      //     this.componentName = 'ChartEdit'
+      //     break
+      //   default:
+      //     this.component = PanelMain
+      //     this.componentName = 'PanelMain'
+      //     break
+      // }
     })
   },
   methods: {

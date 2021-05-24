@@ -24,5 +24,14 @@ public class PanelConstants {
 
     public final static String PANEL_NODE_TYPE_PANEL = "panel";
 
+    public final static String OPT_TYPE_INSERT="insert";
+
+    public final static String OPT_TYPE_UPDATE="update";
+
+    public final static String PANEL_GATHER_DEFAULT_PANEL = "default_panel";
+
+    public final static String PANEL_GATHER_PANEL_LIST = "panel_list";
+
+
 
 }

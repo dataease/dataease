@@ -8,7 +8,8 @@ const getDefaultState = () => {
       preStyle: null
     },
     canvasStyleDataTemp: null, // 页面全局临时存储数据
-    componentDataTemp: null // 画布组件临时存储数据
+    componentDataTemp: null, // 画布组件临时存储数据
+    mainActiveName: 'PanelMain'
   }
 }
 
@@ -17,6 +18,9 @@ const state = getDefaultState()
 const mutations = {
   setPanelName: (state, panelName) => {
     state.panelName = panelName
+  },
+  setMainActiveName: (state, mainActiveName) => {
+    state.mainActiveName = mainActiveName
   },
   setPanelInfo: (state, panelInfo) => {
     state.panelInfo = panelInfo
@@ -32,6 +36,9 @@ const mutations = {
 const actions = {
   setPanelName({ commit }, panelName) {
     commit('setPanelName', panelName)
+  },
+  setMainActiveName({ commit }, mainActiveName) {
+    commit('setMainActiveName', mainActiveName)
   },
   setPanelInfo({ commit }, panelInfo) {
     commit('setPanelInfo', panelInfo)
