@@ -672,7 +672,9 @@ export default {
     only_one_result: 'Only show first result',
     dimension_show: 'Dimension Show',
     quota_show: 'Quota Show',
-    title_limit: 'Title cannot be greater than 50 characters'
+    title_limit: 'Title cannot be greater than 50 characters',
+    filter_condition: 'Filter Condition',
+    filter_field_can_null: 'Filter field must choose'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

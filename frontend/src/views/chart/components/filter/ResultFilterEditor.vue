@@ -2,11 +2,25 @@
   <el-col>
     <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
     <div style="max-height: 50vh;overflow-y: auto;">
-      <el-row v-for="(f,index) in item.filter" :key="index" class="filter-item">
-        <el-col :span="4">
-          <span>{{ item.name }}</span>
+      <el-row v-for="(f,index) in chart.customFilter" :key="index" class="filter-item">
+        <el-col :span="6">
+          <el-select v-model="f.fieldId" size="mini" filterable>
+            <el-option
+              v-for="item in fields"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <span style="float: left">
+                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+              </span>
+              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+            </el-option>
+          </el-select>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <el-select v-model="f.term" size="mini">
             <el-option-group
               v-for="(group,idx) in options"
@@ -34,10 +48,12 @@
 </template>
 
 <script>
+import { fieldList } from '../../../../api/dataset/dataset'
+
 export default {
-  name: 'DimensionFilterEditor',
+  name: 'ResultFilterEditor',
   props: {
-    item: {
+    chart: {
       type: Object,
       required: true
     }
@@ -82,20 +98,25 @@ export default {
           value: 'not_null',
           label: this.$t('chart.filter_not_null')
         }]
-      }]
+      }],
+      fields: []
     }
   },
   mounted() {
+    fieldList(this.chart.tableId).then(response => {
+      this.fields = response.data
+    })
   },
   methods: {
     addFilter() {
-      this.item.filter.push({
+      this.chart.customFilter.push({
+        fieldId: '',
         term: 'eq',
         value: ''
       })
     },
     removeFilter(index) {
-      this.item.filter.splice(index, 1)
+      this.chart.customFilter.splice(index, 1)
     }
   }
 }

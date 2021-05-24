@@ -4,7 +4,7 @@
     <div>
       <el-card class="box-card about-card">
         <div slot="header" class="clearfix license-header">
-          <img src="@/assets/DataEase-white.png" alt="" style="height: 80px;width: 400px;padding-top: 15px;">
+          <img src="@/assets/DataEase-white.png" alt="" width="300">
         </div>
         <div class="license-content">
           <div v-if="license.status === 'Fail'">{{ $t('about.invalid_license') }}</div>

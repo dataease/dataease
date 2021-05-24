@@ -673,7 +673,9 @@ export default {
     only_one_result: '仅显示第1个计算结果',
     dimension_show: '维度显示',
     quota_show: '指标显示',
-    title_limit: '标题不能大于50个字符'
+    title_limit: '标题不能大于50个字符',
+    filter_condition: '过滤条件',
+    filter_field_can_null: '过滤字段必填'
   },
   dataset: {
     sheet_warn: '有多个Sheet页，默认抽取第一个',

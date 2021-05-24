@@ -671,7 +671,9 @@ export default {
     only_one_result: '僅顯示第1個計算結果',
     dimension_show: '維度顯示',
     quota_show: '指標顯示',
-    title_limit: '標題不能大於50個字符'
+    title_limit: '標題不能大於50個字符',
+    filter_condition: '過濾條件',
+    filter_field_can_null: '過濾字段必填'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

@@ -30,11 +30,9 @@ import * as echarts from 'echarts'
 Vue.prototype.$echarts = echarts
 
 import UmyUi from 'umy-ui'
-
 Vue.use(UmyUi)
 
 import vcolorpicker from 'vcolorpicker'
-
 Vue.use(vcolorpicker)
 
 /**

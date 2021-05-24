@@ -134,7 +134,10 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="taskForm.rate === 'CRON'" label="">
-              <el-input v-model="taskForm.cron" size="mini" style="width: 50%" />
+              <el-popover v-model="cronEdit">
+                <cron @close="cronEdit = false" @change="cronChange" i18n="cn"/>
+                <el-input v-model="taskForm.cron" size="mini" style="width: 50%" @click="cronEdit = true" slot="reference"/>
+              </el-popover>
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
               <el-select v-model="taskForm.end" size="mini">
@@ -285,10 +288,12 @@ import 'codemirror/keymap/emacs.js'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
+// vue-cron
+import { cron } from 'vue-cron'
 
 export default {
   name: 'UpdateInfo',
-  components: { codemirror },
+  components: { codemirror, cron },
   props: {
     table: {
       type: Object,
@@ -348,7 +353,8 @@ export default {
       },
       incrementalUpdateType: 'incrementalAdd',
       sql: '',
-      incrementalConfig: {}
+      incrementalConfig: {},
+      cronEdit: false
     }
   },
   computed: {
@@ -563,6 +569,9 @@ export default {
       pos2.line = pos1.line
       pos2.ch = pos1.ch
       this.$refs.myCm.codemirror.replaceRange(param, pos2)
+    },
+    cronChange(val) {
+      this.taskForm.cron = val
     }
   }
 }

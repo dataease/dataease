@@ -36,8 +36,13 @@ export default {
       starDatas: []
     }
   },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    }
+  },
   created() {
-    bus.$on('panle_start_list_refresh', this.initData)
+    bus.$on('panle_start_list_refresh', this.refreshStarts)
     this.initData()
   },
   methods: {
@@ -64,12 +69,20 @@ export default {
     remove(row) {
       deleteEnshrine(row.storeId).then(res => {
         this.initData()
+        this.panelInfo && this.panelInfo.id && row.panelGroupId === this.panelInfo.id && this.setMainNull()
       })
     },
     initData() {
       enshrineList({}).then(res => {
         this.starDatas = res.data
       })
+    },
+    setMainNull() {
+      this.$store.dispatch('panel/setPanelInfo', { id: null, name: '', preStyle: null })
+    },
+    refreshStarts(isStar) {
+      this.initData()
+      !isStar && this.setMainNull()
     }
   }
 }
