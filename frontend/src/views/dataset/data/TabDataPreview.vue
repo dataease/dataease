@@ -2,7 +2,7 @@
   <el-col>
     <el-row>
       <el-col style="width: 200px;">
-        <el-form ref="form" :model="form" label-width="60px" size="mini" class="row-style">
+        <el-form ref="form" :model="form" label-width="100px" size="mini" class="row-style">
           <el-form-item :label="$t('dataset.showRow')">
             <el-input v-model="form.row">
               <el-button slot="append" icon="el-icon-search" @click="reSearch" />
