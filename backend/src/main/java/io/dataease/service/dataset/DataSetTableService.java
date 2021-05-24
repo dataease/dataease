@@ -128,7 +128,11 @@ public class DataSetTableService {
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
         dataSetTableTaskService.deleteByTableId(id);
-        deleteDorisTable(id);
+        try {
+            deleteDorisTable(id);
+        } catch (Exception e) {
+
+        }
     }
 
     private void deleteDorisTable(String datasetId) throws Exception {
@@ -260,13 +264,13 @@ public class DataSetTableService {
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
-            if(CollectionUtils.isEmpty(datasetTableTaskLogs)){
+            if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
                 throw new Exception("no records");
             }
-            if(datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name())){
+            if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
                 throw new Exception(Translator.get("i18n_processing_data"));
             }
-            if(datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Error.name())){
+            if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Error.name())) {
                 throw new Exception("Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
             }
             Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");

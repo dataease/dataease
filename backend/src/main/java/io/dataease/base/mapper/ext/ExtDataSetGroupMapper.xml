@@ -41,7 +41,9 @@
         <if test="sort != null">
             order by ${sort}
         </if>
+    </select>
 
-
+    <select id="searchIds" resultType="java.util.Map">
+        select GET_V_AUTH_MODEL_WITH_CHILDREN(#{id},#{type}) ids
     </select>
 </mapper>
