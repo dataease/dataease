@@ -133,7 +133,7 @@
                       style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @end="end2"
                       >
-                      <transition-group class="list-group" :data-value="$t('panel.field')">
+                      <transition-group class="list-group" :data-value="$t('panel.drag_here')">
                         <drag-item v-for="(item,index) in selectField" :key="item.id" :item="item" :index="index" @closeItem="closeItem" />
                       </transition-group>
                     </draggable>

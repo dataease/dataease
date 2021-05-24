@@ -141,7 +141,6 @@ public class DatasourceService {
             try {
                 commonThreadPool.addTask(() ->{
                     try {
-                        System.out.println(new Gson().toJson(datasource));
                         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
                         DatasourceRequest datasourceRequest = new DatasourceRequest();
                         datasourceRequest.setDatasource(datasource);
