@@ -120,8 +120,7 @@
             <div class="filter-field">
               <div class="field-content">
                 <div class="field-content-left">
-                  <!-- <div class="field-content-text">{{ $t('panel.field') }} </div> -->
-                  <div class="field-content-text">字段</div>
+                  <div class="field-content-text">{{ $t('panel.field') }} </div>
                 </div>
 
                 <div class="field-content-right">
@@ -133,8 +132,8 @@
                       :move="onMove"
                       style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @end="end2"
-                    >
-                      <transition-group class="draggable-group">
+                      >
+                      <transition-group class="list-group" :data-value="$t('panel.field')">
                         <drag-item v-for="(item,index) in selectField" :key="item.id" :item="item" :index="index" @closeItem="closeItem" />
                       </transition-group>
                     </draggable>
@@ -309,7 +308,9 @@ export default {
   },
 
   methods: {
-
+    attr(){
+      return 'aaa'
+    },
     loadViews() {
       const viewIds = this.componentData
         .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
@@ -644,6 +645,18 @@ export default {
             width: 100%;
             margin-left: 0px !important;
         }
+  }
+
+  .list-group:empty,
+  .list-group > div:empty {
+    display: inline-block;
+    width: 100%;
+    height: calc(100% - 13px);
+  }
+
+  .list-group:empty:before,
+  .list-group > div:empty:before {
+    content: attr(data-value);
   }
 
 </style>

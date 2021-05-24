@@ -816,6 +816,7 @@ export default {
     input_limit_0_50: '0-50字符'
   },
   panel: {
+    drag_here: '请将左侧字段拖至此处',
     copy_link_passwd: '复制链接及密码',
     copy_link: '复制链接',
     passwd_protect: '密码保护',

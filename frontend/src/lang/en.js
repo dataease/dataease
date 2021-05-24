@@ -815,6 +815,7 @@ export default {
     input_limit_0_50: '0-50 chars'
   },
   panel: {
+    drag_here: 'Please drag the left field here',
     copy_link_passwd: 'Copy link and password',
     copy_link: 'Copy link',
     passwd_protect: 'Password Protect',

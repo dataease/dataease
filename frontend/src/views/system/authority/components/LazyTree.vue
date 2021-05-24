@@ -127,7 +127,6 @@ export default {
     // 初始化授权模板
     if (this.showExtent) {
       authDetailsModel(this.dataInfo.authType).then(res => {
-        debugger
         this.defaultAuthDetails = res.data
       })
       this.loadAuth()
