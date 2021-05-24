@@ -814,6 +814,7 @@ export default {
     input_limit_0_50: '0-50字符'
   },
   panel: {
+    picture_limit: '只能插入圖片',
     drag_here: '請將左側字段拖至此處',
     copy_link_passwd: '複製鏈接及密碼',
     copy_link: '複製鏈接',

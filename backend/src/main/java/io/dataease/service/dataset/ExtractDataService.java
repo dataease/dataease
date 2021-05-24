@@ -63,6 +63,7 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -82,6 +83,7 @@ import java.util.stream.Collectors;
 public class ExtractDataService {
 
     @Resource
+    @Lazy
     private DataSetTableService dataSetTableService;
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
@@ -91,7 +93,6 @@ public class ExtractDataService {
     private DataSetTableTaskService dataSetTableTaskService;
     @Resource
     private DatasourceMapper datasourceMapper;
-    private static ExecutorService pool = Executors.newScheduledThreadPool(50);    //设置连接池
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -113,7 +114,6 @@ public class ExtractDataService {
             "UNIQUE KEY(dataease_uuid)\n" +
             "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS 10\n" +
             "PROPERTIES(\"replication_num\" = \"1\");";
-
     private static String shellScript = "curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load\n" +
             "rm -rf %s\n";
 
@@ -448,6 +448,7 @@ public class ExtractDataService {
                     selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
                 }
                 inputStep = inputStep(transMeta, selectSQL);
+                udjcStep = udjc(datasetTableFields, false);
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfigration.class);
@@ -459,10 +460,12 @@ public class ExtractDataService {
                     selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
                 }
                 inputStep = inputStep(transMeta, selectSQL);
+                udjcStep = udjc(datasetTableFields, false);
                 break;
             case excel:
                 String filePath = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData();
                 inputStep = excelInputStep(filePath, datasetTableFields);
+                udjcStep = udjc(datasetTableFields, true);
             default:
                 break;
         }
@@ -487,7 +490,7 @@ public class ExtractDataService {
                 break;
         }
 
-        udjcStep = udjc(datasetTableFields);
+
         outputStep = outputStep(dorisOutputTable);
         hi1 = new TransHopMeta(inputStep, udjcStep);
         hi2 = new TransHopMeta(udjcStep, outputStep);
@@ -569,11 +572,11 @@ public class ExtractDataService {
         return outputStep;
     }
 
-    private StepMeta udjc(List<DatasetTableField> datasetTableFields) {
-        String needToChangeolumnType = "";
+    private StepMeta udjc(List<DatasetTableField> datasetTableFields, boolean isExcel) {
+        String needToChangeColumnType = "";
         for (DatasetTableField datasetTableField : datasetTableFields) {
             if (datasetTableField.getDeExtractType() != null && datasetTableField.getDeExtractType() == 4) {
-                needToChangeolumnType = needToChangeolumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getOriginName());
+                needToChangeColumnType = needToChangeColumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getOriginName());
             }
         }
 
@@ -583,8 +586,13 @@ public class ExtractDataService {
         fields.add(fieldInfo);
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
-        UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor",
-                code.replace("alterColumnTypeCode", needToChangeolumnType).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()))));
+        String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList())));
+        if(isExcel){
+            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn);
+        }else {
+            tmp_code = tmp_code.replace("handleExcelIntColumn", "");
+        }
+        UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
         userDefinedJavaClassDef.setActive(true);
         definitions.add(userDefinedJavaClassDef);
@@ -629,6 +637,14 @@ public class ExtractDataService {
             "       }\n" +
             "     }\n";
 
+    private static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
+            "            try {\n" +
+            "                Integer.valueOf(tmp.substring(0, tmp.length()-2));\n" +
+            "                get(Fields.Out, filed).setValue(r, tmp.substring(0, tmp.length()-2));\n" +
+            "                get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+            "            }catch (Exception e){}\n" +
+            "        }";
+
     private static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
             "import java.io.File;\n" +
@@ -659,6 +675,7 @@ public class ExtractDataService {
             "    for (String filed : fileds) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
             "alterColumnTypeCode \n" +
+            "handleExcelIntColumn \n" +
             "        str = str + tmp;\n" +
             "    }\n" +
             "\n" +

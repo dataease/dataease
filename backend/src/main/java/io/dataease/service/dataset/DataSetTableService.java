@@ -35,6 +35,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
  * @Date 2021/2/23 2:54 下午
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class DataSetTableService {
     @Resource
     private DatasetTableMapper datasetTableMapper;

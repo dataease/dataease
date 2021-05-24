@@ -160,7 +160,7 @@ export default {
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
-        toast('只能插入图片')
+        toast(this.$t('panel.picture_limit'))
         return
       }
 
