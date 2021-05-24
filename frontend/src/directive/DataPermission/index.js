@@ -1,8 +1,6 @@
 function checkDataPermission(el, binding, vnode) {
   const dataPermission = vnode.privileges
-  debugger
   const { value } = binding
-  console.log('permission:' + value)
   // // 数据授权采用并集的方式 部门 角色 用户 有一个有权限即可
   // if (value && value instanceof Array) {
   //   const needPermissions = value

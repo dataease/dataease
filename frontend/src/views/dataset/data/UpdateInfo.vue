@@ -135,8 +135,8 @@
             </el-form-item>
             <el-form-item v-if="taskForm.rate === 'CRON'" label="">
               <el-popover v-model="cronEdit">
-                <cron @close="cronEdit = false" @change="cronChange" i18n="cn"/>
-                <el-input v-model="taskForm.cron" size="mini" style="width: 50%" @click="cronEdit = true" slot="reference"/>
+                <cron :i18n="lang" @close="cronEdit = false" @change="cronChange" />
+                <el-input slot="reference" v-model="taskForm.cron" size="mini" style="width: 50%" @click="cronEdit = true" />
               </el-popover>
             </el-form-item>
             <el-form-item :label="$t('dataset.end_time')" prop="end">
@@ -354,7 +354,8 @@ export default {
       incrementalUpdateType: 'incrementalAdd',
       sql: '',
       incrementalConfig: {},
-      cronEdit: false
+      cronEdit: false,
+      lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn'
     }
   },
   computed: {

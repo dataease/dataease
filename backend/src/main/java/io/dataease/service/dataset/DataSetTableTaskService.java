@@ -3,6 +3,7 @@ package io.dataease.service.dataset;
 import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskExample;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
+import io.dataease.i18n.Translator;
 import io.dataease.service.ScheduleService;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
@@ -31,7 +32,7 @@ public class DataSetTableTaskService {
         // check
         if (StringUtils.isNotEmpty(datasetTableTask.getCron())) {
             if (!CronExpression.isValidExpression(datasetTableTask.getCron())) {
-                throw new RuntimeException("cron expression error.");
+                throw new RuntimeException(Translator.get("i18n_cron_expression_error"));
             }
         }
         if (StringUtils.isEmpty(datasetTableTask.getId())) {

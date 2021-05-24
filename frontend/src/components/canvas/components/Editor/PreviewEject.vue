@@ -79,8 +79,6 @@ export default {
   },
   mounted() {
     const _this = this
-
-    debugger
     // 加载数据
     _this.restore()
     const erd = elementResizeDetectorMaker()

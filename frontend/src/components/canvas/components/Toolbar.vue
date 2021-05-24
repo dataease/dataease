@@ -29,14 +29,14 @@
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>
       <input id="input" ref="files" type="file" hidden @change="handleFileChange">
-      <el-tooltip :content="$t('commons.save') ">
-        <el-button class="el-icon-circle-check" size="mini" circle @click="save" />
-      </el-tooltip>
       <el-tooltip :content="$t('panel.preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
 
       <span style="float: right;margin-left: 10px">
+         <el-button size="mini" @click="save">
+          {{ $t('commons.save') }}
+        </el-button>
         <el-button size="mini" @click="closePanelEdit">
           {{ $t('commons.close') }}
         </el-button>
@@ -52,7 +52,7 @@ import { mapState } from 'vuex'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import { panelSave } from '@/api/panel/panel'
+import { post } from '@/api/panel/panel'
 import bus from '@/utils/bus'
 
 export default {
@@ -208,13 +208,8 @@ export default {
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
-      panelSave(requestInfo).then(response => {
-        this.$message({
-          message: this.$t('commons.save_success'),
-          type: 'success',
-          showClose: true
-        })
-      })
+      post('panel/group/save', requestInfo, () => {})
+      this.$message.success('保存成功')
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])

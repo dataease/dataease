@@ -7,6 +7,8 @@ import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.CommonThreadPool;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
@@ -40,6 +42,8 @@ public class DatasourceService {
     private DatasetTableMapper datasetTableMapper;
     @Resource
     private DataSetGroupService dataSetGroupService;
+    @Resource
+    private CommonThreadPool commonThreadPool;
 
     public Datasource addDatasource(Datasource datasource) {
         DatasourceExample example = new DatasourceExample();
@@ -114,7 +118,6 @@ public class DatasourceService {
                 DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 if (StringUtils.equals(name, dataTableInfoDTO.getTable())) {
                     dbTableDTO.setEnableCheck(false);
-
                     List<DatasetGroup> parents = dataSetGroupService.getParents(datasetTable.getSceneId());
                     StringBuilder stringBuilder = new StringBuilder();
                     parents.forEach(ele -> stringBuilder.append(ele.getName()).append("/"));
@@ -130,5 +133,26 @@ public class DatasourceService {
 
     public Datasource get(String id) {
         return datasourceMapper.selectByPrimaryKey(id);
+    }
+
+    public void initAllDataSourceConnectionPool(){
+        List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
+        datasources.forEach(datasource -> {
+            try {
+                commonThreadPool.addTask(() ->{
+                    try {
+                        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+                        DatasourceRequest datasourceRequest = new DatasourceRequest();
+                        datasourceRequest.setDatasource(datasource);
+                        datasourceProvider.initDataSource(datasourceRequest);
+                        LogUtil.error("Succsss to init datasource connection pool: " + datasource.getName());
+                    }catch (Exception e){
+                        LogUtil.error("Failed to init datasource connection pool: " + datasource.getName(), e);
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        });
     }
 }

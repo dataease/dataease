@@ -19,6 +19,7 @@ import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoCustomUnion;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.provider.DDLProvider;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,6 +35,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -49,6 +51,7 @@ import java.util.stream.Collectors;
  * @Date 2021/2/23 2:54 下午
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class DataSetTableService {
     @Resource
     private DatasetTableMapper datasetTableMapper;
@@ -177,7 +180,7 @@ public class DataSetTableService {
                 .id("count")
                 .tableId(dataSetTableRequest.getId())
                 .originName("*")
-                .name("记录数*")
+                .name(Translator.get("i18n_chart_count"))
                 .dataeaseName("*")
                 .type("INT")
                 .checked(true)
@@ -500,7 +503,7 @@ public class DataSetTableService {
             return;
         }
         QueryProvider qp = null;
-        if(!ObjectUtils.isEmpty(ds)) {
+        if (!ObjectUtils.isEmpty(ds)) {
             qp = ProviderFactory.getQueryProvider(ds.getType());
         }
         if (CollectionUtils.isNotEmpty(fields)) {
@@ -611,7 +614,7 @@ public class DataSetTableService {
         }
         List<DatasetTable> list = datasetTableMapper.selectByExample(datasetTableExample);
         if (list.size() > 0) {
-            throw new RuntimeException("Name can't repeat in same group.");
+            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
         }
     }
 
@@ -647,11 +650,11 @@ public class DataSetTableService {
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
             HSSFSheet sheet0 = workbook.getSheetAt(0);
-            for (int i=0;i<workbook.getNumberOfSheets();i++){
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 sheets.add(workbook.getSheetAt(i).getSheetName());
             }
             if (sheet0.getNumMergedRegions() > 0) {
-                throw new RuntimeException("Sheet have merged regions.");
+                throw new RuntimeException(Translator.get("i18n_excel_have_merge_region"));
             }
             int rows;
             if (isPreview) {
@@ -668,7 +671,7 @@ public class DataSetTableService {
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setFieldSize(1024);
                         String columnName = readCell(row.getCell(j));
-                        if(StringUtils.isEmpty(columnName)){
+                        if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
                         tableFiled.setFieldName(columnName);
@@ -686,11 +689,11 @@ public class DataSetTableService {
         } else if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             XSSFWorkbook xssfWorkbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet0 = xssfWorkbook.getSheetAt(0);
-            for (int i=0;i<xssfWorkbook.getNumberOfSheets();i++){
+            for (int i = 0; i < xssfWorkbook.getNumberOfSheets(); i++) {
                 sheets.add(xssfWorkbook.getSheetAt(i).getSheetName());
             }
             if (sheet0.getNumMergedRegions() > 0) {
-                throw new RuntimeException("Sheet have merged regions.");
+                throw new RuntimeException(Translator.get("i18n_excel_have_merge_region"));
             }
             int rows;
             if (isPreview) {
@@ -707,7 +710,7 @@ public class DataSetTableService {
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setFieldSize(1024);
                         String columnName = readCell(row.getCell(j));
-                        if(StringUtils.isEmpty(columnName)){
+                        if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
                         tableFiled.setFieldName(columnName);
