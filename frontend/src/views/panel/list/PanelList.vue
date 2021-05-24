@@ -8,6 +8,7 @@
             :default-expanded-keys="expandedArray"
             :data="defaultData"
             node-key="id"
+            highlight-current
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
@@ -19,7 +20,7 @@
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
               <span style="margin-left: 12px;" @click.stop>
-                <el-dropdown trigger="click" size="small" @command="clickMore">
+                <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
                   <span class="el-dropdown-link">
                     <el-button
                       icon="el-icon-more"
@@ -57,6 +58,7 @@
             :default-expanded-keys="expandedArray"
             :data="tData"
             node-key="id"
+            highlight-current
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
@@ -158,7 +160,7 @@
       </el-dialog>
       <!--新建仪表盘dialog-->
       <el-dialog :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
-        <edit-panel v-if="editPanel.visible" :edit-panel="editPanel" @closeEditPanelDialog="closeEditPanelDialog" />
+        <edit-panel v-if="editPanel.visible" :edit-panel="editPanel" @closeEditPanelDialog="closeEditPanelDialog" @newPanelSave="newPanelSave" />
       </el-dialog>
     </el-col>
   </el-col>
@@ -170,7 +172,7 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import { addGroup, delGroup, groupTree, defaultTree, get } from '@/api/panel/panel'
+import { addGroup, delGroup, groupTree, defaultTree, findOne } from '@/api/panel/panel'
 import {
   DEFAULT_COLOR_CASE,
   DEFAULT_SIZE,
@@ -299,7 +301,7 @@ export default {
       groupForm: {
         name: null,
         pid: null,
-        level: 0,
+        panelType: 'self',
         nodeType: null,
         children: [],
         sort: 'node_type desc,name asc'
@@ -350,7 +352,11 @@ export default {
       switch (param.optType) {
         case 'new':
           this.editPanel.titlePre = this.$t('commons.create')
-          this.editPanel.panelInfo.name = this.$t('panel.panelAdd')
+          if (param.type === 'folder') {
+            this.editPanel.panelInfo.name = this.$t('panel.groupAdd')
+          } else {
+            this.editPanel.panelInfo.name = this.$t('panel.panelAdd')
+          }
           this.editPanel.panelInfo.pid = param.data.id
           this.editPanel.panelInfo.level = param.data.level + 1
           this.editPanel.panelInfo.panelType = 'self'
@@ -358,7 +364,7 @@ export default {
         case 'newFirstFolder':
           this.editPanel.titlePre = this.$t('commons.create')
           this.editPanel.panelInfo.name = ''
-          this.editPanel.panelInfo.pid = null
+          this.editPanel.panelInfo.pid = 'panel_list'
           this.editPanel.panelInfo.level = 0
           this.editPanel.panelInfo.panelType = 'self'
           break
@@ -369,6 +375,7 @@ export default {
             titlePre: this.$t('commons.edit'),
             panelInfo: {
               id: param.data.id,
+              pid: param.data.pid,
               name: param.data.name
             }
           }
@@ -497,7 +504,7 @@ export default {
       this.groupForm = {
         name: null,
         pid: null,
-        level: 0,
+        panelType: 'self',
         nodeType: null,
         children: [],
         sort: 'node_type desc,name asc'
@@ -520,7 +527,7 @@ export default {
     nodeClick(data, node) {
       if (data.nodeType === 'panel') {
         // 加载视图数据
-        get('panel/group/findOne/' + data.id).then(response => {
+        findOne(data.id).then(response => {
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
@@ -558,6 +565,7 @@ export default {
       this.authVisible = false
     },
     edit(data) {
+      debugger
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
@@ -576,6 +584,9 @@ export default {
         })
       }
       return data
+    },
+    newPanelSave(id) {
+
     }
   }
 }

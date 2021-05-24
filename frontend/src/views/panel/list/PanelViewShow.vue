@@ -40,7 +40,7 @@
       <!--TODO 仪表盘预览区域-->
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
-          <Preview v-if="showMain" />
+          <Preview v-if="mainActiveName==='PanelMain'&&showMain" />
         </div>
       </el-row>
     </el-col>
@@ -83,6 +83,9 @@ export default {
   computed: {
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    mainActiveName() {
+      return this.$store.state.panel.mainActiveName
     },
     ...mapState([
       'componentData',

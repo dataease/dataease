@@ -69,6 +69,13 @@ export function panelSave(data) {
     data
   })
 }
+export function findOne(id) {
+  return request({
+    url: 'panel/group/findOne/' + id,
+    method: 'get',
+    loading: true
+  })
+}
 
 export function getTable(id) {
   return request({

@@ -160,7 +160,7 @@ export default {
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
-        toast(this.$t('panel.picture_limit'))
+        toast('只能插入图片')
         return
       }
 
@@ -209,7 +209,7 @@ export default {
         panelData: JSON.stringify(this.componentData)
       }
       post('panel/group/save', requestInfo, () => {})
-      this.$message.success(this.$t('commons.save_success'))
+      this.$message.success('保存成功')
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])

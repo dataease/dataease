@@ -1,8 +1,7 @@
 package io.dataease.dto.panel;
 
-import io.dataease.base.domain.PanelGroup;
 import io.dataease.base.domain.PanelGroupWithBLOBs;
-import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.commons.model.ITreeBase;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -14,14 +13,15 @@ import java.util.List;
  * Description:
  */
 @Data
-public class PanelGroupDTO extends PanelGroupWithBLOBs {
+public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<PanelGroupDTO> {
 
     private String label;
-
-    private List<PanelGroupDTO> children;
 
     private Boolean leaf;
 
     private String privileges;
+
+    private List<PanelGroupDTO> children = new ArrayList<>();
+
 
 }

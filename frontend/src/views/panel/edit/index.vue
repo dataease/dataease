@@ -140,6 +140,7 @@ import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import { get } from '@/api/panel/panel'
 import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
+import Preview from '@/components/canvas/components/Editor/Preview'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -160,7 +161,8 @@ export default {
     Toolbar,
     FilterDialog,
     SubjectSetting,
-    PreviewFullScreen
+    PreviewFullScreen,
+    Preview
   },
   data() {
     return {
@@ -350,8 +352,6 @@ export default {
     },
 
     deselectCurComponent(e) {
-      console.log('deselectCurComponent123')
-
       if (!this.isClickComponent) {
         this.$store.commit('setCurComponent', { component: null, index: null })
       }

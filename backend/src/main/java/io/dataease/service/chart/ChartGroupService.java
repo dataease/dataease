@@ -5,6 +5,7 @@ import io.dataease.base.mapper.ChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
@@ -71,29 +72,11 @@ public class ChartGroupService {
     }
 
     public List<ChartGroupDTO> tree(ChartGroupRequest chartGroup) {
+        chartGroup.setLevel(null);
         chartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        if (chartGroup.getLevel() == null) {
-            chartGroup.setLevel(0);
-        }
         List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(chartGroup);
-        getAll(treeInfo, chartGroup);
-        return treeInfo;
-    }
-
-    public void getAll(List<ChartGroupDTO> list, ChartGroupRequest chartGroup) {
-        for (ChartGroupDTO obj : list) {
-            ChartGroupRequest newChartGroup = new ChartGroupRequest();
-            newChartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-            newChartGroup.setName(chartGroup.getName());
-            newChartGroup.setType(chartGroup.getType());
-            newChartGroup.setPid(obj.getId());
-            newChartGroup.setSort(chartGroup.getSort());
-            List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(newChartGroup);
-            obj.setChildren(treeInfo);
-            if (CollectionUtils.isNotEmpty(treeInfo)) {
-                getAll(treeInfo, chartGroup);
-            }
-        }
+        List<ChartGroupDTO> result = TreeUtils.mergeTree(treeInfo);
+        return result;
     }
 
     public List<String> getAllId(List<ChartGroupDTO> list, List<String> ids) {

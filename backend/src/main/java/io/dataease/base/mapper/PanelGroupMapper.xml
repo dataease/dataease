@@ -10,6 +10,10 @@
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="panel_type" jdbcType="VARCHAR" property="panelType" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="extend1" jdbcType="VARCHAR" property="extend1" />
+    <result column="extend2" jdbcType="VARCHAR" property="extend2" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.PanelGroupWithBLOBs">
     <result column="panel_style" jdbcType="LONGVARCHAR" property="panelStyle" />
@@ -74,7 +78,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, pid, `level`, node_type, create_by, create_time, panel_type
+    id, `name`, pid, `level`, node_type, create_by, create_time, panel_type, `source`, 
+    extend1, extend2, remark
   </sql>
   <sql id="Blob_Column_List">
     panel_style, panel_data
@@ -130,12 +135,14 @@
   <insert id="insert" parameterType="io.dataease.base.domain.PanelGroupWithBLOBs">
     insert into panel_group (id, `name`, pid, 
       `level`, node_type, create_by, 
-      create_time, panel_type, panel_style, 
-      panel_data)
+      create_time, panel_type, `source`, 
+      extend1, extend2, remark, 
+      panel_style, panel_data)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
       #{level,jdbcType=INTEGER}, #{nodeType,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{panelType,jdbcType=VARCHAR}, #{panelStyle,jdbcType=LONGVARCHAR}, 
-      #{panelData,jdbcType=LONGVARCHAR})
+      #{createTime,jdbcType=BIGINT}, #{panelType,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, 
+      #{extend1,jdbcType=VARCHAR}, #{extend2,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{panelStyle,jdbcType=LONGVARCHAR}, #{panelData,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelGroupWithBLOBs">
     insert into panel_group
@@ -163,6 +170,18 @@
       </if>
       <if test="panelType != null">
         panel_type,
+      </if>
+      <if test="source != null">
+        `source`,
+      </if>
+      <if test="extend1 != null">
+        extend1,
+      </if>
+      <if test="extend2 != null">
+        extend2,
+      </if>
+      <if test="remark != null">
+        remark,
       </if>
       <if test="panelStyle != null">
         panel_style,
@@ -195,6 +214,18 @@
       </if>
       <if test="panelType != null">
         #{panelType,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="extend1 != null">
+        #{extend1,jdbcType=VARCHAR},
+      </if>
+      <if test="extend2 != null">
+        #{extend2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
       </if>
       <if test="panelStyle != null">
         #{panelStyle,jdbcType=LONGVARCHAR},
@@ -237,6 +268,18 @@
       <if test="record.panelType != null">
         panel_type = #{record.panelType,jdbcType=VARCHAR},
       </if>
+      <if test="record.source != null">
+        `source` = #{record.source,jdbcType=VARCHAR},
+      </if>
+      <if test="record.extend1 != null">
+        extend1 = #{record.extend1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.extend2 != null">
+        extend2 = #{record.extend2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
       <if test="record.panelStyle != null">
         panel_style = #{record.panelStyle,jdbcType=LONGVARCHAR},
       </if>
@@ -258,6 +301,10 @@
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       panel_type = #{record.panelType,jdbcType=VARCHAR},
+      `source` = #{record.source,jdbcType=VARCHAR},
+      extend1 = #{record.extend1,jdbcType=VARCHAR},
+      extend2 = #{record.extend2,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
       panel_style = #{record.panelStyle,jdbcType=LONGVARCHAR},
       panel_data = #{record.panelData,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -273,7 +320,11 @@
       node_type = #{record.nodeType,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
-      panel_type = #{record.panelType,jdbcType=VARCHAR}
+      panel_type = #{record.panelType,jdbcType=VARCHAR},
+      `source` = #{record.source,jdbcType=VARCHAR},
+      extend1 = #{record.extend1,jdbcType=VARCHAR},
+      extend2 = #{record.extend2,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -302,6 +353,18 @@
       <if test="panelType != null">
         panel_type = #{panelType,jdbcType=VARCHAR},
       </if>
+      <if test="source != null">
+        `source` = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="extend1 != null">
+        extend1 = #{extend1,jdbcType=VARCHAR},
+      </if>
+      <if test="extend2 != null">
+        extend2 = #{extend2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
       <if test="panelStyle != null">
         panel_style = #{panelStyle,jdbcType=LONGVARCHAR},
       </if>
@@ -320,6 +383,10 @@
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       panel_type = #{panelType,jdbcType=VARCHAR},
+      `source` = #{source,jdbcType=VARCHAR},
+      extend1 = #{extend1,jdbcType=VARCHAR},
+      extend2 = #{extend2,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
       panel_style = #{panelStyle,jdbcType=LONGVARCHAR},
       panel_data = #{panelData,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
@@ -332,7 +399,11 @@
       node_type = #{nodeType,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
-      panel_type = #{panelType,jdbcType=VARCHAR}
+      panel_type = #{panelType,jdbcType=VARCHAR},
+      `source` = #{source,jdbcType=VARCHAR},
+      extend1 = #{extend1,jdbcType=VARCHAR},
+      extend2 = #{extend2,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

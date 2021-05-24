@@ -21,5 +21,13 @@ public class PanelGroup implements Serializable {
 
     private String panelType;
 
+    private String source;
+
+    private String extend1;
+
+    private String extend2;
+
+    private String remark;
+
     private static final long serialVersionUID = 1L;
 }

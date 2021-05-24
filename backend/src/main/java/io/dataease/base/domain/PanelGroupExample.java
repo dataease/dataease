@@ -643,6 +643,286 @@ public class PanelGroupExample {
             addCriterion("panel_type not between", value1, value2, "panelType");
             return (Criteria) this;
         }
+
+        public Criteria andSourceIsNull() {
+            addCriterion("`source` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceIsNotNull() {
+            addCriterion("`source` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceEqualTo(String value) {
+            addCriterion("`source` =", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNotEqualTo(String value) {
+            addCriterion("`source` <>", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceGreaterThan(String value) {
+            addCriterion("`source` >", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceGreaterThanOrEqualTo(String value) {
+            addCriterion("`source` >=", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceLessThan(String value) {
+            addCriterion("`source` <", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceLessThanOrEqualTo(String value) {
+            addCriterion("`source` <=", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceLike(String value) {
+            addCriterion("`source` like", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNotLike(String value) {
+            addCriterion("`source` not like", value, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceIn(List<String> values) {
+            addCriterion("`source` in", values, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNotIn(List<String> values) {
+            addCriterion("`source` not in", values, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceBetween(String value1, String value2) {
+            addCriterion("`source` between", value1, value2, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNotBetween(String value1, String value2) {
+            addCriterion("`source` not between", value1, value2, "source");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1IsNull() {
+            addCriterion("extend1 is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1IsNotNull() {
+            addCriterion("extend1 is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1EqualTo(String value) {
+            addCriterion("extend1 =", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1NotEqualTo(String value) {
+            addCriterion("extend1 <>", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1GreaterThan(String value) {
+            addCriterion("extend1 >", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1GreaterThanOrEqualTo(String value) {
+            addCriterion("extend1 >=", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1LessThan(String value) {
+            addCriterion("extend1 <", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1LessThanOrEqualTo(String value) {
+            addCriterion("extend1 <=", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1Like(String value) {
+            addCriterion("extend1 like", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1NotLike(String value) {
+            addCriterion("extend1 not like", value, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1In(List<String> values) {
+            addCriterion("extend1 in", values, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1NotIn(List<String> values) {
+            addCriterion("extend1 not in", values, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1Between(String value1, String value2) {
+            addCriterion("extend1 between", value1, value2, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend1NotBetween(String value1, String value2) {
+            addCriterion("extend1 not between", value1, value2, "extend1");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2IsNull() {
+            addCriterion("extend2 is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2IsNotNull() {
+            addCriterion("extend2 is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2EqualTo(String value) {
+            addCriterion("extend2 =", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2NotEqualTo(String value) {
+            addCriterion("extend2 <>", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2GreaterThan(String value) {
+            addCriterion("extend2 >", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2GreaterThanOrEqualTo(String value) {
+            addCriterion("extend2 >=", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2LessThan(String value) {
+            addCriterion("extend2 <", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2LessThanOrEqualTo(String value) {
+            addCriterion("extend2 <=", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2Like(String value) {
+            addCriterion("extend2 like", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2NotLike(String value) {
+            addCriterion("extend2 not like", value, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2In(List<String> values) {
+            addCriterion("extend2 in", values, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2NotIn(List<String> values) {
+            addCriterion("extend2 not in", values, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2Between(String value1, String value2) {
+            addCriterion("extend2 between", value1, value2, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtend2NotBetween(String value1, String value2) {
+            addCriterion("extend2 not between", value1, value2, "extend2");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIsNull() {
+            addCriterion("remark is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIsNotNull() {
+            addCriterion("remark is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkEqualTo(String value) {
+            addCriterion("remark =", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotEqualTo(String value) {
+            addCriterion("remark <>", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkGreaterThan(String value) {
+            addCriterion("remark >", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkGreaterThanOrEqualTo(String value) {
+            addCriterion("remark >=", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLessThan(String value) {
+            addCriterion("remark <", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLessThanOrEqualTo(String value) {
+            addCriterion("remark <=", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLike(String value) {
+            addCriterion("remark like", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotLike(String value) {
+            addCriterion("remark not like", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIn(List<String> values) {
+            addCriterion("remark in", values, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotIn(List<String> values) {
+            addCriterion("remark not in", values, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkBetween(String value1, String value2) {
+            addCriterion("remark between", value1, value2, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotBetween(String value1, String value2) {
+            addCriterion("remark not between", value1, value2, "remark");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

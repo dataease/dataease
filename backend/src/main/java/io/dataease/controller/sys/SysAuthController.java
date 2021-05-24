@@ -36,6 +36,7 @@ public class SysAuthController {
 
     @ApiOperation("查询视图")
     @PostMapping("/authModels")
+    @I18n
     public  List<VAuthModelDTO> authModels(@RequestBody BaseTreeRequest request){
         return sysAuthService.searchAuthModelTree(request);
     }
