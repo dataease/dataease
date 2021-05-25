@@ -33,7 +33,8 @@
                 <!--2-{{ auth.privilegeType }}-{{ auth.privilegeValue }}-->
                 <el-switch v-model="auth.privilegeValue" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="clickAuth(data.id,auth)" />
               </span>
-            </div></span>
+            </div>
+          </span>
         </span>
       </el-tree>
     </el-row>
@@ -282,8 +283,9 @@ export default {
     padding-left: 8px;
   }
   .tree-main{
-    height: 100vh;
+    height: calc(100vh - 206px);
     border: 1px solid #e6e6e6;
+    overflow-y: auto;
   }
   .tree-head{
     height: 30px;
