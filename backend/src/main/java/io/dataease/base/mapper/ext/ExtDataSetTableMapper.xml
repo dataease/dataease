@@ -16,7 +16,10 @@
         <where>
             FIND_IN_SET(dataset_table.id,cids)
             <if test="sceneId != null">
-               and scene_id = #{sceneId,jdbcType=VARCHAR}
+                and scene_id = #{sceneId,jdbcType=VARCHAR}
+            </if>
+            <if test="mode != null">
+                and mode = #{mode,jdbcType=INTEGER}
             </if>
         </where>
         <if test="sort != null">
