@@ -359,6 +359,8 @@ export default {
         this.lastActiveNodeData.children.push(panelInfo)
         this.lastActiveNode.expanded = true
         this.activeNodeAndClick(panelInfo)
+      } else {
+        this.tree(this.groupForm)
       }
     },
     showEditPanel(param) {
