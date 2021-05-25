@@ -44,6 +44,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -204,6 +205,7 @@ public class DataSetTableService {
     }
 
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize) throws Exception {
+        Map<String, Object> map = new HashMap<>();
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
@@ -265,33 +267,38 @@ public class DataSetTableService {
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
             if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
-                throw new Exception("no records");
-            }
-            if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
-                throw new Exception(Translator.get("i18n_processing_data"));
-            }
-            if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Error.name())) {
-                throw new Exception("Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
-            }
-            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
-            JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(ds);
-            String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
-            try {
-                data.addAll(jdbcProvider.getData(datasourceRequest));
-            } catch (Exception e) {
-                e.printStackTrace();
+                map.put("status", "warnning");
+                map.put("msg", Translator.get("i18n_processing_data"));
+                dataSetPreviewPage.setTotal(0);
+            }else if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
+                map.put("status", "warnning");
+                map.put("msg", Translator.get("i18n_processing_data"));
+                dataSetPreviewPage.setTotal(0);
+            }else if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+                map.put("status", "error");
+                map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
+                dataSetPreviewPage.setTotal(0);
+            }else {
+                Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+                JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
+                String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
+                try {
+                    data.addAll(jdbcProvider.getData(datasourceRequest));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    datasourceRequest.setQuery(qp.createQueryCountSQL(table));
+                    dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
-            try {
-                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
-                dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
             JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
@@ -317,15 +324,17 @@ public class DataSetTableService {
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> tmpMap = new HashMap<>();
                 for (int i = 0; i < ele.length; i++) {
-                    map.put(fieldArray[i], ele[i]);
+                    tmpMap.put(fieldArray[i], ele[i]);
                 }
-                return map;
+                return tmpMap;
             }).collect(Collectors.toList());
         }
 
-        Map<String, Object> map = new HashMap<>();
+       if(!map.containsKey("status")){
+           map.put("status", "success");
+       }
         map.put("fields", fields);
         map.put("data", jsonArray);
         map.put("page", dataSetPreviewPage);
@@ -819,8 +828,15 @@ public class DataSetTableService {
         } else if (cellTypeEnum.equals(CellType.NUMERIC)) {
             double d = cell.getNumericCellValue();
             try {
-                String value = String.valueOf(d);
-                return value.endsWith(".0") ? value.substring(0, value.length() -2):value;
+                Double value = new Double(d);
+                double eps = 1e-10;
+                if(value - Math.floor(value) < eps){
+                    return value.longValue() + "";
+                }else {
+                    NumberFormat nf = NumberFormat.getInstance();
+                    nf.setGroupingUsed(false);
+                    return nf.format(value);
+                }
             } catch (Exception e) {
                 BigDecimal b = new BigDecimal(d);
                 return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";

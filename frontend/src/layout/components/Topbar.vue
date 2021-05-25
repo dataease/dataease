@@ -1,8 +1,8 @@
 <template>
   <div class="top-nav" :style="{'background-color': '#f1f3f8'}">
     <div class="log">
-      <img v-if="!logoUrl" src="@/assets/DataEase-color.png" width="160" alt="" style="padding-top: 8px;">
-      <img v-else :src="logoUrl" width="160" alt="" style="padding-top: 8px;">
+      <img v-if="!logoUrl" src="@/assets/DataEase-color.png" width="140" alt="" style="padding-top: 10px;">
+      <img v-else :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
       :active-text-color="variables.topMenuActiveText"

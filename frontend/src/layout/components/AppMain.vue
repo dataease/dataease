@@ -25,8 +25,8 @@ export default {
     @import "~@/styles/variables.scss";
 
     .app-main {
-        /*107 = navbar 50 + topbar 57  */
-        min-height: calc(100vh - 107px);
+        /* topbar 56  */
+        min-height: calc(100vh - 56px);
         width: 100%;
         position: relative;
         overflow: hidden;

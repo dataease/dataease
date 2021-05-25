@@ -108,6 +108,20 @@ export default {
           this.fields = response.data.fields
           this.data = response.data.data
           this.page = response.data.page
+          if(response.data.status === 'warnning'){
+            this.$warning(response.data.msg, 3000)
+          }
+          if(response.data.status === 'error') {
+            this.$error(response.data.msg, 3000)
+          }
+        }).catch(response => {
+          this.fields = []
+          this.data = []
+          this.page = {
+            page: 1,
+            pageSize: 100,
+            show: 0
+          }
         })
       }
     },

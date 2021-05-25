@@ -639,7 +639,7 @@ public class ExtractDataService {
 
     private static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
             "            try {\n" +
-            "                Integer.valueOf(tmp.substring(0, tmp.length()-2));\n" +
+            "                Long.valueOf(tmp.substring(0, tmp.length()-2));\n" +
             "                get(Fields.Out, filed).setValue(r, tmp.substring(0, tmp.length()-2));\n" +
             "                get(Fields.Out, filed).getValueMeta().setType(2);\n" +
             "            }catch (Exception e){}\n" +
