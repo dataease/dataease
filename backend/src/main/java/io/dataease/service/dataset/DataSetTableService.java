@@ -572,6 +572,7 @@ public class DataSetTableService {
                 return 0;
             case "TIME":
                 return 1;
+            case "LONG":
             case "INT":
                 return 2;
             case "DOUBLE":
@@ -778,10 +779,37 @@ public class DataSetTableService {
         inputStream.close();
 
         Map<String, Object> map = new HashMap<>();
+        inferFieldType(fields, data);
         map.put("fields", fields);
         map.put("data", jsonArray);
         map.put("sheets", sheets);
         return map;
+    }
+
+    private void inferFieldType(List<TableFiled> fields, List<String[]> data){
+        if(CollectionUtils.isEmpty(fields) || CollectionUtils.isEmpty(data)) {
+            return;
+        }
+        String[] firstLine = data.get(0);
+        for (int i=0; i< fields.size()&& i < firstLine.length; i++) {
+            TableFiled filed = fields.get(i);
+            try{
+                Integer.valueOf(firstLine[i]);
+                filed.setFieldType("INT");
+                continue;
+            }catch (Exception ignore ){
+            }
+            try{
+                Long.valueOf(firstLine[i]);
+                filed.setFieldType("LONG");
+                continue;
+            }catch (Exception ignore ){}
+            try{
+                Double.valueOf(firstLine[i]);
+                filed.setFieldType("DOUBLE");
+                continue;
+            }catch (Exception ignore ){}
+        }
     }
 
     private String readCell(Cell cell) {
@@ -791,7 +819,8 @@ public class DataSetTableService {
         } else if (cellTypeEnum.equals(CellType.NUMERIC)) {
             double d = cell.getNumericCellValue();
             try {
-                return new Double(d).longValue() + "";
+                String value = String.valueOf(d);
+                return value.endsWith(".0") ? value.substring(0, value.length() -2):value;
             } catch (Exception e) {
                 BigDecimal b = new BigDecimal(d);
                 return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
