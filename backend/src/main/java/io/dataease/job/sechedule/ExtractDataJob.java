@@ -13,7 +13,6 @@ public class ExtractDataJob extends DeScheduleJob{
         extractDataService = (ExtractDataService) CommonBeanFactory.getBean(ExtractDataService.class);
     }
 
-
     @Override
     void businessExecute(JobExecutionContext context) {
         extractDataService.extractData(datasetTableId, taskId, updateType);

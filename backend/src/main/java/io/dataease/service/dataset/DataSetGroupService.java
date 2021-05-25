@@ -14,15 +14,13 @@ import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,9 +57,14 @@ public class DataSetGroupService {
         DatasetGroup dg = datasetGroupMapper.selectByPrimaryKey(id);
         DataSetGroupRequest datasetGroup = new DataSetGroupRequest();
         BeanUtils.copyBean(datasetGroup, dg);
-        List<DataSetGroupDTO> tree = tree(datasetGroup);
+        Map<String, String> stringStringMap = extDataSetGroupMapper.searchIds(id, "dataset");
+        String[] split = stringStringMap.get("ids").split(",");
         List<String> ids = new ArrayList<>();
-        getAllId(tree, ids);
+        for (String dsId : split) {
+            if (StringUtils.isNotEmpty(dsId)) {
+                ids.add(dsId);
+            }
+        }
         DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
         datasetGroupExample.createCriteria().andIdIn(ids);
         datasetGroupMapper.deleteByExample(datasetGroupExample);
@@ -116,6 +119,9 @@ public class DataSetGroupService {
         }
         if (StringUtils.isNotEmpty(datasetGroup.getId())) {
             criteria.andIdNotEqualTo(datasetGroup.getId());
+        }
+        if (ObjectUtils.isNotEmpty(datasetGroup.getLevel())) {
+            criteria.andLevelEqualTo(datasetGroup.getLevel());
         }
         List<DatasetGroup> list = datasetGroupMapper.selectByExample(datasetGroupExample);
         if (list.size() > 0) {

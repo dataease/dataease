@@ -3,6 +3,7 @@ package io.dataease.service.chart;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
+import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.TreeUtils;
@@ -11,12 +12,14 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
 import io.dataease.i18n.Translator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,9 +30,10 @@ public class ChartGroupService {
     private ChartGroupMapper chartGroupMapper;
     @Resource
     private ChartViewService chartViewService;
-
     @Resource
     private ExtChartGroupMapper extChartGroupMapper;
+    @Resource
+    private ExtDataSetGroupMapper extDataSetGroupMapper;
 
     public ChartGroupDTO save(ChartGroup chartGroup) {
         checkName(chartGroup);
@@ -51,9 +55,14 @@ public class ChartGroupService {
         ChartGroup cg = chartGroupMapper.selectByPrimaryKey(id);
         ChartGroupRequest ChartGroup = new ChartGroupRequest();
         BeanUtils.copyBean(ChartGroup, cg);
-        List<ChartGroupDTO> tree = tree(ChartGroup);
+        Map<String, String> stringStringMap = extDataSetGroupMapper.searchIds(id, "chart");
+        String[] split = stringStringMap.get("ids").split(",");
         List<String> ids = new ArrayList<>();
-        getAllId(tree, ids);
+        for (String dsId : split) {
+            if (StringUtils.isNotEmpty(dsId)) {
+                ids.add(dsId);
+            }
+        }
         ChartGroupExample ChartGroupExample = new ChartGroupExample();
         ChartGroupExample.createCriteria().andIdIn(ids);
         chartGroupMapper.deleteByExample(ChartGroupExample);
@@ -103,6 +112,9 @@ public class ChartGroupService {
         }
         if (StringUtils.isNotEmpty(chartGroup.getId())) {
             criteria.andIdNotEqualTo(chartGroup.getId());
+        }
+        if (ObjectUtils.isNotEmpty(chartGroup.getLevel())) {
+            criteria.andLevelEqualTo(chartGroup.getLevel());
         }
         List<ChartGroup> list = chartGroupMapper.selectByExample(chartGroupExample);
         if (list.size() > 0) {

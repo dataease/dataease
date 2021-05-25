@@ -49,4 +49,10 @@ public class DataSetTableTaskLogService {
         datasetTableTaskLogMapper.deleteByExample(datasetTableTaskLogExample);
     }
 
+    public List<DatasetTableTaskLog> getByTableId(String datasetId){
+        DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
+        DatasetTableTaskLogExample.Criteria criteria = datasetTableTaskLogExample.createCriteria();
+        criteria.andTableIdEqualTo(datasetId);
+        return datasetTableTaskLogMapper.selectByExampleWithBLOBs(datasetTableTaskLogExample);
+    }
 }

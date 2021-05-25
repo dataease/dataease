@@ -7,6 +7,7 @@ import io.dataease.base.mapper.DatasetTableIncrementalConfigMapper;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
+import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
@@ -71,6 +72,8 @@ public class DataSetTableService {
     private DatasetTableIncrementalConfigMapper datasetTableIncrementalConfigMapper;
     @Resource
     private DataSetTableUnionService dataSetTableUnionService;
+    @Resource
+    private DataSetTableTaskLogService dataSetTableTaskLogService;
     @Value("${upload.file.path}")
     private String path;
 
@@ -125,7 +128,11 @@ public class DataSetTableService {
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
         dataSetTableTaskService.deleteByTableId(id);
-        deleteDorisTable(id);
+        try {
+            deleteDorisTable(id);
+        } catch (Exception e) {
+
+        }
     }
 
     private void deleteDorisTable(String datasetId) throws Exception {
@@ -256,6 +263,16 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+            List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
+            if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
+                throw new Exception("no records");
+            }
+            if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
+                throw new Exception(Translator.get("i18n_processing_data"));
+            }
+            if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+                throw new Exception("Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
+            }
             Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
             JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
