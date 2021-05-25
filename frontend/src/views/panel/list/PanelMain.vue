@@ -17,7 +17,7 @@
       </el-tabs>
     </de-aside-container>
     <de-main-container>
-      <PanelViewShow />
+      <PanelViewShow v-if="mainActiveName==='PanelMain'" />
     </de-main-container>
   </de-container>
 </template>
@@ -40,6 +40,14 @@ export default {
       showShare: false,
       showEnshrine: false
     }
+  },
+  computed: {
+    mainActiveName() {
+      return this.$store.state.panel.mainActiveName
+    }
+  },
+  mounted() {
+    this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
   },
   methods: {
     handleClick(tab, event) {

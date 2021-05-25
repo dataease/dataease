@@ -99,7 +99,8 @@ export default {
     gender: '性別',
     man: '男',
     woman: '女',
-    nick_name: '暱稱',
+    nick_name: '姓名',
+    confirmPassword: '確認密碼',
     upload: '上傳',
     cover: '覆蓋',
     not_cover: '不覆蓋',
@@ -929,14 +930,14 @@ export default {
   auth: {
     authConfig: '權限配置',
     authQuickConfig: '權限快捷配置',
-    dept: '部門',
+    dept: '组织',
     role: '角色',
     user: '用戶',
     linkAuth: '數據源權限',
-    datasetAuth: '數據權限',
+    datasetAuth: '數據集權限',
     chartAuth: '視圖權限',
     panelAuth: '儀表盤權限',
-    deptHead: '所有部門',
+    deptHead: '所有组织',
     roleHead: '所有角色',
     userHead: '所有用戶',
     linkAuthHead: '所有數據源',
@@ -961,5 +962,12 @@ export default {
     enterprise: '企業版',
     suport: '獲取技術支持',
     update_success: '更新成功'
+  },
+  template: {
+    exit_same_template_check: '当前存在相同名称模板，是否覆盖？',
+    override: '覆盖',
+    cancel: '取消',
+    confirm_upload: '上传确认'
   }
+
 }

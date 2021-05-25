@@ -12,6 +12,8 @@ import lombok.Data;
 public class PanelTemplateRequest extends PanelTemplateWithBLOBs {
     private String sort;
 
+    private String optType;
+
     private Boolean withChildren = false;
 
     public PanelTemplateRequest() {

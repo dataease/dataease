@@ -40,7 +40,7 @@
       <!--TODO 仪表盘预览区域-->
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
-          <Preview v-if="mainActiveName==='PanelMain'&&showMain" />
+          <Preview v-if="showMain" />
         </div>
       </el-row>
     </el-col>
@@ -74,7 +74,7 @@ export default {
   data() {
     return {
       showMain: true,
-      templateInfo: '',
+      templateInfo: {},
       templateSaveTitle: '保存为模板',
       templateSaveShow: false,
       hasStar: false
@@ -83,9 +83,6 @@ export default {
   computed: {
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    },
-    mainActiveName() {
-      return this.$store.state.panel.mainActiveName
     },
     ...mapState([
       'componentData',
@@ -146,7 +143,7 @@ export default {
       })
     },
     refreshTemplateInfo() {
-      this.templateInfo = ''
+      this.templateInfo = {}
       html2canvas(this.$refs.imageWrapper).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
         if (snapshot !== '') {

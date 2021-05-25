@@ -1,7 +1,7 @@
 <template>
   <el-row>
     <el-row>
-      <el-col :span="4"> {{ $t('panel.template_nale')}}</el-col>
+      <el-col :span="4"> {{ $t('panel.template_nale') }}</el-col>
       <el-col :span="20">
         <el-input v-model="templateInfo.name" clearable size="mini" />
       </el-col>
@@ -26,21 +26,20 @@
       </div>
     </el-row>
     <el-row class="root-class">
-      <el-button @click="cancel()">{{ $t('commons.cancel')}}</el-button>
-      <el-button type="primary" @click="save()">{{ $t('commons.save')}}</el-button>
+      <el-button @click="cancel()">{{ $t('commons.cancel') }}</el-button>
+      <el-button type="primary" @click="save()">{{ $t('commons.save') }}</el-button>
     </el-row>
   </el-row>
 </template>
 
 <script>
-import { post } from '@/api/panel/panel'
+import { save, nameCheck, showTemplateList } from '@/api/system/template'
 
 export default {
   name: 'SaveToTemplate',
   props: {
     templateInfo: {
-      type: Object,
-      require: true
+      type: Object
     }
   },
   data() {
@@ -61,7 +60,7 @@ export default {
         templateType: 'self',
         level: '0'
       }
-      post('/template/templateList', param).then(response => {
+      showTemplateList(param).then(response => {
         this.data = response.data
       })
     },
@@ -81,13 +80,41 @@ export default {
         this.$warning(this.$t('panel.template_name_cannot_be_empty'))
         return false
       }
-      post('/template/save', this.templateInfo).then(response => {
-        this.$message({
-          message: this.$t('commons.save_success'),
-          type: 'success',
-          showClose: true
-        })
-        this.$emit('closeSaveDialog')
+
+      const nameCheckRequest = {
+        pid: this.templateInfo.pid,
+        name: this.templateInfo.name,
+        optType: 'insert'
+      }
+      nameCheck(nameCheckRequest).then(response => {
+        if (response.data.indexOf('exist') > -1) {
+          this.$confirm(this.$t('template.exit_same_template_check'), this.$t('template.confirm_upload'), {
+            confirmButtonText: this.$t('template.override'),
+            cancelButtonText: this.$t('template.cancel'),
+            type: 'warning'
+          }).then(() => {
+            save(this.templateInfo).then(response => {
+              this.$message({
+                message: this.$t('commons.save_success'),
+                type: 'success',
+                showClose: true
+              })
+              debugger
+              this.$emit('closeSaveDialog')
+            })
+          }).catch(() => {
+          })
+        } else {
+          save(this.templateInfo).then(response => {
+            this.$message({
+              message: this.$t('commons.save_success'),
+              type: 'success',
+              showClose: true
+            })
+            debugger
+            this.$emit('closeSaveDialog')
+          })
+        }
       })
     }
 

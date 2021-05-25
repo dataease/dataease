@@ -2,7 +2,7 @@
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
     <de-main-container>
       <panel-main v-show="componentName==='PanelMain'" />
-      <chart-edit v-if="componentName==='ChartEdit'" />
+      <chart-edit v-if="componentName==='ChartEdit'" :param="param" />
       <panel-edit v-if="componentName==='PanelEdit'" />
       <!--      <component :is="component" :param="param" />-->
     </de-main-container>

@@ -1,7 +1,7 @@
 <template>
   <layout-content :header="formType=='add' ? $t('user.create') : $t('user.modify')" back-name="system-user">
     <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-      <el-form-item :label="$t('commons.name')" prop="username">
+      <el-form-item label="ID" prop="username">
         <el-input v-model="form.username" />
       </el-form-item>
       <el-form-item :label="$t('commons.phone')" prop="phone">
@@ -12,6 +12,12 @@
       </el-form-item>
       <el-form-item :label="$t('commons.email')" prop="email">
         <el-input v-model="form.email" />
+      </el-form-item>
+      <el-form-item v-if="formType !== 'modify'" :label="$t('commons.password')" prop="password">
+        <el-input v-model="form.password" autocomplete="off" show-password />
+      </el-form-item>
+      <el-form-item v-if="formType !== 'modify'" :label="$t('commons.confirmPassword')" prop="confirmPassword">
+        <el-input v-model="form.confirmPassword" autocomplete="off" show-password />
       </el-form-item>
 
       <el-form-item :label="$t('commons.gender')">
@@ -127,6 +133,10 @@ export default {
             trigger: 'blur'
           }
         ],
+        confirmPassword: [
+          { required: true, message: this.$t('user.input_password'), trigger: 'blur' },
+          { required: true, validator: this.repeatValidator, trigger: 'blur' }
+        ],
         newPassword: [
           { required: true, message: this.$t('user.input_password'), trigger: 'blur' },
           {
@@ -158,6 +168,13 @@ export default {
     this.initRoles()
   },
   methods: {
+    repeatValidator(rule, value, callback) {
+      if (value !== this.form.password) {
+        callback(new Error(this.$t('member.inconsistent_passwords')))
+      } else {
+        callback()
+      }
+    },
     create() {
       this.depts = null
       this.formType = 'add'
@@ -169,6 +186,7 @@ export default {
       this.formType = 'modify'
       this.dialogVisible = true
       this.form = Object.assign({}, row)
+      this.form.password = ''
       if (this.form.deptId === 0) {
         this.form.deptId = null
       }

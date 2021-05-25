@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ public class SysUserService {
     private ExtSysUserMapper extSysUserMapper;
 
 
-    public List<SysUserGridResponse> query(BaseGridRequest request){
+    public List<SysUserGridResponse> query(BaseGridRequest request) {
         GridExample gridExample = request.convertExample();
         List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
         lists.forEach(item -> {
@@ -60,18 +61,18 @@ public class SysUserService {
     }
 
     @Transactional
-    public int save(SysUserCreateRequest request){
+    public int save(SysUserCreateRequest request) {
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setCreateTime(now);
         user.setUpdateTime(now);
         user.setIsAdmin(false);
-        if (ObjectUtils.isEmpty(user.getPassword()) || StringUtils.equals(user.getPassword(), DEFAULT_PWD)){
+        if (ObjectUtils.isEmpty(user.getPassword()) || StringUtils.equals(user.getPassword(), DEFAULT_PWD)) {
             user.setPassword(CodingUtil.md5(DEFAULT_PWD));
-        }else{
+        } else {
             user.setPassword(CodingUtil.md5(user.getPassword()));
         }
-        if(StringUtils.isEmpty(user.getLanguage())){
+        if (StringUtils.isEmpty(user.getLanguage())) {
             user.setLanguage("zh_CN");
         }
         int insert = sysUserMapper.insert(user);
@@ -82,29 +83,33 @@ public class SysUserService {
 
     /**
      * 修改用户密码清楚缓存
+     *
      * @param request
      * @return
      */
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @Transactional
-    public int update(SysUserCreateRequest request){
+    public int update(SysUserCreateRequest request) {
+        if (StringUtils.isEmpty(request.getPassword())) {
+            request.setPassword(null);
+        }
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setUpdateTime(now);
         deleteUserRoles(user.getUserId());//先删除用户角色关联
         saveUserRoles(user.getUserId(), request.getRoleIds());//再插入角色关联
-        return sysUserMapper.updateByPrimaryKey(user);
-
+        return sysUserMapper.updateByPrimaryKeySelective(user);
     }
 
     /**
      * 用户修改个人信息
+     *
      * @param request
      * @return
      */
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @Transactional
-    public int updatePersonInfo(SysUserCreateRequest request){
+    public int updatePersonInfo(SysUserCreateRequest request) {
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setUpdateTime(now);
@@ -114,7 +119,7 @@ public class SysUserService {
 
 
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
-    public int updateStatus(SysUserStateRequest request){
+    public int updateStatus(SysUserStateRequest request) {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(request.getUserId());
         sysUser.setEnabled(request.getEnabled());
@@ -123,6 +128,7 @@ public class SysUserService {
 
     /**
      * 修改用户密码清楚缓存
+     *
      * @param request
      * @return
      */
@@ -133,7 +139,7 @@ public class SysUserService {
         if (ObjectUtils.isEmpty(user)) {
             throw new RuntimeException("用户不存在");
         }
-        if (!StringUtils.equals(CodingUtil.md5(request.getPassword()), user.getPassword())){
+        if (!StringUtils.equals(CodingUtil.md5(request.getPassword()), user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
         SysUser sysUser = new SysUser();
@@ -143,7 +149,7 @@ public class SysUserService {
     }
 
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
-    public int adminUpdatePwd(SysUserPwdRequest request){
+    public int adminUpdatePwd(SysUserPwdRequest request) {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(request.getUserId());
         sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
@@ -151,13 +157,13 @@ public class SysUserService {
     }
 
 
-
     /**
      * 删除用户角色关联
+     *
      * @param userId
      * @return
      */
-    private int deleteUserRoles(Long userId){
+    private int deleteUserRoles(Long userId) {
         SysUsersRolesExample example = new SysUsersRolesExample();
         example.createCriteria().andUserIdEqualTo(userId);
         return sysUsersRolesMapper.deleteByExample(example);
@@ -165,10 +171,11 @@ public class SysUserService {
 
     /**
      * 保存用户角色关联
+     *
      * @param userId
      * @param roleIds
      */
-    private void saveUserRoles(Long userId, List<Long> roleIds){
+    private void saveUserRoles(Long userId, List<Long> roleIds) {
         roleIds.forEach(roleId -> {
             SysUsersRolesKey sysUsersRolesKey = new SysUsersRolesKey();
             sysUsersRolesKey.setUserId(userId);
@@ -179,33 +186,33 @@ public class SysUserService {
 
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
     @Transactional
-    public int delete(Long userId){
+    public int delete(Long userId) {
         deleteUserRoles(userId);
         return sysUserMapper.deleteByPrimaryKey(userId);
     }
 
-    public SysUser findOne(SysUser user){
+    public SysUser findOne(SysUser user) {
         if (ObjectUtils.isEmpty(user)) return null;
-        if (ObjectUtils.isNotEmpty(user.getUserId())){
+        if (ObjectUtils.isNotEmpty(user.getUserId())) {
             return sysUserMapper.selectByPrimaryKey(user.getUserId());
         }
         SysUserExample example = new SysUserExample();
         SysUserExample.Criteria criteria = example.createCriteria();
-        if (ObjectUtils.isNotEmpty(user.getUsername())){
+        if (ObjectUtils.isNotEmpty(user.getUsername())) {
             criteria.andUsernameEqualTo(user.getUsername());
             List<SysUser> sysUsers = sysUserMapper.selectByExample(example);
-            if (CollectionUtils.isNotEmpty(sysUsers))return sysUsers.get(0);
+            if (CollectionUtils.isNotEmpty(sysUsers)) return sysUsers.get(0);
         }
         return null;
     }
 
 
-    public List<SysUser> users(List<Long> userIds){
+    public List<SysUser> users(List<Long> userIds) {
         return userIds.stream().map(sysUserMapper::selectByPrimaryKey).collect(Collectors.toList());
     }
 
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
-    public void setLanguage(Long userId,String language) {
+    public void setLanguage(Long userId, String language) {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(userId);
         sysUser.setLanguage(language);

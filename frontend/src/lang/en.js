@@ -100,7 +100,8 @@ export default {
     button: 'Button',
     man: 'Man',
     woman: 'Woman',
-    nick_name: 'Nick Name',
+    nick_name: 'Name',
+    confirmPassword: 'Confirm Password',
     upload: 'Upload',
     cover: 'Cover',
     not_cover: 'Not Cover',
@@ -934,7 +935,7 @@ export default {
     role: 'Role',
     user: 'User',
     linkAuth: 'Datasource Permissions',
-    datasetAuth: 'Data Permissions',
+    datasetAuth: 'Dataset Permissions',
     chartAuth: 'Chart Permissions',
     panelAuth: 'Panel Permissions',
     deptHead: 'All Dept',
@@ -962,5 +963,11 @@ export default {
     enterprise: 'Enterprise',
     suport: 'Get technical support',
     update_success: 'Update Success'
+  },
+  template: {
+    exit_same_template_check: 'The Same Name Exists In Now Class. Do You Want To Override It?',
+    override: 'Override',
+    cancel: '取消',
+    confirm_upload: 'Upload Confirm'
   }
 }

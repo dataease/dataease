@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { save } from '@/api/system/template'
+import { save, nameCheck } from '@/api/system/template'
 
 export default {
 
@@ -70,14 +70,40 @@ export default {
         this.$warning(this.$t('chart.name_can_not_empty'))
         return false
       }
-      save(this.templateInfo).then(response => {
-        this.$message({
-          message: this.$t('commons.save_success'),
-          type: 'success',
-          showClose: true
-        })
-        debugger
-        this.$emit('closeEditTemplateDialog')
+      const nameCheckRequest = {
+        pid: this.templateInfo.pid,
+        name: this.templateInfo.name,
+        optType: 'insert'
+      }
+      nameCheck(nameCheckRequest).then(response => {
+        if (response.data.indexOf('exist') > -1) {
+          this.$confirm(this.$t('template.exit_same_template_check'), this.$t('template.confirm_upload'), {
+            confirmButtonText: this.$t('template.override'),
+            cancelButtonText: this.$t('template.cancel'),
+            type: 'warning'
+          }).then(() => {
+            save(this.templateInfo).then(response => {
+              this.$message({
+                message: this.$t('commons.save_success'),
+                type: 'success',
+                showClose: true
+              })
+              debugger
+              this.$emit('closeEditTemplateDialog')
+            })
+          }).catch(() => {
+          })
+        } else {
+          save(this.templateInfo).then(response => {
+            this.$message({
+              message: this.$t('commons.save_success'),
+              type: 'success',
+              showClose: true
+            })
+            debugger
+            this.$emit('closeEditTemplateDialog')
+          })
+        }
       })
     },
     handleFileChange(e) {

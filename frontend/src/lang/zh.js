@@ -100,7 +100,8 @@ export default {
     gender: '性别',
     man: '男',
     woman: '女',
-    nick_name: '昵称',
+    nick_name: '姓名',
+    confirmPassword: '确认密码',
     upload: '上传',
     cover: '覆盖',
     not_cover: '不覆盖',
@@ -402,7 +403,7 @@ export default {
     special_characters_are_not_supported: '不支持特殊字符',
     mobile_number_format_is_incorrect: '手机号码格式不正确',
     email_format_is_incorrect: '邮箱格式不正确',
-    password_format_is_incorrect: '有效密码：6-30位，英文大小写字母+数字+特殊字符（可选）',
+    password_format_is_incorrect: '有效密码：8-30位，英文大小写字母+数字+特殊字符（可选）',
     old_password: '旧密码',
     new_password: '新密码',
     repeat_password: '确认密码',
@@ -932,14 +933,14 @@ export default {
   auth: {
     authConfig: '权限配置',
     authQuickConfig: '权限快捷配置',
-    dept: '部门',
+    dept: '组织',
     role: '角色',
     user: '用户',
     linkAuth: '数据源权限',
-    datasetAuth: '数据权限',
+    datasetAuth: '数据集权限',
     chartAuth: '视图权限',
     panelAuth: '仪表盘权限',
-    deptHead: '所有部门',
+    deptHead: '所有组织',
     roleHead: '所有角色',
     userHead: '所有用户',
     linkAuthHead: '所有数据源',
@@ -964,5 +965,11 @@ export default {
     enterprise: '企业版',
     suport: '获取技术支持',
     update_success: '更新成功'
+  },
+  template: {
+    exit_same_template_check: '当前分类存在相同名称模板，是否覆盖？',
+    override: '覆盖',
+    cancel: '取消',
+    confirm_upload: '上传确认'
   }
 }

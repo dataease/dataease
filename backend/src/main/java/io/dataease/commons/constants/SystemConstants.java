@@ -7,14 +7,11 @@ package io.dataease.commons.constants;
  */
 public class SystemConstants {
 
-    public final static String WITH_EXTEND_NOW = "now";
-    public final static String WITH_EXTEND_PARENT = "parent";
-    public final static String WITH_EXTEND_CHILDREN = "children";
-
-
-    public final static int PRIVILEGE_VALUE_ON= 1;
-    public final static int PRIVILEGE_VALUE_OFF = 0;
-
+    public static final class WITH_EXTEND{
+        public final static String NOW = "now";
+        public final static String PARENT = "parent";
+        public final static String CHILDREN = "children";
+    }
 
 
 
