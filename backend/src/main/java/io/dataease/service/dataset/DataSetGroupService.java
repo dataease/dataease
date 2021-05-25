@@ -139,10 +139,12 @@ public class DataSetGroupService {
     }
 
     public void getParent(List<DatasetGroup> list, DatasetGroup datasetGroup) {
-        if (StringUtils.isNotEmpty(datasetGroup.getPid())) {
-            DatasetGroup d = datasetGroupMapper.selectByPrimaryKey(datasetGroup.getPid());
-            list.add(d);
-            getParent(list, d);
+        if (ObjectUtils.isNotEmpty(datasetGroup)) {
+            if (StringUtils.isNotEmpty(datasetGroup.getPid())) {
+                DatasetGroup d = datasetGroupMapper.selectByPrimaryKey(datasetGroup.getPid());
+                list.add(d);
+                getParent(list, d);
+            }
         }
     }
 }
