@@ -125,7 +125,7 @@
         :rules="rule"
         class="demo-ruleForm"
       >
-        <el-form-item :label="$t('member.new_password')" prop="newpassword">
+        <el-form-item :label="$t('member.new_password')" prop="newPassword">
           <el-input v-model="ruleForm.newPassword" type="password" autocomplete="off" show-password />
         </el-form-item>
         <el-form-item>

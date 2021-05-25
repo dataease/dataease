@@ -2,7 +2,7 @@
   <layout-content header="个人信息">
     <div>
       <el-form ref="createUserForm" :disabled="formType !== 'modify'" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-        <el-form-item :label="$t('commons.user')" prop="username">
+        <el-form-item label="ID" prop="username">
           <el-input v-model="form.username" disabled />
         </el-form-item>
         <el-form-item :label="$t('commons.phone')" prop="phone">
