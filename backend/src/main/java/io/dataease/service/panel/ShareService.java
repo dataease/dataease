@@ -17,6 +17,7 @@ import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelSharePo;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,7 +112,7 @@ public class ShareService {
 
     //List构建Tree
     private List<PanelShareDto> convertTree(List<PanelShareDto> datas){
-        Map<String, List<PanelShareDto>> map = datas.stream().collect(Collectors.groupingBy(PanelShareDto::getCreator));
+        Map<String, List<PanelShareDto>> map = datas.stream().filter(panelShareDto -> StringUtils.isNotEmpty(panelShareDto.getCreator())).collect(Collectors.groupingBy(PanelShareDto::getCreator));
         return map.entrySet().stream().map(entry -> {
             PanelShareDto panelShareDto = new PanelShareDto();
             panelShareDto.setName(entry.getKey());
