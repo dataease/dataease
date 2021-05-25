@@ -475,5 +475,8 @@ export default {
 .el-main >>> .el-drawer__wrapper{
   width: 310px!important;
 }
+.el-main >>> .el-drawer__body{
+  overflow-y: auto;
+}
 
 </style>
