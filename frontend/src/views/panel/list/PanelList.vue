@@ -8,7 +8,7 @@
             :default-expanded-keys="expandedArray"
             :data="defaultData"
             node-key="id"
-            highlight-current
+            :highlight-current="activeTree==='system'"
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
@@ -55,10 +55,11 @@
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
+            ref="panel_list_tree"
             :default-expanded-keys="expandedArray"
             :data="tData"
             node-key="id"
-            highlight-current
+            :highlight-current="activeTree==='self'"
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
@@ -102,23 +103,23 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
+                        {{ $t('panel.edit') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
+                        {{ $t('panel.share') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
+                        {{ $t('panel.create_public_links') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('toDefaultPanel',data,node)">
+                        {{ $t('panel.to_default_panel') }}
+                      </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
                         {{ $t('panel.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
                         {{ $t('panel.delete') }}
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
-                        {{ $t('panel.share') }}
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('toDefaultPanel',data,node)">
-                        {{ $t('panel.to_default_panel') }}
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
-                        {{ $t('panel.edit') }}
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
-                        {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -184,6 +185,9 @@ import {
   DEFAULT_YAXIS_STYLE,
   DEFAULT_BACKGROUND_COLOR
 } from '@/views/chart/chart/chart'
+import {
+  DEFAULT_COMMON_CANVAS_STYLE
+} from '@/views/panel/panel'
 
 import { DEFAULT_PANEL_STYLE } from '@/views/panel/panel'
 
@@ -192,6 +196,9 @@ export default {
   components: { GrantAuth, LinkGenerate, EditPanel },
   data() {
     return {
+      lastActiveNode: null, // 激活的节点 在这个节点下面动态放置子节点
+      lastActiveNodeData: null,
+      activeTree: 'self', // 识别当前操作的树类型self 是仪表盘列表树 system 是默认仪表盘树
       editPanelModel: {
         titlePre: null,
         titleSuf: null,
@@ -332,19 +339,31 @@ export default {
     }
   },
   watch: {
-
   },
   mounted() {
+    this.$store.commit('setComponentData', [])
+    this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
     this.defaultTree()
     this.tree(this.groupForm)
   },
   methods: {
-    closeEditPanelDialog() {
+    closeEditPanelDialog(panelInfo) {
       this.editPanel.visible = false
+      debugger
       this.defaultTree()
-      this.tree(this.groupForm)
+      // 默认展开 同时点击 新增的节点
+      if (panelInfo && this.lastActiveNodeData.id) {
+        if (!this.lastActiveNodeData.children) {
+          this.$set(this.lastActiveNodeData, 'children', [])
+        }
+        this.lastActiveNodeData.children.push(panelInfo)
+        this.lastActiveNode.expanded = true
+        this.activeNodeAndClick(panelInfo)
+      }
     },
     showEditPanel(param) {
+      this.lastActiveNode = param.node
+      this.lastActiveNodeData = param.data
       this.editPanel = JSON.parse(JSON.stringify(this.editPanelModel))
       this.editPanel.optType = param.optType
       this.editPanel.panelInfo.nodeType = param.type
@@ -425,7 +444,7 @@ export default {
           this.share(param.data)
           break
         case 'edit':
-          this.edit(param.data)
+          this.edit(param.data, param.node)
           break
         case 'link':
           this.link(param.data)
@@ -525,6 +544,9 @@ export default {
     },
 
     nodeClick(data, node) {
+      this.lastActiveNode = node
+      this.lastActiveNodeData = data
+      this.activeTree = data.panelType
       if (data.nodeType === 'panel') {
         // 加载视图数据
         findOne(data.id).then(response => {
@@ -564,8 +586,12 @@ export default {
       this.authResourceId = null
       this.authVisible = false
     },
-    edit(data) {
-      debugger
+    edit(data, node) {
+      this.lastActiveNodeData = data
+      this.lastActiveNode = node
+      // 清空当前缓存
+      this.$store.commit('setComponentData', [])
+      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
@@ -587,6 +613,22 @@ export default {
     },
     newPanelSave(id) {
 
+    },
+    // 激活并点击当前节点
+    activeNodeAndClick(panelInfo) {
+      if (panelInfo) {
+        this.$nextTick(() => {
+          // 延迟设置CurrentKey
+          this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
+          this.$nextTick(() => {
+            document.querySelector('.is-current').firstChild.click()
+            // 如果是仪表盘列表的仪表盘 直接进入编辑界面
+            if (panelInfo.nodeType === 'panel' && panelInfo.panelType === 'self') {
+              this.edit(this.lastActiveNodeData, this.lastActiveNode)
+            }
+          })
+        })
+      }
     }
   }
 }

@@ -104,7 +104,14 @@ public class PanelGroupService {
             }
             panelGroupMapper.updateByPrimaryKeySelective(request);
         }
-        return panelGroupMapper.selectByPrimaryKey(panelId);
+
+        //带有权限的返回
+        PanelGroupRequest authRequest = new PanelGroupRequest();
+        authRequest.setId(panelId);
+        authRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(authRequest);
+
+        return panelGroupDTOList.get(0);
     }
 
 

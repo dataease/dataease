@@ -3,16 +3,16 @@
     <ul @mouseup="handleMouseUp">
       <template v-if="curComponent">
         <template v-if="!curComponent.isLock">
-          <li @click="edit">编辑</li>
-          <li @click="copy">复制</li>
-          <li @click="paste">粘贴</li>
-          <li @click="cut">剪切</li>
-          <li @click="deleteComponent">删除</li>
-          <li @click="lock">锁定</li>
-          <li @click="topComponent">置顶</li>
-          <li @click="bottomComponent">置底</li>
-          <li @click="upComponent">上移</li>
-          <li @click="downComponent">下移</li>
+          <li @click="edit"> {{ $t('panel.edit') }}</li>
+          <li @click="copy"> {{ $t('panel.copy') }}</li>
+          <li @click="paste"> {{ $t('panel.paste') }}</li>
+          <li @click="cut"> {{ $t('panel.cut') }}</li>
+          <li @click="deleteComponent"> {{ $t('panel.delete') }}</li>
+          <li @click="lock"> {{ $t('panel.lock') }}</li>
+          <li @click="topComponent"> {{ $t('panel.topComponent') }}</li>
+          <li @click="bottomComponent"> {{ $t('panel.bottomComponent') }}</li>
+          <li @click="upComponent"> {{ $t('panel.upComponent') }}</li>
+          <li @click="downComponent"> {{ $t('panel.downComponent') }}</li>
         </template>
         <li v-else @click="unlock">解锁</li>
       </template>
