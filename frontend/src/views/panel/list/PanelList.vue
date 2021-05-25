@@ -352,13 +352,15 @@ export default {
       debugger
       this.defaultTree()
       // 默认展开 同时点击 新增的节点
-      if (panelInfo && this.lastActiveNodeData.id) {
+      if (panelInfo && panelInfo.panelType === 'self' && this.lastActiveNodeData.id) {
         if (!this.lastActiveNodeData.children) {
           this.$set(this.lastActiveNodeData, 'children', [])
         }
         this.lastActiveNodeData.children.push(panelInfo)
         this.lastActiveNode.expanded = true
         this.activeNodeAndClick(panelInfo)
+      } else {
+        this.tree(this.groupForm)
       }
     },
     showEditPanel(param) {
@@ -623,7 +625,7 @@ export default {
           this.$nextTick(() => {
             document.querySelector('.is-current').firstChild.click()
             // 如果是仪表盘列表的仪表盘 直接进入编辑界面
-            if (panelInfo.nodeType === 'panel' && panelInfo.panelType === 'self') {
+            if (panelInfo.nodeType === 'panel') {
               this.edit(this.lastActiveNodeData, this.lastActiveNode)
             }
           })

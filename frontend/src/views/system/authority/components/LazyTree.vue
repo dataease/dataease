@@ -18,26 +18,23 @@
         @node-click="nodeClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
-          <span>
-            <span style="margin-left: 6px" v-html="data.name" />
+          <span style="display: flex; flex: 1 1 0%; width: 0px;">
+            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" v-html="data.name" />
           </span>
           <span v-if="showExtent" @click.stop>
             <div v-if="authReady && authDetails[data.id]">
               <span v-for="auth in authDetails[data.id]" :key="auth.privilegeType" class="auth-span">
                 <!-- 1-{{ auth.privilegeType }}-{{ auth.privilegeValue }}-->
-                <a href="javascript:;" @click="clickAuth(data.id,auth)">
-                  <svg-icon style="width: 22px;height: 22px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
-                </a>
+                <el-switch v-model="auth.privilegeValue" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="clickAuth(data.id,auth)" />
               </span>
             </div>
             <div v-else>
               <span v-for="auth in defaultAuthDetails" :key="auth.privilegeType" class="auth-span">
                 <!--2-{{ auth.privilegeType }}-{{ auth.privilegeValue }}-->
-                <a href="javascript:;" @click="clickAuth(data.id,auth)">
-                  <svg-icon style="width: 22px;height: 22px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
-                </a>
+                <el-switch v-model="auth.privilegeValue" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="clickAuth(data.id,auth)" />
               </span>
-            </div></span>
+            </div>
+          </span>
         </span>
       </el-tree>
     </el-row>
@@ -286,8 +283,9 @@ export default {
     padding-left: 8px;
   }
   .tree-main{
-    height: 100vh;
+    height: calc(100vh - 206px);
     border: 1px solid #e6e6e6;
+    overflow-y: auto;
   }
   .tree-head{
     height: 30px;
@@ -305,6 +303,19 @@ export default {
   }
   .highlights-text {
     color: #faaa39 !important;
+  }
+
+  >>>.el-switch__core{
+    width:30px!important;
+    height:13px;
+    /*color:#409EFF;*/
+  }
+  /*设置圆*/
+  >>>.el-switch__core::after{
+    width:13px;
+    height:13px;
+    margin-top:-2px;
+    margin-bottom: 2px;
   }
 
 </style>
