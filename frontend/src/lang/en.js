@@ -932,7 +932,7 @@ export default {
     role: 'Role',
     user: 'User',
     linkAuth: 'Datasource Permissions',
-    datasetAuth: 'Data Permissions',
+    datasetAuth: 'Dataset Permissions',
     chartAuth: 'Chart Permissions',
     panelAuth: 'Panel Permissions',
     deptHead: 'All Dept',
