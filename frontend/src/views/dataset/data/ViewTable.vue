@@ -108,6 +108,14 @@ export default {
           this.fields = response.data.fields
           this.data = response.data.data
           this.page = response.data.page
+        }).catch(response => {
+          this.fields = []
+          this.data = []
+          this.page = {
+            page: 1,
+            pageSize: 100,
+            show: 0
+          }
         })
       }
     },
