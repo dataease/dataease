@@ -44,6 +44,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -819,8 +820,15 @@ public class DataSetTableService {
         } else if (cellTypeEnum.equals(CellType.NUMERIC)) {
             double d = cell.getNumericCellValue();
             try {
-                String value = String.valueOf(d);
-                return value.endsWith(".0") ? value.substring(0, value.length() -2):value;
+                Double value = new Double(d);
+                double eps = 1e-10;
+                if(value - Math.floor(value) < eps){
+                    return value.longValue() + "";
+                }else {
+                    NumberFormat nf = NumberFormat.getInstance();
+                    nf.setGroupingUsed(false);
+                    return nf.format(value);
+                }
             } catch (Exception e) {
                 BigDecimal b = new BigDecimal(d);
                 return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
