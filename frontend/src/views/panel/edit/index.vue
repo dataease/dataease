@@ -138,7 +138,7 @@ import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { get } from '@/api/panel/panel'
+import { findOne } from '@/api/panel/panel'
 import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
 
@@ -243,7 +243,7 @@ export default {
         this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
         this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
       } else if (panelId) {
-        get('panel/group/findOne/' + panelId).then(response => {
+        findOne(panelId).then(response => {
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', panelStyle)
@@ -257,7 +257,6 @@ export default {
       this.$router.replace('/panel/index')
     },
     showPanel(type) {
-
       if (this.showIndex === -1 || this.showIndex === type) {
         this.$nextTick(() => (this.show = !this.show))
       }

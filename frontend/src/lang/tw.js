@@ -892,7 +892,15 @@ export default {
     insert_picture: '插入圖片',
     redo: '重做',
     undo: '撤銷',
-    panelNull: '这是个空的儀表盤，可以通过编辑来丰富内容'
+    panelNull: '这是个空的儀表盤，可以通过编辑来丰富内容',
+    copy: '复制',
+    paste: '粘贴',
+    cut: '剪切',
+    lock: '锁定',
+    topComponent: '置于顶层',
+    bottomComponent: '置于底层',
+    upComponent: '上移一层',
+    downComponent: '下移一层'
   },
   plugin: {
     local_install: '本地安裝',

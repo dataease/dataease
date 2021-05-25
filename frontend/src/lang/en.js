@@ -893,7 +893,15 @@ export default {
     insert_picture: 'Insert Picture',
     redo: 'Redo',
     undo: 'Undo',
-    panelNull: 'This is a Empty Panel，You Can Edit and Enrich It'
+    panelNull: 'This is a Empty Panel，You Can Edit and Enrich It',
+    copy: 'Copy',
+    paste: 'Paste',
+    cut: 'Cut',
+    lock: 'Lock',
+    topComponent: 'Top Component',
+    bottomComponent: 'Bottom Component',
+    upComponent: 'Up One Level',
+    downComponent: 'Down One Level'
   },
   plugin: {
     local_install: 'Local installation',

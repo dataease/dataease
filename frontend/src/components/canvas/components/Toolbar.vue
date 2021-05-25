@@ -34,7 +34,7 @@
       </el-tooltip>
 
       <span style="float: right;margin-left: 10px">
-         <el-button size="mini" @click="save">
+        <el-button size="mini" @click="save">
           {{ $t('commons.save') }}
         </el-button>
         <el-button size="mini" @click="closePanelEdit">
@@ -54,6 +54,9 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { post } from '@/api/panel/panel'
 import bus from '@/utils/bus'
+import {
+  DEFAULT_COMMON_CANVAS_STYLE
+} from '@/views/panel/panel'
 
 export default {
   data() {
@@ -213,6 +216,7 @@ export default {
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
+      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
       this.$store.commit('recordSnapshot')
     },
 

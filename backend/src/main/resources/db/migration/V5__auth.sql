@@ -1,18 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : A-LOCAL-本机数据库
- Source Server Type    : MySQL
- Source Server Version : 50726
- Source Host           : localhost:3306
- Source Schema         : data_ease
-
- Target Server Type    : MySQL
- Target Server Version : 50726
- File Encoding         : 65001
-
- Date: 18/05/2021 18:37:45
-*/
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -191,7 +176,7 @@ delimiter ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `get_auths`;
 delimiter ;;
-CREATE DEFINER=`root`@`%` FUNCTION `get_auths`(authSource varchar(255),modelType varchar(255),userId varchar(255)) RETURNS longtext CHARSET utf8
+CREATE  FUNCTION `get_auths`(authSource varchar(255),modelType varchar(255),userId varchar(255)) RETURNS longtext CHARSET utf8
     READS SQL DATA
 BEGIN
 
@@ -302,7 +287,9 @@ delimiter ;
 -- ----------------------------
 -- Function structure for GET_V_AUTH_MODEL_ID_P_USE
 -- ----------------------------
-CREATE DEFINER=`root`@`%` FUNCTION `GET_V_AUTH_MODEL_ID_P_USE`(userId longtext,modelType varchar(255)) RETURNS longtext CHARSET utf8
+DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_ID_P_USE`;
+delimiter ;;
+CREATE  FUNCTION `GET_V_AUTH_MODEL_ID_P_USE`(userId longtext,modelType varchar(255)) RETURNS longtext CHARSET utf8
     READS SQL DATA
 BEGIN
 

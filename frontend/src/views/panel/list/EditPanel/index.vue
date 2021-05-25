@@ -110,7 +110,7 @@ export default {
           type: 'success',
           showClose: true
         })
-        this.$emit('closeEditPanelDialog')
+        this.$emit('closeEditPanelDialog', response.data)
       })
     },
     handleFileChange(e) {
