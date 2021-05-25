@@ -1,10 +1,13 @@
 package io.dataease.service.dataset;
 
 import io.dataease.base.domain.DatasetTableUnion;
+import io.dataease.base.domain.DatasetTableUnionExample;
 import io.dataease.base.mapper.DatasetTableUnionMapper;
 import io.dataease.base.mapper.ext.ExtDatasetTableUnionMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
+import io.dataease.i18n.Translator;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ public class DataSetTableUnionService {
     private ExtDatasetTableUnionMapper extDatasetTableUnionMapper;
 
     public DatasetTableUnion save(DatasetTableUnion datasetTableUnion) {
+        checkUnion(datasetTableUnion);
         if (StringUtils.isEmpty(datasetTableUnion.getId())) {
             datasetTableUnion.setId(UUID.randomUUID().toString());
             datasetTableUnion.setCreateBy(AuthUtils.getUser().getUsername());
@@ -70,5 +74,30 @@ public class DataSetTableUnionService {
 
         sourceList.sort(Comparator.comparing(DatasetTableUnion::getCreateTime));
         return sourceList;
+    }
+
+    private void checkUnion(DatasetTableUnion datasetTableUnion) {
+        DatasetTableUnionExample datasetTableUnionExample = new DatasetTableUnionExample();
+        DatasetTableUnionExample.Criteria criteria = datasetTableUnionExample.createCriteria();
+        if (StringUtils.isNotEmpty(datasetTableUnion.getId())) {
+            criteria.andIdNotEqualTo(datasetTableUnion.getId());
+        }
+        criteria.andSourceTableIdEqualTo(datasetTableUnion.getSourceTableId());
+        criteria.andSourceTableFieldIdEqualTo(datasetTableUnion.getSourceTableFieldId());
+        criteria.andTargetTableIdEqualTo(datasetTableUnion.getTargetTableId());
+        criteria.andTargetTableFieldIdEqualTo(datasetTableUnion.getTargetTableFieldId());
+        List<DatasetTableUnion> sourceResult = datasetTableUnionMapper.selectByExample(datasetTableUnionExample);
+        datasetTableUnionExample.clear();
+        if (StringUtils.isNotEmpty(datasetTableUnion.getId())) {
+            criteria.andIdNotEqualTo(datasetTableUnion.getId());
+        }
+        criteria.andSourceTableIdEqualTo(datasetTableUnion.getTargetTableId());
+        criteria.andSourceTableFieldIdEqualTo(datasetTableUnion.getTargetTableFieldId());
+        criteria.andTargetTableIdEqualTo(datasetTableUnion.getSourceTableId());
+        criteria.andTargetTableFieldIdEqualTo(datasetTableUnion.getSourceTableFieldId());
+        List<DatasetTableUnion> targetResult = datasetTableUnionMapper.selectByExample(datasetTableUnionExample);
+        if (CollectionUtils.isNotEmpty(sourceResult) || CollectionUtils.isNotEmpty(targetResult)) {
+            throw new RuntimeException(Translator.get("i18n_union_already_exists"));
+        }
     }
 }
