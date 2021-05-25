@@ -816,6 +816,8 @@ export default {
     input_limit_0_50: '0-50字符'
   },
   panel: {
+    no_auth_role: '未分享角色',
+    auth_role: '已分享角色',
     picture_limit: '只能插入图片',
     drag_here: '请将左侧字段拖至此处',
     copy_link_passwd: '复制链接及密码',

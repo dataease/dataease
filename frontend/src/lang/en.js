@@ -815,6 +815,8 @@ export default {
     input_limit_0_50: '0-50 chars'
   },
   panel: {
+    no_auth_role: 'Unshared roles',
+    auth_role: 'Shared roles',
     picture_limit: 'Only pictures can be inserted',
     drag_here: 'Please drag the left field here',
     copy_link_passwd: 'Copy link and password',
