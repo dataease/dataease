@@ -88,6 +88,7 @@ public class DataSetTableUnionService {
         criteria.andTargetTableFieldIdEqualTo(datasetTableUnion.getTargetTableFieldId());
         List<DatasetTableUnion> sourceResult = datasetTableUnionMapper.selectByExample(datasetTableUnionExample);
         datasetTableUnionExample.clear();
+        criteria = datasetTableUnionExample.createCriteria();
         if (StringUtils.isNotEmpty(datasetTableUnion.getId())) {
             criteria.andIdNotEqualTo(datasetTableUnion.getId());
         }
