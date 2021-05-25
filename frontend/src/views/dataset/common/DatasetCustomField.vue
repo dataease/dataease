@@ -1,5 +1,9 @@
 <template>
   <el-col>
+    <el-row style="height: 25px;">
+      <span>{{ table.name }}</span>
+    </el-row>
+    <el-divider />
     <el-checkbox v-model="checkAll" :disabled="!(fields.length > 0)" :indeterminate="isIndeterminate" @change="handleCheckAllChange">{{ $t('dataset.check_all') }}</el-checkbox>
     <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldsChange">
       <el-checkbox v-for="f in fields" :key="f.id" :label="f.id" style="display: block;margin-top: 4px;width: 100%;">
@@ -98,5 +102,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .el-divider--horizontal {
+    margin: 12px 0
+  }
 </style>
