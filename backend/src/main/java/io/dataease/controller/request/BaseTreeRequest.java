@@ -22,7 +22,7 @@ public class BaseTreeRequest {
     private String pid;
 
     //now 返回当前条件查询的数据 parent 返回当前数据查询的数据同时递归父节点数据; children 返回当前数据查询的数据同时递归子节点数据
-    private String withExtend= SystemConstants.WITH_EXTEND_NOW;
+    private String withExtend= SystemConstants.WITH_EXTEND.NOW;
 
     private String createBy;
 

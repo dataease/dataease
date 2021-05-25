@@ -960,5 +960,11 @@ export default {
     enterprise: 'Enterprise',
     suport: 'Get technical support',
     update_success: 'Update Success'
+  },
+  template: {
+    exit_same_template_check: 'The Same Name Exists In Now Class. Do You Want To Override It?',
+    override: 'Override',
+    cancel: '取消',
+    confirm_upload: 'Upload Confirm'
   }
 }

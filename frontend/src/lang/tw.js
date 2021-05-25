@@ -959,5 +959,12 @@ export default {
     enterprise: '企業版',
     suport: '獲取技術支持',
     update_success: '更新成功'
+  },
+  template: {
+    exit_same_template_check: '当前存在相同名称模板，是否覆盖？',
+    override: '覆盖',
+    cancel: '取消',
+    confirm_upload: '上传确认'
   }
+
 }

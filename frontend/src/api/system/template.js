@@ -36,3 +36,11 @@ export function find(data) {
     method: 'post'
   })
 }
+
+export function nameCheck(data) {
+  return request({
+    url: '/template/nameCheck',
+    data: data,
+    method: 'post'
+  })
+}

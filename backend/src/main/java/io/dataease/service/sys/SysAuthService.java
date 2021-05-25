@@ -103,7 +103,7 @@ public class SysAuthService {
     }
 
     private List<String> getAuthModels(String id, String type) {
-        List<VAuthModelDTO> vAuthModelDTOS = searchAuthModelTree(new BaseTreeRequest(id,type, SystemConstants.WITH_EXTEND_CHILDREN));
+        List<VAuthModelDTO> vAuthModelDTOS = searchAuthModelTree(new BaseTreeRequest(id,type, SystemConstants.WITH_EXTEND.CHILDREN));
         List<String> authSources = Optional.ofNullable(vAuthModelDTOS).orElse(new ArrayList<>()).stream().map(VAuthModelDTO::getId)
                 .collect(Collectors.toList());
         return authSources;

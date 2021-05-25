@@ -49,4 +49,10 @@ public class PanelTemplateController {
     }
 
 
+    @PostMapping("/nameCheck")
+    public String nameCheck(@RequestBody PanelTemplateRequest request) {
+        return panelTemplateService.nameCheck(request);
+    }
+
+
 }

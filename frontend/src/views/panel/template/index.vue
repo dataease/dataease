@@ -12,6 +12,7 @@
             @templateEdit="templateEdit"
             @showCurrentTemplate="showCurrentTemplate"
             @templateImport="templateImport"
+            @showTemplateEditDialog="showTemplateEditDialog"
           />
         </el-tab-pane>
         <el-tab-pane name="self">
@@ -25,6 +26,7 @@
             @templateEdit="templateEdit"
             @showCurrentTemplate="showCurrentTemplate"
             @templateImport="templateImport"
+            @showTemplateEditDialog="showTemplateEditDialog"
           />
         </el-tab-pane>
       </el-tabs>
