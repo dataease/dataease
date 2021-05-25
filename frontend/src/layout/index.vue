@@ -48,7 +48,7 @@ export default {
     },
     classObj() {
       return {
-        hideSidebar: !this.sidebar.opened,
+        // hideSidebar: !this.sidebar.opened,
         openSidebar: this.sidebar.opened,
         withoutAnimation: this.sidebar.withoutAnimation,
         mobile: this.device === 'mobile'
@@ -98,7 +98,7 @@ export default {
   }
 
   .hideSidebar .fixed-header {
-    width: calc(100% - 54px)
+    width: calc(100% - 56px)
   }
 
   .mobile .fixed-header {
