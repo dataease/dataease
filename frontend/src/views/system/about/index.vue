@@ -1,80 +1,74 @@
 <template>
-  <layout-content>
-
-    <div>
-      <el-card class="box-card about-card">
-        <div slot="header" class="clearfix license-header">
-          <img src="@/assets/DataEase-white.png" alt="" width="300">
+  <div style="width: 100%;display: flex;justify-content: center;">
+    <el-card class="box-card about-card">
+      <div slot="header" class="clearfix license-header">
+        <img src="@/assets/DataEase-white.png" alt="" width="300">
+      </div>
+      <div class="license-content">
+        <div v-if="license.status === 'Fail'">{{ $t('about.invalid_license') }}</div>
+        <div v-if="license.status !== 'Fail'">
+          <table>
+            <tr>
+              <th>{{ $t('about.auth_to') }}</th>
+              <td>{{ license.corporation }}</td>
+            </tr>
+            <tr>
+              <th>{{ $t('about.expiration_time') }}</th>
+              <td>
+                <label v-if="license.status === 'expired'" style="color: red">{{ license.expired }} {{ $t('about.expirationed') }}</label>
+                <label v-if="license.status === 'valid'">{{ license.expired }}</label>
+              </td>
+            </tr>
+            <tr>
+              <th>{{ $t('about.auth_num') }}</th>
+              <td>{{ license.count }}</td>
+            </tr>
+            <tr>
+              <th>{{ $t('about.version') }}</th>
+              <td>
+                <span v-if="license.edition">
+                  <span v-if="license.edition === 'Standard'">{{ $t('about.standard') }}</span>
+                  <span v-if="license.edition === 'Enterprise'">{{ $t('about.enterprise') }}</span>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>{{ $t('about.version_num') }}</th>
+              <td>
+                <span>{{ build }}</span>
+              </td>
+            </tr>
+          </table>
         </div>
-        <div class="license-content">
-          <div v-if="license.status === 'Fail'">{{ $t('about.invalid_license') }}</div>
-          <div v-if="license.status !== 'Fail'">
-            <table>
-              <tr>
-                <th>{{ $t('about.auth_to') }}</th>
-                <td>{{ license.corporation }}</td>
-              </tr>
-              <tr>
-                <th>{{ $t('about.expiration_time') }}</th>
-                <td>
-                  <label v-if="license.status === 'expired'" style="color: red">{{ license.expired }} {{ $t('about.expirationed') }}</label>
-                  <label v-if="license.status === 'valid'">{{ license.expired }}</label>
-                </td>
-              </tr>
-              <tr>
-                <th>{{ $t('about.auth_num') }}</th>
-                <td>{{ license.count }}</td>
-              </tr>
-              <tr>
-                <th>{{ $t('about.version') }}</th>
-                <td>
-                  <span v-if="license.edition">
-                    <span v-if="license.edition === 'Standard'">{{ $t('about.standard') }}</span>
-                    <span v-if="license.edition === 'Enterprise'">{{ $t('about.enterprise') }}</span>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <th>{{ $t('about.version_num') }}</th>
-                <td>
-                  <span>{{ build }}</span>
-                </td>
-              </tr>
-            </table>
-          </div>
 
-          <div class="md-padding" />
-          <div v-if="user.isAdmin" layout="row" layout-align="space-between center" class="lic_rooter">
-            <el-upload
-              action=""
-              :multiple="false"
-              :show-file-list="false"
-              :file-list="fileList"
-              accept=".key"
-              name="file"
-              :before-upload="beforeUpload"
-            >
-              <a class="md-primary pointer">{{ $t('about.update_license') }}</a>
+        <div class="md-padding" />
+        <div v-if="user.isAdmin" layout="row" layout-align="space-between center" class="lic_rooter">
+          <el-upload
+            action=""
+            :multiple="false"
+            :show-file-list="false"
+            :file-list="fileList"
+            accept=".key"
+            name="file"
+            :before-upload="beforeUpload"
+          >
+            <a class="md-primary pointer">{{ $t('about.update_license') }}</a>
 
-            </el-upload>
+          </el-upload>
 
-            <a class="md-primary pointer" @click="support">{{ $t('about.suport') }}</a>
+          <a class="md-primary pointer" @click="support">{{ $t('about.suport') }}</a>
 
-          </div>
         </div>
-      </el-card>
-    </div>
-  </layout-content>
+      </div>
+    </el-card>
+  </div>
 </template>
 
 <script>
-import LayoutContent from '@/components/business/LayoutContent'
 import { validate, buildVersion, updateInfo } from '@/api/system/about'
 import { getToken } from '@/utils/auth'
 import { mapGetters } from 'vuex'
 export default {
-
-  components: { LayoutContent },
   data() {
     return {
       license: {},
@@ -164,8 +158,6 @@ export default {
         background: inherit;
         margin-top: 5%;
         flex-direction: row;
-        margin-left: 20%;
-        margin-right: 20%;
         width: 640px;
         height: 400px;
         position: relative;
