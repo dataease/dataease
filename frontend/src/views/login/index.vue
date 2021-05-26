@@ -8,7 +8,6 @@
               <img v-if="!loginLogoUrl" src="@/assets/DataEase-color.png" alt="">
               <img v-else :src="loginLogoUrl" alt="">
             </div>
-            <div class="login-border" />
             <div class="login-welcome">
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || 'DATAEASE') }}
             </div>
@@ -180,9 +179,11 @@ export default {
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
-
-    img {
-      height: 45px;
+    img{
+      width: 240px;
+      @media only screen and (max-width: 1280px) {
+        width: 200px;
+      }
     }
   }
 
@@ -210,9 +211,9 @@ export default {
   }
 
   .login-welcome {
-    margin-top: 50px;
+    margin-top: 20px;
     font-size: 14px;
-    color: #999999;
+    color: $--color-primary;
     letter-spacing: 0;
     line-height: 18px;
     text-align: center;
@@ -222,17 +223,17 @@ export default {
   }
 
   .login-form {
-    margin-top: 40px;
+    margin-top: 80px;
     padding: 0 40px;
 
     @media only screen and (max-width: 1280px) {
-      margin-top: 20px;
+      margin-top: 40px;
     }
 
     & ::v-deep .el-input__inner {
       border-radius: 20px;
       border: 1px solid transparent;
-      background: rgba(10,123,224,.1);
+      background: $colorBg;
     }
     & :focus {
       border: 1px solid $--color-primary;
@@ -240,7 +241,7 @@ export default {
   }
 
   .login-btn {
-    margin-top: 40px;
+    margin-top: 22px;
     padding: 0 40px;
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
