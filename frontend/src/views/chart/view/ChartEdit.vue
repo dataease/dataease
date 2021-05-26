@@ -979,7 +979,7 @@ export default {
   }
 
   .attr-style{
-    height: calc(100vh - 56px - 25vh - 40px - 62px - 60px);
+    height: calc(100vh - 56px - 25vh - 40px - 62px - 60px - 20px);
   }
 
   .attr-selector{
