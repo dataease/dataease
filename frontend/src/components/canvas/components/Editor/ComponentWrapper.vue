@@ -6,12 +6,14 @@
       :id="'component' + config.id"
       class="component"
       :style="getStyle(config.style)"
+      :out-style="config.style"
       :element="config"
     />
     <component
       :is="config.component"
       v-else
       class="component"
+      :out-style="config.style"
       :style="getStyle(config.style)"
       :prop-value="config.propValue"
       :element="config"
