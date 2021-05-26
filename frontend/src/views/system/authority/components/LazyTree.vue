@@ -281,7 +281,7 @@ export default {
     padding-left: 8px;
   }
   .tree-main{
-    height: 100vh;
+    height:  calc(100vh - 210px);
     border: 1px solid #e6e6e6;
   }
   .tree-head{
