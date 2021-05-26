@@ -78,9 +78,12 @@ export default {
       const arr = obj[this.fieldName]
       if (arr.length === 0) {
         this.initColumnLabel()
-        return
+      } else {
+        this.columnLabel = this.filter_options[arr[0]].text
       }
-      this.columnLabel = this.filter_options[arr[0]].text
+      this.$nextTick(() => {
+        this.setCheckNodes()
+      })
     },
 
     save() {
