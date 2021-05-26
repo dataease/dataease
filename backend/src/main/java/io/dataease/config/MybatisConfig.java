@@ -1,10 +1,7 @@
 package io.dataease.config;
 
 import com.github.pagehelper.PageInterceptor;
-import io.dataease.base.domain.ApiTestReportDetail;
-import io.dataease.base.domain.AuthSource;
-import io.dataease.base.domain.FileContent;
-import io.dataease.base.domain.TestResource;
+import io.dataease.base.domain.*;
 import io.dataease.commons.utils.CompressUtils;
 import io.dataease.commons.utils.MybatisInterceptorConfig;
 import io.dataease.interceptor.MybatisInterceptor;
@@ -45,7 +42,7 @@ public class MybatisConfig {
         List<MybatisInterceptorConfig> configList = new ArrayList<>();
         configList.add(new MybatisInterceptorConfig(FileContent.class, "file", CompressUtils.class, "zip", "unzip"));
         configList.add(new MybatisInterceptorConfig(ApiTestReportDetail.class, "content", CompressUtils.class, "compress", "decompress"));
-        configList.add(new MybatisInterceptorConfig(TestResource.class, "configuration"));
+        configList.add(new MybatisInterceptorConfig(Datasource.class, "configuration"));
         configList.add(new MybatisInterceptorConfig(AuthSource.class, "configuration"));
         interceptor.setInterceptorConfigList(configList);
         return interceptor;

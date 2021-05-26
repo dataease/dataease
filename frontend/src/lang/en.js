@@ -83,8 +83,8 @@ export default {
     thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !',
     expires: 'Login token expired, please login again',
     tokenError: 'Token error, please login again',
-    username_error: 'Please enter the correct user name',
-    password_error: 'The password can not be less than 6 digits'
+    username_error: 'Please enter the correct ID',
+    password_error: 'The password can not be less than 8 digits'
   },
   commons: {
     close: 'Close',
@@ -816,6 +816,8 @@ export default {
     input_limit_0_50: '0-50 chars'
   },
   panel: {
+    no_auth_role: 'Unshared roles',
+    auth_role: 'Shared roles',
     picture_limit: 'Only pictures can be inserted',
     drag_here: 'Please drag the left field here',
     copy_link_passwd: 'Copy link and password',

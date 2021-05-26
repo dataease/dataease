@@ -33,9 +33,9 @@ export default {
   data() {
     return {
       data: [],
-      defaultHeadName: '全部',
+      defaultHeadName: this.$t('commons.all'),
       columnLabel: null,
-      filter_options: [{ text: '未分享角色', value: 0 }, { text: '已分享角色', value: 1 }],
+      filter_options: [{ text: this.$t('panel.no_auth_role'), value: 0 }, { text: this.$t('panel.auth_role'), value: 1 }],
       fieldName: 'name',
       type: 1, // 类型1代表角色
       shares: []

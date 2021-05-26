@@ -10,6 +10,7 @@
     <result column="mode" jdbcType="INTEGER" property="mode" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="sync_status" jdbcType="VARCHAR" property="syncStatus" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.DatasetTable">
     <result column="info" jdbcType="LONGVARCHAR" property="info" />
@@ -73,7 +74,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, scene_id, data_source_id, `type`, `mode`, create_by, create_time
+    id, `name`, scene_id, data_source_id, `type`, `mode`, create_by, create_time, sync_status
   </sql>
   <sql id="Blob_Column_List">
     info
@@ -129,12 +130,12 @@
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTable">
     insert into dataset_table (id, `name`, scene_id, 
       data_source_id, `type`, `mode`, 
-      create_by, create_time, info
-      )
+      create_by, create_time, sync_status, 
+      info)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
       #{dataSourceId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{mode,jdbcType=INTEGER}, 
-      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{info,jdbcType=LONGVARCHAR}
-      )
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{syncStatus,jdbcType=VARCHAR}, 
+      #{info,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTable">
     insert into dataset_table
@@ -162,6 +163,9 @@
       </if>
       <if test="createTime != null">
         create_time,
+      </if>
+      <if test="syncStatus != null">
+        sync_status,
       </if>
       <if test="info != null">
         info,
@@ -191,6 +195,9 @@
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="syncStatus != null">
+        #{syncStatus,jdbcType=VARCHAR},
       </if>
       <if test="info != null">
         #{info,jdbcType=LONGVARCHAR},
@@ -230,6 +237,9 @@
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
       </if>
+      <if test="record.syncStatus != null">
+        sync_status = #{record.syncStatus,jdbcType=VARCHAR},
+      </if>
       <if test="record.info != null">
         info = #{record.info,jdbcType=LONGVARCHAR},
       </if>
@@ -248,6 +258,7 @@
       `mode` = #{record.mode,jdbcType=INTEGER},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
+      sync_status = #{record.syncStatus,jdbcType=VARCHAR},
       info = #{record.info,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -262,7 +273,8 @@
       `type` = #{record.type,jdbcType=VARCHAR},
       `mode` = #{record.mode,jdbcType=INTEGER},
       create_by = #{record.createBy,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=BIGINT}
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      sync_status = #{record.syncStatus,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -291,6 +303,9 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
+      <if test="syncStatus != null">
+        sync_status = #{syncStatus,jdbcType=VARCHAR},
+      </if>
       <if test="info != null">
         info = #{info,jdbcType=LONGVARCHAR},
       </if>
@@ -306,6 +321,7 @@
       `mode` = #{mode,jdbcType=INTEGER},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
+      sync_status = #{syncStatus,jdbcType=VARCHAR},
       info = #{info,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -317,7 +333,8 @@
       `type` = #{type,jdbcType=VARCHAR},
       `mode` = #{mode,jdbcType=INTEGER},
       create_by = #{createBy,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=BIGINT}
+      create_time = #{createTime,jdbcType=BIGINT},
+      sync_status = #{syncStatus,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -11,7 +11,7 @@
         <template :id="scope.row.storeId" slot-scope="scope">
           <div class="start-item">
             <div class="filter-db-row star-item-content" @click="showPanel(scope.row)">
-              <i class="el-icon-s-data" />
+              <svg-icon icon-class="panel" class="ds-icon-scene" />
               <span> {{ scope.row.name }}</span>
             </div>
             <div class="star-item-close">

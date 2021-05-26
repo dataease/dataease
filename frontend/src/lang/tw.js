@@ -83,8 +83,8 @@ export default {
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
     expires: '登陸信息过期，请重新登陸',
     tokenError: '信息错误，请重新登陸',
-    username_error: '請輸入正確的用戶名',
-    password_error: '密碼不小於6位'
+    username_error: '請輸入正確的ID',
+    password_error: '密碼不小於8位'
   },
   commons: {
     icon: '圖標',
@@ -815,6 +815,8 @@ export default {
     input_limit_0_50: '0-50字符'
   },
   panel: {
+    no_auth_role: '未分享角色',
+    auth_role: '已分享角色',
     picture_limit: '只能插入圖片',
     drag_here: '請將左側字段拖至此處',
     copy_link_passwd: '複製鏈接及密碼',
