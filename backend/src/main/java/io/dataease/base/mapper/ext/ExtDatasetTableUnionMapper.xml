@@ -39,4 +39,28 @@
         where dtu.target_table_id = #{tableId,jdbcType=VARCHAR}
         order by dtu.create_time
     </select>
+
+    <select id="selectUsedFieldBySource" resultMap="BaseResultMap"
+            parameterType="io.dataease.base.domain.DatasetTableUnion">
+        select * from dataset_table_union
+        where source_table_id = #{sourceTableId,jdbcType=VARCHAR}
+        and target_table_id = #{targetTableId,jdbcType=VARCHAR}
+        and (source_table_field_id = #{sourceTableFieldId,jdbcType=VARCHAR}
+        or target_table_field_id = #{targetTableFieldId,jdbcType=VARCHAR})
+        <if test="id != null">
+            and id != #{id,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="selectUsedFieldByTarget" resultMap="BaseResultMap"
+            parameterType="io.dataease.base.domain.DatasetTableUnion">
+        select * from dataset_table_union
+        where source_table_id = #{targetTableId,jdbcType=VARCHAR}
+        and target_table_id = #{sourceTableId,jdbcType=VARCHAR}
+        and (source_table_field_id = #{targetTableFieldId,jdbcType=VARCHAR}
+        or target_table_field_id = #{sourceTableFieldId,jdbcType=VARCHAR})
+        <if test="id != null">
+            and id != #{id,jdbcType=VARCHAR}
+        </if>
+    </select>
 </mapper>
