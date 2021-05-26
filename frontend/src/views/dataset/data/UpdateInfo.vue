@@ -64,6 +64,7 @@
     </el-row>
 
     <el-dialog
+      v-dialogDrag
       :title="$t('dataset.detail')"
       :visible="show_error_massage"
       :show-close="false"
@@ -77,6 +78,7 @@
     </el-dialog>
 
     <el-dialog
+      v-dialogDrag
       :title="table.name+' '+$t('dataset.update_setting')"
       :visible="update_setting"
       :show-close="false"
@@ -84,6 +86,7 @@
       class="dialog-css"
     >
       <el-dialog
+        v-dialogDrag
         :title="$t('dataset.task_update')"
         :visible="update_task"
         :show-close="false"
@@ -92,7 +95,7 @@
         append-to-body
       >
         <el-col>
-          <el-form :form="taskForm" label-width="80px" size="mini">
+          <el-form :form="taskForm" label-width="100px" size="mini">
             <el-form-item :label="$t('dataset.task_name')" prop="name">
               <el-input
                 v-model="taskForm.name"
@@ -135,7 +138,7 @@
             </el-form-item>
             <el-form-item v-if="taskForm.rate === 'CRON'" label="">
               <el-popover v-model="cronEdit">
-                <cron :i18n="lang" @close="cronEdit = false" @change="cronChange" />
+                <cron v-model="taskForm.cron" @close="cronEdit = false" />
                 <el-input slot="reference" v-model="taskForm.cron" size="mini" style="width: 50%" @click="cronEdit = true" />
               </el-popover>
             </el-form-item>
@@ -289,7 +292,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 // vue-cron
-import { cron } from 'vue-cron'
+import cron from '@/components/cron/cron'
 
 export default {
   name: 'UpdateInfo',
@@ -524,6 +527,8 @@ export default {
         this.taskForm.end = '0'
         this.taskForm.endTime = ''
         this.taskForm.cron = ''
+      } else {
+        this.taskForm.cron = '0 0 * ? * * *'
       }
     },
     listTaskLog() {
