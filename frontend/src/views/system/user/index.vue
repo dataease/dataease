@@ -14,7 +14,7 @@
         <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
       </template>
 
-      <el-table-column prop="username" :label="$t('commons.name')" />
+      <el-table-column prop="username" label="ID" />
       <el-table-column prop="nickName" :label="$t('commons.nick_name')" />
       <el-table-column prop="gender" :label="$t('commons.gender')" />
 
