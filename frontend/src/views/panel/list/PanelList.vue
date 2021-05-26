@@ -46,7 +46,7 @@
       <el-row>
         <span class="header-title">
           {{ $t('panel.panel_list') }}
-          <el-button style="float: right;padding-right: 7px;" icon="el-icon-plus" type="text" @click="showEditPanel(newFolder)" />
+          <el-button style="float: right;padding-right: 7px;margin-top: -8px" icon="el-icon-plus" type="text" @click="showEditPanel(newFolder)" />
           <!--          <el-button style="float: right;" type="primary" size="mini" @click="showEditPanel(newFolder)">-->
           <!--            {{ $t('panel.groupAdd') }}-->
           <!--          </el-button>-->

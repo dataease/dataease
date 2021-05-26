@@ -845,7 +845,7 @@ export default {
     back: 'Back',
     view: 'Chart',
     edit: 'Edit',
-    panel_list: 'Panel List',
+    panel_list: 'Panel',
     module: 'Component',
     filter_module: 'Filter Component',
     select_by_module: 'Select by Component',
