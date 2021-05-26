@@ -876,4 +876,12 @@ public class DataSetTableService {
         List<String[]> data = jdbcProvider.getData(datasourceRequest);
         return CollectionUtils.isNotEmpty(data);
     }
+
+    public void updateDatasetTableStatus(){
+        DatasetTable record = new DatasetTable();
+        record.setSyncStatus(JobStatus.Completed.name());
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
+        datasetTableMapper.updateByExampleSelective(record, example);
+    }
 }

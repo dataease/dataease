@@ -2,6 +2,7 @@ package io.dataease.service.dataset;
 
 import com.google.gson.Gson;
 import io.dataease.base.domain.*;
+import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
@@ -93,6 +94,8 @@ public class ExtractDataService {
     private DataSetTableTaskService dataSetTableTaskService;
     @Resource
     private DatasourceMapper datasourceMapper;
+    @Resource
+    private DatasetTableMapper datasetTableMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -172,12 +175,17 @@ public class ExtractDataService {
     }
 
     public void extractData(String datasetTableId, String taskId, String type) {
+        DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
+        datasetTable.setSyncStatus(JobStatus.Underway.name());
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andIdEqualTo(datasetTableId);
+        if (datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0) {
+            return;
+        }
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         UpdateType updateType = UpdateType.valueOf(type);
-        DatasetTable datasetTable = null;
         Datasource datasource = new Datasource();
         try {
-            datasetTable = dataSetTableService.get(datasetTableId);
             if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
                 datasource = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
             } else {
@@ -261,6 +269,10 @@ public class ExtractDataService {
                 datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                 dataSetTableTaskService.update(datasetTableTask);
             }
+            datasetTable.setSyncStatus(JobStatus.Completed.name());
+            example.clear();
+            example.createCriteria().andIdEqualTo(datasetTableId);
+            datasetTableMapper.updateByExampleSelective(datasetTable, example);
         }
     }
 
@@ -273,6 +285,8 @@ public class ExtractDataService {
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
+
+
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
         JobMeta jobMeta = null;
