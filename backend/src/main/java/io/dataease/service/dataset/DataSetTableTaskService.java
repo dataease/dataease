@@ -3,10 +3,13 @@ package io.dataease.service.dataset;
 import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskExample;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
+import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.i18n.Translator;
 import io.dataease.service.ScheduleService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +30,24 @@ public class DataSetTableTaskService {
     private DataSetTableTaskLogService dataSetTableTaskLogService;
     @Resource
     private ScheduleService scheduleService;
+    @Resource
+    @Lazy
+    private DataSetTableService dataSetTableService;
 
-    public DatasetTableTask save(DatasetTableTask datasetTableTask) throws Exception {
+    public DatasetTableTask save(DataSetTaskRequest dataSetTaskRequest) throws Exception {
+        dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
+        DatasetTableTask datasetTableTask = dataSetTaskRequest.getDatasetTableTask();
         // check
         if (StringUtils.isNotEmpty(datasetTableTask.getCron())) {
             if (!CronExpression.isValidExpression(datasetTableTask.getCron())) {
                 throw new RuntimeException(Translator.get("i18n_cron_expression_error"));
             }
+        }
+        // check start time and end time
+        if (ObjectUtils.isNotEmpty(datasetTableTask.getStartTime())
+                && ObjectUtils.isNotEmpty(datasetTableTask.getEndTime())
+                && datasetTableTask.getStartTime() > datasetTableTask.getEndTime()) {
+            throw new RuntimeException(Translator.get("i18n_cron_time_error"));
         }
         if (StringUtils.isEmpty(datasetTableTask.getId())) {
             datasetTableTask.setId(UUID.randomUUID().toString());
