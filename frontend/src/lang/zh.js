@@ -91,7 +91,7 @@ export default {
     icon: '图标',
     all: '全部',
     enable: '启用',
-    disable: '停用',
+    disable: '禁用',
     yes: '是',
     no: '否',
     reset: '重置',

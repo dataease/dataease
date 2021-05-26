@@ -159,6 +159,7 @@ export default {
         margin-top: 5%;
         flex-direction: row;
         width: 640px;
+        min-width: 640px;
         height: 400px;
         position: relative;
         >>>div.el-card__header {

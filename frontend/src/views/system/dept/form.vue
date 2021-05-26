@@ -1,5 +1,5 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('organization.create') : $t('organization.modify')" back-name="system-dept">
+  <layout-content :header="formType=='add' ? $t('organization.create') : $t('organization.modify')" back-name="system-dept" style="height: 100%;">
     <el-form ref="deptForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item :label="$t('organization.name')" prop="name">
         <el-input v-model="form.name" />
