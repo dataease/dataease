@@ -9,7 +9,7 @@
         <el-col>
           <el-row>
             <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">{{$t('chart.color')}}</el-radio>
+              <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">{{ $t('chart.color') }}</el-radio>
             </el-col>
             <el-col :span="18">
               <colorPicker v-model="panel.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" />
@@ -17,7 +17,7 @@
           </el-row>
           <el-row style="height: 60px;margin-top:10px;overflow: hidden">
             <el-col :span="6">
-              <el-radio v-model="panel.backgroundType" label="image" @change="onChangeType">{{$t('panel.photo')}}</el-radio>
+              <el-radio v-model="panel.backgroundType" label="image" @change="onChangeType">{{ $t('panel.photo') }}</el-radio>
             </el-col>
             <el-col :span="18">
               <el-upload
@@ -40,7 +40,7 @@
             </el-col>
           </el-row>
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">{{$t('chart.background')}} <i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.background') }} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>
@@ -71,7 +71,7 @@ export default {
   created() {
     // 初始化赋值
     this.panel = this.canvasStyleData.panel
-    if (this.panel.imageUrl) {
+    if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
       this.fileList.push({ url: this.panel.imageUrl })
     }
   },
@@ -80,6 +80,7 @@ export default {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
+      this.$store.commit('recordSnapshot')
     },
     onChangeType() {
       this.commitStyle()

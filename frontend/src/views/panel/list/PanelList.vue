@@ -591,7 +591,8 @@ export default {
     edit(data, node) {
       this.lastActiveNodeData = data
       this.lastActiveNode = node
-      // 清空当前缓存
+      // 清空当前缓存,快照
+      this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
       this.$store.dispatch('panel/setPanelInfo', data)

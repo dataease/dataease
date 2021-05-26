@@ -188,6 +188,7 @@ export default {
     },
     subjectChange() {
       this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
+      this.$store.commit('recordSnapshot')
     },
     templateEdit() {
       this.$emit('templateEdit', this.template)

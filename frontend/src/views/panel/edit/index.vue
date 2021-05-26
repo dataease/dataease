@@ -72,7 +72,7 @@
         >
           <view-select v-show=" show && showIndex===0" />
           <filter-group v-show=" show &&showIndex===1" />
-          <subject-setting v-show=" show &&showIndex===2" />
+                    <subject-setting v-show=" show &&showIndex===2" />
         </el-drawer>
 
         <div
@@ -247,6 +247,7 @@ export default {
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', panelStyle)
+          this.$store.commit('recordSnapshot')// 记录快照
         })
       }
     },

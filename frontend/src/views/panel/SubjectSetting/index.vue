@@ -11,7 +11,7 @@
         <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <background-selector class="attr-selector" />
-            <component-gap class="attr-selector" />
+            <!--            <component-gap class="attr-selector" />-->
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.module_style')" name="component">
@@ -112,6 +112,7 @@ export default {
       chart.customFilter = JSON.stringify(this.chart.customFilter)
       canvasStyleData.chart = chart
       this.$store.commit('setCanvasStyle', canvasStyleData)
+      this.$store.commit('recordSnapshot')
     }
   }
 }
