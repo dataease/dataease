@@ -14,6 +14,10 @@ public class SystemConstants {
     }
 
 
+    public static final class PRIVILEGE_VALUE{
+        public final static Integer ON = 1;
+        public final static Integer OFF = 0;
+    }
 
 
 }

@@ -91,14 +91,13 @@ public class SysAuthService {
                 });
             });
             // 授权修改
-            extSysAuthDetailMapper.authDetailsChange(sysAuthDetail.getPrivilegeValue(),sysAuthDetail.getPrivilegeType(),authIdChange);
-//            if(sysAuthDetail.getPrivilegeValue()==SystemConstants.PRIVILEGE_VALUE_ON){
-//                //当前为开启1 >>> 关闭0 需要将权限级别（PrivilegeType）大于当前级别的全新都修改为关闭 0
-//                extSysAuthDetailMapper.authDetailsChange(SystemConstants.PRIVILEGE_VALUE_OFF,sysAuthDetail.getPrivilegeType(),authIdChange);
-//            }else{
-//                //当前为关闭0 >>> 开启1 需要将权限级别（PrivilegeType）小于当前级别的全新都修改为开启 1
-//                extSysAuthDetailMapper.authDetailsChange(SystemConstants.PRIVILEGE_VALUE_ON,sysAuthDetail.getPrivilegeType(),authIdChange);
-//            }
+            if(sysAuthDetail.getPrivilegeValue()==SystemConstants.PRIVILEGE_VALUE.ON){
+                //当前为开启1 >>> 关闭0 需要将权限级别（PrivilegeType）大于当前级别的全新都修改为关闭 0
+                extSysAuthDetailMapper.authDetailsChange(SystemConstants.PRIVILEGE_VALUE.OFF,sysAuthDetail.getPrivilegeType(),authIdChange);
+            }else{
+                //当前为关闭0 >>> 开启1 需要将权限级别（PrivilegeType）小于当前级别的全新都修改为开启 1
+                extSysAuthDetailMapper.authDetailsChange(SystemConstants.PRIVILEGE_VALUE.ON,sysAuthDetail.getPrivilegeType(),authIdChange);
+            }
         }
     }
 
