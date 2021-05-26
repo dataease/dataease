@@ -48,7 +48,7 @@ export default {
     border-radius: 2px;
     box-sizing: border-box;
     background-color: #FFF;
-    height: 100vh;
+    height: calc(100vh - 56px);
     border-right: 0px;
     position: relative;
   }
