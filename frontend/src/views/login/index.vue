@@ -14,7 +14,7 @@
             </div>
             <div class="login-form">
               <el-form-item prop="username">
-                <el-input v-model="loginForm.username" :placeholder="$t('login.username')" autofocus />
+                <el-input v-model="loginForm.username" placeholder="ID" autofocus />
               </el-form-item>
               <el-form-item prop="password">
                 <el-input
@@ -73,7 +73,7 @@ export default {
     //   }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
+      if (value.length < 8) {
         callback(this.$t('login.password_error'))
       } else {
         callback()
@@ -230,7 +230,12 @@ export default {
     }
 
     & ::v-deep .el-input__inner {
-      border-radius: 0;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      background: rgba(10,123,224,.1);
+    }
+    & :focus {
+      border: 1px solid $--color-primary;
     }
   }
 
@@ -243,7 +248,7 @@ export default {
 
     .submit {
       width: 100%;
-      border-radius: 0;
+      border-radius: 20px;
     }
   }
 
