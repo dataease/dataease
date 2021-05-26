@@ -8,13 +8,12 @@
               <img v-if="!loginLogoUrl" src="@/assets/DataEase-color.png" alt="">
               <img v-else :src="loginLogoUrl" alt="">
             </div>
-            <div class="login-border" />
             <div class="login-welcome">
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || 'DATAEASE') }}
             </div>
             <div class="login-form">
               <el-form-item prop="username">
-                <el-input v-model="loginForm.username" :placeholder="$t('login.username')" autofocus />
+                <el-input v-model="loginForm.username" placeholder="ID" autofocus />
               </el-form-item>
               <el-form-item prop="password">
                 <el-input
@@ -73,7 +72,7 @@ export default {
     //   }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
+      if (value.length < 8) {
         callback(this.$t('login.password_error'))
       } else {
         callback()
@@ -180,9 +179,11 @@ export default {
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
-
-    img {
-      height: 45px;
+    img{
+      width: 240px;
+      @media only screen and (max-width: 1280px) {
+        width: 200px;
+      }
     }
   }
 
@@ -210,9 +211,9 @@ export default {
   }
 
   .login-welcome {
-    margin-top: 50px;
+    margin-top: 20px;
     font-size: 14px;
-    color: #999999;
+    color: $--color-primary;
     letter-spacing: 0;
     line-height: 18px;
     text-align: center;
@@ -222,20 +223,25 @@ export default {
   }
 
   .login-form {
-    margin-top: 40px;
+    margin-top: 80px;
     padding: 0 40px;
 
     @media only screen and (max-width: 1280px) {
-      margin-top: 20px;
+      margin-top: 40px;
     }
 
     & ::v-deep .el-input__inner {
-      border-radius: 0;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      background: $colorBg;
+    }
+    & :focus {
+      border: 1px solid $--color-primary;
     }
   }
 
   .login-btn {
-    margin-top: 40px;
+    margin-top: 22px;
     padding: 0 40px;
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
@@ -243,7 +249,7 @@ export default {
 
     .submit {
       width: 100%;
-      border-radius: 0;
+      border-radius: 20px;
     }
   }
 

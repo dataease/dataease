@@ -83,8 +83,8 @@ export default {
     thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !',
     expires: 'Login token expired, please login again',
     tokenError: 'Token error, please login again',
-    username_error: 'Please enter the correct user name',
-    password_error: 'The password can not be less than 6 digits'
+    username_error: 'Please enter the correct ID',
+    password_error: 'The password can not be less than 8 digits'
   },
   commons: {
     close: 'Close',
