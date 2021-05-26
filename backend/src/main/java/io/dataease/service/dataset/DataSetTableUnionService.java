@@ -77,6 +77,7 @@ public class DataSetTableUnionService {
     }
 
     private void checkUnion(DatasetTableUnion datasetTableUnion) {
+        // check 关联关系是否存在
         DatasetTableUnionExample datasetTableUnionExample = new DatasetTableUnionExample();
         DatasetTableUnionExample.Criteria criteria = datasetTableUnionExample.createCriteria();
         if (StringUtils.isNotEmpty(datasetTableUnion.getId())) {
@@ -99,6 +100,12 @@ public class DataSetTableUnionService {
         List<DatasetTableUnion> targetResult = datasetTableUnionMapper.selectByExample(datasetTableUnionExample);
         if (CollectionUtils.isNotEmpty(sourceResult) || CollectionUtils.isNotEmpty(targetResult)) {
             throw new RuntimeException(Translator.get("i18n_union_already_exists"));
+        }
+        // check 同一字段是否在两个关联表中重复出现
+        List<DataSetTableUnionDTO> sourceResult1 = extDatasetTableUnionMapper.selectUsedFieldBySource(datasetTableUnion);
+        List<DataSetTableUnionDTO> targetResult1 = extDatasetTableUnionMapper.selectUsedFieldByTarget(datasetTableUnion);
+        if (CollectionUtils.isNotEmpty(sourceResult1) || CollectionUtils.isNotEmpty(targetResult1)) {
+            throw new RuntimeException(Translator.get("i18n_union_field_exists"));
         }
     }
 }
