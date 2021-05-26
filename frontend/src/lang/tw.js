@@ -90,7 +90,7 @@ export default {
     icon: '圖標',
     all: '全部',
     enable: '啟用',
-    disable: '停用',
+    disable: '禁用',
     yes: '是',
     no: '否',
     reset: '重置',

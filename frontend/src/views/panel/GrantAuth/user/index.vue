@@ -8,8 +8,15 @@
       :row-style="{height: '35px'}"
       @filter-change="filterChange"
     >
-      <el-table-column :column-key="fieldName" :label="columnLabel" :prop="fieldName" filter-placement="right-start"
-                       :filters="filter_options" :filter-multiple="false" :filter-method="filterHandler" />
+      <el-table-column
+        :column-key="fieldName"
+        :label="columnLabel"
+        :prop="fieldName"
+        filter-placement="right-start"
+        :filters="filter_options"
+        :filter-multiple="false"
+        :filter-method="filterHandler"
+      />
       <el-table-column type="selection" fixd />
     </el-table>
   </div>
@@ -56,7 +63,7 @@ export default {
       userLists(1, 0, param).then(response => {
         const data = response.data
         // this.total = data.itemCount
-        this.data = data.listObject
+        this.data = data.listObject.filter(ele => ele.id !== this.$store.getters.user.userId)
         this.queryShareNodeIds()
       })
     },
@@ -71,9 +78,12 @@ export default {
       const arr = obj[this.fieldName]
       if (arr.length === 0) {
         this.initColumnLabel()
-        return
+      } else {
+        this.columnLabel = this.filter_options[arr[0]].text
       }
-      this.columnLabel = this.filter_options[arr[0]].text
+      this.$nextTick(() => {
+        this.setCheckNodes()
+      })
     },
 
     save() {
