@@ -49,11 +49,6 @@ export default {
   },
   mounted() {
     this.preDraw()
-
-    // 监听元素变动事件
-    eventBus.$on('resizing', (componentId) => {
-      this.chartResize()
-    })
   },
   methods: {
     preDraw() {

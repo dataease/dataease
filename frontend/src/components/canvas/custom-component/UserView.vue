@@ -18,6 +18,7 @@ import { viewData } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
+import { uuid } from 'vue-uuid'
 
 import { mapState } from 'vuex'
 
@@ -48,6 +49,13 @@ export default {
           filter: []
         }
       }
+    },
+    outStyle: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
     }
   },
   watch: {
@@ -65,13 +73,24 @@ export default {
         this.mergeStyle()
       },
       deep: true
+    },
+    // 监听外部的样式变化
+    outStyle: {
+      handler(newVal, oldVla) {
+        this.$refs[this.element.propValue.id].chartResize()
+      },
+      deep: true
     }
+  },
+  created() {
+    this.refId = uuid.v1
   },
   computed: mapState([
     'canvasStyleData'
   ]),
   data() {
     return {
+      refId: null,
       chart: {
         stylePriority: 'panel',
         xaxis: '[]',

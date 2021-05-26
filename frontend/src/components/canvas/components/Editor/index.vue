@@ -40,6 +40,7 @@
         :prop-value="item.propValue"
         :element="item"
         :filter="filter"
+        :out-style="item.style"
       />
       <!-- <component
         :is="item.component"
