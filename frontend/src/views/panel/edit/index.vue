@@ -8,7 +8,7 @@
       </el-col>
       <!--横向工具栏-->
       <el-col :span="16">
-        <Toolbar @showPanel="showPanel" @close-left-panel="closeLeftPanel" @previewFullScreen="previewFullScreen" />
+        <Toolbar :button-active="show&&showIndex===2" @showPanel="showPanel" @close-left-panel="closeLeftPanel" @previewFullScreen="previewFullScreen" />
       </el-col>
     </el-header>
     <de-container>
@@ -17,10 +17,10 @@
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
             <!-- 视图图表 -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
-              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
+              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
             </div>
             <!-- 视图文字 -->
-            <div style="position: relative; margin: 18px auto 30px">
+            <div style="position: relative; margin: 18px auto 30px;">
               <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                 {{ $t('panel.view') }}
               </div>
@@ -33,7 +33,7 @@
             <div tabindex="-1" style="position: relative; margin: 20px auto">
               <div style="height: 60px; position: relative">
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-                  <el-button circle class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
+                  <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
                 </div>
                 <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
                   <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
@@ -41,6 +41,10 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <!-- 视图分割线 -->
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
           </div>
         </div>
@@ -72,7 +76,7 @@
         >
           <view-select v-show=" show && showIndex===0" />
           <filter-group v-show=" show &&showIndex===1" />
-                    <subject-setting v-show=" show &&showIndex===2" />
+          <subject-setting v-show=" show &&showIndex===2" />
         </el-drawer>
 
         <div
@@ -478,6 +482,13 @@ export default {
 }
 .el-main >>> .el-drawer__body{
   overflow-y: auto;
+}
+.button-show{
+    background-color: #ebf2fe
+}
+
+.button-closed{
+  background-color: #ffffff
 }
 
 </style>

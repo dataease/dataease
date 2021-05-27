@@ -1,20 +1,19 @@
 <template>
   <div>
     <div class="toolbar">
-
-      <div class="canvas-config">
+      <div class="canvas-config" style="margin-right: 10px">
         <span> {{ $t('panel.canvas_size') }} </span>
         <input v-model="canvasStyleData.width">
         <span>*</span>
         <input v-model="canvasStyleData.height">
       </div>
-      <div class="canvas-config" style="margin-right: 10px">
-        <span> {{ $t('panel.canvas_scale') }} </span>
-        <input v-model="scale" @input="handleScaleChange"> %
-      </div>
+      <!--      <div class="canvas-config" style="margin-right: 10px">-->
+      <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
+      <!--        <input v-model="scale" @input="handleScaleChange"> %-->
+      <!--      </div>-->
 
       <el-tooltip :content="$t('panel.style')">
-        <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
+        <el-button :class="buttonActive?'button-show':'button-closed'" class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
@@ -59,6 +58,14 @@ import {
 } from '@/views/panel/panel'
 
 export default {
+  name: 'Toolbar',
+  props: {
+    buttonActive: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
   data() {
     return {
       isShowPreview: false,
@@ -291,4 +298,13 @@ export default {
       }
     }
   }
+
+  .button-show{
+    background-color: #ebf2fe
+  }
+
+  .button-closed{
+    background-color: #ffffff
+  }
+
 </style>

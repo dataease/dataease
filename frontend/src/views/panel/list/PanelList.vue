@@ -5,6 +5,7 @@
         <span class="header-title">{{ $t('panel.default_panel') }}</span>
         <div class="block">
           <el-tree
+            ref="default_panel_tree"
             :default-expanded-keys="expandedArray"
             :data="defaultData"
             node-key="id"
@@ -631,6 +632,8 @@ export default {
         this.$nextTick(() => {
           // 延迟设置CurrentKey
           this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
+          // 去除default_tree 的影响
+          this.$refs.default_panel_tree.setCurrentKey(null)
           this.$nextTick(() => {
             document.querySelector('.is-current').firstChild.click()
             // 如果是仪表盘列表的仪表盘 直接进入编辑界面
@@ -647,6 +650,8 @@ export default {
         this.$nextTick(() => {
           // 延迟设置CurrentKey
           this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
+          // 去除default_tree 的影响
+          this.$refs.default_panel_tree.setCurrentKey(null)
           this.$nextTick(() => {
             document.querySelector('.is-current').firstChild.click()
           })
