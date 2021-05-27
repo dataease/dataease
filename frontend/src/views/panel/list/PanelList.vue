@@ -149,7 +149,7 @@
         v-dialogDrag
         :title="authTitle"
         :visible.sync="authVisible"
-        width="500px"
+        width="800px"
         class="dialog-css"
       >
         <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
