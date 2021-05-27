@@ -40,18 +40,20 @@ public class SysAuthService {
     @Resource
     private ExtVAuthModelMapper extVAuthModelMapper;
 
-    private static List<String> PRI_MODEL_TYPE = Arrays.asList("link","dataset","chart","panel");
+    private static List<String> PRI_MODEL_TYPE = Arrays.asList("link","dataset","chart","panel","menu");
 
 
     /**
-     * @Description: 查询可见授权数据的数据如果是管理员（IsAdmin = true）且modelType 为link dataset chart panel可以查询到所有的数据，
+     * @Description: 查询可见授权数据的数据如果是管理员（IsAdmin = true）且modelType 为link dataset chart panel menu可以查询到所有的数据，
      * 如果是普通用户，只能查询到自己的数据；但是 node_type 为spine 时 节点也会返回
      **/
     public List<VAuthModelDTO> searchAuthModelTree(BaseTreeRequest request) {
         CurrentUserDto currentUserDto = AuthUtils.getUser();
-        request.setCreateBy(null);
+        request.setCreateBy(String.valueOf(currentUserDto.getUserId()));
         if(PRI_MODEL_TYPE.contains(request.getModelType())&&(currentUserDto.getIsAdmin() == null || !currentUserDto.getIsAdmin())){
-            request.setCreateBy(currentUserDto.getUsername());
+            request.setWithAuth("1");
+        }else{
+            request.setWithAuth("0");
         }
         return extVAuthModelMapper.searchTree(request);
     }

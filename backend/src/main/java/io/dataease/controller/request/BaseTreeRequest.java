@@ -26,6 +26,9 @@ public class BaseTreeRequest {
 
     private String createBy;
 
+    private String withAuth;//需要根据权限返回
+
+
     public BaseTreeRequest() {
     }
 

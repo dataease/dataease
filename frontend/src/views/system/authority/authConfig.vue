@@ -27,7 +27,7 @@
         </el-input>
       </div>
       <el-tabs v-model="sourceActiveName" :class="{'de-search-header': showSourceSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(sourceInfo, index) in sourceInfoArray" :key="index" :lazy="true" :label="sourceInfo.tabName" :name="sourceInfo.authType">
+        <el-tab-pane v-for="(sourceInfo, index) in sourceInfoTabs" :key="index" :lazy="true" :label="sourceInfo.tabName" :name="sourceInfo.authType">
           <lazy-tree
             v-if="authCondition"
             :active-name="sourceActiveName"
@@ -86,26 +86,39 @@ export default {
             tabName: this.$t('auth.linkAuth'),
             head: this.$t('auth.linkAuthHead'),
             direction: 'source',
-            authType: 'link'
+            authType: 'link',
+            authTargets: 'dept,role,user'
           },
           {
             tabName: this.$t('auth.datasetAuth'),
             head: this.$t('auth.datasetAuthHead'),
             direction: 'source',
-            authType: 'dataset'
+            authType: 'dataset',
+            authTargets: 'dept,role,user'
           },
           {
             tabName: this.$t('auth.chartAuth'),
             head: this.$t('auth.linkAuthHead'),
             direction: 'source',
-            authType: 'chart'
+            authType: 'chart',
+            authTargets: 'dept,role,user'
           },
           {
             tabName: this.$t('auth.panelAuth'),
             head: this.$t('auth.panelAuthHead'),
             direction: 'source',
-            authType: 'panel'
-          }],
+            authType: 'panel',
+            authTargets: 'dept,role,user'
+          }
+          // ,
+          // {
+          //   tabName: this.$t('auth.menuAuth'),
+          //   head: this.$t('auth.menuAuthHead'),
+          //   direction: 'source',
+          //   authType: 'menu',
+          //   authTargets: 'role'
+          // }
+        ],
       targetActiveName: null,
       sourceActiveName: null,
       showSourceSearchInput: false,
@@ -114,6 +127,17 @@ export default {
       targetFilterText: '',
       timeMachine: null,
       authCondition: null
+    }
+  },
+  computed: {
+    sourceInfoTabs() {
+      const tabs = []
+      this.sourceInfoArray.forEach(item => {
+        if (item.authTargets.indexOf(this.targetActiveName) > -1) {
+          tabs.push(item)
+        }
+      })
+      return tabs
     }
   },
   created() {

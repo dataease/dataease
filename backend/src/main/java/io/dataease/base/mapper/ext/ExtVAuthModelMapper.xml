@@ -14,12 +14,12 @@
         authCount.children_count AS children_count,
         IF
         (( authCount.children_count > 0 ), 0, 1 ) AS leaf
-        FROM
-        ( SELECT * FROM v_auth_model
+        FROM (select get_grant_auths (#{modelType},#{createBy}) cids1) t1,
+        ( SELECT * FROM (select get_grant_auths (#{modelType},#{createBy}) cids2) t2 ,v_auth_model
         <where>
             model_type = #{modelType}
-            <if test="createBy != null">
-               and  FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from v_auth_model where model_type = #{modelType} and create_by =#{createBy}) ,#{modelType}))
+            <if test="1== withAuth">
+               and  FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids2 ,#{modelType}))
             </if>
             <if test="pid !=null">
                 and v_auth_model.pid = #{pid}
@@ -50,11 +50,11 @@
         count( 1 ) AS `children_count`,
         `authTemp`.`pid` AS `pid`
         FROM
-        ( SELECT * FROM v_auth_model
+        ( SELECT * FROM (select get_grant_auths (#{modelType},#{createBy}) cids3) t3,v_auth_model
         <where>
             model_type = #{modelType}
-            <if test="createBy != null">
-                and   FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from v_auth_model where model_type = #{modelType} and create_by =#{createBy}) ,#{modelType}))
+            <if test="1== withAuth">
+                and   FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids3 ,#{modelType}))
             </if>
         </where>
         ) authTemp
@@ -63,8 +63,8 @@
         ) authCount ON
         auth.id = authCount.pid
         <where>
-            <if test="createBy != null">
-                (authCount.children_count>0 or auth.create_by = #{createBy})
+            <if test="1== withAuth">
+                (authCount.children_count>0 or FIND_IN_SET(auth.id,cids1) )
             </if>
         </where>
 
