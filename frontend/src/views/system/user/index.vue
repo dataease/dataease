@@ -164,13 +164,13 @@ export default {
       columns: [],
       buttons: [
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit,
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit,
           show: checkPermission(['user:edit'])
         }, {
           label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
           show: checkPermission(['user:del'])
         }, {
-          label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'danger', click: this.editPassword,
+          label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'success', click: this.editPassword,
           show: checkPermission(['user:editPwd'])
         }
       ],

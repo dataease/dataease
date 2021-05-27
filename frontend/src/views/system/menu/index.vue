@@ -159,7 +159,7 @@ export default {
       columns: [],
       buttons: [
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', click: this.edit,
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit,
           show: checkPermission(['menu:edit'])
         }, {
           label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete,

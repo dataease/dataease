@@ -704,7 +704,7 @@ export default {
     custom_data: '自助數據集',
     pls_slc_tbl_left: '請從左側選擇表',
     add_db_table: '添加數據庫表',
-    pls_slc_data_source: '選擇數據源鏈接',
+    pls_slc_data_source: '請選擇數據源',
     table: '表',
     edit: '編輯',
     create_view: '創建視圖',
