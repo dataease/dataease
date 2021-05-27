@@ -44,11 +44,5 @@
         <if test="orderByClause == null">
             order by u.update_time desc
         </if>
-
     </select>
-
-
-
-
-
 </mapper>

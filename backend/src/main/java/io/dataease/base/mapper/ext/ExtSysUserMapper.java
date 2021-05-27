@@ -9,6 +9,5 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ExtSysUserMapper {
-
     List<SysUserGridResponse> query(GridExample example);
 }

@@ -50,12 +50,28 @@ public class SysUserService {
 
 
     public List<SysUserGridResponse> query(BaseGridRequest request) {
+        List<SysUser> sysUsers = sysUserMapper.selectByExample(new SysUserExample());
+        List<SysUserGridResponse> lists = sysUsers.stream().map(ele -> {
+            SysUserGridResponse response = new SysUserGridResponse();
+            BeanUtils.copyBean(response, ele);
+            return response;
+        }).collect(Collectors.toList());
         GridExample gridExample = request.convertExample();
-        List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
+        List<SysUserGridResponse> query = extSysUserMapper.query(gridExample);
         lists.forEach(item -> {
-            List<SysUserRole> roles = item.getRoles();
-            List<Long> roleIds = roles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-            item.setRoleIds(roleIds);
+            for (SysUserGridResponse response : query) {
+                if (item.getUserId().equals(response.getUserId())) {
+                    item.setId(response.getId());
+                    List<SysUserRole> roles = response.getRoles();
+                    item.setRoles(roles);
+                    List<Long> roleIds = roles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                    item.setRoleIds(roleIds);
+                    item.setDept(response.getDept());
+                }
+            }
+//            List<SysUserRole> roles = item.getRoles();
+//            List<Long> roleIds = roles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+//            item.setRoleIds(roleIds);
         });
         return lists;
     }
