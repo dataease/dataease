@@ -3,7 +3,7 @@
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
       <el-row class="panel-design-head">
         <!--TODO 仪表盘头部区域-->
-        <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;color: #606266;font-size: 16px">
+        <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
           <span>{{ panelInfo.name || '测试仪表板' }}</span>
         </el-col>
         <el-col :span="12">

@@ -158,11 +158,11 @@ export default {
       return roots
     },
 
-    save() {
+    save(msg) {
       const rows = this.$refs.table.store.states.selection
       const request = this.buildRequest(rows)
       saveShare(request).then(res => {
-        this.$success(this.$t('commons.save_success'))
+        this.$success(msg)
         return true
       }).catch(err => {
         this.$error(err.message)

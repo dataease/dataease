@@ -277,7 +277,9 @@ export default {
       select_module: 'Select Module',
       default_module: 'Default Module'
     },
-    datasource: 'Datasource'
+    datasource: 'Datasource',
+    char_can_not_more_50: 'Name can not more 50 char',
+    share_success: 'Share Success'
   },
   documentation: {
     documentation: 'Documentation',

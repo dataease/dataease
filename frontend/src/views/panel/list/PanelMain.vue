@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tabs v-model="activeName" class="tab-header" @tab-click="handleClick" type="card" :stretch="true">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />{{ $t('panel.panel_list') }}</span>
           <panel-list />
@@ -81,6 +81,20 @@ export default {
   .ms-main-container {
     height: calc(100vh - 56px);
     padding: 0px;
+  }
+
+  .tab-header>>>.el-tabs__item{
+    font-size: 13px;
+    background-color: #E8EAED;
+    padding: 0 15px;
+  }
+
+  .tab-header>>>.is-active{
+    background-color: #ffffff;
+    border-bottom-color: #ffffff!important;
+  }
+  .tab-header>>>.el-tabs__nav-scroll{
+    padding-left: 0!important;
   }
 
 </style>
