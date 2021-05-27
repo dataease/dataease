@@ -46,6 +46,14 @@ export default {
       return this.$store.state.panel.mainActiveName
     }
   },
+  watch: {
+    // 切换展示页面后 重新点击一下当前节点
+    '$store.state.panel.mainActiveName': function(newVal, oldVal) {
+      if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
+        this.activeNodeAndClickOnly(this.lastActiveNodeData)
+      }
+    }
+  },
   mounted() {
     this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
   },

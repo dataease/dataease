@@ -82,6 +82,14 @@ export default {
       'canvasStyleData'
     ])
   },
+  watch: {
+    componentData: {
+      handler(newVal, oldVla) {
+        this.restore()
+      },
+      deep: true
+    }
+  },
   mounted() {
     const _this = this
     const erd = elementResizeDetectorMaker()
@@ -119,6 +127,7 @@ export default {
     },
     handleScaleChange() {
       if (this.componentData) {
+        debugger
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
           Object.keys(component.style).forEach(key => {

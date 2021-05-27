@@ -77,7 +77,9 @@ export default {
     // 监听外部的样式变化
     outStyle: {
       handler(newVal, oldVla) {
-        this.$refs[this.element.propValue.id].chartResize()
+        if (this.$refs[this.element.propValue.id]) {
+          this.$refs[this.element.propValue.id].chartResize()
+        }
       },
       deep: true
     }

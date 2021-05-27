@@ -263,7 +263,13 @@ export default {
     },
     showPanel(type) {
       if (this.showIndex === -1 || this.showIndex === type) {
-        this.$nextTick(() => (this.show = !this.show))
+        this.$nextTick(() => {
+          if (this.show) {
+            this.showIndex === -1
+          }
+          this.show = !this.show
+        }
+        )
       }
       this.showIndex = type
     },
