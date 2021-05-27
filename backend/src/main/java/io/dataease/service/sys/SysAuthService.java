@@ -15,6 +15,7 @@ import io.dataease.controller.request.SysAuthRequest;
 import io.dataease.dto.SysAuthDTO;
 import io.dataease.dto.SysDeptDTO;
 import io.dataease.dto.VAuthModelDTO;
+import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +81,9 @@ public class SysAuthService {
         SysAuthDetail sysAuthDetail = request.getAuthDetail();
         //TODO 获取需要授权的资源id(当前节点和所有权限的下级节点)
         List<String> authSources = getAuthModels(request.getAuthSource(), request.getAuthSourceType());
-
+        if(CollectionUtils.isEmpty(authSources)){
+            throw new RuntimeException(Translator.get("i18n_auth_source_be_canceled"));
+        }
         //TODO 获取需要被授权的目标id(部门当前节点和所有权限的下级节点)
         List<String> authTargets =getAuthModels(request.getAuthTarget(), request.getAuthTargetType());
 

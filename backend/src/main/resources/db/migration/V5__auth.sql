@@ -1,4 +1,19 @@
 
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : A-LOCAL-本机数据库
+ Source Server Type    : MySQL
+ Source Server Version : 50726
+ Source Host           : localhost:3306
+ Source Schema         : data_ease
+
+ Target Server Type    : MySQL
+ Target Server Version : 50726
+ File Encoding         : 65001
+
+ Date: 27/05/2021 14:59:53
+*/
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -428,8 +443,6 @@ END
 delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;
-
-
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;

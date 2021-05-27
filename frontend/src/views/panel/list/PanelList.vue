@@ -341,6 +341,12 @@ export default {
     }
   },
   watch: {
+    // 切换展示页面后 重新点击一下当前节点
+    '$store.state.panel.mainActiveName': function(newVal, oldVal) {
+      if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
+        this.activeNodeAndClickOnly(this.lastActiveNodeData)
+      }
+    }
   },
   mounted() {
     this.$store.commit('setComponentData', [])
@@ -631,6 +637,18 @@ export default {
             if (panelInfo.nodeType === 'panel') {
               this.edit(this.lastActiveNodeData, this.lastActiveNode)
             }
+          })
+        })
+      }
+    },
+    // 激活当前节点
+    activeNodeAndClickOnly(panelInfo) {
+      if (panelInfo) {
+        this.$nextTick(() => {
+          // 延迟设置CurrentKey
+          this.$refs.panel_list_tree.setCurrentKey(panelInfo.id)
+          this.$nextTick(() => {
+            document.querySelector('.is-current').firstChild.click()
           })
         })
       }

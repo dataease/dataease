@@ -6,18 +6,18 @@ export default {
     snapshotData: [], // 编辑器快照数据
     snapshotStyleData: [], // 样式改变也记录快照
     snapshotIndex: -1 // 快照索引
-
   },
   mutations: {
     undo(state) {
-      state.snapshotIndex--
-      if (state.snapshotIndex >= 0) {
+      if (state.snapshotIndex > 0) {
+        state.snapshotIndex--
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
         store.commit('setCanvasStyle', deepCopy(state.snapshotStyleData[state.snapshotIndex]))
       }
     },
 
     redo(state) {
+      debugger
       if (state.snapshotIndex < state.snapshotData.length - 1) {
         state.snapshotIndex++
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
@@ -35,7 +35,6 @@ export default {
         state.snapshotStyleData = state.snapshotStyleData.slice(0, state.snapshotIndex + 1)
       }
     },
-
     refreshSnapshot(state) {
       // 刷新快照
       state.snapshotData = []

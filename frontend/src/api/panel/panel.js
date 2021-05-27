@@ -30,7 +30,7 @@ export function querySubjectWithGroup(data) {
   return request({
     url: '/panel/subject/querySubjectWithGroup',
     method: 'post',
-    loading: false,
+    loading: true,
     data
   })
 }
