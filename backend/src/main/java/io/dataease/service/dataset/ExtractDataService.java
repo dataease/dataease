@@ -174,12 +174,19 @@ public class ExtractDataService {
         jdbcProvider.exec(datasourceRequest);
     }
 
-    public void extractData(String datasetTableId, String taskId, String type) {
-        DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
+
+    private synchronized boolean updateSyncStatus(DatasetTable  datasetTable ){
         datasetTable.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
-        example.createCriteria().andIdEqualTo(datasetTableId);
-        if (datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0) {
+        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusEqualTo(JobStatus.Completed.name());
+        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull();
+        return datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+    }
+
+    public void extractData(String datasetTableId, String taskId, String type) {
+        DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
+        if(updateSyncStatus(datasetTable)){
+            LogUtil.info("Skip synchronization task for table : " + datasetTableId);
             return;
         }
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
@@ -270,7 +277,7 @@ public class ExtractDataService {
                 dataSetTableTaskService.update(datasetTableTask);
             }
             datasetTable.setSyncStatus(JobStatus.Completed.name());
-            example.clear();
+            DatasetTableExample example = new DatasetTableExample();
             example.createCriteria().andIdEqualTo(datasetTableId);
             datasetTableMapper.updateByExampleSelective(datasetTable, example);
         }
@@ -619,26 +626,27 @@ public class ExtractDataService {
     }
 
     public boolean isKettleRunning() {
-        try {
-            if (!InetAddress.getByName(carte).isReachable(1000)) {
-                return false;
-            }
-            HttpClient httpClient;
-            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
-            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
-            clientBuilder.setConnectionTimeout(1);
-            clientBuilder.setCredentials(user, passwd);
-            httpClient = clientBuilder.build();
-            HttpResponse httpResponse = httpClient.execute(getMethod);
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
-            if (statusCode != -1 && statusCode < 400) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
+        return true;
+//        try {
+//            if (!InetAddress.getByName(carte).isReachable(1000)) {
+//                return false;
+//            }
+//            HttpClient httpClient;
+//            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
+//            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+//            clientBuilder.setConnectionTimeout(1);
+//            clientBuilder.setCredentials(user, passwd);
+//            httpClient = clientBuilder.build();
+//            HttpResponse httpResponse = httpClient.execute(getMethod);
+//            int statusCode = httpResponse.getStatusLine().getStatusCode();
+//            if (statusCode != -1 && statusCode < 400) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } catch (Exception e) {
+//            return false;
+//        }
     }
 
     private static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
