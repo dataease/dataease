@@ -58,7 +58,7 @@ export default {
       this.showSearchInput = false
     },
     save() {
-      this.$refs[this.activeName].save()
+      this.$refs[this.activeName].save(this.$t('commons.share_success'))
       this.$emit('close-grant', 0)
     },
     cancel() {

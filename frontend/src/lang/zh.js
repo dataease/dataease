@@ -278,7 +278,8 @@ export default {
       default_module: '默认模块'
     },
     datasource: '数据连接',
-    char_can_not_more_50: '名称不能超过50字符'
+    char_can_not_more_50: '名称不能超过50字符',
+    share_success: '分享成功'
   },
   documentation: {
     documentation: '文档',

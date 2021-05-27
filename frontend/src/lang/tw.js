@@ -276,7 +276,9 @@ export default {
       select_module: '選擇模块',
       default_module: '默认模块'
     },
-    datasource: '數據源'
+    datasource: '數據源',
+    char_can_not_more_50: '名稱不能超過50字符',
+    share_success: '分享成功'
   },
   documentation: {
     documentation: '文檔',
