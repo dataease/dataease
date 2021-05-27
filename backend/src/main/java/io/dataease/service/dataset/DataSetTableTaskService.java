@@ -46,6 +46,8 @@ public class DataSetTableTaskService {
         // check start time and end time
         if (ObjectUtils.isNotEmpty(datasetTableTask.getStartTime())
                 && ObjectUtils.isNotEmpty(datasetTableTask.getEndTime())
+                && datasetTableTask.getStartTime() != 0
+                && datasetTableTask.getEndTime() != 0
                 && datasetTableTask.getStartTime() > datasetTableTask.getEndTime()) {
             throw new RuntimeException(Translator.get("i18n_cron_time_error"));
         }
