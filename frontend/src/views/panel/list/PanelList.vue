@@ -132,7 +132,7 @@
         </div>
       </el-col>
 
-      <el-dialog :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
+      <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="500px">
         <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
@@ -146,14 +146,17 @@
       </el-dialog>
 
       <el-dialog
+        v-dialogDrag
         :title="authTitle"
         :visible.sync="authVisible"
-        custom-class="de-dialog"
+        width="500px"
+        class="dialog-css"
       >
         <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
       </el-dialog>
 
       <el-dialog
+        v-dialogDrag
         :title="linkTitle"
         :visible.sync="linkVisible"
         width="500px"
@@ -162,7 +165,7 @@
         <link-generate v-if="linkVisible" :resource-id="linkResourceId" />
       </el-dialog>
       <!--新建仪表盘dialog-->
-      <el-dialog :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
+      <el-dialog v-dialogDrag :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
         <edit-panel v-if="editPanel.visible" :edit-panel="editPanel" @closeEditPanelDialog="closeEditPanelDialog" @newPanelSave="newPanelSave" />
       </el-dialog>
     </el-col>
@@ -684,6 +687,13 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     padding:0 8px;
+  }
+
+  .dialog-css>>>.el-dialog__body {
+    padding: 15px 20px;
+  }
+  .dialog-css >>>.el-dialog__body {
+    padding: 10px 20px 20px;
   }
 
 </style>

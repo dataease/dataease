@@ -72,14 +72,14 @@ export default {
 <style lang="scss" scoped>
 .de-tab {
     border:1px solid #E6E6E6;
-    min-height:200px !important;
-    max-height:300px !important;
+    min-height:400px !important;
+    max-height:400px !important;
     overflow:auto;
 }
 .de-icon {
     position: absolute;
     right: 20px;
-    top: 50px;
+    top: 70px;
     z-index: 99;
 }
 .el-input-group__append{

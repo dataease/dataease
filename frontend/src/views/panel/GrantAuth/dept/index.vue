@@ -229,4 +229,8 @@ export default {
   /* 去除下边框 */
   height: 0;
 }
+
+.my_table>>>.el-table-column--selection .cell{
+  text-align: center;
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <el-tabs v-model="activeName" class="tab-header" @tab-click="handleClick" type="card" :stretch="true">
+      <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />{{ $t('panel.panel_list') }}</span>
           <panel-list />
@@ -83,18 +83,20 @@ export default {
     padding: 0px;
   }
 
-  .tab-header>>>.el-tabs__item{
-    font-size: 13px;
-    background-color: #E8EAED;
-    padding: 0 15px;
+  /*.tab-panel>>>.is-stretch{*/
+  /*  min-width: 80% !important;*/
+  /*}*/
+  /*.tab-panel>>>.el-tabs__nav-scroll {*/
+  /*  overflow: hidden;*/
+  /*  text-align: center;*/
+  /*  display: flex;*/
+  /*  align-items: center;*/
+  /*  justify-content: center;*/
+  /*}*/
+  .tab-panel>>>.el-tabs__nav-wrap{
+    padding: 0 10px;
   }
-
-  .tab-header>>>.is-active{
-    background-color: #ffffff;
-    border-bottom-color: #ffffff!important;
+  .tab-panel>>>.el-tabs__nav-wrap::after {
+    height: 1px;
   }
-  .tab-header>>>.el-tabs__nav-scroll{
-    padding-left: 0!important;
-  }
-
 </style>

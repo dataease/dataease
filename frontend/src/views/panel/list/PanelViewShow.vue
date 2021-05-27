@@ -2,7 +2,7 @@
   <el-row style="height: 100%;width: 100%;">
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
       <el-row class="panel-design-head">
-        <!--TODO 仪表盘头部区域-->
+        <!--仪表盘头部区域-->
         <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
           <span>{{ panelInfo.name || '测试仪表板' }}</span>
         </el-col>
@@ -37,7 +37,7 @@
         </el-col>
 
       </el-row>
-      <!--TODO 仪表盘预览区域-->
+      <!-- 仪表盘预览区域-->
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
           <Preview v-if="showMain" />
@@ -54,7 +54,7 @@
       v-if="templateSaveShow"
       :title="templateSaveTitle"
       :visible.sync="templateSaveShow"
-      custom-class="de-dialog"
+      width="500px"
     >
       <save-to-template :template-info="templateInfo" @closeSaveDialog="closeSaveDialog" />
     </el-dialog>
@@ -219,6 +219,7 @@ export default {
     background-color: white;
     padding: 0 6px;
     line-height: 40px;
+    border-bottom: 1px solid #dfe4ed;
   }
 
   .panel-design-preview {
@@ -226,8 +227,7 @@ export default {
     height: calc(100% - 40px);
     overflow-x: hidden;
     overflow-y: auto;
-    padding: 5px;
-    border-top: 1px solid #E6E6E6;
+    /*padding: 5px;*/
   }
 
   .custom-position {

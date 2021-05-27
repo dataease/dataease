@@ -144,7 +144,7 @@ export default {
     min-height: 300px;
     width: 100%;
     height: 100%;
-    border: 1px solid #E6E6E6;
+    /*border: 1px solid #E6E6E6;*/
     background-size: 100% 100% !important;
     .canvas-container {
         width: 100%;
