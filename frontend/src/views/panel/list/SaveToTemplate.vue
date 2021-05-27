@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-row>
+    <el-row style="display: flex;align-items: center;">
       <el-col :span="4"> {{ $t('panel.template_nale') }}</el-col>
       <el-col :span="20">
         <el-input v-model="templateInfo.name" clearable size="mini" />
@@ -26,8 +26,8 @@
       </div>
     </el-row>
     <el-row class="root-class">
-      <el-button @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" @click="save()">{{ $t('commons.save') }}</el-button>
+      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
+      <el-button size="mini" type="primary" @click="save()">{{ $t('commons.save') }}</el-button>
     </el-row>
   </el-row>
 </template>
