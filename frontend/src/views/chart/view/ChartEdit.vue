@@ -557,7 +557,7 @@ export default {
         this.$warning(this.$t('chart.title_limit'))
         return
       }
-      // 从仪表盘入口关闭
+      // 从仪表板入口关闭
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
       this.$emit('switchComponent', { name: '' })
     },

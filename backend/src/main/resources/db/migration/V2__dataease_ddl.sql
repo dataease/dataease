@@ -40,7 +40,7 @@ DROP TABLE IF EXISTS `datasource`;
 CREATE TABLE `datasource` (
   `id`          varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
   `name`     varchar(50) NOT NULL COMMENT '名称',
-  `desc`  varchar(50) NOT NULL COMMENT '描述',
+  `desc`  varchar(50) COMMENT '描述',
   `type`  varchar(50) NOT NULL COMMENT '类型',
   `configuration`  longtext NOT NULL COMMENT '详细信息',
   `create_time` bigint(13)  NOT NULL COMMENT 'Create timestamp',
@@ -288,7 +288,7 @@ CREATE TABLE `chart_view` (
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   `snapshot` longtext COMMENT '缩略图 ',
-  `style_priority` varchar(255) DEFAULT 'panel' COMMENT '样式优先级 panel 仪表盘 view 视图',
+  `style_priority` varchar(255) DEFAULT 'panel' COMMENT '样式优先级 panel 仪表板 view 视图',
   PRIMARY KEY (`id`),
   KEY `IDX_TABLE_ID` (`table_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -307,7 +307,7 @@ CREATE TABLE `panel_design` (
     `update_time` bigint(13) DEFAULT NULL COMMENT '修改时间',
     `update_person` varchar(255) DEFAULT NULL COMMENT '修改人',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='仪表盘和组件的关联关系 组件分为普通视图和系统组件';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='仪表板和组件的关联关系 组件分为普通视图和系统组件';
 
 DROP TABLE IF EXISTS `panel_group`;
 CREATE TABLE `panel_group`  (
@@ -318,10 +318,10 @@ CREATE TABLE `panel_group`  (
   `node_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
   `create_by` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
   `create_time` bigint(13) NULL DEFAULT NULL COMMENT '创建时间',
-  `panel_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '仪表盘类型 system 系统内置 self 用户自建 ',
+  `panel_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '仪表板类型 system 系统内置 self 用户自建 ',
   `panel_style` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT 'panel 样式',
   `panel_data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT 'panel 数据',
-  `source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据来源 导入 或者 其他仪表盘另存',
+  `source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据来源 导入 或者 其他仪表板另存',
   `extend1` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `extend2` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
@@ -362,7 +362,7 @@ CREATE TABLE `panel_template` (
   `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   `snapshot` longtext COMMENT '缩略图',
-  `template_type` varchar(255) DEFAULT NULL COMMENT '仪表盘类型 system 系统内置 self 用户自建 ',
+  `template_type` varchar(255) DEFAULT NULL COMMENT '仪表板类型 system 系统内置 self 用户自建 ',
   `template_style` longtext COMMENT 'template 样式',
   `template_data` longtext COMMENT 'template 数据',
   `dynamic_data` longtext COMMENT '预存数据',
@@ -401,7 +401,7 @@ CREATE TABLE `panel_template` (
       `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
       `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
       `snapshot` longtext COMMENT '缩略图',
-      `template_type` varchar(255) DEFAULT NULL COMMENT '仪表盘类型 system 系统内置 self 用户自建 ',
+      `template_type` varchar(255) DEFAULT NULL COMMENT '仪表板类型 system 系统内置 self 用户自建 ',
       `template_style` longtext COMMENT 'template 样式',
       `template_data` longtext COMMENT 'template 数据',
       `dynamic_data` longtext COMMENT '预存数据',

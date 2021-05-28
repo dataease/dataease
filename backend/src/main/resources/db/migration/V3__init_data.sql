@@ -35,7 +35,7 @@ INSERT INTO `sys_menu` VALUES (25, 34, 0, 2, '删除连接', NULL, NULL, 999, NU
 INSERT INTO `sys_menu` VALUES (26, 34, 0, 2, '编辑连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:edit', NULL, NULL, 1614931234105, 1614931234105);
 INSERT INTO `sys_menu` VALUES (27, 34, 0, 2, '校验连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:validate', NULL, NULL, 1614931268578, 1614931268578);
 INSERT INTO `sys_menu` VALUES (28, 2, 0, 2, '修改密码', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:editPwd', NULL, NULL, 1615275128262, 1615275128262);
-INSERT INTO `sys_menu` VALUES (30, 0, 0, 1, '仪表盘', 'panel', 'panel/index', 1, NULL, '/panel', b'0', b'0', b'0', 'panel:read', NULL, NULL, NULL, 1619081449067);
+INSERT INTO `sys_menu` VALUES (30, 0, 0, 1, '仪表板', 'panel', 'panel/index', 1, NULL, '/panel', b'0', b'0', b'0', 'panel:read', NULL, NULL, NULL, 1619081449067);
 INSERT INTO `sys_menu` VALUES (34, 0, 4, 1, '数据源', 'datasource', 'system/datasource/index', 4, NULL, '/datasource', b'0', b'0', b'0', 'datasource:read', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (35, 1, 0, 1, '用户表单', 'system-user-form', 'system/user/form', 10, '', 'user-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (36, 1, 0, 1, '菜单表单', 'system-menu-form', 'system/menu/form', 11, '', 'menu-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
@@ -108,8 +108,8 @@ INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUE
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.title', '', 'text', 5);
 
 BEGIN;
-INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('default_panel', 'i18n_default_panel', '0', -1, 'folder', 'admin', NULL, 'system', NULL, NULL, NULL, NULL, NULL, '系统内置 默认仪表盘');
-INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('panel_list', 'i18n_panel_list', '0', -1, 'folder', 'admin', NULL, 'self', NULL, NULL, NULL, NULL, NULL, '系统内置 仪表盘列表');
+INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('default_panel', 'i18n_default_panel', '0', -1, 'folder', 'admin', NULL, 'system', NULL, NULL, NULL, NULL, NULL, '系统内置 默认仪表板');
+INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('panel_list', 'i18n_panel_list', '0', -1, 'folder', 'admin', NULL, 'self', NULL, NULL, NULL, NULL, NULL, '系统内置 仪表板列表');
 COMMIT;
 
 

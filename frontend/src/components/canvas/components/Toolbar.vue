@@ -1,21 +1,16 @@
 <template>
   <div>
     <div class="toolbar">
-
-      <div class="canvas-config">
+      <div class="canvas-config" style="margin-right: 10px">
         <span> {{ $t('panel.canvas_size') }} </span>
         <input v-model="canvasStyleData.width">
         <span>*</span>
         <input v-model="canvasStyleData.height">
       </div>
-      <div class="canvas-config" style="margin-right: 10px">
-        <span> {{ $t('panel.canvas_scale') }} </span>
-        <input v-model="scale" @input="handleScaleChange"> %
-      </div>
-
-      <el-tooltip :content="$t('panel.style')">
-        <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
-      </el-tooltip>
+      <!--      <div class="canvas-config" style="margin-right: 10px">-->
+      <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
+      <!--        <input v-model="scale" @input="handleScaleChange"> %-->
+      <!--      </div>-->
       <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
       </el-tooltip>
@@ -59,6 +54,14 @@ import {
 } from '@/views/panel/panel'
 
 export default {
+  name: 'Toolbar',
+  props: {
+    buttonActive: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
   data() {
     return {
       isShowPreview: false,
@@ -172,6 +175,10 @@ export default {
         const fileResult = res.target.result
         const img = new Image()
         img.onload = () => {
+          const scaleWith = img.width / 400
+          const scaleHeight = img.height / 200
+          let scale = scaleWith > scaleHeight ? scaleWith : scaleHeight
+          scale = scale > 1 ? scale : 1
           this.$store.commit('addComponent', {
             component: {
               ...commonAttr,
@@ -184,8 +191,8 @@ export default {
                 ...commonStyle,
                 top: 0,
                 left: 0,
-                width: img.width,
-                height: img.height
+                width: img.width / scale,
+                height: img.height / scale
               }
             }
           })
@@ -291,4 +298,13 @@ export default {
       }
     }
   }
+
+  .button-show{
+    background-color: #ebf2fe!important;
+  }
+
+  .button-closed{
+    background-color: #ffffff!important;
+  }
+
 </style>

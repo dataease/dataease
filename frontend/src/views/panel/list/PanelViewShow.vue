@@ -2,7 +2,7 @@
   <el-row style="height: 100%;width: 100%;">
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
       <el-row class="panel-design-head">
-        <!--仪表盘头部区域-->
+        <!--仪表板头部区域-->
         <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
           <span>{{ panelInfo.name || '测试仪表板' }}</span>
         </el-col>
@@ -37,7 +37,7 @@
         </el-col>
 
       </el-row>
-      <!-- 仪表盘预览区域-->
+      <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
           <Preview v-if="showMain" />

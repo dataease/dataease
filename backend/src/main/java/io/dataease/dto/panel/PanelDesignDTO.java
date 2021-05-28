@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class PanelDesignDTO extends PanelDesign {
 
-    //当前视图是否在仪表盘中显示
+    //当前视图是否在仪表板中显示
     private boolean keepFlag = false;
 
     //当前视图是否已经进行样式初始化

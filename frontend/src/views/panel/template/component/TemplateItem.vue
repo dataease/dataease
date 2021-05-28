@@ -76,7 +76,7 @@ export default {
   }
 
   .template-img {
-    height: 130px;
+    height: 112px;
     width: 200px;
     margin: 0 auto;
     box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
