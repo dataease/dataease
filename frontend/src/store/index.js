@@ -39,7 +39,7 @@ const data = {
     ...lock.state,
 
     editMode: 'edit', // 编辑器模式 edit preview
-    canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE, // 页面全局数据  //扩展公共样式 公共的仪表盘样式，用来实时响应样式的变化
+    canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE, // 页面全局数据  //扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
     componentData: [], // 画布组件数据
     curComponent: null,
     curComponentIndex: null,

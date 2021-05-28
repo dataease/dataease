@@ -53,7 +53,7 @@ export default {
   methods: {
     preDraw() {
       // 基于准备好的dom，初始化echarts实例
-      // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表盘有重复id情况
+      // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
       new Promise((resolve) => { resolve() }).then(() => {
         //	此dom为echarts图标展示dom
         this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))

@@ -69,7 +69,7 @@ export default {
     // deep监听panel 如果改变 提交到 store
     canvasStyleData: {
       handler(newVal, oldVla) {
-        // this.chart.stylePriority == panel 优先使用仪表盘样式
+        // this.chart.stylePriority == panel 优先使用仪表板样式
         this.mergeStyle()
       },
       deep: true
@@ -128,7 +128,7 @@ export default {
   },
   methods: {
     mergeStyle() {
-      // this.chart.stylePriority == panel 优先使用仪表盘样式
+      // this.chart.stylePriority == panel 优先使用仪表板样式
       if ((this.requestStatus === 'success' || this.requestStatus === 'merging') && this.chart.stylePriority === 'panel' && this.canvasStyleData.chart) {
         const customAttrChart = JSON.parse(this.chart.customAttr)
         const customStyleChart = JSON.parse(this.chart.customStyle)

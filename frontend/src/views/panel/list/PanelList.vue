@@ -165,7 +165,7 @@
       >
         <link-generate v-if="linkVisible" :resource-id="linkResourceId" />
       </el-dialog>
-      <!--新建仪表盘dialog-->
+      <!--新建仪表板dialog-->
       <el-dialog v-dialogDrag :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
         <edit-panel v-if="editPanel.visible" :edit-panel="editPanel" @closeEditPanelDialog="closeEditPanelDialog" @newPanelSave="newPanelSave" />
       </el-dialog>
@@ -204,7 +204,7 @@ export default {
     return {
       lastActiveNode: null, // 激活的节点 在这个节点下面动态放置子节点
       lastActiveNodeData: null,
-      activeTree: 'self', // 识别当前操作的树类型self 是仪表盘列表树 system 是默认仪表盘树
+      activeTree: 'self', // 识别当前操作的树类型self 是仪表板列表树 system 是默认仪表板树
       editPanelModel: {
         titlePre: null,
         titleSuf: null,
@@ -248,7 +248,7 @@ export default {
       },
       editPanel: {
         titlePre: null,
-        titleSuf: '仪表盘',
+        titleSuf: '仪表板',
         visible: false,
         optType: 'new',
         panelInfo: {
@@ -365,6 +365,10 @@ export default {
       this.defaultTree()
       // 默认展开 同时点击 新增的节点
       if (panelInfo && panelInfo.panelType === 'self' && this.lastActiveNodeData.id) {
+        if (this.editPanel.optType === 'rename') {
+          this.lastActiveNodeData.name = panelInfo.name
+          return
+        }
         if (!this.lastActiveNodeData.children) {
           this.$set(this.lastActiveNodeData, 'children', [])
         }
@@ -405,6 +409,7 @@ export default {
         case 'rename':
           this.editPanel = {
             visible: true,
+            optType: 'rename',
             titlePre: this.$t('commons.edit'),
             panelInfo: {
               id: param.data.id,
@@ -639,7 +644,7 @@ export default {
           this.$refs.default_panel_tree.setCurrentKey(null)
           this.$nextTick(() => {
             document.querySelector('.is-current').firstChild.click()
-            // 如果是仪表盘列表的仪表盘 直接进入编辑界面
+            // 如果是仪表板列表的仪表板 直接进入编辑界面
             if (panelInfo.nodeType === 'panel') {
               this.edit(this.lastActiveNodeData, this.lastActiveNode)
             }

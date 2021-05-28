@@ -102,7 +102,7 @@ export default {
             authType: 'chart'
           },
           {
-            tabName: '仪表盘',
+            tabName: '仪表板',
             head: '所有仪表板',
             direction: 'source',
             authType: 'panel'

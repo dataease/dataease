@@ -86,7 +86,7 @@ public class PanelGroupService {
             panelGroupMapper.insert(request);
         } else if ("toDefaultPanel".equals(request.getOptType())) {
             panelId = UUID.randomUUID().toString();
-            // 转存为默认仪表盘
+            // 转存为默认仪表板
             PanelGroupWithBLOBs newDefaultPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
             newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE_SYSTEM);
             newDefaultPanel.setNodeType(PanelConstants.PANEL_NODE_TYPE_PANEL);
