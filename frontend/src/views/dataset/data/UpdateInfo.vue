@@ -116,14 +116,6 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('dataset.start_time')" prop="startTime">
-              <el-date-picker
-                v-model="taskForm.startTime"
-                type="datetime"
-                :placeholder="$t('dataset.select_data_time')"
-                size="mini"
-              />
-            </el-form-item>
             <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
               <el-select v-model="taskForm.rate" size="mini" @change="onRateChange">
                 <el-option
@@ -136,13 +128,22 @@
                 />
               </el-select>
             </el-form-item>
+
             <el-form-item v-if="taskForm.rate === 'CRON'" label="">
               <el-popover v-model="cronEdit">
                 <cron v-model="taskForm.cron" @close="cronEdit = false" />
                 <el-input slot="reference" v-model="taskForm.cron" size="mini" style="width: 50%" @click="cronEdit = true" />
               </el-popover>
             </el-form-item>
-            <el-form-item :label="$t('dataset.end_time')" prop="end">
+            <el-form-item v-if="taskForm.rate === 'CRON'" :label="$t('dataset.start_time')" prop="startTime">
+              <el-date-picker
+                v-model="taskForm.startTime"
+                type="datetime"
+                :placeholder="$t('dataset.select_data_time')"
+                size="mini"
+              />
+            </el-form-item>
+            <el-form-item v-if="taskForm.rate === 'CRON'" :label="$t('dataset.end_time')" prop="end">
               <el-select v-model="taskForm.end" size="mini">
                 <el-option
                   :label="$t('dataset.no_limit')"

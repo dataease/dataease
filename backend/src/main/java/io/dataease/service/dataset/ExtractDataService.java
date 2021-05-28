@@ -3,6 +3,7 @@ package io.dataease.service.dataset;
 import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
+import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
@@ -90,13 +91,17 @@ public class ExtractDataService {
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
     @Resource
+    @Lazy
     private DataSetTableTaskLogService dataSetTableTaskLogService;
     @Resource
+    @Lazy
     private DataSetTableTaskService dataSetTableTaskService;
     @Resource
     private DatasourceMapper datasourceMapper;
     @Resource
     private DatasetTableMapper datasetTableMapper;
+    @Resource
+    private DatasetTableTaskMapper datasetTableTaskMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -176,7 +181,7 @@ public class ExtractDataService {
     }
 
 
-    private synchronized boolean updateSyncStatus(DatasetTable  datasetTable ){
+    public synchronized boolean updateSyncStatus(DatasetTable  datasetTable ){
         datasetTable.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusEqualTo(JobStatus.Completed.name());
@@ -186,7 +191,9 @@ public class ExtractDataService {
 
     public void extractData(String datasetTableId, String taskId, String type, JobExecutionContext context) {
         DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
-        if(updateSyncStatus(datasetTable)){
+        DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
+        boolean isSIMPLEJob = (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString()));
+        if(updateSyncStatus(datasetTable) && !isSIMPLEJob){
             LogUtil.info("Skip synchronization task for table : " + datasetTableId);
             return;
         }
@@ -276,7 +283,6 @@ public class ExtractDataService {
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         } finally {
-            DatasetTableTask datasetTableTask = dataSetTableTaskService.get(taskId);
             if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                 datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                 dataSetTableTaskService.update(datasetTableTask);
@@ -292,8 +298,10 @@ public class ExtractDataService {
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-        datasetTableTaskLog.setStartTime(System.currentTimeMillis());
-        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        if(CollectionUtils.isEmpty(dataSetTableTaskLogService.select(datasetTableTaskLog))){
+            datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+            dataSetTableTaskLogService.save(datasetTableTaskLog);
+        }
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {

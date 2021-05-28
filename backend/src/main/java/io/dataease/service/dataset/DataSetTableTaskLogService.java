@@ -4,6 +4,7 @@ import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.domain.DatasetTableTaskLogExample;
 import io.dataease.base.mapper.DatasetTableTaskLogMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
+import io.dataease.commons.constants.JobStatus;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -54,5 +55,20 @@ public class DataSetTableTaskLogService {
         DatasetTableTaskLogExample.Criteria criteria = datasetTableTaskLogExample.createCriteria();
         criteria.andTableIdEqualTo(datasetId);
         return datasetTableTaskLogMapper.selectByExampleWithBLOBs(datasetTableTaskLogExample);
+    }
+
+    public List<DatasetTableTaskLog> select(DatasetTableTaskLog datasetTableTaskLog){
+        DatasetTableTaskLogExample example = new DatasetTableTaskLogExample();
+        DatasetTableTaskLogExample.Criteria criteria = example.createCriteria();
+        if(StringUtils.isNotEmpty(datasetTableTaskLog.getStatus())){
+            criteria.andStatusEqualTo(datasetTableTaskLog.getStatus());
+        }
+        if(StringUtils.isNotEmpty(datasetTableTaskLog.getTableId())){
+            criteria.andTableIdEqualTo(datasetTableTaskLog.getTableId());
+        }
+        if(StringUtils.isNotEmpty(datasetTableTaskLog.getTaskId())){
+            criteria.andTaskIdEqualTo(datasetTableTaskLog.getTaskId());
+        }
+        return datasetTableTaskLogMapper.selectByExampleWithBLOBs(example);
     }
 }

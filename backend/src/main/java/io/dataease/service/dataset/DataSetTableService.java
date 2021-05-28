@@ -268,18 +268,18 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
-            if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
+            if (StringUtils.isEmpty(datasetTable.getSyncStatus()) || datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
                 map.put("status", "warnning");
                 map.put("msg", Translator.get("i18n_processing_data"));
                 dataSetPreviewPage.setTotal(0);
-            }else if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
-                map.put("status", "warnning");
-                map.put("msg", Translator.get("i18n_processing_data"));
-                dataSetPreviewPage.setTotal(0);
-            }else if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+            }else if (datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+                List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
                 map.put("status", "error");
-                map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
+                if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+                    map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
+                }else {
+                    map.put("msg", "Failed to extract data.");
+                }
                 dataSetPreviewPage.setTotal(0);
             }else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
