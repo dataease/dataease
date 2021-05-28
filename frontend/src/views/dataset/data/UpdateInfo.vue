@@ -498,6 +498,7 @@ export default {
         this.update_task = false
         this.resetTaskForm()
         this.listTask()
+        this.listTaskLog()
       })
     },
     deleteTask(task) {
@@ -514,6 +515,7 @@ export default {
           })
           this.resetTaskForm()
           this.listTask()
+          this.listTaskLog()
         })
       }).catch(() => {
       })

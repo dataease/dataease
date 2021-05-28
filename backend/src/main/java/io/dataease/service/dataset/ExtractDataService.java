@@ -63,6 +63,7 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
+import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -183,7 +184,7 @@ public class ExtractDataService {
         return datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
     }
 
-    public void extractData(String datasetTableId, String taskId, String type) {
+    public void extractData(String datasetTableId, String taskId, String type, JobExecutionContext context) {
         DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
         if(updateSyncStatus(datasetTable)){
             LogUtil.info("Skip synchronization task for table : " + datasetTableId);
@@ -193,6 +194,10 @@ public class ExtractDataService {
         UpdateType updateType = UpdateType.valueOf(type);
         Datasource datasource = new Datasource();
         try {
+            if(context != null){
+                datasetTable.setQrtzInstance(context.getFireInstanceId());
+                datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+            }
             if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
                 datasource = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
             } else {

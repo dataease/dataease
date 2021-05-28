@@ -644,6 +644,76 @@ public class DatasetTableExample {
             return (Criteria) this;
         }
 
+        public Criteria andQrtzInstanceIsNull() {
+            addCriterion("qrtz_instance is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceIsNotNull() {
+            addCriterion("qrtz_instance is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceEqualTo(String value) {
+            addCriterion("qrtz_instance =", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceNotEqualTo(String value) {
+            addCriterion("qrtz_instance <>", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceGreaterThan(String value) {
+            addCriterion("qrtz_instance >", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceGreaterThanOrEqualTo(String value) {
+            addCriterion("qrtz_instance >=", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceLessThan(String value) {
+            addCriterion("qrtz_instance <", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceLessThanOrEqualTo(String value) {
+            addCriterion("qrtz_instance <=", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceLike(String value) {
+            addCriterion("qrtz_instance like", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceNotLike(String value) {
+            addCriterion("qrtz_instance not like", value, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceIn(List<String> values) {
+            addCriterion("qrtz_instance in", values, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceNotIn(List<String> values) {
+            addCriterion("qrtz_instance not in", values, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceBetween(String value1, String value2) {
+            addCriterion("qrtz_instance between", value1, value2, "qrtzInstance");
+            return (Criteria) this;
+        }
+
+        public Criteria andQrtzInstanceNotBetween(String value1, String value2) {
+            addCriterion("qrtz_instance not between", value1, value2, "qrtzInstance");
+            return (Criteria) this;
+        }
+
         public Criteria andSyncStatusIsNull() {
             addCriterion("sync_status is null");
             return (Criteria) this;

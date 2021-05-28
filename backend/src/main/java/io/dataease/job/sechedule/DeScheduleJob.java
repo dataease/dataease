@@ -1,5 +1,6 @@
 package io.dataease.job.sechedule;
 
+import com.google.gson.Gson;
 import io.dataease.commons.utils.LogUtil;
 import org.quartz.*;
 
