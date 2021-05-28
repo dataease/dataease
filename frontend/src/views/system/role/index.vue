@@ -266,7 +266,7 @@ export default {
       })
     },
     btnDisabled(row) {
-      return !row.createTime
+      return !row.updateTime
     }
   }
 }
