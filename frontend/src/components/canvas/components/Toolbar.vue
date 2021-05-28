@@ -11,10 +11,6 @@
       <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
       <!--        <input v-model="scale" @input="handleScaleChange"> %-->
       <!--      </div>-->
-
-      <el-tooltip :content="$t('panel.style')">
-        <el-button :class="buttonActive?'button-show':'button-closed'" class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
-      </el-tooltip>
       <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
       </el-tooltip>
@@ -300,11 +296,11 @@ export default {
   }
 
   .button-show{
-    background-color: #ebf2fe
+    background-color: #ebf2fe!important;
   }
 
   .button-closed{
-    background-color: #ffffff
+    background-color: #ffffff!important;
   }
 
 </style>

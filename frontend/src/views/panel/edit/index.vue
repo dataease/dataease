@@ -13,14 +13,14 @@
     </el-header>
     <de-container>
       <de-aside-container class="ms-aside-container">
-        <div style="width: 60px; left: 0px; top: 0px; bottom: 0px; position: absolute">
-          <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto;">
+        <div style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+          <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
             <!-- 视图图表 -->
-            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 32px auto 0px;font-size:150%;">
+            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
               <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
             </div>
             <!-- 视图文字 -->
-            <div style="position: relative; margin: 18px auto 30px;">
+            <div style="position: relative; margin: 18px auto 16px;">
               <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                 {{ $t('panel.view') }}
               </div>
@@ -30,7 +30,7 @@
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
             <!-- 过滤组件 -->
-            <div tabindex="-1" style="position: relative; margin: 20px auto">
+            <div tabindex="-1" style="position: relative; margin: 16px auto">
               <div style="height: 60px; position: relative">
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
                   <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
@@ -40,6 +40,21 @@
                     {{ $t('panel.module') }}
                   </div>
                 </div>
+              </div>
+            </div>
+            <!-- 分割线 -->
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+            </div>
+
+            <!-- 视图图表 -->
+            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
+              <el-button :class="show&&showIndex===2? 'button-show':'button-closed'" circle class="el-icon-magic-stick" size="mini" @click="showPanel(2)" />
+            </div>
+            <!-- 视图文字 -->
+            <div style="position: relative; margin: 18px auto 16px;">
+              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                {{ $t('panel.style') }}
               </div>
             </div>
             <!-- 视图分割线 -->
@@ -490,11 +505,11 @@ export default {
   overflow-y: auto;
 }
 .button-show{
-    background-color: #ebf2fe
+    background-color: #ebf2fe!important;
 }
 
 .button-closed{
-  background-color: #ffffff
+  background-color: #ffffff!important;
 }
 
 </style>
