@@ -251,13 +251,13 @@ export default {
       this.$refs.menu.setCheckedKeys(this.menuIds)
     },
     handleDelete(row) {
-      this.$confirm(this.$t('commons.confirm_delete') + ': ' + row.name + '？', this.$t('role.tips'), {
+      this.$confirm(this.$t('role.confirm_delete') + ': ' + row.name + '？', this.$t('role.tips'), {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
         delRole(row.roleId).then(res => {
-          this.$success(this.$t('commons.modify_success'))
+          this.$success(this.$t('commons.delete_success'))
           this.search()
         })
       }).catch(() => {

@@ -184,8 +184,9 @@ public class ExtractDataService {
     public synchronized boolean updateSyncStatus(DatasetTable  datasetTable ){
         datasetTable.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
-        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusEqualTo(JobStatus.Completed.name());
-        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull();
+        example.createCriteria().andIdEqualTo(datasetTable.getId());
+        datasetTableMapper.selectByExample(example);
+        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
         return datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
     }
 
@@ -225,7 +226,7 @@ public class ExtractDataService {
             switch (updateType) {
                 // 全量更新
                 case all_scope:
-                    writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
                     // TODO  before: check doris table column type
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
@@ -251,7 +252,7 @@ public class ExtractDataService {
                     if (CollectionUtils.isEmpty(dataSetTaskLogDTOS)) {
                         return;
                     }
-                    writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
 
                     // 增量添加
                     if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {
@@ -275,6 +276,10 @@ public class ExtractDataService {
                     dataSetTableTaskLogService.save(datasetTableTaskLog);
                     break;
             }
+            datasetTable.setSyncStatus(JobStatus.Completed.name());
+            DatasetTableExample example = new DatasetTableExample();
+            example.createCriteria().andIdEqualTo(datasetTableId);
+            datasetTableMapper.updateByExampleSelective(datasetTable, example);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtil.error("Extract data error: " + datasetTableId, e);
@@ -282,25 +287,29 @@ public class ExtractDataService {
             datasetTableTaskLog.setInfo(ExceptionUtils.getStackTrace(e));
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
+            datasetTable.setSyncStatus(JobStatus.Error.name());
+            DatasetTableExample example = new DatasetTableExample();
+            example.createCriteria().andIdEqualTo(datasetTableId);
+            datasetTableMapper.updateByExampleSelective(datasetTable, example);
         } finally {
             if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                 datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                 dataSetTableTaskService.update(datasetTableTask);
             }
-            datasetTable.setSyncStatus(JobStatus.Completed.name());
-            DatasetTableExample example = new DatasetTableExample();
-            example.createCriteria().andIdEqualTo(datasetTableId);
-            datasetTableMapper.updateByExampleSelective(datasetTable, example);
         }
     }
 
-    private void writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
+    private DatasetTableTaskLog writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-        if(CollectionUtils.isEmpty(dataSetTableTaskLogService.select(datasetTableTaskLog))){
+        List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
+        if(CollectionUtils.isEmpty(datasetTableTaskLogs)){
             datasetTableTaskLog.setStartTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
+            return datasetTableTaskLog;
+        }else {
+            return datasetTableTaskLogs.get(0);
         }
     }
 
