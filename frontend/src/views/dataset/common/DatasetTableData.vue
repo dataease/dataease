@@ -18,6 +18,7 @@
         :resizable="true"
       />
     </ux-grid>
+    <span style="font-size: 12px;">{{ $t('chart.preview_100_data') }}</span>
   </el-col>
 </template>
 
@@ -57,8 +58,8 @@ export default {
     initData() {
       this.resetData()
       if (this.table.id) {
-        this.table.row = 10
-        post('/dataset/table/getPreviewData/1/10', this.table).then(response => {
+        this.table.row = 100
+        post('/dataset/table/getPreviewData/1/100', this.table).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
           const datas = this.data

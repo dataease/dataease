@@ -677,7 +677,8 @@ export default {
     quota_show: 'Quota Show',
     title_limit: 'Title cannot be greater than 50 characters',
     filter_condition: 'Filter Condition',
-    filter_field_can_null: 'Filter field must choose'
+    filter_field_can_null: 'Filter field must choose',
+    preview_100_data: 'Preview 100 rows'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
