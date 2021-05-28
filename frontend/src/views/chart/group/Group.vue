@@ -73,8 +73,8 @@
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
-                <span style="margin-left: 12px;" @click.stop >
-                  <el-dropdown  trigger="click" size="small" @command="clickMore">
+                <span style="margin-left: 12px;" @click.stop>
+                  <el-dropdown trigger="click" size="small" @command="clickMore">
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"
@@ -156,8 +156,8 @@
             <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
           </span>
           <span v-if="hasDataPermission('manage',data.privileges)">
-            <span style="margin-left: 12px;" @click.stop >
-              <el-dropdown  trigger="click" size="small" @command="clickMore">
+            <span style="margin-left: 12px;" @click.stop>
+              <el-dropdown trigger="click" size="small" @command="clickMore">
                 <span class="el-dropdown-link">
                   <el-button
                     icon="el-icon-more"
@@ -204,7 +204,7 @@
         <el-row style="width: 400px;">
           <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
             <el-form-item :label="$t('chart.view_name')">
-              <el-input v-model="table.name" size="mini" />
+              <el-input v-model="chartName" size="mini" />
             </el-form-item>
           </el-form>
         </el-row>
@@ -274,7 +274,8 @@ export default {
       },
       selectTableFlag: false,
       table: {},
-      tables: []
+      tables: [],
+      chartName: ''
     }
   },
   computed: {
@@ -547,7 +548,7 @@ export default {
     },
 
     createChart() {
-      if (!this.table.name || this.table.name === '') {
+      if (!this.chartName || this.chartName === '') {
         this.$message({
           message: this.$t('chart.name_can_not_empty'),
           type: 'error',
@@ -555,7 +556,7 @@ export default {
         })
         return
       }
-      if (this.table.name.length > 50) {
+      if (this.chartName.length > 50) {
         this.$message({
           showClose: true,
           message: this.$t('commons.char_can_not_more_50'),
@@ -564,8 +565,8 @@ export default {
         return
       }
       const view = {}
-      view.name = this.table.name
-      view.title = this.table.name
+      view.name = this.chartName
+      view.title = this.chartName
       view.sceneId = this.currGroup.id
       view.tableId = this.table.id
       view.type = 'bar'
