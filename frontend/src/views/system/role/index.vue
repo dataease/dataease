@@ -18,6 +18,7 @@
           </template>
 
           <el-table-column prop="name" :label="$t('commons.name')" />
+          <el-table-column :show-overflow-tooltip="true" prop="description" :label="$t('commons.description')" />
           <el-table-column :show-overflow-tooltip="true" prop="createTime" :label="$t('commons.create_time')">
             <template v-slot:default="scope">
               <span>{{ scope.row.createTime | timestampFormatDate }}</span>
@@ -118,9 +119,9 @@ export default {
       columns: [],
       buttons: [
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit, disabled: this.btnDisabled
         }, {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.handleDelete
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.handleDelete, disabled: this.btnDisabled
         }
       ],
       searchConfig: {
@@ -156,7 +157,7 @@ export default {
       const param = temp || {}
       roleGrid(this.paginationConfig.currentPage, this.paginationConfig.pageSize, param).then(response => {
         const data = response.data
-        this.total = data.itemCount
+        this.paginationConfig.total = data.itemCount
         this.tableData = data.listObject
       })
     },
@@ -263,6 +264,9 @@ export default {
       }).catch(() => {
 
       })
+    },
+    btnDisabled(row) {
+      return !row.createTime
     }
   }
 }

@@ -278,7 +278,7 @@ export default {
       default_module: '默认模块'
     },
     datasource: '数据源',
-    char_can_not_more_50: '名称不能超过50字符',
+    char_can_not_more_50: '不能超过50字符',
     share_success: '分享成功'
   },
   documentation: {
@@ -435,7 +435,8 @@ export default {
     current_user: '当前用户',
     origin_passwd: '原始密码',
     new_passwd: '新密码',
-    confirm_passwd: '确认密码'
+    confirm_passwd: '确认密码',
+    change_password: '修改密码'
   },
   role: {
     menu_authorization: '菜单授权',

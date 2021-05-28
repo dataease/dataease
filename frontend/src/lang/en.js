@@ -278,7 +278,7 @@ export default {
       default_module: 'Default Module'
     },
     datasource: 'Datasource',
-    char_can_not_more_50: 'Name can not more 50 char',
+    char_can_not_more_50: 'Can not more 50 char',
     share_success: 'Share Success'
   },
   documentation: {
@@ -435,7 +435,8 @@ export default {
     current_user: 'Current User',
     origin_passwd: 'Origin Password',
     new_passwd: 'New Password',
-    confirm_passwd: 'Confirm Password'
+    confirm_passwd: 'Confirm Password',
+    change_password: 'Change Password'
   },
   role: {
     menu_authorization: 'Menu Authorization',

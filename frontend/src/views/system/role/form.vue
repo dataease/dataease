@@ -30,7 +30,7 @@ export default {
         name: [
           { required: true, trigger: 'blur', validator: this.roleValidator }
         ],
-        code: [{ required: true, message: '请输入代码', trigger: 'blur' }]
+        description: [{ max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'blur' }]
       },
       roles: [],
       originName: null
