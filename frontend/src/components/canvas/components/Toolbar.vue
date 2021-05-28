@@ -175,6 +175,10 @@ export default {
         const fileResult = res.target.result
         const img = new Image()
         img.onload = () => {
+          const scaleWith = img.width / 400
+          const scaleHeight = img.height / 200
+          let scale = scaleWith > scaleHeight ? scaleWith : scaleHeight
+          scale = scale > 1 ? scale : 1
           this.$store.commit('addComponent', {
             component: {
               ...commonAttr,
@@ -187,8 +191,8 @@ export default {
                 ...commonStyle,
                 top: 0,
                 left: 0,
-                width: img.width,
-                height: img.height
+                width: img.width / scale,
+                height: img.height / scale
               }
             }
           })
