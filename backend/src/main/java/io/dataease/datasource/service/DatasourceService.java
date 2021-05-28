@@ -18,6 +18,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.service.dataset.DataSetGroupService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +50,7 @@ public class DatasourceService {
         DatasourceExample example = new DatasourceExample();
         example.createCriteria().andNameEqualTo(datasource.getName());
         if (CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))) {
-            DEException.throwException("Exist data connection with the same name ");
+            DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());
