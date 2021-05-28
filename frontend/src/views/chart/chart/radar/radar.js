@@ -24,9 +24,7 @@ export function baseRadarOption(chart_option, chart) {
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
-    chart.data.x.forEach(function(ele) {
-      chart_option.radar.indicator.push({ name: ele })
-    })
+    const maxValues = []
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       // color
@@ -40,7 +38,13 @@ export function baseRadarOption(chart_option, chart) {
       chart_option.legend.data.push(y.name)
       y.value = JSON.parse(JSON.stringify(y.data))
       chart_option.series[0].data.push(y)
+
+      maxValues.push(Math.max.apply(null, y.value))
     }
+    const max = Math.max.apply(null, maxValues)
+    chart.data.x.forEach(function(ele) {
+      chart_option.radar.indicator.push({ name: ele, max: max })
+    })
   }
   // console.log(chart_option);
   componentStyle(chart_option, chart)
