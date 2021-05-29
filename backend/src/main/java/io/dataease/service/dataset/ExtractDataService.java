@@ -117,15 +117,15 @@ public class ExtractDataService {
     private String user;
     @Value("${carte.passwd:cluster}")
     private String passwd;
-
     private static String creatTableSql = "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
             "Column_Fields" +
             "UNIQUE KEY(dataease_uuid)\n" +
             "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS 10\n" +
             "PROPERTIES(\"replication_num\" = \"1\");";
+
+    private static String dropTableSql = "DROP TABLE IF EXISTS TABLE_NAME;";
     private static String shellScript = "curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load\n" +
             "rm -rf %s\n";
-
     private String createDorisTablColumnSql(List<DatasetTableField> datasetTableFields) {
         String Column_Fields = "dataease_uuid  varchar(50), `";
         for (DatasetTableField datasetTableField : datasetTableFields) {
@@ -163,11 +163,21 @@ public class ExtractDataService {
     private void createDorisTable(String dorisTableName, String dorisTablColumnSql) throws Exception {
         Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-        ;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         datasourceRequest.setQuery(creatTableSql.replace("TABLE_NAME", dorisTableName).replace("Column_Fields", dorisTablColumnSql));
         jdbcProvider.exec(datasourceRequest);
+    }
+
+    private void dropDorisTable(String dorisTableName) {
+        try {
+            Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(dorisDatasource);
+            datasourceRequest.setQuery(dropTableSql.replace("TABLE_NAME", dorisTableName));
+            jdbcProvider.exec(datasourceRequest);
+        }catch (Exception ignore){}
     }
 
     private void replaceTable(String dorisTableName) throws Exception {
@@ -180,7 +190,6 @@ public class ExtractDataService {
         jdbcProvider.exec(datasourceRequest);
     }
 
-
     public synchronized boolean updateSyncStatus(DatasetTable  datasetTable ){
         datasetTable.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
@@ -188,11 +197,15 @@ public class ExtractDataService {
         datasetTableMapper.selectByExample(example);
         example.clear();
         example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
+        example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
         return datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
     }
 
     public void extractData(String datasetTableId, String taskId, String type, JobExecutionContext context) {
-        DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
+        DatasetTable datasetTable = getDatasetTable(datasetTableId);
+        if(datasetTable == null){
+            LogUtil.error("Can not find DatasetTable: " + datasetTableId);
+        }
         DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
         boolean isSIMPLEJob = (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString()));
         if(updateSyncStatus(datasetTable) && !isSIMPLEJob){
@@ -288,16 +301,35 @@ public class ExtractDataService {
             datasetTableTaskLog.setInfo(ExceptionUtils.getStackTrace(e));
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
+
             datasetTable.setSyncStatus(JobStatus.Error.name());
             DatasetTableExample example = new DatasetTableExample();
             example.createCriteria().andIdEqualTo(datasetTableId);
             datasetTableMapper.updateByExampleSelective(datasetTable, example);
+
+            if(updateType.name().equalsIgnoreCase("all_scope")){
+                dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
+            }
         } finally {
             if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                 datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                 dataSetTableTaskService.update(datasetTableTask);
             }
         }
+    }
+
+    private DatasetTable getDatasetTable(String datasetTableId){
+        for (int i=0;i<5;i++){
+            DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
+            if(datasetTable == null){
+                try {
+                    Thread.sleep(1000);
+                }catch (Exception ignore){}
+            }else {
+                return datasetTable;
+            }
+        }
+        return null;
     }
 
     private DatasetTableTaskLog writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
