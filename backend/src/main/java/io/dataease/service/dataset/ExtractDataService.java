@@ -186,6 +186,7 @@ public class ExtractDataService {
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTable.getId());
         datasetTableMapper.selectByExample(example);
+        example.clear();
         example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
         return datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
     }
