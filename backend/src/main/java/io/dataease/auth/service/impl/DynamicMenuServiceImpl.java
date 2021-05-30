@@ -6,6 +6,9 @@ import io.dataease.auth.service.DynamicMenuService;
 import io.dataease.base.domain.SysMenu;
 import io.dataease.base.domain.SysMenuExample;
 import io.dataease.base.mapper.SysMenuMapper;
+import io.dataease.plugins.common.dto.PluginSysMenu;
+import io.dataease.plugins.util.PluginUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -25,6 +28,12 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         sysMenuExample.setOrderByClause(" menu_sort ");
         List<SysMenu> sysMenus = sysMenuMapper.selectByExample(sysMenuExample);
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
+        //增加插件中的菜单
+        List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();
+        if (CollectionUtils.isNotEmpty(pluginSysMenus) ) {
+            List<DynamicMenuDto> pluginDtos = pluginSysMenus.stream().map(this::convert).collect(Collectors.toList());
+            dynamicMenuDtos.addAll(pluginDtos);
+        }
         List<DynamicMenuDto> result = buildTree(dynamicMenuDtos);
         return result;
     }
@@ -44,6 +53,25 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         dynamicMenuDto.setMeta(menuMeta);
         dynamicMenuDto.setPermission(sysMenu.getPermission());
         dynamicMenuDto.setHidden(sysMenu.getHidden());
+        dynamicMenuDto.setIsPlugin(false);
+        return dynamicMenuDto;
+    }
+    private DynamicMenuDto convert(PluginSysMenu sysMenu){
+        DynamicMenuDto dynamicMenuDto = new DynamicMenuDto();
+        dynamicMenuDto.setId(sysMenu.getMenuId());
+        dynamicMenuDto.setPid(sysMenu.getPid());
+        dynamicMenuDto.setName(sysMenu.getName());
+        dynamicMenuDto.setPath(sysMenu.getPath());
+        dynamicMenuDto.setRedirect(null);
+        dynamicMenuDto.setType(sysMenu.getType());
+        dynamicMenuDto.setComponent(sysMenu.getComponent());
+        MenuMeta menuMeta = new MenuMeta();
+        menuMeta.setTitle(sysMenu.getTitle());
+        menuMeta.setIcon(sysMenu.getIcon());
+        dynamicMenuDto.setMeta(menuMeta);
+        dynamicMenuDto.setPermission(sysMenu.getPermission());
+        dynamicMenuDto.setHidden(sysMenu.getHidden());
+        dynamicMenuDto.setIsPlugin(true);
         return dynamicMenuDto;
     }
 

@@ -5,6 +5,11 @@ import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.plugins.common.dto.PluginSysMenu;
+import io.dataease.plugins.common.service.PluginMenuService;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.util.PluginUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -53,6 +58,14 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public List<String> permissions(Long userId){
         List<String> permissions = authMapper.permissions(userId);
+        List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();
+        if (CollectionUtils.isNotEmpty(pluginSysMenus)) {
+            List<Long> menuIds = authMapper.userMenuIds(userId);
+            List<String> pluginPermissions = pluginSysMenus.stream().
+                    filter(sysMenu -> menuIds.contains(sysMenu.getMenuId()))
+                    .map(menu -> menu.getPermission()).collect(Collectors.toList());
+            permissions.addAll(pluginPermissions);
+        }
         return permissions.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
     }
 

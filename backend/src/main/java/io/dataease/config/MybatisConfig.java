@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Properties;
 
 @Configuration
-@MapperScan(basePackages = {"io.dataease.base.mapper", "io.dataease.xpack.mapper"}, sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages = {"io.dataease.base.mapper", "io.dataease.plugins"}, sqlSessionFactoryRef = "sqlSessionFactory")
 @EnableTransactionManagement
 public class MybatisConfig {
 
