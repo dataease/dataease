@@ -2,14 +2,24 @@
   <div>
     <div style="width: 100%">
       <el-popover
+        v-model="isSetting"
         placement="right"
         width="400"
         trigger="click"
       >
         <el-col>
           <el-form ref="titleForm" :model="titleForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('chart.show')" class="form-item">
-              <el-checkbox v-model="titleForm.show" @change="changeTitleStyle">{{ $t('chart.show') }}</el-checkbox>
+            <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
+            <!--              <el-checkbox v-model="titleForm.show" @change="changeTitleStyle">{{ $t('chart.show') }}</el-checkbox>-->
+            <!--            </el-form-item>-->
+            <el-form-item :label="$t('chart.title')" class="form-item">
+              <el-input
+                v-model="titleForm.title"
+                size="mini"
+                :placeholder="$t('chart.title')"
+                clearable
+                @blur="changeTitleStyle"
+              />
             </el-form-item>
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
               <el-select v-model="titleForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTitleStyle">
@@ -39,7 +49,15 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.title') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!titleForm.show">
+          {{ $t('chart.title') }}<i class="el-icon-setting el-icon--right" />
+          <el-switch
+            v-model="titleForm.show"
+            class="switch-style"
+            @click.stop.native
+            @change="changeTitleStyle"
+          />
+        </el-button>
       </el-popover>
     </div>
   </div>
@@ -59,7 +77,8 @@ export default {
   data() {
     return {
       titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE)),
-      fontSize: []
+      fontSize: [],
+      isSetting: false
     }
   },
   watch: {
@@ -76,12 +95,10 @@ export default {
           if (customStyle.text) {
             this.titleForm = customStyle.text
           }
+          this.titleForm.title = this.chart.title
         }
       }
     }
-  },
-  created() {
-    console.log(JSON.stringify(this.chart))
   },
   mounted() {
     this.init()
@@ -98,6 +115,9 @@ export default {
       this.fontSize = arr
     },
     changeTitleStyle() {
+      if (!this.titleForm.show) {
+        this.isSetting = false
+      }
       this.$emit('onTextChange', this.titleForm)
     }
   }
@@ -129,4 +149,10 @@ export default {
   .el-form-item{
     margin-bottom: 6px;
   }
+
+.switch-style{
+  position: absolute;
+  right: 10px;
+  margin-top: -4px;
+}
 </style>
