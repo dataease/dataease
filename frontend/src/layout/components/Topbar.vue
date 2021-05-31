@@ -49,7 +49,7 @@
           <router-link to="/person-pwd/index">
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link>
-          <a href="/swagger-ui.html" target="_blank">
+          <a href="https://de-docs.fit2cloud.com/" target="_blank">
             <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>
           </a>
           <router-link to="/about/index">
