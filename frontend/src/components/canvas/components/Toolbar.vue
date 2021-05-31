@@ -11,6 +11,19 @@
       <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
       <!--        <input v-model="scale" @input="handleScaleChange"> %-->
       <!--      </div>-->
+
+      <el-tooltip :content="$t('panel.style')">
+        <el-button :class="styleButtonActive?'button-show':'button-closed'" class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
+      </el-tooltip>
+
+      <el-tooltip v-if="!aidedButtonActive" :content="$t('panel.open_aided_design') ">
+        <el-button class="el-icon-help button-closed" size="mini" circle @click="changeAidedDesign" />
+      </el-tooltip>
+
+      <el-tooltip v-if="aidedButtonActive" :content="$t('panel.close_aided_design') ">
+        <el-button class="el-icon-help button-show" size="mini" circle @click="changeAidedDesign" />
+      </el-tooltip>
+
       <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
       </el-tooltip>
@@ -56,11 +69,8 @@ import {
 export default {
   name: 'Toolbar',
   props: {
-    buttonActive: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
+    styleButtonActive: Boolean,
+    aidedButtonActive: Boolean
   },
   data() {
     return {
@@ -233,6 +243,9 @@ export default {
 
     clickPreview() {
       this.$emit('previewFullScreen')
+    },
+    changeAidedDesign() {
+      this.$emit('changeAidedDesign')
     }
   }
 }
