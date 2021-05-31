@@ -41,18 +41,6 @@ public class DefaultLicenseService {
                 f2CLicenseResponse.setMessage("The license is unavailable for this product.");
                 return f2CLicenseResponse;
             }
-
-//            检查每个模块的PLU限制
-//            if(!Arrays.asList(NO_PLU_LIMIT_MODULES).contains(moduleId)){
-//                AuthorizationUnit authorizationUnit= CommonBeanFactory.getBean(AuthorizationUnit.class);
-//                try{
-//                    authorizationUnit.calculateAssets(f2CLicenseResponse.getLicense().getCount());
-//                    return f2CLicenseResponse;
-//                }catch (Exception e){
-//                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.invalid);
-//                    f2CLicenseResponse.setMessage(e.getMessage());
-//                }
-//            }
             return f2CLicenseResponse;
         }catch (Exception e){
             return F2CLicenseResponse.invalid(e.getMessage());
@@ -79,14 +67,8 @@ public class DefaultLicenseService {
             License license  = readLicense();
             return validateLicense(product, license.getLicense());
         } catch (Exception e) {
-            return F2CLicenseResponse.invalid(e.getMessage());
+            return F2CLicenseResponse.noRecord();
         }
-    }
-
-    public void validateF2cLicense(){
-        License license  = readLicense();
-        F2CLicenseResponse f2CLicenseResponse = validateLicense(product, license.getLicense());
-        writeLicense(license.getLicense(), f2CLicenseResponse);
     }
 
     public F2CLicenseResponse updateLicense(String product, String licenseKey) {
@@ -104,12 +86,10 @@ public class DefaultLicenseService {
     public License readLicense() {
         License license = innerLicenseService.getLicense(LICENSE_ID);
         if (license == null) {
-            /*DEException.throwException(Translator.get("i18n_no_license_record"));*/
             DEException.throwException("i18n_no_license_record");
         }
         if (StringUtils.isBlank(license.getLicense())) {
             DEException.throwException("i18n_license_is_empty");
-            //F2CException.throwException(Translator.get("i18n_license_is_empty"));
         }
         return license;
     }
@@ -117,9 +97,7 @@ public class DefaultLicenseService {
     // 创建或更新License
     private void writeLicense(String licenseKey, F2CLicenseResponse response) {
         if (StringUtils.isBlank(licenseKey)) {
-
             DEException.throwException("i18n_license_is_empty");
-
         }
         License license = new License();
         license.setId(LICENSE_ID);
