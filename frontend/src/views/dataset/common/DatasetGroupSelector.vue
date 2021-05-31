@@ -51,7 +51,7 @@
     </el-col>
 
     <!--scene-->
-    <el-col v-if="sceneMode">
+    <el-col v-if="sceneMode" v-loading="dsLoading">
       <el-row class="title-css">
         <span class="title-text">
           {{ currGroup.name }}
@@ -150,7 +150,8 @@ export default {
       tableForm: {
         name: '',
         sort: 'type asc,create_time desc,name asc'
-      }
+      },
+      dsLoading: false
     }
   },
   computed: {},
@@ -219,6 +220,7 @@ export default {
     tableTree() {
       this.tableData = []
       if (this.currGroup) {
+        this.dsLoading = true
         post('/dataset/table/list', {
           sort: 'type asc,create_time desc,name asc',
           sceneId: this.currGroup.id,
@@ -235,6 +237,9 @@ export default {
           this.$nextTick(function() {
             this.unionDataChange()
           })
+          this.dsLoading = false
+        }).catch(res => {
+          this.dsLoading = false
         })
       }
     },

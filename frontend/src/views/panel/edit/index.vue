@@ -8,28 +8,34 @@
       </el-col>
       <!--横向工具栏-->
       <el-col :span="16">
-        <Toolbar :button-active="show&&showIndex===2" @showPanel="showPanel" @close-left-panel="closeLeftPanel" @previewFullScreen="previewFullScreen" />
+        <Toolbar
+          :style-button-active="show&&showIndex===2"
+          :aided-button-active="aidedButtonActive"
+          @showPanel="showPanel"
+          @previewFullScreen="previewFullScreen"
+          @changeAidedDesign="changeAidedDesign"
+        />
       </el-col>
     </el-header>
     <de-container>
+      <!--左侧导航栏-->
       <de-aside-container class="ms-aside-container">
         <div style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
-            <!-- 视图图表 -->
+            <!-- 视图图表 start -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
               <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
             </div>
-            <!-- 视图文字 -->
             <div style="position: relative; margin: 18px auto 16px;">
               <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                 {{ $t('panel.view') }}
               </div>
             </div>
-            <!-- 视图分割线 -->
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
-            <!-- 过滤组件 -->
+            <!-- 视图图表 end -->
+            <!-- 过滤组件 start -->
             <div tabindex="-1" style="position: relative; margin: 16px auto">
               <div style="height: 60px; position: relative">
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
@@ -42,43 +48,18 @@
                 </div>
               </div>
             </div>
-            <!-- 分割线 -->
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
-
-            <!-- 视图图表 -->
-            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
-              <el-button :class="show&&showIndex===2? 'button-show':'button-closed'" circle class="el-icon-magic-stick" size="mini" @click="showPanel(2)" />
-            </div>
-            <!-- 视图文字 -->
-            <div style="position: relative; margin: 18px auto 16px;">
-              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                {{ $t('panel.style') }}
-              </div>
-            </div>
-            <!-- 视图分割线 -->
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
-            </div>
+            <!-- 过滤组件 end -->
           </div>
         </div>
-        <!--        <div ref="leftPanel" :class="{show:show}" class="leftPanel-container">-->
-        <!--          <div />-->
-        <!--          <div v-if="show" class="leftPanel">-->
-        <!--            <div style="height:100%;overflow-y: auto">-->
-        <!--              <view-select v-show=" show && showIndex===0" />-->
-        <!--              <filter-group v-show=" show &&showIndex===1" />-->
-        <!--              <subject-setting v-show=" show &&showIndex===2" />-->
-        <!--            </div>-->
-        <!--          </div>-->
-        <!--        </div>-->
       </de-aside-container>
 
       <!--画布区域-->
-      <el-main>
+      <de-main-container style="margin-left: 5px;margin-right: 5px">
+        <!--左侧抽屉-->
         <el-drawer
-          title="我是标题"
           :visible.sync="show"
           :with-header="false"
           style="position: absolute;"
@@ -101,9 +82,14 @@
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor />
+          <Editor style="margin: 15px;" />
         </div>
-      </el-main>
+      </de-main-container>
+      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">
+        <AttrList v-if="curComponent" />
+        <p v-else class="placeholder">{{ $t('panel.select_component') }}</p>
+      </de-aside-container>
+
     </de-container>
 
     <el-dialog
@@ -160,6 +146,7 @@ import Toolbar from '@/components/canvas/components/Toolbar'
 import { findOne } from '@/api/panel/panel'
 import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
+import AttrList from '@/components/canvas/components/AttrList.vue'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -181,7 +168,8 @@ export default {
     FilterDialog,
     SubjectSetting,
     PreviewFullScreen,
-    Preview
+    Preview,
+    AttrList
   },
   data() {
     return {
@@ -197,7 +185,9 @@ export default {
       currentWidget: null,
       currentFilterCom: null,
       subjectVisible: false,
-      previewVisible: false
+      previewVisible: false,
+      componentStyleShow: true,
+      aidedButtonActive: false
     }
   },
 
@@ -417,6 +407,9 @@ export default {
     },
     previewFullScreen() {
       this.previewVisible = true
+    },
+    changeAidedDesign() {
+      this.aidedButtonActive = !this.aidedButtonActive
     }
 
   }
@@ -510,6 +503,25 @@ export default {
 
 .button-closed{
   background-color: #ffffff!important;
+}
+.style-aside{
+  width: 85px;
+  max-width:85px!important;
+  border: 1px solid #E6E6E6;
+  padding: 3px;
+  transition: all 0.3s;
+
+}
+.placeholder{
+  font-size: 14px;
+  color: gray;
+}
+.show {
+  transform: translateX(0);
+}
+
+.hidden {
+  transform: translateX(100%);
 }
 
 </style>
