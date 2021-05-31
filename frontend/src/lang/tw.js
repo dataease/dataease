@@ -679,7 +679,20 @@ export default {
     title_limit: '標題不能大於50個字符',
     filter_condition: '過濾條件',
     filter_field_can_null: '過濾字段必填',
-    preview_100_data: '預覽前100條記錄'
+    preview_100_data: '預覽前100條記錄',
+    chart_table_normal: '明細表',
+    chart_card: '指標卡',
+    chart_bar: '基礎柱狀圖',
+    chart_bar_stack: '堆疊柱狀圖',
+    chart_bar_horizontal: '橫向柱狀圖',
+    chart_bar_stack_horizontal: '橫向堆疊柱狀圖',
+    chart_line: '基礎折線圖',
+    chart_line_stack: '堆疊折線圖',
+    chart_pie: '餅圖',
+    chart_pie_rose: '南丁格爾玫瑰圖',
+    chart_funnel: '漏鬥圖',
+    chart_radar: '雷達圖',
+    chart_gauge: '儀表盤'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
