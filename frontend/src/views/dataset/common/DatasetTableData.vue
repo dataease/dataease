@@ -1,5 +1,5 @@
 <template>
-  <el-col ref="container" style="width: 100%;height:100%">
+  <el-col ref="container" v-loading="dataLoading" style="width: 100%;height:100%">
     <span>{{ table.name }}</span>
     <ux-grid
       ref="plxTable"
@@ -43,7 +43,8 @@ export default {
     return {
       fields: [],
       data: [],
-      height: 'auto'
+      height: 'auto',
+      dataLoading: false
     }
   },
   watch: {
@@ -64,6 +65,7 @@ export default {
     initData() {
       this.resetData()
       if (this.table.id) {
+        this.dataLoading = true
         this.table.row = 100
         post('/dataset/table/getPreviewData/1/100', this.table).then(response => {
           this.fields = response.data.fields
@@ -76,6 +78,9 @@ export default {
             this.$error(response.data.msg, 3000)
           }
           this.$refs.plxTable.reloadData(datas)
+          this.dataLoading = false
+        }).catch(res => {
+          this.dataLoading = false
         })
       }
     },
