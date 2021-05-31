@@ -71,16 +71,17 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import Treeselect from '@riophae/vue-treeselect'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+// import Treeselect from '@riophae/vue-treeselect'
+// import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { PHONE_REGEX } from '@/utils/validate'
-import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
+// import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 import { allRoles } from '@/api/system/role'
 import { addUser, editUser } from '@/api/system/user'
 export default {
 
-  components: { LayoutContent, Treeselect },
+  //   components: { LayoutContent, Treeselect },
+  components: { LayoutContent },
   data() {
     return {
       form: {
@@ -211,7 +212,7 @@ export default {
     },
     // 获取弹窗内部门数据
     loadDepts({ action, parentNode, callback }) {
-      if (action === LOAD_ROOT_OPTIONS && !this.form.deptId) {
+      if (action === 'LOAD_ROOT_OPTIONS' && !this.form.deptId) {
         const _self = this
         treeByDeptId(0).then(res => {
           const results = res.data.map(node => {
@@ -225,7 +226,7 @@ export default {
         })
       }
 
-      if (action === LOAD_CHILDREN_OPTIONS) {
+      if (action === 'LOAD_CHILDREN_OPTIONS') {
         const _self = this
         getDeptTree(parentNode.id).then(res => {
           parentNode.children = res.data.map(function(obj) {
@@ -279,6 +280,9 @@ export default {
       this.$router.push({ name: 'system-user' })
     },
     filterData(instanceId) {
+      if (!this.depts) {
+        return
+      }
       const results = this.depts.map(node => {
         if (node.hasChildren) {
           node.children = null
