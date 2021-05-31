@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 public class DeFileUtils {
 
@@ -110,6 +111,16 @@ public class DeFileUtils {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static void deleteFile(String path) {
+        File file = new File(path);
+        if (file.exists()){
+            if (file.isDirectory()) {
+                Arrays.stream(file.listFiles()).forEach(item -> deleteFile(item.getAbsolutePath()));
+            }
+            file.delete();
         }
     }
 }

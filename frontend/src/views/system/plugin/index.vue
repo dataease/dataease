@@ -54,7 +54,7 @@ import ComplexTable from '@/components/business/complex-table'
 
 import { checkPermission } from '@/utils/permission'
 import { formatCondition } from '@/utils/index'
-import { pluginLists } from '@/api/system/plugin'
+import { pluginLists, uninstall } from '@/api/system/plugin'
 import { getToken } from '@/utils/auth'
 export default {
 
@@ -131,6 +131,12 @@ export default {
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
+        uninstall(row.pluginId).then(res => {
+          this.search()
+          this.$success('卸载成功')
+        }).catch(() => {
+          this.$error('卸载失败')
+        })
       }).catch(() => {
         this.$info(this.$t('commons.delete_cancel'))
       })

@@ -1,6 +1,11 @@
 package io.dataease.plugins.loader;
 
+import io.dataease.plugins.common.annotation.PluginResultMap;
 import io.dataease.plugins.config.SpringContextUtil;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.type.TypeAliasRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.stereotype.Component;
@@ -53,13 +58,18 @@ public class ModuleClassLoader extends URLClassLoader {
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         if(findLoadedClass(name)==null){
-            return super.loadClass(name);
+            Class<?> aClass = super.loadClass(name);
+            Optional.ofNullable(aClass.getAnnotation(PluginResultMap.class)).ifPresent(anno -> {
+                SqlSessionFactory sqlSessionFactory = SpringContextUtil.getBean(SqlSessionFactory.class);
+                Configuration configuration = sqlSessionFactory.getConfiguration();
+                TypeAliasRegistry typeAliasRegistry = configuration.getTypeAliasRegistry();
+                typeAliasRegistry.registerAlias(name.toLowerCase(), aClass);
+            });
+            return aClass;
         }else{
             return cacheClassMap.get(name);
         }
-
     }
-
 
 
     /**
@@ -76,8 +86,8 @@ public class ModuleClassLoader extends URLClassLoader {
                 JarEntry je = en.nextElement();
                 String name = je.getName();
                 //这里添加了路径扫描限制
-                if (name.endsWith(".class")) {
-                    String className = name.replace(".class", "").replaceAll("/", ".");
+                if (name.endsWith(".class")) {String className = name.replace(".class", "").replaceAll("/", ".");
+
                     input = jarFile.getInputStream(je);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     int bufferSize = 4096;
@@ -89,6 +99,9 @@ public class ModuleClassLoader extends URLClassLoader {
                     byte[] classBytes = baos.toByteArray();
                     classBytesMap.put(className,classBytes);
                 }
+                /*if (name.endsWith(".xml")) {
+                    loadMapperXml(name);
+                }*/
             }
         } catch (IOException e) {
             e.printStackTrace();

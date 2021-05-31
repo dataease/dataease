@@ -10,6 +10,7 @@
     <result column="version" jdbcType="VARCHAR" property="version" />
     <result column="install_type" jdbcType="INTEGER" property="installType" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="load_mybatis" jdbcType="BIT" property="loadMybatis" />
     <result column="release_time" jdbcType="BIGINT" property="releaseTime" />
     <result column="install_time" jdbcType="BIGINT" property="installTime" />
     <result column="module_name" jdbcType="VARCHAR" property="moduleName" />
@@ -75,8 +76,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    plugin_id, `name`, `free`, cost, descript, version, install_type, creator, release_time, 
-    install_time, module_name, bean_name, icon
+    plugin_id, `name`, `free`, cost, descript, version, install_type, creator, load_mybatis, 
+    release_time, install_time, module_name, bean_name, icon
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.MyPluginExample" resultMap="BaseResultMap">
     select
@@ -111,14 +112,14 @@
   <insert id="insert" parameterType="io.dataease.base.domain.MyPlugin">
     insert into my_plugin (plugin_id, `name`, `free`, 
       cost, descript, version, 
-      install_type, creator, release_time, 
-      install_time, module_name, bean_name, 
-      icon)
+      install_type, creator, load_mybatis, 
+      release_time, install_time, module_name, 
+      bean_name, icon)
     values (#{pluginId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{free,jdbcType=BIT}, 
       #{cost,jdbcType=INTEGER}, #{descript,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, 
-      #{installType,jdbcType=INTEGER}, #{creator,jdbcType=VARCHAR}, #{releaseTime,jdbcType=BIGINT}, 
-      #{installTime,jdbcType=BIGINT}, #{moduleName,jdbcType=VARCHAR}, #{beanName,jdbcType=VARCHAR}, 
-      #{icon,jdbcType=VARCHAR})
+      #{installType,jdbcType=INTEGER}, #{creator,jdbcType=VARCHAR}, #{loadMybatis,jdbcType=BIT}, 
+      #{releaseTime,jdbcType=BIGINT}, #{installTime,jdbcType=BIGINT}, #{moduleName,jdbcType=VARCHAR}, 
+      #{beanName,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.MyPlugin">
     insert into my_plugin
@@ -146,6 +147,9 @@
       </if>
       <if test="creator != null">
         creator,
+      </if>
+      <if test="loadMybatis != null">
+        load_mybatis,
       </if>
       <if test="releaseTime != null">
         release_time,
@@ -187,6 +191,9 @@
       </if>
       <if test="creator != null">
         #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="loadMybatis != null">
+        #{loadMybatis,jdbcType=BIT},
       </if>
       <if test="releaseTime != null">
         #{releaseTime,jdbcType=BIGINT},
@@ -238,6 +245,9 @@
       <if test="record.creator != null">
         creator = #{record.creator,jdbcType=VARCHAR},
       </if>
+      <if test="record.loadMybatis != null">
+        load_mybatis = #{record.loadMybatis,jdbcType=BIT},
+      </if>
       <if test="record.releaseTime != null">
         release_time = #{record.releaseTime,jdbcType=BIGINT},
       </if>
@@ -268,6 +278,7 @@
       version = #{record.version,jdbcType=VARCHAR},
       install_type = #{record.installType,jdbcType=INTEGER},
       creator = #{record.creator,jdbcType=VARCHAR},
+      load_mybatis = #{record.loadMybatis,jdbcType=BIT},
       release_time = #{record.releaseTime,jdbcType=BIGINT},
       install_time = #{record.installTime,jdbcType=BIGINT},
       module_name = #{record.moduleName,jdbcType=VARCHAR},
@@ -301,6 +312,9 @@
       <if test="creator != null">
         creator = #{creator,jdbcType=VARCHAR},
       </if>
+      <if test="loadMybatis != null">
+        load_mybatis = #{loadMybatis,jdbcType=BIT},
+      </if>
       <if test="releaseTime != null">
         release_time = #{releaseTime,jdbcType=BIGINT},
       </if>
@@ -328,6 +342,7 @@
       version = #{version,jdbcType=VARCHAR},
       install_type = #{installType,jdbcType=INTEGER},
       creator = #{creator,jdbcType=VARCHAR},
+      load_mybatis = #{loadMybatis,jdbcType=BIT},
       release_time = #{releaseTime,jdbcType=BIGINT},
       install_time = #{installTime,jdbcType=BIGINT},
       module_name = #{moduleName,jdbcType=VARCHAR},

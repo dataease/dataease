@@ -351,6 +351,13 @@
             <artifactId>c3p0</artifactId>
             <version>0.9.1.2</version>
         </dependency>
+        <!--由于暂时插件接口未注册到公司仓库，请先down下代码安装到本地仓库
+        https://github.com/dataease/dataease-plugins-->
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>dataease-plugin-xpack</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

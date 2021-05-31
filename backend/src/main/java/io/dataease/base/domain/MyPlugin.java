@@ -21,6 +21,8 @@ public class MyPlugin implements Serializable {
 
     private String creator;
 
+    private Boolean loadMybatis;
+
     private Long releaseTime;
 
     private Long installTime;

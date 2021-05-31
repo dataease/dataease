@@ -5,17 +5,16 @@ import io.dataease.base.domain.MyPlugin;
 import io.dataease.base.mapper.MyPluginMapper;
 import io.dataease.base.mapper.ext.ExtSysPluginMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
-import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.ZipUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.plugins.config.LoadjarUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
@@ -38,8 +37,9 @@ public class PluginService {
     @Resource
     private MyPluginMapper myPluginMapper;
 
-    @Resource
+    @Autowired
     private LoadjarUtil loadjarUtil;
+
 
     public List<MyPlugin> query(BaseGridRequest request) {
         GridExample gridExample = request.convertExample();
@@ -60,6 +60,8 @@ public class PluginService {
         try {
             ZipUtils.upZipFile(dest, folder);
         } catch (IOException e) {
+            DeFileUtils.deleteFile(pluginDir+"temp/");
+            DeFileUtils.deleteFile(folder);
             // 需要删除文件
             e.printStackTrace();
         }
@@ -67,27 +69,78 @@ public class PluginService {
         File folderFile = new File(folder);
         File[] jsonFiles = folderFile.listFiles(this::isPluginJson);
         if (ArrayUtils.isEmpty(jsonFiles)) {
+            DeFileUtils.deleteFile(pluginDir+"temp/");
+            DeFileUtils.deleteFile(folder);
             throw new RuntimeException("缺少插件描述文件");
         }
         MyPlugin myPlugin = formatJsonFile(jsonFiles[0]);
         //4.加载jar包 失败则 直接返回错误 删除文件
         File[] jarFiles = folderFile.listFiles(this::isPluginJar);
         if (ArrayUtils.isEmpty(jarFiles)) {
+            DeFileUtils.deleteFile(pluginDir+"temp/");
+            DeFileUtils.deleteFile(folder);
             throw new RuntimeException("缺少插件jar文件");
         }
-        File jarFile = jarFiles[0];
-        String jarRoot = pluginDir+"jar/";
-        String jarPath = null;
+        String versionDir = null;
         try {
-            jarPath = DeFileUtils.copy(jarFile, jarRoot);
-        } catch (IOException e) {
+            File jarFile = jarFiles[0];
+            versionDir = makeVersionDir(myPlugin);
+            String jarPath = null;
+            jarPath = DeFileUtils.copy(jarFile, versionDir);
+            //DeFileUtils.copy(folderFile, versionDir);
+            loadJar(jarPath, myPlugin);
+            myPluginMapper.insert(myPlugin);
+        } catch (Exception e) {
+            if (StringUtils.isNotEmpty(versionDir)) {
+                DeFileUtils.deleteFile(versionDir);
+            }
             e.printStackTrace();
+        }finally {
+            DeFileUtils.deleteFile(pluginDir+"temp/");
+            DeFileUtils.deleteFile(folder);
         }
-        loadjarUtil.loadJar(jarPath);
+
+        //mybatisLoader.loadMybatis(myPlugin);
         //5.写表到my_plugin
-        myPlugin.setPluginId(0L);
-        myPluginMapper.insert(myPlugin);
+        // myPlugin.setPluginId(0L);
+
         return null;
+    }
+
+    public void loadJar(String jarPath, MyPlugin myPlugin) throws Exception {
+        loadjarUtil.loadJar(jarPath, myPlugin);
+    }
+
+
+
+    private String makeVersionDir(MyPlugin myPlugin) {
+        String name = myPlugin.getName();
+        String dir = pluginDir + name + "/" + myPlugin.getVersion() + "/";
+        File fileDir = new File(dir);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+        }
+        return dir;
+    }
+
+    /**
+     * 卸载插件
+     * @param pluginId
+     * @return
+     */
+    public Boolean uninstall(Long pluginId) {
+        myPluginMapper.deleteByPrimaryKey(pluginId);
+        return true;
+    }
+
+    /**
+     * 改变插件状态
+     * @param pluginId
+     * @param status   true ？ 使用状态 : 禁用状态
+     * @return
+     */
+    public Boolean changeStatus(Long pluginId, Boolean status) {
+        return false;
     }
 
     //判断当前文件是否实插件描述文件
@@ -110,6 +163,7 @@ public class PluginService {
         Gson gson = new Gson();
         Map<String, Object> myPlugin = gson.fromJson(str, Map.class);
         myPlugin.put("free", (Double)myPlugin.get("free") > 0.0);
+        myPlugin.put("loadMybatis", (Double)myPlugin.get("loadMybatis") > 0.0);
         MyPlugin result = new MyPlugin();
         try {
             org.apache.commons.beanutils.BeanUtils.populate(result, myPlugin);
