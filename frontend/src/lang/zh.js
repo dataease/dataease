@@ -679,7 +679,20 @@ export default {
     title_limit: '标题不能大于50个字符',
     filter_condition: '过滤条件',
     filter_field_can_null: '过滤字段必填',
-    preview_100_data: '预览前100条记录'
+    preview_100_data: '预览前100条记录',
+    chart_table_normal: '明细表',
+    chart_card: '指标卡',
+    chart_bar: '基础柱状图',
+    chart_bar_stack: '堆叠柱状图',
+    chart_bar_horizontal: '横向柱状图',
+    chart_bar_stack_horizontal: '横向堆叠柱状图',
+    chart_line: '基础折线图',
+    chart_line_stack: '堆叠折线图',
+    chart_pie: '饼图',
+    chart_pie_rose: '南丁格尔玫瑰图',
+    chart_funnel: '漏斗图',
+    chart_radar: '雷达图',
+    chart_gauge: '仪表盘'
   },
   dataset: {
     sheet_warn: '有多个Sheet页，默认抽取第一个',
