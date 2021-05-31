@@ -17,6 +17,8 @@ import filter from '@/filter/filter'
 import directives from './directive'
 import VueClipboard from 'vue-clipboard2'
 import widgets from '@/components/widget'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
 
 import '@/components/canvas/custom-component' // 注册自定义组件
@@ -62,6 +64,7 @@ Vue.use(VueAxios, axios)
 Vue.use(filter)
 Vue.use(directives)
 Vue.use(message)
+Vue.component('Treeselect', Treeselect)
 Vue.config.productionTip = false
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
@@ -69,6 +72,15 @@ Vue.prototype.hasDataPermission = function(pTarget, pSource) {
     return pSource.indexOf(pTarget) > -1
   }
   return false
+}
+
+Vue.prototype.checkPermission = function(pers) {
+  const permissions = store.getters.permissions
+  const hasPermission = pers.every(needP => {
+    const result = permissions.includes(needP)
+    return result
+  })
+  return hasPermission
 }
 new Vue({
 

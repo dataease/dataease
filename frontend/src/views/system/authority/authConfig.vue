@@ -109,15 +109,14 @@ export default {
             direction: 'source',
             authType: 'panel',
             authTargets: 'dept,role,user'
+          },
+          {
+            tabName: this.$t('auth.menuAuth'),
+            head: this.$t('auth.menuAuthHead'),
+            direction: 'source',
+            authType: 'menu',
+            authTargets: 'role'
           }
-          // ,
-          // {
-          //   tabName: this.$t('auth.menuAuth'),
-          //   head: this.$t('auth.menuAuthHead'),
-          //   direction: 'source',
-          //   authType: 'menu',
-          //   authTargets: 'role'
-          // }
         ],
       targetActiveName: null,
       sourceActiveName: null,

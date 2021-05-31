@@ -6,8 +6,6 @@ import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.plugins.common.dto.PluginSysMenu;
-import io.dataease.plugins.common.service.PluginMenuService;
-import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,10 +13,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service

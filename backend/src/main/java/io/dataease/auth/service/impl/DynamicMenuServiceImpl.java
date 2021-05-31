@@ -31,6 +31,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         //增加插件中的菜单
         List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();
         if (CollectionUtils.isNotEmpty(pluginSysMenus) ) {
+            pluginSysMenus = pluginSysMenus.stream().filter(menu -> menu.getType() <= 1).collect(Collectors.toList());
             List<DynamicMenuDto> pluginDtos = pluginSysMenus.stream().map(this::convert).collect(Collectors.toList());
             dynamicMenuDtos.addAll(pluginDtos);
         }
