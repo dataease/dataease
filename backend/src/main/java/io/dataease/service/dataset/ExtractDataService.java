@@ -240,8 +240,7 @@ public class ExtractDataService {
             switch (updateType) {
                 // 全量更新
                 case all_scope:
-                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
-                    // TODO  before: check doris table column type
+                    datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
                     generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
@@ -344,6 +343,21 @@ public class ExtractDataService {
         }else {
             return datasetTableTaskLogs.get(0);
         }
+    }
+
+    private DatasetTableTaskLog getDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
+        datasetTableTaskLog.setTableId(datasetTableId);
+        datasetTableTaskLog.setTaskId(taskId);
+        datasetTableTaskLog.setStatus(JobStatus.Underway.name());
+        for (int i=0;i<5;i++){
+            List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
+            if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+                return datasetTableTaskLogs.get(0);
+            }
+        }
+        datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        return datasetTableTaskLog;
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {

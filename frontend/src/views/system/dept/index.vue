@@ -92,10 +92,8 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import TreeTable from '@/components/business/tree-table'
-import Treeselect from '@riophae/vue-treeselect'
 import { formatCondition, formatQuickCondition } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import { checkPermission } from '@/utils/permission'
 import { getDeptTree, addDept, editDept, delDept, loadTable } from '@/api/system/dept'
 
@@ -103,8 +101,7 @@ export default {
   name: 'MsOrganization',
   components: {
     LayoutContent,
-    TreeTable,
-    Treeselect
+    TreeTable
   },
   data() {
     return {
@@ -361,7 +358,7 @@ export default {
 
     // 获取弹窗内部门数据
     loadDepts({ action, parentNode, callback }) {
-      if (action === LOAD_ROOT_OPTIONS) {
+      if (action === 'LOAD_ROOT_OPTIONS') {
         const _self = this
         !this.depts && getDeptTree('0').then(res => {
           _self.depts = res.data.map(node => _self.normalizer(node))
@@ -369,7 +366,7 @@ export default {
         })
       }
 
-      if (action === LOAD_CHILDREN_OPTIONS) {
+      if (action === 'LOAD_CHILDREN_OPTIONS') {
         const _self = this
         getDeptTree(parentNode.id).then(res => {
           parentNode.children = res.data.map(function(obj) {

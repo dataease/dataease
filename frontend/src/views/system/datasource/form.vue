@@ -19,6 +19,9 @@
         </el-select>
       </el-form-item>
 
+      <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host">
+        <el-input v-model="form.configuration.host" autocomplete="off" :disabled="formType=='modify'" />
+      </el-form-item>
       <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase">
         <el-input v-model="form.configuration.dataBase" autocomplete="off" :disabled="formType=='modify'" />
       </el-form-item>
@@ -26,13 +29,10 @@
         <el-input v-model="form.configuration.username" autocomplete="off" :disabled="formType=='modify'" />
       </el-form-item>
       <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')" prop="configuration.password">
-        <el-input v-model="form.configuration.password" autocomplete="off" show-password :disabled="formType=='modify'" />
-      </el-form-item>
-      <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host">
-        <el-input v-model="form.configuration.host" autocomplete="off" :disabled="formType=='modify'" />
+        <el-input v-model="form.configuration.password" autocomplete="off" show-password  />
       </el-form-item>
       <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
-        <el-input v-model="form.configuration.port" autocomplete="off" :disabled="formType=='modify'" />
+        <el-input v-model="form.configuration.port" autocomplete="off"  />
       </el-form-item>
 
       <el-form-item>

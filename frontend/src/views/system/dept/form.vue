@@ -41,13 +41,10 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import Treeselect from '@riophae/vue-treeselect'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import { getDeptTree, treeByDeptId, addDept, editDept } from '@/api/system/dept'
 export default {
 
-  components: { LayoutContent, Treeselect },
+  components: { LayoutContent },
   data() {
     return {
       defaultForm: { deptId: null, top: true, pid: null },
@@ -100,7 +97,7 @@ export default {
     },
     // 获取弹窗内部门数据
     loadDepts({ action, parentNode, callback }) {
-      if (action === LOAD_ROOT_OPTIONS && !this.form.pid) {
+      if (action === 'LOAD_ROOT_OPTIONS' && !this.form.pid) {
         const _self = this
         treeByDeptId(0).then(res => {
           const results = res.data.map(node => {
@@ -114,7 +111,7 @@ export default {
         })
       }
 
-      if (action === LOAD_CHILDREN_OPTIONS) {
+      if (action === 'LOAD_CHILDREN_OPTIONS') {
         const _self = this
         getDeptTree(parentNode.id).then(res => {
           parentNode.children = res.data.map(function(obj) {

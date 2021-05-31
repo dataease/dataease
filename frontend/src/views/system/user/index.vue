@@ -162,7 +162,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 
-import { checkPermission } from '@/utils/permission'
+// import { checkPermission } from '@/utils/permission'
 import { formatCondition, formatQuickCondition } from '@/utils/index'
 import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
@@ -183,13 +183,13 @@ export default {
       buttons: [
         {
           label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit,
-          show: checkPermission(['user:edit'])
+          show: this.checkPermission(['user:edit'])
         }, {
           label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
-          show: checkPermission(['user:del'])
+          show: this.checkPermission(['user:del'])
         }, {
           label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'success', click: this.editPassword,
-          show: checkPermission(['user:editPwd'])
+          show: this.checkPermission(['user:editPwd'])
         }
       ],
       searchConfig: {
