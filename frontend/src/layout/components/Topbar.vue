@@ -47,7 +47,7 @@
             <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
           </router-link>
           <router-link to="/person-pwd/index">
-            <el-dropdown-item>{{ $t('user.reset_password') }}</el-dropdown-item>
+            <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link>
           <a href="/swagger-ui.html" target="_blank">
             <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>

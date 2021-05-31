@@ -3,6 +3,7 @@ package io.dataease.service.dataset;
 import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
+import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
@@ -63,6 +64,7 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
+import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -89,13 +91,17 @@ public class ExtractDataService {
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
     @Resource
+    @Lazy
     private DataSetTableTaskLogService dataSetTableTaskLogService;
     @Resource
+    @Lazy
     private DataSetTableTaskService dataSetTableTaskService;
     @Resource
     private DatasourceMapper datasourceMapper;
     @Resource
     private DatasetTableMapper datasetTableMapper;
+    @Resource
+    private DatasetTableTaskMapper datasetTableTaskMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -111,15 +117,15 @@ public class ExtractDataService {
     private String user;
     @Value("${carte.passwd:cluster}")
     private String passwd;
-
     private static String creatTableSql = "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
             "Column_Fields" +
             "UNIQUE KEY(dataease_uuid)\n" +
             "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS 10\n" +
             "PROPERTIES(\"replication_num\" = \"1\");";
+
+    private static String dropTableSql = "DROP TABLE IF EXISTS TABLE_NAME;";
     private static String shellScript = "curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load\n" +
             "rm -rf %s\n";
-
     private String createDorisTablColumnSql(List<DatasetTableField> datasetTableFields) {
         String Column_Fields = "dataease_uuid  varchar(50), `";
         for (DatasetTableField datasetTableField : datasetTableFields) {
@@ -157,11 +163,21 @@ public class ExtractDataService {
     private void createDorisTable(String dorisTableName, String dorisTablColumnSql) throws Exception {
         Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-        ;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         datasourceRequest.setQuery(creatTableSql.replace("TABLE_NAME", dorisTableName).replace("Column_Fields", dorisTablColumnSql));
         jdbcProvider.exec(datasourceRequest);
+    }
+
+    private void dropDorisTable(String dorisTableName) {
+        try {
+            Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(dorisDatasource);
+            datasourceRequest.setQuery(dropTableSql.replace("TABLE_NAME", dorisTableName));
+            jdbcProvider.exec(datasourceRequest);
+        }catch (Exception ignore){}
     }
 
     private void replaceTable(String dorisTableName) throws Exception {
@@ -174,18 +190,36 @@ public class ExtractDataService {
         jdbcProvider.exec(datasourceRequest);
     }
 
-    public void extractData(String datasetTableId, String taskId, String type) {
-        DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
+    public synchronized boolean updateSyncStatus(DatasetTable  datasetTable ){
         datasetTable.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
-        example.createCriteria().andIdEqualTo(datasetTableId);
-        if (datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0) {
+        example.createCriteria().andIdEqualTo(datasetTable.getId());
+        datasetTableMapper.selectByExample(example);
+        example.clear();
+        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
+        example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
+        return datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+    }
+
+    public void extractData(String datasetTableId, String taskId, String type, JobExecutionContext context) {
+        DatasetTable datasetTable = getDatasetTable(datasetTableId);
+        if(datasetTable == null){
+            LogUtil.error("Can not find DatasetTable: " + datasetTableId);
+        }
+        DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
+        boolean isSIMPLEJob = (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString()));
+        if(updateSyncStatus(datasetTable) && !isSIMPLEJob){
+            LogUtil.info("Skip synchronization task for table : " + datasetTableId);
             return;
         }
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         UpdateType updateType = UpdateType.valueOf(type);
         Datasource datasource = new Datasource();
         try {
+            if(context != null){
+                datasetTable.setQrtzInstance(context.getFireInstanceId());
+                datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+            }
             if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
                 datasource = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
             } else {
@@ -206,7 +240,7 @@ public class ExtractDataService {
             switch (updateType) {
                 // 全量更新
                 case all_scope:
-                    writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
                     // TODO  before: check doris table column type
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
@@ -232,7 +266,7 @@ public class ExtractDataService {
                     if (CollectionUtils.isEmpty(dataSetTaskLogDTOS)) {
                         return;
                     }
-                    writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
 
                     // 增量添加
                     if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {
@@ -256,6 +290,10 @@ public class ExtractDataService {
                     dataSetTableTaskLogService.save(datasetTableTaskLog);
                     break;
             }
+            datasetTable.setSyncStatus(JobStatus.Completed.name());
+            DatasetTableExample example = new DatasetTableExample();
+            example.createCriteria().andIdEqualTo(datasetTableId);
+            datasetTableMapper.updateByExampleSelective(datasetTable, example);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtil.error("Extract data error: " + datasetTableId, e);
@@ -263,25 +301,49 @@ public class ExtractDataService {
             datasetTableTaskLog.setInfo(ExceptionUtils.getStackTrace(e));
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
+
+            datasetTable.setSyncStatus(JobStatus.Error.name());
+            DatasetTableExample example = new DatasetTableExample();
+            example.createCriteria().andIdEqualTo(datasetTableId);
+            datasetTableMapper.updateByExampleSelective(datasetTable, example);
+
+            if(updateType.name().equalsIgnoreCase("all_scope")){
+                dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
+            }
         } finally {
-            DatasetTableTask datasetTableTask = dataSetTableTaskService.get(taskId);
             if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                 datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                 dataSetTableTaskService.update(datasetTableTask);
             }
-            datasetTable.setSyncStatus(JobStatus.Completed.name());
-            example.clear();
-            example.createCriteria().andIdEqualTo(datasetTableId);
-            datasetTableMapper.updateByExampleSelective(datasetTable, example);
         }
     }
 
-    private void writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
+    private DatasetTable getDatasetTable(String datasetTableId){
+        for (int i=0;i<5;i++){
+            DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
+            if(datasetTable == null){
+                try {
+                    Thread.sleep(1000);
+                }catch (Exception ignore){}
+            }else {
+                return datasetTable;
+            }
+        }
+        return null;
+    }
+
+    private DatasetTableTaskLog writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-        datasetTableTaskLog.setStartTime(System.currentTimeMillis());
-        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
+        if(CollectionUtils.isEmpty(datasetTableTaskLogs)){
+            datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+            dataSetTableTaskLogService.save(datasetTableTaskLog);
+            return datasetTableTaskLog;
+        }else {
+            return datasetTableTaskLogs.get(0);
+        }
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
@@ -619,26 +681,27 @@ public class ExtractDataService {
     }
 
     public boolean isKettleRunning() {
-        try {
-            if (!InetAddress.getByName(carte).isReachable(1000)) {
-                return false;
-            }
-            HttpClient httpClient;
-            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
-            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
-            clientBuilder.setConnectionTimeout(1);
-            clientBuilder.setCredentials(user, passwd);
-            httpClient = clientBuilder.build();
-            HttpResponse httpResponse = httpClient.execute(getMethod);
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
-            if (statusCode != -1 && statusCode < 400) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
+        return true;
+//        try {
+//            if (!InetAddress.getByName(carte).isReachable(1000)) {
+//                return false;
+//            }
+//            HttpClient httpClient;
+//            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
+//            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+//            clientBuilder.setConnectionTimeout(1);
+//            clientBuilder.setCredentials(user, passwd);
+//            httpClient = clientBuilder.build();
+//            HttpResponse httpResponse = httpClient.execute(getMethod);
+//            int statusCode = httpResponse.getStatusLine().getStatusCode();
+//            if (statusCode != -1 && statusCode < 400) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } catch (Exception e) {
+//            return false;
+//        }
     }
 
     private static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +

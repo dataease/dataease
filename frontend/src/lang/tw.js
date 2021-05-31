@@ -278,7 +278,7 @@ export default {
       default_module: '默认模块'
     },
     datasource: '數據源',
-    char_can_not_more_50: '名稱不能超過50字符',
+    char_can_not_more_50: '不能超過50字符',
     share_success: '分享成功'
   },
   documentation: {
@@ -435,7 +435,8 @@ export default {
     current_user: '當前用戶',
     origin_passwd: '原始密碼',
     new_passwd: '新密碼',
-    confirm_passwd: '確認密碼'
+    confirm_passwd: '確認密碼',
+    change_password: '修改密碼'
   },
   role: {
     menu_authorization: '菜單授權',
@@ -677,7 +678,8 @@ export default {
     quota_show: '指標顯示',
     title_limit: '標題不能大於50個字符',
     filter_condition: '過濾條件',
-    filter_field_can_null: '過濾字段必填'
+    filter_field_can_null: '過濾字段必填',
+    preview_100_data: '預覽前100條記錄'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -732,13 +734,13 @@ export default {
     error: '錯誤',
     completed: '完成',
     underway: '執行中',
-    task_update: '定時更新',
+    task_update: '更新設置',
     update_type: '更新方式',
     all_scope: '全量更新',
     add_scope: '增量更新',
     select_data_time: '選擇日期時間',
     execute_rate: '執行頻率',
-    execute_once: '只執行一次',
+    execute_once: '立即執行',
     cron_config: '表達時設定',
     no_limit: '無限制',
     set_end_time: '設定結束時間',

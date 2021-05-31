@@ -98,7 +98,7 @@
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
-                @change="save(true)"
+                @change="save(true,'chart')"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                   <el-radio value="table-normal" label="table-normal"><svg-icon icon-class="table-normal" class="chart-icon" /></el-radio>
@@ -430,7 +430,7 @@ export default {
         return true
       })
     },
-    save(getData) {
+    save(getData, trigger) {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -470,6 +470,12 @@ export default {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
+      }
+      if (view.type === 'line' && trigger === 'chart') {
+        view.customAttr.size.lineArea = false
+      }
+      if (view.type === 'line-stack' && trigger === 'chart') {
+        view.customAttr.size.lineArea = true
       }
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)

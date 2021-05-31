@@ -1,5 +1,5 @@
 <template>
-  <layout-content :header="$t('member.edit_password')">
+  <layout-content :header="$t('user.change_password')">
 
     <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item :label="$t('user.origin_passwd')" prop="oldPwd">

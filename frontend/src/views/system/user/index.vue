@@ -25,6 +25,24 @@
           <div>{{ scope.row.dept && scope.row.dept.deptName }}</div>
         </template>
       </el-table-column>
+      <el-table-column prop="roles" :label="$t('commons.role')">
+        <template slot-scope="scope">
+          <div v-if="scope.row.roles && scope.row.roles.length <= 2">
+            <div v-for="role in scope.row.roles" :key="role.roleId">{{ role.roleName }}</div>
+          </div>
+          <div v-if="scope.row.roles && scope.row.roles.length > 2">
+            <el-tooltip placement="top">
+              <div slot="content">
+                <div v-for="role in scope.row.roles" :key="role.roleId">{{ role.roleName }}</div>
+              </div>
+              <div>
+                <div v-for="(role,index) in scope.row.roles" v-if="index < 2" :key="role.roleId">{{ role.roleName }}</div>
+                <div>...</div>
+              </div>
+            </el-tooltip>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="status" :label="$t('commons.status')">
         <template v-slot:default="scope">
           <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />

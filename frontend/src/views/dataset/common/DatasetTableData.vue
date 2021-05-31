@@ -1,5 +1,5 @@
 <template>
-  <el-col ref="container" style="width: 100%;height:100%">
+  <el-col ref="container" v-loading="dataLoading" style="width: 100%;height:100%">
     <span>{{ table.name }}</span>
     <ux-grid
       ref="plxTable"
@@ -14,10 +14,17 @@
         :key="field.dataeaseName"
         min-width="200px"
         :field="field.dataeaseName"
-        :title="field.name"
         :resizable="true"
-      />
+      >
+        <template slot="header">
+          <svg-icon v-if="field.deType === 0" icon-class="field_text" class="field-icon-text" />
+          <svg-icon v-if="field.deType === 1" icon-class="field_time" class="field-icon-time" />
+          <svg-icon v-if="field.deType === 2 || field.deType === 3" icon-class="field_value" class="field-icon-value" />
+          <span>{{ field.name }}</span>
+        </template>
+      </ux-table-column>
     </ux-grid>
+    <span v-if="table.name" style="font-size: 12px;">{{ $t('chart.preview_100_data') }}</span>
   </el-col>
 </template>
 
@@ -36,7 +43,8 @@ export default {
     return {
       fields: [],
       data: [],
-      height: 'auto'
+      height: 'auto',
+      dataLoading: false
     }
   },
   watch: {
@@ -57,8 +65,9 @@ export default {
     initData() {
       this.resetData()
       if (this.table.id) {
-        this.table.row = 10
-        post('/dataset/table/getPreviewData/1/10', this.table).then(response => {
+        this.dataLoading = true
+        this.table.row = 100
+        post('/dataset/table/getPreviewData/1/100', this.table).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
           const datas = this.data
@@ -69,6 +78,9 @@ export default {
             this.$error(response.data.msg, 3000)
           }
           this.$refs.plxTable.reloadData(datas)
+          this.dataLoading = false
+        }).catch(res => {
+          this.dataLoading = false
         })
       }
     },

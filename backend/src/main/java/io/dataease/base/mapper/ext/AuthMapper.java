@@ -16,6 +16,8 @@ public interface AuthMapper {
 
     List<String> permissions(@Param("userId") Long userId);
 
+    List<Long> userMenuIds(@Param("userId") Long userId);
+
 
     SysUserEntity findUser(@Param("userId") Long userId);
 

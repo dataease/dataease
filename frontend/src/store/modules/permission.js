@@ -36,6 +36,14 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
     if (router.type === 1 && router.pid === 0 && router.component && router.component !== 'Layout') {
       router = decorate(router)
     }
+    if (router.isPlugin) {
+      const jsName = router.component
+      router.component = 'system/plugin/dynamic'
+      router.props = {
+        jsname: jsName,
+        menuid: router.id
+      }
+    }
     if (router.component) {
       if (router.component === 'Layout') { // Layout组件特殊处理
         router.component = Layout
@@ -47,6 +55,7 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
     if (router.children && router.children.length) {
       router.children = filterAsyncRouter(router.children)
     }
+
     router.hasOwnProperty('id') && delete router.id
     router.hasOwnProperty('type') && delete router.type
     router.hasOwnProperty('pid') && delete router.pid

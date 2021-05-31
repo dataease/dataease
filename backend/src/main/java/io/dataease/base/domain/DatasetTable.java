@@ -21,6 +21,8 @@ public class DatasetTable implements Serializable {
 
     private Long createTime;
 
+    private String qrtzInstance;
+
     private String syncStatus;
 
     private String info;

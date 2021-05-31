@@ -624,6 +624,66 @@ public class MyPluginExample {
             return (Criteria) this;
         }
 
+        public Criteria andLoadMybatisIsNull() {
+            addCriterion("load_mybatis is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisIsNotNull() {
+            addCriterion("load_mybatis is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisEqualTo(Boolean value) {
+            addCriterion("load_mybatis =", value, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisNotEqualTo(Boolean value) {
+            addCriterion("load_mybatis <>", value, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisGreaterThan(Boolean value) {
+            addCriterion("load_mybatis >", value, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("load_mybatis >=", value, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisLessThan(Boolean value) {
+            addCriterion("load_mybatis <", value, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisLessThanOrEqualTo(Boolean value) {
+            addCriterion("load_mybatis <=", value, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisIn(List<Boolean> values) {
+            addCriterion("load_mybatis in", values, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisNotIn(List<Boolean> values) {
+            addCriterion("load_mybatis not in", values, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisBetween(Boolean value1, Boolean value2) {
+            addCriterion("load_mybatis between", value1, value2, "loadMybatis");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoadMybatisNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("load_mybatis not between", value1, value2, "loadMybatis");
+            return (Criteria) this;
+        }
+
         public Criteria andReleaseTimeIsNull() {
             addCriterion("release_time is null");
             return (Criteria) this;

@@ -278,7 +278,7 @@ export default {
       default_module: 'Default Module'
     },
     datasource: 'Datasource',
-    char_can_not_more_50: 'Name can not more 50 char',
+    char_can_not_more_50: 'Can not more 50 char',
     share_success: 'Share Success'
   },
   documentation: {
@@ -435,7 +435,8 @@ export default {
     current_user: 'Current User',
     origin_passwd: 'Origin Password',
     new_passwd: 'New Password',
-    confirm_passwd: 'Confirm Password'
+    confirm_passwd: 'Confirm Password',
+    change_password: 'Change Password'
   },
   role: {
     menu_authorization: 'Menu Authorization',
@@ -677,7 +678,8 @@ export default {
     quota_show: 'Quota Show',
     title_limit: 'Title cannot be greater than 50 characters',
     filter_condition: 'Filter Condition',
-    filter_field_can_null: 'Filter field must choose'
+    filter_field_can_null: 'Filter field must choose',
+    preview_100_data: 'Preview 100 rows'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -732,13 +734,13 @@ export default {
     error: 'Error',
     completed: 'Completed',
     underway: 'underway',
-    task_update: 'Regular update',
+    task_update: 'Update Setting',
     update_type: 'Update Type',
     all_scope: 'Full update',
     add_scope: 'Incremental update',
     select_data_time: 'Select date time',
     execute_rate: 'Execution frequency',
-    execute_once: 'Only once',
+    execute_once: 'Execution Now',
     cron_config: 'Expression setting',
     no_limit: 'No limit',
     set_end_time: 'Set the end time',

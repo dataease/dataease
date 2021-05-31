@@ -1,11 +1,10 @@
 package io.dataease.service.dataset;
 
 
+import com.fit2cloud.quartz.anno.QuartzScheduled;
 import com.google.gson.Gson;
 import io.dataease.base.domain.*;
-import io.dataease.base.mapper.DatasetTableIncrementalConfigMapper;
-import io.dataease.base.mapper.DatasetTableMapper;
-import io.dataease.base.mapper.DatasourceMapper;
+import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.utils.*;
@@ -75,6 +74,10 @@ public class DataSetTableService {
     private DataSetTableUnionService dataSetTableUnionService;
     @Resource
     private DataSetTableTaskLogService dataSetTableTaskLogService;
+    @Resource
+    private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
+    @Resource
+    private DatasetTableTaskLogMapper datasetTableTaskLogMapper;
     @Value("${upload.file.path}")
     private String path;
 
@@ -106,7 +109,7 @@ public class DataSetTableService {
                 saveTableField(datasetTable);
                 if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
                     commonThreadPool.addTask(() -> {
-                        extractDataService.extractData(datasetTable.getId(), null, "all_scope");
+                        extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
                     });
                 }
             }
@@ -265,18 +268,18 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
-            if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
+            if (StringUtils.isEmpty(datasetTable.getSyncStatus()) || datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
                 map.put("status", "warnning");
                 map.put("msg", Translator.get("i18n_processing_data"));
                 dataSetPreviewPage.setTotal(0);
-            }else if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
-                map.put("status", "warnning");
-                map.put("msg", Translator.get("i18n_processing_data"));
-                dataSetPreviewPage.setTotal(0);
-            }else if (datasetTableTaskLogs.get(0).getStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+            }else if (datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+                List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
                 map.put("status", "error");
-                map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
+                if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+                    map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
+                }else {
+                    map.put("msg", "Failed to extract data.");
+                }
                 dataSetPreviewPage.setTotal(0);
             }else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -867,22 +870,48 @@ public class DataSetTableService {
     }
 
     public Boolean checkDorisTableIsExists(String id) throws Exception {
-//        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
-//        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-//        DatasourceRequest datasourceRequest = new DatasourceRequest();
-//        datasourceRequest.setDatasource(dorisDatasource);
-//        QueryProvider qp = ProviderFactory.getQueryProvider(dorisDatasource.getType());
-//        datasourceRequest.setQuery(qp.searchTable(DorisTableUtils.dorisName(id)));
-//        List<String[]> data = jdbcProvider.getData(datasourceRequest);
-//        return CollectionUtils.isNotEmpty(data);
-        return true;
+        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(dorisDatasource);
+        QueryProvider qp = ProviderFactory.getQueryProvider(dorisDatasource.getType());
+        datasourceRequest.setQuery(qp.searchTable(DorisTableUtils.dorisName(id)));
+        List<String[]> data = jdbcProvider.getData(datasourceRequest);
+        return CollectionUtils.isNotEmpty(data);
     }
 
+    @QuartzScheduled(cron = "0 0/3 * * * ?")
     public void updateDatasetTableStatus(){
-        DatasetTable record = new DatasetTable();
-        record.setSyncStatus(JobStatus.Completed.name());
+        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > System.currentTimeMillis()).map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
+        List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
+
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
+
+         datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
+             if(StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))){
+                 jobStoppeddDatasetTables.add(datasetTable);
+             }
+         });
+
+        if(CollectionUtils.isEmpty(jobStoppeddDatasetTables)){
+            return;
+        }
+
+        DatasetTable record = new DatasetTable();
+        record.setSyncStatus(JobStatus.Completed.name());
+        example.clear();
+        example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name()).andIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
         datasetTableMapper.updateByExampleSelective(record, example);
+
+        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
+        datasetTableTaskLog.setStatus(JobStatus.Error.name());
+        datasetTableTaskLog.setInfo("Job stopped due to system error.");
+
+        DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
+        datasetTableTaskLogExample.createCriteria().andStatusEqualTo(JobStatus.Underway.name()).andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
+        datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
+
     }
 }

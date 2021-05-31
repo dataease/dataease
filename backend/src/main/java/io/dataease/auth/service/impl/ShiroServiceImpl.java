@@ -47,7 +47,7 @@ public class ShiroServiceImpl implements ShiroService {
 
 
         filterChainDefinitionMap.put("/system/ui/**", ANON);
-        filterChainDefinitionMap.put("/PluginDemo.js", ANON);
+        filterChainDefinitionMap.put("/SystemParam.js", ANON);
         filterChainDefinitionMap.put("/DeXPack.js", ANON);
 
         filterChainDefinitionMap.put("/api/auth/test", ANON);

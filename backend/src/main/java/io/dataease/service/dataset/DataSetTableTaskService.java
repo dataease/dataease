@@ -2,7 +2,10 @@ package io.dataease.service.dataset;
 
 import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskExample;
+import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
+import io.dataease.commons.constants.JobStatus;
+import io.dataease.commons.constants.ScheduleType;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.i18n.Translator;
 import io.dataease.service.ScheduleService;
@@ -33,10 +36,12 @@ public class DataSetTableTaskService {
     @Resource
     @Lazy
     private DataSetTableService dataSetTableService;
-
+    @Resource
+    private ExtractDataService extractDataService;
     public DatasetTableTask save(DataSetTaskRequest dataSetTaskRequest) throws Exception {
-        dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
         DatasetTableTask datasetTableTask = dataSetTaskRequest.getDatasetTableTask();
+        dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
+
         // check
         if (StringUtils.isNotEmpty(datasetTableTask.getCron())) {
             if (!CronExpression.isValidExpression(datasetTableTask.getCron())) {
@@ -54,6 +59,20 @@ public class DataSetTableTaskService {
         if (StringUtils.isEmpty(datasetTableTask.getId())) {
             datasetTableTask.setId(UUID.randomUUID().toString());
             datasetTableTask.setCreateTime(System.currentTimeMillis());
+            // SIMPLE 类型，提前占位
+            if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
+                if(extractDataService.updateSyncStatus(dataSetTableService.get(datasetTableTask.getTableId()))){
+                    throw new Exception(Translator.get("i18n_sync_job_exists"));
+                }else {
+                    //write log
+                    DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
+                    datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
+                    datasetTableTaskLog.setTaskId(datasetTableTask.getId());
+                    datasetTableTaskLog.setStatus(JobStatus.Underway.name());
+                    datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+                    dataSetTableTaskLogService.save(datasetTableTaskLog);
+                }
+            }
             datasetTableTaskMapper.insert(datasetTableTask);
         } else {
             datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);

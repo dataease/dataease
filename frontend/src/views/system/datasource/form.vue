@@ -94,8 +94,10 @@ export default {
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const method = this.formType === 'add' ? addDs : editDs
-          this.form.configuration = JSON.stringify(this.form.configuration)
-          method(this.form).then(res => {
+          // this.form.configuration = JSON.stringify(this.form.configuration)
+          const form = JSON.parse(JSON.stringify(this.form))
+          form.configuration = JSON.stringify(form.configuration)
+          method(form).then(res => {
             this.$success(this.$t('commons.save_success'))
             this.backToList()
           })

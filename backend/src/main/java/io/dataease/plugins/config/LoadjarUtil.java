@@ -1,7 +1,10 @@
 package io.dataease.plugins.config;
 
+import io.dataease.base.domain.MyPlugin;
 import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.plugins.loader.ModuleClassLoader;
+import io.dataease.plugins.loader.MybatisLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -15,27 +18,27 @@ import java.util.Map;
 @Component
 public class LoadjarUtil {
 
-    public List<?> loadJar(String jarPath){
+    @Autowired
+    private MybatisLoader mybatisLoader;
+
+    public List<?> loadJar(String jarPath, MyPlugin myPlugin)  throws Exception{
         File jar = new File(jarPath);
         URI uri = jar.toURI();
         String moduleName = jarPath.substring(jarPath.lastIndexOf("/")+1,jarPath.lastIndexOf("."));
-        try {
 
-            if(ClassloaderResponsity.getInstance().containsClassLoader(moduleName)){
-                ClassloaderResponsity.getInstance().removeClassLoader(moduleName);
-            }
 
-            ModuleClassLoader classLoader = new ModuleClassLoader(new URL[]{uri.toURL()}, Thread.currentThread().getContextClassLoader());
-            SpringContextUtil.getBeanFactory().setBeanClassLoader(classLoader);
-            Thread.currentThread().setContextClassLoader(classLoader);
-            classLoader.initBean();
-            ClassloaderResponsity.getInstance().addClassLoader(moduleName,classLoader);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(ClassloaderResponsity.getInstance().containsClassLoader(moduleName)){
+            ClassloaderResponsity.getInstance().removeClassLoader(moduleName);
         }
+
+        ModuleClassLoader classLoader = new ModuleClassLoader(new URL[]{uri.toURL()}, Thread.currentThread().getContextClassLoader());
+        SpringContextUtil.getBeanFactory().setBeanClassLoader(classLoader);
+        Thread.currentThread().setContextClassLoader(classLoader);
+        classLoader.initBean();
+        mybatisLoader.loadMybatis(myPlugin);
+        ClassloaderResponsity.getInstance().addClassLoader(moduleName,classLoader);
+
+
         return SpringContextUtil.getAllBean();
     }
 

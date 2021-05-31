@@ -19,6 +19,7 @@ import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
+import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +79,7 @@ public class SysUserService {
 
     @Transactional
     public int save(SysUserCreateRequest request) {
+        checkUsername(request);
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setCreateTime(now);
@@ -106,6 +108,7 @@ public class SysUserService {
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     @Transactional
     public int update(SysUserCreateRequest request) {
+        checkUsername(request);
         if (StringUtils.isEmpty(request.getPassword())) {
             request.setPassword(null);
         }
@@ -235,4 +238,16 @@ public class SysUserService {
         sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
+    private void checkUsername(SysUserCreateRequest request) {
+        SysUserExample sysUserExample = new SysUserExample();
+        SysUserExample.Criteria criteria = sysUserExample.createCriteria();
+        if (request.getUserId() != null) {
+            criteria.andUserIdNotEqualTo(request.getUserId());
+        }
+        criteria.andUsernameEqualTo(request.getUsername());
+        List<SysUser> sysUsers = sysUserMapper.selectByExample(sysUserExample);
+        if (CollectionUtils.isNotEmpty(sysUsers)) {
+            throw new RuntimeException(Translator.get("i18n_username_exists"));
+        }
+    }
 }

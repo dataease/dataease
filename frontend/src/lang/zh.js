@@ -278,7 +278,7 @@ export default {
       default_module: '默认模块'
     },
     datasource: '数据源',
-    char_can_not_more_50: '名称不能超过50字符',
+    char_can_not_more_50: '不能超过50字符',
     share_success: '分享成功'
   },
   documentation: {
@@ -435,7 +435,8 @@ export default {
     current_user: '当前用户',
     origin_passwd: '原始密码',
     new_passwd: '新密码',
-    confirm_passwd: '确认密码'
+    confirm_passwd: '确认密码',
+    change_password: '修改密码'
   },
   role: {
     menu_authorization: '菜单授权',
@@ -677,7 +678,8 @@ export default {
     quota_show: '指标显示',
     title_limit: '标题不能大于50个字符',
     filter_condition: '过滤条件',
-    filter_field_can_null: '过滤字段必填'
+    filter_field_can_null: '过滤字段必填',
+    preview_100_data: '预览前100条记录'
   },
   dataset: {
     sheet_warn: '有多个Sheet页，默认抽取第一个',
@@ -732,13 +734,13 @@ export default {
     error: '错误',
     completed: '完成',
     underway: '执行中',
-    task_update: '定时更新',
+    task_update: '更新设置',
     update_type: '更新方式',
     all_scope: '全量更新',
     add_scope: '增量更新',
     select_data_time: '选择日期时间',
     execute_rate: '执行频率',
-    execute_once: '只执行一次',
+    execute_once: '立即执行',
     cron_config: '表达式设定',
     no_limit: '无限制',
     set_end_time: '设定结束时间',

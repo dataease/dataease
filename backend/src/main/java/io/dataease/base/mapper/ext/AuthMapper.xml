@@ -42,6 +42,13 @@
             where sur.user_id = #{userId}
     </select>
 
+    <select id="userMenuIds" resultType="Long">
+        select srm.menu_id
+        from sys_roles_menus srm
+        left join sys_users_roles sur on sur.role_id = srm.role_id
+        where sur.user_id = #{userId}
+    </select>
+
     <select id="roles" resultMap="roleMap">
         select r.role_id, r.name
         from sys_role r

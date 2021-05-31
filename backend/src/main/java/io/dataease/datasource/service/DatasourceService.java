@@ -18,6 +18,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.service.dataset.DataSetGroupService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,11 +47,7 @@ public class DatasourceService {
     private CommonThreadPool commonThreadPool;
 
     public Datasource addDatasource(Datasource datasource) {
-        DatasourceExample example = new DatasourceExample();
-        example.createCriteria().andNameEqualTo(datasource.getName());
-        if (CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))) {
-            DEException.throwException("Exist data connection with the same name ");
-        }
+        checkName(datasource);
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());
         datasource.setUpdateTime(currentTimeMillis);
@@ -67,7 +64,7 @@ public class DatasourceService {
 
     public List<DatasourceDTO> gridQuery(BaseGridRequest request) {
         //如果没有查询条件增加一个默认的条件
-        if(CollectionUtils.isEmpty(request.getConditions())){
+        if (CollectionUtils.isEmpty(request.getConditions())) {
             ConditionEntity conditionEntity = new ConditionEntity();
             conditionEntity.setField("1");
             conditionEntity.setOperator("eq");
@@ -84,6 +81,7 @@ public class DatasourceService {
     }
 
     public void updateDatasource(Datasource datasource) {
+        checkName(datasource);
         datasource.setCreateTime(null);
         datasource.setUpdateTime(System.currentTimeMillis());
         datasourceMapper.updateByPrimaryKeySelective(datasource);
@@ -135,24 +133,36 @@ public class DatasourceService {
         return datasourceMapper.selectByPrimaryKey(id);
     }
 
-    public void initAllDataSourceConnectionPool(){
+    public void initAllDataSourceConnectionPool() {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
             try {
-                commonThreadPool.addTask(() ->{
+                commonThreadPool.addTask(() -> {
                     try {
                         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
                         DatasourceRequest datasourceRequest = new DatasourceRequest();
                         datasourceRequest.setDatasource(datasource);
                         datasourceProvider.initDataSource(datasourceRequest);
-                        LogUtil.error("Succsss to init datasource connection pool: " + datasource.getName());
+                        LogUtil.info("Succsss to init datasource connection pool: " + datasource.getName());
                     }catch (Exception e){
                         LogUtil.error("Failed to init datasource connection pool: " + datasource.getName(), e);
                     }
                 });
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private void checkName(Datasource datasource) {
+        DatasourceExample example = new DatasourceExample();
+        DatasourceExample.Criteria criteria = example.createCriteria();
+        criteria.andNameEqualTo(datasource.getName());
+        if (StringUtils.isNotEmpty(datasource.getId())) {
+            criteria.andIdNotEqualTo(datasource.getId());
+        }
+        if (CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))) {
+            DEException.throwException(Translator.get("i18n_ds_name_exists"));
+        }
     }
 }
