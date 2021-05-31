@@ -2,15 +2,16 @@
   <div>
     <div style="width: 100%">
       <el-popover
+        v-model="isSetting"
         placement="right"
         width="400"
         trigger="click"
       >
         <el-col>
           <el-form ref="axisForm" :model="axisForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('chart.show')" class="form-item">
-              <el-checkbox v-model="axisForm.show" @change="changeYAxisStyle">{{ $t('chart.show') }}</el-checkbox>
-            </el-form-item>
+            <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
+            <!--              <el-checkbox v-model="axisForm.show" @change="changeYAxisStyle">{{ $t('chart.show') }}</el-checkbox>-->
+            <!--            </el-form-item>-->
             <el-form-item :label="$t('chart.position')" class="form-item">
               <el-radio-group v-model="axisForm.position" size="mini" @change="changeYAxisStyle">
                 <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
@@ -24,12 +25,20 @@
               <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeYAxisStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.content_formatter')" class="form-item">
-              <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeYAxisStyle"/>
+              <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeYAxisStyle" />
             </el-form-item>
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.yAxis') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!axisForm.show">
+          {{ $t('chart.yAxis') }}<i class="el-icon-setting el-icon--right" />
+          <el-switch
+            v-model="axisForm.show"
+            class="switch-style"
+            @click.stop.native
+            @change="changeYAxisStyle"
+          />
+        </el-button>
       </el-popover>
     </div>
   </div>
@@ -48,7 +57,8 @@ export default {
   },
   data() {
     return {
-      axisForm: JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE))
+      axisForm: JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE)),
+      isSetting: false
     }
   },
   watch: {
@@ -73,6 +83,9 @@ export default {
   },
   methods: {
     changeYAxisStyle() {
+      if (!this.axisForm.show) {
+        this.isSetting = false
+      }
       this.$emit('onChangeYAxisForm', this.axisForm)
     }
   }
@@ -104,4 +117,10 @@ export default {
   .el-form-item{
     margin-bottom: 6px;
   }
+
+.switch-style{
+  position: absolute;
+  right: 10px;
+  margin-top: -4px;
+}
 </style>

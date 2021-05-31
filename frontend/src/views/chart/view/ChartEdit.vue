@@ -73,23 +73,23 @@
       <el-col
         style="height: 100%;width: 30%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
-        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">
-          <el-row>
-            <span>{{ $t('chart.title') }}</span>
-            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>
-          </el-row>
-          <el-form>
-            <el-form-item class="form-item">
-              <el-input
-                v-model="view.title"
-                size="mini"
-                :placeholder="$t('chart.title')"
-                prefix-icon="el-icon-search"
-                clearable
-              />
-            </el-form-item>
-          </el-form>
-        </div>
+        <!--        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">-->
+        <!--          <el-row>-->
+        <!--            <span>{{ $t('chart.title') }}</span>-->
+        <!--            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>-->
+        <!--          </el-row>-->
+        <!--          <el-form>-->
+        <!--            <el-form-item class="form-item">-->
+        <!--              <el-input-->
+        <!--                v-model="view.title"-->
+        <!--                size="mini"-->
+        <!--                :placeholder="$t('chart.title')"-->
+        <!--                prefix-icon="el-icon-search"-->
+        <!--                clearable-->
+        <!--              />-->
+        <!--            </el-form-item>-->
+        <!--          </el-form>-->
+        <!--        </div>-->
         <div style="height: 25vh;overflow:auto" class="padding-lr">
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
@@ -736,6 +736,7 @@ export default {
 
     onTextChange(val) {
       this.view.customStyle.text = val
+      this.view.title = val.title
       this.save()
     },
 

@@ -2,15 +2,16 @@
   <div>
     <div style="width: 100%">
       <el-popover
+        v-model="isSetting"
         placement="right"
         width="400"
         trigger="click"
       >
         <el-col>
           <el-form ref="legendForm" :model="legendForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('chart.show')" class="form-item">
-              <el-checkbox v-model="legendForm.show" @change="changeLegendStyle">{{ $t('chart.show') }}</el-checkbox>
-            </el-form-item>
+            <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
+            <!--              <el-checkbox v-model="legendForm.show" @change="changeLegendStyle">{{ $t('chart.show') }}</el-checkbox>-->
+            <!--            </el-form-item>-->
             <el-form-item :label="$t('chart.icon')" class="form-item">
               <el-select v-model="legendForm.icon" :placeholder="$t('chart.icon')" @change="changeLegendStyle">
                 <el-option
@@ -52,7 +53,15 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.legend') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!legendForm.show">
+          {{ $t('chart.legend') }}<i class="el-icon-setting el-icon--right" />
+          <el-switch
+            v-model="legendForm.show"
+            class="switch-style"
+            @click.stop.native
+            @change="changeLegendStyle"
+          />
+        </el-button>
       </el-popover>
     </div>
   </div>
@@ -80,7 +89,8 @@ export default {
         { name: this.$t('chart.line_symbol_roundRect'), value: 'roundRect' },
         { name: this.$t('chart.line_symbol_triangle'), value: 'triangle' },
         { name: this.$t('chart.line_symbol_diamond'), value: 'diamond' }
-      ]
+      ],
+      isSetting: false
     }
   },
   watch: {
@@ -116,6 +126,9 @@ export default {
       this.fontSize = arr
     },
     changeLegendStyle() {
+      if (!this.legendForm.show) {
+        this.isSetting = false
+      }
       this.$emit('onLegendChange', this.legendForm)
     }
   }
@@ -147,4 +160,10 @@ export default {
   .el-form-item{
     margin-bottom: 6px;
   }
+
+.switch-style{
+  position: absolute;
+  right: 10px;
+  margin-top: -4px;
+}
 </style>

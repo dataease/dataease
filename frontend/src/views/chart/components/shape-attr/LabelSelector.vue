@@ -2,15 +2,16 @@
   <div>
     <div style="width: 100%">
       <el-popover
+        v-model="isSetting"
         placement="right"
         width="400"
         trigger="click"
       >
         <el-col>
           <el-form v-show="chart.type && !chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('chart.show')" class="form-item">
-              <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
-            </el-form-item>
+            <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
+            <!--              <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>-->
+            <!--            </el-form-item>-->
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
               <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -67,7 +68,15 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.label') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!labelForm.show">
+          {{ $t('chart.label') }}<i class="el-icon-setting el-icon--right" />
+          <el-switch
+            v-model="labelForm.show"
+            class="switch-style"
+            @click.stop.native
+            @change="changeLabelAttr"
+          />
+        </el-button>
       </el-popover>
     </div>
   </div>
@@ -87,7 +96,8 @@ export default {
   data() {
     return {
       labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
-      fontSize: []
+      fontSize: [],
+      isSetting: false
     }
   },
   watch: {
@@ -123,6 +133,9 @@ export default {
       this.fontSize = arr
     },
     changeLabelAttr() {
+      if (!this.labelForm.show) {
+        this.isSetting = false
+      }
       this.$emit('onLabelChange', this.labelForm)
     }
   }
@@ -153,5 +166,11 @@ export default {
   }
   .el-form-item{
     margin-bottom: 6px;
+  }
+
+  .switch-style{
+    position: absolute;
+    right: 10px;
+    margin-top: -4px;
   }
 </style>
