@@ -1,19 +1,53 @@
 
-/*
- Navicat Premium Data Transfer
 
- Source Server         : A-LOCAL-本机数据库
- Source Server Type    : MySQL
- Source Server Version : 50726
- Source Host           : localhost:3306
- Source Schema         : data_ease
+SET FOREIGN_KEY_CHECKS = 1;
 
- Target Server Type    : MySQL
- Target Server Version : 50726
- File Encoding         : 65001
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
 
- Date: 27/05/2021 14:59:53
-*/
+-- ----------------------------
+-- Table structure for sys_auth
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_auth`;
+CREATE TABLE `sys_auth`  (
+  `id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `auth_source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权资产源 数据集 视图 仪表板',
+  `auth_source_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权资产类型 dataset 数据集 view 视图 panel 仪表板',
+  `auth_target` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权目标 用户 角色 组织 ',
+  `auth_target_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权目标类型 user 用户 role 角色 org dept 组织',
+  `auth_time` bigint(13) NULL DEFAULT NULL COMMENT '授权时间',
+  `auth_details` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权明细 privilegename 名称 privilegeType 权限类型 1 查看 2 管理 3 导出 4 使用 ; privilegeValue 1 不可用 2 可用 3 部分可用',
+  `auth_user` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权人员',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci;
+
+-- ----------------------------
+-- Table structure for sys_auth_detail
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_auth_detail`;
+CREATE TABLE `sys_auth_detail`  (
+  `id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `auth_id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `privilege_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限名称',
+  `privilege_type` int(6) NULL DEFAULT NULL COMMENT '权限类型',
+  `privilege_value` int(6) NULL DEFAULT NULL COMMENT '权限值 1 可用 2 不用',
+  `privilege_extend` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限扩展',
+  `remark` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `create_user` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `create_time` bigint(13) NULL DEFAULT NULL,
+  `update_time` bigint(13) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci;
+
+-- ----------------------------
+-- Records of sys_auth_detail
+-- ----------------------------
+BEGIN;
+INSERT INTO `sys_auth_detail` VALUES ('chart_grant', 'chart', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('chart_manage', 'chart', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('chart_use', 'chart', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('dataset_grant', 'dataset', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('dataset_manege', 'dataset', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('dataset_use', 'dataset', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('link_grant', 'link', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('link_manage', 'link', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('link_use', 'link', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('menu_grant', 'menu', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('menu_use', 'menu', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('panel_export', 'panel', 'i18n_auth_export', 3, 0, 'export', '基础权限-导出', 'system', NULL, NULL), ('panel_grant', 'panel', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('panel_manage', 'panel', 'i18n_auth_manage', 5, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('panel_use', 'panel', 'i18n_auth_view', 1, 0, 'view', '基础权限-查看', 'system', NULL, NULL);
+COMMIT;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -442,54 +476,6 @@ END
 ;;
 delimiter ;
 
-SET FOREIGN_KEY_CHECKS = 1;
-
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for sys_auth
--- ----------------------------
-DROP TABLE IF EXISTS `sys_auth`;
-CREATE TABLE `sys_auth`  (
-  `id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `auth_source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权资产源 数据集 视图 仪表板',
-  `auth_source_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权资产类型 dataset 数据集 view 视图 panel 仪表板',
-  `auth_target` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权目标 用户 角色 组织 ',
-  `auth_target_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权目标类型 user 用户 role 角色 org dept 组织',
-  `auth_time` bigint(13) NULL DEFAULT NULL COMMENT '授权时间',
-  `auth_details` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权明细 privilegename 名称 privilegeType 权限类型 1 查看 2 管理 3 导出 4 使用 ; privilegeValue 1 不可用 2 可用 3 部分可用',
-  `auth_user` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '授权人员',
-  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci;
-
--- ----------------------------
--- Table structure for sys_auth_detail
--- ----------------------------
-DROP TABLE IF EXISTS `sys_auth_detail`;
-CREATE TABLE `sys_auth_detail`  (
-  `id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `auth_id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `privilege_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限名称',
-  `privilege_type` int(6) NULL DEFAULT NULL COMMENT '权限类型',
-  `privilege_value` int(6) NULL DEFAULT NULL COMMENT '权限值 1 可用 2 不用',
-  `privilege_extend` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限扩展',
-  `remark` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
-  `create_user` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `create_time` bigint(13) NULL DEFAULT NULL,
-  `update_time` bigint(13) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci;
-
--- ----------------------------
--- Records of sys_auth_detail
--- ----------------------------
-BEGIN;
-INSERT INTO `sys_auth_detail` VALUES ('chart_grant', 'chart', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('chart_manage', 'chart', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('chart_use', 'chart', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('dataset_grant', 'dataset', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('dataset_manege', 'dataset', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('dataset_use', 'dataset', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('link_grant', 'link', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('link_manage', 'link', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('link_use', 'link', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('menu_grant', 'menu', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('menu_use', 'menu', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL, NULL), ('panel_export', 'panel', 'i18n_auth_export', 3, 0, 'export', '基础权限-导出', 'system', NULL, NULL), ('panel_grant', 'panel', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'system', NULL, NULL), ('panel_manage', 'panel', 'i18n_auth_manage', 5, 0, 'manage', '基础权限-管理', 'system', NULL, NULL), ('panel_use', 'panel', 'i18n_auth_view', 1, 0, 'view', '基础权限-查看', 'system', NULL, NULL);
-COMMIT;
-
-SET FOREIGN_KEY_CHECKS = 1;
 
 
 DROP TRIGGER if exists`new_auth_link`;
