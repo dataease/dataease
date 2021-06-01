@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <!-- group -->
-    <el-col v-if="!sceneMode">
+    <el-col v-if="!sceneMode" v-loading="dsLoading">
       <el-row class="title-css">
         <span class="title-text">
           {{ $t('dataset.datalist') }}
@@ -212,8 +212,10 @@ export default {
     },
 
     tree(group) {
+      this.dsLoading = true
       post('/dataset/group/tree', group).then(response => {
         this.data = response.data
+        this.dsLoading = false
       })
     },
 
