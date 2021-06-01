@@ -131,24 +131,24 @@ public class DorisQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (x.getDeExtractType() == 1) {
                 if (x.getDeType() == 2 || x.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as ").append(x.getDataeaseName());
+                    stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as _").append(x.getDataeaseName());
                 } else if (x.getDeType() == 1) {
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    stringBuilder.append("DATE_FORMAT(").append(x.getDataeaseName()).append(",'").append(format).append("') as ").append(x.getDataeaseName());
+                    stringBuilder.append("DATE_FORMAT(").append(x.getDataeaseName()).append(",'").append(format).append("') as _").append(x.getDataeaseName());
                 } else {
-                    stringBuilder.append(x.getDataeaseName());
+                    stringBuilder.append(x.getDataeaseName()).append(" as _").append(x.getDataeaseName());
                 }
             } else {
                 if (x.getDeType() == 1) {
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    stringBuilder.append("DATE_FORMAT(").append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S')").append(",'").append(format).append("') as ").append(x.getDataeaseName());
+                    stringBuilder.append("DATE_FORMAT(").append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S')").append(",'").append(format).append("') as _").append(x.getDataeaseName());
                 } else {
-                    stringBuilder.append(x.getDataeaseName());
+                    stringBuilder.append(x.getDataeaseName()).append(" as _").append(x.getDataeaseName());
                 }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        String[] group = xAxis.stream().map(ChartViewFieldDTO::getDataeaseName).toArray(String[]::new);
+        String[] group = xAxis.stream().map(x -> "_" + x.getDataeaseName()).toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
                 .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
         String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
