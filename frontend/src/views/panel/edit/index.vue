@@ -57,7 +57,7 @@
       </de-aside-container>
 
       <!--画布区域-->
-      <de-main-container style="margin-left: 5px;margin-right: 5px">
+      <de-main-container id="canvasInfo-main" style="margin-left: 5px;margin-right: 5px">
         <!--左侧抽屉-->
         <el-drawer
           :visible.sync="show"
@@ -76,13 +76,14 @@
         </el-drawer>
 
         <div
+          id="canvasInfo"
           class="content this_canvas"
           @drop="handleDrop"
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor style="margin: 15px;" />
+          <Editor :out-style="outStyle" />
         </div>
       </de-main-container>
       <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">
@@ -147,6 +148,7 @@ import { findOne } from '@/api/panel/panel'
 import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrList from '@/components/canvas/components/AttrList.vue'
+import elementResizeDetectorMaker from 'element-resize-detector'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -187,7 +189,21 @@ export default {
       subjectVisible: false,
       previewVisible: false,
       componentStyleShow: true,
-      aidedButtonActive: false
+      aidedButtonActive: false,
+      timer: null,
+      needToChange: [
+        'top',
+        'left',
+        'width',
+        'height',
+        'fontSize',
+        'borderWidth'
+      ],
+      scale: '100',
+      outStyle: {
+        width: null,
+        height: null
+      }
     }
   },
 
@@ -237,6 +253,15 @@ export default {
 
     bus.$on('previewFullScreenClose', () => {
       this.previewVisible = false
+    })
+    const _this = this
+    const erd = elementResizeDetectorMaker()
+    // 监听div变动事件
+    erd.listenTo(document.getElementById('canvasInfo-main'), element => {
+      _this.$nextTick(() => {
+        debugger
+        _this.restore()
+      })
     })
   },
   beforeDestroy() {
@@ -410,8 +435,24 @@ export default {
     },
     changeAidedDesign() {
       this.aidedButtonActive = !this.aidedButtonActive
+    },
+    getOriginStyle(value) {
+      const scale = this.canvasStyleData.scale
+      const result = value / (parseInt(scale) / 100)
+      return result
+    },
+    restore() {
+      debugger
+      if (document.getElementById('canvasInfo')) {
+        this.$nextTick(() => {
+          const canvasHeight = document.getElementById('canvasInfo').offsetHeight
+          const canvasWidth = document.getElementById('canvasInfo').offsetWidth
+          this.outStyle.height = canvasHeight
+          this.outStyle.width = canvasWidth
+          console.log(canvasHeight + '--' + canvasWidth)
+        })
+      }
     }
-
   }
 }
 </script>
@@ -419,9 +460,9 @@ export default {
 <style scoped>
   .ms-aside-container {
     height: calc(100vh - 91px);
-    min-width: 40px;
     max-width: 60px;
     border: none;
+    width: 60px;
   }
 
   .ms-main-container {

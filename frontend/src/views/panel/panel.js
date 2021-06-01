@@ -19,9 +19,12 @@ export const DEFAULT_PANEL_STYLE = {
 }
 
 export const DEFAULT_COMMON_CANVAS_STYLE = {
-  width: 1280,
-  height: 720,
+  width: 1600,
+  height: 900,
   scale: 100,
+  scaleWidth: 100,
+  scaleHeight: 100,
+  selfAdaption: true,
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,
   chart: {
