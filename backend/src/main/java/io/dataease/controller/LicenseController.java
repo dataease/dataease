@@ -23,9 +23,9 @@ public class LicenseController {
 
     @GetMapping(value = "anonymous/license/validate")
     public ResultHolder validateLicense() throws Exception {
-//        if (!need_validate_lic) {
-//            return ResultHolder.success(null);
-//        }
+        if (!need_validate_lic) {
+            return ResultHolder.success(null);
+        }
         F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
         System.out.println(new Gson().toJson(f2CLicenseResponse));
         switch (f2CLicenseResponse.getStatus()) {

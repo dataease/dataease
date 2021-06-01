@@ -152,12 +152,8 @@ const hasPermission = (router, user_permissions) => {
   }
   return true
 }
-const xpackMenuNames = ['system-param', 'system-plugin']
 const filterLic = (router) => {
-  if (xpackMenuNames.some(name => name === router.name) && !store.getters.validate) {
-    return false
-  }
-  return true
+  return !router.isPlugin || store.getters.validate
 }
 router.afterEach(() => {
   // finish progress bar
