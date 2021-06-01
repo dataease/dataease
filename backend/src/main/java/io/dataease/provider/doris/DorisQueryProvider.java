@@ -134,7 +134,7 @@ public class DorisQueryProvider extends QueryProvider {
                     stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as ").append(x.getDataeaseName());
                 } else if (x.getDeType() == 1) {
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    stringBuilder.append("DATE_FORMAT(").append(x.getDataeaseName()).append(",'").append(format).append("')");
+                    stringBuilder.append("DATE_FORMAT(").append(x.getDataeaseName()).append(",'").append(format).append("') as ").append(x.getDataeaseName());
                 } else {
                     stringBuilder.append(x.getDataeaseName());
                 }
