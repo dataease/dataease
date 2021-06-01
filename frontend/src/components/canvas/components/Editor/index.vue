@@ -30,6 +30,7 @@
         :id="'component' + item.id"
         class="component"
         :style="item.style"
+        :out-style="getShapeStyleInt(item.style)"
         :element="item"
       />
 
@@ -42,7 +43,7 @@
         :prop-value="item.propValue"
         :element="item"
         :filter="filter"
-        :out-style="item.style"
+        :out-style="getShapeStyleInt(item.style)"
       />
       <!-- <component
         :is="item.component"
