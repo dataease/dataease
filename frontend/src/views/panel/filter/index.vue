@@ -74,7 +74,7 @@ export default {
         return result
       })
     }
-    console.log('this.widgetSubjects=>' + JSON.stringify(this.widgetSubjects))
+    // console.log('this.widgetSubjects=>' + JSON.stringify(this.widgetSubjects))
   },
 
   methods: {

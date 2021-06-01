@@ -367,7 +367,6 @@ export default {
   methods: {
     closeEditPanelDialog(panelInfo) {
       this.editPanel.visible = false
-      debugger
       this.defaultTree()
       // 默认展开 同时点击 新增的节点
       if (panelInfo && panelInfo.panelType === 'self' && this.lastActiveNodeData.id) {
@@ -618,6 +617,9 @@ export default {
       this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
+      // 清空临时画布数据
+      this.$store.dispatch('panel/setComponentDataTemp', null)
+      this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },

@@ -133,7 +133,6 @@ export default {
   methods: {
     loadAuth() {
       if (this.authCondition && this.showExtent) {
-        debugger
         let authQueryCondition = {}
         if (this.dataInfo.direction === 'source') {
           // 当前为授权数据 获取当前authTarget 的授权信息 authSource
@@ -153,7 +152,6 @@ export default {
       }
     },
     loadNodes(node, resolve) {
-      debugger
       if (!this.searchStatus) {
         if (node.level === 0) {
           const queryCondition = {
@@ -181,7 +179,6 @@ export default {
     },
     filterNode(index) {
       this.timeMachine = setTimeout(() => {
-        debugger
         if (index === this.changeIndex) {
           const queryCondition = {
             withExtend: 'parent',

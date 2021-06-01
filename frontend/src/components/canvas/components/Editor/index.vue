@@ -374,13 +374,11 @@ export default {
     },
 
     getComponentStyleDefault(style) {
-      debugger
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
 
     getComponentStyle(style) {
-      debugger
       //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       return style
     },
@@ -392,7 +390,6 @@ export default {
     },
 
     getTextareaHeight(element, text) {
-      debugger
       // eslint-disable-next-line prefer-const
       let { lineHeight, fontSize, height } = element.style
       if (lineHeight === '') {

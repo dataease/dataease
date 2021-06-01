@@ -88,7 +88,6 @@ export default {
                 type: 'success',
                 showClose: true
               })
-              debugger
               this.$emit('closeEditTemplateDialog')
             })
           }).catch(() => {
@@ -100,7 +99,6 @@ export default {
               type: 'success',
               showClose: true
             })
-            debugger
             this.$emit('closeEditTemplateDialog')
           })
         }

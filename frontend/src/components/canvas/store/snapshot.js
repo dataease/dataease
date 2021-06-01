@@ -17,7 +17,6 @@ export default {
     },
 
     redo(state) {
-      debugger
       if (state.snapshotIndex < state.snapshotData.length - 1) {
         state.snapshotIndex++
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))

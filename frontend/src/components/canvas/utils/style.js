@@ -27,7 +27,6 @@ export function getStyle(style, filter = []) {
     }
   })
 
-  debugger
   return result
 }
 

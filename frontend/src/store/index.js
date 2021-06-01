@@ -78,7 +78,6 @@ const data = {
     },
 
     setCurCanvasScale(state, curCanvasScale) {
-      debugger
       state.curCanvasScale = curCanvasScale
     },
 

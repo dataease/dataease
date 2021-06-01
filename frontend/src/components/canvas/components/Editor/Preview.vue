@@ -127,7 +127,6 @@ export default {
     },
     handleScaleChange() {
       if (this.componentData) {
-        debugger
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
           Object.keys(component.style).forEach(key => {

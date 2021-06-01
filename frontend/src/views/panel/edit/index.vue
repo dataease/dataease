@@ -279,7 +279,6 @@ export default {
     // 监听div变动事件
     erd.listenTo(document.getElementById('canvasInfo-main'), element => {
       _this.$nextTick(() => {
-        debugger
         _this.restore()
       })
     })
@@ -296,6 +295,9 @@ export default {
       if (componentDataTemp && canvasStyleDataTemp) {
         this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
         this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
+        // 清空临时画布数据
+        this.$store.dispatch('panel/setComponentDataTemp', null)
+        this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       } else if (panelId) {
         findOne(panelId).then(response => {
           this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
@@ -354,7 +356,6 @@ export default {
       return data
     },
     handleDrop(e) {
-      debugger
       e.preventDefault()
       e.stopPropagation()
       let component
@@ -415,7 +416,7 @@ export default {
     },
 
     handleMouseDown() {
-      console.log('handleMouseDown123')
+      // console.log('handleMouseDown123')
 
       this.$store.commit('setClickComponentStatus', false)
     },
@@ -471,14 +472,13 @@ export default {
       return result
     },
     restore() {
-      debugger
       if (document.getElementById('canvasInfo')) {
         this.$nextTick(() => {
           const canvasHeight = document.getElementById('canvasInfo').offsetHeight
           const canvasWidth = document.getElementById('canvasInfo').offsetWidth
           this.outStyle.height = canvasHeight
           this.outStyle.width = canvasWidth
-          console.log(canvasHeight + '--' + canvasWidth)
+          // console.log(canvasHeight + '--' + canvasWidth)
         })
       }
     }
