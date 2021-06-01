@@ -2,38 +2,17 @@ INSERT INTO system_parameter (param_key, param_value, type, sort)
 VALUES ('default.language', 'zh_CN', 'text', 5);
 
 BEGIN;
-INSERT INTO `sys_dept` VALUES (18, 0, 1, '上海飞致云', 1, NULL, NULL, 1614048906358, 1614048906358);
-INSERT INTO `sys_dept` VALUES (19, 0, 1, '北京飞致云', 2, NULL, NULL, 1614048918465, 1614048918465);
-INSERT INTO `sys_dept` VALUES (20, 18, 1, '营销部', 1, NULL, NULL, 1614048946370, 1614049006759);
-INSERT INTO `sys_dept` VALUES (21, 19, 0, '综合部', 3, NULL, NULL, 1614048963483, 1619667528267);
-INSERT INTO `sys_dept` VALUES (25, 20, 0, '售前组', 1, NULL, NULL, 1615791706945, 1615791706945);
+INSERT INTO `sys_dept` VALUES (1, 0, 0, '默认组织', 0, NULL, NULL, 1622533297817, 1622533297817);
 COMMIT;
 
 BEGIN;
 INSERT INTO `sys_menu` VALUES (1, 0, 3, 0, '系统管理', 'system', 'Layout', 6, 'system', '/system', NULL, b'0', b'0', 'dir:sys', NULL, NULL, NULL, 1614916695777);
 INSERT INTO `sys_menu` VALUES (2, 1, 4, 1, '用户管理', 'system-user', 'system/user/index', 1, 'peoples', 'user', NULL, b'0', b'0', 'user:read', NULL, NULL, NULL, 1620281952752);
-/*INSERT INTO `sys_menu` VALUES (3, 1, 3, 1, '菜单管理', 'system-menu', 'system/menu/index', 2, 'menu', 'menu', NULL, b'0', b'0', 'menu:read', NULL, NULL, NULL, NULL);*/
-/*INSERT INTO `sys_menu` VALUES (4, 1, 3, 1, '组织管理', 'system-dept', 'system/dept/index', 3, 'dept', 'dept', NULL, b'0', b'0', 'dept:read', NULL, NULL, NULL, NULL);*/
-
-/*INSERT INTO `sys_menu` VALUES (5, 1, 3, 1, '角色管理', 'system-role', 'system/role/index', 4, 'role', 'role', b'0', b'0', b'0', 'role:read', NULL, NULL, 1614683852133, 1614683852133);
-INSERT INTO `sys_menu` VALUES (6, 1, 0, 1, '参数管理', 'system-param', 'system/systemParamSettings/index', 5, 'sys-tools', 'systemParamSettings', NULL, b'0', b'0', 'sysparam:read', NULL, NULL, NULL, 1615790294169);*/
 INSERT INTO `sys_menu` VALUES (8, 0, 0, 1, '数据集', 'dataset', 'dataset/index', 3, '', '/dataset', NULL, b'0', b'0', 'data:read', NULL, NULL, NULL, 1614916684821);
 INSERT INTO `sys_menu` VALUES (10, 0, 0, 1, '视图', 'view', 'chart/index', 2, '', '/chart', NULL, b'0', b'0', 'chart:read', NULL, NULL, NULL, 1614915491036);
-/*INSERT INTO `sys_menu` VALUES (12, 3, 0, 2, '创建菜单', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'menu:add', NULL, NULL, 1614924617327, 1614924617327);
-INSERT INTO `sys_menu` VALUES (13, 3, 0, 2, '删除菜单', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'menu:del', NULL, NULL, 1614924667808, 1614924667808);
-INSERT INTO `sys_menu` VALUES (14, 3, 0, 2, '编辑菜单', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'menu:edit', NULL, NULL, 1614930734224, 1614936429773);*/
 INSERT INTO `sys_menu` VALUES (15, 2, 0, 2, '创建用户', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:add', NULL, NULL, 1614930862373, 1614930862373);
 INSERT INTO `sys_menu` VALUES (16, 2, 0, 2, '删除用户', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:del', NULL, NULL, 1614930903502, 1614930903502);
 INSERT INTO `sys_menu` VALUES (17, 2, 0, 2, '编辑用户', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:edit', NULL, NULL, 1614930935529, 1614930935529);
-/*
-INSERT INTO `sys_menu` VALUES (18, 4, 0, 2, '创建组织', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'dept:add', NULL, NULL, 1614930976297, 1614930976297);
-INSERT INTO `sys_menu` VALUES (19, 4, 0, 2, '删除组织', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'dept:del', NULL, NULL, 1614930997130, 1614930997130);
-INSERT INTO `sys_menu` VALUES (20, 4, 0, 2, '编辑组织', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'dept:edit', NULL, NULL, 1614931022967, 1614931022967);
-INSERT INTO `sys_menu` VALUES (21, 5, 0, 2, '创建角色', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'role:add', NULL, NULL, 1614931069408, 1614931069408);
-INSERT INTO `sys_menu` VALUES (22, 5, 0, 2, '删除角色', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'role:del', NULL, NULL, 1614931097720, 1614931097720);
-INSERT INTO `sys_menu` VALUES (23, 5, 0, 2, '编辑角色', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'role:edit', NULL, NULL, 1614931124782, 1614931124782);
-
- */
 INSERT INTO `sys_menu` VALUES (24, 34, 0, 2, '创建连接', NULL, NULL, 997, NULL, NULL, b'0', b'0', b'0', 'datasource:add', NULL, NULL, 1614931168956, 1615783705537);
 INSERT INTO `sys_menu` VALUES (25, 34, 0, 2, '删除连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:del', NULL, NULL, 1614931205899, 1614931205899);
 INSERT INTO `sys_menu` VALUES (26, 34, 0, 2, '编辑连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:edit', NULL, NULL, 1614931234105, 1614931234105);
@@ -42,70 +21,70 @@ INSERT INTO `sys_menu` VALUES (28, 2, 0, 2, '修改密码', NULL, NULL, 999, NUL
 INSERT INTO `sys_menu` VALUES (30, 0, 0, 1, '仪表板', 'panel', 'panel/index', 1, NULL, '/panel', b'0', b'0', b'0', 'panel:read', NULL, NULL, NULL, 1619081449067);
 INSERT INTO `sys_menu` VALUES (34, 0, 4, 1, '数据源', 'datasource', 'system/datasource/index', 4, NULL, '/datasource', b'0', b'0', b'0', 'datasource:read', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (35, 1, 0, 1, '用户表单', 'system-user-form', 'system/user/form', 10, '', 'user-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
-/*INSERT INTO `sys_menu` VALUES (36, 1, 0, 1, '菜单表单', 'system-menu-form', 'system/menu/form', 11, '', 'menu-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);*/
-/*INSERT INTO `sys_menu` VALUES (37, 1, 0, 1, '组织表单', 'system-dept-form', 'system/dept/form', 12, '', 'dept-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);*/
-/*INSERT INTO `sys_menu` VALUES (38, 1, 0, 1, '角色表单', 'system-role-form', 'system/role/form', 13, '', 'role-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);*/
 INSERT INTO `sys_menu` VALUES (39, 0, 0, 1, '数据源表单', 'datasource-form', 'system/datasource/form', 5, NULL, '/ds-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (40, 1, 0, 1, '模板管理', 'system-template', 'panel/template/index', 13, 'dashboard', 'panel/template/index', NULL, b'0', b'0', 'template:read', NULL, NULL, NULL, 1620444227389);
-/*
-INSERT INTO `sys_menu` VALUES (41, 1, 0, 1, '权限管理', 'system-auth', 'system/authority/index', 14, 'password', 'system/authority/index', b'0', b'0', b'0', 'auth:read', NULL, NULL, NULL, 1620447312657);
-INSERT INTO `sys_menu` VALUES (42, 1, 0, 1, '插件管理', 'system-plugin', 'system/plugin/index', 15, 'sys-tools', '/plugin', b'0', b'0', b'0', 'plugin:read', NULL, NULL, NULL, NULL);
- */
 INSERT INTO `sys_menu` VALUES (50, 0, 0, 1, '个人信息', 'person-info', 'system/user/privateForm', 999, NULL, '/person-info', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (51, 0, 0, 1, '重置密码', 'person-pwd-reset', 'system/user/personPwd', 999, NULL, '/person-pwd', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (52, 0, 0, 1, '关于', 'about', 'system/about/index', 16, 'system', '/about', b'0', b'0', b'1', NULL, NULL, NULL, NULL, 1620897406691);
 COMMIT;
 
 BEGIN;
-INSERT INTO `sys_user` VALUES (4, 0, 'admin', '管理员', '男', NULL, 'admin@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534,'zh_CN');
-INSERT INTO `sys_user` VALUES (19, 25, 'demo', 'demo', '男', NULL, 'demo@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'0', 0, NULL, NULL, NULL, 1619086036234, 1619086036234,'zh_CN');
+INSERT INTO `sys_user` VALUES (1, 0, 'admin', '管理员', '男', NULL, 'admin@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534, 'zh_CN');
+INSERT INTO `sys_user` VALUES (2, 1, 'demo', 'demo', '男', NULL, 'demo@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'0', 1, NULL, NULL, NULL, 1619086036234, 1622533509697, 'zh_CN');
 COMMIT;
 
 
 BEGIN;
-INSERT INTO `sys_role` VALUES (3, '管理员', '', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
-INSERT INTO `sys_role` VALUES (4, '普通员工', '', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
+INSERT INTO `sys_role` VALUES (1, '管理员', '', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
+INSERT INTO `sys_role` VALUES (2, '普通员工', '', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
 COMMIT;
 
 
 BEGIN;
-INSERT INTO `sys_roles_menus` VALUES (1, 3);
-INSERT INTO `sys_roles_menus` VALUES (2, 3);
-INSERT INTO `sys_roles_menus` VALUES (3, 3);
-INSERT INTO `sys_roles_menus` VALUES (4, 3);
-INSERT INTO `sys_roles_menus` VALUES (5, 3);
-INSERT INTO `sys_roles_menus` VALUES (6, 3);
-INSERT INTO `sys_roles_menus` VALUES (8, 3);
-INSERT INTO `sys_roles_menus` VALUES (10, 3);
-INSERT INTO `sys_roles_menus` VALUES (11, 3);
-INSERT INTO `sys_roles_menus` VALUES (14, 3);
-INSERT INTO `sys_roles_menus` VALUES (15, 3);
-INSERT INTO `sys_roles_menus` VALUES (16, 3);
-INSERT INTO `sys_roles_menus` VALUES (17, 3);
-INSERT INTO `sys_roles_menus` VALUES (18, 3);
-INSERT INTO `sys_roles_menus` VALUES (19, 3);
-INSERT INTO `sys_roles_menus` VALUES (20, 3);
-INSERT INTO `sys_roles_menus` VALUES (21, 3);
-INSERT INTO `sys_roles_menus` VALUES (22, 3);
-INSERT INTO `sys_roles_menus` VALUES (23, 3);
-INSERT INTO `sys_roles_menus` VALUES (24, 3);
-INSERT INTO `sys_roles_menus` VALUES (25, 3);
-INSERT INTO `sys_roles_menus` VALUES (26, 3);
-INSERT INTO `sys_roles_menus` VALUES (27, 3);
-INSERT INTO `sys_roles_menus` VALUES (28, 3);
-INSERT INTO `sys_roles_menus` VALUES (30, 3);
-INSERT INTO `sys_roles_menus` VALUES (31, 3);
-INSERT INTO `sys_roles_menus` VALUES (32, 3);
-INSERT INTO `sys_roles_menus` VALUES (34, 3);
-INSERT INTO `sys_roles_menus` VALUES (40, 3);
-INSERT INTO `sys_roles_menus` VALUES (41, 3);
-INSERT INTO `sys_roles_menus` VALUES (42, 3);
-INSERT INTO `sys_roles_menus` VALUES (30, 4);
+INSERT INTO `sys_roles_menus` VALUES (1, 1);
+INSERT INTO `sys_roles_menus` VALUES (2, 1);
+INSERT INTO `sys_roles_menus` VALUES (3, 1);
+INSERT INTO `sys_roles_menus` VALUES (4, 1);
+INSERT INTO `sys_roles_menus` VALUES (5, 1);
+INSERT INTO `sys_roles_menus` VALUES (6, 1);
+INSERT INTO `sys_roles_menus` VALUES (8, 1);
+INSERT INTO `sys_roles_menus` VALUES (10, 1);
+INSERT INTO `sys_roles_menus` VALUES (11, 1);
+INSERT INTO `sys_roles_menus` VALUES (14, 1);
+INSERT INTO `sys_roles_menus` VALUES (15, 1);
+INSERT INTO `sys_roles_menus` VALUES (16, 1);
+INSERT INTO `sys_roles_menus` VALUES (17, 1);
+INSERT INTO `sys_roles_menus` VALUES (18, 1);
+INSERT INTO `sys_roles_menus` VALUES (19, 1);
+INSERT INTO `sys_roles_menus` VALUES (20, 1);
+INSERT INTO `sys_roles_menus` VALUES (21, 1);
+INSERT INTO `sys_roles_menus` VALUES (22, 1);
+INSERT INTO `sys_roles_menus` VALUES (23, 1);
+INSERT INTO `sys_roles_menus` VALUES (24, 1);
+INSERT INTO `sys_roles_menus` VALUES (25, 1);
+INSERT INTO `sys_roles_menus` VALUES (26, 1);
+INSERT INTO `sys_roles_menus` VALUES (27, 1);
+INSERT INTO `sys_roles_menus` VALUES (28, 1);
+INSERT INTO `sys_roles_menus` VALUES (30, 1);
+INSERT INTO `sys_roles_menus` VALUES (31, 1);
+INSERT INTO `sys_roles_menus` VALUES (32, 1);
+INSERT INTO `sys_roles_menus` VALUES (34, 1);
+INSERT INTO `sys_roles_menus` VALUES (40, 1);
+INSERT INTO `sys_roles_menus` VALUES (41, 1);
+INSERT INTO `sys_roles_menus` VALUES (42, 1);
+INSERT INTO `sys_roles_menus` VALUES (8, 2);
+INSERT INTO `sys_roles_menus` VALUES (10, 2);
+INSERT INTO `sys_roles_menus` VALUES (24, 2);
+INSERT INTO `sys_roles_menus` VALUES (25, 2);
+INSERT INTO `sys_roles_menus` VALUES (26, 2);
+INSERT INTO `sys_roles_menus` VALUES (27, 2);
+INSERT INTO `sys_roles_menus` VALUES (30, 2);
+INSERT INTO `sys_roles_menus` VALUES (34, 2);
 COMMIT;
 
 BEGIN;
-INSERT INTO `sys_users_roles` VALUES (4, 3);
-INSERT INTO `sys_users_roles` VALUES (19, 4);
+INSERT INTO `sys_users_roles` VALUES (1, 1);
+INSERT INTO `sys_users_roles` VALUES (2, 2);
 COMMIT;
 
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.favicon', NULL, 'file', 6);
