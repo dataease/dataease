@@ -72,6 +72,7 @@ const data = {
     },
 
     setCurComponent(state, { component, index }) {
+      console.log('curComponent' + JSON.stringify(component))
       state.curComponent = component
       state.curComponentIndex = index
     },
@@ -87,6 +88,7 @@ const data = {
       if (width) curComponent.style.width = parseInt(canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width)
       if (height) curComponent.style.height = parseInt(canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height)
       if (rotate) curComponent.style.rotate = rotate
+      console.log('setShapeStyle' + JSON.stringify(curComponent))
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {

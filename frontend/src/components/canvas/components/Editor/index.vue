@@ -21,28 +21,36 @@
       :index="index"
       :class="{ lock: item.isLock }"
     >
-      <!--      item.style-&#45;&#45;{{ item.style }}-->
-      <!--      item.style-&#45;&#45;{{ getShapeStyleInt(item.style) }}-->
-
       <component
         :is="item.component"
-        v-if="item.type==='custom'"
+        v-if="item.type==='v-text'"
         :id="'component' + item.id"
         class="component"
-        :style="item.style"
-        :out-style="getShapeStyleInt(item.style)"
+        :style="getComponentStyleDefault(item.style)"
+        :prop-value="item.propValue"
         :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        @input="handleInput"
       />
-
       <component
         :is="item.component"
-        v-else
+        v-else-if="item.type==='other'"
         :id="'component' + item.id"
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"
         :filter="filter"
+        :out-style="getShapeStyleInt(item.style)"
+      />
+      <component
+        :is="item.component"
+        v-else
+        :id="'component' + item.id"
+        class="component"
+        :style="getComponentStyleDefault(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
         :out-style="getShapeStyleInt(item.style)"
       />
       <!-- <component
@@ -365,17 +373,26 @@ export default {
       return result
     },
 
+    getComponentStyleDefault(style) {
+      debugger
+      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // return style
+    },
+
     getComponentStyle(style) {
+      debugger
       //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       return style
     },
 
     handleInput(element, value) {
       // 根据文本组件高度调整 shape 高度
-      this.$store.commit('setShapeStyle', { height: this.getTextareaHeight(element, value) })
+      // remain -自适应画布会导致一些问题 暂时不修改
+      // this.$store.commit('setShapeStyle', { height: this.getTextareaHeight(element, value) })
     },
 
     getTextareaHeight(element, text) {
+      debugger
       // eslint-disable-next-line prefer-const
       let { lineHeight, fontSize, height } = element.style
       if (lineHeight === '') {

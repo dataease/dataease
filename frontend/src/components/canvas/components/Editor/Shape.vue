@@ -334,7 +334,6 @@ export default {
           curPoint,
           symmetricPoint
         })
-
         // console.log('this is test:' + JSON.stringify(this.element.propValue.viewId))
         this.$store.commit('setShapeStyle', style)
         this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)

@@ -52,6 +52,23 @@
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
             <!-- 过滤组件 end -->
+            <!-- 其他组件 start -->
+            <div tabindex="-1" style="position: relative; margin: 16px auto">
+              <div style="height: 60px; position: relative">
+                <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
+                  <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
+                </div>
+                <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
+                  <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                    {{ $t('panel.other_module') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+            </div>
+            <!-- 其他组件 end -->
           </div>
         </div>
       </de-aside-container>
@@ -73,6 +90,7 @@
           <view-select v-show=" show && showIndex===0" />
           <filter-group v-show=" show &&showIndex===1" />
           <subject-setting v-show=" show &&showIndex===2" />
+          <assist-component v-show=" show &&showIndex===3" />
         </el-drawer>
 
         <div
@@ -147,8 +165,9 @@ import Toolbar from '@/components/canvas/components/Toolbar'
 import { findOne } from '@/api/panel/panel'
 import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
-import AttrList from '@/components/canvas/components/AttrList.vue'
+import AttrList from '@/components/canvas/components/AttrList'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import AssistComponent from '@/views/panel/AssistComponent'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -171,7 +190,8 @@ export default {
     SubjectSetting,
     PreviewFullScreen,
     Preview,
-    AttrList
+    AttrList,
+    AssistComponent
   },
   data() {
     return {
@@ -334,6 +354,7 @@ export default {
       return data
     },
     handleDrop(e) {
+      debugger
       e.preventDefault()
       e.stopPropagation()
       let component
@@ -341,8 +362,15 @@ export default {
 
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
 
-      // 用户视图设置 复制一个模板
-      if (componentInfo.type === 'view') {
+      if (componentInfo.type === 'assist') {
+        // 辅助设计组件
+        componentList.forEach(componentTemp => {
+          if (componentInfo.id === componentTemp.id) {
+            component = deepCopy(componentTemp)
+          }
+        })
+      } else if (componentInfo.type === 'view') {
+        // 用户视图设置 复制一个模板
         componentList.forEach(componentTemp => {
           if (componentTemp.type === 'view') {
             component = deepCopy(componentTemp)
@@ -368,6 +396,7 @@ export default {
         component = deepCopy(this.currentFilterCom)
       }
 
+      // position = absolution 或导致有偏移 这里中和一下偏移量
       component.style.top = e.offsetY
       component.style.left = e.offsetX
       component.id = newComponentId
@@ -546,10 +575,10 @@ export default {
   background-color: #ffffff!important;
 }
 .style-aside{
-  width: 85px;
-  max-width:85px!important;
+  width: 200px;
+  max-width:200px!important;
   border: 1px solid #E6E6E6;
-  padding: 3px;
+  padding: 10px;
   transition: all 0.3s;
 
 }

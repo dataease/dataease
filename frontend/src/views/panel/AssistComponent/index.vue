@@ -2,24 +2,24 @@
 
   <div class="filter-container" @dragstart="handleDragStart">
 
-    <div v-for="(item, key) in widgetSubjects" :key="key" class="widget-subject">
+    <div class="widget-subject">
       <div class="filter-header">
-        <div class="filter-header-text"> {{ key }} </div>
+        <div class="filter-header-text"> 样式组件 </div>
       </div>
 
       <div class="filter-widget-content">
         <div
-          v-for="(widget, index) in item"
-          :key="widget.widgetName+index"
-          :data-id="widget.widgetName"
+          v-for="(item, index) in assistList"
+          :key="index"
+          :data-id="item.id"
           draggable
           :data-index="index"
-          :class="'filter-widget '+ (widget.defaultClass || '')"
+          :class="'filter-widget '+ (item.defaultClass || '')"
         >
           <div class="filter-widget-icon">
-            <i :class="(widget.icon || 'el-icon-setting') + ' widget-icon-i'" />
+            <i :class="(item.icon || 'el-icon-setting') + ' widget-icon-i'" />
           </div>
-          <div class="filter-widget-text">{{ widget.label }}</div>
+          <div class="filter-widget-text">{{ item.label }}</div>
         </div>
       </div>
     </div>
@@ -29,59 +29,20 @@
 </template>
 
 <script>
-import componentList from '@/components/canvas/custom-component/component-list'
-import { ApplicationContext } from '@/utils/ApplicationContext'
+import { assistList } from '@/components/canvas/custom-component/component-list'
 export default {
   name: 'FilterGroup',
   data() {
     return {
-      componentList,
-      panelInfo: this.$store.state.panel.panelInfo,
-      //   widgetSubjects: {
-      //     '文本过滤组件': [
-      //       'mySelectWidget'
-      //     ]
-      //   }
-      widgetSubjects: {
-        '时间过滤组件': [
-          'timeYearWidget',
-          'timeMonthWidget',
-          //   'timeQuarterWidget',
-          'timeDateWidget',
-          'timeDateRangeWidget'
-
-        ],
-        '文本过滤组件': [
-          'textSelectWidget',
-          'textInputWidget'
-        ],
-        '数字过滤组件': [
-          'numberSelectWidget'
-        ]
-        // '按钮': [
-        //   'buttonSureWidget'
-        // ]
-      }
+      assistList
     }
-  },
-  created() {
-    for (const key in this.widgetSubjects) {
-      const widgetNames = this.widgetSubjects[key]
-      this.widgetSubjects[key] = widgetNames.map(widgetName => {
-        const widget = ApplicationContext.getService(widgetName)
-        const result = { widgetName: widgetName }
-        Object.assign(result, widget.getLeftPanel())
-        return result
-      })
-    }
-    console.log('this.widgetSubjects=>' + JSON.stringify(this.widgetSubjects))
   },
 
   methods: {
     handleDragStart(ev) {
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
-        type: 'other',
+        type: 'assist',
         id: ev.target.dataset.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
