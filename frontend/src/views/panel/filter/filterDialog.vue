@@ -132,7 +132,7 @@
                       :move="onMove"
                       style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @end="end2"
-                      >
+                    >
                       <transition-group class="list-group" :data-value="$t('panel.drag_here')">
                         <drag-item v-for="(item,index) in selectField" :key="item.id" :item="item" :index="index" @closeItem="closeItem" />
                       </transition-group>
@@ -308,7 +308,7 @@ export default {
   },
 
   methods: {
-    attr(){
+    attr() {
       return 'aaa'
     },
     loadViews() {
@@ -370,9 +370,17 @@ export default {
       this.componentSetBreads.push(tail)
     },
 
-    removeTail() {
-      this.dataSetBreads = this.dataSetBreads.slice(0, this.dataSetBreads.length - 1)
-      this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
+    removeTail(bread) {
+      for (let index = 0; index < this.dataSetBreads.length; index++) {
+        const element = this.dataSetBreads[index]
+        if (element.type === bread.type) {
+          this.dataSetBreads = this.dataSetBreads.slice(0, index + 1)
+          this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
+          return
+        }
+      }
+    //   this.dataSetBreads = this.dataSetBreads.slice(0, this.dataSetBreads.length - 1)
+    //   this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
     },
     comRemoveTail() {
       this.componentSetBreads = this.componentSetBreads.slice(0, this.componentSetBreads.length - 1)
@@ -385,7 +393,7 @@ export default {
         this.showDomType = 'tree'
       }
 
-      this.removeTail()
+      this.removeTail(bread)
     },
     comBackLink(bread) {
       this.comShowDomType = 'view'

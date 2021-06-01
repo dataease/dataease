@@ -38,4 +38,8 @@ public class ChartViewFieldDTO implements Serializable {
     private List<ChartViewFieldFilterDTO> filter;
 
     private Integer deExtractType;
+
+    private String dateStyle;
+
+    private String datePattern;
 }

@@ -155,6 +155,7 @@ public class ExtractDataService {
                     break;
             }
         }
+
         Column_Fields = Column_Fields.substring(0, Column_Fields.length() - 2);
         Column_Fields = "(" + Column_Fields + ")\n";
         return Column_Fields;
@@ -637,7 +638,12 @@ public class ExtractDataService {
         for (int i = 0; i < datasetTableFields.size(); i++) {
             ExcelInputField field = new ExcelInputField();
             field.setName(datasetTableFields.get(i).getOriginName());
-            field.setType("String");
+            if(datasetTableFields.get(i).getDeExtractType() == 1){
+                field.setType("Date");
+                field.setFormat("yyyy-MM-dd HH:mm:ss");
+            }else {
+                field.setType("String");
+            }
             fields[i] = field;
         }
 

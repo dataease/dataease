@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!licstatus" class="lic">
+  <div v-if="!licValidate && licStatus !== 'no_record'" class="lic">
     <strong>{{ $t(licMsg) }}</strong>
   </div>
 </template>
@@ -20,8 +20,11 @@ export default {
     theme() {
       return this.$store.state.settings.theme
     },
-    licstatus() {
+    licValidate() {
       return this.$store.state.lic.validate
+    },
+    licStatus() {
+      return this.$store.state.lic.licStatus || ''
     },
     licMsg() {
       return this.$store.state.lic.licMsg ? ('license.' + this.$store.state.lic.licMsg) : null
