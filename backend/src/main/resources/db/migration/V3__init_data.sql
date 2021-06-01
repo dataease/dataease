@@ -58,8 +58,8 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO `sys_role` VALUES (3, '管理员', 'www', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
-INSERT INTO `sys_role` VALUES (4, '普通员工', 'ceshi', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
+INSERT INTO `sys_role` VALUES (3, '管理员', '', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
+INSERT INTO `sys_role` VALUES (4, '普通员工', '', NULL, NULL, REPLACE(unix_timestamp(current_timestamp(3)),'.',''), null);
 COMMIT;
 
 
