@@ -73,23 +73,23 @@
       <el-col
         style="height: 100%;width: 30%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
-        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">
-          <el-row>
-            <span>{{ $t('chart.title') }}</span>
-            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>
-          </el-row>
-          <el-form>
-            <el-form-item class="form-item">
-              <el-input
-                v-model="view.title"
-                size="mini"
-                :placeholder="$t('chart.title')"
-                prefix-icon="el-icon-search"
-                clearable
-              />
-            </el-form-item>
-          </el-form>
-        </div>
+        <!--        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">-->
+        <!--          <el-row>-->
+        <!--            <span>{{ $t('chart.title') }}</span>-->
+        <!--            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>-->
+        <!--          </el-row>-->
+        <!--          <el-form>-->
+        <!--            <el-form-item class="form-item">-->
+        <!--              <el-input-->
+        <!--                v-model="view.title"-->
+        <!--                size="mini"-->
+        <!--                :placeholder="$t('chart.title')"-->
+        <!--                prefix-icon="el-icon-search"-->
+        <!--                clearable-->
+        <!--              />-->
+        <!--            </el-form-item>-->
+        <!--          </el-form>-->
+        <!--        </div>-->
         <div style="height: 25vh;overflow:auto" class="padding-lr">
           <span>{{ $t('chart.chart_type') }}</span>
           <el-row>
@@ -101,24 +101,49 @@
                 @change="save(true,'chart')"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-radio value="table-normal" label="table-normal"><svg-icon icon-class="table-normal" class="chart-icon" /></el-radio>
-                  <el-radio value="text" label="text"><svg-icon icon-class="text" class="chart-icon" /></el-radio>
-                  <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
-                  <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
-                  <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_table_normal')" placement="bottom">
+                    <el-radio value="table-normal" label="table-normal"><svg-icon icon-class="table-normal" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_card')" placement="bottom">
+                    <el-radio value="text" label="text"><svg-icon icon-class="text" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_bar')" placement="bottom">
+                    <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_bar_stack')" placement="bottom">
+                    <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_bar_horizontal')" placement="bottom">
+                    <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
+                  </el-tooltip>
                 </div>
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
-                  <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
-                  <el-radio value="line-stack" label="line-stack"><svg-icon icon-class="line-stack" class="chart-icon" /></el-radio>
-                  <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
-                  <el-radio value="pie-rose" label="pie-rose"><svg-icon icon-class="pie-rose" class="chart-icon" /></el-radio>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_bar_stack_horizontal')" placement="bottom">
+                    <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_line')" placement="bottom">
+                    <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_line_stack')" placement="bottom">
+                    <el-radio value="line-stack" label="line-stack"><svg-icon icon-class="line-stack" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_pie')" placement="bottom">
+                    <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_pie_rose')" placement="bottom">
+                    <el-radio value="pie-rose" label="pie-rose"><svg-icon icon-class="pie-rose" class="chart-icon" /></el-radio>
+                  </el-tooltip>
                 </div>
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
-                  <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
-                  <el-radio value="gauge" label="gauge"><svg-icon icon-class="gauge" class="chart-icon" /></el-radio>
-                  <!--                  <el-radio value="scatter" label="scatter"><svg-icon icon-class="scatter" class="chart-icon" /></el-radio>-->
+                  <el-tooltip effect="dark" :content="$t('chart.chart_funnel')" placement="bottom">
+                    <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_radar')" placement="bottom">
+                    <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="$t('chart.chart_gauge')" placement="bottom">
+                    <el-radio value="gauge" label="gauge"><svg-icon icon-class="gauge" class="chart-icon" /></el-radio>
+                  </el-tooltip>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                 </div>
@@ -736,6 +761,7 @@ export default {
 
     onTextChange(val) {
       this.view.customStyle.text = val
+      this.view.title = val.title
       this.save()
     },
 

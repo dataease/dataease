@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
+import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
@@ -880,12 +881,14 @@ public class DataSetTableService {
         return CollectionUtils.isNotEmpty(data);
     }
 
+    @Resource
+    private UtilMapper utilMapper;
+
     @QuartzScheduled(cron = "0 0/3 * * * ?")
     public void updateDatasetTableStatus(){
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
-        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > System.currentTimeMillis()).map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > utilMapper.currentTimestamp()).map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
         List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
-
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
 

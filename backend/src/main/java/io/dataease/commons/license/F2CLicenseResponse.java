@@ -31,6 +31,7 @@ public class F2CLicenseResponse {
     }
 
     public static enum Status {
+        no_record,
         valid,
         invalid,
         expired;
@@ -41,6 +42,14 @@ public class F2CLicenseResponse {
         f2CLicenseResponse.setStatus(Status.invalid);
         f2CLicenseResponse.setLicense(null);
         f2CLicenseResponse.setMessage(a);
+        return f2CLicenseResponse;
+    }
+
+    public static F2CLicenseResponse noRecord() {
+        F2CLicenseResponse f2CLicenseResponse = new F2CLicenseResponse();
+        f2CLicenseResponse.setStatus(Status.no_record);
+        f2CLicenseResponse.setLicense(null);
+        f2CLicenseResponse.setMessage("No license record");
         return f2CLicenseResponse;
     }
 }

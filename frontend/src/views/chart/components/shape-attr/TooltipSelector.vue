@@ -2,15 +2,16 @@
   <div>
     <div style="width: 100%">
       <el-popover
+        v-model="isSetting"
         placement="right"
         width="400"
         trigger="click"
       >
         <el-col>
           <el-form ref="tooltipForm" :model="tooltipForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('chart.show')" class="form-item">
-              <el-checkbox v-model="tooltipForm.show" @change="changeTooltipAttr">{{ $t('chart.show') }}</el-checkbox>
-            </el-form-item>
+            <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
+            <!--              <el-checkbox v-model="tooltipForm.show" @change="changeTooltipAttr">{{ $t('chart.show') }}</el-checkbox>-->
+            <!--            </el-form-item>-->
             <el-form-item :label="$t('chart.trigger_position')" class="form-item">
               <el-radio-group v-model="tooltipForm.trigger" size="mini" @change="changeTooltipAttr">
                 <el-radio-button label="item">{{ $t('chart.tooltip_item') }}</el-radio-button>
@@ -54,7 +55,15 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.tooltip') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!tooltipForm.show">
+          {{ $t('chart.tooltip') }}<i class="el-icon-setting el-icon--right" />
+          <el-switch
+            v-model="tooltipForm.show"
+            class="switch-style"
+            @click.stop.native
+            @change="changeTooltipAttr"
+          />
+        </el-button>
       </el-popover>
     </div>
   </div>
@@ -74,7 +83,8 @@ export default {
   data() {
     return {
       tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP)),
-      fontSize: []
+      fontSize: [],
+      isSetting: false
     }
   },
   watch: {
@@ -110,6 +120,9 @@ export default {
       this.fontSize = arr
     },
     changeTooltipAttr() {
+      if (!this.tooltipForm.show) {
+        this.isSetting = false
+      }
       this.$emit('onTooltipChange', this.tooltipForm)
     }
   }
@@ -141,4 +154,10 @@ export default {
   .el-form-item{
     margin-bottom: 6px;
   }
+
+.switch-style{
+  position: absolute;
+  right: 10px;
+  margin-top: -4px;
+}
 </style>

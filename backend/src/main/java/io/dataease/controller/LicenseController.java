@@ -2,6 +2,7 @@ package io.dataease.controller;
 
 
 
+import com.google.gson.Gson;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,16 +23,14 @@ public class LicenseController {
 
     @GetMapping(value = "anonymous/license/validate")
     public ResultHolder validateLicense() throws Exception {
-        if (!need_validate_lic) {
-            return ResultHolder.success(null);
-        }
-       /* License license = defaultLicenseService.readLicense();
-        if(StringUtils.isEmpty(license.getF2cLicense())){
-            throw new Exception("Invalid License.");
-        }
-        F2CLicenseResponse f2CLicenseResponse = new Gson().fromJson(license.getF2cLicense(), F2CLicenseResponse.class);*/
+//        if (!need_validate_lic) {
+//            return ResultHolder.success(null);
+//        }
         F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
+        System.out.println(new Gson().toJson(f2CLicenseResponse));
         switch (f2CLicenseResponse.getStatus()) {
+            case no_record:
+                return ResultHolder.success(f2CLicenseResponse);
             case valid:
                 return ResultHolder.success(null);
             case expired:

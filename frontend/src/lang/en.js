@@ -679,7 +679,20 @@ export default {
     title_limit: 'Title cannot be greater than 50 characters',
     filter_condition: 'Filter Condition',
     filter_field_can_null: 'Filter field must choose',
-    preview_100_data: 'Preview 100 rows'
+    preview_100_data: 'Preview 100 rows',
+    chart_table_normal: 'Detail Table',
+    chart_card: 'KPI Card',
+    chart_bar: 'Base Bar',
+    chart_bar_stack: 'Stack Bar',
+    chart_bar_horizontal: 'Horizontal Bar',
+    chart_bar_stack_horizontal: 'Stack Horizontal Bar',
+    chart_line: 'Base Line',
+    chart_line_stack: 'Stack Line',
+    chart_pie: 'Pie',
+    chart_pie_rose: 'Rose Pie',
+    chart_funnel: 'Funnel',
+    chart_radar: 'Radar',
+    chart_gauge: 'Gauge'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
