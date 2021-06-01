@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RequestMapping("/plugin/dept")
 @RestController
-public class DeptServer {
+public class XDeptServer {
 
     @PostMapping("/childNodes/{pid}")
     public List<DeptNodeResponse> childNodes(@PathVariable("pid") Long pid){
