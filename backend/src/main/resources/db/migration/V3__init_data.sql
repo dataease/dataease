@@ -164,7 +164,9 @@ COMMIT;
 INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('self', '用户模板', '', -1, 'folder', NULL, NULL, '', 'self', '', '', NULL);
 INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('system', '系统模板', '', -1, 'folder', NULL, NULL, NULL, 'system', NULL, NULL, NULL);
 
-
+BEGIN;
+INSERT INTO `my_plugin` VALUES (1, 'xpakc默认插件', 'default', 0, 20000, 'xpack', '请购买正式许可', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 1, 1620624387327, NULL, 'deplugin-xpack-backend', NULL);
+COMMIT;
 -- ----------------------------
 
 

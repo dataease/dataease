@@ -4,8 +4,10 @@
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.MyPlugin">
     <id column="plugin_id" jdbcType="BIGINT" property="pluginId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="store" jdbcType="VARCHAR" property="store" />
     <result column="free" jdbcType="BIT" property="free" />
     <result column="cost" jdbcType="INTEGER" property="cost" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
     <result column="descript" jdbcType="VARCHAR" property="descript" />
     <result column="version" jdbcType="VARCHAR" property="version" />
     <result column="install_type" jdbcType="INTEGER" property="installType" />
@@ -14,7 +16,6 @@
     <result column="release_time" jdbcType="BIGINT" property="releaseTime" />
     <result column="install_time" jdbcType="BIGINT" property="installTime" />
     <result column="module_name" jdbcType="VARCHAR" property="moduleName" />
-    <result column="bean_name" jdbcType="VARCHAR" property="beanName" />
     <result column="icon" jdbcType="VARCHAR" property="icon" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -76,8 +77,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    plugin_id, `name`, `free`, cost, descript, version, install_type, creator, load_mybatis, 
-    release_time, install_time, module_name, bean_name, icon
+    plugin_id, `name`, store, `free`, cost, category, descript, version, install_type, 
+    creator, load_mybatis, release_time, install_time, module_name, icon
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.MyPluginExample" resultMap="BaseResultMap">
     select
@@ -110,16 +111,16 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.MyPlugin">
-    insert into my_plugin (plugin_id, `name`, `free`, 
-      cost, descript, version, 
-      install_type, creator, load_mybatis, 
-      release_time, install_time, module_name, 
-      bean_name, icon)
-    values (#{pluginId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{free,jdbcType=BIT}, 
-      #{cost,jdbcType=INTEGER}, #{descript,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, 
-      #{installType,jdbcType=INTEGER}, #{creator,jdbcType=VARCHAR}, #{loadMybatis,jdbcType=BIT}, 
-      #{releaseTime,jdbcType=BIGINT}, #{installTime,jdbcType=BIGINT}, #{moduleName,jdbcType=VARCHAR}, 
-      #{beanName,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR})
+    insert into my_plugin (plugin_id, `name`, store, 
+      `free`, cost, category, descript, 
+      version, install_type, creator, 
+      load_mybatis, release_time, install_time, 
+      module_name, icon)
+    values (#{pluginId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{store,jdbcType=VARCHAR}, 
+      #{free,jdbcType=BIT}, #{cost,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, #{descript,jdbcType=VARCHAR}, 
+      #{version,jdbcType=VARCHAR}, #{installType,jdbcType=INTEGER}, #{creator,jdbcType=VARCHAR}, 
+      #{loadMybatis,jdbcType=BIT}, #{releaseTime,jdbcType=BIGINT}, #{installTime,jdbcType=BIGINT}, 
+      #{moduleName,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.MyPlugin">
     insert into my_plugin
@@ -130,11 +131,17 @@
       <if test="name != null">
         `name`,
       </if>
+      <if test="store != null">
+        store,
+      </if>
       <if test="free != null">
         `free`,
       </if>
       <if test="cost != null">
         cost,
+      </if>
+      <if test="category != null">
+        category,
       </if>
       <if test="descript != null">
         descript,
@@ -160,9 +167,6 @@
       <if test="moduleName != null">
         module_name,
       </if>
-      <if test="beanName != null">
-        bean_name,
-      </if>
       <if test="icon != null">
         icon,
       </if>
@@ -174,11 +178,17 @@
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
+      <if test="store != null">
+        #{store,jdbcType=VARCHAR},
+      </if>
       <if test="free != null">
         #{free,jdbcType=BIT},
       </if>
       <if test="cost != null">
         #{cost,jdbcType=INTEGER},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
       </if>
       <if test="descript != null">
         #{descript,jdbcType=VARCHAR},
@@ -204,9 +214,6 @@
       <if test="moduleName != null">
         #{moduleName,jdbcType=VARCHAR},
       </if>
-      <if test="beanName != null">
-        #{beanName,jdbcType=VARCHAR},
-      </if>
       <if test="icon != null">
         #{icon,jdbcType=VARCHAR},
       </if>
@@ -227,11 +234,17 @@
       <if test="record.name != null">
         `name` = #{record.name,jdbcType=VARCHAR},
       </if>
+      <if test="record.store != null">
+        store = #{record.store,jdbcType=VARCHAR},
+      </if>
       <if test="record.free != null">
         `free` = #{record.free,jdbcType=BIT},
       </if>
       <if test="record.cost != null">
         cost = #{record.cost,jdbcType=INTEGER},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
       </if>
       <if test="record.descript != null">
         descript = #{record.descript,jdbcType=VARCHAR},
@@ -257,9 +270,6 @@
       <if test="record.moduleName != null">
         module_name = #{record.moduleName,jdbcType=VARCHAR},
       </if>
-      <if test="record.beanName != null">
-        bean_name = #{record.beanName,jdbcType=VARCHAR},
-      </if>
       <if test="record.icon != null">
         icon = #{record.icon,jdbcType=VARCHAR},
       </if>
@@ -272,8 +282,10 @@
     update my_plugin
     set plugin_id = #{record.pluginId,jdbcType=BIGINT},
       `name` = #{record.name,jdbcType=VARCHAR},
+      store = #{record.store,jdbcType=VARCHAR},
       `free` = #{record.free,jdbcType=BIT},
       cost = #{record.cost,jdbcType=INTEGER},
+      category = #{record.category,jdbcType=VARCHAR},
       descript = #{record.descript,jdbcType=VARCHAR},
       version = #{record.version,jdbcType=VARCHAR},
       install_type = #{record.installType,jdbcType=INTEGER},
@@ -282,7 +294,6 @@
       release_time = #{record.releaseTime,jdbcType=BIGINT},
       install_time = #{record.installTime,jdbcType=BIGINT},
       module_name = #{record.moduleName,jdbcType=VARCHAR},
-      bean_name = #{record.beanName,jdbcType=VARCHAR},
       icon = #{record.icon,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -294,11 +305,17 @@
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
       </if>
+      <if test="store != null">
+        store = #{store,jdbcType=VARCHAR},
+      </if>
       <if test="free != null">
         `free` = #{free,jdbcType=BIT},
       </if>
       <if test="cost != null">
         cost = #{cost,jdbcType=INTEGER},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
       </if>
       <if test="descript != null">
         descript = #{descript,jdbcType=VARCHAR},
@@ -324,9 +341,6 @@
       <if test="moduleName != null">
         module_name = #{moduleName,jdbcType=VARCHAR},
       </if>
-      <if test="beanName != null">
-        bean_name = #{beanName,jdbcType=VARCHAR},
-      </if>
       <if test="icon != null">
         icon = #{icon,jdbcType=VARCHAR},
       </if>
@@ -336,8 +350,10 @@
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.MyPlugin">
     update my_plugin
     set `name` = #{name,jdbcType=VARCHAR},
+      store = #{store,jdbcType=VARCHAR},
       `free` = #{free,jdbcType=BIT},
       cost = #{cost,jdbcType=INTEGER},
+      category = #{category,jdbcType=VARCHAR},
       descript = #{descript,jdbcType=VARCHAR},
       version = #{version,jdbcType=VARCHAR},
       install_type = #{installType,jdbcType=INTEGER},
@@ -346,7 +362,6 @@
       release_time = #{releaseTime,jdbcType=BIGINT},
       install_time = #{installTime,jdbcType=BIGINT},
       module_name = #{moduleName,jdbcType=VARCHAR},
-      bean_name = #{beanName,jdbcType=VARCHAR},
       icon = #{icon,jdbcType=VARCHAR}
     where plugin_id = #{pluginId,jdbcType=BIGINT}
   </update>

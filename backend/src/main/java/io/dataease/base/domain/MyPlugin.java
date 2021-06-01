@@ -9,9 +9,13 @@ public class MyPlugin implements Serializable {
 
     private String name;
 
+    private String store;
+
     private Boolean free;
 
     private Integer cost;
+
+    private String category;
 
     private String descript;
 
@@ -28,8 +32,6 @@ public class MyPlugin implements Serializable {
     private Long installTime;
 
     private String moduleName;
-
-    private String beanName;
 
     private String icon;
 

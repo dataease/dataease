@@ -234,6 +234,76 @@ public class MyPluginExample {
             return (Criteria) this;
         }
 
+        public Criteria andStoreIsNull() {
+            addCriterion("store is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreIsNotNull() {
+            addCriterion("store is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreEqualTo(String value) {
+            addCriterion("store =", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreNotEqualTo(String value) {
+            addCriterion("store <>", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreGreaterThan(String value) {
+            addCriterion("store >", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreGreaterThanOrEqualTo(String value) {
+            addCriterion("store >=", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreLessThan(String value) {
+            addCriterion("store <", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreLessThanOrEqualTo(String value) {
+            addCriterion("store <=", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreLike(String value) {
+            addCriterion("store like", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreNotLike(String value) {
+            addCriterion("store not like", value, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreIn(List<String> values) {
+            addCriterion("store in", values, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreNotIn(List<String> values) {
+            addCriterion("store not in", values, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreBetween(String value1, String value2) {
+            addCriterion("store between", value1, value2, "store");
+            return (Criteria) this;
+        }
+
+        public Criteria andStoreNotBetween(String value1, String value2) {
+            addCriterion("store not between", value1, value2, "store");
+            return (Criteria) this;
+        }
+
         public Criteria andFreeIsNull() {
             addCriterion("`free` is null");
             return (Criteria) this;
@@ -351,6 +421,76 @@ public class MyPluginExample {
 
         public Criteria andCostNotBetween(Integer value1, Integer value2) {
             addCriterion("cost not between", value1, value2, "cost");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryIsNull() {
+            addCriterion("category is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryIsNotNull() {
+            addCriterion("category is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryEqualTo(String value) {
+            addCriterion("category =", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryNotEqualTo(String value) {
+            addCriterion("category <>", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryGreaterThan(String value) {
+            addCriterion("category >", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryGreaterThanOrEqualTo(String value) {
+            addCriterion("category >=", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryLessThan(String value) {
+            addCriterion("category <", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryLessThanOrEqualTo(String value) {
+            addCriterion("category <=", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryLike(String value) {
+            addCriterion("category like", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryNotLike(String value) {
+            addCriterion("category not like", value, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryIn(List<String> values) {
+            addCriterion("category in", values, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryNotIn(List<String> values) {
+            addCriterion("category not in", values, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryBetween(String value1, String value2) {
+            addCriterion("category between", value1, value2, "category");
+            return (Criteria) this;
+        }
+
+        public Criteria andCategoryNotBetween(String value1, String value2) {
+            addCriterion("category not between", value1, value2, "category");
             return (Criteria) this;
         }
 
@@ -871,76 +1011,6 @@ public class MyPluginExample {
 
         public Criteria andModuleNameNotBetween(String value1, String value2) {
             addCriterion("module_name not between", value1, value2, "moduleName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameIsNull() {
-            addCriterion("bean_name is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameIsNotNull() {
-            addCriterion("bean_name is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameEqualTo(String value) {
-            addCriterion("bean_name =", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameNotEqualTo(String value) {
-            addCriterion("bean_name <>", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameGreaterThan(String value) {
-            addCriterion("bean_name >", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameGreaterThanOrEqualTo(String value) {
-            addCriterion("bean_name >=", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameLessThan(String value) {
-            addCriterion("bean_name <", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameLessThanOrEqualTo(String value) {
-            addCriterion("bean_name <=", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameLike(String value) {
-            addCriterion("bean_name like", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameNotLike(String value) {
-            addCriterion("bean_name not like", value, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameIn(List<String> values) {
-            addCriterion("bean_name in", values, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameNotIn(List<String> values) {
-            addCriterion("bean_name not in", values, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameBetween(String value1, String value2) {
-            addCriterion("bean_name between", value1, value2, "beanName");
-            return (Criteria) this;
-        }
-
-        public Criteria andBeanNameNotBetween(String value1, String value2) {
-            addCriterion("bean_name not between", value1, value2, "beanName");
             return (Criteria) this;
         }
 

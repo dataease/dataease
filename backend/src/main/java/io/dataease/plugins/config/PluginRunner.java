@@ -2,6 +2,7 @@ package io.dataease.plugins.config;
 
 import io.dataease.base.domain.MyPlugin;
 import io.dataease.commons.utils.DeFileUtils;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.service.sys.PluginService;
 import org.apache.commons.lang3.StringUtils;
@@ -30,15 +31,22 @@ public class PluginRunner implements ApplicationRunner {
         BaseGridRequest request = new BaseGridRequest();
         List<MyPlugin> plugins = pluginService.query(request);
         plugins.stream().forEach(plugin -> {
-            String name = plugin.getName();
+            String store = plugin.getStore();
             String version = plugin.getVersion();
-            String versionDir = pluginDir + name + "/" + version + "/";
-            File fileDir = new File(versionDir);
-            File[] jarFiles = fileDir.listFiles(this::isPluginJar);
-            File jarFile = jarFiles[0];
+            String moduleName = plugin.getModuleName();
+            String fileName = moduleName + "-" + version + ".jar";
+            String path = pluginDir + store + "/" + fileName;
+
+            File jarFile = new File(path);
+
+
             String jarPath = jarFile.getAbsolutePath();
             try {
-                pluginService.loadJar(jarPath, plugin);
+                if (jarFile.exists()) {
+                    pluginService.loadJar(jarPath, plugin);
+                }else {
+                    LogUtil.error("插件错误");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
