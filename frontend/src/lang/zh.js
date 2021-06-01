@@ -702,7 +702,8 @@ export default {
     y_M_d_H_m: '年月日时分',
     y_M_d_H_m_s: '年月日时分秒',
     date_sub: 'yyyy-MM-dd',
-    date_split: 'yyyy/MM/dd'
+    date_split: 'yyyy/MM/dd',
+    chartName: '新建视图'
   },
   dataset: {
     sheet_warn: '有多个Sheet页，默认抽取第一个',

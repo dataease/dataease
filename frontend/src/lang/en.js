@@ -702,7 +702,8 @@ export default {
     y_M_d_H_m: 'Year Month Day Hour Minute',
     y_M_d_H_m_s: 'Year Month Day Hour Minute Second',
     date_sub: 'yyyy-MM-dd',
-    date_split: 'yyyy/MM/dd'
+    date_split: 'yyyy/MM/dd',
+    chartName: 'New Chart'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

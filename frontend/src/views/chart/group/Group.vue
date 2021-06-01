@@ -275,7 +275,7 @@ export default {
       selectTableFlag: false,
       table: {},
       tables: [],
-      chartName: ''
+      chartName: this.$t('chart.chartName')
     }
   },
   computed: {
