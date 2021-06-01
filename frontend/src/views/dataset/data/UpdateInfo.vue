@@ -379,6 +379,12 @@ export default {
   mounted() {
     this.calHeight()
   },
+  created() {
+    this.timer = setInterval(this.listTaskLog, 5000)
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
     calHeight() {
       const that = this
