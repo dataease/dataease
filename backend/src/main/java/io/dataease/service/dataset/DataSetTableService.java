@@ -275,16 +275,16 @@ public class DataSetTableService {
                 map.put("status", "warnning");
                 map.put("msg", Translator.get("i18n_processing_data"));
                 dataSetPreviewPage.setTotal(0);
-            }else if (datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+            } else if (datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Error.name())) {
                 List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
                 map.put("status", "error");
-                if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+                if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
                     map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
-                }else {
+                } else {
                     map.put("msg", "Failed to extract data.");
                 }
                 dataSetPreviewPage.setTotal(0);
-            }else {
+            } else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
                 JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -338,9 +338,9 @@ public class DataSetTableService {
             }).collect(Collectors.toList());
         }
 
-       if(!map.containsKey("status")){
-           map.put("status", "success");
-       }
+        if (!map.containsKey("status")) {
+            map.put("status", "success");
+        }
         map.put("fields", fields);
         map.put("data", jsonArray);
         map.put("page", dataSetPreviewPage);
@@ -808,7 +808,8 @@ public class DataSetTableService {
         if (cellTypeEnum.equals(CellType.STRING)) {
             if(cellType){ tableFiled.setFieldType("TEXT"); }
             return cell.getStringCellValue();
-        } else if (cellTypeEnum.equals(CellType.NUMERIC)) {
+        }
+        if (cellTypeEnum.equals(CellType.NUMERIC)) {
             if(HSSFDateUtil.isCellDateFormatted(cell)){
                 if(cellType) { tableFiled.setFieldType("DATETIME"); }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -836,11 +837,11 @@ public class DataSetTableService {
                     return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
                 }
             }
-        } else if (cellTypeEnum.equals(CellType.BOOLEAN)) {
-            return cell.getBooleanCellValue() ? "1" : "0";
-        } else {
-            return "";
         }
+        if (cellTypeEnum.equals(CellType.BOOLEAN)) {
+            return cell.getBooleanCellValue() ? "1" : "0";
+        }
+        return "";
     }
 
     private String saveFile(MultipartFile file) throws Exception {
@@ -876,20 +877,20 @@ public class DataSetTableService {
     private UtilMapper utilMapper;
 
     @QuartzScheduled(cron = "0 0/3 * * * ?")
-    public void updateDatasetTableStatus(){
+    public void updateDatasetTableStatus() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > utilMapper.currentTimestamp()).map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
         List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
 
-         datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
-             if(StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))){
-                 jobStoppeddDatasetTables.add(datasetTable);
-             }
-         });
+        datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
+            if (StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
+                jobStoppeddDatasetTables.add(datasetTable);
+            }
+        });
 
-        if(CollectionUtils.isEmpty(jobStoppeddDatasetTables)){
+        if (CollectionUtils.isEmpty(jobStoppeddDatasetTables)) {
             return;
         }
 

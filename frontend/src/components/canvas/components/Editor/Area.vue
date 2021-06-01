@@ -1,25 +1,28 @@
 <template>
-    <div :style="{
-        left: start.x + 'px',
-        top: start.y + 'px',
-        width: width + 'px',
-        height: height + 'px',
-    }" class="area"></div>
+  <div
+    :style="{
+      left: start.x + 'px',
+      top: start.y + 'px',
+      width: width + 'px',
+      height: height + 'px',
+    }"
+    class="area"
+  />
 </template>
 
 <script>
 export default {
-    props: {
-        start: {
-            type: Object,
-        },
-        width: {
-            type: Number,
-        },
-        height: {
-            type: Number,
-        },
+  props: {
+    start: {
+      type: Object
     },
+    width: {
+      type: Number
+    },
+    height: {
+      type: Number
+    }
+  }
 }
 </script>
 

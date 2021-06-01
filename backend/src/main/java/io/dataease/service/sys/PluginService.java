@@ -81,18 +81,17 @@ public class PluginService {
             DeFileUtils.deleteFile(folder);
             throw new RuntimeException("缺少插件jar文件");
         }
-        String versionDir = null;
+        String targetDir = null;
         try {
             File jarFile = jarFiles[0];
-            versionDir = makeVersionDir(myPlugin);
+            targetDir = makeTargetDir(myPlugin);
             String jarPath = null;
-            jarPath = DeFileUtils.copy(jarFile, versionDir);
-            //DeFileUtils.copy(folderFile, versionDir);
+            jarPath = DeFileUtils.copy(jarFile, targetDir);
             loadJar(jarPath, myPlugin);
             myPluginMapper.insert(myPlugin);
         } catch (Exception e) {
-            if (StringUtils.isNotEmpty(versionDir)) {
-                DeFileUtils.deleteFile(versionDir);
+            if (StringUtils.isNotEmpty(targetDir)) {
+                DeFileUtils.deleteFile(targetDir);
             }
             e.printStackTrace();
         }finally {
@@ -113,9 +112,18 @@ public class PluginService {
 
 
 
-    private String makeVersionDir(MyPlugin myPlugin) {
+    /*private String makeTargetDir(MyPlugin myPlugin) {
         String name = myPlugin.getName();
         String dir = pluginDir + name + "/" + myPlugin.getVersion() + "/";
+        File fileDir = new File(dir);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+        }
+        return dir;
+    }*/
+    private String makeTargetDir(MyPlugin myPlugin) {
+        String store = myPlugin.getStore();
+        String dir = pluginDir + store + "/";
         File fileDir = new File(dir);
         if (!fileDir.exists()) {
             fileDir.mkdirs();

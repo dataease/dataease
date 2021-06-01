@@ -126,6 +126,30 @@ export function changeStyleWithScale(value) {
   return value * parseInt(store.state.canvasStyleData.scale) / 100
 }
 
-export function changeStyleWithScaleIn(value, scale) {
-  return value * parseInt(scale) / 100
+// 自适应宽高
+export function changeStyleWithScaleHeightInAuto(value) {
+  const scale = store.state.canvasStyleData.scaleHeight ? store.state.canvasStyleData.scaleHeight : 100
+  const result = value * scale / 100
+  console.log('heightInAuto=>' + scale + ';' + result)
+  return result
+}
+
+// 自适应宽高
+export function changeStyleWithScaleWidthInAuto(value) {
+  const scale = store.state.canvasStyleData.scaleWidth ? store.state.canvasStyleData.scaleWidth : 100
+  const result = value * scale / 100
+  console.log('widthInAuto=>' + scale + ';' + result)
+  return result
+}
+
+export function getOriginStyleHeight(value) {
+  const scale = store.state.canvasStyleData.scaleHeight ? store.state.canvasStyleData.scaleHeight : 100
+  const result = value / (scale / 100)
+  return result
+}
+
+export function getOriginStyleWidth(value) {
+  const scale = store.state.canvasStyleData.scaleWidth ? store.state.canvasStyleData.scaleWidth : 100
+  const result = value / (scale / 100)
+  return result
 }

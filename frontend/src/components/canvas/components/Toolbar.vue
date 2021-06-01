@@ -1,11 +1,17 @@
 <template>
   <div>
     <div class="toolbar">
+
+      <div class="canvas-config" style="margin-right: 10px">
+        <el-switch v-model="canvasStyleData.selfAdaption" :width="35" label="自适应画布区域" name="selfAdaption" />
+        <span>自适应画布区域 </span>
+      </div>
+
       <div class="canvas-config" style="margin-right: 10px">
         <span> {{ $t('panel.canvas_size') }} </span>
-        <input v-model="canvasStyleData.width">
+        <input v-model="canvasStyleData.width" :disabled="canvasStyleData.selfAdaption">
         <span>*</span>
-        <input v-model="canvasStyleData.height">
+        <input v-model="canvasStyleData.height" :disabled="canvasStyleData.selfAdaption">
       </div>
       <!--      <div class="canvas-config" style="margin-right: 10px">-->
       <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
@@ -140,7 +146,6 @@ export default {
           ...this.canvasStyleData,
           scale: this.scale
         })
-        this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }, 1000)
     },
 
@@ -318,6 +323,19 @@ export default {
 
   .button-closed{
     background-color: #ffffff!important;
+  }
+
+   >>>.el-switch__core{
+     width:30px!important;
+     height:15px;
+     /*color:#409EFF;*/
+   }
+  /*设置圆*/
+  >>>.el-switch__core::after{
+    width:14px;
+    height:14px;
+    margin-top:-1px;
+    margin-bottom: 2px;
   }
 
 </style>

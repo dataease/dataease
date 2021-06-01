@@ -14,13 +14,15 @@
     <Shape
       v-for="(item, index) in componentData"
       :key="item.id"
-      :default-style="item.style"
+      :default-style="getShapeStyleInt(item.style)"
       :style="getShapeStyle(item.style)"
       :active="item === curComponent"
       :element="item"
       :index="index"
       :class="{ lock: item.isLock }"
     >
+      <!--      item.style-&#45;&#45;{{ item.style }}-->
+      <!--      item.style-&#45;&#45;{{ getShapeStyleInt(item.style) }}-->
 
       <component
         :is="item.component"
@@ -28,6 +30,7 @@
         :id="'component' + item.id"
         class="component"
         :style="item.style"
+        :out-style="getShapeStyleInt(item.style)"
         :element="item"
       />
 
@@ -40,7 +43,7 @@
         :prop-value="item.propValue"
         :element="item"
         :filter="filter"
-        :out-style="item.style"
+        :out-style="getShapeStyleInt(item.style)"
       />
       <!-- <component
         :is="item.component"
@@ -76,6 +79,7 @@ import Grid from './Grid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { Condition } from '@/components/widget/bean/Condition'
 import bus from '@/utils/bus'
+
 export default {
   components: { Shape, ContextMenu, MarkLine, Area, Grid },
   props: {
@@ -84,6 +88,10 @@ export default {
       default: true
     },
     filter: {
+      type: Object,
+      require: false
+    },
+    outStyle: {
       type: Object,
       require: false
     }
@@ -99,31 +107,58 @@ export default {
       width: 0,
       height: 0,
       isShowArea: false,
-      conditions: []
+      conditions: [],
+      scaleWidth: 100,
+      scaleHeight: 100,
+      timer: null,
+      needToChangeHeight: [
+        'top',
+        'height',
+        'fontSize',
+        'borderWidth'
+      ],
+      needToChangeWidth: [
+        'left',
+        'width'
+      ]
+    }
+  },
+  watch: {
+    outStyle: {
+      handler(newVal, oldVla) {
+        this.changeScale()
+      },
+      deep: true
+    },
+    canvasStyleData: {
+      handler(newVal, oldVla) {
+        this.changeScale()
+      },
+      deep: true
     }
   },
   computed: {
+
     customStyle() {
       let style = {
-        width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
-        height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px'
+        width: this.format(this.canvasStyleData.width, this.scaleWidth) + 'px',
+        height: this.format(this.canvasStyleData.height, this.scaleHeight) + 'px'
       }
+      console.log('customStyle=>' + JSON.stringify(style))
+
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
-            width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
-            height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px',
-            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            ...style
           }
         } else {
           style = {
-            width: this.changeStyleWithScale(this.canvasStyleData.width) + 'px',
-            height: this.changeStyleWithScale(this.canvasStyleData.height) + 'px',
-            background: this.canvasStyleData.panel.color
+            background: this.canvasStyleData.panel.color,
+            ...style
           }
         }
       }
-
       return style
     },
     panelInfo() {
@@ -153,7 +188,6 @@ export default {
   },
   methods: {
     changeStyleWithScale,
-
     handleMouseDown(e) {
       // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
       if (!this.curComponent || (this.curComponent.component !== 'v-text' && this.curComponent.component !== 'rect-shape')) {
@@ -218,8 +252,10 @@ export default {
 
       // 根据选中区域和区域中每个组件的位移信息来创建 Group 组件
       // 要遍历选择区域的每个组件，获取它们的 left top right bottom 信息来进行比较
-      let top = Infinity; let left = Infinity
-      let right = -Infinity; let bottom = -Infinity
+      let top = Infinity
+      let left = Infinity
+      let right = -Infinity
+      let bottom = -Infinity
       areaData.forEach(component => {
         let style = {}
         if (component.component === 'Group') {
@@ -303,19 +339,34 @@ export default {
 
     getShapeStyle(style) {
       const result = {};
-      ['width', 'height', 'top', 'left', 'rotate'].forEach(attr => {
-        if (attr !== 'rotate') {
-          result[attr] = style[attr] + 'px'
-        } else {
-          result.transform = 'rotate(' + style[attr] + 'deg)'
-        }
+      ['width', 'left'].forEach(attr => {
+        result[attr] = this.format(style[attr], this.scaleWidth) + 'px'
+      });
+      ['height', 'top'].forEach(attr => {
+        result[attr] = this.format(style[attr], this.scaleHeight) + 'px'
       })
+      result.transform = 'rotate(' + style['rotate'] + 'deg)'
+
+      return result
+    },
+
+    getShapeStyleInt(style) {
+      const result = {};
+      ['width', 'left'].forEach(attr => {
+        result[attr] = this.format(style[attr], this.scaleWidth)
+      });
+      ['height', 'top'].forEach(attr => {
+        result[attr] = this.format(style[attr], this.scaleHeight)
+      })
+      result['rotate'] = style['rotate']
+      result['borderWidth'] = style['borderWidth']
+      result['opacity'] = style['opacity']
 
       return result
     },
 
     getComponentStyle(style) {
-    //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       return style
     },
 
@@ -368,6 +419,21 @@ export default {
     },
     executeSearch() {
       console.log('当前查询条件是: ' + JSON.stringify(this.conditions))
+    },
+    format(value, scale) {
+      // 自适应画布区域 返回原值
+      if (this.canvasStyleData.selfAdaption) {
+        return parseInt(value * parseInt(scale) / 100)
+      } else {
+        return parseInt(value)
+      }
+    },
+    changeScale() {
+      if (this.outStyle.width && this.outStyle.height) {
+        this.scaleWidth = parseInt(this.outStyle.width * 100 / this.canvasStyleData.width)
+        this.scaleHeight = parseInt(this.outStyle.height * 100 / this.canvasStyleData.height)
+        this.$store.commit('setCurCanvasScale', { scaleWidth: this.scaleWidth, scaleHeight: this.scaleHeight })
+      }
     }
   }
 }

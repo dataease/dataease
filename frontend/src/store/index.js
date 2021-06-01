@@ -42,6 +42,7 @@ const data = {
     canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE, // 页面全局数据  //扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
     componentData: [], // 画布组件数据
     curComponent: null,
+    curCanvasScale: null,
     curComponentIndex: null,
     // 点击画布时是否点中组件，主要用于取消选中组件用。
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
@@ -75,11 +76,16 @@ const data = {
       state.curComponentIndex = index
     },
 
-    setShapeStyle({ curComponent }, { top, left, width, height, rotate }) {
-      if (top) curComponent.style.top = top
-      if (left) curComponent.style.left = left
-      if (width) curComponent.style.width = width
-      if (height) curComponent.style.height = height
+    setCurCanvasScale(state, curCanvasScale) {
+      debugger
+      state.curCanvasScale = curCanvasScale
+    },
+
+    setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
+      if (top) curComponent.style.top = parseInt(canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top)
+      if (left) curComponent.style.left = parseInt(canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left)
+      if (width) curComponent.style.width = parseInt(canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width)
+      if (height) curComponent.style.height = parseInt(canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height)
       if (rotate) curComponent.style.rotate = rotate
     },
 
