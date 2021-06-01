@@ -26,6 +26,7 @@ import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -45,6 +46,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -583,7 +585,7 @@ public class DataSetTableService {
         switch (field) {
             case "TEXT":
                 return 0;
-            case "TIME":
+            case "DATETIME":
                 return 1;
             case "LONG":
             case "INT":
@@ -701,16 +703,17 @@ public class DataSetTableService {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setFieldSize(1024);
-                        String columnName = readCell(row.getCell(j));
+                        String columnName = readCell(row.getCell(j), false, null);
                         if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
-
                         fields.add(tableFiled);
-                    } else {
-                        r[j] = readCell(row.getCell(j));
+                    } else if (i == 1){
+                        r[j] = readCell(row.getCell(j), true, fields.get(j));
+                    }else {
+                        r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
                 if (i > 0) {
@@ -740,15 +743,17 @@ public class DataSetTableService {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setFieldSize(1024);
-                        String columnName = readCell(row.getCell(j));
+                        String columnName = readCell(row.getCell(j),false, null);
                         if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
-                    } else {
-                        r[j] = readCell(row.getCell(j));
+                    } else if (i == 1){
+                        r[j] = readCell(row.getCell(j), true, fields.get(j));
+                    }else {
+                        r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
                 if (i > 0) {
@@ -792,58 +797,44 @@ public class DataSetTableService {
         inputStream.close();
 
         Map<String, Object> map = new HashMap<>();
-        inferFieldType(fields, data);
         map.put("fields", fields);
         map.put("data", jsonArray);
         map.put("sheets", sheets);
         return map;
     }
 
-    private void inferFieldType(List<TableFiled> fields, List<String[]> data){
-        if(CollectionUtils.isEmpty(fields) || CollectionUtils.isEmpty(data)) {
-            return;
-        }
-        String[] firstLine = data.get(0);
-        for (int i=0; i< fields.size()&& i < firstLine.length; i++) {
-            TableFiled filed = fields.get(i);
-            try{
-                Integer.valueOf(firstLine[i]);
-                filed.setFieldType("INT");
-                continue;
-            }catch (Exception ignore ){
-            }
-            try{
-                Long.valueOf(firstLine[i]);
-                filed.setFieldType("LONG");
-                continue;
-            }catch (Exception ignore ){}
-            try{
-                Double.valueOf(firstLine[i]);
-                filed.setFieldType("DOUBLE");
-                continue;
-            }catch (Exception ignore ){}
-        }
-    }
-
-    private String readCell(Cell cell) {
+    private String readCell(Cell cell, boolean cellType, TableFiled tableFiled) {
         CellType cellTypeEnum = cell.getCellTypeEnum();
         if (cellTypeEnum.equals(CellType.STRING)) {
+            if(cellType){ tableFiled.setFieldType("TEXT"); }
             return cell.getStringCellValue();
         } else if (cellTypeEnum.equals(CellType.NUMERIC)) {
-            double d = cell.getNumericCellValue();
-            try {
-                Double value = new Double(d);
-                double eps = 1e-10;
-                if(value - Math.floor(value) < eps){
-                    return value.longValue() + "";
-                }else {
-                    NumberFormat nf = NumberFormat.getInstance();
-                    nf.setGroupingUsed(false);
-                    return nf.format(value);
+            if(HSSFDateUtil.isCellDateFormatted(cell)){
+                if(cellType) { tableFiled.setFieldType("DATETIME"); }
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try {
+                    return sdf.format(cell.getDateCellValue());
+                }catch (Exception e){
+                    return "";
                 }
-            } catch (Exception e) {
-                BigDecimal b = new BigDecimal(d);
-                return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
+            }else {
+                double d = cell.getNumericCellValue();
+                try {
+                    Double value = new Double(d);
+                    double eps = 1e-10;
+                    if(value - Math.floor(value) < eps){
+                        if(cellType) { tableFiled.setFieldType("LONG"); }
+                        return value.longValue() + "";
+                    }else {
+                        if(cellType){ tableFiled.setFieldType("DOUBLE");}
+                        NumberFormat nf = NumberFormat.getInstance();
+                        nf.setGroupingUsed(false);
+                        return nf.format(value);
+                    }
+                } catch (Exception e) {
+                    BigDecimal b = new BigDecimal(d);
+                    return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
+                }
             }
         } else if (cellTypeEnum.equals(CellType.BOOLEAN)) {
             return cell.getBooleanCellValue() ? "1" : "0";
