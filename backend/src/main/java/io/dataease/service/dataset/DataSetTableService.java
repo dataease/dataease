@@ -26,6 +26,7 @@ import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -45,6 +46,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -273,16 +275,16 @@ public class DataSetTableService {
                 map.put("status", "warnning");
                 map.put("msg", Translator.get("i18n_processing_data"));
                 dataSetPreviewPage.setTotal(0);
-            }else if (datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Error.name())) {
+            } else if (datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Error.name())) {
                 List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
                 map.put("status", "error");
-                if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+                if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
                     map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
-                }else {
+                } else {
                     map.put("msg", "Failed to extract data.");
                 }
                 dataSetPreviewPage.setTotal(0);
-            }else {
+            } else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
                 JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -336,9 +338,9 @@ public class DataSetTableService {
             }).collect(Collectors.toList());
         }
 
-       if(!map.containsKey("status")){
-           map.put("status", "success");
-       }
+        if (!map.containsKey("status")) {
+            map.put("status", "success");
+        }
         map.put("fields", fields);
         map.put("data", jsonArray);
         map.put("page", dataSetPreviewPage);
@@ -799,29 +801,38 @@ public class DataSetTableService {
         return map;
     }
 
-    private void inferFieldType(List<TableFiled> fields, List<String[]> data){
-        if(CollectionUtils.isEmpty(fields) || CollectionUtils.isEmpty(data)) {
+    private void inferFieldType(List<TableFiled> fields, List<String[]> data) {
+        if (CollectionUtils.isEmpty(fields) || CollectionUtils.isEmpty(data)) {
             return;
         }
         String[] firstLine = data.get(0);
-        for (int i=0; i< fields.size()&& i < firstLine.length; i++) {
+        for (int i = 0; i < fields.size() && i < firstLine.length; i++) {
             TableFiled filed = fields.get(i);
-            try{
+            try {
                 Integer.valueOf(firstLine[i]);
                 filed.setFieldType("INT");
                 continue;
-            }catch (Exception ignore ){
+            } catch (Exception ignore) {
             }
-            try{
+            try {
                 Long.valueOf(firstLine[i]);
                 filed.setFieldType("LONG");
                 continue;
-            }catch (Exception ignore ){}
-            try{
+            } catch (Exception ignore) {
+            }
+            try {
                 Double.valueOf(firstLine[i]);
                 filed.setFieldType("DOUBLE");
                 continue;
-            }catch (Exception ignore ){}
+            } catch (Exception ignore) {
+            }
+            try {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                simpleDateFormat.parse(firstLine[i]);
+                filed.setFieldType("TIME");
+                continue;
+            } catch (Exception ignore) {
+            }
         }
     }
 
@@ -830,20 +841,27 @@ public class DataSetTableService {
         if (cellTypeEnum.equals(CellType.STRING)) {
             return cell.getStringCellValue();
         } else if (cellTypeEnum.equals(CellType.NUMERIC)) {
-            double d = cell.getNumericCellValue();
-            try {
-                Double value = new Double(d);
-                double eps = 1e-10;
-                if(value - Math.floor(value) < eps){
-                    return value.longValue() + "";
-                }else {
-                    NumberFormat nf = NumberFormat.getInstance();
-                    nf.setGroupingUsed(false);
-                    return nf.format(value);
+            if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                Date date = cell.getDateCellValue();
+                //格式转换
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                return sdf.format(date);
+            } else {
+                double d = cell.getNumericCellValue();
+                try {
+                    Double value = new Double(d);
+                    double eps = 1e-10;
+                    if (value - Math.floor(value) < eps) {
+                        return value.longValue() + "";
+                    } else {
+                        NumberFormat nf = NumberFormat.getInstance();
+                        nf.setGroupingUsed(false);
+                        return nf.format(value);
+                    }
+                } catch (Exception e) {
+                    BigDecimal b = new BigDecimal(d);
+                    return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
                 }
-            } catch (Exception e) {
-                BigDecimal b = new BigDecimal(d);
-                return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
             }
         } else if (cellTypeEnum.equals(CellType.BOOLEAN)) {
             return cell.getBooleanCellValue() ? "1" : "0";
@@ -885,20 +903,20 @@ public class DataSetTableService {
     private UtilMapper utilMapper;
 
     @QuartzScheduled(cron = "0 0/3 * * * ?")
-    public void updateDatasetTableStatus(){
+    public void updateDatasetTableStatus() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > utilMapper.currentTimestamp()).map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
         List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
 
-         datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
-             if(StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))){
-                 jobStoppeddDatasetTables.add(datasetTable);
-             }
-         });
+        datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
+            if (StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
+                jobStoppeddDatasetTables.add(datasetTable);
+            }
+        });
 
-        if(CollectionUtils.isEmpty(jobStoppeddDatasetTables)){
+        if (CollectionUtils.isEmpty(jobStoppeddDatasetTables)) {
             return;
         }
 
