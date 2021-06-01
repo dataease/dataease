@@ -1,10 +1,17 @@
 <template>
-  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
+  <layout-content v-if="!noLayout" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
     <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
   </layout-content>
+  <div v-else>
+    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" />
+    <div v-else>
+      <h1>未知组件无法展示</h1>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -26,6 +33,10 @@ export default {
     menuid: {
       type: Number,
       default: null
+    },
+    noLayout: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

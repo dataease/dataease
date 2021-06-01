@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RequestMapping("/plugin/role")
 @RestController
-public class RoleServer {
+public class XRoleServer {
 
 
     @PostMapping("/create")

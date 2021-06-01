@@ -52,7 +52,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 
-import { checkPermission } from '@/utils/permission'
+// import { checkPermission } from '@/utils/permission'
 import { formatCondition } from '@/utils/index'
 import { pluginLists, uninstall } from '@/api/system/plugin'
 import { getToken } from '@/utils/auth'
@@ -64,10 +64,10 @@ export default {
       header: '',
       columns: [],
       buttons: [
-        {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
-          show: checkPermission(['user:del'])
-        }
+        // {
+        //   label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+        //   show: checkPermission(['user:del'])
+        // }
       ],
       searchConfig: {
         useQuickSearch: false,
@@ -123,6 +123,7 @@ export default {
     },
     uploadSuccess(response, file, fileList) {
       this.uploading = false
+      this.search()
     },
 
     del(row) {

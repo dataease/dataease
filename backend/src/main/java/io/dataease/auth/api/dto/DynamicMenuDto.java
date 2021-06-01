@@ -31,6 +31,8 @@ public class DynamicMenuDto implements Serializable {
 
     private Boolean isPlugin;
 
+    private Boolean noLayout;
+
     private List<DynamicMenuDto> children;
 
 }

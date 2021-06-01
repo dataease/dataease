@@ -41,7 +41,8 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
       router.component = 'system/plugin/dynamic'
       router.props = {
         jsname: jsName,
-        menuid: router.id
+        menuid: router.id,
+        noLayout: router.noLayout
       }
     }
     if (router.component) {

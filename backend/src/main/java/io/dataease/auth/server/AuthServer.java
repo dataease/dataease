@@ -14,10 +14,10 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
 
-import io.dataease.plugins.config.SpringContextUtil;
+/*import io.dataease.plugins.config.SpringContextUtil;
 
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
-import io.dataease.plugins.xpack.display.service.DisPlayXpackService;
+import io.dataease.plugins.xpack.display.service.DisPlayXpackService;*/
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -110,7 +110,7 @@ public class AuthServer implements AuthApi {
         SysUserEntity userById = authUserService.getUserById(4L);
         String nickName = userById.getNickName();
 //        System.out.println(nickName);
-        Map<String, DisPlayXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType(DisPlayXpackService.class);
+       /* Map<String, DisPlayXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType(DisPlayXpackService.class);
         for (Map.Entry entry : beansOfType.entrySet()) {
             Object key = entry.getKey();
             DisPlayXpackService value = (DisPlayXpackService)entry.getValue();
@@ -118,7 +118,7 @@ public class AuthServer implements AuthApi {
 
             String name = entry.getValue().getClass().getName();
             System.out.println("key: "+ key + ",  value: "+ name);
-        }
+        }*/
         return "apple";
     }
 }
