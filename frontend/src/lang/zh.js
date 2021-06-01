@@ -482,13 +482,12 @@ export default {
     create: '创建组织',
     modify: '修改组织',
     delete: '删除组织',
-    delete_confirm: '删除该组织会关联删除该组织下的所有资源(如：相关工作空间，项目，测试用例等），确定要删除吗?',
+    delete_confirm: '删除该组织会关联删除该组织的下属组织，确定要删除吗?',
     input_name: '请输入组织名称',
     select_organization: '请选择组织',
     search_by_name: '根据名称搜索',
     special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
-    select: '选择组织',
-    delete_warning: '删除该组织将同步删除该组织下所有相关工作空间和相关工作空间下的所有项目，以及项目中的所有用例、接口测试、性能测试等,确定要删除吗?'
+    select: '选择组织'
   },
   system_parameter_setting: {
     mailbox_service_settings: '邮件设置',

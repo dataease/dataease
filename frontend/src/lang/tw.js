@@ -482,13 +482,12 @@ export default {
     create: '創建組織',
     modify: '修改組織',
     delete: '删除組織',
-    delete_confirm: '删除該組織會關聯刪除該組織的所有資源，確定要删除吗?',
+    delete_confirm: '删除該組織會關聯刪除該組織的下屬組織，確定要删除吗?',
     input_name: '請輸入組織名稱',
     select_organization: '请選擇組織',
     search_by_name: '根据名稱搜索',
     special_characters_are_not_supported: '格式錯誤(不支持特殊字符，且不能以\'-\'開頭結尾)',
-    select: '選擇組織',
-    delete_warning: '確定要删除組織吗?'
+    select: '選擇組織'
   },
   system_parameter_setting: {
     mailbox_service_settings: '郵件設置',
