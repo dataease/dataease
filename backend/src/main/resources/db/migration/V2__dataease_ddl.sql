@@ -458,21 +458,3 @@ CREATE TABLE `license` (
    `f2c_license` longtext COMMENT 'F2C License',
    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-DROP TABLE IF EXISTS `my_plugin`;
-CREATE TABLE `my_plugin` (
-     `plugin_id` bigint(20) NOT NULL COMMENT '主键',
-     `name` varchar(255) DEFAULT NULL COMMENT '插件名称',
-     `free` tinyint(1) DEFAULT NULL COMMENT '是否免费',
-     `cost` int(10) DEFAULT NULL COMMENT '费用',
-     `descript` varchar(255) DEFAULT NULL COMMENT '描述',
-     `version` varchar(255) DEFAULT NULL COMMENT '版本号',
-     `install_type` int(4) DEFAULT NULL COMMENT '安装类型',
-     `creator` varchar(255) DEFAULT NULL COMMENT '开发者',
-     `release_time` bigint(13) DEFAULT NULL COMMENT '发布时间',
-     `install_time` bigint(13) DEFAULT NULL COMMENT '安装时间',
-     `module_name` varchar(255) DEFAULT NULL COMMENT 'jar包名称',
-     `bean_name` varchar(40) DEFAULT NULL COMMENT 'bean名称',
-     `icon` varchar(255) DEFAULT NULL COMMENT '图标',
-     PRIMARY KEY (`plugin_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
