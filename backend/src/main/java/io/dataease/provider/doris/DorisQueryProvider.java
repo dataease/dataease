@@ -132,12 +132,16 @@ public class DorisQueryProvider extends QueryProvider {
             if (x.getDeExtractType() == 1) {
                 if (x.getDeType() == 2 || x.getDeType() == 3) {
                     stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as ").append(x.getDataeaseName());
+                } else if (x.getDeType() == 1) {
+                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                    stringBuilder.append("DATE_FORMAT(").append(x.getDataeaseName()).append(",'").append(format).append("')");
                 } else {
                     stringBuilder.append(x.getDataeaseName());
                 }
             } else {
                 if (x.getDeType() == 1) {
-                    stringBuilder.append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(x.getDataeaseName());
+                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                    stringBuilder.append("DATE_FORMAT(").append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S')").append(",'").append(format).append("') as ").append(x.getDataeaseName());
                 } else {
                     stringBuilder.append(x.getDataeaseName());
                 }
@@ -329,5 +333,31 @@ public class DorisQueryProvider extends QueryProvider {
             }
         }
         return filter.toString();
+    }
+
+    private String transDateFormat(String dateStyle, String datePattern) {
+        String split = "-";
+        if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
+            split = "-";
+        } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+            split = "/";
+        }
+
+        switch (dateStyle) {
+            case "y":
+                return "%Y";
+            case "y_M":
+                return "%Y" + split + "%m";
+            case "y_M_d":
+                return "%Y" + split + "%m" + split + "%d";
+            case "H_m_s":
+                return "%H:%i:%S";
+            case "y_M_d_H_m":
+                return "%Y" + split + "%m" + split + "%d" + " %H:%i";
+            case "y_M_d_H_m_s":
+                return "%Y" + split + "%m" + split + "%d" + " %H:%i:%S";
+            default:
+                return "%Y-%m-%d %H:%i:%S";
+        }
     }
 }

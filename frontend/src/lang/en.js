@@ -692,7 +692,17 @@ export default {
     chart_pie_rose: 'Rose Pie',
     chart_funnel: 'Funnel',
     chart_radar: 'Radar',
-    chart_gauge: 'Gauge'
+    chart_gauge: 'Gauge',
+    dateStyle: '日期顯示',
+    datePattern: '日期格式',
+    y: 'Year',
+    y_M: 'Year Month',
+    y_M_d: 'Year Month Day',
+    H_m_s: 'Hour Minute Second',
+    y_M_d_H_m: 'Year Month Day Hour Minute',
+    y_M_d_H_m_s: 'Year Month Day Hour Minute Second',
+    date_sub: 'yyyy-MM-dd',
+    date_split: 'yyyy/MM/dd'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

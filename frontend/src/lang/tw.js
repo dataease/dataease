@@ -692,7 +692,17 @@ export default {
     chart_pie_rose: '南丁格爾玫瑰圖',
     chart_funnel: '漏鬥圖',
     chart_radar: '雷達圖',
-    chart_gauge: '儀表盤'
+    chart_gauge: '儀表盤',
+    dateStyle: '日期顯示',
+    datePattern: '日期格式',
+    y: '年',
+    y_M: '年月',
+    y_M_d: '年月日',
+    H_m_s: '時分秒',
+    y_M_d_H_m: '年月日時分',
+    y_M_d_H_m_s: '年月日時分秒',
+    date_sub: 'yyyy-MM-dd',
+    date_split: 'yyyy/MM/dd'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

@@ -26,6 +26,44 @@
           <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
+
+          <el-dropdown-item v-show="item.deType === 1" divided>
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="dateStyle">
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-c-scale-to-original" />
+                  <span>{{ $t('chart.dateStyle') }}</span>
+                  <span class="summary-span">({{ $t('chart.'+item.dateStyle) }})</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeDateStyle('y')">{{ $t('chart.y') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeDateStyle('y_M')">{{ $t('chart.y_M') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeDateStyle('H_m_s')">{{ $t('chart.H_m_s') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{ $t('chart.y_M_d_H_m') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m_s')">{{ $t('chart.y_M_d_H_m_s') }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item v-show="item.deType === 1">
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="datePattern">
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-timer" />
+                  <span>{{ $t('chart.datePattern') }}</span>
+                  <span class="summary-span">({{ $t('chart.'+item.datePattern) }})</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeDatePattern('date_sub')">{{ $t('chart.date_sub') }}(1990-01-01)</el-dropdown-item>
+                <el-dropdown-item :command="beforeDatePattern('date_split')">{{ $t('chart.date_split') }}(1990/01/01)</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
@@ -91,6 +129,26 @@ export default {
         type: type
       }
     },
+    dateStyle(param) {
+      // console.log(param)
+      this.item.dateStyle = param.type
+      this.$emit('onDimensionItemChange', this.item)
+    },
+    beforeDateStyle(type) {
+      return {
+        type: type
+      }
+    },
+    datePattern(param) {
+      // console.log(param)
+      this.item.datePattern = param.type
+      this.$emit('onDimensionItemChange', this.item)
+    },
+    beforeDatePattern(type) {
+      return {
+        type: type
+      }
+    },
     editFilter() {
       this.item.index = this.index
       this.$emit('editItemFilter', this.item)
@@ -128,5 +186,17 @@ export default {
 
   span {
     font-size: 12px;
+  }
+
+  .summary-span{
+    margin-left: 4px;
+    color: #878d9f;;
+  }
+
+  .inner-dropdown-menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%
   }
 </style>

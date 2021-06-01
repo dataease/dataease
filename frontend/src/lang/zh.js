@@ -692,7 +692,17 @@ export default {
     chart_pie_rose: '南丁格尔玫瑰图',
     chart_funnel: '漏斗图',
     chart_radar: '雷达图',
-    chart_gauge: '仪表盘'
+    chart_gauge: '仪表盘',
+    dateStyle: '日期显示',
+    datePattern: '日期格式',
+    y: '年',
+    y_M: '年月',
+    y_M_d: '年月日',
+    H_m_s: '时分秒',
+    y_M_d_H_m: '年月日时分',
+    y_M_d_H_m_s: '年月日时分秒',
+    date_sub: 'yyyy-MM-dd',
+    date_split: 'yyyy/MM/dd'
   },
   dataset: {
     sheet_warn: '有多个Sheet页，默认抽取第一个',
