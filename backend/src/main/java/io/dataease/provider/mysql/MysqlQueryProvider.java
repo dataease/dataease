@@ -156,7 +156,7 @@ public class MysqlQueryProvider extends QueryProvider {
         }).toArray(String[]::new);
         String[] group = xAxis.stream().map(x -> "_" + x.getDataeaseName()).toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> "_" + f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
         String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
                 .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getDataeaseName(), "*") ? "" : f.getDataeaseName()) + " " + f.getSort()).toArray(String[]::new);
         String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
