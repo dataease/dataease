@@ -29,10 +29,10 @@
         <el-input v-model="form.configuration.username" autocomplete="off" :disabled="formType=='modify'" />
       </el-form-item>
       <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')" prop="configuration.password">
-        <el-input v-model="form.configuration.password" autocomplete="off" show-password  />
+        <el-input v-model="form.configuration.password" autocomplete="off" show-password />
       </el-form-item>
       <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
-        <el-input v-model="form.configuration.port" autocomplete="off"  />
+        <el-input v-model="form.configuration.port" autocomplete="off" />
       </el-form-item>
 
       <el-form-item>
