@@ -161,7 +161,7 @@ export default {
     },
     'table': function() {
       if (this.table && this.table.sceneId) {
-        post('dataset/group/getScene/' + this.table.sceneId, {}).then(response => {
+        post('dataset/group/getScene/' + this.table.sceneId, {}, false).then(response => {
           this.currGroup = response.data
 
           this.$nextTick(function() {
@@ -213,7 +213,7 @@ export default {
 
     tree(group) {
       this.dsLoading = true
-      post('/dataset/group/tree', group).then(response => {
+      post('/dataset/group/tree', group, false).then(response => {
         this.data = response.data
         this.dsLoading = false
       })
@@ -227,7 +227,7 @@ export default {
           sort: 'type asc,create_time desc,name asc',
           sceneId: this.currGroup.id,
           mode: this.mode < 0 ? null : this.mode
-        }).then(response => {
+        }, false).then(response => {
           this.tables = response.data
           for (let i = 0; i < this.tables.length; i++) {
             if (this.tables[i].mode === 1 && this.kettleRunning === false) {
@@ -278,7 +278,7 @@ export default {
       }
       // check mode=1的数据集是否创建doris表
       if (data.mode === 1) {
-        post('/dataset/table/checkDorisTableIsExists/' + data.id, {}).then(response => {
+        post('/dataset/table/checkDorisTableIsExists/' + data.id, {}, false).then(response => {
           if (response.data) {
             this.$nextTick(function() {
               this.$emit('getTable', data)

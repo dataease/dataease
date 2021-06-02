@@ -67,7 +67,7 @@ export default {
       if (this.table.id) {
         this.dataLoading = true
         this.table.row = 100
-        post('/dataset/table/getPreviewData/1/100', this.table).then(response => {
+        post('/dataset/table/getPreviewData/1/100', this.table, false).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
           const datas = this.data
