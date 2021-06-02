@@ -39,6 +39,7 @@ public class PanelTemplateService {
     private ExtPanelTemplateMapper extPanelTemplateMapper;
 
     public List<PanelTemplateDTO> templateList(PanelTemplateRequest panelTemplateRequest) {
+        panelTemplateRequest.setWithBlobs("N");
         List<PanelTemplateDTO> panelTemplateList = extPanelTemplateMapper.panelTemplateList(panelTemplateRequest);
         if(panelTemplateRequest.getWithChildren()){
             getTreeChildren(panelTemplateList);

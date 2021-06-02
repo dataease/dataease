@@ -85,10 +85,10 @@ export function getPreviewData(data) {
   })
 }
 
-export function fieldList(id) {
+export function fieldList(id, showLoading = true) {
   return request({
     url: '/dataset/field/list/' + id,
-    loading: true,
+    loading: showLoading,
     method: 'post'
   })
 }
@@ -102,11 +102,11 @@ export function batchEdit(data) {
   })
 }
 
-export function post(url, data) {
+export function post(url, data, showLoading = true) {
   return request({
     url: url,
     method: 'post',
-    loading: true,
+    loading: showLoading,
     data
   })
 }

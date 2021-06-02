@@ -659,6 +659,7 @@ export default {
     rose_radius: '園角',
     view_name: '視圖名稱',
     name_can_not_empty: '名稱不能為空',
+    template_can_not_empty: '请选择仪表盘',
     custom_count: '記錄數',
     table_title_fontsize: '表頭字體大小',
     table_item_fontsize: '表格字體大小',

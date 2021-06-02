@@ -12,6 +12,8 @@ import lombok.Data;
 public class PanelTemplateRequest extends PanelTemplateWithBLOBs {
     private String sort;
 
+    private String withBlobs="Y";
+
     private String optType;
 
     private Boolean withChildren = false;
@@ -21,5 +23,6 @@ public class PanelTemplateRequest extends PanelTemplateWithBLOBs {
 
     public PanelTemplateRequest(String pid) {
         super.setPid(pid);
+        withBlobs="N";
     }
 }

@@ -659,6 +659,7 @@ export default {
     rose_radius: 'Fillet',
     view_name: 'Chart Name',
     name_can_not_empty: 'Name cannot be empty',
+    template_can_not_empty: 'Please check a Template',
     custom_count: 'Number of records',
     table_title_fontsize: 'Font size of header',
     table_item_fontsize: 'Table font size',

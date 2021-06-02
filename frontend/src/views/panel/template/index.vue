@@ -71,7 +71,7 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import TemplateList from './component/TemplateList'
 import TemplateItem from './component/TemplateItem'
 import TemplateImport from './component/TemplateImport'
-import { save, templateDelete, showTemplateList } from '@/api/system/template'
+import { save, templateDelete, find } from '@/api/system/template'
 
 export default {
   name: 'PanelMain',
@@ -108,7 +108,7 @@ export default {
     showCurrentTemplate(pid) {
       this.currentTemplateId = pid
       if (this.currentTemplateId) {
-        showTemplateList({ pid: this.currentTemplateId }).then(response => {
+        find({ pid: this.currentTemplateId }).then(response => {
           this.currentTemplateShowList = response.data
         })
       }
@@ -157,7 +157,7 @@ export default {
         templateType: this.currentTemplateType,
         level: '0'
       }
-      showTemplateList(request).then(res => {
+      find(request).then(res => {
         this.templateList = res.data
         this.showFirst()
       })
