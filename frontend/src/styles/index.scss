@@ -90,11 +90,15 @@ div:focus {
     width: 50% !important;
 
     .el-dialog__header{
-        background-color: #f4f4f5;
+        // background-color: #f4f4f5;
         padding: 10px 20px !important;
+
+        .el-dialog__headerbtn {
+            top: 15px !important;
+        }
     }
     .el-dialog__body{
-        padding: 1px 20px !important;
+        padding: 1px 15px !important;
 
     }
 }
