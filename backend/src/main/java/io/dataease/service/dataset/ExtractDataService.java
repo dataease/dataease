@@ -208,8 +208,8 @@ public class ExtractDataService {
             LogUtil.error("Can not find DatasetTable: " + datasetTableId);
         }
         DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
-        boolean isSIMPLEJob = (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString()));
-        if(updateSyncStatus(datasetTable) && !isSIMPLEJob){
+        boolean isCronJob = (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString()));
+        if(updateSyncStatus(datasetTable) && isCronJob){
             LogUtil.info("Skip synchronization task for table : " + datasetTableId);
             return;
         }

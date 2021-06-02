@@ -186,7 +186,7 @@ public class JdbcProvider extends DatasourceProvider {
         try {
             connection = getConnectionFromPool(datasourceRequest);
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable().toUpperCase(), "%");
+            ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database = resultSet.getString("TABLE_CAT");

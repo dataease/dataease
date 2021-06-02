@@ -309,8 +309,16 @@ export default {
 
   methods: {
     sortChange({ column, prop, order }) {
+      this.orderConditions = []
+      if (!order) {
+        this.search(this.last_condition)
+        return
+      }
       if (prop === 'dept') {
-        prop = 'deptId'
+        prop = 'u.deptId'
+      }
+      if (prop === 'status') {
+        prop = 'u.enabled'
       }
       this.orderConditions = []
       addOrder({ field: prop, value: order }, this.orderConditions)

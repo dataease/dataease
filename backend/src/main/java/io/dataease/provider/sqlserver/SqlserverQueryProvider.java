@@ -79,21 +79,21 @@ public class SqlserverQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (f.getDeExtractType() == 1) {
                 if (f.getDeType() == 2 || f.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(f.getDataeaseName()).append(")*1000 as ").append(f.getDataeaseName());
+                    stringBuilder.append("unix_timestamp(").append(f.getOriginName()).append(")*1000 as ").append(f.getOriginName());
                 } else {
-                    stringBuilder.append(f.getDataeaseName());
+                    stringBuilder.append(f.getOriginName());
                 }
             } else {
                 if (f.getDeType() == 1) {
-                    stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getDataeaseName());
+                    stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getOriginName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getOriginName());
                 } else {
-                    stringBuilder.append(f.getDataeaseName());
+                    stringBuilder.append(f.getOriginName());
                 }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
 
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getOriginName() : "null"), StringUtils.join(array, ","), table);
     }
 
     @Override
@@ -116,21 +116,21 @@ public class SqlserverQueryProvider extends QueryProvider {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
-            if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
-                f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
+            if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
+                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
                             .append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST(").append(y.getOriginName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(") AS DECIMAL(20,2)").append(")");
                 } else {
                     f.append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST(").append(y.getOriginName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(")");
                 }
             }
-            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName());
             return f.toString();
         }).toArray(String[]::new);
         String[] groupField = xAxis.stream().map(x -> {
@@ -138,24 +138,24 @@ public class SqlserverQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (x.getDeExtractType() == 1) {
                 if (x.getDeType() == 2 || x.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as ").append(x.getDataeaseName());
+                    stringBuilder.append("unix_timestamp(").append(x.getOriginName()).append(")*1000 as ").append(x.getOriginName());
                 } else {
-                    stringBuilder.append(x.getDataeaseName());
+                    stringBuilder.append(x.getOriginName());
                 }
             } else {
                 if (x.getDeType() == 1) {
-                    stringBuilder.append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(x.getDataeaseName());
+                    stringBuilder.append("FROM_UNIXTIME(cast(").append(x.getOriginName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(x.getOriginName());
                 } else {
-                    stringBuilder.append(x.getDataeaseName());
+                    stringBuilder.append(x.getOriginName());
                 }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        String[] group = xAxis.stream().map(ChartViewFieldDTO::getDataeaseName).toArray(String[]::new);
+        String[] group = xAxis.stream().map(ChartViewFieldDTO::getOriginName).toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> f.getOriginName() + " " + f.getSort()).toArray(String[]::new);
         String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getDataeaseName(), "*") ? "" : f.getDataeaseName()) + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + " " + f.getSort()).toArray(String[]::new);
         String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
         System.arraycopy(yOrder, 0, order, xOrder.length, yOrder.length);
 
@@ -165,10 +165,10 @@ public class SqlserverQueryProvider extends QueryProvider {
                         StringBuilder filter = new StringBuilder();
                         if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
                             filter.append(" AND FROM_UNIXTIME(cast(")
-                                    .append(x.getDataeaseName())
+                                    .append(x.getOriginName())
                                     .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND ").append(x.getDataeaseName());
+                            filter.append(" AND ").append(x.getOriginName());
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -202,10 +202,10 @@ public class SqlserverQueryProvider extends QueryProvider {
                         // 原始类型不是时间，在de中被转成时间的字段做处理
                         if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
                             filter.append(" AND FROM_UNIXTIME(cast(_")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())
                                     .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName());
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -281,10 +281,10 @@ public class SqlserverQueryProvider extends QueryProvider {
             DatasetTableField field = request.getField();
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 filter.append(" AND FROM_UNIXTIME(cast(")
-                        .append(field.getDataeaseName())
+                        .append(field.getOriginName())
                         .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
             } else {
-                filter.append(" AND ").append(field.getDataeaseName());
+                filter.append(" AND ").append(field.getOriginName());
             }
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getTerm()))
@@ -313,10 +313,10 @@ public class SqlserverQueryProvider extends QueryProvider {
             DatasetTableField field = request.getDatasetTableField();
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 filter.append(" AND FROM_UNIXTIME(cast(")
-                        .append(field.getDataeaseName())
+                        .append(field.getOriginName())
                         .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
             } else {
-                filter.append(" AND ").append(field.getDataeaseName());
+                filter.append(" AND ").append(field.getOriginName());
             }
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getOperator()))
