@@ -2,6 +2,7 @@ package io.dataease.service.panel;
 
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelViewDto;
@@ -25,14 +26,12 @@ public class PanelViewService {
 
     private final static String SCENE_TYPE = "scene";
 
-    public List<PanelViewPo> groups(BaseGridRequest request){
-        GridExample example = request.convertExample();
-        return extPanelViewMapper.groups(example);
+    public List<PanelViewPo> groups(){
+        return extPanelViewMapper.groups(String.valueOf(AuthUtils.getUser().getUserId()));
     }
 
-    public List<PanelViewPo> views(BaseGridRequest request){
-        GridExample example = request.convertExample();
-        return extPanelViewMapper.views(example);
+    public List<PanelViewPo> views(){
+        return extPanelViewMapper.views(String.valueOf(AuthUtils.getUser().getUserId()));
     }
 
     public List<PanelViewDto> buildTree(List<PanelViewPo> groups, List<PanelViewPo> views){
