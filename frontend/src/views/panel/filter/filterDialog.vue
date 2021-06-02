@@ -521,7 +521,7 @@ export default {
   .ms-main-container {
     height: 100%;
     min-height: 400px;
-
+    padding: 5px 10px;
   }
 
   .filter-field {
@@ -588,13 +588,14 @@ export default {
   }
 
   .filter-content {
-      height: calc(50vh - 130px);
+      height: calc(50vh - 120px);
       top: 160px;
 
   }
 
   .filter-dialog-tabs {
       border: 1px solid #E6E6E6;
+      padding: 10px;
       height: 100%;
       >>> div.el-tabs__content {
           height: calc(100% - 55px);
@@ -602,12 +603,12 @@ export default {
   }
 
   .filter-common {
-      margin: 10px 10px;
+      margin: 10px 5px;
 
   }
 
   .component-header {
-      margin: 20px 10px !important;
+      margin: 5px 5px 15px;
   }
 
   .component-result-content {

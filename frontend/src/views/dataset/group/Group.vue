@@ -458,6 +458,7 @@ export default {
     },
 
     close() {
+      this.$refs['groupForm'].resetFields()
       this.editGroup = false
       this.groupForm = {
         name: '',

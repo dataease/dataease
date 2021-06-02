@@ -11,32 +11,23 @@
 
 
 
-    <select id="groups" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
+    <select id="groups"  resultMap="treeNodeMap">
         select id, pid,  name, `type`
-        from chart_group
-        <if test="_parameter != null">
-            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
-        </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by create_time desc
-        </if>
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_group
+        <where>
+            FIND_IN_SET(chart_group.id,cids)
+        </where>
+        order by create_time desc
+
     </select>
 
-    <select id="views" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
-        select id, scene_id  as pid ,title  as name, `type`
-        from chart_view
-        <if test="_parameter != null">
-            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
-        </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by create_time desc
-        </if>
+    <select id="views" resultMap="treeNodeMap">
+        select id, scene_id  as pid , name, `type`
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t, chart_view
+        <where>
+            FIND_IN_SET(chart_view.id,cids)
+        </where>
+        order by create_time desc
     </select>
 
 
