@@ -985,7 +985,8 @@ export default {
     loginLogo: 'Login page header logo',
     loginImage: 'Picture on the right side of the login page',
     loginTitle: 'Login page title',
-    title: 'System name'
+    title: 'System name',
+    advice_size: 'Advice picture size'
   },
   auth: {
     authConfig: 'Auth Config',
