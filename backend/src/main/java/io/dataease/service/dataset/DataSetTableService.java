@@ -541,11 +541,7 @@ public class DataSetTableService {
                 datasetTableField.setTableId(datasetTable.getId());
                 datasetTableField.setOriginName(filed.getFieldName());
                 datasetTableField.setName(filed.getRemarks());
-                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-                    datasetTableField.setDataeaseName(DorisTableUtils.excelColumnName(filed.getFieldName()));
-                } else {
-                    datasetTableField.setDataeaseName(filed.getFieldName());
-                }
+                datasetTableField.setDataeaseName(DorisTableUtils.columnName(filed.getFieldName()));
                 datasetTableField.setType(filed.getFieldType());
                 if (ObjectUtils.isEmpty(ds)) {
                     datasetTableField.setDeType(transFieldType(filed.getFieldType()));
