@@ -120,17 +120,24 @@ export default {
     save() {
       // console.log(this.checkTableList);
       // console.log(this.scene);
+      let ds = {}
+      this.options.forEach(ele => {
+        if (ele.id === this.dataSource) {
+          ds = ele
+        }
+      })
       const sceneId = this.param.id
       const dataSourceId = this.dataSource
       const tables = []
       const mode = this.mode
       this.checkTableList.forEach(function(name) {
         tables.push({
-          name: name,
+          name: ds.name + '_' + name,
           sceneId: sceneId,
           dataSourceId: dataSourceId,
           type: 'db',
-          mode: parseInt(mode)
+          mode: parseInt(mode),
+          info: JSON.stringify({ table: name })
         })
       })
       post('/dataset/table/batchAdd', tables).then(response => {

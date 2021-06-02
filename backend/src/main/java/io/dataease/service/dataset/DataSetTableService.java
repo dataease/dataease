@@ -102,10 +102,6 @@ public class DataSetTableService {
             datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
             datasetTable.setCreateTime(System.currentTimeMillis());
             DataTableInfoDTO dataTableInfoDTO = new DataTableInfoDTO();
-            if (StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
-                dataTableInfoDTO.setTable(datasetTable.getName());
-                datasetTable.setInfo(new Gson().toJson(dataTableInfoDTO));
-            }
             int insert = datasetTableMapper.insert(datasetTable);
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
