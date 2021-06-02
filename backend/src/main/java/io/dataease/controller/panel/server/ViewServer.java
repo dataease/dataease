@@ -34,16 +34,9 @@ public class ViewServer implements ViewApi {
      * @return
      */
     @Override
-    public List<PanelViewDto> tree(@RequestBody BaseGridRequest request) {
-        List<ConditionEntity> conditions = new ArrayList<>();
-        ConditionEntity condition = new ConditionEntity();
-        condition.setField("create_by");
-        condition.setOperator("eq");
-        condition.setValue(AuthUtils.getUser().getUsername());
-        conditions.add(condition);
-        request.setConditions(conditions);
-        List<PanelViewPo> groups = panelViewService.groups(request);
-        List<PanelViewPo> views = panelViewService.views(request);
+    public List<PanelViewDto> treeWithAuth() {
+        List<PanelViewPo> groups = panelViewService.groups();
+        List<PanelViewPo> views = panelViewService.views();
         List<PanelViewDto> panelViewDtos = panelViewService.buildTree(groups, views);
         return panelViewDtos;
     }

@@ -18,9 +18,13 @@ import java.util.List;
 public interface ViewApi {
 
 
-    @ApiOperation("视图树")
+//    @ApiOperation("视图树")
+//    @PostMapping("/tree")
+//    List<PanelViewDto> tree(BaseGridRequest request);
+
+    @ApiOperation("授权的视图树")
     @PostMapping("/tree")
-    List<PanelViewDto> tree(BaseGridRequest request);
+    List<PanelViewDto> treeWithAuth();
 
 
     @ApiOperation("根据仪表板Id查询视图")
