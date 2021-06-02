@@ -351,6 +351,9 @@ public class DataSetTableService {
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
         // 使用输入的sql先预执行一次,并拿到所有字段
+        if(StringUtils.isEmpty(sql)){
+            throw new Exception(Translator.get("i18n_sql_not_empty"));
+        }
         datasourceRequest.setQuery(sql);
         List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
         // 正式执行
