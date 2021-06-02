@@ -8,6 +8,13 @@
         <result column="childrenCount" jdbcType="VARCHAR" property="childrenCount"/>
     </resultMap>
 
+    <sql id="Base_Column_List">
+    panel_template.id, panel_template.`name`, panel_template.pid, panel_template.`level`, panel_template.node_type, panel_template.create_by, panel_template.create_time, panel_template.template_type
+  </sql>
+    <sql id="Blob_Column_List">
+    panel_template.snapshot, panel_template.template_style, panel_template.template_data, panel_template.dynamic_data
+  </sql>
+
     <select id="panelTemplate" resultMap="BaseResultMapDTO">
         SELECT
             panel_template.*,
@@ -32,7 +39,12 @@
 
     <select id="panelTemplateList" resultMap="BaseResultMapDTO">
         SELECT
-        panel_template.*,
+        <include refid="Base_Column_List" />
+        ,
+        <if test='withBlobs == "Y"'>
+            <include refid="Blob_Column_List" />
+            ,
+        </if>
         panel_template.NAME AS label,
         ifnull(tempCountInfo.childrenCount,0) as childrenCount
         FROM

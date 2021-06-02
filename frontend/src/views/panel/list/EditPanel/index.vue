@@ -1,10 +1,10 @@
 <template>
-  <el-row>
+  <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel'">
       <el-col :span="18" style="height: 40px">
         <el-radio v-model="inputType" label="self"> {{ $t('panel.custom') }}</el-radio>
         <!--        <el-radio v-model="inputType" label="import">{{ $t('panel.import_template') }}  </el-radio>-->
-        <el-radio v-model="inputType" label="copy">{{ $t('panel.copy_template') }}  </el-radio>
+        <el-radio v-model="inputType" label="copy" @click.native="getTree">{{ $t('panel.copy_template') }}  </el-radio>
       </el-col>
       <el-col v-if="inputType==='import'" :span="6">
         <el-button class="el-icon-upload" size="small" type="primary" @click="goFile">{{ $t('panel.upload_template') }}</el-button>
@@ -18,12 +18,12 @@
       </el-col>
     </el-row>
     <el-row v-if="inputType==='copy'" class="preview">
-      <el-col :span="8" style="overflow-y: auto">
+      <el-col :span="8" style="height:100%;overflow-y: auto">
         <template-all-list :template-list="templateList" @showCurrentTemplateInfo="showCurrentTemplateInfo" />
       </el-col>
       <el-col :span="16" :style="classBackground" class="preview-show" />
     </el-row>
-    <el-row v-if="inputType==='import'" class="preview" :style="classBackground" />
+    <!--    <el-row v-if="inputType==='import'" class="preview" :style="classBackground" />-->
     <el-row class="root-class">
       <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
       <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
@@ -32,7 +32,8 @@
 </template>
 
 <script>
-import { post, panelSave } from '@/api/panel/panel'
+import { panelSave } from '@/api/panel/panel'
+import { showTemplateList } from '@/api/system/template'
 import TemplateAllList from './TemplateAllList'
 
 export default {
@@ -76,10 +77,11 @@ export default {
     }
   },
   created() {
-    this.getTree()
+    // this.getTree()
   },
   methods: {
     showCurrentTemplateInfo(data) {
+      debugger
       this.editPanel.panelInfo.name = data.name
       this.editPanel.panelInfo.panelStyle = data.templateStyle
       this.editPanel.panelInfo.panelData = data.templateData
@@ -90,7 +92,7 @@ export default {
         level: '-1',
         withChildren: true
       }
-      post('/template/templateList', request).then(res => {
+      showTemplateList(request).then(res => {
         this.templateList = res.data
       })
     },
@@ -102,6 +104,10 @@ export default {
     save() {
       if (!this.editPanel.panelInfo.name) {
         this.$warning(this.$t('chart.name_can_not_empty'))
+        return false
+      }
+      if (!this.editPanel.panelInfo.panelData) {
+        this.$warning(this.$t('chart.template_can_not_empty'))
         return false
       }
       panelSave(this.editPanel.panelInfo).then(response => {
@@ -156,13 +162,13 @@ export default {
   .preview {
     margin-top: 5px;
     border:1px solid #E6E6E6;
-    height:300px !important;
+    height:250px !important;
     overflow:hidden;
     background-size: 100% 100% !important;
   }
   .preview-show {
     border-left:1px solid #E6E6E6;
-    height:300px;
+    height:250px;
     background-size: 100% 100% !important;
   }
 </style>

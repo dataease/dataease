@@ -42,8 +42,8 @@ export default {
         level: '1',
         pid: this.pid,
         name: '',
-        templateStyle: '',
-        templateData: '',
+        templateStyle: null,
+        templateData: null,
         snapshot: ''
       }
     }
@@ -68,6 +68,10 @@ export default {
     save() {
       if (!this.templateInfo.name) {
         this.$warning(this.$t('chart.name_can_not_empty'))
+        return false
+      }
+      if (!this.templateInfo.templateData) {
+        this.$warning(this.$t('chart.template_can_not_empty'))
         return false
       }
       const nameCheckRequest = {
