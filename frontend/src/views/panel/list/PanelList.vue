@@ -1,5 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col style="padding: 0 10px 0 10px;">
+  <el-col style="padding: 0 5px 0 5px;">
     <el-col>
       <el-row>
         <span class="header-title">{{ $t('panel.default_panel') }}</span>

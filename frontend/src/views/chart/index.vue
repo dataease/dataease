@@ -53,7 +53,7 @@ export default {
 <style scoped>
   .ms-aside-container {
     height: calc(100vh - 56px);
-    padding: 15px;
+    padding: 10px 15px;
     min-width: 260px;
     max-width: 460px;
   }

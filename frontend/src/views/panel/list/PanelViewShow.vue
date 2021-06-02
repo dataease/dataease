@@ -3,39 +3,40 @@
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
       <el-row class="panel-design-head">
         <!--仪表板头部区域-->
-        <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
-          <span>{{ panelInfo.name || '测试仪表板' }}</span>
-        </el-col>
-        <el-col :span="12">
-          <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-            <el-tooltip :content="$t('panel.save_to_panel')">
-              <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
-            </el-tooltip>
-          </span>
-          <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-            <el-tooltip :content="$t('panel.export_to_panel')">
-              <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
-            </el-tooltip>
-          </span>
-          <span style="float: right;margin-right: 10px">
-            <el-tooltip :content="$t('panel.preview')">
-              <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
-            </el-tooltip>
-          </span>
+        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+          <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
+            <span>{{ panelInfo.name || '测试仪表板' }}</span>
+          </el-col>
+          <el-col :span="12">
+            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('panel.save_to_panel')">
+                <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
+              </el-tooltip>
+            </span>
+            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('panel.export_to_panel')">
+                <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
+              </el-tooltip>
+            </span>
+            <span style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('panel.preview')">
+                <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
+              </el-tooltip>
+            </span>
 
-          <span v-if="!hasStar && panelInfo" style="float: right;margin-right: 10px">
-            <el-tooltip :content="$t('panel.store')">
-              <el-button class="el-icon-star-off" size="mini" circle @click="star" />
-            </el-tooltip>
-          </span>
+            <span v-if="!hasStar && panelInfo" style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('panel.store')">
+                <el-button class="el-icon-star-off" size="mini" circle @click="star" />
+              </el-tooltip>
+            </span>
 
-          <span v-if="hasStar && panelInfo" style="float: right;margin-right: 10px">
-            <el-tooltip :content="$t('commons.cancel')">
-              <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
-            </el-tooltip>
-          </span>
-        </el-col>
-
+            <span v-if="hasStar && panelInfo" style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('commons.cancel')">
+                <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
+              </el-tooltip>
+            </span>
+          </el-col>
+        </div>
       </el-row>
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
@@ -217,9 +218,8 @@ export default {
   .panel-design-head {
     height: 40px;
     background-color: white;
-    padding: 0 6px;
+    padding: 0 10px;
     line-height: 40px;
-    border-bottom: 1px solid #dfe4ed;
   }
 
   .panel-design-preview {
