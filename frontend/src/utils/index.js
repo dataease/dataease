@@ -1,7 +1,4 @@
 
-/**
- * Created by PanJiaChen on 16/11/18.
- */
 export function timeSection(date, type) {
   if (!date) {
     return null
