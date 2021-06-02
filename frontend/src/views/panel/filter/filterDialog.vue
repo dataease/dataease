@@ -593,6 +593,9 @@ export default {
   .filter-dialog-tabs {
       border: 1px solid #E6E6E6;
       height: 100%;
+      >>> div.el-tabs__content {
+          height: calc(100% - 55px);
+      }
   }
 
   .filter-common {
@@ -602,6 +605,11 @@ export default {
 
   .component-header {
       margin: 20px 10px !important;
+  }
+
+  .component-result-content {
+      height: calc(50vh - 140px);
+      overflow-y: auto;
   }
 
   .link-text {

@@ -99,7 +99,7 @@ export default {
     padding-top: 0px;
     padding-bottom: 0px;
     position: relative;
-    height: 940px;
+    // height: 940px;
     max-height: 976px;
   }
   .filter-header {
