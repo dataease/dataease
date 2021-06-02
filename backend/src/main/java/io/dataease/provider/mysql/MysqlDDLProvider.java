@@ -15,7 +15,12 @@ public class MysqlDDLProvider extends DDLProvider {
     }
 
     @Override
-    public String dropTableOrView(String name) {
+    public String dropTable(String name) {
         return "DROP TABLE IF EXISTS " + name;
+    }
+
+    @Override
+    public String dropView(String name) {
+        return "DROP VIEW IF EXISTS " + name;
     }
 }
