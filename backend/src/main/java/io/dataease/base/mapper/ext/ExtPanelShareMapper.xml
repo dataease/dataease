@@ -16,16 +16,17 @@
         </foreach>
     </insert>
 
-    <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="treeNodeMap">
+    <select id="query" resultMap="treeNodeMap">
         select distinct s.panel_group_id as id, g.create_by as creator, g.name
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
-        <if test="_parameter != null">
-            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
-        </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
+        where
+        ( s.target_id = #{userId} and s.type = 0 ) or
+        ( s.target_id = #{deptId} and s.type = 1 ) or
+        s.target_id in
+        <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+            #{roleId}
+        </foreach>
         <if test="orderByClause == null">
             order by s.create_time desc
         </if>
