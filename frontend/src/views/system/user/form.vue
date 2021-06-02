@@ -2,7 +2,7 @@
   <layout-content :header="formType=='add' ? $t('user.create') : $t('user.modify')" back-name="system-user">
     <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
       <el-form-item label="ID" prop="username">
-        <el-input v-model="form.username" />
+        <el-input v-model="form.username" :disabled="formType !== 'add'" />
       </el-form-item>
       <el-form-item :label="$t('commons.phone')" prop="phone">
         <el-input v-model="form.phone" />
@@ -27,7 +27,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item :label="$t('commons.status')">
-        <el-radio-group v-model="form.enabled" style="width: 140px">
+        <el-radio-group v-model="form.enabled" :disabled="formType !== 'add' && form.isAdmin" style="width: 140px">
           <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
           <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
         </el-radio-group>
@@ -47,6 +47,7 @@
         <el-select
           v-model="form.roleIds"
           style="width: 100%"
+          :disabled="formType !== 'add' && form.isAdmin"
           multiple
           :placeholder="$t('commons.please_select')"
           @remove-tag="deleteTag"

@@ -187,6 +187,7 @@ export default {
           show: this.checkPermission(['user:edit'])
         }, {
           label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+          disabled: this.btnDisabled,
           show: this.checkPermission(['user:del'])
         }, {
           label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'success', click: this.editPassword,
@@ -489,6 +490,9 @@ export default {
       allRoles().then(res => {
         this.roles = res.data
       })
+    },
+    btnDisabled(row) {
+      return row.userId === 1
     }
   }
 }
