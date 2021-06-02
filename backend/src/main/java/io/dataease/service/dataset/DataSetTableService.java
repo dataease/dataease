@@ -127,28 +127,36 @@ public class DataSetTableService {
     }
 
     public void delete(String id) throws Exception {
+        DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
         dataSetTableTaskService.deleteByTableId(id);
         try {
-            deleteDorisTable(id);
+            deleteDorisTable(id, table);
         } catch (Exception e) {
 
         }
     }
 
-    private void deleteDorisTable(String datasetId) throws Exception {
+    private void deleteDorisTable(String datasetId, DatasetTable table) throws Exception {
         String dorisTableName = DorisTableUtils.dorisName(datasetId);
         Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(dorisDatasource.getType());
-        datasourceRequest.setQuery(ddlProvider.dropTableOrView(dorisTableName));
-        jdbcProvider.exec(datasourceRequest);
-        datasourceRequest.setQuery(ddlProvider.dropTableOrView(DorisTableUtils.dorisTmpName(dorisTableName)));
-        jdbcProvider.exec(datasourceRequest);
+        if (StringUtils.equalsIgnoreCase("custom", table.getType())) {
+            datasourceRequest.setQuery(ddlProvider.dropView(dorisTableName));
+            jdbcProvider.exec(datasourceRequest);
+            datasourceRequest.setQuery(ddlProvider.dropView(DorisTableUtils.dorisTmpName(dorisTableName)));
+            jdbcProvider.exec(datasourceRequest);
+        } else {
+            datasourceRequest.setQuery(ddlProvider.dropTable(dorisTableName));
+            jdbcProvider.exec(datasourceRequest);
+            datasourceRequest.setQuery(ddlProvider.dropTable(DorisTableUtils.dorisTmpName(dorisTableName)));
+            jdbcProvider.exec(datasourceRequest);
+        }
     }
 
     public List<DataSetTableDTO> list(DataSetTableRequest dataSetTableRequest) {
@@ -567,7 +575,7 @@ public class DataSetTableService {
         datasourceRequest.setDatasource(dorisDatasource);
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(dorisDatasource.getType());
         // 先删除表
-        datasourceRequest.setQuery(ddlProvider.dropTableOrView(dorisTableName));
+        datasourceRequest.setQuery(ddlProvider.dropView(dorisTableName));
         jdbcProvider.exec(datasourceRequest);
         datasourceRequest.setQuery(ddlProvider.createView(dorisTableName, customSql));
         jdbcProvider.exec(datasourceRequest);
@@ -702,9 +710,9 @@ public class DataSetTableService {
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
-                    } else if (i == 1){
+                    } else if (i == 1) {
                         r[j] = readCell(row.getCell(j), true, fields.get(j));
-                    }else {
+                    } else {
                         r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
@@ -735,16 +743,16 @@ public class DataSetTableService {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setFieldSize(1024);
-                        String columnName = readCell(row.getCell(j),false, null);
+                        String columnName = readCell(row.getCell(j), false, null);
                         if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
-                    } else if (i == 1){
+                    } else if (i == 1) {
                         r[j] = readCell(row.getCell(j), true, fields.get(j));
-                    }else {
+                    } else {
                         r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
@@ -798,28 +806,36 @@ public class DataSetTableService {
     private String readCell(Cell cell, boolean cellType, TableFiled tableFiled) {
         CellType cellTypeEnum = cell.getCellTypeEnum();
         if (cellTypeEnum.equals(CellType.STRING)) {
-            if(cellType){ tableFiled.setFieldType("TEXT"); }
+            if (cellType) {
+                tableFiled.setFieldType("TEXT");
+            }
             return cell.getStringCellValue();
         }
         if (cellTypeEnum.equals(CellType.NUMERIC)) {
-            if(HSSFDateUtil.isCellDateFormatted(cell)){
-                if(cellType) { tableFiled.setFieldType("DATETIME"); }
+            if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                if (cellType) {
+                    tableFiled.setFieldType("DATETIME");
+                }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
                     return sdf.format(cell.getDateCellValue());
-                }catch (Exception e){
+                } catch (Exception e) {
                     return "";
                 }
-            }else {
+            } else {
                 double d = cell.getNumericCellValue();
                 try {
                     Double value = new Double(d);
                     double eps = 1e-10;
-                    if(value - Math.floor(value) < eps){
-                        if(cellType) { tableFiled.setFieldType("LONG"); }
+                    if (value - Math.floor(value) < eps) {
+                        if (cellType) {
+                            tableFiled.setFieldType("LONG");
+                        }
                         return value.longValue() + "";
-                    }else {
-                        if(cellType){ tableFiled.setFieldType("DOUBLE");}
+                    } else {
+                        if (cellType) {
+                            tableFiled.setFieldType("DOUBLE");
+                        }
                         NumberFormat nf = NumberFormat.getInstance();
                         nf.setGroupingUsed(false);
                         return nf.format(value);

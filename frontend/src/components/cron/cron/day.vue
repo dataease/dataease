@@ -153,7 +153,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .el-checkbox+.el-checkbox {
     margin-left: 10px;
 }
