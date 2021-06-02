@@ -268,6 +268,10 @@ export default {
         not_equals: 'Not equals',
         between: 'between',
         current_user: 'Current User'
+      },
+      message_box: {
+        alert: 'Alert',
+        confirm: 'Confirm'
       }
     },
     monitor: 'Monitor',

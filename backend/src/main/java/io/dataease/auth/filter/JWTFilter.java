@@ -7,6 +7,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.ServletUtils;
+import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
@@ -26,7 +27,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    public final static String expireMessage = "login token is expire";
+    public final static String expireMessage = "Login token is expire.";
 
     /*@Autowired
     private AuthUserService authUserService;*/
@@ -102,6 +103,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
         AuthUserService authUserService = CommonBeanFactory.getBean(AuthUserService.class);
         SysUserEntity user = authUserService.getUserById(tokenInfo.getUserId());
+        if(user == null){
+            throw new Exception(Translator.get("i18n_not_find_user"));
+        }
         String password = user.getPassword();
 
         // 删除老token操作时间

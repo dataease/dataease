@@ -81,10 +81,10 @@ export default {
     any: '随便填',
     thirdparty: '第三方登录',
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
-    expires: '登录token过期，请重新登录',
-    tokenError: 'token错误，请重新登录',
-    username_error: '请输入正确的ID',
-    password_error: '密码不小于8位'
+    expires: '登录信息过期，请重新登录',
+    tokenError: '登陆信息错误，请重新登录',
+    username_error: '请输入正确的 ID',
+    password_error: '密码不小于 8 位'
   },
   commons: {
     close: '关闭',
@@ -268,6 +268,10 @@ export default {
         not_equals: '不等于',
         between: '之间',
         current_user: '是当前用户'
+      },
+      message_box: {
+        alert: '警告',
+        confirm: '确认'
       }
     },
     monitor: '监控',
