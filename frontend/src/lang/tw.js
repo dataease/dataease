@@ -701,7 +701,8 @@ export default {
     y_M_d_H_m: '年月日時分',
     y_M_d_H_m_s: '年月日時分秒',
     date_sub: 'yyyy-MM-dd',
-    date_split: 'yyyy/MM/dd'
+    date_split: 'yyyy/MM/dd',
+    chartName: '新建視圖'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -941,6 +942,7 @@ export default {
     width: '宽',
     color: '颜色',
     backgroundColor: '背景色',
+    borderStyle: '边框风格',
     borderWidth: '边框宽度',
     borderColor: '边框颜色',
     borderRadius: '边框半径',
@@ -948,12 +950,20 @@ export default {
     fontWeight: '字体粗细',
     lineHeight: '行高',
     letterSpacing: '字间距',
-    textAlign: '对齐方式',
+    textAlign: '左右对齐',
     opacity: '透明度',
-    aline_left: '左对齐',
-    aline_center: '居中',
-    aline_right: '右对齐',
-    select_component: '请选择组件'
+    verticalAlign: '上下对齐',
+    text_align_left: '左对齐',
+    text_align_center: '左右居中',
+    text_align_right: '右对齐',
+    vertical_align_top: '上对齐',
+    vertical_align_middle: '居中对齐',
+    vertical_align_bottom: '下对齐',
+    border_style_solid: '实线',
+    border_style_dashed: '虚线',
+    select_component: '请选择组件',
+    other_module: '其他',
+    content: '内容'
   },
   plugin: {
     local_install: '本地安裝',

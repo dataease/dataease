@@ -8,20 +8,16 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-
 @Component
 public class MyScanner implements BeanDefinitionRegistryPostProcessor {
 
-    @Resource
-    private MapperScannerConfigurer mapperScannerConfigurer;
+
 
     private BeanDefinitionRegistry beanDefinitionRegistry;
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
         this.beanDefinitionRegistry = beanDefinitionRegistry;
-        System.out.println("-----");
     }
 
     @Override
@@ -30,9 +26,7 @@ public class MyScanner implements BeanDefinitionRegistryPostProcessor {
     }
 
     public void scanner() {
-        if (null == mapperScannerConfigurer){
-            mapperScannerConfigurer = SpringContextUtil.getBean(MapperScannerConfigurer.class);
-        }
+        MapperScannerConfigurer mapperScannerConfigurer = SpringContextUtil.getBean(MapperScannerConfigurer.class);
 
         mapperScannerConfigurer.postProcessBeanDefinitionRegistry(this.beanDefinitionRegistry);
     }

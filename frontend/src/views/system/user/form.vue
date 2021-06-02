@@ -150,7 +150,7 @@ export default {
         roleIds: [{ required: true, message: this.$t('user.input_roles'), trigger: 'change' }]
 
       },
-      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null, roleIds: [] },
+      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null, roleIds: [2] },
       depts: null,
       roles: [],
       roleDatas: [],

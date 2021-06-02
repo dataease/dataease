@@ -701,7 +701,8 @@ export default {
     y_M_d_H_m: 'Year Month Day Hour Minute',
     y_M_d_H_m_s: 'Year Month Day Hour Minute Second',
     date_sub: 'yyyy-MM-dd',
-    date_split: 'yyyy/MM/dd'
+    date_split: 'yyyy/MM/dd',
+    chartName: 'New Chart'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -941,6 +942,7 @@ export default {
     width: 'Width',
     color: 'Color',
     backgroundColor: 'BackgroundColor',
+    borderStyle: 'Border Style',
     borderWidth: 'BorderWidth',
     borderColor: 'BorderColor',
     borderRadius: 'BorderRadius',
@@ -950,10 +952,18 @@ export default {
     letterSpacing: 'LetterSpacing',
     textAlign: 'TextAlign',
     opacity: 'Opacity',
-    aline_left: 'Aline Left',
-    aline_center: 'Aline Center',
-    aline_right: 'Aline Right',
-    select_component: 'Check Component'
+    verticalAlign: 'Vertical Align',
+    text_align_left: 'Aline Left',
+    text_align_center: 'Aline Center',
+    text_align_right: 'Aline Right',
+    vertical_align_top: 'Align Align',
+    vertical_align_middle: 'Align Middle',
+    vertical_align_bottom: 'Align Bottom',
+    border_style_solid: 'Solid',
+    border_style_dashed: 'Dashed',
+    select_component: 'Check Component',
+    other_module: 'Other',
+    content: 'Content'
   },
   plugin: {
     local_install: 'Local installation',

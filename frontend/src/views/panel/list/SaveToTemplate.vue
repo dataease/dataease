@@ -99,7 +99,6 @@ export default {
                 type: 'success',
                 showClose: true
               })
-              debugger
               this.$emit('closeSaveDialog')
             })
           }).catch(() => {
@@ -111,7 +110,6 @@ export default {
               type: 'success',
               showClose: true
             })
-            debugger
             this.$emit('closeSaveDialog')
           })
         }

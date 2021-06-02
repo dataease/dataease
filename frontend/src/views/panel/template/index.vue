@@ -184,7 +184,6 @@ export default {
       }
     },
     closeEditTemplateDialog() {
-      debugger
       this.templateDialog.visible = false
       this.showCurrentTemplate(this.templateDialog.pid)
     },

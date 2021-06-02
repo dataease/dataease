@@ -91,7 +91,11 @@ public class DatasourceService {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasource);
-        datasourceProvider.test(datasourceRequest);
+        try {
+            datasourceProvider.test(datasourceRequest);
+        } catch (Exception e) {
+            throw new RuntimeException(Translator.get("i18n_datasource_check_fail"));
+        }
     }
 
     public List<DBTableDTO> getTables(Datasource datasource) throws Exception {
@@ -144,7 +148,7 @@ public class DatasourceService {
                         datasourceRequest.setDatasource(datasource);
                         datasourceProvider.initDataSource(datasourceRequest);
                         LogUtil.info("Succsss to init datasource connection pool: " + datasource.getName());
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         LogUtil.error("Failed to init datasource connection pool: " + datasource.getName(), e);
                     }
                 });

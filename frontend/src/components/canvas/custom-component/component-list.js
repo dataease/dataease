@@ -11,6 +11,25 @@ export const commonAttr = {
   isLock: false // 是否锁定组件
 }
 
+export const assistList = [
+  {
+    id: '10001',
+    component: 'v-text',
+    type: 'v-text',
+    label: '文字',
+    icon: 'iconfont icon-shuru',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '10004',
+    component: 'rect-shape',
+    type: 'rect-shape',
+    label: '矩形',
+    icon: 'iconfont icon-xialakuang',
+    defaultClass: 'text-filter'
+  }
+]
+
 // 编辑器左侧组件列表
 const list = [
   {
@@ -19,7 +38,7 @@ const list = [
     label: '文字',
     propValue: '双击编辑文字',
     icon: 'wenben',
-    type: 'other',
+    type: 'v-text',
     style: {
       width: 200,
       height: 22,
@@ -37,7 +56,7 @@ const list = [
     label: '按钮',
     propValue: '按钮',
     icon: 'button',
-    type: 'other',
+    type: 'v-button',
     style: {
       width: 100,
       height: 34,
@@ -58,7 +77,7 @@ const list = [
     component: 'Picture',
     label: '图片',
     icon: 'tupian',
-    type: 'other',
+    type: 'Picture',
     propValue: require('@/components/canvas/assets/title.jpg'),
     style: {
       width: 300,
@@ -71,7 +90,7 @@ const list = [
     component: 'Picture',
     label: '背景-科技1',
     icon: 'tupian',
-    type: 'other',
+    type: 'Picture',
     propValue: require('@/components/canvas/assets/bg-kj-1.jpg'),
     style: {
       width: 600,
@@ -83,9 +102,9 @@ const list = [
     id: '10004',
     component: 'rect-shape',
     label: '矩形',
-    propValue: '&nbsp;',
+    propValue: '',
     icon: 'juxing',
-    type: 'other',
+    type: 'rect-shape',
     style: {
       width: 200,
       height: 200,
@@ -112,7 +131,7 @@ const list = [
     style: {
       width: 200,
       height: 300,
-      borderWidth: 1
+      borderRadius: ''
     }
   }
 ]

@@ -85,10 +85,10 @@ export default {
 
   methods: {
     handleChange(val) {
-      console.log(val)
+      // console.log(val)
     },
     onChangePanelStyle(parma) {
-      console.log('parma:' + JSON.stringify(parma))
+      // console.log('parma:' + JSON.stringify(parma))
     },
     onColorChange(val) {
       this.chart.customAttr.color = val
