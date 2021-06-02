@@ -611,7 +611,7 @@ export default {
   }
 
   .component-result-content {
-      height: calc(50vh - 140px);
+      height: calc(50vh - 150px);
       overflow-y: auto;
   }
 
