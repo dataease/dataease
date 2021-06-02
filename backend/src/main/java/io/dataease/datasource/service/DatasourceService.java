@@ -91,11 +91,7 @@ public class DatasourceService {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasource);
-        try {
-            datasourceProvider.test(datasourceRequest);
-        } catch (Exception e) {
-            throw new RuntimeException(Translator.get("i18n_datasource_check_fail"));
-        }
+        datasourceProvider.test(datasourceRequest);
     }
 
     public List<DBTableDTO> getTables(Datasource datasource) throws Exception {

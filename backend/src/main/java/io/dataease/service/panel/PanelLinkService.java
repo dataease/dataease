@@ -119,7 +119,7 @@ public class PanelLinkService {
     public Boolean validateHeads(PanelLink panelLink) throws Exception{
         HttpServletRequest request = ServletUtils.request();
         String token = request.getHeader("LINK-PWD-TOKEN");
-        if (StringUtils.isEmpty(token)) return false;
+        if (StringUtils.isEmpty(token) || StringUtils.equals("undefined", token) || StringUtils.equals("null", token)) return false;
         boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd()));
         return verify;
     }

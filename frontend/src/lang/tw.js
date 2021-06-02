@@ -989,7 +989,8 @@ export default {
     loginLogo: '登陸頁面頭部 Logo',
     loginImage: '登陸頁面右側圖片',
     loginTitle: '登陸頁面標題',
-    title: '系統名稱'
+    title: '系統名稱',
+    advice_size: '建議圖片大小'
   },
   auth: {
     authConfig: '權限配置',

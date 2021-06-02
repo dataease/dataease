@@ -989,7 +989,8 @@ export default {
     loginLogo: '登录页面头部logo',
     loginImage: '登录页面右侧图片',
     loginTitle: '登录页面标题',
-    title: '系统名称'
+    title: '系统名称',
+    advice_size: '建议图片大小'
   },
   auth: {
     authConfig: '权限配置',
