@@ -115,7 +115,7 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
                         {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('toDefaultPanel',data,node)">
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-copy-document" :command="beforeClickMore('toDefaultPanel',data,node)">
                         {{ $t('panel.to_default_panel') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
