@@ -221,6 +221,35 @@ export function formatCondition(param) {
   }
   return result
 }
+/**
+ * 驼峰转下划线
+ * @param {*} name
+ * @returns
+ */
+export function toLine(name) {
+  return name.replace(/([A-Z])/g, '_$1').toLowerCase()
+}
+export function addOrder(order, orders) {
+  order.field = toLine(order.field)
+  if (order.value.startsWith('desc')) {
+    order.value = 'desc'
+  } else {
+    order.value = 'asc'
+  }
+  orders = orders || []
+  for (let index = 0; index < orders.length; index++) {
+    const element = orders[index]
+    if (order.field === element.field) {
+      orders[index] = order
+      return
+    }
+  }
+  orders.push(order)
+}
+
+export function formatOrders(orders) {
+  return orders.map(order => order.field + ' ' + order.value)
+}
 
 export function formatQuickCondition(param, quickField) {
   let quickObj = null
