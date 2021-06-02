@@ -25,6 +25,7 @@ import AddSQL from './add/AddSQL'
 import AddExcel from './add/AddExcel'
 import AddCustom from './add/AddCustom'
 import FieldEdit from './data/FieldEdit'
+import { removeClass } from '@/utils'
 
 export default {
   name: 'DataSet',
@@ -34,6 +35,9 @@ export default {
       component: DataHome,
       param: {}
     }
+  },
+  mounted() {
+    removeClass(document.body, 'showRightPanel')
   },
   methods: {
     switchComponent(c) {

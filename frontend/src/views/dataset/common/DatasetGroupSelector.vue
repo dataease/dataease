@@ -188,7 +188,7 @@ export default {
   },
   methods: {
     kettleState() {
-      isKettleRunning().then(res => {
+      isKettleRunning(false).then(res => {
         this.kettleRunning = res.data
       })
     },

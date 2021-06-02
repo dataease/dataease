@@ -20,6 +20,7 @@ import Group from './group/Group'
 
 import ChartHome from './data/ChartHome'
 import ChartEdit from './view/ChartEdit'
+import { removeClass } from '@/utils'
 
 export default {
   name: 'Chart',
@@ -29,6 +30,9 @@ export default {
       component: ChartHome,
       param: {}
     }
+  },
+  mounted() {
+    removeClass(document.body, 'showRightPanel')
   },
   methods: {
     switchComponent(c) {
