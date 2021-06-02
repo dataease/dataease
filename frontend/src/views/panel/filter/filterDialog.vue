@@ -401,7 +401,10 @@ export default {
     },
     loadTable(sceneId) {
       loadTable({ sceneId: sceneId, sort: 'type asc,create_time desc,name asc' }).then(res => {
-        this.sceneDatas = res.data
+        res && res.data && (this.sceneDatas = res.data.map(tb => {
+          tb.type = 'db'
+          return tb
+        }))
       })
     },
 
@@ -608,7 +611,7 @@ export default {
   }
 
   .component-result-content {
-      height: calc(50vh - 140px);
+      height: calc(50vh - 150px);
       overflow-y: auto;
   }
 

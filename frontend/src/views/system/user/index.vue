@@ -8,6 +8,7 @@
       :pagination-config="paginationConfig"
       @select="select"
       @search="search"
+      @sort-change="sortChange"
     >
       <template #toolbar>
         <el-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('user.create') }}</el-button>
@@ -15,12 +16,12 @@
       </template>
 
       <el-table-column prop="username" label="ID" />
-      <el-table-column prop="nickName" :label="$t('commons.nick_name')" />
+      <el-table-column prop="nickName" sortable="custom" :label="$t('commons.nick_name')" />
       <el-table-column prop="gender" :label="$t('commons.gender')" />
 
       <el-table-column :show-overflow-tooltip="true" prop="phone" :label="$t('commons.phone')" />
       <el-table-column :show-overflow-tooltip="true" prop="email" :label="$t('commons.email')" />
-      <el-table-column :show-overflow-tooltip="true" prop="dept" :label="$t('commons.organization')">
+      <el-table-column :show-overflow-tooltip="true" prop="dept" sortable="custom" :label="$t('commons.organization')">
         <template slot-scope="scope">
           <div>{{ scope.row.dept && scope.row.dept.deptName }}</div>
         </template>
@@ -43,12 +44,12 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="status" :label="$t('commons.status')">
+      <el-table-column prop="status" sortable="custom" :label="$t('commons.status')">
         <template v-slot:default="scope">
           <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" :label="$t('commons.create_time')">
+      <el-table-column prop="createTime" sortable="custom" :label="$t('commons.create_time')">
         <template v-slot:default="scope">
           <span>{{ scope.row.createTime | timestampFormatDate }}</span>
         </template>
@@ -163,7 +164,7 @@ import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 
 // import { checkPermission } from '@/utils/permission'
-import { formatCondition, formatQuickCondition } from '@/utils/index'
+import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import Treeselect from '@riophae/vue-treeselect'
@@ -295,7 +296,9 @@ export default {
         edit: ['user:edit'],
         del: ['user:del'],
         editPwd: ['user:editPwd']
-      }
+      },
+      orderConditions: [],
+      last_condition: null
     }
   },
   mounted() {
@@ -305,13 +308,23 @@ export default {
   },
 
   methods: {
+    sortChange({ column, prop, order }) {
+      if (prop === 'dept') {
+        prop = 'deptId'
+      }
+      this.orderConditions = []
+      addOrder({ field: prop, value: order }, this.orderConditions)
+      this.search(this.last_condition)
+    },
     select(selection) {
     },
 
     search(condition) {
-      condition = formatQuickCondition(condition, 'username')
+      this.last_condition = condition
+      condition = formatQuickCondition(condition, 'nick_name')
       const temp = formatCondition(condition)
       const param = temp || {}
+      param['orders'] = formatOrders(this.orderConditions)
       const { currentPage, pageSize } = this.paginationConfig
       userLists(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject
