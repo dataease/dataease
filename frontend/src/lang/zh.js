@@ -81,10 +81,10 @@ export default {
     any: '随便填',
     thirdparty: '第三方登录',
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
-    expires: '登录token过期，请重新登录',
-    tokenError: 'token错误，请重新登录',
-    username_error: '请输入正确的ID',
-    password_error: '密码不小于8位'
+    expires: '登录信息过期，请重新登录',
+    tokenError: '登陆信息错误，请重新登录',
+    username_error: '请输入正确的 ID',
+    password_error: '密码不小于 8 位'
   },
   commons: {
     close: '关闭',
@@ -268,6 +268,10 @@ export default {
         not_equals: '不等于',
         between: '之间',
         current_user: '是当前用户'
+      },
+      message_box: {
+        alert: '警告',
+        confirm: '确认'
       }
     },
     monitor: '监控',
@@ -482,13 +486,12 @@ export default {
     create: '创建组织',
     modify: '修改组织',
     delete: '删除组织',
-    delete_confirm: '删除该组织会关联删除该组织下的所有资源(如：相关工作空间，项目，测试用例等），确定要删除吗?',
+    delete_confirm: '删除该组织会关联删除该组织的下属组织，确定要删除吗?',
     input_name: '请输入组织名称',
     select_organization: '请选择组织',
     search_by_name: '根据名称搜索',
     special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
-    select: '选择组织',
-    delete_warning: '删除该组织将同步删除该组织下所有相关工作空间和相关工作空间下的所有项目，以及项目中的所有用例、接口测试、性能测试等,确定要删除吗?'
+    select: '选择组织'
   },
   system_parameter_setting: {
     mailbox_service_settings: '邮件设置',
@@ -986,7 +989,8 @@ export default {
     loginLogo: '登录页面头部logo',
     loginImage: '登录页面右侧图片',
     loginTitle: '登录页面标题',
-    title: '系统名称'
+    title: '系统名称',
+    advice_size: '建议图片大小'
   },
   auth: {
     authConfig: '权限配置',

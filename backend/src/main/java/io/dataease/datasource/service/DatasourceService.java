@@ -144,7 +144,7 @@ public class DatasourceService {
                         datasourceRequest.setDatasource(datasource);
                         datasourceProvider.initDataSource(datasourceRequest);
                         LogUtil.info("Succsss to init datasource connection pool: " + datasource.getName());
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         LogUtil.error("Failed to init datasource connection pool: " + datasource.getName(), e);
                     }
                 });

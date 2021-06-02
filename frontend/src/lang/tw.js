@@ -83,8 +83,8 @@ export default {
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！',
     expires: '登陸信息过期，请重新登陸',
     tokenError: '信息错误，请重新登陸',
-    username_error: '請輸入正確的ID',
-    password_error: '密碼不小於8位'
+    username_error: '請輸入正確的 ID',
+    password_error: '密碼不小於 8 位'
   },
   commons: {
     close: '关闭',
@@ -268,6 +268,10 @@ export default {
         not_equals: '不等與',
         between: '之间',
         current_user: '是当前用戶'
+      },
+      message_box: {
+        alert: '警告',
+        confirm: '確認'
       }
     },
     monitor: '监控',
@@ -482,13 +486,12 @@ export default {
     create: '創建組織',
     modify: '修改組織',
     delete: '删除組織',
-    delete_confirm: '删除該組織會關聯刪除該組織的所有資源，確定要删除吗?',
+    delete_confirm: '删除該組織會關聯刪除該組織的下屬組織，確定要删除吗?',
     input_name: '請輸入組織名稱',
     select_organization: '请選擇組織',
     search_by_name: '根据名稱搜索',
     special_characters_are_not_supported: '格式錯誤(不支持特殊字符，且不能以\'-\'開頭結尾)',
-    select: '選擇組織',
-    delete_warning: '確定要删除組織吗?'
+    select: '選擇組織'
   },
   system_parameter_setting: {
     mailbox_service_settings: '郵件設置',
@@ -986,7 +989,8 @@ export default {
     loginLogo: '登陸頁面頭部 Logo',
     loginImage: '登陸頁面右側圖片',
     loginTitle: '登陸頁面標題',
-    title: '系統名稱'
+    title: '系統名稱',
+    advice_size: '建議圖片大小'
   },
   auth: {
     authConfig: '權限配置',

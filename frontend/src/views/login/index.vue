@@ -180,9 +180,13 @@ export default {
       margin-top: 20px;
     }
     img{
-      width: 240px;
+      /*width: 240px;*/
+      width: auto;
+      max-height: 60px;
       @media only screen and (max-width: 1280px) {
-        width: 200px;
+        /*width: 200px;*/
+        width: auto;
+        max-height: 50px;
       }
     }
   }

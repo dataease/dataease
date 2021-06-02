@@ -268,6 +268,10 @@ export default {
         not_equals: 'Not equals',
         between: 'between',
         current_user: 'Current User'
+      },
+      message_box: {
+        alert: 'Alert',
+        confirm: 'Confirm'
       }
     },
     monitor: 'Monitor',
@@ -482,13 +486,12 @@ export default {
     create: 'Create',
     modify: 'Modify',
     delete: 'Delete',
-    delete_confirm: '删除该组织会关联删除该组织下的所有资源(如：相关工作空间，项目，测试用例等），确定要删除吗?',
+    delete_confirm: 'Deleting the organization will be associated with deleting the subordinate organization, Are you sure you want to delete it?',
     input_name: 'Please enter name',
     select_organization: 'Please select organization',
     search_by_name: 'Search by name',
     special_characters_are_not_supported: 'Format error (special characters are not supported and cannot start and end with \'-\')',
-    select: 'Select organization',
-    delete_warning: '删除该组织将同步删除该组织下所有相关工作空间和相关工作空间下的所有项目，以及项目中的所有用例、接口测试、性能测试等,确定要删除吗?'
+    select: 'Select organization'
   },
   system_parameter_setting: {
     mailbox_service_settings: 'Mail Settings',
@@ -986,7 +989,8 @@ export default {
     loginLogo: 'Login page header logo',
     loginImage: 'Picture on the right side of the login page',
     loginTitle: 'Login page title',
-    title: 'System name'
+    title: 'System name',
+    advice_size: 'Advice picture size'
   },
   auth: {
     authConfig: 'Auth Config',

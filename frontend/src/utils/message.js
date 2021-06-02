@@ -1,7 +1,7 @@
 import { MessageBox, Message } from 'element-ui'
 import i18n from '@/lang'
 export const $alert = (message, callback, options) => {
-  const title = i18n.t('common.message_box.alert')
+  const title = i18n.t('commons.message_box.alert')
   MessageBox.alert(message, title, options).then(() => {
     callback()
   })
@@ -14,7 +14,7 @@ export const $confirm = (message, callback, options = {}) => {
     type: 'warning',
     ...options
   }
-  const title = i18n.t('common.message_box.confirm')
+  const title = i18n.t('commons.message_box.confirm')
   MessageBox.confirm(message, title, defaultOptions).then(() => {
     callback()
   })

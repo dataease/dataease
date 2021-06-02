@@ -232,7 +232,7 @@ public class JdbcProvider extends DatasourceProvider {
         } catch (Exception e) {
             throw new Exception("ERROR: " + e.getMessage(), e);
         } finally {
-            con.close();
+            if(con != null){con.close();}
         }
     }
 
