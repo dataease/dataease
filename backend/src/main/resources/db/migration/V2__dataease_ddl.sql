@@ -458,3 +458,28 @@ CREATE TABLE `license` (
    `f2c_license` longtext COMMENT 'F2C License',
    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `plugin_sys_menu`;
+CREATE TABLE `plugin_sys_menu` (
+  `menu_id` bigint(8) NOT NULL,
+  `pid` bigint(8) DEFAULT NULL,
+  `sub_count` int(8) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `component` varchar(255) DEFAULT NULL,
+  `menu_sort` varchar(255) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
+  `path` varchar(255) DEFAULT NULL,
+  `i_frame` tinyint(1) DEFAULT NULL,
+  `cache` tinyint(1) DEFAULT NULL,
+  `hidden` tinyint(1) DEFAULT NULL,
+  `permission` varchar(255) DEFAULT NULL,
+  `create_by` varchar(255) DEFAULT NULL,
+  `update_by` varchar(255) DEFAULT NULL,
+  `create_time` bigint(13) DEFAULT NULL,
+  `update_time` bigint(13) DEFAULT NULL,
+  `no_layout` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

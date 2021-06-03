@@ -2,17 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.dataease.base.mapper.ext.ExtSysAuthMapper">
 
-    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.SysAuthDTO"
-               extends="io.dataease.base.mapper.SysAuthMapper.BaseResultMap">
-        <collection property="sysAuthDetails" ofType="io.dataease.base.domain.SysAuthDetail" javaType="list">
-            <result column="auth_id" property="authId"/>
-            <result column="privilege_name" property="privilegeName"/>
-            <result column="privilege_type" property="privilegeType"/>
-            <result column="privilege_value" property="privilegeValue"/>
-            <result column="privilege_extend" property="privilegeExtend"/>
-        </collection>
+    <resultMap id="BaseResultMapAuthDetailDTO" type="io.dataease.dto.SysAuthDetailDTO"
+               extends="io.dataease.base.mapper.SysAuthDetailMapper.BaseResultMap">
+        <result column="auth_source" jdbcType="VARCHAR" property="authSource" />
+        <result column="auth_source_type" jdbcType="VARCHAR" property="authSourceType" />
+        <result column="auth_target" jdbcType="VARCHAR" property="authTarget" />
+        <result column="auth_target_type" jdbcType="VARCHAR" property="authTargetType" />
     </resultMap>
-    <select id="searchAuth" resultMap="BaseResultMapDTO">
+
+    <select id="searchAuth" resultMap="BaseResultMapAuthDetailDTO">
         select
         sys_auth.id,
         sys_auth.auth_source,

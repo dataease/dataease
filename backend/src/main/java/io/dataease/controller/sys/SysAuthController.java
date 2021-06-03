@@ -9,6 +9,7 @@ import io.dataease.controller.request.BaseTreeRequest;
 import io.dataease.controller.request.SysAuthDetailRequest;
 import io.dataease.controller.request.SysAuthRequest;
 import io.dataease.dto.BaseAuthDetail;
+import io.dataease.dto.SysAuthDetailDTO;
 import io.dataease.dto.VAuthModelDTO;
 import io.dataease.service.sys.SysAuthService;
 import io.swagger.annotations.Api;
@@ -44,7 +45,7 @@ public class SysAuthController {
 
     @ApiOperation("查询授权")
     @PostMapping("/authDetails")
-    public Map<String,List<SysAuthDetail>> authDetails(@RequestBody SysAuthRequest request){
+    public Map<String,List<SysAuthDetailDTO>> authDetails(@RequestBody SysAuthRequest request){
         return sysAuthService.searchAuthDetails(request);
     }
 

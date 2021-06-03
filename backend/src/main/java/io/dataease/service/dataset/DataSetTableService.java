@@ -132,6 +132,8 @@ public class DataSetTableService {
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
         dataSetTableTaskService.deleteByTableId(id);
+        // 删除关联关系
+        dataSetTableUnionService.deleteUnionByTableId(id);
         try {
             deleteDorisTable(id, table);
         } catch (Exception e) {
@@ -359,7 +361,7 @@ public class DataSetTableService {
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
         // 使用输入的sql先预执行一次,并拿到所有字段
-        if(StringUtils.isEmpty(sql)){
+        if (StringUtils.isEmpty(sql)) {
             throw new Exception(Translator.get("i18n_sql_not_empty"));
         }
         datasourceRequest.setQuery(sql);

@@ -19,7 +19,7 @@
         <where>
             model_type = #{modelType}
             <if test="1== withAuth">
-               and  FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids2 ,#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids2 ,#{modelType}))
             </if>
             <if test="pid !=null">
                 and v_auth_model.pid = #{pid}
@@ -36,7 +36,8 @@
             </if>
 
             <if test="name != null and name !='' and withExtend == 'parent'">
-               and  FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from v_auth_model where model_type = #{modelType} and `name`  like CONCAT('%', #{name},'%')) ,#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from
+                v_auth_model where model_type = #{modelType} and `name` like CONCAT('%', #{name},'%')) ,#{modelType}))
             </if>
 
             <if test="name != null and name =='' and withExtend == 'parent'">
@@ -54,7 +55,7 @@
         <where>
             model_type = #{modelType}
             <if test="1== withAuth">
-                and   FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids3 ,#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids3 ,#{modelType}))
             </if>
         </where>
         ) authTemp
@@ -69,4 +70,5 @@
         </where>
 
     </select>
+
 </mapper>
