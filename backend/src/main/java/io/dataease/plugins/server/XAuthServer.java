@@ -8,6 +8,7 @@ import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.XpackBaseTreeRequest;
 import io.dataease.plugins.xpack.auth.dto.request.XpackSysAuthRequest;
 import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetail;
+import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetailDTO;
 import io.dataease.plugins.xpack.auth.dto.response.XpackVAuthModelDTO;
 import org.springframework.web.bind.annotation.*;
 import io.dataease.plugins.xpack.auth.service.AuthXpackService;
@@ -27,7 +28,7 @@ public class XAuthServer {
     }
 
     @PostMapping("/authDetails")
-    public Map<String,List<XpackSysAuthDetail>> authDetails(@RequestBody XpackSysAuthRequest request){
+    public Map<String,List<XpackSysAuthDetailDTO>> authDetails(@RequestBody XpackSysAuthRequest request){
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         return sysAuthService.searchAuthDetails(request);
     }
