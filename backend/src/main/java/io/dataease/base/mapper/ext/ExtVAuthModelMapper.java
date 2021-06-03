@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ExtVAuthModelMapper {
     List<VAuthModelDTO> searchTree(BaseTreeRequest request);
+
 }

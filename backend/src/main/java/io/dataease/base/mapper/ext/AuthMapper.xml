@@ -4,19 +4,19 @@
 
     <resultMap id="baseMap" type="io.dataease.auth.entity.SysUserEntity">
         <id column="user_id" property="userId"/>
-        <result column="username" jdbcType="VARCHAR" property="username" />
-        <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
-        <result column="dept_id"  property="deptId" />
-        <result column="password" jdbcType="VARCHAR" property="password" />
-        <result column="email" jdbcType="VARCHAR" property="email" />
-        <result column="phone" jdbcType="VARCHAR" property="phone" />
-        <result column="enabled" property="enabled" />
-        <result column="is_admin" jdbcType="BIT" property="isAdmin" />
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="enabled" property="enabled"/>
+        <result column="is_admin" jdbcType="BIT" property="isAdmin"/>
     </resultMap>
 
-    <resultMap id="roleMap" type="io.dataease.auth.api.dto.CurrentRoleDto" >
+    <resultMap id="roleMap" type="io.dataease.auth.api.dto.CurrentRoleDto">
         <id column="role_id" property="id"/>
-        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="name" jdbcType="VARCHAR" property="name"/>
     </resultMap>
 
 
@@ -34,12 +34,21 @@
             where sur.user_id = #{userId}
     </select>
 
-    <select id="permissions"  resultType="String">
-        select sm.permission
-            from sys_menu sm
-            left join sys_roles_menus srm on srm.menu_id = sm.menu_id
-            left join sys_users_roles sur on sur.role_id = srm.role_id
-            where sur.user_id = #{userId}
+    <select id="permissions" resultType="String">
+		SELECT
+			sys_menu.permission
+		FROM
+			( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{userId}, 'menu' ) cids ) t,
+			sys_menu
+		WHERE
+			FIND_IN_SET( sys_menu.menu_id, cids ) UNION ALL
+		SELECT
+			plugin_sys_menu.permission
+		FROM
+			( SELECT GET_V_AUTH_MODEL_ID_P_USE (  #{userId}, 'menu' ) cids ) t,
+			plugin_sys_menu
+		WHERE
+			FIND_IN_SET( plugin_sys_menu.menu_id, cids )
     </select>
 
     <select id="userMenuIds" resultType="Long">
@@ -57,6 +66,16 @@
     </select>
 
 
+    <select id="permissionsAll" resultType="String">
+		SELECT
+			sys_menu.permission
+		FROM
+			sys_menu UNION ALL
+		SELECT
+			plugin_sys_menu.permission
+		FROM
+			plugin_sys_menu
+    </select>
 
 
 </mapper>

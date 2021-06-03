@@ -19,5 +19,10 @@ public class SystemConstants {
         public final static Integer OFF = 0;
     }
 
+    public static final class AUTH_SOURCE{
+        public final static String MENU = "menu";
+    }
+
+
 
 }

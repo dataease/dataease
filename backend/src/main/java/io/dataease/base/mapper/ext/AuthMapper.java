@@ -16,6 +16,8 @@ public interface AuthMapper {
 
     List<String> permissions(@Param("userId") Long userId);
 
+    List<String> permissionsAll();
+
     List<Long> userMenuIds(@Param("userId") Long userId);
 
 
@@ -25,4 +27,5 @@ public interface AuthMapper {
 
 
     List<CurrentRoleDto> roles(@Param("userId") Long userId);
+
 }

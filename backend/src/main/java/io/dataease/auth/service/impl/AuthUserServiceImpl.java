@@ -2,8 +2,11 @@ package io.dataease.auth.service.impl;
 
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.SysUserEntity;
+import io.dataease.base.domain.SysUser;
+import io.dataease.base.mapper.SysUserMapper;
 import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
+import io.dataease.base.mapper.ext.ExtPluginSysMenuMapper;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.plugins.common.dto.PluginSysMenu;
 import io.dataease.plugins.util.PluginUtils;
@@ -13,8 +16,12 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +30,10 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Resource
     private AuthMapper authMapper;
+    @Resource
+    private SysUserMapper sysUserMapper;
+    @Resource
+    private ExtPluginSysMenuMapper extPluginSysMenuMapper;
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
@@ -53,16 +64,16 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Cacheable(value = AuthConstants.USER_PERMISSION_CACHE_NAME,  key = "'user' + #userId" )
     @Override
     public List<String> permissions(Long userId){
-        List<String> permissions = authMapper.permissions(userId);
-        List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();
-        if (CollectionUtils.isNotEmpty(pluginSysMenus)) {
-            List<Long> menuIds = authMapper.userMenuIds(userId);
-            List<String> pluginPermissions = pluginSysMenus.stream().
-                    filter(sysMenu -> menuIds.contains(sysMenu.getMenuId()))
-                    .map(menu -> menu.getPermission()).collect(Collectors.toList());
-            permissions.addAll(pluginPermissions);
+        // 用户登录获取菜单权限时同时更新插件菜单表
+        this.syncPluginMenu();
+        List<String> permissions;
+        SysUser sysUser = sysUserMapper.selectByPrimaryKey(userId);
+        if(sysUser.getIsAdmin()!=null&&sysUser.getIsAdmin()){
+            permissions = authMapper.permissionsAll();
+        }else{
+            permissions = authMapper.permissions(userId);
         }
-        return permissions.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+        return Optional.ofNullable(permissions).orElse(new ArrayList<>()).stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
     }
 
     /**
@@ -89,5 +100,14 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public void clearCache(Long userId) {
 
+    }
+
+    @Transactional
+    public void syncPluginMenu() {
+        List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
+        extPluginSysMenuMapper.deletePluginMenu();
+        if(CollectionUtils.isNotEmpty(pluginSysMenuList)){
+            extPluginSysMenuMapper.savePluginMenu(pluginSysMenuList);
+        }
     }
 }
