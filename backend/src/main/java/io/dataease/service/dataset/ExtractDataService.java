@@ -501,8 +501,13 @@ public class ExtractDataService {
             tmpSql = tmpSql + " limit 0";
         }
         datasourceRequest.setQuery(tmpSql);
-        return String.join(",", datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).collect(Collectors.toList()));
+        List<String>dorisFileds = new ArrayList<>();
+        datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
+            dorisFileds.add(DorisTableUtils.columnName(filed));
+        });
+        return String.join(",", dorisFileds);
     }
+
 
     private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception {
         TransMeta transMeta = new TransMeta();
