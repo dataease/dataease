@@ -73,12 +73,17 @@ public class ScheduleManager {
 
             triggerBuilder.withIdentity(triggerKey);
 
+            Date nTimeByCron = getNTimeByCron(cron);
             if (startTime.before(new Date())) {
-                triggerBuilder.startAt(getNTimeByCron(cron));
+                triggerBuilder.startAt(nTimeByCron);
             }
 
             if (endTime != null) {
-                triggerBuilder.endAt(endTime);
+                if (endTime.before(nTimeByCron)) {
+                    triggerBuilder.endAt(nTimeByCron);
+                } else {
+                    triggerBuilder.endAt(endTime);
+                }
             }
 
             triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cron));
@@ -151,12 +156,17 @@ public class ScheduleManager {
 
             triggerBuilder.withIdentity(triggerKey);// 触发器名,触发器组
 
+            Date nTimeByCron = getNTimeByCron(cron);
             if (startTime.before(new Date())) {
-                triggerBuilder.startAt(getNTimeByCron(cron));
+                triggerBuilder.startAt(nTimeByCron);
             }
 
             if (endTime != null) {
-                triggerBuilder.endAt(endTime);
+                if (endTime.before(nTimeByCron)) {
+                    triggerBuilder.endAt(nTimeByCron);
+                } else {
+                    triggerBuilder.endAt(endTime);
+                }
             }
 
             triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cron));// 触发器时间设定
