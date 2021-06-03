@@ -69,13 +69,17 @@ export default {
     changeValue(value) {
       this.setCondition()
       // this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
+      this.showNumber = false
       this.$nextTick(() => {
+        if (!this.$refs.deSelect.$refs.tags || !this.options.attrs.multiple) {
+          return
+        }
         const kids = this.$refs.deSelect.$refs.tags.children[0].children
         let contentWidth = 0
         kids.forEach(kid => {
           contentWidth += kid.offsetWidth
         })
-        this.showNumber = contentWidth > (this.$refs.deSelect.$refs.tags.clientWidth * 0.7)
+        this.showNumber = contentWidth > (this.$refs.deSelect.$refs.tags.clientWidth * 0.9)
       })
     },
 
