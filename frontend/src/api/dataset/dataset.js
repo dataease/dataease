@@ -119,11 +119,11 @@ export function fieldValues(fieldId) {
   })
 }
 
-export function isKettleRunning() {
+export function isKettleRunning(showLoading = true) {
   return request({
     url: '/dataset/group/isKettleRunning',
     method: 'post',
-    loading: true
+    loading: showLoading
   })
 }
 

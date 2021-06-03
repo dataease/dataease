@@ -25,6 +25,7 @@ import AddSQL from './add/AddSQL'
 import AddExcel from './add/AddExcel'
 import AddCustom from './add/AddCustom'
 import FieldEdit from './data/FieldEdit'
+import { removeClass } from '@/utils'
 
 export default {
   name: 'DataSet',
@@ -34,6 +35,9 @@ export default {
       component: DataHome,
       param: {}
     }
+  },
+  mounted() {
+    removeClass(document.body, 'showRightPanel')
   },
   methods: {
     switchComponent(c) {
@@ -69,14 +73,14 @@ export default {
 <style scoped>
   .ms-aside-container {
     height: calc(100vh - 56px);
-    padding: 15px;
+    padding: 10px 15px;
     min-width: 260px;
     max-width: 460px;
   }
 
   .ms-main-container {
     height: calc(100vh - 56px);
-    padding: 15px 15px 0 15px;
+    padding: 10px 15px 0 15px;
   }
 
 </style>
