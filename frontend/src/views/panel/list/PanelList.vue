@@ -323,12 +323,12 @@ export default {
         panelType: 'self',
         nodeType: null,
         children: [],
-        sort: 'node_type desc,name asc'
+        sort: 'create_time desc,node_type desc,name asc'
       },
       tableForm: {
         name: '',
         mode: '',
-        sort: 'node_type asc,create_time desc,name asc'
+        sort: 'create_time desc,node_type asc,create_time desc,name asc'
       },
       groupFormRules: {
         name: [
