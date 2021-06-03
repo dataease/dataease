@@ -281,7 +281,7 @@ export default {
   }
 
   .span-number{
-    color: #f18126;
+    color: #0a7be0;
   }
   .table-count{
     color: #606266;
