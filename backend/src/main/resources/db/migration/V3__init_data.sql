@@ -18,7 +18,7 @@ INSERT INTO `sys_menu` VALUES (25, 34, 0, 2, '删除连接', NULL, NULL, 999, NU
 INSERT INTO `sys_menu` VALUES (26, 34, 0, 2, '编辑连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:edit', NULL, NULL, 1614931234105, 1614931234105);
 INSERT INTO `sys_menu` VALUES (27, 34, 0, 2, '校验连接', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'datasource:validate', NULL, NULL, 1614931268578, 1614931268578);
 INSERT INTO `sys_menu` VALUES (28, 2, 0, 2, '修改密码', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:editPwd', NULL, NULL, 1615275128262, 1615275128262);
-INSERT INTO `sys_menu` VALUES (30, 0, 0, 1, '仪表板', 'panel', 'panel/index', 1, NULL, '/panel', b'0', b'0', b'0', 'panel:read', NULL, NULL, NULL, 1619081449067);
+INSERT INTO `sys_menu` VALUES (30, 0, 0, 1, '仪表板', 'panel', 'panel/index', 1, NULL, '/panel', b'0', b'0', b'0', NULL, NULL, NULL, NULL, 1619081449067);
 INSERT INTO `sys_menu` VALUES (34, 0, 4, 1, '数据源', 'datasource', 'system/datasource/index', 4, NULL, '/datasource', b'0', b'0', b'0', 'datasource:read', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (35, 1, 0, 1, '用户表单', 'system-user-form', 'system/user/form', 10, '', 'user-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (39, 0, 0, 1, '数据源表单', 'datasource-form', 'system/datasource/form', 5, NULL, '/ds-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
