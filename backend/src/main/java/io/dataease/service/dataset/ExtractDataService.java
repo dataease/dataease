@@ -121,7 +121,7 @@ public class ExtractDataService {
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
                     if (datasetTableField.getSize() > 65533) {
-                        Column_Fields = Column_Fields + "String" + ",`";
+                        Column_Fields = Column_Fields + "varchar(65533)" + ",`";
                     } else {
                         Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
                     }
