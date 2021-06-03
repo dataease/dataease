@@ -158,10 +158,12 @@ public class JWTUtils {
         CacheManager cacheManager = CommonBeanFactory.getBean(CacheManager.class);
         Cache tokens_expire = cacheManager.getCache("tokens_expire");
         Long expTime = tokens_expire.get(token, Long.class);
+        // System.out.println("get-------"+token+"  :"+expTime);
         return expTime;
     }
 
     public static void removeTokenExpire(String token){
+        // System.out.println("remove----"+token);
         CacheManager cacheManager = CommonBeanFactory.getBean(CacheManager.class);
         Cache tokens_expire = cacheManager.getCache("tokens_expire");
         tokens_expire.evict(token);
@@ -171,6 +173,7 @@ public class JWTUtils {
         CacheManager cacheManager = CommonBeanFactory.getBean(CacheManager.class);
         Cache tokens_expire = cacheManager.getCache("tokens_expire");
         long now = System.currentTimeMillis();
+        // System.out.println("add-------"+token+"  :"+now);
         tokens_expire.put(token, now);
     }
 
