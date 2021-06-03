@@ -27,10 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -38,8 +34,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.HttpClientManager;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
@@ -57,7 +51,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.excelinput.ExcelInputField;
 import org.pentaho.di.trans.steps.excelinput.ExcelInputMeta;
 import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
-import org.pentaho.di.trans.steps.sql.ExecSQLMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
@@ -70,16 +63,11 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.naming.AuthenticationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,7 +121,7 @@ public class ExtractDataService {
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
                     if (datasetTableField.getSize() > 65533) {
-                        Column_Fields = Column_Fields + "String" + ",`";
+                        Column_Fields = Column_Fields + "varchar(65533)" + ",`";
                     } else {
                         Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
                     }
@@ -513,8 +501,13 @@ public class ExtractDataService {
             tmpSql = tmpSql + " limit 0";
         }
         datasourceRequest.setQuery(tmpSql);
-        return String.join(",", datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).collect(Collectors.toList()));
+        List<String>dorisFileds = new ArrayList<>();
+        datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
+            dorisFileds.add(DorisTableUtils.columnName(filed));
+        });
+        return String.join(",", dorisFileds);
     }
+
 
     private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception {
         TransMeta transMeta = new TransMeta();
@@ -532,6 +525,7 @@ public class ExtractDataService {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost(), mysqlConfigration.getDataBase(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
+                dataMeta.addExtraOption("MYSQL","characterEncoding", "UTF-8");
                 transMeta.addDatabase(dataMeta);
                 if (extractType.equalsIgnoreCase("all_scope")) {
                     String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
