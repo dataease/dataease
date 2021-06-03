@@ -112,7 +112,17 @@ public class ExtractDataService {
             "PROPERTIES(\"replication_num\" = \"1\");";
 
     private static String dropTableSql = "DROP TABLE IF EXISTS TABLE_NAME;";
-    private static String shellScript = "curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load\n" +
+    private static String shellScript = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
+            "if [ $? == 0 ] ; then\n" +
+            "  failstatus=$(echo $result | grep '\"Status\": \"Fail\"')\n" +
+            "  if [[ \"$failstatus\" != \"\" ]]; then\n" +
+            "     echo $result\n" +
+            "     exit 1\n" +
+            "  fi\n" +
+            "else\n" +
+            "  echo $result\n" +
+            "  exit 1\n" +
+            "fi\n" +
             "rm -rf %s\n";
     private String createDorisTablColumnSql(List<DatasetTableField> datasetTableFields) {
         String Column_Fields = "dataease_uuid  varchar(50), `";

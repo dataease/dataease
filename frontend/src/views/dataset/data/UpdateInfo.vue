@@ -461,8 +461,11 @@ export default {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
         this.incrementalUpdateType = 'incrementalAdd'
+        console.log(this.sql);
         if (this.incrementalConfig.incrementalAdd) {
           this.sql = this.incrementalConfig.incrementalAdd
+        }else {
+          this.sql = ''
         }
       })
     },
