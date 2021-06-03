@@ -76,6 +76,14 @@ public class DataSetTableUnionService {
         return sourceList;
     }
 
+    public void deleteUnionByTableId(String tableId) {
+        DatasetTableUnionExample datasetTableUnionExample = new DatasetTableUnionExample();
+        DatasetTableUnionExample.Criteria criteriaSource = datasetTableUnionExample.createCriteria().andSourceTableIdEqualTo(tableId);
+        DatasetTableUnionExample.Criteria criteriaTarget = datasetTableUnionExample.createCriteria().andTargetTableIdEqualTo(tableId);
+        datasetTableUnionExample.or(criteriaTarget);
+        datasetTableUnionMapper.deleteByExample(datasetTableUnionExample);
+    }
+
     private void checkUnion(DatasetTableUnion datasetTableUnion) {
         // check 关联关系是否存在
         DatasetTableUnionExample datasetTableUnionExample = new DatasetTableUnionExample();
