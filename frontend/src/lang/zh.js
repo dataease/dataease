@@ -659,7 +659,7 @@ export default {
     rose_radius: '圆角',
     view_name: '视图名称',
     name_can_not_empty: '名称不能为空',
-    template_can_not_empty: '请选择仪表盘',
+    template_can_not_empty: '请选择仪表版',
     custom_count: '记录数',
     table_title_fontsize: '表头字体大小',
     table_item_fontsize: '表格字体大小',

@@ -106,7 +106,7 @@ export default {
         this.$warning(this.$t('chart.name_can_not_empty'))
         return false
       }
-      if (!this.editPanel.panelInfo.panelData) {
+      if (!this.editPanel.panelInfo.panelData && this.editPanel.optType === 'new' && this.inputType === 'copy') {
         this.$warning(this.$t('chart.template_can_not_empty'))
         return false
       }
