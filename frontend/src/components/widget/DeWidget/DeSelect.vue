@@ -1,6 +1,15 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="options.value" :clearable="!options.attrs.multiple" :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder" @change="changeValue">
+  <el-select
+    v-if="options!== null && options.attrs!==null"
+    ref="deSelect"
+    v-model="options.value"
+    :collapse-tags="showNumber"
+    :clearable="!options.attrs.multiple"
+    :multiple="options.attrs.multiple"
+    :placeholder="options.attrs.placeholder"
+    @change="changeValue"
+  >
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"
@@ -29,7 +38,8 @@ export default {
     return {
       options: null,
       //   operator: 'eq',
-      values: null
+      values: null,
+      showNumber: false
     }
   },
   computed: {
@@ -59,6 +69,14 @@ export default {
     changeValue(value) {
       this.setCondition()
       // this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
+      this.$nextTick(() => {
+        const kids = this.$refs.deSelect.$refs.tags.children[0].children
+        let contentWidth = 0
+        kids.forEach(kid => {
+          contentWidth += kid.offsetWidth
+        })
+        this.showNumber = contentWidth > (this.$refs.deSelect.$refs.tags.clientWidth * 0.7)
+      })
     },
 
     setCondition() {
