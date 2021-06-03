@@ -111,7 +111,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         // JWTUtils.removeTokenExpire(token);
         String newToken = JWTUtils.sign(tokenInfo, password);
         // 记录新token操作时间
-        // JWTUtils.addTokenExpire(newToken);
+         JWTUtils.addTokenExpire(newToken);
 
         JWTToken jwtToken = new JWTToken(newToken);
         this.getSubject(request, response).login(jwtToken);
