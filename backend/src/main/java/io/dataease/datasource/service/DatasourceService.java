@@ -76,7 +76,13 @@ public class DatasourceService {
         return extDataSourceMapper.query(gridExample);
     }
 
-    public void deleteDatasource(String datasourceId) {
+    public void deleteDatasource(String datasourceId) throws Exception {
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andDataSourceIdEqualTo(datasourceId);
+        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(example);
+        if(CollectionUtils.isNotEmpty(datasetTables)){
+            throw new Exception(datasetTables.size() +  Translator.get("i18n_datasource_not_allow_delete_msg"));
+        }
         datasourceMapper.deleteByPrimaryKey(datasourceId);
     }
 

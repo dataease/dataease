@@ -49,7 +49,7 @@ public class DatasourceController {
     }
 
     @PostMapping("/delete/{datasourceID}")
-    public void deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) {
+    public void deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
         datasourceService.deleteDatasource(datasourceID);
     }
 
