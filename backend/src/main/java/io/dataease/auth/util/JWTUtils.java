@@ -84,23 +84,16 @@ public class JWTUtils {
      */
     public static boolean loginExpire(String token){
         if (Login_Interval==0) {
-            String property = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout");
-            // 默认超时时间是8h
-            int minute = StringUtils.isNotEmpty(property) ? Integer.parseInt(property): (8*60);
+            int minute = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Integer.class, 8*60);
             // 分钟换算成毫秒
             Login_Interval = minute * 1000 * 60;
         }
         Long now = System.currentTimeMillis();
         Long lastOperateTime = tokenLastOperateTime(token);
+        if (ObjectUtils.isEmpty(lastOperateTime)) return true;
         boolean isExpire = false;
         if (lastOperateTime != null) {
             isExpire = now - lastOperateTime > Login_Interval;
-        }
-        if (isExpire) {
-//            System.out.println("-----------------------");
-//            System.out.println("-----上次操作时间是["+lastOperateTime+"]-----");
-//            System.out.println("-----当前操作时间是["+now+"]-----");
-//            System.out.println("-----------------------");
         }
         return isExpire;
     }
@@ -116,7 +109,7 @@ public class JWTUtils {
     }
 
     /**
-     * 生成签名,5min后过期
+     * 生成签名,1min后过期
      * @param tokenInfo 用户信息
      * @param secret 用户的密码
      * @return 加密的token

@@ -6,7 +6,6 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.commons.utils.ServletUtils;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
