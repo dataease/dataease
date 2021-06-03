@@ -108,7 +108,7 @@ export default {
     height: 1px;
   }
   .tab-panel>>>.el-tabs__item{
-    width: 10px;
+    /* width: 10px; */
     padding: 0 10px;
   }
 </style>
