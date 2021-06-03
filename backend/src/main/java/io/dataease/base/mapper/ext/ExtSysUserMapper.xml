@@ -21,18 +21,21 @@
             <result column="dept_name" property="deptName" />
         </association>
         <association property="dept" column="dept_id" javaType="io.dataease.controller.sys.response.SysUserDept" resultMap="sysUserDept"/>
-        <collection property="roles" ofType="io.dataease.controller.sys.response.SysUserRole" >
-            <id column="role_id" property="roleId" />
-            <result column="role_name" property="roleName"/>
+
+        <collection property="roles"
+                    javaType="java.util.ArrayList"
+                    ofType="io.dataease.controller.sys.response.SysUserRole"
+                    column="user_id"
+                    select="queryRole">
         </collection>
     </resultMap>
 
 
 
+
     <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="BaseResultMap">
-        select u.*,u.user_id as id, r.role_id,r.name as role_name , d.pid, d.name as dept_name
-        from sys_user u left join sys_users_roles ur on u.user_id = ur.user_id
-        left join sys_role r on r.role_id = ur.role_id
+        select u.*,u.user_id as id, d.pid, d.name as dept_name
+        from sys_user u
         left join sys_dept d on d.dept_id = u.dept_id
 
         <if test="_parameter != null">
@@ -44,5 +47,12 @@
         <if test="orderByClause == null">
             order by u.update_time desc
         </if>
+    </select>
+
+    <select id="queryRole" resultMap="sysUserRole">
+        select r.role_id, r.name as role_name
+        from sys_users_roles sur
+        left join sys_role r on r.role_id = sur.role_id
+        where sur.user_id = #{user_id}
     </select>
 </mapper>
