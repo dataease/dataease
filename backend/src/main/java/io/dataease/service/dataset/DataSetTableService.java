@@ -876,15 +876,14 @@ public class DataSetTableService {
     }
 
     public Boolean checkDorisTableIsExists(String id) throws Exception {
-//        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
-//        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-//        DatasourceRequest datasourceRequest = new DatasourceRequest();
-//        datasourceRequest.setDatasource(dorisDatasource);
-//        QueryProvider qp = ProviderFactory.getQueryProvider(dorisDatasource.getType());
-//        datasourceRequest.setQuery(qp.searchTable(DorisTableUtils.dorisName(id)));
-//        List<String[]> data = jdbcProvider.getData(datasourceRequest);
-//        return CollectionUtils.isNotEmpty(data);
-        return true;
+        Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(dorisDatasource);
+        QueryProvider qp = ProviderFactory.getQueryProvider(dorisDatasource.getType());
+        datasourceRequest.setQuery(qp.searchTable(DorisTableUtils.dorisName(id)));
+        List<String[]> data = jdbcProvider.getData(datasourceRequest);
+        return CollectionUtils.isNotEmpty(data);
     }
 
     @Resource
