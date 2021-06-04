@@ -1,5 +1,5 @@
 <template>
-  <el-col>
+  <el-col v-loading="loading">
     <el-row style="margin-top: 5px">
       <el-row style="margin-left: 5px;margin-right: 5px">
         <el-input
@@ -42,14 +42,14 @@
           </span>
         </el-tree>
       </el-row>
-<!--      <el-row v-if="detailItem&&detailItem.snapshot" class="detail-class">-->
-<!--        <el-card class="filter-card-class">-->
-<!--          <div slot="header" class="button-div-class">-->
-<!--            <span>{{ detailItem.name }}</span>-->
-<!--          </div>-->
-<!--          <img draggable="false" class="view-list-thumbnails" :src="detailItem.snapshot" alt="">-->
-<!--        </el-card>-->
-<!--      </el-row>-->
+      <!--      <el-row v-if="detailItem&&detailItem.snapshot" class="detail-class">-->
+      <!--        <el-card class="filter-card-class">-->
+      <!--          <div slot="header" class="button-div-class">-->
+      <!--            <span>{{ detailItem.name }}</span>-->
+      <!--          </div>-->
+      <!--          <img draggable="false" class="view-list-thumbnails" :src="detailItem.snapshot" alt="">-->
+      <!--        </el-card>-->
+      <!--      </el-row>-->
     </el-row>
   </el-col>
 </template>
@@ -68,7 +68,8 @@ export default {
       },
       data: [],
       showdetail: false,
-      detailItem: null
+      detailItem: null,
+      loading: false
     }
   },
   watch: {
@@ -91,8 +92,10 @@ export default {
     },
     loadData() {
       const param = {}
+      this.loading = true
       tree(param).then(res => {
         this.data = res.data
+        this.loading = false
       })
     },
     handleDragStart(node, ev) {

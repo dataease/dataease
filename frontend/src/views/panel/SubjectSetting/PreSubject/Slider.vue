@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <el-row v-loading="slidersLoading">
       <el-col :span="2">
         <span>&nbsp;</span>
         <ul class="direction">
@@ -100,6 +100,7 @@ export default {
   data() {
     return {
       sliders: [],
+      slidersLoading: false,
       sliderWidth: 240,
       imgWidth: 240,
       currentIndex: 1,
@@ -150,8 +151,10 @@ export default {
       })
     },
     querySubjectWithGroup() {
+      this.slidersLoading = true
       querySubjectWithGroup({}).then(response => {
         this.sliders = response.data
+        this.slidersLoading = false
       })
     },
     move(offset, direction, speed) {
