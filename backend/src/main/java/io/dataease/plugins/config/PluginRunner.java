@@ -45,7 +45,7 @@ public class PluginRunner implements ApplicationRunner {
                 if (jarFile.exists()) {
                     pluginService.loadJar(jarPath, plugin);
                 }else {
-                    LogUtil.error("插件错误");
+                    LogUtil.error("插件路径不存在 {} ", jarPath);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
