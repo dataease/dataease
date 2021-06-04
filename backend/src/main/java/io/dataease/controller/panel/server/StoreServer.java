@@ -26,12 +26,7 @@ public class StoreServer implements StoreApi {
     }
 
     @Override
-    public void remove(String storeId) {
-        try {
-            Long id = Long.parseLong(storeId);
-            storeService.remove(id);
-        } catch (Exception e) {
-            storeService.removeByPanelId(storeId);
-        }
+    public void remove(String panelId) {
+        storeService.removeByPanelId(panelId);
     }
 }
