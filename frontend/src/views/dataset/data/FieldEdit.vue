@@ -12,7 +12,7 @@
     </el-row>
     <el-divider />
     <el-table :data="tableFields" size="mini" :max-height="maxHeight">
-      <el-table-column property="type" :label="$t('dataset.field_type')" width="180">
+      <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
         <template slot-scope="scope">
           <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;">
             <el-option
@@ -42,6 +42,25 @@
               <svg-icon v-if="scope.row.deType === 2 || scope.row.deType === 3" icon-class="field_value" class="field-icon-value" />
               <span v-if="scope.row.deType === 2" class="field-class">{{ $t('dataset.value') }}</span>
               <span v-if="scope.row.deType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
+            </span>
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="140">
+        <template slot-scope="scope">
+          <span>
+            <span v-if="scope.row.deExtractType === 0">
+              <svg-icon v-if="scope.row.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+              <span class="field-class">{{ $t('dataset.text') }}</span>
+            </span>
+            <span v-if="scope.row.deExtractType === 1">
+              <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+              <span class="field-class">{{ $t('dataset.time') }}</span>
+            </span>
+            <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3">
+              <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3" icon-class="field_value" class="field-icon-value" />
+              <span v-if="scope.row.deExtractType === 2" class="field-class">{{ $t('dataset.value') }}</span>
+              <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
             </span>
           </span>
         </template>

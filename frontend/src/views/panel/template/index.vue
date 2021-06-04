@@ -139,17 +139,24 @@ export default {
       this.showTemplateEditDialog('edit', templateInfo)
     },
     saveTemplateEdit(templateEditForm) {
-      save(templateEditForm).then(response => {
-        this.$message({
-          message: this.$t('commons.save_success'),
-          type: 'success',
-          showClose: true
-        })
-        this.editTemplate = false
-        this.getTree()
+      this.$refs['templateEditForm'].validate((valid) => {
+        if (valid) {
+          save(templateEditForm).then(response => {
+            this.close()
+            this.$message({
+              message: this.$t('commons.save_success'),
+              type: 'success',
+              showClose: true
+            })
+            this.getTree()
+          })
+        } else {
+          return false
+        }
       })
     },
     close() {
+      this.$refs['templateEditForm'].resetFields()
       this.editTemplate = false
     },
     getTree() {
