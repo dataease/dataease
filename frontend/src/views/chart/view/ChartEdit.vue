@@ -38,7 +38,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in dimension" :key="item.id" class="item">
+              <span v-for="item in dimension" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -59,7 +59,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in quota" :key="item.id" class="item">
+              <span v-for="item in quota" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -101,49 +101,75 @@
                 @change="save(true,'chart')"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-tooltip effect="dark" :content="$t('chart.chart_table_normal')" placement="bottom">
-                    <el-radio value="table-normal" label="table-normal"><svg-icon icon-class="table-normal" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_card')" placement="bottom">
-                    <el-radio value="text" label="text"><svg-icon icon-class="text" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_bar')" placement="bottom">
-                    <el-radio value="bar" label="bar"><svg-icon icon-class="bar" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_bar_stack')" placement="bottom">
-                    <el-radio value="bar-stack" label="bar-stack"><svg-icon icon-class="bar-stack" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_bar_horizontal')" placement="bottom">
-                    <el-radio value="bar-horizontal" label="bar-horizontal"><svg-icon icon-class="bar-horizontal" class="chart-icon" /></el-radio>
-                  </el-tooltip>
+                  <el-radio value="table-normal" label="table-normal">
+                    <span :title="$t('chart.chart_table_normal')">
+                      <svg-icon icon-class="table-normal" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="text" label="text">
+                    <span :title="$t('chart.chart_card')">
+                      <svg-icon icon-class="text" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="bar" label="bar">
+                    <span :title="$t('chart.chart_bar')">
+                      <svg-icon icon-class="bar" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="bar-stack" label="bar-stack">
+                    <span :title="$t('chart.chart_bar_stack')">
+                      <svg-icon icon-class="bar-stack" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="bar-horizontal" label="bar-horizontal">
+                    <span :title="$t('chart.chart_bar_horizontal')">
+                      <svg-icon icon-class="bar-horizontal" class="chart-icon" />
+                    </span>
+                  </el-radio>
                 </div>
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-tooltip effect="dark" :content="$t('chart.chart_bar_stack_horizontal')" placement="bottom">
-                    <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal"><svg-icon icon-class="bar-stack-horizontal" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_line')" placement="bottom">
-                    <el-radio value="line" label="line"><svg-icon icon-class="line" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_line_stack')" placement="bottom">
-                    <el-radio value="line-stack" label="line-stack"><svg-icon icon-class="line-stack" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_pie')" placement="bottom">
-                    <el-radio value="pie" label="pie"><svg-icon icon-class="pie" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_pie_rose')" placement="bottom">
-                    <el-radio value="pie-rose" label="pie-rose"><svg-icon icon-class="pie-rose" class="chart-icon" /></el-radio>
-                  </el-tooltip>
+                  <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal">
+                    <span :title="$t('chart.chart_bar_stack_horizontal')">
+                      <svg-icon icon-class="bar-stack-horizontal" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="line" label="line">
+                    <span :title="$t('chart.chart_line')">
+                      <svg-icon icon-class="line" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="line-stack" label="line-stack">
+                    <span :title="$t('chart.chart_line_stack')">
+                      <svg-icon icon-class="line-stack" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="pie" label="pie">
+                    <span :title="$t('chart.chart_pie')">
+                      <svg-icon icon-class="pie" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="pie-rose" label="pie-rose">
+                    <span :title="$t('chart.chart_pie_rose')">
+                      <svg-icon icon-class="pie-rose" class="chart-icon" />
+                    </span>
+                  </el-radio>
                 </div>
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-tooltip effect="dark" :content="$t('chart.chart_funnel')" placement="bottom">
-                    <el-radio value="funnel" label="funnel"><svg-icon icon-class="funnel" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_radar')" placement="bottom">
-                    <el-radio value="radar" label="radar"><svg-icon icon-class="radar" class="chart-icon" /></el-radio>
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="$t('chart.chart_gauge')" placement="bottom">
-                    <el-radio value="gauge" label="gauge"><svg-icon icon-class="gauge" class="chart-icon" /></el-radio>
-                  </el-tooltip>
+                  <el-radio value="funnel" label="funnel">
+                    <span :title="$t('chart.chart_funnel')">
+                      <svg-icon icon-class="funnel" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="radar" label="radar">
+                    <span :title="$t('chart.chart_radar')">
+                      <svg-icon icon-class="radar" class="chart-icon" />
+                    </span>
+                  </el-radio>
+                  <el-radio value="gauge" label="gauge">
+                    <span :title="$t('chart.chart_gauge')">
+                      <svg-icon icon-class="gauge" class="chart-icon" />
+                    </span>
+                  </el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                   <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                 </div>
@@ -236,8 +262,8 @@
             <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
             <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
-            <div v-if="!httpRequest.status" style=";width: 100%;height: 100%;background-color: #ece7e7; text-align: center">
-              <div style="font-size: 12px; color: #9ea6b2;">
+            <div v-if="!httpRequest.status" class="chart-error-class">
+              <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
                 {{ $t('panel.error_data') }}<br>
                 {{ httpRequest.msg }}
               </div>
@@ -941,7 +967,10 @@ export default {
     background-color: white;
     display: block;
     word-break: break-all;
-    white-space: normal;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .item-on-move {
@@ -952,6 +981,10 @@ export default {
     color: #606266;
     /*background-color: rgba(35,46,64,.05);*/
     background-color: white;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .item + .item {
@@ -1069,5 +1102,13 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  .chart-error-class{
+    text-align: center;
+    height: calc(100% - 84px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ece7e7;
   }
 </style>

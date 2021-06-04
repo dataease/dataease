@@ -51,7 +51,7 @@
                   <!--                  />-->
                   <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)">
                 <span v-if="data.type ==='group'" @click.stop>
@@ -114,8 +114,8 @@
 
     <!--scene-->
     <el-col v-if="sceneMode">
-      <el-row class="title-css">
-        <span class="title-text">
+      <el-row class="title-css scene-title">
+        <span class="title-text scene-title-name" :title="currGroup.name">
           {{ currGroup.name }}
         </span>
         <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
@@ -153,7 +153,7 @@
         <span slot-scope="{ node, data }" class="custom-tree-node-list">
           <span style="display: flex;flex: 1;width: 0;">
             <span><svg-icon :icon-class="data.type" /></span>
-            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
           </span>
           <span v-if="hasDataPermission('manage',data.privileges)">
             <span style="margin-left: 12px;" @click.stop>
@@ -679,5 +679,17 @@ export default {
 
   .form-item>>>.el-form-item__label{
     font-size: 12px;
+  }
+
+  .scene-title{
+    width: 100%;
+    display: flex;
+  }
+  .scene-title-name{
+    width: 100%;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 </style>
