@@ -152,7 +152,7 @@ export default {
         width: this.format(this.canvasStyleData.width, this.scaleWidth) + 'px',
         height: this.format(this.canvasStyleData.height, this.scaleHeight) + 'px'
       }
-      console.log('customStyle=>' + JSON.stringify(style))
+      // console.log('customStyle=>' + JSON.stringify(style))
 
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -401,7 +401,7 @@ export default {
     },
 
     filterValueChange(value) {
-      console.log('emit:' + value)
+      // console.log('emit:' + value)
     },
 
     setConditionValue(obj) {
@@ -432,7 +432,7 @@ export default {
       this.executeSearch()
     },
     executeSearch() {
-      console.log('当前查询条件是: ' + JSON.stringify(this.conditions))
+      // console.log('当前查询条件是: ' + JSON.stringify(this.conditions))
     },
     format(value, scale) {
       // 自适应画布区域 返回原值
