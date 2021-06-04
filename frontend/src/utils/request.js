@@ -57,7 +57,7 @@ const checkAuth = response => {
 
   if (response.headers['authentication-status'] === 'login_expire') {
     const message = i18n.t('login.expires')
-    store.dispatch('user/setLoginMsg', message)
+    // store.dispatch('user/setLoginMsg', message)
     $alert(message, () => {
       store.dispatch('user/logout').then(() => {
         location.reload()
@@ -65,7 +65,7 @@ const checkAuth = response => {
     })
   }
 
-  if (response.headers['authentication-status'] === 'invalid' || response.status === 401) {
+  if (response.headers['authentication-status'] === 'invalid') {
     const message = i18n.t('login.tokenError')
     $alert(message, () => {
       store.dispatch('user/logout').then(() => {
@@ -85,59 +85,6 @@ const checkAuth = response => {
   }
 }
 
-const checkPermission = response => {
-  // 请根据实际需求修改
-  if (response.status === 404) {
-    location.href = '/404'
-  }
-  if (response.status === 401) {
-    location.href = '/401'
-  }
-}
-
-// response interceptor
-/**
-service.interceptors.response.use(
-  response => {
-    const res = response.data
-
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
-
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        })
-      }
-      return Promise.reject(new Error(res.message || 'Error'))
-    } else {
-      return res
-    }
-  },
-  error => {
-    console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
-    return Promise.reject(error)
-  }
-)
-*/
 // 请根据实际需求修改
 service.interceptors.response.use(response => {
   response.config.loading && tryHideLoading(store.getters.currentPath)
@@ -148,12 +95,12 @@ service.interceptors.response.use(response => {
   let msg
   if (error.response) {
     checkAuth(error.response)
-    checkPermission(error.response)
+    // checkPermission(error.response)
     msg = error.response.data.message || error.response.data
   } else {
     msg = error.message
   }
-  !error.config.hideMsg && $error(msg)
+  !error.config.hideMsg && (!error.config.headers['authentication-status']) && $error(msg)
   return Promise.reject(error)
 })
 export default service

@@ -6,6 +6,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -72,10 +73,11 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 boolean loginSuccess = executeLogin(request, response);
                 return loginSuccess;
             } catch (Exception e) {
+                LogUtil.error(e);
                 if (e instanceof AuthenticationException && StringUtils.equals(e.getMessage(), expireMessage)){
-                    responseExpire(request, response);
+                    responseExpire(request, response, e);
                 }else {
-                    response401(request, response);
+                    tokenError(request, response, e);
                 }
             }
         }
@@ -125,29 +127,17 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         return super.preHandle(request, response);
     }
 
-    /**
-     * 将非法请求跳转到 /401
-     */
-    private void response401(ServletRequest req, ServletResponse resp) {
-        try {
-            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
-            httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
-            httpServletResponse.setHeader("authentication-status", "invalid");
-            httpServletResponse.setStatus(401);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+
+    private void tokenError(ServletRequest req, ServletResponse resp, Exception e1) {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+        httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
+        httpServletResponse.setHeader("authentication-status", "invalid");
     }
 
-    private void responseExpire(ServletRequest req, ServletResponse resp) {
-        try {
-            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
-            httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
-            httpServletResponse.setHeader("authentication-status", "login_expire");
-            httpServletResponse.setStatus(401);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+    private void responseExpire(ServletRequest req, ServletResponse resp, Exception e1) {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+        httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
+        httpServletResponse.setHeader("authentication-status", "login_expire");
     }
 
 }
