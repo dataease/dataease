@@ -160,7 +160,7 @@ export default {
             background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
             ...style
           }
-        } else {
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
           style = {
             background: this.canvasStyleData.panel.color,
             ...style
