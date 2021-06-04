@@ -84,8 +84,8 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{ required: true, trigger: 'blur', message: this.$t('commons.input_id') }],
+        password: [{ required: true, trigger: 'blur', message: this.$t('commons.input_pwd') }]
       },
       loading: false,
       passwordType: 'password',

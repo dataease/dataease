@@ -18,12 +18,14 @@ import io.dataease.commons.utils.ServletUtils;
 
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.display.service.DisPlayXpackService;*/
+import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +43,11 @@ public class AuthServer implements AuthApi {
         String password = loginDto.getPassword();
         SysUserEntity user = authUserService.getUserByName(username);
 
-        if (ObjectUtils.isEmpty(user)){
-            throw new RuntimeException("没有该用户！");
+        if (ObjectUtils.isEmpty(user)) {
+            throw new RuntimeException(Translator.get("i18n_id_or_pwd_error"));
         }
-        if (user.getEnabled()==0){
-            throw new RuntimeException("用户已经失效！");
+        if (user.getEnabled() == 0) {
+            throw new RuntimeException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
         //私钥解密
@@ -53,10 +55,10 @@ public class AuthServer implements AuthApi {
         //md5加密
         pwd = CodingUtil.md5(pwd);
 
-        if (!StringUtils.equals(pwd, realPwd)){
-            throw new RuntimeException("密码错误！");
+        if (!StringUtils.equals(pwd, realPwd)) {
+            throw new RuntimeException(Translator.get("i18n_id_or_pwd_error"));
         }
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).lastLoginTime(System.currentTimeMillis()).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
         // 记录token操作时间
@@ -68,7 +70,7 @@ public class AuthServer implements AuthApi {
 
     @Override
     public CurrentUserDto userInfo() {
-        CurrentUserDto userDto = (CurrentUserDto)SecurityUtils.getSubject().getPrincipal();
+        CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
         if (ObjectUtils.isEmpty(userDto)) {
             String token = ServletUtils.getToken();
             Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
@@ -84,7 +86,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
-    public String logout(){
+    public String logout() {
         String token = ServletUtils.getToken();
         Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
         authUserService.clearCache(userId);
