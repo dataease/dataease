@@ -283,7 +283,9 @@ export default {
     },
     datasource: 'Datasource',
     char_can_not_more_50: 'Can not more 50 char',
-    share_success: 'Share Success'
+    share_success: 'Share Success',
+    input_id: 'Please input ID',
+    input_pwd: 'Please input password'
   },
   documentation: {
     documentation: 'Documentation',

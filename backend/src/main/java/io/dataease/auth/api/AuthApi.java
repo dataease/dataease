@@ -31,7 +31,4 @@ public interface AuthApi {
     @PostMapping("/validateName")
     Boolean validateName(Map<String, String> nameDto);
 
-
-    @GetMapping("/test")
-    String test();
 }

@@ -283,7 +283,9 @@ export default {
     },
     datasource: '數據源',
     char_can_not_more_50: '不能超過50字符',
-    share_success: '分享成功'
+    share_success: '分享成功',
+    input_id: '請輸入ID',
+    input_pwd: '請輸入密碼'
   },
   documentation: {
     documentation: '文檔',
