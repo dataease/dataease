@@ -100,7 +100,7 @@ service.interceptors.response.use(response => {
   } else {
     msg = error.message
   }
-  !error.config.hideMsg && (!error.config.headers['authentication-status']) && $error(msg)
+  !error.config.hideMsg && (!error.response.headers['authentication-status']) && $error(msg)
   return Promise.reject(error)
 })
 export default service
