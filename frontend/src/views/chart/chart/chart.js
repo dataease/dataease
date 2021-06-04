@@ -104,9 +104,9 @@ export const BASE_BAR = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
+  grid: {
+    containLabel: true
+  },
   tooltip: {},
   legend: {
     show: true,
@@ -136,9 +136,9 @@ export const HORIZONTAL_BAR = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
+  grid: {
+    containLabel: true
+  },
   tooltip: {},
   legend: {
     show: true,
@@ -169,9 +169,9 @@ export const BASE_LINE = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
+  grid: {
+    containLabel: true
+  },
   tooltip: {},
   legend: {
     show: true,
@@ -203,9 +203,9 @@ export const BASE_PIE = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
+  grid: {
+    containLabel: true
+  },
   tooltip: {},
   legend: {
     show: true,
@@ -239,9 +239,9 @@ export const BASE_FUNNEL = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
+  grid: {
+    containLabel: true
+  },
   tooltip: {
     trigger: 'item'
   },
@@ -298,9 +298,9 @@ export const BASE_RADAR = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
+  grid: {
+    containLabel: true
+  },
   tooltip: {},
   legend: {
     show: true,
@@ -336,9 +336,9 @@ export const BASE_GAUGE = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
+  grid: {
+    containLabel: true
+  },
   tooltip: {},
   legend: {
     show: true,
