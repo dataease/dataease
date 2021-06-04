@@ -285,7 +285,11 @@ export default {
     char_can_not_more_50: '不能超过50字符',
     share_success: '分享成功',
     input_id: '请输入ID',
-    input_pwd: '请输入密码'
+    input_pwd: '请输入密码',
+    message_box: {
+      alert: '警告',
+      confirm: '确认'
+    }
   },
   documentation: {
     documentation: '文档',

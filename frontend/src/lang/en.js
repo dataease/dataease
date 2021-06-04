@@ -285,7 +285,11 @@ export default {
     char_can_not_more_50: 'Can not more 50 char',
     share_success: 'Share Success',
     input_id: 'Please input ID',
-    input_pwd: 'Please input password'
+    input_pwd: 'Please input password',
+    message_box: {
+      alert: 'Alert',
+      confirm: 'Confirm'
+    }
   },
   documentation: {
     documentation: 'Documentation',
