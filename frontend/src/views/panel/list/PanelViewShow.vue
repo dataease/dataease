@@ -19,8 +19,14 @@
               </el-tooltip>
             </span>
             <span style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.preview')">
-                <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
+              <el-tooltip :content="$t('panel.fullscreen_preview')">
+                <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
+              </el-tooltip>
+            </span>
+
+            <span style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('panel.new_tab_preview')">
+                <el-button class="el-icon-data-analysis" size="mini" circle @click="newTab" />
               </el-tooltip>
             </span>
 
@@ -41,7 +47,9 @@
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
-          <Preview v-if="showMain" />
+          <fullscreen style="background: #ffffff;height: 100%" :fullscreen.sync="fullscreen">
+            <Preview v-if="showMain" />
+          </fullscreen>
         </div>
       </el-row>
     </el-col>
@@ -78,7 +86,8 @@ export default {
       templateInfo: {},
       templateSaveTitle: '保存为模板',
       templateSaveShow: false,
-      hasStar: false
+      hasStar: false,
+      fullscreen: false
     }
   },
   computed: {
@@ -103,7 +112,10 @@ export default {
   mounted() {
   },
   methods: {
-    clickPreview() {
+    clickFullscreen() {
+      this.fullscreen = true
+    },
+    newTab() {
       const url = '#/preview/' + this.$store.state.panel.panelInfo.id
       window.open(url, '_blank')
     },

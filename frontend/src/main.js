@@ -37,6 +37,10 @@ Vue.use(UmyUi)
 import vcolorpicker from 'vcolorpicker'
 Vue.use(vcolorpicker)
 
+// 全屏插件
+import fullscreen from 'vue-fullscreen'
+Vue.use(fullscreen)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

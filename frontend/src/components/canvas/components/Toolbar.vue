@@ -43,7 +43,7 @@
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>
       <input id="input" ref="files" type="file" hidden @change="handleFileChange">
-      <el-tooltip :content="$t('panel.preview')">
+      <el-tooltip :content="$t('panel.fullscreen_preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
 

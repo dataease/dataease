@@ -899,6 +899,8 @@ export default {
     save_to_panel: '保存為模板',
     export_to_panel: '導出為模板',
     preview: '預覽',
+    fullscreen_preview: '全屏预览',
+    new_tab_preview: '新Tab页预览',
     select_panel_from_left: '請從左側選擇儀表板',
     template_nale: '模板名稱',
     template: '模板',
