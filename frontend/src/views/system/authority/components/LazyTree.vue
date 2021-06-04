@@ -1,5 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col class="tree-main">
+  <el-col v-loading="loading" class="tree-main">
     <el-row v-if="showExtent" class="tree-head">
       <span style="float: left;padding-left: 10px">{{ dataInfo.head }}</span>
       <span v-for="auth in defaultAuthDetails" :key="auth.privilegeName" class="auth-span">
@@ -67,6 +67,7 @@ export default {
       type: String,
       required: true
     },
+    attachActiveName: String,
     defaultProps: {
       type: Object,
       required: false,
@@ -85,6 +86,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       treeData: [],
       changeIndex: 0,
       timeMachine: null,
@@ -119,6 +121,12 @@ export default {
         this.loadAuth()
       },
       deep: true
+    },
+    attachActiveName: {
+      handler(newVal, oldVla) {
+        this.authDetails = {}
+      },
+      deep: true
     }
   },
   created() {
@@ -138,7 +146,8 @@ export default {
           // 当前为授权数据 获取当前authTarget 的授权信息 authSource
           authQueryCondition = {
             authTarget: this.authCondition.id,
-            authTargetType: this.authCondition.type
+            authTargetType: this.authCondition.type,
+            authSourceType: this.dataInfo.authType
           }
         } else {
           authQueryCondition = {
@@ -248,9 +257,11 @@ export default {
           authDetail: auth
         }
       }
+      this.loading = true
       authChange(authChangeCondition).then(res => {
         // 重新加载权限
         this.loadAuth()
+        this.loading = false
       })
     },
     // 高亮显示搜索内容
