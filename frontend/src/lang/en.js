@@ -827,7 +827,8 @@ export default {
     edit_field: 'Edit Field',
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
-    parse_error: 'Parse Error'
+    parse_error: 'Parse Error',
+    origin_field_type: 'Origin Type'
   },
   datasource: {
     datasource: 'Data Source',

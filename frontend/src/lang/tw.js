@@ -827,7 +827,8 @@ export default {
     edit_field: '編輯自斷',
     preview_100_data: '顯示前100行數據',
     invalid_table_check: '非直連數據集請先完成數據同步',
-    parse_error: '解析錯誤'
+    parse_error: '解析錯誤',
+    origin_field_type: '原始類型'
   },
   datasource: {
     datasource: '數據源',
