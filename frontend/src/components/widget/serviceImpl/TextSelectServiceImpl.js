@@ -27,7 +27,7 @@ const drawPanel = {
   type: 'custom',
   style: {
     width: 300,
-    height: 35,
+    height: 47,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
