@@ -49,35 +49,35 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { validateUserName } from '@/api/user'
+// import { validateUserName } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      const userName = value.trim()
-      validateUserName({ userName: userName }).then(res => {
-        if (res.data) {
-          callback()
-        } else {
-          callback(this.$t('login.username_error'))
-        }
-      }).catch(() => {
-        callback(this.$t('login.username_error'))
-      })
-    //   if (!validUsername(value)) {
-    //     callback(new Error('Please enter the correct user name'))
+    // const validateUsername = (rule, value, callback) => {
+    //   const userName = value.trim()
+    //   validateUserName({ userName: userName }).then(res => {
+    //     if (res.data) {
+    //       callback()
+    //     } else {
+    //       callback(this.$t('login.username_error'))
+    //     }
+    //   }).catch(() => {
+    //     callback(this.$t('login.username_error'))
+    //   })
+    // //   if (!validUsername(value)) {
+    // //     callback(new Error('Please enter the correct user name'))
+    // //   } else {
+    // //     callback()
+    // //   }
+    // }
+    // const validatePassword = (rule, value, callback) => {
+    //   if (value.length < 8) {
+    //     callback(this.$t('login.password_error'))
     //   } else {
     //     callback()
     //   }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 8) {
-        callback(this.$t('login.password_error'))
-      } else {
-        callback()
-      }
-    }
+    // }
     return {
       loginForm: {
         username: '',
