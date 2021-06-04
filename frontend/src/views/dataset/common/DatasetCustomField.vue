@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row style="height: 25px;">
-      <span>{{ table.name }}</span>
+      <span class="table-name">{{ table.name }}</span>
     </el-row>
     <el-divider />
     <el-checkbox v-model="checkAll" :disabled="!(fields.length > 0)" :indeterminate="isIndeterminate" @change="handleCheckAllChange">{{ $t('dataset.check_all') }}</el-checkbox>
@@ -104,5 +104,13 @@ export default {
 <style scoped>
   .el-divider--horizontal {
     margin: 12px 0
+  }
+
+  .table-name{
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
   }
 </style>

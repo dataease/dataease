@@ -38,7 +38,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in dimension" :key="item.id" class="item">
+              <span v-for="item in dimension" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -59,7 +59,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in quota" :key="item.id" class="item">
+              <span v-for="item in quota" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -941,7 +941,10 @@ export default {
     background-color: white;
     display: block;
     word-break: break-all;
-    white-space: normal;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .item-on-move {
@@ -952,6 +955,10 @@ export default {
     color: #606266;
     /*background-color: rgba(35,46,64,.05);*/
     background-color: white;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .item + .item {
