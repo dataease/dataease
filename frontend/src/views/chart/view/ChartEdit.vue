@@ -262,8 +262,8 @@
             <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
             <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
-            <div v-if="!httpRequest.status" style=";width: 100%;height: 100%;background-color: #ece7e7; text-align: center">
-              <div style="font-size: 12px; color: #9ea6b2;">
+            <div v-if="!httpRequest.status" class="chart-error-class">
+              <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
                 {{ $t('panel.error_data') }}<br>
                 {{ httpRequest.msg }}
               </div>
@@ -1102,5 +1102,13 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  .chart-error-class{
+    text-align: center;
+    height: calc(100% - 84px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ece7e7;
   }
 </style>
