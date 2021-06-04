@@ -14,10 +14,6 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
 
-/*import io.dataease.plugins.config.SpringContextUtil;
-
-import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
-import io.dataease.plugins.xpack.display.service.DisPlayXpackService;*/
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,10 +55,9 @@ public class AuthServer implements AuthApi {
             throw new RuntimeException(Translator.get("i18n_id_or_pwd_error"));
         }
         Map<String, Object> result = new HashMap<>();
-        TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).lastLoginTime(System.currentTimeMillis()).build();
+        TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
         // 记录token操作时间
-        JWTUtils.addTokenExpire(token);
         result.put("token", token);
         ServletUtils.setToken(token);
         return result;
@@ -107,20 +102,5 @@ public class AuthServer implements AuthApi {
         return null;
     }
 
-    @Override
-    public String test() {
-        SysUserEntity userById = authUserService.getUserById(4L);
-        String nickName = userById.getNickName();
-//        System.out.println(nickName);
-       /* Map<String, DisPlayXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType(DisPlayXpackService.class);
-        for (Map.Entry entry : beansOfType.entrySet()) {
-            Object key = entry.getKey();
-            DisPlayXpackService value = (DisPlayXpackService)entry.getValue();
-            List<SysSettingDto> sysSettingDtos = value.systemSettings();
 
-            String name = entry.getValue().getClass().getName();
-            System.out.println("key: "+ key + ",  value: "+ name);
-        }*/
-        return "apple";
-    }
 }
