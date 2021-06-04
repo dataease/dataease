@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.dataease.base.mapper.ext.ExtPanelViewMapper">
 
-    <resultMap id="treeNodeMap" type="io.dataease.dto.panel.po.PanelViewPo">
+    <resultMap id="treeNodeMap" type="io.dataease.dto.panel.PanelViewDto">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="pid" property="pid" />
@@ -12,7 +12,7 @@
 
 
     <select id="groups"  resultMap="treeNodeMap">
-        select id, pid,  name, `type`
+        select id, ifnull(pid,0) as pid,  name, `type`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_group
         <where>
             FIND_IN_SET(chart_group.id,cids)
