@@ -3,7 +3,7 @@
     <complex-table
       :data="data"
       :columns="columns"
-
+      local-key="userGrid"
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"
