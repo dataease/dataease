@@ -1,6 +1,6 @@
 <template>
 
-  <de-container class="de-dialog-container">
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="de-dialog-container">
     <de-aside-container :show-drag-bar="false" class="ms-aside-container">
       <el-tabs v-model="activeName" class="filter-dialog-tabs">
         <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_table')" name="dataset">
