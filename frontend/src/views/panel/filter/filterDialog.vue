@@ -43,6 +43,7 @@
             <div v-else-if="showDomType === 'field'">
               <draggable
                 v-model="fieldDatas"
+                :disabled="selectField.length !== 0"
                 :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                 animation="300"
                 :move="onMove"
@@ -93,6 +94,7 @@
             <div v-else-if="comShowDomType === 'field'">
               <draggable
                 v-model="comFieldDatas"
+                :disabled="selectField.length !== 0"
                 :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                 animation="300"
                 :move="onMove"
