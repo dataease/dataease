@@ -121,9 +121,9 @@
           <el-col :span="24">
             <div class="filter-field">
               <div class="field-content">
-                <div class="field-content-left">
+                <!-- <div class="field-content-left">
                   <div class="field-content-text">{{ $t('panel.field') }} </div>
-                </div>
+                </div> -->
 
                 <div class="field-content-right">
                   <el-row style="display:flex;height: 32px;">
