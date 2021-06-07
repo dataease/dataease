@@ -692,6 +692,7 @@ public class ExtractDataService {
             tmp_code = tmp_code.replace("handleExcelWraps", handleExcelWraps);
         }else {
             tmp_code = tmp_code.replace("handleExcelIntColumn", "");
+            tmp_code = tmp_code.replace("handleExcelWraps", "");
         }
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
