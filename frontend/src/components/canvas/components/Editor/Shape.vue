@@ -89,6 +89,7 @@ export default {
     if (this.curComponent) {
       this.cursors = this.getCursor() // 根据旋转角度获取光标位置
     }
+    this.element.type === 'custom' && (this.pointList = ['l', 'r'])
 
     eventBus.$on('runAnimation', () => {
       if (this.element === this.curComponent) {
@@ -221,7 +222,7 @@ export default {
 
     handleMouseDownOnShape(e) {
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape') {
+      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search') {
         e.preventDefault()
       }
 
