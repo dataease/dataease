@@ -92,7 +92,7 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import { checkPermission } from '@/utils/permission'
+import { checkPermission, hasDataPermission } from '@/utils/permission'
 import { formatCondition } from '@/utils/index'
 import { dsGrid, addDs, editDs, delDs, validateDs } from '@/api/system/datasource'
 
@@ -124,10 +124,16 @@ export default {
       buttons: [
         {
           label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit,
-          show: checkPermission(['datasource:edit'])
+          show: true,
+          disabled: (row) => {
+            return !hasDataPermission('manage', row.privileges)
+          }
         }, {
           label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this._handleDelete,
-          show: checkPermission(['datasource:del'])
+          show: true,
+          disabled: (row) => {
+            return !hasDataPermission('manage', row.privileges)
+          }
         }
       ],
       searchConfig: {
