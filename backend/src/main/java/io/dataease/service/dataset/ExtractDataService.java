@@ -689,6 +689,7 @@ public class ExtractDataService {
         String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList())));
         if(isExcel){
             tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn);
+            tmp_code = tmp_code.replace("handleExcelWraps", handleExcelWraps);
         }else {
             tmp_code = tmp_code.replace("handleExcelIntColumn", "");
         }
@@ -746,6 +747,14 @@ public class ExtractDataService {
             "            }catch (Exception e){}\n" +
             "        }";
 
+    private static String handleExcelWraps = "       \n" +
+            "        if(tmp != null ){\n" +
+            "          tmp = tmp.trim();\n" +
+            "          tmp = tmp.replaceAll(\"\\r\",\" \");\n" +
+            "          tmp = tmp.replaceAll(\"\\n\",\" \");\n" +
+            "          get(Fields.Out, filed).setValue(r, tmp);\n" +
+            "        }";
+
     private static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
             "import java.io.File;\n" +
@@ -775,6 +784,7 @@ public class ExtractDataService {
             "    List<String> fileds = Arrays.asList(\"Column_Fields\".split(\",\"));\n" +
             "    for (String filed : fileds) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
+            "handleExcelWraps \n" +
             "alterColumnTypeCode \n" +
             "handleExcelIntColumn \n" +
             "        str = str + tmp;\n" +

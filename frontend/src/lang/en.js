@@ -713,7 +713,9 @@ export default {
     y_M_d_H_m_s: 'Year Month Day Hour Minute Second',
     date_sub: 'yyyy-MM-dd',
     date_split: 'yyyy/MM/dd',
-    chartName: 'New Chart'
+    chartName: 'New Chart',
+    chart_show_error: 'can not show normal',
+    chart_error_tips: 'Please contact admin '
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

@@ -63,7 +63,7 @@ public class DataSetTableTaskService {
             if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                 if (extractDataService.updateSyncStatus(dataSetTableService.get(datasetTableTask.getTableId()))) {
                     throw new Exception(Translator.get("i18n_sync_job_exists"));
-                } else {
+                }else {
                     //write log
                     DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
                     datasetTableTaskLog.setTableId(datasetTableTask.getTableId());

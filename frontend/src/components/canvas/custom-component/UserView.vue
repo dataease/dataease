@@ -1,9 +1,10 @@
 <template>
   <div v-loading="requestStatus==='waiting'" class="rect-shape">
-    <div v-if="requestStatus==='error'" style=";width: 100%;height: 100%;background-color: #ece7e7; text-align: center">
-      <div style="font-size: 12px; color: #9ea6b2;">
-        {{ $t('panel.error_data') }}<br>
-        {{ message }}
+    <div v-if="requestStatus==='error'" class="chart-error-class">
+      <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
+        {{ message.response.data.message }},{{ $t('chart.chart_show_error') }}
+        <br>
+        {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
     <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" />
@@ -188,5 +189,13 @@ export default {
 }
 .table-class{
   height: 100%;
+}
+.chart-error-class{
+  text-align: center;
+  height: calc(100% - 84px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ece7e7;
 }
 </style>

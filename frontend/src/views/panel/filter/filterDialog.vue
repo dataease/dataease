@@ -1,6 +1,6 @@
 <template>
 
-  <de-container class="de-dialog-container">
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="de-dialog-container">
     <de-aside-container :show-drag-bar="false" class="ms-aside-container">
       <el-tabs v-model="activeName" class="filter-dialog-tabs">
         <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_table')" name="dataset">
@@ -43,6 +43,7 @@
             <div v-else-if="showDomType === 'field'">
               <draggable
                 v-model="fieldDatas"
+                :disabled="selectField.length !== 0"
                 :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                 animation="300"
                 :move="onMove"
@@ -93,6 +94,7 @@
             <div v-else-if="comShowDomType === 'field'">
               <draggable
                 v-model="comFieldDatas"
+                :disabled="selectField.length !== 0"
                 :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                 animation="300"
                 :move="onMove"
@@ -119,9 +121,9 @@
           <el-col :span="24">
             <div class="filter-field">
               <div class="field-content">
-                <div class="field-content-left">
+                <!-- <div class="field-content-left">
                   <div class="field-content-text">{{ $t('panel.field') }} </div>
-                </div>
+                </div> -->
 
                 <div class="field-content-right">
                   <el-row style="display:flex;height: 32px;">

@@ -84,11 +84,11 @@ public class DorisQueryProvider extends QueryProvider {
                 }
             } else if (f.getDeExtractType() == 0) {
                 if (f.getDeType() == 2) {
-                    stringBuilder.append("cast(").append(f.getOriginName()).append(" as decimal(20,0)) as ").append(f.getOriginName());
+                    stringBuilder.append("cast(").append(f.getDataeaseName()).append(" as decimal(20,0)) as ").append(f.getDataeaseName());
                 } else if (f.getDeType() == 3) {
-                    stringBuilder.append("cast(").append(f.getOriginName()).append(" as decimal(20,2)) as ").append(f.getOriginName());
+                    stringBuilder.append("cast(").append(f.getDataeaseName()).append(" as decimal(20,2)) as ").append(f.getDataeaseName());
                 } else {
-                    stringBuilder.append(f.getOriginName());
+                    stringBuilder.append(f.getDataeaseName());
                 }
             } else {
                 if (f.getDeType() == 1) {

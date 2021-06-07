@@ -3,9 +3,10 @@
   <el-input
     v-if="options!== null && options.attrs!==null"
     v-model="options.value"
-    style="width: 260px"
+    resize="vertical"
     :placeholder="options.attrs.placeholder"
     @keyup.enter.native="search"
+    @dblclick="setEdit"
   >
 
     <el-button slot="append" icon="el-icon-search" @click="search" />
@@ -30,7 +31,8 @@ export default {
     return {
       options: null,
       operator: 'like',
-      values: null
+      values: null,
+      canEdit: false
     }
   },
   created() {
@@ -48,6 +50,9 @@ export default {
         operator: this.operator
       }
       this.inDraw && this.$store.dispatch('conditions/add', param)
+    },
+    setEdit() {
+      this.canEdit = true
     }
   }
 }

@@ -238,6 +238,9 @@ public class DataSetTableService {
         }
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
             Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+            if (ObjectUtils.isEmpty(ds)) {
+                throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+            }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
@@ -258,6 +261,9 @@ public class DataSetTableService {
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
             Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+            if (ObjectUtils.isEmpty(ds)) {
+                throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+            }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
@@ -813,6 +819,7 @@ public class DataSetTableService {
         if (cellTypeEnum.equals(CellType.STRING)) {
             if (cellType) {
                 tableFiled.setFieldType("TEXT");
+                tableFiled.setFieldSize(65533);
             }
             return cell.getStringCellValue();
         }
