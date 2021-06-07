@@ -69,5 +69,18 @@
             memoryStoreEvictionPolicy="LRU"
     />
 
+    <cache
+            name="lic_info"
+            eternal="false"
+            maxElementsInMemory="10"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="60"
+            memoryStoreEvictionPolicy="FIFO"
+    >
+        <cacheEventListenerFactory class="io.dataease.listener.LicCacheEventListener" />
+    </cache>
+
 
 </ehcache>

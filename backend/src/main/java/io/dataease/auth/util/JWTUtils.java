@@ -6,12 +6,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.entity.TokenInfo;
-import io.dataease.auth.filter.JWTFilter;
 import io.dataease.commons.utils.CommonBeanFactory;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authc.AuthenticationException;
-
 import org.springframework.core.env.Environment;
 
 import java.util.Date;
