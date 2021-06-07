@@ -283,7 +283,13 @@ export default {
     },
     datasource: 'Datasource',
     char_can_not_more_50: 'Can not more 50 char',
-    share_success: 'Share Success'
+    share_success: 'Share Success',
+    input_id: 'Please input ID',
+    input_pwd: 'Please input password',
+    message_box: {
+      alert: 'Alert',
+      confirm: 'Confirm'
+    }
   },
   documentation: {
     documentation: 'Documentation',
@@ -821,7 +827,8 @@ export default {
     edit_field: 'Edit Field',
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
-    parse_error: 'Parse Error'
+    parse_error: 'Parse Error',
+    origin_field_type: 'Origin Type'
   },
   datasource: {
     datasource: 'Data Source',
@@ -899,6 +906,8 @@ export default {
     save_to_panel: 'Save to template',
     export_to_panel: 'Export to template',
     preview: 'Preview',
+    fullscreen_preview: 'Fullscreen Preview',
+    new_tab_preview: 'New Tab Preview',
     select_panel_from_left: 'Please select Dashboard from left',
     template_nale: 'Template name',
     template: 'Template',

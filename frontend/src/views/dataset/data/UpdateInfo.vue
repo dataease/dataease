@@ -380,7 +380,9 @@ export default {
     this.calHeight()
   },
   created() {
-    this.timer = setInterval(this.listTaskLog, 5000)
+    this.timer = setInterval(() => {
+      this.listTaskLog(false)
+    }, 5000)
   },
   beforeDestroy() {
     clearInterval(this.timer)
@@ -461,10 +463,10 @@ export default {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
         this.incrementalUpdateType = 'incrementalAdd'
-        console.log(this.sql);
+        console.log(this.sql)
         if (this.incrementalConfig.incrementalAdd) {
           this.sql = this.incrementalConfig.incrementalAdd
-        }else {
+        } else {
           this.sql = ''
         }
       })
@@ -543,8 +545,8 @@ export default {
         this.taskForm.cron = '0 0 * ? * * *'
       }
     },
-    listTaskLog() {
-      post('/dataset/taskLog/list/' + this.page.currentPage + '/' + this.page.pageSize, { tableId: this.table.id }).then(response => {
+    listTaskLog(loading = true) {
+      post('/dataset/taskLog/list/' + this.page.currentPage + '/' + this.page.pageSize, { tableId: this.table.id }, loading).then(response => {
         this.taskLogData = response.data.listObject
         this.page.total = response.data.itemCount
       })

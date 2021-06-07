@@ -141,7 +141,7 @@
       :fullscreen="true"
       custom-class="preview-dialog"
     >
-      <PreviewFullScreen />
+      <PreviewFullScreen :fullscreen="previewVisible" />
     </el-dialog>
   </el-row>
 </template>

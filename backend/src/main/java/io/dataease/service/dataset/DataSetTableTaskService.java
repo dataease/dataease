@@ -1,8 +1,6 @@
 package io.dataease.service.dataset;
 
-import io.dataease.base.domain.DatasetTableTask;
-import io.dataease.base.domain.DatasetTableTaskExample;
-import io.dataease.base.domain.DatasetTableTaskLog;
+import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
@@ -38,7 +36,9 @@ public class DataSetTableTaskService {
     private DataSetTableService dataSetTableService;
     @Resource
     private ExtractDataService extractDataService;
+
     public DatasetTableTask save(DataSetTaskRequest dataSetTaskRequest) throws Exception {
+        checkName(dataSetTaskRequest);
         DatasetTableTask datasetTableTask = dataSetTaskRequest.getDatasetTableTask();
         dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
 
@@ -60,8 +60,8 @@ public class DataSetTableTaskService {
             datasetTableTask.setId(UUID.randomUUID().toString());
             datasetTableTask.setCreateTime(System.currentTimeMillis());
             // SIMPLE 类型，提前占位
-            if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
-                if(extractDataService.updateSyncStatus(dataSetTableService.get(datasetTableTask.getTableId()))){
+            if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
+                if (extractDataService.updateSyncStatus(dataSetTableService.get(datasetTableTask.getTableId()))) {
                     throw new Exception(Translator.get("i18n_sync_job_exists"));
                 }else {
                     //write log
@@ -118,5 +118,23 @@ public class DataSetTableTaskService {
         }
         datasetTableTaskExample.setOrderByClause("create_time desc,name asc");
         return datasetTableTaskMapper.selectByExample(datasetTableTaskExample);
+    }
+
+    private void checkName(DataSetTaskRequest dataSetTaskRequest) {
+        DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+        DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
+        if (StringUtils.isNotEmpty(dataSetTaskRequest.getDatasetTableTask().getId())) {
+            criteria.andIdNotEqualTo(dataSetTaskRequest.getDatasetTableTask().getId());
+        }
+        if (StringUtils.isNotEmpty(dataSetTaskRequest.getDatasetTableTask().getTableId())) {
+            criteria.andTableIdEqualTo(dataSetTaskRequest.getDatasetTableTask().getTableId());
+        }
+        if (StringUtils.isNotEmpty(dataSetTaskRequest.getDatasetTableTask().getName())) {
+            criteria.andNameEqualTo(dataSetTaskRequest.getDatasetTableTask().getName());
+        }
+        List<DatasetTableTask> list = datasetTableTaskMapper.selectByExample(datasetTableTaskExample);
+        if (list.size() > 0) {
+            throw new RuntimeException(Translator.get("i18n_task_name_repeat"));
+        }
     }
 }

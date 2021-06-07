@@ -813,6 +813,7 @@ public class DataSetTableService {
         if (cellTypeEnum.equals(CellType.STRING)) {
             if (cellType) {
                 tableFiled.setFieldType("TEXT");
+                tableFiled.setFieldSize(65533);
             }
             return cell.getStringCellValue();
         }

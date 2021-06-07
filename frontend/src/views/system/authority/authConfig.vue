@@ -10,6 +10,7 @@
       <el-tabs v-model="targetActiveName" :class="{'de-search-header': showTargetSearchInput}" @tab-click="handleClick">
         <el-tab-pane v-for="(targetInfo, index) in targetInfoArray" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
           <lazy-tree
+            v-if="targetActiveName===targetInfo.authType"
             :active-name="targetActiveName"
             :filter-text="targetFilterText"
             :data-info="targetInfo"
@@ -35,6 +36,7 @@
             :data-info="sourceInfo"
             show-extent
             :auth-condition="authCondition"
+            :attach-active-name="targetActiveName"
           />
         </el-tab-pane>
       </el-tabs>
@@ -115,7 +117,7 @@ export default {
             head: this.$t('auth.menuAuthHead'),
             direction: 'source',
             authType: 'menu',
-            authTargets: 'role'
+            authTargets: 'dept,role,user'
           }
         ],
       targetActiveName: null,
@@ -170,11 +172,11 @@ export default {
       this.$emit('close-grant', 0)
     },
     authNodeClick(val) {
-      console.log('authNodeClick')
+      // console.log('authNodeClick')
       this.authCondition = val
     },
     clickAuth(auth) {
-      console.log('clickAuth')
+      // console.log('clickAuth')
     }
   }
 }

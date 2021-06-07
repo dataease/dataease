@@ -181,7 +181,7 @@ export default {
       this.depts = null
       this.formType = 'add'
       this.form = Object.assign({}, this.defaultForm)
-      console.log(this.form)
+      // console.log(this.form)
     },
     edit(row) {
       this.depts = null

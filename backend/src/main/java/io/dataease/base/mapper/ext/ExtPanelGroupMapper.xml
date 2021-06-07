@@ -64,6 +64,9 @@
         <if test="sort != null">
             order by ${sort}
         </if>
+        <if test="sort == null">
+            order by panel_group.create_time desc
+        </if>
     </select>
 
     <delete id="deleteCircle">

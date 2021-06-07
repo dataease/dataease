@@ -1,11 +1,9 @@
 package io.dataease.plugins.config;
 
 import io.dataease.base.domain.MyPlugin;
-import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.service.sys.PluginService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -26,7 +24,7 @@ public class PluginRunner implements ApplicationRunner {
 
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         // 执行加载插件逻辑
         BaseGridRequest request = new BaseGridRequest();
         List<MyPlugin> plugins = pluginService.query(request);
@@ -45,17 +43,14 @@ public class PluginRunner implements ApplicationRunner {
                 if (jarFile.exists()) {
                     pluginService.loadJar(jarPath, plugin);
                 }else {
-                    LogUtil.error("插件错误");
+                    LogUtil.error("插件路径不存在 {} ", jarPath);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.error(e);
+                //e.printStackTrace();
             }
         });
 
     }
 
-    private boolean isPluginJar(File file) {
-        String name = file.getName();
-        return StringUtils.equals(DeFileUtils.getExtensionName(name), "jar");
-    }
 }

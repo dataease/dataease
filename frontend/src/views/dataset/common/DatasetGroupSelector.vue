@@ -42,7 +42,7 @@
                   <!--                  />-->
                   <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
             </span>
           </el-tree>
@@ -52,8 +52,8 @@
 
     <!--scene-->
     <el-col v-if="sceneMode" v-loading="dsLoading">
-      <el-row class="title-css">
-        <span class="title-text">
+      <el-row class="title-css scene-title">
+        <span class="title-text scene-title-name" :title="currGroup.name">
           {{ currGroup.name }}
         </span>
         <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
@@ -94,7 +94,7 @@
               <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
               <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
             </span>
-            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
           </span>
         </span>
       </el-tree>
@@ -382,5 +382,17 @@ export default {
 
   .title-text {
     line-height: 26px;
+  }
+
+  .scene-title{
+    width: 100%;
+    display: flex;
+  }
+  .scene-title-name{
+    width: 100%;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 </style>

@@ -8,6 +8,7 @@ import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.mapper.ext.ExtPluginSysMenuMapper;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.plugins.common.dto.PluginSysMenu;
 import io.dataease.plugins.util.PluginUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,7 +18,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +99,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     })
     @Override
     public void clearCache(Long userId) {
-
+        LogUtil.info("正在清除用户缓存【{}】",userId);
     }
 
     @Transactional

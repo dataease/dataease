@@ -1,5 +1,6 @@
 package io.dataease.dto.panel;
 
+import io.dataease.commons.model.ITreeBase;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Data
-public class PanelViewDto {
+public class PanelViewDto implements ITreeBase<PanelViewDto> {
 
     private String id;
 

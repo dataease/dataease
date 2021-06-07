@@ -6,6 +6,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -28,9 +29,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
     public final static String expireMessage = "Login token is expire.";
 
-    /*@Autowired
-    private AuthUserService authUserService;*/
-
 
     /**
      * 判断用户是否想要登入。
@@ -52,22 +50,15 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String authorization = httpServletRequest.getHeader("Authorization");
         // 当没有出现登录超时 且需要刷新token 则执行刷新token
         if (JWTUtils.loginExpire(authorization)){
-            throw  new AuthenticationException(expireMessage);
+            throw new AuthenticationException(expireMessage);
         }
         if (JWTUtils.needRefresh(authorization)){
-            String oldAuthorization = authorization;
             authorization = refreshToken(request, response);
-            JWTUtils.removeTokenExpire(oldAuthorization);
         }
-        // 删除老的操作时间
-        JWTUtils.removeTokenExpire(authorization);
-        // 设置新的操作时间
-        JWTUtils.addTokenExpire(authorization);
         JWTToken token = new JWTToken(authorization);
         Subject subject = getSubject(request, response);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         subject.login(token);
-
         return true;
     }
 
@@ -82,10 +73,11 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 boolean loginSuccess = executeLogin(request, response);
                 return loginSuccess;
             } catch (Exception e) {
+                LogUtil.error(e);
                 if (e instanceof AuthenticationException && StringUtils.equals(e.getMessage(), expireMessage)){
-                    responseExpire(request, response);
+                    responseExpire(request, response, e);
                 }else {
-                    response401(request, response);
+                    tokenError(request, response, e);
                 }
             }
         }
@@ -107,14 +99,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         }
         String password = user.getPassword();
 
-        // 删除老token操作时间
-        // JWTUtils.removeTokenExpire(token);
         String newToken = JWTUtils.sign(tokenInfo, password);
-        // 记录新token操作时间
-         JWTUtils.addTokenExpire(newToken);
 
-        JWTToken jwtToken = new JWTToken(newToken);
-        this.getSubject(request, response).login(jwtToken);
         // 设置响应的Header头新Token
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         httpServletResponse.addHeader("Access-Control-Expose-Headers", "RefreshAuthorization");
@@ -141,29 +127,17 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         return super.preHandle(request, response);
     }
 
-    /**
-     * 将非法请求跳转到 /401
-     */
-    private void response401(ServletRequest req, ServletResponse resp) {
-        try {
-            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
-            httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
-            httpServletResponse.setHeader("authentication-status", "invalid");
-            httpServletResponse.setStatus(401);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+
+    private void tokenError(ServletRequest req, ServletResponse resp, Exception e1) {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+        httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
+        httpServletResponse.setHeader("authentication-status", "invalid");
     }
 
-    private void responseExpire(ServletRequest req, ServletResponse resp) {
-        try {
-            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
-            httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
-            httpServletResponse.setHeader("authentication-status", "login_expire");
-            httpServletResponse.setStatus(401);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+    private void responseExpire(ServletRequest req, ServletResponse resp, Exception e1) {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+        httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
+        httpServletResponse.setHeader("authentication-status", "login_expire");
     }
 
 }

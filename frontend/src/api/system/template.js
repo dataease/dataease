@@ -18,7 +18,6 @@ export function showTemplateList(data) {
   return request({
     url: '/template/templateList',
     data: data,
-    loading: true,
     method: 'post'
   })
 }
@@ -26,7 +25,6 @@ export function showTemplateList(data) {
 export function findOne(id) {
   return request({
     url: '/template/findOne/' + id,
-    loading: true,
     method: 'get'
   })
 }

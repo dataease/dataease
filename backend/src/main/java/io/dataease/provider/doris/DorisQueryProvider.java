@@ -82,6 +82,14 @@ public class DorisQueryProvider extends QueryProvider {
                 } else {
                     stringBuilder.append(f.getDataeaseName());
                 }
+            } else if (f.getDeExtractType() == 0) {
+                if (f.getDeType() == 2) {
+                    stringBuilder.append("cast(").append(f.getDataeaseName()).append(" as decimal(20,0)) as ").append(f.getDataeaseName());
+                } else if (f.getDeType() == 3) {
+                    stringBuilder.append("cast(").append(f.getDataeaseName()).append(" as decimal(20,2)) as ").append(f.getDataeaseName());
+                } else {
+                    stringBuilder.append(f.getDataeaseName());
+                }
             } else {
                 if (f.getDeType() == 1) {
                     stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getDataeaseName());

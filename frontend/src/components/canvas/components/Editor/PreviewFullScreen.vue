@@ -1,11 +1,8 @@
 <template>
   <div style="width: 100%;height: 100vh;">
-    <span style="line-height: 35px; position: absolute; top:10px;right: 20px;z-index:100000">
-      <el-button size="mini" @click="close">
-        关闭
-      </el-button>
-    </span>
-    <Preview />
+    <fullscreen style="background: #ffffff" :fullscreen.sync="fullscreen" @change="fullscreenChange">
+      <Preview v-if="fullscreen" />
+    </fullscreen>
   </div>
 </template>
 
@@ -16,10 +13,21 @@ import bus from '@/utils/bus'
 
 export default {
   components: { Preview },
+  data() {
+    return {
+      fullscreen: false
+    }
+  },
+  mounted() {
+    this.fullscreen = false
+    this.$nextTick(() => (this.fullscreen = true))
+  },
 
   methods: {
-    close() {
-      bus.$emit('previewFullScreenClose')
+    fullscreenChange(fullscreen) {
+      if (!fullscreen) {
+        bus.$emit('previewFullScreenClose')
+      }
     }
   }
 }

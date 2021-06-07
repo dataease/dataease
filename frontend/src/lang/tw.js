@@ -283,7 +283,13 @@ export default {
     },
     datasource: '數據源',
     char_can_not_more_50: '不能超過50字符',
-    share_success: '分享成功'
+    share_success: '分享成功',
+    input_id: '請輸入ID',
+    input_pwd: '請輸入密碼',
+    message_box: {
+      alert: '警告',
+      confirm: '確認'
+    }
   },
   documentation: {
     documentation: '文檔',
@@ -659,7 +665,7 @@ export default {
     rose_radius: '園角',
     view_name: '視圖名稱',
     name_can_not_empty: '名稱不能為空',
-    template_can_not_empty: '请选择仪表盘',
+    template_can_not_empty: '请选择仪表板',
     custom_count: '記錄數',
     table_title_fontsize: '表頭字體大小',
     table_item_fontsize: '表格字體大小',
@@ -821,7 +827,8 @@ export default {
     edit_field: '編輯自斷',
     preview_100_data: '顯示前100行數據',
     invalid_table_check: '非直連數據集請先完成數據同步',
-    parse_error: '解析錯誤'
+    parse_error: '解析錯誤',
+    origin_field_type: '原始類型'
   },
   datasource: {
     datasource: '數據源',
@@ -899,6 +906,8 @@ export default {
     save_to_panel: '保存為模板',
     export_to_panel: '導出為模板',
     preview: '預覽',
+    fullscreen_preview: '全屏预览',
+    new_tab_preview: '新Tab页预览',
     select_panel_from_left: '請從左側選擇儀表板',
     template_nale: '模板名稱',
     template: '模板',

@@ -67,7 +67,7 @@ export default {
       return data
     },
     remove(row) {
-      deleteEnshrine(row.storeId).then(res => {
+      deleteEnshrine(row.panelGroupId).then(res => {
         this.initData()
         this.panelInfo && this.panelInfo.id && row.panelGroupId === this.panelInfo.id && this.setMainNull()
       })

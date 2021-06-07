@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class DynamicMenuServiceImpl implements DynamicMenuService {
@@ -35,6 +36,12 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
             List<DynamicMenuDto> pluginDtos = pluginSysMenus.stream().map(this::convert).collect(Collectors.toList());
             dynamicMenuDtos.addAll(pluginDtos);
         }
+        dynamicMenuDtos = dynamicMenuDtos.stream().sorted((s1, s2) -> {
+            int sortIndex1 = null == s1.getMenuSort() ? 999: s1.getMenuSort();
+            int sortIndex2 = null == s2.getMenuSort() ? 999: s2.getMenuSort();
+            return sortIndex1 - sortIndex2;
+        }).collect(Collectors.toList());
+        dynamicMenuDtos.sort((s1, s2) -> s1.getHidden().compareTo(s2.getHidden()));
         List<DynamicMenuDto> result = buildTree(dynamicMenuDtos);
         return result;
     }
@@ -53,6 +60,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         menuMeta.setIcon(sysMenu.getIcon());
         dynamicMenuDto.setMeta(menuMeta);
         dynamicMenuDto.setPermission(sysMenu.getPermission());
+        dynamicMenuDto.setMenuSort(sysMenu.getMenuSort());
         dynamicMenuDto.setHidden(sysMenu.getHidden());
         dynamicMenuDto.setIsPlugin(false);
         return dynamicMenuDto;
@@ -71,6 +79,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         menuMeta.setIcon(sysMenu.getIcon());
         dynamicMenuDto.setMeta(menuMeta);
         dynamicMenuDto.setPermission(sysMenu.getPermission());
+        dynamicMenuDto.setMenuSort(sysMenu.getMenuSort());
         dynamicMenuDto.setHidden(sysMenu.getHidden());
         dynamicMenuDto.setIsPlugin(true);
         dynamicMenuDto.setNoLayout(!!sysMenu.isNoLayout());

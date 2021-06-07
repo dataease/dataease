@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     handleClick() {
-      console.log('===>handleClick')
+      // console.log('===>handleClick')
     }
 
   }

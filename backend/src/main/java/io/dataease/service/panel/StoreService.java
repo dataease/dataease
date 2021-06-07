@@ -34,14 +34,15 @@ public class StoreService {
     }
 
     public void removeByPanelId(String panelId) {
+        Long userId = AuthUtils.getUser().getUserId();
         PanelStoreExample panelStoreExample = new PanelStoreExample();
-        panelStoreExample.createCriteria().andPanelGroupIdEqualTo(panelId);
+        panelStoreExample.createCriteria().andPanelGroupIdEqualTo(panelId).andUserIdEqualTo(userId);
         panelStoreMapper.deleteByExample(panelStoreExample);
     }
 
-    public void remove(Long storeId) {
+    /*public void remove(Long storeId) {
         panelStoreMapper.deleteByPrimaryKey(storeId);
-    }
+    }*/
 
     /**
      * 按照当前用户ID查询收藏仪表板

@@ -26,11 +26,11 @@ public class PanelViewService {
 
     private final static String SCENE_TYPE = "scene";
 
-    public List<PanelViewPo> groups(){
+    public List<PanelViewDto> groups(){
         return extPanelViewMapper.groups(String.valueOf(AuthUtils.getUser().getUserId()));
     }
 
-    public List<PanelViewPo> views(){
+    public List<PanelViewDto> views(){
         return extPanelViewMapper.views(String.valueOf(AuthUtils.getUser().getUserId()));
     }
 

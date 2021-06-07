@@ -1,5 +1,5 @@
 <template>
-  <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <el-row v-loading="loading">
     <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel'">
       <el-col :span="18" style="height: 40px">
         <el-radio v-model="inputType" label="self"> {{ $t('panel.custom') }}</el-radio>
@@ -46,6 +46,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       inputType: 'self',
       fieldName: 'name',
       tableRadio: null,
@@ -92,8 +93,10 @@ export default {
         level: '-1',
         withChildren: true
       }
+      this.loading = true
       showTemplateList(request).then(res => {
         this.templateList = res.data
+        this.loading = false
       })
     },
     handleExceed(file) {
@@ -106,7 +109,7 @@ export default {
         this.$warning(this.$t('chart.name_can_not_empty'))
         return false
       }
-      if (!this.editPanel.panelInfo.panelData) {
+      if (!this.editPanel.panelInfo.panelData && this.editPanel.optType === 'new' && this.inputType === 'copy') {
         this.$warning(this.$t('chart.template_can_not_empty'))
         return false
       }

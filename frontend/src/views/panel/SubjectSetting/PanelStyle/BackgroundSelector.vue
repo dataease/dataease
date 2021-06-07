@@ -106,7 +106,7 @@ export default {
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
-      console.log('this is upload')
+      // console.log('this is upload')
     }
   }
 }

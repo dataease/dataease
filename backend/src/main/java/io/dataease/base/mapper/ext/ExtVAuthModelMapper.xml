@@ -8,18 +8,30 @@
         <result column="leaf" property="leaf"/>
     </resultMap>
 
+<!--    函数嵌套会导致循环调用函数 导致查询速度变慢 所有预先经需要嵌套查询的函数分解查询-->
     <select id="searchTree" resultMap="BaseResultMapDTO">
         SELECT
         auth.*,
         authCount.children_count AS children_count,
         IF
         (( authCount.children_count > 0 ), 0, 1 ) AS leaf
-        FROM (select get_grant_auths (#{modelType},#{createBy}) cids1) t1,
-        ( SELECT * FROM (select get_grant_auths (#{modelType},#{createBy}) cids2) t2 ,v_auth_model
+        FROM (select get_grant_auths (#{modelType},#{createBy}) c_auth_ids) t1,
+        ( SELECT * FROM (select GET_V_AUTH_MODEL_WITH_PARENT(get_grant_auths (#{modelType},#{createBy}),#{modelType}) c_auth_parent_ids) t2,
+        <if test="withExtend == 'parent' and id != null">
+        (select GET_V_AUTH_MODEL_WITH_PARENT(#{id},#{modelType}) c_model_parent_ids) tmp,
+        </if>
+        <if test="withExtend == 'children' and id != null">
+            (select GET_V_AUTH_MODEL_WITH_CHILDREN(#{id},#{modelType}) c_model_children_ids) tmc,
+        </if>
+        <if test="name != null and name !='' and withExtend == 'parent'">
+            (select GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from
+            v_auth_model where model_type = #{modelType} and `name` like CONCAT('%', #{name},'%')) ,#{modelType}) c_model_parent_seartch_ids) tmsc,
+        </if>
+         v_auth_model
         <where>
             model_type = #{modelType}
             <if test="1== withAuth">
-                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids2 ,#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,c_auth_parent_ids)
             </if>
             <if test="pid !=null">
                 and v_auth_model.pid = #{pid}
@@ -29,15 +41,14 @@
                 and v_auth_model.id = #{id}
             </if>
             <if test="withExtend == 'parent' and id != null">
-                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT(#{id},#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,c_model_parent_ids)
             </if>
             <if test="withExtend == 'children' and id != null">
-                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_CHILDREN(#{id},#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,c_model_children_ids)
             </if>
 
             <if test="name != null and name !='' and withExtend == 'parent'">
-                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from
-                v_auth_model where model_type = #{modelType} and `name` like CONCAT('%', #{name},'%')) ,#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,c_model_parent_seartch_ids)
             </if>
 
             <if test="name != null and name =='' and withExtend == 'parent'">
@@ -51,11 +62,11 @@
         count( 1 ) AS `children_count`,
         `authTemp`.`pid` AS `pid`
         FROM
-        ( SELECT * FROM (select get_grant_auths (#{modelType},#{createBy}) cids3) t3,v_auth_model
+        ( SELECT * FROM (select GET_V_AUTH_MODEL_WITH_PARENT(get_grant_auths (#{modelType},#{createBy}),#{modelType}) cids3) t3,v_auth_model
         <where>
             model_type = #{modelType}
             <if test="1== withAuth">
-                and FIND_IN_SET(v_auth_model.id,GET_V_AUTH_MODEL_WITH_PARENT ( cids3 ,#{modelType}))
+                and FIND_IN_SET(v_auth_model.id,cids3)
             </if>
         </where>
         ) authTemp
@@ -65,7 +76,7 @@
         auth.id = authCount.pid
         <where>
             <if test="1== withAuth">
-                (authCount.children_count>0 or FIND_IN_SET(auth.id,cids1) )
+                (authCount.children_count>0 or FIND_IN_SET(auth.id,c_auth_ids) )
             </if>
         </where>
 

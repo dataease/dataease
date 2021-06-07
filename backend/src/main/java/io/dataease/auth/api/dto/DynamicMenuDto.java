@@ -29,6 +29,8 @@ public class DynamicMenuDto implements Serializable {
 
     private Integer type;
 
+    private Integer menuSort;
+
     private Boolean isPlugin;
 
     private Boolean noLayout;

@@ -124,9 +124,9 @@ const hasCurrentRouter = (locations, routers, index) => {
 // 根据权限过滤菜单
 const filterRouter = routers => {
   const user_permissions = store.getters.permissions
-  if (!user_permissions || user_permissions.length === 0) {
-    return routers
-  }
+  // if (!user_permissions || user_permissions.length === 0) {
+  //   return routers
+  // }
   const tempResults = routers.filter(router => hasPermission(router, user_permissions))
   // 如果是一级菜单(目录) 没有字菜单 那就移除
   return tempResults.filter(item => {

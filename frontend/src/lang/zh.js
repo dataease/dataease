@@ -283,7 +283,13 @@ export default {
     },
     datasource: '数据源',
     char_can_not_more_50: '不能超过50字符',
-    share_success: '分享成功'
+    share_success: '分享成功',
+    input_id: '请输入ID',
+    input_pwd: '请输入密码',
+    message_box: {
+      alert: '警告',
+      confirm: '确认'
+    }
   },
   documentation: {
     documentation: '文档',
@@ -659,7 +665,7 @@ export default {
     rose_radius: '圆角',
     view_name: '视图名称',
     name_can_not_empty: '名称不能为空',
-    template_can_not_empty: '请选择仪表盘',
+    template_can_not_empty: '请选择仪表版',
     custom_count: '记录数',
     table_title_fontsize: '表头字体大小',
     table_item_fontsize: '表格字体大小',
@@ -821,7 +827,8 @@ export default {
     edit_field: '编辑字段',
     preview_100_data: '显示前100行数据',
     invalid_table_check: '非直连数据集请先完成数据同步',
-    parse_error: '解析错误'
+    parse_error: '解析错误',
+    origin_field_type: '原始类型'
   },
   datasource: {
     datasource: '数据源',
@@ -899,6 +906,8 @@ export default {
     save_to_panel: '保存为模板',
     export_to_panel: '导出为模板',
     preview: '预览',
+    fullscreen_preview: '全屏预览',
+    new_tab_preview: '新Tab页预览',
     select_panel_from_left: '请从左侧选择仪表板',
     template_nale: '模板名称',
     template: '模板',
