@@ -312,23 +312,23 @@ CREATE TABLE `panel_design` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='仪表板和组件的关联关系 组件分为普通视图和系统组件';
 
 DROP TABLE IF EXISTS `panel_group`;
-CREATE TABLE `panel_group`  (
-  `id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '名称',
-  `pid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '父级id',
-  `level` int(10) NULL DEFAULT NULL COMMENT '层级',
-  `node_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
-  `create_by` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
-  `create_time` bigint(13) NULL DEFAULT NULL COMMENT '创建时间',
-  `panel_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '仪表板类型 system 系统内置 self 用户自建 ',
-  `panel_style` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT 'panel 样式',
-  `panel_data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT 'panel 数据',
-  `source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据来源 导入 或者 其他仪表板另存',
-  `extend1` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `extend2` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+CREATE TABLE `panel_group` (
+  `id` varchar(50) NOT NULL,
+  `name` varchar(255) DEFAULT NULL COMMENT '名称',
+  `pid` varchar(255) DEFAULT NULL COMMENT '父级id',
+  `level` int(10) DEFAULT NULL COMMENT '层级',
+  `node_type` varchar(255) DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
+  `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+  `panel_type` varchar(255) NOT NULL COMMENT '仪表板类型 system 系统内置 self 用户自建 ',
+  `panel_style` longtext NOT NULL COMMENT 'panel 样式',
+  `panel_data` longtext COMMENT 'panel 数据',
+  `source` varchar(255) DEFAULT NULL COMMENT '数据来源 导入 或者 其他仪表板另存',
+  `extend1` varchar(255) DEFAULT NULL,
+  `extend2` varchar(255) DEFAULT NULL,
+  `remark` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `panel_view`;

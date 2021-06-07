@@ -187,6 +187,9 @@ div:focus {
 
 .custom-component-class {
     width: 100%;
+    div.el-input-group__append {
+        width: 10% !important;
+    }
     div {
       width: 100% !important;
     }

@@ -713,7 +713,9 @@ export default {
     y_M_d_H_m_s: '年月日時分秒',
     date_sub: 'yyyy-MM-dd',
     date_split: 'yyyy/MM/dd',
-    chartName: '新建視圖'
+    chartName: '新建視圖',
+    chart_show_error: '無法正常顯示',
+    chart_error_tips: '如有疑問請聯系管理員'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

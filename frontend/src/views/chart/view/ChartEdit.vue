@@ -264,8 +264,9 @@
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
             <div v-if="!httpRequest.status" class="chart-error-class">
               <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
-                {{ $t('panel.error_data') }}<br>
-                {{ httpRequest.msg }}
+                {{ httpRequest.msg }},{{ $t('chart.chart_show_error') }}
+                <br>
+                {{ $t('chart.chart_error_tips') }}
               </div>
             </div>
           </div>
@@ -464,8 +465,8 @@ export default {
           this.initTableField(id)
         }).catch(err => {
           this.resetView()
-          this.httpRequest.status = false
-          this.httpRequest.msg = err
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
           return true
         })
       }
@@ -476,8 +477,8 @@ export default {
         this.quota = response.data.quota
       }).catch(err => {
         this.resetView()
-        this.httpRequest.status = false
-        this.httpRequest.msg = err
+        this.httpRequest.status = err.response.data.success
+        this.httpRequest.msg = err.response.data.message
         return true
       })
     },
@@ -643,8 +644,8 @@ export default {
           this.httpRequest.status = true
         }).catch(err => {
           this.resetView()
-          this.httpRequest.status = false
-          this.httpRequest.msg = err
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
           return true
         })
       } else {
@@ -668,8 +669,8 @@ export default {
           this.httpRequest.status = true
         }).catch(err => {
           this.resetView()
-          this.httpRequest.status = false
-          this.httpRequest.msg = err
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
           return true
         })
       } else {

@@ -118,6 +118,7 @@ export default {
         this.templateInfo.templateStyle = this.importTemplateInfo.panelStyle
         this.templateInfo.templateData = this.importTemplateInfo.panelData
         this.templateInfo.snapshot = this.importTemplateInfo.snapshot
+        this.templateInfo.nodeType = 'template'
       }
       reader.readAsText(file)
     },
