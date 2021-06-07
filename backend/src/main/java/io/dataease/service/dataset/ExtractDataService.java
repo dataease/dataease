@@ -93,7 +93,7 @@ public class ExtractDataService {
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
-    private static String separator = "|";
+    private static String separator = "|DE|";
     private static String extention = "txt";
     private static String root_path = "/opt/dataease/data/kettle/";
 
