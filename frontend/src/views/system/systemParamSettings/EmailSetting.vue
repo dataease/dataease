@@ -152,7 +152,7 @@ export default {
         this.formInline = response.data
         this.formInline.ssl = this.formInline.ssl === 'true'
         this.formInline.tls = this.formInline.tls === 'true'
-        console.log(this.formInline)
+        // console.log(this.formInline)
         this.$nextTick(() => {
           this.$refs.formInline.clearValidate()
         })
