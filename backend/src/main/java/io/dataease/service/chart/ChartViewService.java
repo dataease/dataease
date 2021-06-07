@@ -88,6 +88,9 @@ public class ChartViewService {
 
     public ChartViewDTO getData(String id, ChartExtRequest requestList) throws Exception {
         ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
+        if (ObjectUtils.isEmpty(view)) {
+            throw new RuntimeException(Translator.get("i18n_chart_delete"));
+        }
         List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
@@ -122,10 +125,16 @@ public class ChartViewService {
 
         // 获取数据集
         DatasetTable table = dataSetTableService.get(view.getTableId());
+        if (ObjectUtils.isEmpty(table)) {
+            throw new RuntimeException(Translator.get("i18n_dataset_delete"));
+        }
         // 判断连接方式，直连或者定时抽取 table.mode
         List<String[]> data = new ArrayList<>();
         if (table.getMode() == 0) {// 直连
             Datasource ds = datasourceService.get(table.getDataSourceId());
+            if (ObjectUtils.isEmpty(ds)) {
+                throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+            }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
