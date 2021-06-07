@@ -7,3 +7,11 @@ export function checkPermission(pers) {
   })
   return hasPermission
 }
+
+export function hasDataPermission(pTarget, pSource) {
+  debugger
+  if (pSource && pTarget) {
+    return pSource.indexOf(pTarget) > -1
+  }
+  return false
+}
