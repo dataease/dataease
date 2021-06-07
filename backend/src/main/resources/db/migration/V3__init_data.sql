@@ -95,8 +95,8 @@ INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUE
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.title', '', 'text', 5);
 
 BEGIN;
-INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('default_panel', 'i18n_default_panel', '0', -1, 'folder', 'admin', NULL, 'system', NULL, NULL, NULL, NULL, NULL, '系统内置 默认仪表板');
-INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('panel_list', 'i18n_panel_list', '0', -1, 'folder', 'admin', NULL, 'self', NULL, NULL, NULL, NULL, NULL, '系统内置 仪表板列表');
+INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('default_panel', 'i18n_default_panel', '0', -1, 'folder', 'admin', NULL, 'system', '{}', '[]', NULL, NULL, NULL, '系统内置 默认仪表板');
+INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `panel_type`, `panel_style`, `panel_data`, `source`, `extend1`, `extend2`, `remark`) VALUES ('panel_list', 'i18n_panel_list', '0', -1, 'folder', 'admin', NULL, 'self', '{}', '[]', NULL, NULL, NULL, '系统内置 仪表板列表');
 COMMIT;
 
 

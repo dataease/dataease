@@ -66,7 +66,7 @@ import { mapState } from 'vuex'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import { post } from '@/api/panel/panel'
+import { panelSave } from '@/api/panel/panel'
 import bus from '@/utils/bus'
 import {
   DEFAULT_COMMON_CANVAS_STYLE
@@ -233,8 +233,13 @@ export default {
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
-      post('panel/group/save', requestInfo, () => {})
-      this.$message.success('保存成功')
+      panelSave(requestInfo).then(response => {
+        this.$message({
+          message: this.$t('commons.save_success'),
+          type: 'success',
+          showClose: true
+        })
+      })
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
