@@ -395,6 +395,7 @@ export default {
       table.mode = parseInt(table.mode)
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
+          table.isRename = true
           addTable(table).then(response => {
             this.closeTable()
             this.$message({

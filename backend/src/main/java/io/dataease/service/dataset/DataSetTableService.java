@@ -114,12 +114,25 @@ public class DataSetTableService {
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
-            // sql 更新
-            if (update == 1) {
-                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
-                    // 删除所有字段，重新抽象
-                    dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
-                    saveTableField(datasetTable);
+            if (datasetTable.getIsRename() == null || !datasetTable.getIsRename()) {
+                // 更新数据和字段
+                if (update == 1) {
+                    if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
+                        // 删除所有字段，重新抽象
+                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
+                        saveTableField(datasetTable);
+                    }
+                    if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+                        if (datasetTable.getEditType() == 0) {
+                            commonThreadPool.addTask(() -> {
+                                extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
+                            });
+                        } else if (datasetTable.getEditType() == 1) {
+                            commonThreadPool.addTask(() -> {
+                                extractDataService.extractData(datasetTable.getId(), null, "add_scope", null);
+                            });
+                        }
+                    }
                 }
             }
         }
