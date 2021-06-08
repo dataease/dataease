@@ -5,11 +5,11 @@
         <el-col :span="12">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
-              <img v-if="!loginLogoUrl" src="@/assets/DataEase-color.png" alt="">
+              <svg-icon v-if="!loginLogoUrl" icon-class="DataEase"  custom-class="login-logo-icon"/>
               <img v-else :src="loginLogoUrl" alt="">
             </div>
             <div class="login-welcome">
-              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || 'DATAEASE') }}
+              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
             </div>
             <div class="login-form">
               <el-form-item prop="username">

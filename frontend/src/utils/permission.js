@@ -9,7 +9,6 @@ export function checkPermission(pers) {
 }
 
 export function hasDataPermission(pTarget, pSource) {
-  debugger
   if (pSource && pTarget) {
     return pSource.indexOf(pTarget) > -1
   }

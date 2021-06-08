@@ -19,6 +19,10 @@ export default {
     className: {
       type: String,
       default: ''
+    },
+    customClass: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -31,9 +35,11 @@ export default {
     svgClass() {
       if (this.className) {
         return 'svg-icon ' + this.className
-      } else {
-        return 'svg-icon'
       }
+      if (this.customClass) {
+        return this.customClass
+      }
+      return 'svg-icon'
     },
     styleExternalIcon() {
       return {

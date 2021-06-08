@@ -82,7 +82,6 @@ export default {
   },
   methods: {
     showCurrentTemplateInfo(data) {
-      debugger
       this.editPanel.panelInfo.name = data.name
       this.editPanel.panelInfo.panelStyle = data.templateStyle
       this.editPanel.panelInfo.panelData = data.templateData
