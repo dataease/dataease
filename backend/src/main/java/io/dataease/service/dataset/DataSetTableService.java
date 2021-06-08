@@ -928,7 +928,7 @@ public class DataSetTableService {
         }
 
         DatasetTable record = new DatasetTable();
-        record.setSyncStatus(JobStatus.Completed.name());
+        record.setSyncStatus(JobStatus.Error.name());
         example.clear();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name()).andIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
         datasetTableMapper.updateByExampleSelective(record, example);
