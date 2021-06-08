@@ -18,4 +18,6 @@ public class DataSetTableRequest extends DatasetTable {
     private String row = "1000";
 
     private String userId;
+
+    private Integer editType;
 }

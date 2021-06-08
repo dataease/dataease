@@ -84,13 +84,13 @@ public class DataSetTableService {
     @Value("${upload.file.path}")
     private String path;
 
-    public void batchInsert(List<DatasetTable> datasetTable) throws Exception {
-        for (DatasetTable table : datasetTable) {
+    public void batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
+        for (DataSetTableRequest table : datasetTable) {
             save(table);
         }
     }
 
-    public DatasetTable save(DatasetTable datasetTable) throws Exception {
+    public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();

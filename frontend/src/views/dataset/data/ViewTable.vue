@@ -166,10 +166,10 @@ export default {
       // console.log(param);
       switch (param.type) {
         case '0':
-          this.$emit('switchComponent', { name: 'AddExcel', param: { id: this.table.sceneId, tableId: this.table.id, editType: 0 }})
+          this.$emit('switchComponent', { name: 'AddExcel', param: { id: this.table.sceneId, tableId: this.table.id, editType: 0, table: this.table }})
           break
         case '1':
-          this.$emit('switchComponent', { name: 'AddExcel', param: { id: this.table.sceneId, tableId: this.table.id, editType: 1 }})
+          this.$emit('switchComponent', { name: 'AddExcel', param: { id: this.table.sceneId, tableId: this.table.id, editType: 1, table: this.table }})
           break
       }
     },

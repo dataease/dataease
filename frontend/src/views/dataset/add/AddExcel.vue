@@ -20,7 +20,7 @@
           <el-col style="width: 500px;">
             <el-form :inline="true" size="mini" class="row-style">
               <el-form-item class="form-item">
-                <el-input v-model="name" :disabled="!!param.tableId" :placeholder="$t('commons.name')" />
+                <el-input v-show="!param.tableId" v-model="name" :placeholder="$t('commons.name')" />
               </el-form-item>
               <el-form-item class="form-item">
                 <el-upload
@@ -176,15 +176,28 @@ export default {
         })
         return
       }
-      const table = {
-        id: this.param.tableId,
-        name: this.name,
-        sceneId: this.param.id,
-        dataSourceId: null,
-        type: 'excel',
-        mode: parseInt(this.mode),
-        info: '{"data":"' + this.path + '"}',
-        editType: this.param.editType ? this.param.editType : 0
+      let table = {}
+      if (!this.param.tableId) {
+        table = {
+          id: this.param.tableId,
+          name: this.name,
+          sceneId: this.param.id,
+          dataSourceId: null,
+          type: 'excel',
+          mode: parseInt(this.mode),
+          info: '{"data":"' + this.path + '"}'
+        }
+      } else {
+        table = {
+          id: this.param.tableId,
+          name: this.param.table.name,
+          sceneId: this.param.id,
+          dataSourceId: null,
+          type: 'excel',
+          mode: parseInt(this.mode),
+          info: '{"data":"' + this.path + '"}',
+          editType: this.param.editType ? this.param.editType : 0
+        }
       }
       post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())
