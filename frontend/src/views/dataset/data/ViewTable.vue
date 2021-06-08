@@ -14,6 +14,19 @@
         </span>
       </el-popover>
       <el-row style="float: right">
+        <el-dropdown style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">
+          <el-button type="primary" size="mini" plain>
+            {{ $t('dataset.edit_excel') }}
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :command="beforeEditExcel('0')">
+              {{ $t('dataset.excel_replace') }}
+            </el-dropdown-item>
+            <el-dropdown-item :command="beforeEditExcel('1')">
+              {{ $t('dataset.excel_add') }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
         <el-button v-if="table.type ==='custom'" size="mini" @click="editCustom">
           {{ $t('dataset.edit_custom_table') }}
         </el-button>
@@ -108,10 +121,10 @@ export default {
           this.fields = response.data.fields
           this.data = response.data.data
           this.page = response.data.page
-          if(response.data.status === 'warnning'){
+          if (response.data.status === 'warnning') {
             this.$warning(response.data.msg, 3000)
           }
-          if(response.data.status === 'error') {
+          if (response.data.status === 'error') {
             this.$error(response.data.msg, 3000)
           }
         }).catch(response => {
@@ -147,6 +160,24 @@ export default {
     },
     hideTab() {
       this.tabStatus = false
+    },
+
+    clickEditExcel(param) {
+      // console.log(param);
+      switch (param.type) {
+        case '0':
+          this.$emit('switchComponent', { name: 'AddExcel', param: { id: this.table.sceneId, tableId: this.table.id, editType: 0 }})
+          break
+        case '1':
+          this.$emit('switchComponent', { name: 'AddExcel', param: { id: this.table.sceneId, tableId: this.table.id, editType: 1 }})
+          break
+      }
+    },
+
+    beforeEditExcel(type) {
+      return {
+        'type': type
+      }
     }
   }
 }

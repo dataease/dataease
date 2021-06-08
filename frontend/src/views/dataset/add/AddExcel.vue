@@ -3,7 +3,7 @@
     <el-row>
       <el-row style="height: 26px;">
         <span style="line-height: 26px;">
-          {{ $t('dataset.add_excel_table') }}
+          {{ param.tableId?$t('dataset.edit_excel_table'):$t('dataset.add_excel_table') }}
         </span>
         <el-row style="float: right">
           <el-button size="mini" @click="cancel">
@@ -20,7 +20,7 @@
           <el-col style="width: 500px;">
             <el-form :inline="true" size="mini" class="row-style">
               <el-form-item class="form-item">
-                <el-input v-model="name" :placeholder="$t('commons.name')" />
+                <el-input v-model="name" :disabled="!!param.tableId" :placeholder="$t('commons.name')" />
               </el-form-item>
               <el-form-item class="form-item">
                 <el-upload
@@ -183,7 +183,8 @@ export default {
         dataSourceId: null,
         type: 'excel',
         mode: parseInt(this.mode),
-        info: '{"data":"' + this.path + '"}'
+        info: '{"data":"' + this.path + '"}',
+        editType: this.param.editType ? this.param.editType : 0
       }
       post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())
