@@ -41,7 +41,7 @@
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
@@ -53,7 +53,7 @@
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
-              <span v-if="hasDataPermission('manage',data.privileges)">
+              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.type ==='group'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickAdd">
                     <span class="el-dropdown-link">
@@ -150,12 +150,12 @@
         highlight-current
         @node-click="sceneClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list">
+        <span slot-scope="{ node, data }" class="custom-tree-node-list father">
           <span style="display: flex;flex: 1;width: 0;">
             <span><svg-icon :icon-class="data.type" /></span>
             <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
           </span>
-          <span v-if="hasDataPermission('manage',data.privileges)">
+          <span v-if="hasDataPermission('manage',data.privileges)" class="child">
             <span style="margin-left: 12px;" @click.stop>
               <el-dropdown trigger="click" size="small" @command="clickMore">
                 <span class="el-dropdown-link">
@@ -691,5 +691,11 @@ export default {
     display: inline-block;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .father .child {
+    display: none;
+  }
+  .father:hover .child {
+    display: inline;
   }
 </style>
