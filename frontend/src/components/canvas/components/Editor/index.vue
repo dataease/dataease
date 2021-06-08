@@ -40,7 +40,6 @@
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"
-        :filter="item.filters"
         :out-style="getShapeStyleInt(item.style)"
       />
       <component
@@ -170,6 +169,12 @@ export default {
     canvasStyleData: {
       handler(newVal, oldVla) {
         this.changeScale()
+      },
+      deep: true
+    },
+    componentData: {
+      handler(newVal, oldVla) {
+        console.log('11111')
       },
       deep: true
     }
