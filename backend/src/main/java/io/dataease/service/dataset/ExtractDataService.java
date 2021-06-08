@@ -27,6 +27,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -34,6 +37,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
@@ -66,6 +70,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -707,27 +712,26 @@ public class ExtractDataService {
     }
 
     public boolean isKettleRunning() {
-        return true;
-//        try {
-//            if (!InetAddress.getByName(carte).isReachable(1000)) {
-//                return false;
-//            }
-//            HttpClient httpClient;
-//            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
-//            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
-//            clientBuilder.setConnectionTimeout(1);
-//            clientBuilder.setCredentials(user, passwd);
-//            httpClient = clientBuilder.build();
-//            HttpResponse httpResponse = httpClient.execute(getMethod);
-//            int statusCode = httpResponse.getStatusLine().getStatusCode();
-//            if (statusCode != -1 && statusCode < 400) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } catch (Exception e) {
-//            return false;
-//        }
+        try {
+            if (!InetAddress.getByName(carte).isReachable(1000)) {
+                return false;
+            }
+            HttpClient httpClient;
+            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
+            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+            clientBuilder.setConnectionTimeout(1);
+            clientBuilder.setCredentials(user, passwd);
+            httpClient = clientBuilder.build();
+            HttpResponse httpResponse = httpClient.execute(getMethod);
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if (statusCode != -1 && statusCode < 400) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
