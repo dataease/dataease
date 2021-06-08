@@ -16,7 +16,7 @@
     <el-divider />
     <el-row>
       <el-form :inline="true">
-        <el-form-item class="form-item">
+        <el-form-item class="form-item" :label="$t('commons.name')">
           <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
         </el-form-item>
       </el-form>
@@ -77,7 +77,7 @@ export default {
   },
   data() {
     return {
-      name: '自助数据集',
+      name: '自定义数据集',
       table: {},
       checkedList: [],
       unionData: [],
