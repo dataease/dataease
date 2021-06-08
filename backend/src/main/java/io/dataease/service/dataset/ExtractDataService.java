@@ -268,7 +268,6 @@ public class ExtractDataService {
                         generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
                         generateJobFile("incremental_add", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                         extractData(datasetTable, "incremental_add");
-                        return;
                     }else {
                         DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
                         if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
