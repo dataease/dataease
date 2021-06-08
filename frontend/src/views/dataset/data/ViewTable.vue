@@ -14,8 +14,8 @@
         </span>
       </el-popover>
       <el-row style="float: right">
-        <el-dropdown style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">
-          <el-button type="primary" size="mini" plain>
+        <el-dropdown v-if="table.type ==='excel'" style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">
+          <el-button size="mini">
             {{ $t('dataset.edit_excel') }}
           </el-button>
           <el-dropdown-menu slot="dropdown">
