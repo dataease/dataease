@@ -223,7 +223,8 @@ export default {
       outStyle: {
         width: null,
         height: null
-      }
+      },
+      beforeDialogValue: null
     }
   },
 
@@ -432,15 +433,19 @@ export default {
       }
     },
     openFilterDiolog() {
+      this.beforeDialogValue = this.curComponent.options.value
       this.filterVisible = true
     },
     cancelFilter() {
+      this.beforeDialogValue = null
       this.filterVisible = false
       this.currentWidget = null
       this.clearCurrentInfo()
     },
     sureFilter() {
+      this.currentFilterCom.options.value = this.beforeDialogValue
       const component = deepCopy(this.currentFilterCom)
+
       //   this.$store.commit('addComponent', { component })
       this.$store.commit('setComponentWithId', component)
       this.$store.commit('recordSnapshot')

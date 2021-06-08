@@ -17,7 +17,7 @@
       :style="getStyle(config.style)"
       :prop-value="config.propValue"
       :element="config"
-      :filter="filter"
+      :filter="config.filters"
     />
   </div>
 </template>
@@ -32,11 +32,13 @@ export default {
   props: {
     config: {
       type: Object,
-      require: true
+      require: true,
+      default: null
     },
     filter: {
       type: Object,
-      require: false
+      require: false,
+      default: null
     }
   },
   mounted() {

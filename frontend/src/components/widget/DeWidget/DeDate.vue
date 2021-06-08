@@ -47,7 +47,7 @@ export default {
         operator: this.operator
       }
       param.value = this.formatValues(param.value)
-      this.inDraw && this.$store.dispatch('conditions/add', param)
+      this.inDraw && this.$store.commit('addViewFilter', param)
     },
     dateChange(value) {
       this.setCondition()

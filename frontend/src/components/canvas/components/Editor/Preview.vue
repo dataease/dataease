@@ -102,7 +102,7 @@ export default {
   },
   created() {
     // 先清除查询条件
-    this.$store.dispatch('conditions/clear')
+    // this.$store.dispatch('conditions/clear')
   },
   methods: {
     changeStyleWithScale,
