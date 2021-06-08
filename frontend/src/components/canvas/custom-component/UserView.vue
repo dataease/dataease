@@ -40,7 +40,8 @@ export default {
   components: { ChartComponent, TableNormal, LabelNormal },
   props: {
     element: {
-      type: Object
+      type: Object,
+      default: null
     },
     filter: {
       type: Object,
@@ -59,38 +60,6 @@ export default {
       }
     }
   },
-  watch: {
-    '$store.getters.conditions': function(newVal, oldVal) {
-      this.filter.filter = newVal
-      this.getData(this.element.propValue.viewId)
-    },
-    filter(val) {
-      this.getData(this.element.propValue.viewId)
-    },
-    // deep监听panel 如果改变 提交到 store
-    canvasStyleData: {
-      handler(newVal, oldVla) {
-        // this.chart.stylePriority == panel 优先使用仪表板样式
-        this.mergeStyle()
-      },
-      deep: true
-    },
-    // 监听外部的样式变化
-    outStyle: {
-      handler(newVal, oldVla) {
-        if (this.$refs[this.element.propValue.id]) {
-          this.$refs[this.element.propValue.id].chartResize()
-        }
-      },
-      deep: true
-    }
-  },
-  created() {
-    this.refId = uuid.v1
-  },
-  computed: mapState([
-    'canvasStyleData'
-  ]),
   data() {
     return {
       refId: null,
@@ -120,8 +89,35 @@ export default {
       message: null
     }
   },
+  computed: mapState([
+    'canvasStyleData'
+  ]),
+  watch: {
+    filter(val) {
+      this.getData(this.element.propValue.viewId)
+    },
+    // deep监听panel 如果改变 提交到 store
+    canvasStyleData: {
+      handler(newVal, oldVla) {
+        // this.chart.stylePriority == panel 优先使用仪表板样式
+        this.mergeStyle()
+      },
+      deep: true
+    },
+    // 监听外部的样式变化
+    outStyle: {
+      handler(newVal, oldVla) {
+        if (this.$refs[this.element.propValue.id]) {
+          this.$refs[this.element.propValue.id].chartResize()
+        }
+      },
+      deep: true
+    }
+  },
+
   created() {
-    this.filter.filter = this.$store.getters.conditions
+    this.refId = uuid.v1
+    // this.filter.filter = this.$store.getters.conditions
     this.getData(this.element.propValue.viewId)
   },
   mounted() {

@@ -2,6 +2,7 @@
   <div ref="tableContainer" :style="bg_class">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <ux-grid
+      :id="chart.id"
       ref="plxTable"
       size="mini"
       style="width: 100%;"
@@ -109,7 +110,9 @@ export default {
         datas = []
       }
       this.$refs.plxTable.reloadData(datas)
-      this.initStyle()
+      this.$nextTick(() => {
+        this.initStyle()
+      })
       window.onresize = function() {
         that.calcHeight()
       }
@@ -165,15 +168,18 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
-
       // 修改footer合计样式
-      const s_table = document.getElementsByClassName('elx-table--footer')[0]
+      const table = document.getElementById(this.chart.id)
+      const s_table = table.getElementsByClassName('elx-table--footer')
       // console.log(s_table)
       let s = ''
       for (const i in this.table_header_class) {
         s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
       }
-      s_table.setAttribute('style', s)
+      console.log(s_table)
+      for (let i = 0; i < s_table.length; i++) {
+        s_table[i].setAttribute('style', s)
+      }
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 === 0) {

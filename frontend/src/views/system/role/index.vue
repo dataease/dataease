@@ -146,7 +146,7 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event)
+      // console.log(tab, event)
     },
     create() {
       this.$router.push({ name: 'system-role-form' })

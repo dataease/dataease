@@ -830,7 +830,11 @@ export default {
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
     parse_error: 'Parse Error',
-    origin_field_type: 'Origin Type'
+    origin_field_type: 'Origin Type',
+    edit_excel_table: 'Edit Excel Dataset',
+    edit_excel: 'Edit Excel',
+    excel_replace: 'Replace',
+    excel_add: 'Add'
   },
   datasource: {
     datasource: 'Data Source',

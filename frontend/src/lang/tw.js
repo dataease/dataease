@@ -797,7 +797,7 @@ export default {
     param: '參數',
     edit_sql: '編輯 SQL',
     showRow: '顯示行',
-    add_excel_table: ' 添加 Excel 數據集',
+    add_excel_table: ' 添加Excel數據集',
     add_custom_table: '添加自助數據集',
     upload_file: '上傳文件',
     detail: '詳情',
@@ -830,7 +830,11 @@ export default {
     preview_100_data: '顯示前100行數據',
     invalid_table_check: '非直連數據集請先完成數據同步',
     parse_error: '解析錯誤',
-    origin_field_type: '原始類型'
+    origin_field_type: '原始類型',
+    edit_excel_table: '編輯Excel數據集',
+    edit_excel: '編輯Excel',
+    excel_replace: '替換',
+    excel_add: '追加'
   },
   datasource: {
     datasource: '數據源',

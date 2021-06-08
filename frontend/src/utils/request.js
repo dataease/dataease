@@ -83,6 +83,10 @@ const checkAuth = response => {
     const linkToken = response.headers[LinkTokenKey.toLocaleLowerCase()]
     setLinkToken(linkToken)
   }
+  // 许可状态改变 刷新页面
+//   if (response.headers['lic-status']) {
+//     location.reload()
+//   }
 }
 
 // 请根据实际需求修改
