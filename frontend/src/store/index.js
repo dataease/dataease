@@ -19,23 +19,13 @@ import event from '@/components/canvas/store/event'
 import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
-import { Condition } from '@/components/widget/bean/Condition'
+import { valueValid, formatCondition } from '@/utils/conditionUtil'
 import {
   DEFAULT_COMMON_CANVAS_STYLE
 } from '@/views/panel/panel'
 
 Vue.use(Vuex)
-const valueValid = condition => {
-  return condition && condition.value && condition.value.length > 0 && condition.value[0]
-}
 
-const formatCondition = obj => {
-  const { component, value, operator } = obj
-  const fieldId = component.options.attrs.fieldId
-  const viewIds = component.options.attrs.viewIds
-  const condition = new Condition(component.id, fieldId, operator, value, viewIds)
-  return condition
-}
 const data = {
   state: {
     ...animation.state,
@@ -137,19 +127,21 @@ const data = {
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
 
         let j = currentFilters.length
-        let filterExist = false
+        // let filterExist = false
         while (j--) {
           const filter = currentFilters[j]
           if (filter.componentId === filterComponentId) {
-            filterExist = true
+            // filterExist = true
             // 已存在该条件 且 条件值有效 直接替换原体检
-            vidMatch && vValid && (currentFilters[j] = condition)
+            // vidMatch && vValid && (currentFilters[j] = condition)
             // 已存在该条件 且 条件值无效 直接删除原条件
-            vidMatch && !vValid && (currentFilters.splice(j, 1))
+            // vidMatch && !vValid && (currentFilters.splice(j, 1))
+            currentFilters.splice(j, 1)
           }
         }
         // 不存在该条件 且 条件有效 直接保存该条件
-        !filterExist && vValid && currentFilters.push(condition)
+        // !filterExist && vValid && currentFilters.push(condition)
+        vidMatch && vValid && currentFilters.push(condition)
         element.filters = currentFilters
         state.componentData[index] = element
       }

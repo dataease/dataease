@@ -22,7 +22,7 @@ import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
 
 import { mapState } from 'vuex'
-
+import { isChange } from '@/utils/conditionUtil'
 import {
   DEFAULT_COLOR_CASE,
   DEFAULT_SIZE,
@@ -43,15 +43,11 @@ export default {
       type: Object,
       default: null
     },
-    filter: {
-      type: Object,
-      required: false,
-      default: function() {
-        return {
-          filter: []
-        }
-      }
-    },
+    // filters: {
+    //   type: Array,
+    //   required: false,
+    //   default: null
+    // },
     outStyle: {
       type: Object,
       required: false,
@@ -89,12 +85,25 @@ export default {
       message: null
     }
   },
-  computed: mapState([
-    'canvasStyleData'
-  ]),
+  computed: {
+    filter() {
+      const filter = {}
+      filter.filter = this.element.filters
+      return filter
+    },
+    filters() {
+      // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
+      return JSON.parse(JSON.stringify(this.element.filters))
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
+  },
+
   watch: {
-    filter(val) {
-      this.getData(this.element.propValue.viewId)
+    'filters': function(val1, val2) {
+      // this.getData(this.element.propValue.viewId)
+      isChange(val1, val2) && this.getData(this.element.propValue.viewId)
     },
     // deep监听panel 如果改变 提交到 store
     canvasStyleData: {
@@ -169,6 +178,9 @@ export default {
           return true
         })
       }
+    },
+    viewIdMatch(viewIds, viewId) {
+      return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
     }
   }
 }

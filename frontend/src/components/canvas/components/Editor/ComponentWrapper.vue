@@ -17,7 +17,6 @@
       :style="getStyle(config.style)"
       :prop-value="config.propValue"
       :element="config"
-      :filter="config.filters"
     />
   </div>
 </template>
