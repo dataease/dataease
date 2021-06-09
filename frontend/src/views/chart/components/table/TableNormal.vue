@@ -2,7 +2,6 @@
   <div ref="tableContainer" :style="bg_class">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <ux-grid
-      :id="chart.id"
       ref="plxTable"
       size="mini"
       style="width: 100%;"
@@ -12,6 +11,7 @@
       :header-row-style="table_header_class"
       :row-style="getRowStyle"
       class="table-class"
+      :class="chart.id"
       show-summary
       :summary-method="summaryMethod"
     >
@@ -169,16 +169,18 @@ export default {
         }
       }
       // 修改footer合计样式
-      const table = document.getElementById(this.chart.id)
-      const s_table = table.getElementsByClassName('elx-table--footer')
-      // console.log(s_table)
-      let s = ''
-      for (const i in this.table_header_class) {
-        s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
-      }
-      console.log(s_table)
-      for (let i = 0; i < s_table.length; i++) {
-        s_table[i].setAttribute('style', s)
+      const table = document.getElementsByClassName(this.chart.id)
+      for (let i = 0; i < table.length; i++) {
+        const s_table = table[i].getElementsByClassName('elx-table--footer')
+        // console.log(s_table)
+        let s = ''
+        for (const i in this.table_header_class) {
+          s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+        }
+        // console.log(s_table)
+        for (let i = 0; i < s_table.length; i++) {
+          s_table[i].setAttribute('style', s)
+        }
       }
     },
     getRowStyle({ row, rowIndex }) {
@@ -223,6 +225,10 @@ export default {
     chartResize() {
       // 指定图表的配置项和数据
       this.calcHeight()
+    },
+
+    initClass() {
+      return this.chart.id
     }
   }
 }
