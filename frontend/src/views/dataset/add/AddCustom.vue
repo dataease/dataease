@@ -192,7 +192,7 @@ export default {
       if (this.name.length > 50) {
         this.$message({
           showClose: true,
-          message: this.$t('commons.char_can_not_more_50'),
+          message: this.$t('dataset.char_can_not_more_50'),
           type: 'error'
         })
         return

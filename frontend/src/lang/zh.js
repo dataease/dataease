@@ -663,7 +663,7 @@ export default {
     radius_mode: '半径',
     area_mode: '面积',
     rose_radius: '圆角',
-    view_name: '视图名称',
+    view_name: '视图标题',
     name_can_not_empty: '名称不能为空',
     template_can_not_empty: '请选择仪表版',
     custom_count: '记录数',
@@ -715,7 +715,8 @@ export default {
     date_split: 'yyyy/MM/dd',
     chartName: '新建视图',
     chart_show_error: '无法正常显示',
-    chart_error_tips: '如有疑问请联系管理员'
+    chart_error_tips: '如有疑问请联系管理员',
+    title_cannot_empty: '标题不能为空'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -834,7 +835,11 @@ export default {
     edit_excel_table: '编辑Excel数据集',
     edit_excel: '编辑Excel',
     excel_replace: '替换',
-    excel_add: '追加'
+    excel_add: '追加',
+    dataset_group: '数据集分组',
+    m1: '将 ',
+    m2: ' 移动到',
+    char_can_not_more_50: '数据集名称不能超过50个字符'
   },
   datasource: {
     datasource: '数据源',

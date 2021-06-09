@@ -93,6 +93,7 @@ export default {
     },
     filters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
+      if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
     },
     ...mapState([

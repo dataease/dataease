@@ -486,9 +486,9 @@ export default {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
-      view.name = this.view.name ? this.view.name : this.table.name
+      view.name = this.view.title ? this.view.title : this.table.name
       if (view.title.length > 50) {
-        this.$warning(this.$t('chart.title_limit'))
+        this.$error(this.$t('chart.title_limit'))
         return
       }
       view.tableId = this.view.tableId
@@ -623,7 +623,7 @@ export default {
       }
       // 从仪表板入口关闭
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
-      this.$emit('switchComponent', { name: '' })
+      // this.$emit('switchComponent', { name: '' })
     },
     getData(id) {
       if (id) {
