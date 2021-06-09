@@ -390,6 +390,7 @@ export default {
               viewId: componentInfo.id
             }
             component.propValue = propValue
+            component.filters = []
           }
         })
       } else {
