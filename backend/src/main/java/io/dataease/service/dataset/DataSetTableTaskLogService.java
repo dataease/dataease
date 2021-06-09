@@ -69,6 +69,7 @@ public class DataSetTableTaskLogService {
         if(StringUtils.isNotEmpty(datasetTableTaskLog.getTaskId())){
             criteria.andTaskIdEqualTo(datasetTableTaskLog.getTaskId());
         }
+        example.setOrderByClause("create_time desc");
         return datasetTableTaskLogMapper.selectByExampleWithBLOBs(example);
     }
 }

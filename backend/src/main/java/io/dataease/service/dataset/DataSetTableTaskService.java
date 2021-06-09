@@ -7,6 +7,7 @@ import io.dataease.commons.constants.ScheduleType;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.i18n.Translator;
 import io.dataease.service.ScheduleService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
@@ -61,7 +62,16 @@ public class DataSetTableTaskService {
             datasetTableTask.setCreateTime(System.currentTimeMillis());
             // SIMPLE 类型，提前占位
             if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                if (extractDataService.updateSyncStatus(dataSetTableService.get(datasetTableTask.getTableId()))) {
+                if(datasetTableTask.getType().equalsIgnoreCase("add_scope")){
+                    DatasetTableTaskLog request = new DatasetTableTaskLog();
+                    request.setTableId(datasetTableTask.getTableId());
+                    request.setStatus(JobStatus.Completed.name());
+                    List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(request);
+                    if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
+                        throw new Exception(Translator.get("i18n_not_exec_add_sync"));
+                    }
+                }
+                if (extractDataService.updateSyncStatusIsNone(dataSetTableService.get(datasetTableTask.getTableId()))) {
                     throw new Exception(Translator.get("i18n_sync_job_exists"));
                 }else {
                     //write log
