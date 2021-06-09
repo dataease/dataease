@@ -719,10 +719,14 @@ public class DataSetTableService {
             } else {
                 rows = sheet0.getPhysicalNumberOfRows();
             }
+            int columnNum = 0;
             for (int i = 0; i < rows; i++) {
                 HSSFRow row = sheet0.getRow(i);
-                String[] r = new String[row.getPhysicalNumberOfCells()];
-                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                if (i == 0) {
+                    columnNum = row.getPhysicalNumberOfCells();
+                }
+                String[] r = new String[columnNum];
+                for (int j = 0; j < columnNum; j++) {
                     if (i == 0) {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldType("TEXT");
@@ -759,10 +763,14 @@ public class DataSetTableService {
             } else {
                 rows = sheet0.getPhysicalNumberOfRows();
             }
+            int columnNum = 0;
             for (int i = 0; i < rows; i++) {
                 XSSFRow row = sheet0.getRow(i);
-                String[] r = new String[row.getPhysicalNumberOfCells()];
-                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                if (i == 0) {
+                    columnNum = row.getPhysicalNumberOfCells();
+                }
+                String[] r = new String[columnNum];
+                for (int j = 0; j < columnNum; j++) {
                     if (i == 0) {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldType("TEXT");
@@ -828,6 +836,9 @@ public class DataSetTableService {
     }
 
     private String readCell(Cell cell, boolean cellType, TableFiled tableFiled) {
+        if (cell == null) {
+            return "";
+        }
         CellType cellTypeEnum = cell.getCellTypeEnum();
         if (cellTypeEnum.equals(CellType.STRING)) {
             if (cellType) {
