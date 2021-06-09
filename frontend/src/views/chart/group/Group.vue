@@ -40,6 +40,8 @@
             node-key="id"
             :expand-on-click-node="true"
             @node-click="nodeClick"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
@@ -491,14 +493,14 @@ export default {
         this.$store.dispatch('chart/setSceneId', this.currGroup.id)
         this.chartTree()
       }
-      if (node.expanded) {
-        this.expandedArray.push(data.id)
-      } else {
-        const index = this.expandedArray.indexOf(data.id)
-        if (index > -1) {
-          this.expandedArray.splice(index, 1)
-        }
-      }
+      // if (node.expanded) {
+      //   this.expandedArray.push(data.id)
+      // } else {
+      //   const index = this.expandedArray.indexOf(data.id)
+      //   if (index > -1) {
+      //     this.expandedArray.splice(index, 1)
+      //   }
+      // }
     },
 
     back() {
@@ -608,6 +610,17 @@ export default {
         post('/chart/group/getScene/' + sceneId, null).then(response => {
           this.currGroup = response.data
         })
+      }
+    },
+
+    nodeExpand(data) {
+      if (data.id) {
+        this.expandedArray.push(data.id)
+      }
+    },
+    nodeCollapse(data) {
+      if (data.id) {
+        this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
       }
     }
   }

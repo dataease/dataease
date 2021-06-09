@@ -663,7 +663,7 @@ export default {
     radius_mode: '半徑',
     area_mode: '面積',
     rose_radius: '園角',
-    view_name: '視圖名稱',
+    view_name: '視圖標題',
     name_can_not_empty: '名稱不能為空',
     template_can_not_empty: '请选择仪表板',
     custom_count: '記錄數',
@@ -715,7 +715,8 @@ export default {
     date_split: 'yyyy/MM/dd',
     chartName: '新建視圖',
     chart_show_error: '無法正常顯示',
-    chart_error_tips: '如有疑問請聯系管理員'
+    chart_error_tips: '如有疑問請聯系管理員',
+    title_cannot_empty: '標題不能為空'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -834,7 +835,10 @@ export default {
     edit_excel_table: '編輯Excel數據集',
     edit_excel: '編輯Excel',
     excel_replace: '替換',
-    excel_add: '追加'
+    excel_add: '追加',
+    dataset_group: '數據集分組',
+    m1: '將 ',
+    m2: ' 移動到'
   },
   datasource: {
     datasource: '數據源',

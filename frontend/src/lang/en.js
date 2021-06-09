@@ -663,7 +663,7 @@ export default {
     radius_mode: 'Radius',
     area_mode: 'Area',
     rose_radius: 'Fillet',
-    view_name: 'Chart Name',
+    view_name: 'Chart Title',
     name_can_not_empty: 'Name cannot be empty',
     template_can_not_empty: 'Please check a Template',
     custom_count: 'Number of records',
@@ -715,7 +715,8 @@ export default {
     date_split: 'yyyy/MM/dd',
     chartName: 'New Chart',
     chart_show_error: 'can not show normal',
-    chart_error_tips: 'Please contact admin '
+    chart_error_tips: 'Please contact admin ',
+    title_cannot_empty: 'Title can not be empty'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -834,7 +835,10 @@ export default {
     edit_excel_table: 'Edit Excel Dataset',
     edit_excel: 'Edit Excel',
     excel_replace: 'Replace',
-    excel_add: 'Add'
+    excel_add: 'Add',
+    dataset_group: 'Dataset Group',
+    m1: 'Move ',
+    m2: ' To'
   },
   datasource: {
     datasource: 'Data Source',
