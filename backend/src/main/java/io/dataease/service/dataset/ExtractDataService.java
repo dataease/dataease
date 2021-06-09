@@ -697,7 +697,7 @@ public class ExtractDataService {
             ExcelInputField field = new ExcelInputField();
             field.setName(datasetTableFields.get(i).getOriginName());
             if(datasetTableFields.get(i).getDeExtractType() == 1){
-                field.setType("Date");
+                field.setType("String");
                 field.setFormat("yyyy-MM-dd HH:mm:ss");
             }else {
                 field.setType("String");
