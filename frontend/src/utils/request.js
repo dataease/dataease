@@ -95,7 +95,10 @@ service.interceptors.response.use(response => {
   checkAuth(response)
   return response.data
 }, error => {
-  error.response.config.loading && tryHideLoading(store.getters.currentPath)
+  const config = error.response && error.response.config || error.config
+  const headers = error.response && error.response.headers || error.response || config.headers
+  config.loading && tryHideLoading(store.getters.currentPath)
+
   let msg
   if (error.response) {
     checkAuth(error.response)
@@ -104,7 +107,7 @@ service.interceptors.response.use(response => {
   } else {
     msg = error.message
   }
-  !error.config.hideMsg && (!error.response.headers['authentication-status']) && $error(msg)
+  !config.hideMsg && (!headers['authentication-status']) && $error(msg)
   return Promise.reject(error)
 })
 export default service
