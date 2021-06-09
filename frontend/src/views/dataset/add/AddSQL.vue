@@ -219,7 +219,8 @@ export default {
       post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
         type: 'sql',
-        info: '{"sql":"' + this.sql + '"}'
+        // info: '{"sql":"' + this.sql + '"}',
+        info: JSON.stringify({ sql: this.sql })
       }).then(response => {
         this.fields = response.data.fields
         this.data = response.data.data

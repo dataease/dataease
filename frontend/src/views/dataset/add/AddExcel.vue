@@ -185,7 +185,8 @@ export default {
           dataSourceId: null,
           type: 'excel',
           mode: parseInt(this.mode),
-          info: '{"data":"' + this.path + '"}'
+          // info: '{"data":"' + this.path + '"}',
+          info: JSON.stringify({ data: this.path })
         }
       } else {
         table = {
@@ -195,7 +196,8 @@ export default {
           dataSourceId: null,
           type: 'excel',
           mode: parseInt(this.mode),
-          info: '{"data":"' + this.path + '"}',
+          // info: '{"data":"' + this.path + '"}',
+          info: JSON.stringify({ data: this.path }),
           editType: this.param.editType ? this.param.editType : 0
         }
       }
