@@ -1023,6 +1023,7 @@ export default {
     datasetAuth: '數據集權限',
     chartAuth: '視圖權限',
     panelAuth: '儀表板權限',
+    menuAuth: '菜單和操作權限',
     deptHead: '所有组织',
     roleHead: '所有角色',
     userHead: '所有用戶',

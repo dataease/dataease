@@ -1023,6 +1023,7 @@ export default {
     datasetAuth: 'Dataset Permissions',
     chartAuth: 'Chart Permissions',
     panelAuth: 'Dashboard Permissions',
+    menuAuth: 'Menu and operation permission',
     deptHead: 'All Dept',
     roleHead: 'All Role',
     userHead: 'All User',
