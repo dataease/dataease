@@ -240,16 +240,16 @@ public class ExtractDataService {
                         }
 
                         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
-                            String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString()
-                                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString()));
+                            String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString())
+                                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
                             generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, sql);
                             generateJobFile("incremental_add", datasetTable, fetchSqlField(sql, datasource));
                             extractData(datasetTable, "incremental_add");
                         }
 
                         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
-                            String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString()
-                                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString()));
+                            String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString())
+                                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
                             generateTransFile("incremental_delete", datasetTable, datasource, datasetTableFields, sql);
                             generateJobFile("incremental_delete", datasetTable, fetchSqlField(sql, datasource));
                             extractData(datasetTable, "incremental_delete");
