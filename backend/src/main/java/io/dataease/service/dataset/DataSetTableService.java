@@ -723,6 +723,9 @@ public class DataSetTableService {
             for (int i = 0; i < rows; i++) {
                 HSSFRow row = sheet0.getRow(i);
                 if (i == 0) {
+                    if (row == null) {
+                        throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
+                    }
                     columnNum = row.getPhysicalNumberOfCells();
                 }
                 String[] r = new String[columnNum];
@@ -739,8 +742,14 @@ public class DataSetTableService {
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
                     } else if (i == 1) {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
@@ -767,6 +776,9 @@ public class DataSetTableService {
             for (int i = 0; i < rows; i++) {
                 XSSFRow row = sheet0.getRow(i);
                 if (i == 0) {
+                    if (row == null) {
+                        throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
+                    }
                     columnNum = row.getPhysicalNumberOfCells();
                 }
                 String[] r = new String[columnNum];
@@ -783,8 +795,14 @@ public class DataSetTableService {
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
                     } else if (i == 1) {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
