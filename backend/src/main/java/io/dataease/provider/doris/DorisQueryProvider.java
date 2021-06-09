@@ -295,7 +295,8 @@ public class DorisQueryProvider extends QueryProvider {
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getTerm()))
                     .append(" ");
-            if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
+            if (StringUtils.containsIgnoreCase(request.getTerm(), "null")) {
+            } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 filter.append("('").append(StringUtils.join(value, "','")).append("')");
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 filter.append("'%").append(value).append("%'");
