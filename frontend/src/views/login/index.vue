@@ -8,7 +8,10 @@
               <svg-icon v-if="!loginLogoUrl" icon-class="DataEase" custom-class="login-logo-icon" />
               <img v-else :src="loginLogoUrl" alt="">
             </div>
-            <div class="login-welcome">
+            <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
+              {{ uiInfo['ui.loginTitle'].paramValue }}
+            </div>
+            <div v-else class="login-welcome">
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
             </div>
             <div class="login-form">
