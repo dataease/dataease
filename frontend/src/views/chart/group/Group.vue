@@ -168,9 +168,9 @@
                   />
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">
-                    {{ $t('chart.rename') }}
-                  </el-dropdown-item>
+                  <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">-->
+                  <!--                    {{ $t('chart.rename') }}-->
+                  <!--                  </el-dropdown-item>-->
                   <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">
                     {{ $t('chart.delete') }}
                   </el-dropdown-item>
@@ -536,6 +536,7 @@ export default {
         this.chartData.forEach(function(ele) {
           if (ele.id === that.$store.state.chart.chartSceneData.id) {
             ele.type = that.$store.state.chart.chartSceneData.type
+            ele.name = that.$store.state.chart.chartSceneData.name
           }
         })
       }

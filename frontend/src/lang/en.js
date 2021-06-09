@@ -838,7 +838,8 @@ export default {
     excel_add: 'Add',
     dataset_group: 'Dataset Group',
     m1: 'Move ',
-    m2: ' To'
+    m2: ' To',
+    char_can_not_more_50: 'Dataset name can not more 50'
   },
   datasource: {
     datasource: 'Data Source',

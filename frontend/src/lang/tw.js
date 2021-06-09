@@ -838,7 +838,8 @@ export default {
     excel_add: '追加',
     dataset_group: '數據集分組',
     m1: '將 ',
-    m2: ' 移動到'
+    m2: ' 移動到',
+    char_can_not_more_50: '數據集名稱不能超過50個字符'
   },
   datasource: {
     datasource: '數據源',
