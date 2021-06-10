@@ -36,7 +36,7 @@ export default {
       currGroup: '',
       groupForm: {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: 'group',
         children: [],
