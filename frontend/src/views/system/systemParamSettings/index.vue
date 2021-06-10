@@ -34,7 +34,7 @@ export default {
   methods: {
     // hasLicense
     executeAxios(options) {
-      console.log(options)
+      // console.log(options)
     }
   }
 }

@@ -531,7 +531,7 @@ export default {
       if (this.parent) {
         this.bounds = this.calcResizeLimits()
       }
-      console.log('changeWidth：' + val)
+      // console.log('changeWidth：' + val)
       this.changeWidth(val)
     },
     h(val) {
@@ -584,7 +584,7 @@ export default {
       this.aspectFactor = this.outsideAspectRatio
     }
     this.width = this.w !== 'auto' ? this.w : width
-    console.log('width1:' + this.width)
+    // console.log('width1:' + this.width)
     this.height = this.h !== 'auto' ? this.h : height
     this.right = this.parentWidth - this.width - this.left
     this.bottom = this.parentHeight - this.height - this.top
@@ -1109,7 +1109,7 @@ export default {
       newH = restrictToBounds(newH, this.minH || 0, this.maxH)
       // 纵横比
       if (this.lockAspectRatio) {
-        console.log(this.lockAspectRatio, this.aspectFactor)
+        // console.log(this.lockAspectRatio, this.aspectFactor)
         if (newW / newH > this.aspectFactor) {
           newW = newH * this.aspectFactor
         } else {
@@ -1117,7 +1117,7 @@ export default {
         }
       }
       this.width = newW
-      console.log('width2:' + this.width)
+      // console.log('width2:' + this.width)
       this.height = newH
 
       this.$emit('resizing', this.left, this.top, this.width, this.height)
@@ -1128,8 +1128,8 @@ export default {
     },
     changeWidth(val) {
       debugger
-      console.log('parentWidth', this.parentWidth)
-      console.log('parentHeight', this.parentHeight)
+      // console.log('parentWidth', this.parentWidth)
+      // console.log('parentHeight', this.parentHeight)
       const [newWidth, _] = snapToGrid(this.grid, val, 0, this.scale)
       // const right = restrictToBounds(this.parentWidth - newWidth - this.left, this.bounds.minRight, this.bounds.maxRight)
       // private 将 this.bounds.minRight 设置为0
@@ -1143,7 +1143,7 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      console.log('width3:' + this.width)
+      // console.log('width3:' + this.width)
       this.height = height
     },
     changeHeight(val) {
@@ -1160,7 +1160,7 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      console.log('width4:' + this.width)
+      // console.log('width4:' + this.width)
       this.height = height
     },
     // 从控制柄松开

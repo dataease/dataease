@@ -7,6 +7,7 @@
       v-for="(item, index) in componentDataInfo"
       :key="index"
       :config="item"
+      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     />
   </div>
 </template>
@@ -171,5 +172,8 @@ export default {
   font-size: 14px;
   flex-flow: row nowrap;
   color: #9ea6b2;
+}
+.gap_class{
+  padding:3px;
 }
 </style>

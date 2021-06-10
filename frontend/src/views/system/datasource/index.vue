@@ -164,7 +164,7 @@ export default {
   },
   methods: {
     select(selection) {
-      console.log(selection)
+      // console.log(selection)
     },
     // create() {
     //   this.formType = 'add'

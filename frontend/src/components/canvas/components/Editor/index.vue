@@ -214,7 +214,7 @@ export default {
     },
     componentData: {
       handler(newVal, oldVla) {
-        console.log('11111')
+        // console.log('11111')
       },
       deep: true
     }
@@ -508,7 +508,7 @@ export default {
       }
     },
     getRefLineParams(params) {
-      console.log(params)
+      // console.log(params)
       const { vLine, hLine } = params
       this.vLine = vLine
       this.hLine = hLine

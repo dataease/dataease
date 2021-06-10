@@ -157,7 +157,7 @@ export default {
           info: '{"list":' + JSON.stringify(this.checkedList) + '}'
         }
         post('/dataset/table/customPreview', table).then(response => {
-          console.log(response)
+          // console.log(response)
           this.fields = response.data.fields
           this.data = response.data.data
           const datas = this.data

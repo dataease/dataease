@@ -25,7 +25,7 @@ export default {
     },
 
     recordSnapshot(state) {
-      console.log('recordSnapshot')
+      // console.log('recordSnapshot')
       // 添加新的快照
       state.snapshotData[++state.snapshotIndex] = deepCopy(state.componentData)
       state.snapshotStyleData[state.snapshotIndex] = deepCopy(state.canvasStyleData)
