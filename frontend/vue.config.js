@@ -11,7 +11,6 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 module.exports = {
   productionSourceMap: true,
-  // 使用mock-server
   devServer: {
     port: port,
     proxy: {
@@ -24,8 +23,7 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
-    },
-    before: require('./mock/mock-server.js')
+    }
   },
   pages: {
     index: {

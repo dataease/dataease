@@ -39,7 +39,6 @@
 
 ```bash
 ├── build                      # 构建相关
-├── mock                       # 项目mock 模拟数据
 ├── public                     # 静态资源
 │   │── favicon.ico            # favicon图标
 │   └── index.html             # html模板
