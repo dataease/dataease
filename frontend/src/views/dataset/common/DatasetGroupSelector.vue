@@ -108,6 +108,11 @@ import { isKettleRunning, post } from '@/api/dataset/dataset'
 export default {
   name: 'DatasetGroupSelector',
   props: {
+    customType: {
+      type: Array,
+      required: false,
+      default: null
+    },
     mode: {
       type: Number,
       required: false,
@@ -226,7 +231,8 @@ export default {
         post('/dataset/table/list', {
           sort: 'type asc,create_time desc,name asc',
           sceneId: this.currGroup.id,
-          mode: this.mode < 0 ? null : this.mode
+          mode: this.mode < 0 ? null : this.mode,
+          typeFilter: this.customType ? this.customType : null
         }, false).then(response => {
           this.tables = response.data
           for (let i = 0; i < this.tables.length; i++) {

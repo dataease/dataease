@@ -23,7 +23,7 @@
     </el-row>
     <el-col style="display: flex;flex-direction: row">
       <el-col class="panel-height" style="width: 220px;border-right:solid 1px #dcdfe6;border-top:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;">
-        <dataset-group-selector :table="table" :mode="1" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
+        <dataset-group-selector :custom-type="customType" :table="table" :mode="1" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
       </el-col>
       <el-col class="panel-height" style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
         <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
@@ -83,7 +83,8 @@ export default {
       unionData: [],
       height: 500,
       data: [],
-      fields: []
+      fields: [],
+      customType: ['db', 'sql', 'excel']
     }
   },
   watch: {

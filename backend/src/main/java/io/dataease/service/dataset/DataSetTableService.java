@@ -176,6 +176,7 @@ public class DataSetTableService {
 
     public List<DataSetTableDTO> list(DataSetTableRequest dataSetTableRequest) {
         dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        dataSetTableRequest.setTypeFilter(dataSetTableRequest.getTypeFilter());
         return extDataSetTableMapper.search(dataSetTableRequest);
     }
 

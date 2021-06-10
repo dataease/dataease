@@ -19,4 +19,5 @@ public class DataSetTableRequest extends DatasetTable {
     private String userId;
     private Integer editType;
     private Boolean isRename;
+    private List<String> typeFilter;
 }
