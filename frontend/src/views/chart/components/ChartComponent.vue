@@ -50,6 +50,9 @@ export default {
   mounted() {
     this.preDraw()
   },
+  destroyed() {
+    this.myChart.dispose()
+  },
   methods: {
     preDraw() {
       // 基于准备好的dom，初始化echarts实例
