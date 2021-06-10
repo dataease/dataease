@@ -148,9 +148,12 @@ public class DataSetTableService {
         // 删除关联关系
         dataSetTableUnionService.deleteUnionByTableId(id);
         try {
-            deleteDorisTable(id, table);
+            // 抽取的数据集删除doris
+            if (table.getMode() == 1) {
+                deleteDorisTable(id, table);
+            }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
