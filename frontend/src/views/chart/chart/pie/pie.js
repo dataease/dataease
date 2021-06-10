@@ -45,6 +45,9 @@ export function basePieOption(chart_option, chart) {
       }
     }
   }
+  chart_option.series[0].itemStyle = {
+    borderRadius: 0
+  }
   // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option

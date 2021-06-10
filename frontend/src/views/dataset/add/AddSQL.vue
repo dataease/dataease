@@ -261,7 +261,8 @@ export default {
         dataSourceId: this.dataSource,
         type: 'sql',
         mode: parseInt(this.mode),
-        info: '{"sql":"' + this.sql + '"}'
+        // info: '{"sql":"' + this.sql + '"}',
+        info: JSON.stringify({ sql: this.sql })
       }
       post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())
