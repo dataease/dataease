@@ -18,7 +18,6 @@
       <ux-table-column
         v-for="field in fields"
         :key="field.dataeaseName"
-        min-width="200px"
         :field="field.dataeaseName"
         :resizable="true"
         sortable
