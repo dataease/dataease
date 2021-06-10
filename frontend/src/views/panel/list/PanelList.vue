@@ -223,6 +223,7 @@ export default {
             scaleWidth: 100,
             scaleHeight: 100,
             selfAdaption: true,
+            auxiliaryMatrix: true,
             openCommonStyle: true,
             panel: DEFAULT_PANEL_STYLE,
             chart: {
@@ -267,6 +268,7 @@ export default {
             scaleWidth: 100,
             scaleHeight: 100,
             selfAdaption: true,
+            auxiliaryMatrix: true,
             openCommonStyle: true,
             panel: DEFAULT_PANEL_STYLE,
             chart: {

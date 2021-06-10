@@ -25,6 +25,7 @@ export const DEFAULT_COMMON_CANVAS_STYLE = {
   scaleWidth: 100,
   scaleHeight: 100,
   selfAdaption: true,
+  auxiliaryMatrix: true,
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,
   chart: {
