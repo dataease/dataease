@@ -7,8 +7,8 @@
         trigger="click"
       >
         <el-col>
-          <el-radio v-model="panelStyleForm.gap" label="yes" @change="onChangePanelStyle">{{ $t('panel.gap') }} </el-radio>
-          <el-radio v-model="panelStyleForm.gap" label="no" @change="onChangePanelStyle">{{ $t('panel.no_gap') }}</el-radio>
+          <el-radio v-model="panel.gap" label="yes" @change="onChangePanelStyle">{{ $t('panel.gap') }} </el-radio>
+          <el-radio v-model="panel.gap" label="no" @change="onChangePanelStyle">{{ $t('panel.no_gap') }}</el-radio>
         </el-col>
         <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.component_gap') }} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
@@ -18,18 +18,32 @@
 
 <script>
 import { DEFAULT_PANEL_STYLE } from '@/views/panel/panel'
+import { mapState } from 'vuex'
+import { deepCopy } from '@/components/canvas/utils/utils'
+
 export default {
   name: 'BackgroundSelector',
   props: {
   },
   data() {
     return {
-      panelStyleForm: JSON.parse(JSON.stringify(DEFAULT_PANEL_STYLE))
+      panel: null
     }
+  },
+  computed: mapState([
+    'canvasStyleData'
+  ]),
+
+  created() {
+    // 初始化赋值
+    this.panel = this.canvasStyleData.panel
   },
   methods: {
     onChangePanelStyle() {
-      this.$emit('onChangePanelStyle', this.panelStyleForm)
+      const canvasStyleData = deepCopy(this.canvasStyleData)
+      canvasStyleData.panel = this.panel
+      this.$store.commit('setCanvasStyle', canvasStyleData)
+      this.$store.commit('recordSnapshot')
     }
   }
 }

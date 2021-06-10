@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="showDrag"
     id="editor"
     class="editor"
     :class="{ edit: isEdit }"
@@ -8,18 +9,27 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid />
-
+    <Grid v-if="canvasStyleData.auxiliaryMatrix" :matrix-style="matrixStyle" />
     <!--页面组件列表展示-->
-    <Shape
+    <de-drag
       v-for="(item, index) in componentData"
       :key="item.id"
+      :index="index"
+      :x="getShapeStyleIntDeDrag(item.style,'left')"
+      :y="getShapeStyleIntDeDrag(item.style,'top')"
+      :w="getShapeStyleIntDeDrag(item.style,'width')"
+      :h="getShapeStyleIntDeDrag(item.style,'height')"
+      :r="item.style.rotate"
+      :parent="true"
+      :rotatable="rotatable"
       :default-style="getShapeStyleInt(item.style)"
-      :style="getShapeStyle(item.style)"
       :active="item === curComponent"
       :element="item"
-      :index="index"
-      :class="{ lock: item.isLock }"
+      class-name-active="de-drag-active"
+      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
+      :snap="true"
+      :snap-tolerance="5"
+      @refLineParams="getRefLineParams"
     >
       <component
         :is="item.component"
@@ -63,19 +73,33 @@
         :element="item"
         @input="handleInput"
       /> -->
-    </Shape>
+    </de-drag>
     <!-- 右击菜单 -->
     <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
     <!--    <MarkLine />-->
     <!-- 选中区域 -->
-    <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
+    <!--    <Area v-show="isShowArea" :start="start" :width="width" :height="height" />-->
+
+    <span
+      v-for="(item, index) in vLine"
+      v-show="item.display"
+      :key="'v_'+index"
+      class="ref-line v-line"
+      :style="{
+        left: item.position,
+        top: item.origin,
+        height: item.lineLength,
+      }"
+    />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import Shape from './Shape'
+import DeDrag from '@/components/DeDrag'
+
 // eslint-disable-next-line no-unused-vars
 import { getStyle, getComponentRotatedStyle } from '@/components/canvas/utils/style'
 import { $ } from '@/components/canvas/utils/utils'
@@ -89,7 +113,7 @@ import { Condition } from '@/components/widget/bean/Condition'
 import bus from '@/utils/bus'
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag },
   props: {
     isEdit: {
       type: Boolean,
@@ -128,7 +152,23 @@ export default {
       needToChangeWidth: [
         'left',
         'width'
-      ]
+      ],
+      // private 是否可旋转
+      rotatable: false,
+      // 矩阵大小
+      matrixStyle: {
+        width: 80,
+        height: 20
+      },
+      // 矩阵数量 默认 12 * 24
+      matrixCount: {
+        x: 12,
+        y: 24
+      },
+      customStyleHistory: null,
+      showDrag: true,
+      vLine: [],
+      hLine: []
     }
   },
   watch: {
@@ -146,7 +186,6 @@ export default {
     }
   },
   computed: {
-
     customStyle() {
       let style = {
         width: this.format(this.canvasStyleData.width, this.scaleWidth) + 'px',
@@ -327,19 +366,26 @@ export default {
     handleContextMenu(e) {
       e.stopPropagation()
       e.preventDefault()
-
-      // 计算菜单相对于编辑器的位移
       let target = e.target
-      let top = e.offsetY
-      let left = e.offsetX
       while (target instanceof SVGElement) {
         target = target.parentNode
       }
+      let top = 0
+      let left = 0
+      // 如果档期有计划的组件 坐标取当前组件的加上偏移量
+      if (this.curComponent && !target.className.includes('editor')) {
+        top = this.curComponent.style.top * this.scaleHeight / 100 + e.offsetY
+        left = this.curComponent.style.left * this.scaleWidth / 100 + e.offsetX
+      } else {
+        // 计算菜单相对于编辑器的位移
+        top = e.offsetY
+        left = e.offsetX
 
-      while (!target.className.includes('editor')) {
-        left += target.offsetLeft
-        top += target.offsetTop
-        target = target.parentNode
+        while (!target.className.includes('editor')) {
+          left += target.offsetLeft
+          top += target.offsetTop
+          target = target.parentNode
+        }
       }
 
       this.$store.commit('showContextMenu', { top, left })
@@ -443,11 +489,62 @@ export default {
       }
     },
     changeScale() {
+      // 获取当前宽高（宽高改变后重新渲染画布）
+      const style = {
+        width: this.format(this.canvasStyleData.width, this.scaleWidth) + 'px',
+        height: this.format(this.canvasStyleData.height, this.scaleHeight) + 'px'
+      }
+      if (this.customStyleHistory && this.customStyleHistory !== style) {
+        this.showDrag = false
+        this.$nextTick(() => (this.showDrag = true))
+      }
+      this.customStyleHistory = style
+
+      if (this.canvasStyleData.matrixCount) {
+        this.matrixCount = this.canvasStyleData.matrixCount
+      }
       if (this.outStyle.width && this.outStyle.height) {
+        // 矩阵计算
+        if (!this.canvasStyleData.selfAdaption) {
+          this.matrixStyle.width = this.canvasStyleData.width / this.matrixCount.x
+          this.matrixStyle.height = this.canvasStyleData.height / this.matrixCount.y
+        } else {
+          this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
+          this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
+        }
         this.scaleWidth = parseInt(this.outStyle.width * 100 / this.canvasStyleData.width)
         this.scaleHeight = parseInt(this.outStyle.height * 100 / this.canvasStyleData.height)
-        this.$store.commit('setCurCanvasScale', { scaleWidth: this.scaleWidth, scaleHeight: this.scaleHeight })
+        this.$store.commit('setCurCanvasScale',
+          {
+            scaleWidth: this.scaleWidth,
+            scaleHeight: this.scaleHeight,
+            matrixStyleWidth: this.matrixStyle.width,
+            matrixStyleHeight: this.matrixStyle.height
+          })
       }
+    },
+    getShapeStyleIntDeDrag(style, prop) {
+      if (prop === 'rotate') {
+        return style['rotate']
+      }
+      if (prop === 'width') {
+        return this.format(style['width'], this.scaleWidth)
+      }
+      if (prop === 'left') {
+        return this.format(style['left'], this.scaleWidth)
+      }
+      if (prop === 'height') {
+        return this.format(style['height'], this.scaleHeight)
+      }
+      if (prop === 'top') {
+        return this.format(style['top'], this.scaleHeight)
+      }
+    },
+    getRefLineParams(params) {
+      console.log(params)
+      const { vLine, hLine } = params
+      this.vLine = vLine
+      this.hLine = hLine
     }
   }
 }
@@ -456,7 +553,7 @@ export default {
 <style lang="scss" scoped>
 .editor {
     position: relative;
-    background: #fff;
+    /*background: #fff;*/
     margin: auto;
     background-size:100% 100% !important;
 
@@ -465,10 +562,35 @@ export default {
     }
 }
 .edit {
+    outline: 1px solid gainsboro;
     .component {
         outline: none;
         width: 100%;
         height: 100%;
     }
 }
+
+.gap_class{
+   padding:3px;
+}
+
+// 拖拽组件样式
+
+.de-drag-active{
+  outline: 1px solid #70c0ff;
+  user-select: none;
+}
+
+.ref-line {
+  position: absolute;
+  background-color: #70c0ff;;
+  z-index: 9999;
+}
+.v-line {
+  width: 1px;
+}
+.h-line {
+  height: 1px;
+}
+
 </style>

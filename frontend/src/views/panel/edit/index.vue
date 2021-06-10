@@ -74,7 +74,7 @@
       </de-aside-container>
 
       <!--画布区域-->
-      <de-main-container id="canvasInfo-main" style="margin-left: 5px;margin-right: 5px">
+      <de-main-container id="canvasInfo-main">
         <!--左侧抽屉-->
         <el-drawer
           :visible.sync="show"

@@ -952,6 +952,7 @@ export default {
     close_aided_design: 'Close Component Aided Design',
     open_style_design: 'Open Style Design',
     close_style_design: 'Close Style Design',
+    matrix_design: 'Matrix Design',
     left: 'X-Axis',
     top: 'Y-Axis',
     height: 'Height',

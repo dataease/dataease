@@ -3,6 +3,11 @@
     <div class="toolbar">
 
       <div class="canvas-config" style="margin-right: 10px">
+        <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" label="矩阵设计" name="auxiliaryMatrix" />
+        <span>矩阵设计</span>
+      </div>
+
+      <div class="canvas-config" style="margin-right: 10px">
         <el-switch v-model="canvasStyleData.selfAdaption" :width="35" label="自适应画布区域" name="selfAdaption" />
         <span>自适应画布区域 </span>
       </div>

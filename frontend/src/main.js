@@ -27,6 +27,7 @@ Vue.use(VueClipboard)
 Vue.use(widgets)
 Vue.prototype.$api = api
 
+
 import * as echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts

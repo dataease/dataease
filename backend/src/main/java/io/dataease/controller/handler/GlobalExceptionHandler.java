@@ -1,6 +1,8 @@
 package io.dataease.controller.handler;
 
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.handler.annotation.I18n;
+import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -66,7 +68,8 @@ public class GlobalExceptionHandler implements ErrorController {
                 errorMessage = "The server responds " + code + " but no detailed message.";
             }
         }
-        return ResultHolder.error(errorMessage);
+
+        return ResultHolder.error(Translator.get(errorMessage));
     }
 
     protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {

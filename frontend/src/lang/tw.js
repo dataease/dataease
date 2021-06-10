@@ -952,6 +952,7 @@ export default {
     close_aided_design: '关闭组件辅助设计',
     open_style_design: '打开样式设计',
     close_style_design: '关闭样式设计',
+    matrix_design: '矩阵设计',
     left: 'x 坐标',
     top: 'y 坐标',
     height: '高',

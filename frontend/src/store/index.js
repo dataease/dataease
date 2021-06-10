@@ -72,7 +72,7 @@ const data = {
     },
 
     setCurComponent(state, { component, index }) {
-      // console.log('curComponent' + JSON.stringify(component))
+      console.log('curComponent' + JSON.stringify(component))
       state.curComponent = component
       state.curComponentIndex = index
     },
@@ -82,12 +82,12 @@ const data = {
     },
 
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      if (top) curComponent.style.top = parseInt(canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top)
-      if (left) curComponent.style.left = parseInt(canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left)
-      if (width) curComponent.style.width = parseInt(canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width)
-      if (height) curComponent.style.height = parseInt(canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height)
-      if (rotate) curComponent.style.rotate = rotate
-      // console.log('setShapeStyle' + JSON.stringify(curComponent))
+      if (top || top === 0) curComponent.style.top = parseInt(canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top)
+      if (left || left === 0) curComponent.style.left = parseInt(canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left)
+      if (width || width === 0) curComponent.style.width = parseInt(canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width)
+      if (height || height === 0) curComponent.style.height = parseInt(canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height)
+      if (rotate || rotate === 0) curComponent.style.rotate = rotate
+      // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
