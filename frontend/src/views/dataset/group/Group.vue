@@ -285,7 +285,7 @@ export default {
       expandedArray: [],
       groupForm: {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -293,7 +293,7 @@ export default {
       },
       dsForm: {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -508,7 +508,7 @@ export default {
       this.editGroup = false
       this.groupForm = {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -629,7 +629,7 @@ export default {
       this.moveGroup = false
       this.groupForm = {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -656,7 +656,7 @@ export default {
       this.moveDs = false
       this.dsForm = {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],

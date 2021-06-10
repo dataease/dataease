@@ -252,7 +252,7 @@ export default {
       expandedArray: [],
       groupForm: {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -451,7 +451,7 @@ export default {
       this.editGroup = false
       this.groupForm = {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
