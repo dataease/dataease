@@ -82,6 +82,7 @@ public class ChartGroupService {
 
     public List<ChartGroupDTO> tree(ChartGroupRequest chartGroup) {
         chartGroup.setLevel(null);
+        chartGroup.setPid(null);
         chartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(chartGroup);
         List<ChartGroupDTO> result = TreeUtils.mergeTree(treeInfo);
