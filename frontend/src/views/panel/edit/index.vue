@@ -223,7 +223,8 @@ export default {
       outStyle: {
         width: null,
         height: null
-      }
+      },
+      beforeDialogValue: []
     }
   },
 
@@ -232,7 +233,6 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     ...mapState([
-      'componentData',
       'curComponent',
       'isClickComponent',
       'canvasStyleData',
@@ -293,14 +293,24 @@ export default {
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
       if (componentDataTemp && canvasStyleDataTemp) {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
+        const componentDatas = JSON.parse(componentDataTemp)
+        componentDatas.forEach(item => {
+          item.filters = (item.filters || [])
+        })
+        this.$store.commit('setComponentData', this.resetID(componentDatas))
+        // this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
         this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
         // 清空临时画布数据
         this.$store.dispatch('panel/setComponentDataTemp', null)
         this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       } else if (panelId) {
         findOne(panelId).then(response => {
-          this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+          const componentDatas = JSON.parse(response.data.panelData)
+          componentDatas.forEach(item => {
+            item.filters = (item.filters || [])
+          })
+          this.$store.commit('setComponentData', this.resetID(componentDatas))
+          //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', panelStyle)
           this.$store.commit('recordSnapshot')// 记录快照
@@ -380,6 +390,7 @@ export default {
               viewId: componentInfo.id
             }
             component.propValue = propValue
+            component.filters = []
           }
         })
       } else {
@@ -432,15 +443,19 @@ export default {
       }
     },
     openFilterDiolog() {
+      this.beforeDialogValue = []
       this.filterVisible = true
     },
     cancelFilter() {
+      this.beforeDialogValue = []
       this.filterVisible = false
       this.currentWidget = null
       this.clearCurrentInfo()
     },
     sureFilter() {
+      this.currentFilterCom.options.value = []
       const component = deepCopy(this.currentFilterCom)
+
       //   this.$store.commit('addComponent', { component })
       this.$store.commit('setComponentWithId', component)
       this.$store.commit('recordSnapshot')

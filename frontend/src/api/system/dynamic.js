@@ -3,7 +3,8 @@ import request from '@/utils/request'
 export function get(url) {
   return request({
     url: url,
-    method: 'get'
+    method: 'get',
+    loading: true
   })
 }
 

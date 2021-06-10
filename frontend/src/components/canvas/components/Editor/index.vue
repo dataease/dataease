@@ -50,7 +50,6 @@
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"
-        :filter="filter"
         :out-style="getShapeStyleInt(item.style)"
       />
       <component
@@ -109,8 +108,6 @@ import Area from './Area'
 import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
-import { Condition } from '@/components/widget/bean/Condition'
-import bus from '@/utils/bus'
 
 export default {
   components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag },
@@ -119,13 +116,11 @@ export default {
       type: Boolean,
       default: true
     },
-    filter: {
-      type: Object,
-      require: false
-    },
+
     outStyle: {
       type: Object,
-      require: false
+      require: false,
+      default: null
     }
   },
   data() {
@@ -171,20 +166,6 @@ export default {
       hLine: []
     }
   },
-  watch: {
-    outStyle: {
-      handler(newVal, oldVla) {
-        this.changeScale()
-      },
-      deep: true
-    },
-    canvasStyleData: {
-      handler(newVal, oldVla) {
-        this.changeScale()
-      },
-      deep: true
-    }
-  },
   computed: {
     customStyle() {
       let style = {
@@ -218,6 +199,26 @@ export default {
       'editor'
     ])
   },
+  watch: {
+    outStyle: {
+      handler(newVal, oldVla) {
+        this.changeScale()
+      },
+      deep: true
+    },
+    canvasStyleData: {
+      handler(newVal, oldVla) {
+        this.changeScale()
+      },
+      deep: true
+    },
+    componentData: {
+      handler(newVal, oldVla) {
+        console.log('11111')
+      },
+      deep: true
+    }
+  },
 
   mounted() {
     // 获取编辑器元素
@@ -226,12 +227,12 @@ export default {
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
-    bus.$on('delete-condition', condition => {
-      this.deleteCondition(condition)
-    })
+    // bus.$on('delete-condition', condition => {
+    //   this.deleteCondition(condition)
+    // })
   },
   created() {
-    this.$store.dispatch('conditions/clear')
+    // this.$store.dispatch('conditions/clear')
   },
   methods: {
     changeStyleWithScale,
@@ -446,40 +447,6 @@ export default {
       return height > newHeight ? height : newHeight
     },
 
-    filterValueChange(value) {
-      // console.log('emit:' + value)
-    },
-
-    setConditionValue(obj) {
-      const { component, value, operator } = obj
-      const fieldId = component.options.attrs.fieldId
-      const viewIds = component.options.attrs.viewIds
-      const condition = new Condition(component.id, fieldId, operator, value, viewIds)
-      this.addCondition(condition)
-    },
-    addCondition(condition) {
-      let conditionExist = false
-      for (let index = 0; index < this.conditions.length; index++) {
-        const element = this.conditions[index]
-        if (condition.componentId === element.componentId) {
-          this.conditions[index] = condition
-          conditionExist = true
-        }
-      }
-      !conditionExist && this.conditions.push(condition)
-      this.executeSearch()
-    },
-    deleteCondition(condition) {
-      this.conditions = this.conditions.filter(item => {
-        const componentIdSuitable = !condition.componentId || (item.componentId === condition.componentId)
-        const fieldIdSuitable = !condition.fieldId || (item.fieldId === condition.fieldId)
-        return !(componentIdSuitable && fieldIdSuitable)
-      })
-      this.executeSearch()
-    },
-    executeSearch() {
-      // console.log('当前查询条件是: ' + JSON.stringify(this.conditions))
-    },
     format(value, scale) {
       // 自适应画布区域 返回原值
       if (this.canvasStyleData.selfAdaption) {

@@ -11,7 +11,6 @@ import request from './modules/request'
 import panel from './modules/panel'
 import application from './modules/application'
 import lic from './modules/lic'
-import conditions from './modules/conditions'
 import animation from '@/components/canvas/store/animation'
 import compose from '@/components/canvas/store/compose'
 import contextmenu from '@/components/canvas/store/contextmenu'
@@ -20,7 +19,7 @@ import event from '@/components/canvas/store/event'
 import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
-
+import { valueValid, formatCondition } from '@/utils/conditionUtil'
 import {
   DEFAULT_COMMON_CANVAS_STYLE
 } from '@/views/panel/panel'
@@ -105,7 +104,48 @@ const data = {
         state.componentData.push(component)
       }
     },
+    removeViewFilter(state, componentId) {
+      state.componentData = state.componentData.map(item => {
+        const newItem = item
+        newItem.filters = newItem.filters && newItem.filters.filter(filter => filter.componentId !== componentId) || []
+        return newItem
+      })
+    },
+    addViewFilter(state, data) {
+      const condition = formatCondition(data)
+      const vValid = valueValid(condition)
+      //   1.根据componentId过滤
+      const filterComponentId = condition.componentId
 
+      //   2.循环每个Component 得到 三种情况 a增加b删除c无操作
+      const viewIdMatch = (viewIds, viewId) => !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
+
+      for (let index = 0; index < state.componentData.length; index++) {
+        const element = state.componentData[index]
+        if (!element.type || element.type !== 'view') continue
+        const currentFilters = element.filters || []
+        const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
+
+        let j = currentFilters.length
+        // let filterExist = false
+        while (j--) {
+          const filter = currentFilters[j]
+          if (filter.componentId === filterComponentId) {
+            // filterExist = true
+            // 已存在该条件 且 条件值有效 直接替换原体检
+            // vidMatch && vValid && (currentFilters[j] = condition)
+            // 已存在该条件 且 条件值无效 直接删除原条件
+            // vidMatch && !vValid && (currentFilters.splice(j, 1))
+            currentFilters.splice(j, 1)
+          }
+        }
+        // 不存在该条件 且 条件有效 直接保存该条件
+        // !filterExist && vValid && currentFilters.push(condition)
+        vidMatch && vValid && currentFilters.push(condition)
+        element.filters = currentFilters
+        state.componentData[index] = element
+      }
+    },
     setComponentWithId(state, component) {
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
@@ -143,8 +183,7 @@ const data = {
     request,
     panel,
     application,
-    lic,
-    conditions
+    lic
   },
   getters
 }

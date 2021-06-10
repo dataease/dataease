@@ -5,9 +5,11 @@ import io.dataease.base.domain.MyPlugin;
 import io.dataease.base.mapper.MyPluginMapper;
 import io.dataease.base.mapper.ext.ExtSysPluginMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.ZipUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.config.LoadjarUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,6 +91,10 @@ public class PluginService {
             jarPath = DeFileUtils.copy(jarFile, targetDir);
             loadJar(jarPath, myPlugin);
             myPluginMapper.insert(myPlugin);
+
+            CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
+            CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
+            CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
         } catch (Exception e) {
             if (StringUtils.isNotEmpty(targetDir)) {
                 DeFileUtils.deleteFile(targetDir);
@@ -137,6 +143,9 @@ public class PluginService {
      * @return
      */
     public Boolean uninstall(Long pluginId) {
+        CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
+        CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
+        CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
         myPluginMapper.deleteByPrimaryKey(pluginId);
         return true;
     }
@@ -148,6 +157,9 @@ public class PluginService {
      * @return
      */
     public Boolean changeStatus(Long pluginId, Boolean status) {
+        CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
+        CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
+        CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
         return false;
     }
 

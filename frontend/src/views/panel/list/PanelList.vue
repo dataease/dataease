@@ -574,7 +574,11 @@ export default {
       if (data.nodeType === 'panel') {
         // 加载视图数据
         findOne(data.id).then(response => {
-          this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+          const componentDatas = JSON.parse(response.data.panelData)
+          componentDatas.forEach(item => {
+            item.filters = (item.filters || [])
+          })
+          this.$store.commit('setComponentData', this.resetID(componentDatas))
           //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', temp)

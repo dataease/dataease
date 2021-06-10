@@ -16,7 +16,7 @@ const LinkTokenKey = Config.LinkTokenKey
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 0 // request timeout
+  timeout: 10000 // request timeout
 })
 
 // request interceptor
@@ -83,6 +83,10 @@ const checkAuth = response => {
     const linkToken = response.headers[LinkTokenKey.toLocaleLowerCase()]
     setLinkToken(linkToken)
   }
+  // 许可状态改变 刷新页面
+//   if (response.headers['lic-status']) {
+//     location.reload()
+//   }
 }
 
 // 请根据实际需求修改
@@ -91,7 +95,10 @@ service.interceptors.response.use(response => {
   checkAuth(response)
   return response.data
 }, error => {
-  error.response.config.loading && tryHideLoading(store.getters.currentPath)
+  const config = error.response && error.response.config || error.config
+  const headers = error.response && error.response.headers || error.response || config.headers
+  config.loading && tryHideLoading(store.getters.currentPath)
+
   let msg
   if (error.response) {
     checkAuth(error.response)
@@ -100,7 +107,7 @@ service.interceptors.response.use(response => {
   } else {
     msg = error.message
   }
-  !error.config.hideMsg && (!error.response.headers['authentication-status']) && $error(msg)
+  !config.hideMsg && (!headers['authentication-status']) && $error(msg)
   return Promise.reject(error)
 })
 export default service

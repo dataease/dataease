@@ -1,16 +1,18 @@
 package io.dataease.service;
 
+import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.listener.util.CacheUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -23,6 +25,15 @@ public class AboutService {
 
     public F2CLicenseResponse updateLicense(String licenseKey) {
         F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.updateLicense(product, licenseKey);
+        Optional.ofNullable(f2CLicenseResponse).ifPresent(resp -> {
+            if (resp.getStatus() == F2CLicenseResponse.Status.valid){
+                CacheUtils.updateLicCache(new Date(f2CLicenseResponse.getLicense().getExpired()));
+
+                CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
+                CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
+                CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+            }
+        });
         return f2CLicenseResponse;
     }
 

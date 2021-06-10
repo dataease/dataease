@@ -11,13 +11,13 @@
       :header-row-style="table_header_class"
       :row-style="getRowStyle"
       class="table-class"
+      :class="chart.id"
       show-summary
       :summary-method="summaryMethod"
     >
       <ux-table-column
         v-for="field in fields"
         :key="field.dataeaseName"
-        min-width="200px"
         :field="field.dataeaseName"
         :resizable="true"
         sortable
@@ -109,7 +109,9 @@ export default {
         datas = []
       }
       this.$refs.plxTable.reloadData(datas)
-      this.initStyle()
+      this.$nextTick(() => {
+        this.initStyle()
+      })
       window.onresize = function() {
         that.calcHeight()
       }
@@ -149,7 +151,13 @@ export default {
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         if (customAttr.color.tableStripe) {
-          this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
+          // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
+          if (this.chart.customStyle) {
+            const customStyle = JSON.parse(this.chart.customStyle)
+            if (customStyle.background) {
+              this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+            }
+          }
         }
       }
       if (this.chart.customStyle) {
@@ -165,18 +173,23 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
-
       // 修改footer合计样式
-      const s_table = document.getElementsByClassName('elx-table--footer')[0]
-      // console.log(s_table)
-      let s = ''
-      for (const i in this.table_header_class) {
-        s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+      const table = document.getElementsByClassName(this.chart.id)
+      for (let i = 0; i < table.length; i++) {
+        const s_table = table[i].getElementsByClassName('elx-table--footer')
+        // console.log(s_table)
+        let s = ''
+        for (const i in this.table_header_class) {
+          s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+        }
+        // console.log(s_table)
+        for (let i = 0; i < s_table.length; i++) {
+          s_table[i].setAttribute('style', s)
+        }
       }
-      s_table.setAttribute('style', s)
     },
     getRowStyle({ row, rowIndex }) {
-      if (rowIndex % 2 === 0) {
+      if (rowIndex % 2 !== 0) {
         return this.table_item_class_stripe
       } else {
         return this.table_item_class
@@ -217,6 +230,10 @@ export default {
     chartResize() {
       // 指定图表的配置项和数据
       this.calcHeight()
+    },
+
+    initClass() {
+      return this.chart.id
     }
   }
 }

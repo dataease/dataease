@@ -49,7 +49,7 @@ export default {
         value: [this.options.value],
         operator: this.operator
       }
-      this.inDraw && this.$store.dispatch('conditions/add', param)
+      this.inDraw && this.$store.commit('addViewFilter', param)
     },
     setEdit() {
       this.canEdit = true

@@ -22,7 +22,7 @@ import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
 
 import { mapState } from 'vuex'
-
+import { isChange } from '@/utils/conditionUtil'
 import {
   DEFAULT_COLOR_CASE,
   DEFAULT_SIZE,
@@ -40,17 +40,14 @@ export default {
   components: { ChartComponent, TableNormal, LabelNormal },
   props: {
     element: {
-      type: Object
-    },
-    filter: {
       type: Object,
-      required: false,
-      default: function() {
-        return {
-          filter: []
-        }
-      }
+      default: null
     },
+    // filters: {
+    //   type: Array,
+    //   required: false,
+    //   default: null
+    // },
     outStyle: {
       type: Object,
       required: false,
@@ -59,38 +56,6 @@ export default {
       }
     }
   },
-  watch: {
-    '$store.getters.conditions': function(newVal, oldVal) {
-      this.filter.filter = newVal
-      this.getData(this.element.propValue.viewId)
-    },
-    filter(val) {
-      this.getData(this.element.propValue.viewId)
-    },
-    // deep监听panel 如果改变 提交到 store
-    canvasStyleData: {
-      handler(newVal, oldVla) {
-        // this.chart.stylePriority == panel 优先使用仪表板样式
-        this.mergeStyle()
-      },
-      deep: true
-    },
-    // 监听外部的样式变化
-    outStyle: {
-      handler(newVal, oldVla) {
-        if (this.$refs[this.element.propValue.id]) {
-          this.$refs[this.element.propValue.id].chartResize()
-        }
-      },
-      deep: true
-    }
-  },
-  created() {
-    this.refId = uuid.v1
-  },
-  computed: mapState([
-    'canvasStyleData'
-  ]),
   data() {
     return {
       refId: null,
@@ -120,8 +85,49 @@ export default {
       message: null
     }
   },
+  computed: {
+    filter() {
+      const filter = {}
+      filter.filter = this.element.filters
+      return filter
+    },
+    filters() {
+      // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
+      if (!this.element.filters) return []
+      return JSON.parse(JSON.stringify(this.element.filters))
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
+  },
+
+  watch: {
+    'filters': function(val1, val2) {
+      // this.getData(this.element.propValue.viewId)
+      isChange(val1, val2) && this.getData(this.element.propValue.viewId)
+    },
+    // deep监听panel 如果改变 提交到 store
+    canvasStyleData: {
+      handler(newVal, oldVla) {
+        // this.chart.stylePriority == panel 优先使用仪表板样式
+        this.mergeStyle()
+      },
+      deep: true
+    },
+    // 监听外部的样式变化
+    outStyle: {
+      handler(newVal, oldVla) {
+        if (this.$refs[this.element.propValue.id]) {
+          this.$refs[this.element.propValue.id].chartResize()
+        }
+      },
+      deep: true
+    }
+  },
+
   created() {
-    this.filter.filter = this.$store.getters.conditions
+    this.refId = uuid.v1
+    // this.filter.filter = this.$store.getters.conditions
     this.getData(this.element.propValue.viewId)
   },
   mounted() {
@@ -173,6 +179,9 @@ export default {
           return true
         })
       }
+    },
+    viewIdMatch(viewIds, viewId) {
+      return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
     }
   }
 }

@@ -29,13 +29,11 @@
 </template>
 
 <script>
-import componentList from '@/components/canvas/custom-component/component-list'
 import { ApplicationContext } from '@/utils/ApplicationContext'
 export default {
   name: 'FilterGroup',
   data() {
     return {
-      componentList,
       panelInfo: this.$store.state.panel.panelInfo,
       //   widgetSubjects: {
       //     '文本过滤组件': [

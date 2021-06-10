@@ -1,7 +1,8 @@
 <template>
   <div class="top-nav" :style="{'background-color': '#f1f3f8'}">
     <div class="log">
-      <img v-if="!logoUrl" src="@/assets/DataEase-color.png" width="140" alt="" style="padding-top: 10px;">
+      <!--      <img      v-if="!logoUrl" src="@/assets/DataEase-color.png" width="140" alt="" style="padding-top: 10px;">-->
+      <svg-icon v-if="!logoUrl" icon-class="DataEase" custom-class="top-nav-logo-icon" />
       <img v-else :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu

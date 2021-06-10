@@ -84,13 +84,13 @@ public class DataSetTableService {
     @Value("${upload.file.path}")
     private String path;
 
-    public void batchInsert(List<DatasetTable> datasetTable) throws Exception {
-        for (DatasetTable table : datasetTable) {
+    public void batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
+        for (DataSetTableRequest table : datasetTable) {
             save(table);
         }
     }
 
-    public DatasetTable save(DatasetTable datasetTable) throws Exception {
+    public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
@@ -114,12 +114,25 @@ public class DataSetTableService {
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
-            // sql 更新
-            if (update == 1) {
-                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
-                    // 删除所有字段，重新抽象
-                    dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
-                    saveTableField(datasetTable);
+            if (datasetTable.getIsRename() == null || !datasetTable.getIsRename()) {
+                // 更新数据和字段
+                if (update == 1) {
+                    if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
+                        // 删除所有字段，重新抽象
+                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
+                        saveTableField(datasetTable);
+                    }
+                    if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+                        if (datasetTable.getEditType() == 0) {
+                            commonThreadPool.addTask(() -> {
+                                extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
+                            });
+                        } else if (datasetTable.getEditType() == 1) {
+                            commonThreadPool.addTask(() -> {
+                                extractDataService.extractData(datasetTable.getId(), null, "add_scope", null);
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -135,9 +148,12 @@ public class DataSetTableService {
         // 删除关联关系
         dataSetTableUnionService.deleteUnionByTableId(id);
         try {
-            deleteDorisTable(id, table);
+            // 抽取的数据集删除doris
+            if (table.getMode() == 1) {
+                deleteDorisTable(id, table);
+            }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -163,6 +179,7 @@ public class DataSetTableService {
 
     public List<DataSetTableDTO> list(DataSetTableRequest dataSetTableRequest) {
         dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        dataSetTableRequest.setTypeFilter(dataSetTableRequest.getTypeFilter());
         return extDataSetTableMapper.search(dataSetTableRequest);
     }
 
@@ -706,10 +723,17 @@ public class DataSetTableService {
             } else {
                 rows = sheet0.getPhysicalNumberOfRows();
             }
+            int columnNum = 0;
             for (int i = 0; i < rows; i++) {
                 HSSFRow row = sheet0.getRow(i);
-                String[] r = new String[row.getPhysicalNumberOfCells()];
-                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                if (i == 0) {
+                    if (row == null) {
+                        throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
+                    }
+                    columnNum = row.getPhysicalNumberOfCells();
+                }
+                String[] r = new String[columnNum];
+                for (int j = 0; j < columnNum; j++) {
                     if (i == 0) {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldType("TEXT");
@@ -722,8 +746,14 @@ public class DataSetTableService {
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
                     } else if (i == 1) {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
@@ -746,10 +776,17 @@ public class DataSetTableService {
             } else {
                 rows = sheet0.getPhysicalNumberOfRows();
             }
+            int columnNum = 0;
             for (int i = 0; i < rows; i++) {
                 XSSFRow row = sheet0.getRow(i);
-                String[] r = new String[row.getPhysicalNumberOfCells()];
-                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                if (i == 0) {
+                    if (row == null) {
+                        throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
+                    }
+                    columnNum = row.getPhysicalNumberOfCells();
+                }
+                String[] r = new String[columnNum];
+                for (int j = 0; j < columnNum; j++) {
                     if (i == 0) {
                         TableFiled tableFiled = new TableFiled();
                         tableFiled.setFieldType("TEXT");
@@ -762,8 +799,14 @@ public class DataSetTableService {
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
                     } else if (i == 1) {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
+                        if (row == null) {
+                            break;
+                        }
                         r[j] = readCell(row.getCell(j), false, null);
                     }
                 }
@@ -815,6 +858,9 @@ public class DataSetTableService {
     }
 
     private String readCell(Cell cell, boolean cellType, TableFiled tableFiled) {
+        if (cell == null) {
+            return "";
+        }
         CellType cellTypeEnum = cell.getCellTypeEnum();
         if (cellTypeEnum.equals(CellType.STRING)) {
             if (cellType) {
@@ -915,7 +961,7 @@ public class DataSetTableService {
         }
 
         DatasetTable record = new DatasetTable();
-        record.setSyncStatus(JobStatus.Completed.name());
+        record.setSyncStatus(JobStatus.Error.name());
         example.clear();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name()).andIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
         datasetTableMapper.updateByExampleSelective(record, example);

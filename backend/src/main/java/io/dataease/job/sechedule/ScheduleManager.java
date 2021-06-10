@@ -73,7 +73,7 @@ public class ScheduleManager {
 
             triggerBuilder.withIdentity(triggerKey);
 
-            Date nTimeByCron = getNTimeByCron(cron);
+            Date nTimeByCron = getNTimeByCron(cron, startTime);
             if (startTime.before(new Date())) {
                 triggerBuilder.startAt(nTimeByCron);
             }
@@ -156,7 +156,7 @@ public class ScheduleManager {
 
             triggerBuilder.withIdentity(triggerKey);// 触发器名,触发器组
 
-            Date nTimeByCron = getNTimeByCron(cron);
+            Date nTimeByCron = getNTimeByCron(cron, startTime);
             if (startTime.before(new Date())) {
                 triggerBuilder.startAt(nTimeByCron);
             }
@@ -410,22 +410,38 @@ public class ScheduleManager {
         return returnMap;
     }
 
-    public static Date getNTimeByCron(String cron) {
-        try {
-            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
-            cronTriggerImpl.setCronExpression(cron);
-            Calendar calendar = Calendar.getInstance();
-            Date now = calendar.getTime();
-//            calendar.add(java.util.Calendar.YEAR, 1);
-            calendar.add(Calendar.MONTH, 2);
+//    public static Date getNTimeByCron(String cron) {
+//        try {
+//            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+//            cronTriggerImpl.setCronExpression(cron);
+//            Calendar calendar = Calendar.getInstance();
+//            Date now = calendar.getTime();
+////            calendar.add(java.util.Calendar.YEAR, 1);
+//            calendar.add(Calendar.MONTH, 2);
+//
+//            List<Date> dates = TriggerUtils.computeFireTimesBetween(cronTriggerImpl, null, now, calendar.getTime());
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            String nextTime = dateFormat.format(dates.get(0));
+//            Date date = dateFormat.parse(nextTime);
+//            return date;
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-            List<Date> dates = TriggerUtils.computeFireTimesBetween(cronTriggerImpl, null, now, calendar.getTime());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String nextTime = dateFormat.format(dates.get(0));
-            Date date = dateFormat.parse(nextTime);
-            return date;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public static CronTrigger getCronTrigger(String cron) {
+        if (!CronExpression.isValidExpression(cron)) {
+            throw new RuntimeException("cron :" + cron + " error");
         }
+        return TriggerBuilder.newTrigger().withIdentity("Calculate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
+
+    }
+
+    public static Date getNTimeByCron(String cron, Date start) {
+        CronTrigger trigger = getCronTrigger(cron);
+        if (start == null) {
+            start = trigger.getStartTime();
+        }
+        return trigger.getFireTimeAfter(start);
     }
 }

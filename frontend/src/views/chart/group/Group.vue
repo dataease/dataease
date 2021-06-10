@@ -40,8 +40,10 @@
             node-key="id"
             :expand-on-click-node="true"
             @node-click="nodeClick"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
@@ -53,7 +55,7 @@
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
-              <span v-if="hasDataPermission('manage',data.privileges)">
+              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.type ==='group'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickAdd">
                     <span class="el-dropdown-link">
@@ -150,12 +152,12 @@
         highlight-current
         @node-click="sceneClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list">
+        <span slot-scope="{ node, data }" class="custom-tree-node-list father">
           <span style="display: flex;flex: 1;width: 0;">
             <span><svg-icon :icon-class="data.type" /></span>
             <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
           </span>
-          <span v-if="hasDataPermission('manage',data.privileges)">
+          <span v-if="hasDataPermission('manage',data.privileges)" class="child">
             <span style="margin-left: 12px;" @click.stop>
               <el-dropdown trigger="click" size="small" @command="clickMore">
                 <span class="el-dropdown-link">
@@ -166,9 +168,9 @@
                   />
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">
-                    {{ $t('chart.rename') }}
-                  </el-dropdown-item>
+                  <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">-->
+                  <!--                    {{ $t('chart.rename') }}-->
+                  <!--                  </el-dropdown-item>-->
                   <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">
                     {{ $t('chart.delete') }}
                   </el-dropdown-item>
@@ -250,7 +252,7 @@ export default {
       expandedArray: [],
       groupForm: {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -449,7 +451,7 @@ export default {
       this.editGroup = false
       this.groupForm = {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -491,14 +493,14 @@ export default {
         this.$store.dispatch('chart/setSceneId', this.currGroup.id)
         this.chartTree()
       }
-      if (node.expanded) {
-        this.expandedArray.push(data.id)
-      } else {
-        const index = this.expandedArray.indexOf(data.id)
-        if (index > -1) {
-          this.expandedArray.splice(index, 1)
-        }
-      }
+      // if (node.expanded) {
+      //   this.expandedArray.push(data.id)
+      // } else {
+      //   const index = this.expandedArray.indexOf(data.id)
+      //   if (index > -1) {
+      //     this.expandedArray.splice(index, 1)
+      //   }
+      // }
     },
 
     back() {
@@ -534,6 +536,7 @@ export default {
         this.chartData.forEach(function(ele) {
           if (ele.id === that.$store.state.chart.chartSceneData.id) {
             ele.type = that.$store.state.chart.chartSceneData.type
+            ele.name = that.$store.state.chart.chartSceneData.name
           }
         })
       }
@@ -608,6 +611,17 @@ export default {
         post('/chart/group/getScene/' + sceneId, null).then(response => {
           this.currGroup = response.data
         })
+      }
+    },
+
+    nodeExpand(data) {
+      if (data.id) {
+        this.expandedArray.push(data.id)
+      }
+    },
+    nodeCollapse(data) {
+      if (data.id) {
+        this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
       }
     }
   }
@@ -691,5 +705,11 @@ export default {
     display: inline-block;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .father .child {
+    display: none;
+  }
+  .father:hover .child {
+    display: inline;
   }
 </style>

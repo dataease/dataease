@@ -37,8 +37,6 @@ export default {
   data() {
     return {
       options: null,
-      //   operator: 'eq',
-      values: null,
       showNumber: false
     }
   },
@@ -49,26 +47,32 @@ export default {
   },
   watch: {
     'options.attrs.multiple': function(value) {
+      const sourceValue = this.options.value
       if (value) {
-        this.values = []
+        !sourceValue && (this.options.value = [])
+        sourceValue && !Array.isArray(sourceValue) && (this.options.value = sourceValue.split(','))
+        !this.inDraw && (this.options.value = [])
       } else {
-        this.values = null
+        !sourceValue && (this.options.value = null)
+        sourceValue && Array.isArray(sourceValue) && (this.options.value = sourceValue[0])
+        !this.inDraw && (this.options.value = null)
       }
     }
   },
   created() {
     this.options = this.element.options
-    this.setCondition()
+
+    // this.setCondition()
   },
   mounted() {
-    this.$nextTick(() => {
-
-    })
+    // this.$nextTick(() => {
+    //   this.options && this.options.value && this.changeValue(this.options.value)
+    // })
+    this.options && this.options.value && this.changeValue(this.options.value)
   },
   methods: {
     changeValue(value) {
       this.setCondition()
-      // this.inDraw && this.$emit('set-condition-value', { component: this.element, value: [value], operator: this.operator })
       this.showNumber = false
       this.$nextTick(() => {
         if (!this.$refs.deSelect.$refs.tags || !this.options.attrs.multiple) {
@@ -89,7 +93,7 @@ export default {
         value: Array.isArray(this.options.value) ? this.options.value : [this.options.value],
         operator: this.operator
       }
-      this.inDraw && this.$store.dispatch('conditions/add', param)
+      this.inDraw && this.$store.commit('addViewFilter', param)
     }
   }
 }

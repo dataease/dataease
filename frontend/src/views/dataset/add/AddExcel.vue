@@ -3,7 +3,7 @@
     <el-row>
       <el-row style="height: 26px;">
         <span style="line-height: 26px;">
-          {{ $t('dataset.add_excel_table') }}
+          {{ param.tableId?$t('dataset.edit_excel_table'):$t('dataset.add_excel_table') }}
         </span>
         <el-row style="float: right">
           <el-button size="mini" @click="cancel">
@@ -20,7 +20,7 @@
           <el-col style="width: 500px;">
             <el-form :inline="true" size="mini" class="row-style">
               <el-form-item class="form-item">
-                <el-input v-model="name" :placeholder="$t('commons.name')" />
+                <el-input v-show="!param.tableId" v-model="name" :placeholder="$t('commons.name')" />
               </el-form-item>
               <el-form-item class="form-item">
                 <el-upload
@@ -171,19 +171,35 @@ export default {
       if (this.name.length > 50) {
         this.$message({
           showClose: true,
-          message: this.$t('commons.char_can_not_more_50'),
+          message: this.$t('dataset.char_can_not_more_50'),
           type: 'error'
         })
         return
       }
-      const table = {
-        id: this.param.tableId,
-        name: this.name,
-        sceneId: this.param.id,
-        dataSourceId: null,
-        type: 'excel',
-        mode: parseInt(this.mode),
-        info: '{"data":"' + this.path + '"}'
+      let table = {}
+      if (!this.param.tableId) {
+        table = {
+          id: this.param.tableId,
+          name: this.name,
+          sceneId: this.param.id,
+          dataSourceId: null,
+          type: 'excel',
+          mode: parseInt(this.mode),
+          // info: '{"data":"' + this.path + '"}',
+          info: JSON.stringify({ data: this.path })
+        }
+      } else {
+        table = {
+          id: this.param.tableId,
+          name: this.param.table.name,
+          sceneId: this.param.id,
+          dataSourceId: null,
+          type: 'excel',
+          mode: parseInt(this.mode),
+          // info: '{"data":"' + this.path + '"}',
+          info: JSON.stringify({ data: this.path }),
+          editType: this.param.editType ? this.param.editType : 0
+        }
       }
       post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())

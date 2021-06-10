@@ -92,7 +92,7 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import { checkPermission, hasDataPermission } from '@/utils/permission'
+import { hasDataPermission } from '@/utils/permission'
 import { formatCondition } from '@/utils/index'
 import { dsGrid, addDs, editDs, delDs, validateDs } from '@/api/system/datasource'
 

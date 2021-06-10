@@ -115,6 +115,11 @@ export default {
       this.fontSize = arr
     },
     changeTitleStyle() {
+      if (this.titleForm.title.length < 1) {
+        this.$error(this.$t('chart.title_cannot_empty'))
+        this.titleForm.title = this.chart.title
+        return
+      }
       if (!this.titleForm.show) {
         this.isSetting = false
       }

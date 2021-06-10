@@ -219,7 +219,8 @@ export default {
       post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
         type: 'sql',
-        info: '{"sql":"' + this.sql + '"}'
+        // info: '{"sql":"' + this.sql + '"}',
+        info: JSON.stringify({ sql: this.sql })
       }).then(response => {
         this.fields = response.data.fields
         this.data = response.data.data
@@ -248,7 +249,7 @@ export default {
       if (this.name.length > 50) {
         this.$message({
           showClose: true,
-          message: this.$t('commons.char_can_not_more_50'),
+          message: this.$t('dataset.char_can_not_more_50'),
           type: 'error'
         })
         return
@@ -260,7 +261,8 @@ export default {
         dataSourceId: this.dataSource,
         type: 'sql',
         mode: parseInt(this.mode),
-        info: '{"sql":"' + this.sql + '"}'
+        // info: '{"sql":"' + this.sql + '"}',
+        info: JSON.stringify({ sql: this.sql })
       }
       post('/dataset/table/update', table).then(response => {
         this.$store.dispatch('dataset/setSceneData', new Date().getTime())

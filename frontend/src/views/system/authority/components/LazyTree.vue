@@ -57,7 +57,8 @@ export default {
     },
     authCondition: {
       type: Object,
-      required: false
+      required: false,
+      default: null
     },
     dataInfo: {
       type: Object,
@@ -67,7 +68,10 @@ export default {
       type: String,
       required: true
     },
-    attachActiveName: String,
+    attachActiveName: {
+      type: String,
+      default: null
+    },
     defaultProps: {
       type: Object,
       required: false,

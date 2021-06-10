@@ -36,15 +36,18 @@ export default {
     },
     element: {
       require: true,
-      type: Object
+      type: Object,
+      default: null
     },
     defaultStyle: {
       require: true,
-      type: Object
+      type: Object,
+      default: null
     },
     index: {
       require: true,
-      type: [Number, String]
+      type: [Number, String],
+      default: null
     }
   },
   data() {
@@ -200,6 +203,7 @@ export default {
       pointList.forEach(point => {
         const angle = mod360(initialAngle[point] + rotate)
         const len = angleToCursor.length
+        // eslint-disable-next-line no-constant-condition
         while (true) {
           lastMatchIndex = (lastMatchIndex + 1) % len
           const angleLimit = angleToCursor[lastMatchIndex]

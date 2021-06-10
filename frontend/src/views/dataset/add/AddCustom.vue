@@ -16,14 +16,14 @@
     <el-divider />
     <el-row>
       <el-form :inline="true">
-        <el-form-item class="form-item">
+        <el-form-item class="form-item" :label="$t('commons.name')">
           <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
         </el-form-item>
       </el-form>
     </el-row>
     <el-col style="display: flex;flex-direction: row">
       <el-col class="panel-height" style="width: 220px;border-right:solid 1px #dcdfe6;border-top:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;">
-        <dataset-group-selector :table="table" :mode="1" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
+        <dataset-group-selector :custom-type="customType" :table="table" :mode="1" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
       </el-col>
       <el-col class="panel-height" style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
         <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
@@ -31,7 +31,7 @@
       <el-col class="panel-height" style="flex: 1;overflow: hidden;">
         <el-card class="box-card dataPreview" shadow="never">
           <div slot="header" class="clearfix">
-            <span>{{ $t('dataset.data_preview') }}</span>
+            <span style="font-size: 16px;">{{ $t('dataset.data_preview') }}</span>
           </div>
           <ux-grid
             ref="plxTable"
@@ -77,13 +77,14 @@ export default {
   },
   data() {
     return {
-      name: '自助数据集',
+      name: '自定义数据集',
       table: {},
       checkedList: [],
       unionData: [],
       height: 500,
       data: [],
-      fields: []
+      fields: [],
+      customType: ['db', 'sql', 'excel']
     }
   },
   watch: {
@@ -192,7 +193,7 @@ export default {
       if (this.name.length > 50) {
         this.$message({
           showClose: true,
-          message: this.$t('commons.char_can_not_more_50'),
+          message: this.$t('dataset.char_can_not_more_50'),
           type: 'error'
         })
         return
@@ -265,7 +266,7 @@ export default {
   }
 
   .dataPreview>>>.el-card__header{
-    padding: 6px 8px;
+    padding: 0 8px 12px;
   }
 
   .dataPreview>>>.el-card__body{

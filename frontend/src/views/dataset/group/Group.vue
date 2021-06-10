@@ -40,8 +40,10 @@
             node-key="id"
             :expand-on-click-node="true"
             @node-click="nodeClick"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
@@ -53,7 +55,7 @@
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
-              <span v-if="hasDataPermission('manage',data.privileges)">
+              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.type ==='group'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickAdd">
                     <span class="el-dropdown-link">
@@ -86,9 +88,9 @@
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
-                      <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
-                      <!--                    {{$t('dataset.move_to')}}-->
-                      <!--                  </el-dropdown-item>-->
+                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">
+                        {{ $t('dataset.move_to') }}
+                      </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
@@ -179,7 +181,7 @@
         highlight-current
         @node-click="sceneClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list">
+        <span slot-scope="{ node, data }" class="custom-tree-node-list father">
           <span style="display: flex;flex: 1;width: 0;">
             <span>
               <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
@@ -193,7 +195,7 @@
             </span>
             <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
           </span>
-          <span v-if="hasDataPermission('manage',data.privileges)">
+          <span v-if="hasDataPermission('manage',data.privileges)" class="child">
             <span style="margin-left: 12px;" @click.stop>
               <el-dropdown trigger="click" size="small" @command="clickMore">
                 <span class="el-dropdown-link">
@@ -207,9 +209,9 @@
                   <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
                     {{ $t('dataset.rename') }}
                   </el-dropdown-item>
-                  <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">-->
-                  <!--                    {{$t('dataset.move_to')}}-->
-                  <!--                  </el-dropdown-item>-->
+                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">
+                    {{ $t('dataset.move_to') }}
+                  </el-dropdown-item>
                   <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteTable',data,node)">
                     {{ $t('dataset.delete') }}
                   </el-dropdown-item>
@@ -238,14 +240,37 @@
       </el-dialog>
 
     </el-col>
+
+    <!--移动分组、场景-->
+    <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
+      <group-move-selector :item="groupForm" @targetGroup="targetGroup" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeMoveGroup()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{ $t('dataset.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <!--移动数据集-->
+    <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveDs" :show-close="false" width="30%" class="dialog-css">
+      <ds-move-selector :item="dsForm" @targetDs="targetDs" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeMoveDs()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button :disabled="dsMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveDs(tDs)">{{ $t('dataset.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 
 <script>
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree } from '@/api/dataset/dataset'
+import GroupMoveSelector from './GroupMoveSelector'
+import DsMoveSelector from './DsMoveSelector'
 
 export default {
   name: 'Group',
+  components: { GroupMoveSelector, DsMoveSelector },
   data() {
     return {
       sceneMode: false,
@@ -260,7 +285,15 @@ export default {
       expandedArray: [],
       groupForm: {
         name: '',
-        pid: null,
+        pid: '0',
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      },
+      dsForm: {
+        name: '',
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -282,7 +315,14 @@ export default {
           { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
           { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
-      }
+      },
+      moveGroup: false,
+      tGroup: {},
+      moveDs: false,
+      tDs: {},
+      groupMoveConfirmDisabled: true,
+      dsMoveConfirmDisabled: true,
+      moveDialogTitle: ''
     }
   },
   computed: {
@@ -329,7 +369,12 @@ export default {
           this.groupForm = JSON.parse(JSON.stringify(param.data))
           break
         case 'move':
-
+          this.moveTo(param.data)
+          this.groupForm = JSON.parse(JSON.stringify(param.data))
+          break
+        case 'moveDs':
+          this.moveToDs(param.data)
+          this.dsForm = JSON.parse(JSON.stringify(param.data))
           break
         case 'delete':
           this.delete(param.data)
@@ -395,6 +440,7 @@ export default {
       table.mode = parseInt(table.mode)
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
+          table.isRename = true
           addTable(table).then(response => {
             this.closeTable()
             this.$message({
@@ -462,7 +508,7 @@ export default {
       this.editGroup = false
       this.groupForm = {
         name: '',
-        pid: null,
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -505,14 +551,14 @@ export default {
         this.currGroup = data
         this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
       }
-      if (node.expanded) {
-        this.expandedArray.push(data.id)
-      } else {
-        const index = this.expandedArray.indexOf(data.id)
-        if (index > -1) {
-          this.expandedArray.splice(index, 1)
-        }
-      }
+      // if (node.expanded) {
+      //   this.expandedArray.push(data.id)
+      // } else {
+      //   const index = this.expandedArray.indexOf(data.id)
+      //   if (index > -1) {
+      //     this.expandedArray.splice(index, 1)
+      //   }
+      // }
       // console.log(this.expandedArray);
     },
 
@@ -561,6 +607,79 @@ export default {
         getScene(sceneId).then(res => {
           this.currGroup = res.data
         })
+      }
+    },
+
+    nodeExpand(data) {
+      if (data.id) {
+        this.expandedArray.push(data.id)
+      }
+    },
+    nodeCollapse(data) {
+      if (data.id) {
+        this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
+      }
+    },
+
+    moveTo(data) {
+      this.moveGroup = true
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
+    },
+    closeMoveGroup() {
+      this.moveGroup = false
+      this.groupForm = {
+        name: '',
+        pid: '0',
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      }
+    },
+    saveMoveGroup() {
+      this.groupForm.pid = this.tGroup.id
+      addGroup(this.groupForm).then(res => {
+        this.closeMoveGroup()
+        this.tree(this.groupForm)
+      })
+    },
+    targetGroup(val) {
+      this.tGroup = val
+      this.groupMoveConfirmDisabled = false
+    },
+
+    moveToDs(data) {
+      this.moveDs = true
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
+    },
+    closeMoveDs() {
+      this.moveDs = false
+      this.dsForm = {
+        name: '',
+        pid: '0',
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      }
+    },
+    saveMoveDs() {
+      if (this.tDs && this.tDs.type === 'group') {
+        return
+      }
+      this.dsForm.sceneId = this.tDs.id
+      this.dsForm.isRename = true
+      addTable(this.dsForm).then(res => {
+        this.closeMoveDs()
+        this.tableTree()
+      })
+    },
+    targetDs(val) {
+      this.tDs = val
+      if (this.tDs.type === 'group') {
+        this.dsMoveConfirmDisabled = true
+      } else {
+        this.dsMoveConfirmDisabled = false
       }
     }
   }
@@ -632,5 +751,15 @@ export default {
     display: inline-block;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .father .child {
+    display: none;
+  }
+  .father:hover .child {
+    display: inline;
+  }
+
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px 20px;
   }
 </style>
