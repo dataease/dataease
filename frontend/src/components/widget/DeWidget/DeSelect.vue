@@ -62,12 +62,13 @@ export default {
   created() {
     this.options = this.element.options
 
-    this.setCondition()
+    // this.setCondition()
   },
   mounted() {
-    this.$nextTick(() => {
-
-    })
+    // this.$nextTick(() => {
+    //   this.options && this.options.value && this.changeValue(this.options.value)
+    // })
+    this.options && this.options.value && this.changeValue(this.options.value)
   },
   methods: {
     changeValue(value) {
