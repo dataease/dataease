@@ -4,9 +4,9 @@
       <span class="table-name">{{ table.name }}</span>
     </el-row>
     <el-divider />
-    <el-checkbox v-model="checkAll" :disabled="!(fields.length > 0)" :indeterminate="isIndeterminate" @change="handleCheckAllChange">{{ $t('dataset.check_all') }}</el-checkbox>
+    <el-checkbox v-model="checkAll" :disabled="!(fields.length > 0)" :indeterminate="isIndeterminate" style="font-weight: 400;" @change="handleCheckAllChange">{{ $t('dataset.check_all') }}</el-checkbox>
     <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldsChange">
-      <el-checkbox v-for="f in fields" :key="f.id" :label="f.id" style="display: block;margin-top: 4px;width: 100%;">
+      <el-checkbox v-for="f in fields" :key="f.id" :label="f.id" style="display: block;margin-top: 4px;width: 100%;font-weight: 400;">
         <span style="display: flex;flex-direction: row;flex: 1;">
           <span>
             <span v-if="f.deType === 0">

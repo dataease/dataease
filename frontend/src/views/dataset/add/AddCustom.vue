@@ -31,7 +31,7 @@
       <el-col class="panel-height" style="flex: 1;overflow: hidden;">
         <el-card class="box-card dataPreview" shadow="never">
           <div slot="header" class="clearfix">
-            <span>{{ $t('dataset.data_preview') }}</span>
+            <span style="font-size: 16px;">{{ $t('dataset.data_preview') }}</span>
           </div>
           <ux-grid
             ref="plxTable"
@@ -266,7 +266,7 @@ export default {
   }
 
   .dataPreview>>>.el-card__header{
-    padding: 6px 8px;
+    padding: 0 8px 12px;
   }
 
   .dataPreview>>>.el-card__body{
