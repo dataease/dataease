@@ -83,7 +83,7 @@ export default {
         kids.forEach(kid => {
           contentWidth += kid.offsetWidth
         })
-        this.showNumber = contentWidth > (this.$refs.deSelect.$refs.tags.clientWidth * 0.9)
+        this.showNumber = contentWidth > ((this.$refs.deSelect.$refs.tags.clientWidth - 30) * 0.9)
       })
     },
 
