@@ -152,7 +152,13 @@ export default {
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         if (customAttr.color.tableStripe) {
-          this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
+          // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
+          if (this.chart.customStyle) {
+            const customStyle = JSON.parse(this.chart.customStyle)
+            if (customStyle.background) {
+              this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+            }
+          }
         }
       }
       if (this.chart.customStyle) {
@@ -184,7 +190,7 @@ export default {
       }
     },
     getRowStyle({ row, rowIndex }) {
-      if (rowIndex % 2 === 0) {
+      if (rowIndex % 2 !== 0) {
         return this.table_item_class_stripe
       } else {
         return this.table_item_class
