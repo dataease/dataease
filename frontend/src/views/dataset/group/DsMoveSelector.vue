@@ -68,7 +68,7 @@ export default {
         node.visible = false
       }
       return 'custom-tree-node'
-    },
+    }
   }
 }
 </script>
