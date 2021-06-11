@@ -87,7 +87,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     stringBuilder.append("cast(").append(f.getOriginName()).append(" as decimal(20,0)) as ").append(f.getOriginName());
                 } else if (f.getDeType() == 3) {
                     stringBuilder.append("cast(").append(f.getOriginName()).append(" as decimal(20,2)) as ").append(f.getOriginName());
-                } else if (f.getDeType() == 0) {
+                } else if (f.getDeType() == 1) {
                     stringBuilder.append("DATE_FORMAT(").append(f.getOriginName()).append(",'%Y-%m-%d %H:%i:%S') as _").append(f.getOriginName());
                 } else {
                     stringBuilder.append(f.getOriginName());
