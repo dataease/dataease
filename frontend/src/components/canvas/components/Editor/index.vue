@@ -450,9 +450,9 @@ export default {
     format(value, scale) {
       // 自适应画布区域 返回原值
       if (this.canvasStyleData.selfAdaption) {
-        return parseInt(value * parseInt(scale) / 100)
+        return value * scale / 100
       } else {
-        return parseInt(value)
+        return value
       }
     },
     changeScale() {
@@ -479,8 +479,8 @@ export default {
           this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
           this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
         }
-        this.scaleWidth = parseInt(this.outStyle.width * 100 / this.canvasStyleData.width)
-        this.scaleHeight = parseInt(this.outStyle.height * 100 / this.canvasStyleData.height)
+        this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
+        this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
         this.$store.commit('setCurCanvasScale',
           {
             scaleWidth: this.scaleWidth,

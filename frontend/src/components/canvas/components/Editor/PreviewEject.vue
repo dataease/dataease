@@ -97,8 +97,8 @@ export default {
       this.$emit('change', false)
     },
     resize() {
-      this.scaleWidth = window.innerWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
-      this.scaleHeight = window.innerHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
+      this.scaleWidth = window.innerWidth * 100 / this.canvasStyleData.width// 获取宽度比
+      this.scaleHeight = window.innerHeight * 100 / this.canvasStyleData.height// 获取高度比
       this.handleScaleChange()
     },
     restore() {
@@ -123,7 +123,7 @@ export default {
     },
 
     format(value, scale) {
-      return value * parseInt(scale) / 100
+      return value * scale / 100
     },
     handleScaleChange() {
       const componentData = deepCopy(this.componentDataSource)

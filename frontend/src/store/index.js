@@ -81,10 +81,10 @@ const data = {
     },
 
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      if (top || top === 0) curComponent.style.top = parseInt(canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top)
-      if (left || left === 0) curComponent.style.left = parseInt(canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left)
-      if (width || width === 0) curComponent.style.width = parseInt(canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width)
-      if (height || height === 0) curComponent.style.height = parseInt(canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height)
+      if (top || top === 0) curComponent.style.top = canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top
+      if (left || left === 0) curComponent.style.left = canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left
+      if (width || width === 0) curComponent.style.width = canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width
+      if (height || height === 0) curComponent.style.height = canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height
       if (rotate || rotate === 0) curComponent.style.rotate = rotate
       // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
     },

@@ -483,7 +483,7 @@ export default {
     },
     getOriginStyle(value) {
       const scale = this.canvasStyleData.scale
-      const result = value / (parseInt(scale) / 100)
+      const result = value / (scale / 100)
       return result
     },
     restore() {

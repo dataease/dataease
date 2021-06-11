@@ -68,15 +68,13 @@ export default {
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
-            width: '100%',
-            height: '100%',
-            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            ...style
           }
-        } else {
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
           style = {
-            width: '100%',
-            height: '100%',
-            background: this.canvasStyleData.panel.color
+            background: this.canvasStyleData.panel.color,
+            ...style
           }
         }
       }
@@ -117,6 +115,7 @@ export default {
     changeStyleWithScale,
     getStyle,
     restore() {
+      debugger
       const canvasHeight = document.getElementById('canvasInfo').offsetHeight
       const canvasWidth = document.getElementById('canvasInfo').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比

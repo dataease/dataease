@@ -123,12 +123,12 @@ export default {
     },
     format(value) {
       const scale = this.scale
-      return value * parseInt(scale) / 100
+      return value * scale / 100
     },
 
     getOriginStyle(value) {
       const scale = this.canvasStyleData.scale
-      const result = value / (parseInt(scale) / 100)
+      const result = value / (scale / 100)
       return result
     },
 

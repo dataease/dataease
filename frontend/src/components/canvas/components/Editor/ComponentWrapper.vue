@@ -68,8 +68,4 @@ export default {
 .component {
     position: absolute;
 }
-
-.gap_class{
-  padding:3px;
-}
 </style>
