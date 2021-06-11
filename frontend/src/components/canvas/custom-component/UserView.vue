@@ -143,8 +143,8 @@ export default {
         const customAttrPanel = JSON.parse(this.canvasStyleData.chart.customAttr)
         const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
 
-        // 组件样式-标题设置
-        customStyleChart.text = customStylePanel.text
+        // 组件样式-标题设置 - 标题修改为组件自己控制
+        // customStyleChart.text = customStylePanel.text
         // 组件样式-背景设置
         customStyleChart.background = customStylePanel.background
         // 图形属性-颜色设置
