@@ -202,6 +202,7 @@
         :show-close="false"
         width="70%"
         class="dialog-css"
+        :destroy-on-close="true"
       >
         <el-row style="width: 400px;">
           <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
@@ -544,6 +545,7 @@ export default {
 
     selectTable() {
       this.selectTableFlag = true
+      this.chartName = this.$t('chart.chartName')
     },
 
     closeCreateChart() {

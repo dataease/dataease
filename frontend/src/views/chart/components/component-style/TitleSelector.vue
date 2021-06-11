@@ -19,6 +19,7 @@
                 :placeholder="$t('chart.title')"
                 clearable
                 @blur="changeTitleStyle"
+                @input="inputOnInput($event)"
               />
             </el-form-item>
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
@@ -124,6 +125,9 @@ export default {
         this.isSetting = false
       }
       this.$emit('onTextChange', this.titleForm)
+    },
+    inputOnInput: function(e) {
+      this.$forceUpdate()
     }
   }
 }
