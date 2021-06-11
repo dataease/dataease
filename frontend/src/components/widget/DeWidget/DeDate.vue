@@ -35,6 +35,9 @@ export default {
   },
   created() {
     this.options = this.element.options
+    if ((this.options.attrs.type === 'date' || this.options.attrs.type === 'daterange') && Array.isArray(this.options.value) && this.options.value.length === 0) {
+      this.options.value = null
+    }
   },
   methods: {
     search() {
