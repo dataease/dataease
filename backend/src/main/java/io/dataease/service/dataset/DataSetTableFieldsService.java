@@ -3,11 +3,13 @@ package io.dataease.service.dataset;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,6 +61,16 @@ public class DataSetTableFieldsService {
         DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
         datasetTableFieldExample.createCriteria().andIdIn(ids);
         return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+    }
+
+    public List<DatasetTableField> getListByIdsEach(List<String> ids) {
+        List<DatasetTableField> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            ids.forEach(id -> {
+                list.add(datasetTableFieldMapper.selectByPrimaryKey(id));
+            });
+        }
+        return list;
     }
 
     public List<DatasetTableField> getFieldsByTableId(String id) {
