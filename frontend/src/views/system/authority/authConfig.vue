@@ -100,7 +100,7 @@ export default {
           },
           {
             tabName: this.$t('auth.chartAuth'),
-            head: this.$t('auth.linkAuthHead'),
+            head: this.$t('auth.chartAuthHead'),
             direction: 'source',
             authType: 'chart',
             authTargets: 'dept,role,user'

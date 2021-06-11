@@ -266,6 +266,9 @@ export default {
         // 重新加载权限
         this.loadAuth()
         this.loading = false
+      }).catch((e) => {
+        // this.$warning(e)
+        this.loading = false
       })
     },
     // 高亮显示搜索内容

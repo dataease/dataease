@@ -3,7 +3,7 @@
     <el-row v-loading="slidersLoading">
       <el-col :span="2">
         <span>&nbsp;</span>
-        <ul class="direction">
+        <ul v-show="currentIndex>1" class="direction">
           <li class="left" @click="move(sliderWidth, 1, speed)">
             <svg class="icon" width="15px" height="15.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M481.233 904c8.189 0 16.379-3.124 22.628-9.372 12.496-12.497 12.496-32.759 0-45.256L166.488 512l337.373-337.373c12.496-12.497 12.496-32.758 0-45.255-12.498-12.497-32.758-12.497-45.256 0l-360 360c-12.496 12.497-12.496 32.758 0 45.255l360 360c6.249 6.249 14.439 9.373 22.628 9.373z" /></svg>
           </li>
@@ -49,7 +49,7 @@
       </el-col>
       <el-col :span="2">
         <span>&nbsp;</span>
-        <ul class="direction">
+        <ul v-show="currentIndex<sliders.length" class="direction">
           <li class="right" @click="move(sliderWidth, -1, speed)">
             <svg class="icon" width="15px" height="15.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M557.179 904c-8.189 0-16.379-3.124-22.628-9.372-12.496-12.497-12.496-32.759 0-45.256L871.924 512 534.551 174.627c-12.496-12.497-12.496-32.758 0-45.255 12.498-12.497 32.758-12.497 45.256 0l360 360c12.496 12.497 12.496 32.758 0 45.255l-360 360c-6.249 6.249-14.439 9.373-22.628 9.373z" /></svg>
           </li>
@@ -141,6 +141,7 @@ export default {
       const request = {
         details: JSON.stringify(this.canvasStyleData)
       }
+      this.slidersLoading = true
       saveSubject(request).then(response => {
         this.$message({
           message: '保存成功',
@@ -148,12 +149,16 @@ export default {
           showClose: true
         })
         this.querySubjectWithGroup()
+      }).catch(() => {
+        this.slidersLoading = false
       })
     },
     querySubjectWithGroup() {
       this.slidersLoading = true
       querySubjectWithGroup({}).then(response => {
         this.sliders = response.data
+        this.slidersLoading = false
+      }).catch(() => {
         this.slidersLoading = false
       })
     },
