@@ -154,17 +154,16 @@ public class ExtractDataService {
         }
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         UpdateType updateType = UpdateType.valueOf(type);
-        Datasource datasource = new Datasource();
         if(context != null){
             datasetTable.setQrtzInstance(context.getFireInstanceId());
             datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
         }
+        Datasource datasource = new Datasource();
         if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
             datasource = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         } else {
             datasource.setType(datasetTable.getType());
         }
-
         List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
         datasetTableFields.sort((o1, o2) -> {
             if (o1.getColumnIndex() == null) {
@@ -192,7 +191,11 @@ public class ExtractDataService {
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
                     generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
-                    generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
+                    if(datasetTable.getType().equalsIgnoreCase("sql")){
+                        generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
+                    }else {
+                        generateJobFile("all_scope", datasetTable, fetchSqlField(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql(), datasource));
+                    }
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
@@ -592,9 +595,13 @@ public class ExtractDataService {
                 dataMeta.addExtraOption("MYSQL","characterEncoding", "UTF-8");
                 transMeta.addDatabase(dataMeta);
                 if (extractType.equalsIgnoreCase("all_scope")) {
-                    String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
-                    QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-                    selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
+                    if(datasetTable.getType().equalsIgnoreCase("sql")){
+                        selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
+                    }else {
+                        String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
+                        QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
+                        selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
+                    }
                 }
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, false);
@@ -604,9 +611,13 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 if (extractType.equalsIgnoreCase("all_scope")) {
-                    String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
-                    QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-                    selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
+                    if(datasetTable.getType().equalsIgnoreCase("sql")){
+                        selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
+                    }else {
+                        String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
+                        QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
+                        selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
+                    }
                 }
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, false);
