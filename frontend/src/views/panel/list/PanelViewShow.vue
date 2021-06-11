@@ -47,8 +47,8 @@
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
-          <fullscreen style="background: #ffffff;height: 100%" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMain" />
+          <fullscreen style="background: none;height: 100%" :fullscreen.sync="fullscreen">
+            <Preview v-if="showMain" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
           </fullscreen>
         </div>
       </el-row>

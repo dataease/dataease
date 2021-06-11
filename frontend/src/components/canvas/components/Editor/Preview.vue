@@ -7,7 +7,6 @@
       v-for="(item, index) in componentDataInfo"
       :key="index"
       :config="item"
-      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     />
   </div>
 </template>
@@ -32,6 +31,11 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    showType: {
+      type: String,
+      required: false,
+      default: 'full'
     }
   },
   data() {
@@ -56,7 +60,11 @@ export default {
   },
   computed: {
     customStyle() {
-      let style = {}
+      let style = {
+        margin: 'auto',
+        width: '100%',
+        height: '100%'
+      }
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
@@ -113,6 +121,9 @@ export default {
       const canvasWidth = document.getElementById('canvasInfo').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
+      if (this.showType === 'width') {
+        this.scaleHeight = this.scaleWidth
+      }
       this.handleScaleChange()
     },
     resetID(data) {

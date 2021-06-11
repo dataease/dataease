@@ -8,6 +8,7 @@
       :style="getStyle(config.style)"
       :out-style="config.style"
       :element="config"
+      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     />
     <component
       :is="config.component"
@@ -17,6 +18,7 @@
       :style="getStyle(config.style)"
       :prop-value="config.propValue"
       :element="config"
+      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     />
   </div>
 </template>
@@ -25,6 +27,7 @@
 import { getStyle } from '@/components/canvas/utils/style'
 import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mixins } from '@/components/canvas/utils/events'
+import { mapState } from 'vuex'
 
 export default {
   mixins: [mixins],
@@ -39,6 +42,11 @@ export default {
       require: false,
       default: null
     }
+  },
+  computed: {
+    ...mapState([
+      'canvasStyleData'
+    ])
   },
   mounted() {
     runAnimation(this.$el, this.config.animations)
@@ -59,5 +67,9 @@ export default {
 <style lang="scss" scoped>
 .component {
     position: absolute;
+}
+
+.gap_class{
+  padding:3px;
 }
 </style>
