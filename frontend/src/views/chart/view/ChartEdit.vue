@@ -178,15 +178,15 @@
           </el-row>
           <el-row style="color: #909399;">
             <span>
-              <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel'))">
+              <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge'))">
                 Tips: {{ $t('chart.only_one_quota') }}
               </span>
-              <span v-show="chart.type && (chart.type.includes('text'))">
-                Tips: {{ $t('chart.only_one_result') }}
-              </span>
-              <span v-show="chart.type && chart.type.includes('gauge')">
-                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}
-              </span>
+              <!--              <span v-show="chart.type && (chart.type.includes('text'))">-->
+              <!--                Tips: {{ $t('chart.only_one_result') }}-->
+              <!--              </span>-->
+              <!--              <span v-show="chart.type && chart.type.includes('gauge')">-->
+              <!--                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}-->
+              <!--              </span>-->
             </span>
           </el-row>
         </div>
@@ -226,8 +226,8 @@
 
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
-          <el-row style="margin-top: 10px;">
-            <el-row style="display:flex;height: 32px;">
+          <el-row style="margin-top: 10px;height: 74px;">
+            <el-row v-if="chart.type !=='text' && chart.type !== 'gauge'" style="display:flex;height: 32px;">
               <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.dimension') }}</span>
               <draggable
                 v-model="view.xaxis"
@@ -524,10 +524,13 @@ export default {
           ele.filter = []
         }
       })
-      if (view.type.startsWith('pie') || view.type.startsWith('funnel')) {
+      if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('text') || view.type.startsWith('gauge')) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
+      }
+      if (view.type.startsWith('text') || view.type.startsWith('gauge')) {
+        view.xaxis = []
       }
       if (view.type === 'line' && trigger === 'chart') {
         view.customAttr.size.lineArea = false

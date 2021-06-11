@@ -240,6 +240,16 @@ public class SqlserverQueryProvider extends QueryProvider {
         return "SELECT table_name FROM information_schema.TABLES WHERE table_name ='" + table + "'";
     }
 
+    @Override
+    public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
+        return null;
+    }
+
+    @Override
+    public String getSQLSummaryAsTmp(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
+        return null;
+    }
+
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":
