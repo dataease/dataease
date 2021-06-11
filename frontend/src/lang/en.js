@@ -1029,7 +1029,7 @@ export default {
     roleHead: 'All Role',
     userHead: 'All User',
     linkAuthHead: 'All Datasource',
-    datasetAuthHead: 'All Data',
+    datasetAuthHead: 'All Dataset',
     chartAuthHead: 'All Chart',
     panelAuthHead: 'All Chart',
     view: 'View',

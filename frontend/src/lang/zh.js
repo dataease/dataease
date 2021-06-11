@@ -1029,7 +1029,7 @@ export default {
     roleHead: '所有角色',
     userHead: '所有用户',
     linkAuthHead: '所有数据源',
-    datasetAuthHead: '所有数据',
+    datasetAuthHead: '所有数据集',
     chartAuthHead: '所有视图',
     panelAuthHead: '所有仪表板',
     menuAuthHead: '所有菜单和操作',
