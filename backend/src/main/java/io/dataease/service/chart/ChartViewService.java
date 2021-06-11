@@ -99,10 +99,18 @@ public class ChartViewService {
         }.getType());
         customFilter.forEach(ele -> ele.setField(dataSetTableFieldsService.get(ele.getFieldId())));
 
-        if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
-            ChartViewDTO dto = new ChartViewDTO();
-            BeanUtils.copyBean(dto, view);
-            return dto;
+        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+            if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
+                ChartViewDTO dto = new ChartViewDTO();
+                BeanUtils.copyBean(dto, view);
+                return dto;
+            }
+        } else {
+            if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
+                ChartViewDTO dto = new ChartViewDTO();
+                BeanUtils.copyBean(dto, view);
+                return dto;
+            }
         }
 
         // 过滤来自仪表板的条件
@@ -142,9 +150,17 @@ public class ChartViewService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList));
+                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, customFilter, extFilterList));
+                } else {
+                    datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList));
+                }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
-                datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList));
+                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, customFilter, extFilterList));
+                } else {
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList));
+                }
             }
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
@@ -156,7 +172,11 @@ public class ChartViewService {
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList));
+            if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+                datasourceRequest.setQuery(qp.getSQLSummary(tableName, yAxis, customFilter, extFilterList));
+            } else {
+                datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList));
+            }
             data = datasourceProvider.getData(datasourceRequest);
         }
 
@@ -192,7 +212,9 @@ public class ChartViewService {
         // table组件
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
-        fields.addAll(xAxis);
+        if (ObjectUtils.isNotEmpty(xAxis)) {
+            fields.addAll(xAxis);
+        }
         fields.addAll(yAxis);
         data.forEach(ele -> {
             Map<String, Object> d = new HashMap<>();

@@ -44,7 +44,8 @@ export function baseGaugeOption(chart_option, chart) {
       }
       // data只取第一个
       const y = {
-        name: chart.data.x[0],
+        // name: chart.data.x[0],
+        name: chart.data.series[0].name,
         value: chart.data.series[0].data[0]
       }
       chart_option.series[0].data.push(y)

@@ -29,21 +29,22 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item v-if="item.id !== 'count'">
-            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">
-              <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
-                  <i class="el-icon-s-grid" />
-                  <span>{{ $t('chart.quick_calc') }}</span>
-                  <span class="summary-span">(无)</span>
-                </span>
-                <i class="el-icon-arrow-right el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="beforeQuickCalc('none')">无</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-dropdown-item>
+          <!-- 快速计算先隐藏-->
+          <!--          <el-dropdown-item v-if="item.id !== 'count'">-->
+          <!--            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">-->
+          <!--              <span class="el-dropdown-link inner-dropdown-menu">-->
+          <!--                <span>-->
+          <!--                  <i class="el-icon-s-grid" />-->
+          <!--                  <span>{{ $t('chart.quick_calc') }}</span>-->
+          <!--                  <span class="summary-span">(无)</span>-->
+          <!--                </span>-->
+          <!--                <i class="el-icon-arrow-right el-icon&#45;&#45;right" />-->
+          <!--              </span>-->
+          <!--              <el-dropdown-menu slot="dropdown">-->
+          <!--                <el-dropdown-item :command="beforeQuickCalc('none')">无</el-dropdown-item>-->
+          <!--              </el-dropdown-menu>-->
+          <!--            </el-dropdown>-->
+          <!--          </el-dropdown-item>-->
           <el-dropdown-item divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
