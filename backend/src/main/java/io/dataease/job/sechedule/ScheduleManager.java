@@ -74,9 +74,9 @@ public class ScheduleManager {
             triggerBuilder.withIdentity(triggerKey);
 
             Date nTimeByCron = getNTimeByCron(cron, startTime);
-            if (startTime.before(new Date())) {
-                triggerBuilder.startAt(nTimeByCron);
-            }
+//            if (startTime.before(new Date())) {
+            triggerBuilder.startAt(nTimeByCron);
+//            }
 
             if (endTime != null) {
                 if (endTime.before(nTimeByCron)) {
@@ -157,9 +157,9 @@ public class ScheduleManager {
             triggerBuilder.withIdentity(triggerKey);// 触发器名,触发器组
 
             Date nTimeByCron = getNTimeByCron(cron, startTime);
-            if (startTime.before(new Date())) {
-                triggerBuilder.startAt(nTimeByCron);
-            }
+//            if (startTime.before(new Date())) {
+            triggerBuilder.startAt(nTimeByCron);
+//            }
 
             if (endTime != null) {
                 if (endTime.before(nTimeByCron)) {

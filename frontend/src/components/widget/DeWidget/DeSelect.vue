@@ -48,13 +48,14 @@ export default {
   watch: {
     'options.attrs.multiple': function(value) {
       const sourceValue = this.options.value
+      const sourceValid = !!sourceValue && Object.keys(sourceValue).length > 0
       if (value) {
-        !sourceValue && (this.options.value = [])
-        sourceValue && !Array.isArray(sourceValue) && (this.options.value = sourceValue.split(','))
+        !sourceValid && (this.options.value = [])
+        sourceValid && !Array.isArray(sourceValue) && (this.options.value = sourceValue.split(','))
         !this.inDraw && (this.options.value = [])
       } else {
-        !sourceValue && (this.options.value = null)
-        sourceValue && Array.isArray(sourceValue) && (this.options.value = sourceValue[0])
+        !sourceValid && (this.options.value = null)
+        sourceValid && Array.isArray(sourceValue) && (this.options.value = sourceValue[0])
         !this.inDraw && (this.options.value = null)
       }
     }
@@ -68,7 +69,7 @@ export default {
     // this.$nextTick(() => {
     //   this.options && this.options.value && this.changeValue(this.options.value)
     // })
-    this.options && this.options.value && this.changeValue(this.options.value)
+    this.options && this.options.value && Object.keys(this.options.value).length > 0 && this.changeValue(this.options.value)
   },
   methods: {
     changeValue(value) {

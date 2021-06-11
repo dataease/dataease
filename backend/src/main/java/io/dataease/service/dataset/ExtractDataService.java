@@ -199,17 +199,18 @@ public class ExtractDataService {
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
+                    deleteFile("all_scope", datasetTableId);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
+                    deleteFile("all_scope", datasetTableId);
                 }finally {
                     if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                         datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                         dataSetTableTaskService.update(datasetTableTask);
                     }
-                    deleteFile("all_scope", datasetTableId);
                 }
                 break;
 
@@ -258,18 +259,20 @@ public class ExtractDataService {
                             extractData(datasetTable, "incremental_delete");
                         }
                         saveSucessLog(datasetTableTaskLog);
+                        deleteFile("incremental_add", datasetTableId);
+                        deleteFile("incremental_delete", datasetTableId);
                         updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
                     }
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error);
+                    deleteFile("incremental_add", datasetTableId);
+                    deleteFile("incremental_delete", datasetTableId);
                 }finally {
                     if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                         datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
                         dataSetTableTaskService.update(datasetTableTask);
                     }
-                    deleteFile("incremental_add", datasetTableId);
-                    deleteFile("incremental_delete", datasetTableId);
                 }
                 break;
             }
