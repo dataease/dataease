@@ -13,14 +13,14 @@
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span>
                   <svg-icon icon-class="panel" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
-              <span style="margin-left: 12px;" @click.stop>
+              <span style="margin-left: 12px;" class="child" @click.stop>
                 <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
                   <span class="el-dropdown-link">
                     <el-button
@@ -64,7 +64,7 @@
             :expand-on-click-node="true"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node-list">
+            <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span v-if="data.nodeType === 'panel'">
                   <svg-icon icon-class="panel" class="ds-icon-scene" />
@@ -74,7 +74,7 @@
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
               </span>
-              <span v-if="hasDataPermission('manage',data.privileges)">
+              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.nodeType ==='folder'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="showEditPanel">
                     <span class="el-dropdown-link">
@@ -718,6 +718,13 @@ export default {
   }
   .dialog-css >>>.el-dialog__body {
     padding: 10px 20px 20px;
+  }
+
+  .father .child {
+    display: none;
+  }
+  .father:hover .child {
+    display: inline;
   }
 
 </style>
