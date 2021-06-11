@@ -9,6 +9,9 @@ export function checkPermission(pers) {
 }
 
 export function hasDataPermission(pTarget, pSource) {
+  if (store.state.user.user.isAdmin) {
+    return true
+  }
   if (pSource && pTarget) {
     return pSource.indexOf(pTarget) > -1
   }
