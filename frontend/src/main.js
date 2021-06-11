@@ -27,7 +27,6 @@ Vue.use(VueClipboard)
 Vue.use(widgets)
 Vue.prototype.$api = api
 
-
 import * as echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts
@@ -73,6 +72,9 @@ Vue.component('Treeselect', Treeselect)
 Vue.config.productionTip = false
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
+  if (this.$store.state.user.user.isAdmin) {
+    return true
+  }
   if (pSource && pTarget) {
     return pSource.indexOf(pTarget) > -1
   }
