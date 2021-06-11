@@ -226,6 +226,7 @@ public class ExtractDataService {
                     }else {
                         DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
                         if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
+                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
                             return;
                         }
                         DatasetTableTaskLog request = new DatasetTableTaskLog();
@@ -233,6 +234,7 @@ public class ExtractDataService {
                         request.setStatus(JobStatus.Completed.name());
                         List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(request);
                         if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
+                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
                             return;
                         }
 
