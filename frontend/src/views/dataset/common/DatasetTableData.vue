@@ -2,6 +2,7 @@
   <el-col ref="container" v-loading="dataLoading" style="width: 100%;height:100%">
     <span>{{ table.name }}</span>
     <ux-grid
+      id="dsData"
       ref="plxTable"
       size="mini"
       style="width: 100%;"
@@ -59,6 +60,7 @@ export default {
     //   })()
     // }
     // this.height = window.innerHeight / 3
+    this.height = document.getElementById('dsData').parentNode.offsetHeight - 16 - 14 - 5
     this.initData()
   },
   methods: {

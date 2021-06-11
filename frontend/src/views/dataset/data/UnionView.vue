@@ -51,7 +51,7 @@
     >
       <el-row style="display: flex;align-items: center;justify-content: center;">
         <el-col :span="6">
-          <p class="table-name-css">{{ table.name }}</p>
+          <p class="table-name-css" :title="table.name">{{ table.name }}</p>
           <el-select v-model="union.sourceTableFieldId" :placeholder="$t('dataset.pls_slc_union_field')" filterable clearable size="mini">
             <el-option
               v-for="item in sourceFieldOption"
@@ -93,7 +93,9 @@
             trigger="click"
           >
             <dataset-group-selector :mode="1" @getTable="getTable" />
-            <el-button slot="reference" size="mini">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</el-button>
+            <el-button slot="reference" size="mini" style="width: 100%;">
+              <p class="table-name-css" :title="targetTable.name || $t('dataset.pls_slc_union_table')">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</p>
+            </el-button>
           </el-popover>
 
           <el-select v-model="union.targetTableFieldId" :placeholder="$t('dataset.pls_slc_union_field')" filterable clearable size="mini">
@@ -282,6 +284,9 @@ export default {
 <style scoped>
   .table-name-css{
     margin: 4px 2px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
   .union-relation-css{
     display: block;

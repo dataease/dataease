@@ -100,7 +100,8 @@ public class ChartViewService {
         customFilter.forEach(ele -> ele.setField(dataSetTableFieldsService.get(ele.getFieldId())));
 
         if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
-            if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
+            xAxis = new ArrayList<>();
+            if (CollectionUtils.isEmpty(yAxis)) {
                 ChartViewDTO dto = new ChartViewDTO();
                 BeanUtils.copyBean(dto, view);
                 return dto;

@@ -427,45 +427,49 @@ public class DataSetTableService {
         String sql = getCustomSQL(dataTableInfoDTO, list);
         // 使用输入的sql先预执行一次,并拿到所有字段
         datasourceRequest.setQuery(sql);
-        List<TableFiled> previewFields = jdbcProvider.fetchResultField(datasourceRequest);
 
-        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
-        Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
-        List<String[]> data = result.get("dataList");
-        List<TableFiled> fields = result.get("fieldList");
-        String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
+        Map<String, Object> res = new HashMap<>();
+        try {
+            List<TableFiled> previewFields = jdbcProvider.fetchResultField(datasourceRequest);
 
-        List<Map<String, Object>> jsonArray = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(data)) {
-            jsonArray = data.stream().map(ele -> {
-                Map<String, Object> map = new HashMap<>();
-                for (int i = 0; i < ele.length; i++) {
-                    map.put(fieldArray[i], ele[i]);
-                }
-                return map;
-            }).collect(Collectors.toList());
-        }
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
+            Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
+            List<String[]> data = result.get("dataList");
+            List<TableFiled> fields = result.get("fieldList");
+            String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
 
-        // 获取每个字段在当前de数据库中的name，作为sql查询后的remarks返回前端展示
-        List<DatasetTableField> checkedFieldList = new ArrayList<>();
-        dataTableInfoDTO.getList().forEach(ele -> {
-            checkedFieldList.addAll(dataSetTableFieldsService.getListByIds(ele.getCheckedFields()));
-        });
-        for (DatasetTableField datasetTableField : checkedFieldList) {
-            for (TableFiled tableFiled : fields) {
-                if (StringUtils.equalsIgnoreCase(tableFiled.getFieldName(), DorisTableUtils.dorisFieldName(datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))) {
-                    tableFiled.setRemarks(datasetTableField.getName());
-                    break;
+            List<Map<String, Object>> jsonArray = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(data)) {
+                jsonArray = data.stream().map(ele -> {
+                    Map<String, Object> map = new HashMap<>();
+                    for (int i = 0; i < ele.length; i++) {
+                        map.put(fieldArray[i], ele[i]);
+                    }
+                    return map;
+                }).collect(Collectors.toList());
+            }
+
+            // 获取每个字段在当前de数据库中的name，作为sql查询后的remarks返回前端展示
+            List<DatasetTableField> checkedFieldList = new ArrayList<>();
+            dataTableInfoDTO.getList().forEach(ele -> {
+                checkedFieldList.addAll(dataSetTableFieldsService.getListByIds(ele.getCheckedFields()));
+            });
+            for (DatasetTableField datasetTableField : checkedFieldList) {
+                for (TableFiled tableFiled : fields) {
+                    if (StringUtils.equalsIgnoreCase(tableFiled.getFieldName(), DorisTableUtils.dorisFieldName(datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))) {
+                        tableFiled.setRemarks(datasetTableField.getName());
+                        break;
+                    }
                 }
             }
+
+            res.put("fields", fields);
+            res.put("data", jsonArray);
+            return res;
+        } catch (Exception e) {
+            return res;
         }
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("fields", fields);
-        map.put("data", jsonArray);
-
-        return map;
     }
 
     // 自助数据集从doris里预览数据
@@ -473,7 +477,7 @@ public class DataSetTableService {
         Map<String, String[]> customInfo = new TreeMap<>();
         dataTableInfoDTO.getList().forEach(ele -> {
             String table = DorisTableUtils.dorisName(ele.getTableId());
-            List<DatasetTableField> fields = dataSetTableFieldsService.getListByIds(ele.getCheckedFields());
+            List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
             String[] array = fields.stream().map(f -> table + "." + f.getDataeaseName() + " AS " + DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName())).toArray(String[]::new);
             customInfo.put(table, array);
         });
@@ -503,8 +507,14 @@ public class DataSetTableService {
                     }
                 }
             }
+            if (StringUtils.isEmpty(f)) {
+                throw new RuntimeException(Translator.get("i18n_custom_ds_delete"));
+            }
             return MessageFormat.format("SELECT {0} FROM {1}", f, DorisTableUtils.dorisName(first.getTableId())) + join.toString();
         } else {
+            if (StringUtils.isEmpty(StringUtils.join(customInfo.get(DorisTableUtils.dorisName(first.getTableId())), ","))) {
+                throw new RuntimeException(Translator.get("i18n_custom_ds_delete"));
+            }
             return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(customInfo.get(DorisTableUtils.dorisName(first.getTableId())), ","), DorisTableUtils.dorisName(first.getTableId()));
         }
     }

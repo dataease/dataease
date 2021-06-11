@@ -529,9 +529,6 @@ export default {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if (view.type.startsWith('text') || view.type.startsWith('gauge')) {
-        view.xaxis = []
-      }
       if (view.type === 'line' && trigger === 'chart') {
         view.customAttr.size.lineArea = false
       }
