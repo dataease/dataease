@@ -16,7 +16,7 @@
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.module_style')" name="component">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+<!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
             <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
