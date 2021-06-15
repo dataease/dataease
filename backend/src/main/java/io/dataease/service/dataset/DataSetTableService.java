@@ -271,8 +271,9 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
-                dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
+//                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
+//                dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
+                dataSetPreviewPage.setTotal(Integer.parseInt(dataSetTableRequest.getRow()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -294,8 +295,9 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(qp.createQueryCountSQLAsTmp(sql));
-                dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
+//                datasourceRequest.setQuery(qp.createQueryCountSQLAsTmp(sql));
+//                dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
+                dataSetPreviewPage.setTotal(Integer.parseInt(dataSetTableRequest.getRow()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -383,15 +385,16 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
-        // 使用输入的sql先预执行一次,并拿到所有字段
+
         if (StringUtils.isEmpty(sql)) {
             throw new Exception(Translator.get("i18n_sql_not_empty"));
         }
-        datasourceRequest.setQuery(sql);
-        List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
-        // 正式执行
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
+        String sqlAsTable = qp.createSQLPreview(sql, null);
+//        datasourceRequest.setQuery(sqlAsTable);
+//        List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
+        // 正式执行
+        datasourceRequest.setQuery(sqlAsTable);
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
@@ -545,7 +548,9 @@ public class DataSetTableService {
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
-            datasourceRequest.setQuery(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql());
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            String sqlAsTable = qp.createSQLPreview(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql(), null);
+            datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);

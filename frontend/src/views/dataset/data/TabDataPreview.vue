@@ -6,7 +6,7 @@
           <el-form-item>
             <span style="width: 100px;">{{ $t('dataset.showRow') }}</span>
             <el-input v-model="form.row">
-              <el-button size="mini" slot="append" icon="el-icon-search" @click="reSearch" />
+              <el-button slot="append" size="mini" icon="el-icon-search" @click="reSearch" />
             </el-input>
           </el-form-item>
         </el-form>
@@ -36,7 +36,7 @@
       </ux-table-column>
     </ux-grid>
     <el-row style="margin-top: 4px;">
-      <span class="table-count">
+      <span v-if="table.type === 'excel' || table.type === 'custom'" class="table-count">
         <span v-if="page.total <= currentPage.show">
           {{ $t('dataset.preview_total') }}
           <span class="span-number">{{ page.total }}</span>
@@ -50,6 +50,11 @@
           <span class="span-number">{{ page.total }}</span>
           {{ $t('dataset.preview_item') }}
         </span>
+      </span>
+      <span v-if="table.type === 'db' || table.type === 'sql'" class="table-count">
+        {{ $t('dataset.preview_show') }}
+        <span class="span-number">{{ page.total }}</span>
+        {{ $t('dataset.preview_item') }}
       </span>
       <el-pagination
         :current-page="currentPage.page"
@@ -129,9 +134,9 @@ export default {
       }, 10)
     },
     reSearch() {
-      if (!this.form.row || this.form.row === '' || this.form.row.length > 8 || isNaN(Number(this.form.row)) || String(this.form.row).includes('.')) {
+      if (!this.form.row || this.form.row === '' || this.form.row.length > 4 || isNaN(Number(this.form.row)) || String(this.form.row).includes('.')) {
         this.$message({
-          message: this.$t('dataset.pls_input_less_9'),
+          message: this.$t('dataset.pls_input_less_5'),
           type: 'error',
           showClose: true
         })

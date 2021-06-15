@@ -13,7 +13,7 @@
           <el-option
             v-for="item in allTypes"
             :key="item.name"
-            :label="item.name"
+            :label="item.label"
             :value="item.name"
           />
         </el-select>
@@ -65,7 +65,8 @@ export default {
         'configuration.host': [{ required: true, message: this.$t('datasource.please_input_host'), trigger: 'change' }],
         'configuration.port': [{ required: true, message: this.$t('datasource.please_input_port'), trigger: 'change' }]
       },
-      allTypes: [{ name: 'mysql', type: 'jdbc' }, { name: 'sqlServer', type: 'jdbc' }]
+      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
+        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' }]
     }
   },
 

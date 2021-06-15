@@ -808,7 +808,7 @@ export default {
     preview_show: '显示',
     preview_item: '条数据',
     preview_total: '共',
-    pls_input_less_9: '请输入9位以内的正整数',
+    pls_input_less_5: '请输入5位以内的正整数',
     field_edit: '编辑字段',
     table_already_add_to: '该表已添加至',
     uploading: '上传中...',
