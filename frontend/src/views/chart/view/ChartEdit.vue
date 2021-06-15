@@ -334,7 +334,7 @@
 </template>
 
 <script>
-import { post, ajaxGetData } from '@/api/chart/chart'
+import { ajaxGetData, post } from '@/api/chart/chart'
 import draggable from 'vuedraggable'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
@@ -342,18 +342,17 @@ import ResultFilterEditor from '../components/filter/ResultFilterEditor'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
-
 // shape attr,component style
 import {
+  DEFAULT_BACKGROUND_COLOR,
   DEFAULT_COLOR_CASE,
+  DEFAULT_LABEL,
+  DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
   DEFAULT_TITLE_STYLE,
-  DEFAULT_LEGEND_STYLE,
-  DEFAULT_LABEL,
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE,
-  DEFAULT_BACKGROUND_COLOR
+  DEFAULT_YAXIS_STYLE
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -646,6 +645,9 @@ export default {
           this.resetView()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
+          this.$nextTick(() => {
+            this.getChart(id)
+          })
           return true
         })
       } else {
@@ -666,9 +668,9 @@ export default {
           response.data.data = this.data
           this.chart = response.data
 
-          this.httpRequest.status = true
+          // this.httpRequest.status = true
         }).catch(err => {
-          this.resetView()
+          // this.resetView()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
           return true

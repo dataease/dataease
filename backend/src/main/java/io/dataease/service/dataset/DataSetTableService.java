@@ -81,6 +81,9 @@ public class DataSetTableService {
     private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
     @Resource
     private DatasetTableTaskLogMapper datasetTableTaskLogMapper;
+    private static String lastUpdateTime = "${__last_update_time__}";
+    private static String currentUpdateTime = "${__current_update_time__}";
+
     @Value("${upload.file.path}")
     private String path;
 
@@ -652,6 +655,7 @@ public class DataSetTableService {
         } else {
             return new DatasetTableIncrementalConfig();
         }
+
     }
 
     public DatasetTableIncrementalConfig incrementalConfig(String datasetTableId) {
@@ -661,7 +665,7 @@ public class DataSetTableService {
     }
 
 
-    public void saveIncrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig) {
+    public void saveIncrementalConfig(DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception{
         if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
             return;
         }
@@ -671,8 +675,65 @@ public class DataSetTableService {
         } else {
             datasetTableIncrementalConfigMapper.updateByPrimaryKey(datasetTableIncrementalConfig);
         }
+        checkColumes(datasetTableIncrementalConfig);
     }
 
+    private void checkColumes(DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
+        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(datasetTableIncrementalConfig.getTableId());
+        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(datasetTable.getId());
+        datasetTableFields.sort((o1, o2) -> {
+            if (o1.getOriginName() == null) {
+                return -1;
+            }
+            if (o2.getOriginName() == null) {
+                return 1;
+            }
+            return o1.getOriginName().compareTo(o2.getOriginName());
+        });
+        List<String> originNameFileds = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
+        Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
+            String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
+                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
+            datasourceRequest.setQuery(sql);
+            List<String> sqlFileds = new ArrayList<>();
+            datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
+                sqlFileds.add(filed);
+            });
+            sort(sqlFileds);
+            if(!originNameFileds.equals(sqlFileds)){
+                throw new Exception(Translator.get("i18n_sql_add_not_matching") + sqlFileds.toString());
+            }
+        }
+        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
+            String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
+                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
+            datasourceRequest.setQuery(sql);
+            List<String> sqlFileds = new ArrayList<>();
+            datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
+                sqlFileds.add(filed);
+            });
+            sort(sqlFileds);
+            if(!originNameFileds.equals(sqlFileds)){
+                throw new Exception(Translator.get("i18n_sql_delete_not_matching") + sqlFileds.toString());
+            }
+        }
+    }
+
+    private void sort(List<String> sqlFileds){
+        sqlFileds.sort((o1, o2) -> {
+            if (o1 == null) {
+                return -1;
+            }
+            if (o2 == null) {
+                return 1;
+            }
+            return o1.compareTo(o2);
+        });
+    }
     private void checkName(DatasetTable datasetTable) {
 //        if (StringUtils.isEmpty(datasetTable.getId()) && StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
 //            return;

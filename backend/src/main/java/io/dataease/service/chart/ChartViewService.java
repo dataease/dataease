@@ -180,6 +180,9 @@ public class ChartViewService {
             }
             data = datasourceProvider.getData(datasourceRequest);
         }
+        if (StringUtils.containsIgnoreCase(view.getType(), "pie") && data.size() > 1000) {
+            data = data.subList(0, 1000);
+        }
 
         // 图表组件可再扩展
         List<String> x = new ArrayList<>();

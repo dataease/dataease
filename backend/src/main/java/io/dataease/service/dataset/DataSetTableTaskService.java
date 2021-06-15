@@ -24,7 +24,7 @@ import java.util.UUID;
  * @Date 2021/3/4 1:26 下午
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class DataSetTableTaskService {
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;

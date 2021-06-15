@@ -472,7 +472,6 @@ export default {
       })
     },
     saveIncrementalConfig() {
-      this.update_setting = false
       if (this.incrementalUpdateType === 'incrementalAdd') {
         this.incrementalConfig.incrementalAdd = this.sql
       } else {
@@ -485,6 +484,7 @@ export default {
           type: 'success',
           showClose: true
         })
+        this.update_setting = false
       })
     },
     saveTask(task) {

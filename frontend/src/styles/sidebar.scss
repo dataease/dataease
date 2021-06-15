@@ -13,9 +13,9 @@
   }
   .sidebar-container {
     transition: width 0.28s;
-    width: $sideBarWidth !important;
+    // width: $sideBarWidth !important;
     background-color: $menuBg;
-    // height: 100%;
+     // width: 260px;
     height: $contentHeight;
     position: fixed;
     font-size: 0px;
@@ -25,7 +25,9 @@
     left: 0;
     z-index: 999;
     overflow: hidden;
-    border-right: 1px solid rgba(0, 0, 0, 0.12);
+    // min-width: 260px;
+    // max-width: 400px;
+    // border-right: 1px solid rgba(0, 0, 0, 0.12);
 
     // reset element-ui css
     .horizontal-collapse-transition {
