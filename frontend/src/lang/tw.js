@@ -808,7 +808,7 @@ export default {
     preview_show: '顯示',
     preview_item: '條數據',
     preview_total: '共',
-    pls_input_less_9: '請輸入9位以內的正整數',
+    pls_input_less_5: '請輸入5位以內的正整數',
     field_edit: '編輯字段',
     table_already_add_to: '該表已添加至',
     uploading: '上傳中...',

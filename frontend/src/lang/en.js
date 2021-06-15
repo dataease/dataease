@@ -808,7 +808,7 @@ export default {
     preview_show: 'Display',
     preview_item: 'items data',
     preview_total: 'Total',
-    pls_input_less_9: 'Please input integer less 9',
+    pls_input_less_5: 'Please input integer less 5',
     field_edit: 'Edit Field',
     table_already_add_to: 'This table is already add to',
     uploading: 'Uploading...',

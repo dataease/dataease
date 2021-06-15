@@ -18,7 +18,12 @@
       <!-- <el-table-column type="selection" fix /> -->
       <el-table-column prop="name" :label="$t('commons.name')" />
       <el-table-column prop="desc" :label="$t('commons.description')" />
-      <el-table-column prop="type" :label="$t('datasource.type')" />
+      <el-table-column prop="type" :label="$t('datasource.type')">
+        <template slot-scope="scope">
+          <span v-if="scope.row.type ==='mysql'">MySQL</span>
+          <span v-if="scope.row.type ==='sqlserver'">SQL Server</span>
+        </template>
+      </el-table-column>
       <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
 
     </complex-table>
