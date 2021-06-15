@@ -2,35 +2,43 @@
   <div :class="classObj" class="app-wrapper">
     <licbar />
     <topbar />
-    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar v-if="!sidebar.hide" class="sidebar-container" />
-    <div :class="{sidebarHide: sidebar.hide}" class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
-        <!-- <navbar /> -->
-      </div>
+
+    <de-container style="padding-top: 56px;">
+      <de-aside-container v-if="!sidebar.hide">
+        <sidebar class="sidebar-container" />
+      </de-aside-container>
+
+      <de-main-container class="la-main-container">
+        <app-main />
+      </de-main-container>
+    </de-container>
+
+    <!-- <de-main-container>
       <app-main />
-      <right-panel v-if="showSettings">
-        <settings />
-      </right-panel>
-    </div>
+    </de-main-container> -->
+
+    <!-- <div :class="{sidebarHide: sidebar.hide}" class="main-container">
+      <app-main />
+    </div> -->
   </div>
 </template>
 
 <script>
-import RightPanel from '@/components/RightPanel'
-import { Sidebar, Settings, AppMain, Topbar, Licbar } from './components'
-// import { Sidebar, Settings, AppMain, Topbar } from './components'
+import { Sidebar, AppMain, Topbar, Licbar } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
-
+import DeMainContainer from '@/components/dataease/DeMainContainer'
+import DeContainer from '@/components/dataease/DeContainer'
+import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 export default {
   name: 'Layout',
   components: {
-    RightPanel,
     Sidebar,
-    Settings,
     AppMain,
     Topbar,
-    Licbar
+    Licbar,
+    DeMainContainer,
+    DeContainer,
+    DeAsideContainer
   },
   mixins: [ResizeMixin],
   computed: {
@@ -70,8 +78,8 @@ export default {
   .app-wrapper {
     @include clearfix;
     position: relative;
-    // height: 100%;
-    height: $contentHeight;
+    height: 100%;
+    // height: $contentHeight;
     width: 100%;
     &.mobile.openSidebar{
       position: fixed;
@@ -103,5 +111,9 @@ export default {
 
   .mobile .fixed-header {
     width: 100%;
+  }
+
+  .la-main-container {
+      padding: 0px !important;
   }
 </style>

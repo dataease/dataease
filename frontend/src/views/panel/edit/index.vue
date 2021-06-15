@@ -101,7 +101,7 @@
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor :out-style="outStyle" />
+          <Editor v-if="!previewVisible" :out-style="outStyle" />
         </div>
       </de-main-container>
       <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">
@@ -135,14 +135,10 @@
       </div>
     </el-dialog>
 
-    <el-dialog
-      v-if="previewVisible"
-      :visible.sync="previewVisible"
-      :fullscreen="true"
-      custom-class="preview-dialog"
-    >
-      <PreviewFullScreen :fullscreen="previewVisible" />
-    </el-dialog>
+    <fullscreen style="height: 100%;background: none" :fullscreen.sync="previewVisible">
+      <Preview v-if="previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
+    </fullscreen>
+
   </el-row>
 </template>
 

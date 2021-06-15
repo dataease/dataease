@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasInfo" :style="customStyle" class="bg">
+  <div id="canvasInfoTemp" :style="customStyle" class="bg">
     <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
       {{ $t('panel.panelNull') }}
     </el-row>
@@ -101,7 +101,7 @@ export default {
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
-    erd.listenTo(document.getElementById('canvasInfo'), element => {
+    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
       _this.$nextTick(() => {
         _this.restore()
       })
@@ -116,8 +116,8 @@ export default {
     getStyle,
     restore() {
       debugger
-      const canvasHeight = document.getElementById('canvasInfo').offsetHeight
-      const canvasWidth = document.getElementById('canvasInfo').offsetWidth
+      const canvasHeight = document.getElementById('canvasInfoTemp').offsetHeight
+      const canvasWidth = document.getElementById('canvasInfoTemp').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
       if (this.showType === 'width') {
