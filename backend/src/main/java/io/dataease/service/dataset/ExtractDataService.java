@@ -245,7 +245,7 @@ public class ExtractDataService {
                             datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
                         }
 
-                        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
+                        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
                             String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString())
                                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
                             generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, sql);
@@ -253,7 +253,7 @@ public class ExtractDataService {
                             extractData(datasetTable, "incremental_add");
                         }
 
-                        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
+                        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
                             String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString())
                                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
                             generateTransFile("incremental_delete", datasetTable, datasource, datasetTableFields, sql);
@@ -563,21 +563,24 @@ public class ExtractDataService {
     }
 
     private String fetchSqlField(String sql, Datasource ds) throws Exception {
-        String tmpSql = sql;
+        String tmpSql = "SELECT * FROM (" + sqlFix(sql) + ") AS tmp " + " LIMIT 0";
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        if (tmpSql.trim().endsWith(";")) {
-            tmpSql = tmpSql.substring(0, tmpSql.length() - 1) + " limit 0";
-        } else {
-            tmpSql = tmpSql + " limit 0";
-        }
         datasourceRequest.setQuery(tmpSql);
-        List<String>dorisFileds = new ArrayList<>();
+        List<String> dorisFileds = new ArrayList<>();
         datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
             dorisFileds.add(DorisTableUtils.columnName(filed));
         });
         return String.join(",", dorisFileds);
+    }
+
+    private String sqlFix(String sql) {
+        sql = sql.trim();
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        return sql;
     }
 
 
