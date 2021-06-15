@@ -9,7 +9,7 @@
       :active-text-color="variables.topMenuActiveText"
       :default-active="activeMenu"
       mode="horizontal"
-      :style="{'background-color': '#f1f3f8'}"
+      :style="{'background-color': '#f1f3f8', 'margin-left': '260px', 'position': 'absolute'}"
       @select="handleSelect"
     >
       <div v-for="item in permission_routes" :key="item.path" class="nav-item">
