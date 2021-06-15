@@ -2,9 +2,7 @@
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
       <el-main class="ms-main-container">
-        <!-- <keep-alive> -->
         <router-view :key="key" />
-        <!-- </keep-alive> -->
       </el-main>
     </transition>
   </section>
@@ -26,11 +24,11 @@ export default {
 
     .app-main {
         /* topbar 56  */
-        min-height: calc(100vh - 56px);
-        width: 100%;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
+        // min-height: calc(100vh - 56px);
+        // width: 100%;
+        // height: 100%;
+         // position: relative;
+        // overflow: hidden;
     }
 
     .fixed-header + .app-main {
