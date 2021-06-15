@@ -567,7 +567,7 @@ public class DataSetTableService {
             List<DataTableInfoCustomUnion> list = dataTableInfoDTO.getList();
             List<DatasetTableField> fieldList = new ArrayList<>();
             list.forEach(ele -> {
-                List<DatasetTableField> listByIds = dataSetTableFieldsService.getListByIds(ele.getCheckedFields());
+                List<DatasetTableField> listByIds = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
                 listByIds.forEach(f -> {
                     f.setDataeaseName(DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName()));
                 });
