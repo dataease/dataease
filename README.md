@@ -1,4 +1,4 @@
-# DataEase 开源数据可视化分析平台
+# DataEase - 人人可用的开源数据可视化分析工具
 
 DataEase 是开源的数据可视化分析工具，帮助用户分析数据、改善业务。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。
 
@@ -15,6 +15,12 @@ TBD
 
 TBD
 
+## 在线体验
+
+-   环境地址：<https://demo.dataease.io/>
+-   用户名：demo
+-   密码：P@ssw0rd123..
+
 ## 快速开始
 
 仅需两步快速安装 DataEase：
@@ -28,19 +34,12 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 
 文档和演示视频：
 
--   [完整文档](https://dataease.io/docs/)
--   [演示视频] TBD
+- [在线文档](https://dataease.io/docs/)
+- [演示视频]
 
-## 版本说明
+## 微信群
 
-DataEase 版本号命名规则为：v大版本.功能版本.Bug修复版本。比如：
-
-```text
-v1.0.1 是 v1.0.0 之后的 Bug 修复版本；
-v1.1.0 是 v1.0.0 之后的功能版本。
-```
-
-像其它优秀开源项目一样，DataEase 将每月发布一个功能版本。
+![wechat-group](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png)
 
 ## 产品优势
 
@@ -180,25 +179,30 @@ v1.1.0 是 v1.0.0 之后的功能版本。
   </table>
 </body>
 
-
 ## 技术栈
 
--   后端: [Spring Boot](https://www.tutorialspoint.com/spring_boot/spring_boot_introduction.htm)
--   前端: [Vue.js](https://vuejs.org/)
--   中间件: [MySQL](https://www.mysql.com/)
--   数据处理: [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/), [Apache Doris](https://doris.apache.org/)
--   基础设施: [Docker](https://www.docker.com/)
+-   后端: [Spring Boot](https://www.tutorialspoint.com/spring_boot/spring_boot_introduction.htm)；
+-   前端: [Vue.js](https://vuejs.org/)；
+-   中间件: [MySQL](https://www.mysql.com/)；
+-   数据处理: [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/)、[Apache Doris](https://doris.apache.org/)；
+-   基础设施: [Docker](https://www.docker.com/)。
 
 ## 致谢
 
--   [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/)：DataEase 使用了 Kettle 进行数据处理工作
--   [Apache Doris](https://doris.apache.org/)：DataEase 使用了 Apache Doris 进行快速的数据分析
--   [Element](https://element.eleme.cn/#/)：感谢 Element 提供的优秀组件库
+-   [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/)：DataEase 使用了 Kettle 进行数据处理工作；
+-   [Apache Doris](https://doris.apache.org/)：DataEase 使用了 Apache Doris 进行快速的数据分析；
+-   [Element](https://element.eleme.cn/#/)：感谢 Element 提供的优秀组件库。
 
-## 微信群
+## 版本说明
 
-![wechat-group](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png)
+DataEase 版本号命名规则为：v大版本.功能版本.Bug修复版本。比如：
 
+```text
+v1.0.1 是 v1.0.0 之后的 Bug 修复版本；
+v1.1.0 是 v1.0.0 之后的功能版本。
+```
+
+像其它优秀开源项目一样，DataEase 将每月发布一个功能版本。
 
 ## License & Copyright
 
@@ -209,5 +213,3 @@ Licensed under The GNU General Public License version 2 (GPLv2)  (the "License")
 <https://www.gnu.org/licenses/gpl-2.0.html>
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
-
