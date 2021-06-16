@@ -87,7 +87,7 @@
     >
       <el-dialog
         v-dialogDrag
-        :title="$t('dataset.task_update')"
+        :title="update_task_dialog_title"
         :visible="update_task"
         :show-close="false"
         width="50%"
@@ -310,6 +310,7 @@ export default {
       update_setting: false,
       update_task: false,
       show_error_massage: false,
+      update_task_dialog_title: '',
       error_massage: '',
       taskForm: {
         name: '',
@@ -446,11 +447,15 @@ export default {
     },
     addTask(task) {
       if (!task) {
+        // add
         this.resetTaskForm()
         this.taskForm.name = this.table.name + ' ' + this.$t('dataset.task_update')
         this.taskForm.startTime = new Date()
+        this.update_task_dialog_title = this.$t('dataset.task_add_title')
       } else {
+        // update
         this.taskForm = JSON.parse(JSON.stringify(task))
+        this.update_task_dialog_title = this.$t('dataset.task_edit_title')
       }
       this.update_task = true
     },

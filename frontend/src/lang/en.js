@@ -839,7 +839,9 @@ export default {
     dataset_group: 'Dataset Group',
     m1: 'Move ',
     m2: ' To',
-    char_can_not_more_50: 'Dataset name can not more 50'
+    char_can_not_more_50: 'Dataset name can not more 50',
+    task_add_title: 'Add Task',
+    task_edit_title: 'Edit Task'
   },
   datasource: {
     datasource: 'Data Source',
