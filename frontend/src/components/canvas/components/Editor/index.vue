@@ -40,6 +40,8 @@
         :prop-value="item.propValue"
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
+        :edit-mode="'edit'"
+        :active="item === curComponent"
         @input="handleInput"
       />
       <component

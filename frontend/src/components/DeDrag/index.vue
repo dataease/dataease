@@ -1197,7 +1197,6 @@ export default {
 
       // 如果辅助设计 需要最后调整矩阵
       if (this.canvasStyleData.auxiliaryMatrix) {
-        debugger
         this.recordMatrixCurStyle()
       }
       this.hasMove && this.$store.commit('recordSnapshot')
