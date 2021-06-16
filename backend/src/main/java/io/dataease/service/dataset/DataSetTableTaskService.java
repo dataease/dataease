@@ -63,11 +63,8 @@ public class DataSetTableTaskService {
             // SIMPLE 类型，提前占位
             if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                 if(datasetTableTask.getType().equalsIgnoreCase("add_scope")){
-                    DatasetTableTaskLog request = new DatasetTableTaskLog();
-                    request.setTableId(datasetTableTask.getTableId());
-                    request.setStatus(JobStatus.Completed.name());
-                    List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(request);
-                    if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
+                    DatasetTable datasetTable = dataSetTableService.get(datasetTableTask.getTableId());
+                    if (datasetTable.getLastUpdateTime() == 0 || datasetTable.getLastUpdateTime() == null) {
                         throw new Exception(Translator.get("i18n_not_exec_add_sync"));
                     }
                 }
