@@ -197,7 +197,7 @@ export default {
       searchConfig: {
         useQuickSearch: true,
         useComplexSearch: true,
-        quickPlaceholder: '按名称搜索',
+        quickPlaceholder: '按姓名搜索',
         components: [
           { field: 'nick_name', label: '姓名', component: 'FuComplexInput' },
           {
