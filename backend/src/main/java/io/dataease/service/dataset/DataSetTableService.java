@@ -1055,6 +1055,11 @@ public class DataSetTableService {
         DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
         datasetTableTaskLogExample.createCriteria().andStatusEqualTo(JobStatus.Underway.name()).andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
+        for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
+            extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());
+            extractDataService.deleteFile("incremental_add", jobStoppeddDatasetTable.getId());
+            extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
 
+        }
     }
 }
