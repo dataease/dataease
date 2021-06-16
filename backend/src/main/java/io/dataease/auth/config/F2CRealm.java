@@ -60,10 +60,18 @@ public class F2CRealm extends AuthorizingRealm {
             CacheUtils.get("lic_info", "lic");
         }catch (Exception e) {
             LogUtil.error(e);
+            throw new AuthenticationException("lic error");
         }
-        String token = (String) auth.getCredentials();
-        // 解密获得username，用于和数据库进行对比
-        TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
+        TokenInfo tokenInfo = null;
+        String token = null;
+        try {
+            token = (String) auth.getCredentials();
+            // 解密获得username，用于和数据库进行对比
+            tokenInfo = JWTUtils.tokenInfoByToken(token);
+        }catch (Exception e) {
+            throw new AuthenticationException(e);
+        }
+
         Long userId = tokenInfo.getUserId();
         String username = tokenInfo.getUsername();
         if (username == null) {
