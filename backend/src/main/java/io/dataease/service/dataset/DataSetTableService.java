@@ -274,9 +274,8 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
             try {
-//                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
-//                dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
-                dataSetPreviewPage.setTotal(Integer.parseInt(dataSetTableRequest.getRow()));
+                datasourceRequest.setQuery(qp.createQuerySQL(table, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
+                dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -298,9 +297,8 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
             try {
-//                datasourceRequest.setQuery(qp.createQueryCountSQLAsTmp(sql));
-//                dataSetPreviewPage.setTotal(Integer.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]));
-                dataSetPreviewPage.setTotal(Integer.parseInt(dataSetTableRequest.getRow()));
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
+                dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
             }
