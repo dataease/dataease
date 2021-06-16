@@ -196,14 +196,15 @@ public class ExtractDataService {
                     }else {
                         generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     }
+                    Long execTime = System.currentTimeMillis();
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
                     deleteFile("all_scope", datasetTableId);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
+                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error);
+                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                     deleteFile("all_scope", datasetTableId);
                 }finally {
@@ -220,21 +221,19 @@ public class ExtractDataService {
                         datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, null);
                         generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
                         generateJobFile("incremental_add", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
+                        Long execTime = System.currentTimeMillis();
                         extractData(datasetTable, "incremental_add");
                         saveSucessLog(datasetTableTaskLog);
-                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
+                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                     }else {
                         DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
                         if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
-                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
+                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
                             return;
                         }
-                        DatasetTableTaskLog request = new DatasetTableTaskLog();
-                        request.setTableId(datasetTableId);
-                        request.setStatus(JobStatus.Completed.name());
-                        List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(request);
-                        if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
-                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
+
+                        if (datasetTable.getLastUpdateTime() == 0 || datasetTable.getLastUpdateTime() == null) {
+                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
                             return;
                         }
 
@@ -245,8 +244,9 @@ public class ExtractDataService {
                             datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
                         }
 
+                        Long execTime = System.currentTimeMillis();
                         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
-                            String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString())
+                            String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
                                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
                             generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, sql);
                             generateJobFile("incremental_add", datasetTable, fetchSqlField(sql, datasource));
@@ -254,7 +254,7 @@ public class ExtractDataService {
                         }
 
                         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
-                            String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, datasetTableTaskLogs.get(0).getStartTime().toString())
+                            String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
                                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
                             generateTransFile("incremental_delete", datasetTable, datasource, datasetTableFields, sql);
                             generateJobFile("incremental_delete", datasetTable, fetchSqlField(sql, datasource));
@@ -263,11 +263,11 @@ public class ExtractDataService {
                         saveSucessLog(datasetTableTaskLog);
                         deleteFile("incremental_add", datasetTableId);
                         deleteFile("incremental_delete", datasetTableId);
-                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed);
+                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                     }
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error);
+                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
                 }finally {
@@ -280,8 +280,11 @@ public class ExtractDataService {
             }
     }
 
-    private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed) {
+    private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed, Long execTime) {
         datasetTable.setSyncStatus(completed.name());
+        if(execTime != null){
+            datasetTable.setLastUpdateTime(execTime);
+        }
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTableId);
         datasetTableMapper.updateByExampleSelective(datasetTable, example);
@@ -429,13 +432,13 @@ public class ExtractDataService {
         JobMeta jobMeta = null;
         switch (extractType) {
             case "all_scope":
-                jobMeta = repository.loadJob("job_" + datasetTable.getId(), repositoryDirectoryInterface, null, null);
+                jobMeta = repository.loadJob("job_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, null);
                 break;
             case "incremental_add":
-                jobMeta = repository.loadJob("job_add_" + datasetTable.getId(), repositoryDirectoryInterface, null, null);
+                jobMeta = repository.loadJob("job_add_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, null);
                 break;
             case "incremental_delete":
-                jobMeta = repository.loadJob("job_delete_" + datasetTable.getId(), repositoryDirectoryInterface, null, null);
+                jobMeta = repository.loadJob("job_delete_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, null);
                 break;
             default:
                 break;
@@ -477,7 +480,7 @@ public class ExtractDataService {
     }
 
     private void generateJobFile(String extractType, DatasetTable datasetTable, String columnFeilds) throws Exception {
-        String dorisOutputTable = null;
+        String outFile = null;
         String jobName = null;
         String script = null;
         Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -486,22 +489,22 @@ public class ExtractDataService {
         String transName = null;
         switch (extractType) {
             case "all_scope":
-                transName = "trans_" + datasetTable.getId();
-                dorisOutputTable = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId()));
+                transName = "trans_" + DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId()));
                 jobName = "job_" + datasetTable.getId();
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), dorisOutputTable, root_path + dorisOutputTable + "." + extention);
+                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
                 break;
             case "incremental_add":
-                transName = "trans_add_" + datasetTable.getId();
-                dorisOutputTable = DorisTableUtils.dorisName(datasetTable.getId());
-                jobName = "job_add_" + datasetTable.getId();
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), dorisOutputTable, root_path + dorisOutputTable + "." + extention);
+                transName = "trans_add_" + DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisName(datasetTable.getId());
+                jobName = "job_add_" + DorisTableUtils.dorisName(datasetTable.getId());
+                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
                 break;
             case "incremental_delete":
-                transName = "trans_delete_" + datasetTable.getId();
-                dorisOutputTable = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(datasetTable.getId()));
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "DELETE", root_path + dorisOutputTable + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + dorisOutputTable + "." + extention);
-                jobName = "job_delete_" + datasetTable.getId();
+                transName = "trans_delete_" + DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(datasetTable.getId()));
+                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "DELETE", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
+                jobName = "job_delete_" + DorisTableUtils.dorisName(datasetTable.getId());
                 break;
             default:
                 break;
@@ -586,7 +589,7 @@ public class ExtractDataService {
 
     private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception {
         TransMeta transMeta = new TransMeta();
-        String dorisOutputTable = null;
+        String outFile = null;
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasource.getType());
         DatabaseMeta dataMeta = null;
         StepMeta inputStep = null;
@@ -640,18 +643,18 @@ public class ExtractDataService {
 
         switch (extractType) {
             case "all_scope":
-                transName = "trans_" + datasetTable.getId();
-                dorisOutputTable = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId()));
+                transName = "trans_" + DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId()));
                 transMeta.setName(transName);
                 break;
             case "incremental_add":
-                transName = "trans_add_" + datasetTable.getId();
-                dorisOutputTable = DorisTableUtils.dorisName(datasetTable.getId());
+                transName = "trans_add_" + DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisName(datasetTable.getId());
                 transMeta.setName(transName);
                 break;
             case "incremental_delete":
-                dorisOutputTable = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(datasetTable.getId()));
-                transName = "trans_delete_" + datasetTable.getId();
+                transName = "trans_delete_" + DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(datasetTable.getId()));
                 transMeta.setName(transName);
                 break;
             default:
@@ -659,7 +662,7 @@ public class ExtractDataService {
         }
 
 
-        outputStep = outputStep(dorisOutputTable);
+        outputStep = outputStep(outFile);
         hi1 = new TransHopMeta(inputStep, udjcStep);
         hi2 = new TransHopMeta(udjcStep, outputStep);
         transMeta.addTransHop(hi1);
@@ -779,26 +782,34 @@ public class ExtractDataService {
         return userDefinedJavaClassStep;
     }
 
-    private void deleteFile(String type, String dataSetTableId){
+    public void deleteFile(String type, String dataSetTableId){
         String transName = null;
         String jobName = null;
+        String fileName = null;
 
         switch (type) {
             case "all_scope":
                 transName = "trans_" + dataSetTableId;
                 jobName = "job_" + dataSetTableId;
+                fileName = DorisTableUtils.dorisTmpName(dataSetTableId);
                 break;
             case "incremental_add":
                 transName = "trans_add_" + dataSetTableId;
                 jobName = "job_add_" + dataSetTableId;
+                fileName = DorisTableUtils.dorisName(dataSetTableId);
                  break;
             case "incremental_delete":
                 transName = "trans_delete_" + dataSetTableId;
                 jobName = "job_delete_" + dataSetTableId;
+                fileName = DorisTableUtils.dorisDeleteName(dataSetTableId);
                 break;
             default:
                 break;
         }
+        try{
+            File file = new File(root_path + fileName + "." + extention);
+            FileUtils.forceDelete(file);
+        }catch (Exception e){}
         try{
             File file = new File(root_path + jobName + ".kjb");
             FileUtils.forceDelete(file);

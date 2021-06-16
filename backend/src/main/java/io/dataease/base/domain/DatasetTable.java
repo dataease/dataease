@@ -25,6 +25,8 @@ public class DatasetTable implements Serializable {
 
     private String syncStatus;
 
+    private Long lastUpdateTime;
+
     private String info;
 
     private static final long serialVersionUID = 1L;
