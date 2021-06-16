@@ -143,6 +143,7 @@
         label-width="120px"
         :rules="rule"
         class="demo-ruleForm"
+        @keyup.enter.native="editUserPassword('editPasswordForm')"
       >
         <el-form-item :label="$t('member.new_password')" prop="newPassword">
           <el-input v-model="ruleForm.newPassword" type="password" autocomplete="off" show-password />
