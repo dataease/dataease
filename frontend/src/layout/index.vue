@@ -4,7 +4,7 @@
     <topbar />
 
     <de-container style="padding-top: 56px;">
-      <de-aside-container v-if="!sidebar.hide">
+      <de-aside-container v-if="!sidebar.hide" class="le-aside-container">
         <sidebar class="sidebar-container" />
       </de-aside-container>
 
@@ -115,5 +115,11 @@ export default {
 
   .la-main-container {
       padding: 0px !important;
+  }
+  .le-aside-container {
+      .sidebar-container {
+        width: 100% !important;
+        position: initial !important;
+      }
   }
 </style>
