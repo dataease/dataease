@@ -55,15 +55,17 @@ export default {
       scaleWidth: '100',
       scaleHeight: '100',
       timer: null,
-      componentDataShow: []
+      componentDataShow: [],
+      mainWidth: '100%',
+      mainHeight: '100%'
     }
   },
   computed: {
     customStyle() {
       let style = {
         margin: 'auto',
-        width: '100%',
-        height: '100%'
+        width: this.mainWidth,
+        height: this.mainHeight
       }
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -122,6 +124,7 @@ export default {
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
       if (this.showType === 'width') {
         this.scaleHeight = this.scaleWidth
+        this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
       }
       this.handleScaleChange()
     },
