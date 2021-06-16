@@ -1,4 +1,4 @@
-FROM registry.cn-qingdao.aliyuncs.com/fit2cloud3/fabric8-java-alpine-openjdk8-jre
+FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre
 
 ARG IMAGE_TAG
 
