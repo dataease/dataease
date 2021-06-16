@@ -575,9 +575,7 @@ export default {
       this.activeTree = data.panelType
       if (data.nodeType === 'panel') {
         // 加载视图数据
-        // 如果是默认仪表盘 需要查询原仪表板的详细数据
-        const queryPanelId = data.panelType === 'system' ? data.source : data.id
-        findOne(queryPanelId).then(response => {
+        findOne(data.id).then(response => {
           const componentDatas = JSON.parse(response.data.panelData)
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])

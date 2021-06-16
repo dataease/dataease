@@ -141,7 +141,11 @@ public class PanelGroupService {
 
 
     public PanelGroupWithBLOBs findOne(String panelId) {
-        return panelGroupMapper.selectByPrimaryKey(panelId);
+        PanelGroupWithBLOBs panelGroupWithBLOBs = panelGroupMapper.selectByPrimaryKey(panelId);
+        if(panelGroupWithBLOBs!=null&& StringUtils.isNotEmpty(panelGroupWithBLOBs.getSource())){
+            return  panelGroupMapper.selectByPrimaryKey(panelGroupWithBLOBs.getSource());
+        }
+        return panelGroupWithBLOBs;
     }
 
 

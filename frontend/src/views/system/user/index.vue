@@ -162,7 +162,6 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-
 // import { checkPermission } from '@/utils/permission'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import { PHONE_REGEX } from '@/utils/validate'
@@ -199,7 +198,7 @@ export default {
         useComplexSearch: true,
         quickPlaceholder: '按姓名搜索',
         components: [
-          { field: 'nick_name', label: '姓名', component: 'FuComplexInput' },
+          { field: 'nick_name', label: '姓名', component: 'DeComplexInput' },
           {
             field: 'u.enabled',
             label: '状态',
