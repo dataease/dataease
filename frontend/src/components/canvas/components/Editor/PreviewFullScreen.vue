@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%;height: 100vh;">
-    <fullscreen style="background: #ffffff" :fullscreen.sync="fullscreen" @change="fullscreenChange">
+    <fullscreen style="height:100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen" @change="fullscreenChange">
       <Preview v-if="fullscreen" />
     </fullscreen>
   </div>

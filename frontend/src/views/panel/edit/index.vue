@@ -135,7 +135,7 @@
       </div>
     </el-dialog>
 
-    <fullscreen style="height: 100%;background: #f7f8fa" :fullscreen.sync="previewVisible">
+    <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
       <Preview v-if="previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
     </fullscreen>
 
