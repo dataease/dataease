@@ -28,7 +28,7 @@
       class-name-active="de-drag-active"
       :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
-      :snap-tolerance="5"
+      :snap-tolerance="1"
       @refLineParams="getRefLineParams"
     >
       <component
