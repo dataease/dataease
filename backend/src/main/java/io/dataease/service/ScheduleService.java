@@ -37,6 +37,10 @@ public class ScheduleService {
 //                if (endTime.before(new Date())) {
 //                    return;
 //                }
+                if (endTime.before(new Date())) {
+                    deleteSchedule(datasetTableTask);
+                    return;
+                }
             }
 
             scheduleManager.addOrUpdateCronJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()),

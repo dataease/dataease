@@ -26,7 +26,13 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
         List<DatasetTableTask> list = dataSetTableTaskService.list(new DatasetTableTask());
         for (DatasetTableTask task : list) {
             try {
-                scheduleService.addSchedule(task);
+                if (task.getEndTime() != null && task.getEndTime() > 0) {
+                    if (task.getEndTime() > System.currentTimeMillis()) {
+                        scheduleService.addSchedule(task);
+                    }
+                } else {
+                    scheduleService.addSchedule(task);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -136,7 +136,7 @@ public class GridExample {
                     addCriterion(field+" like ", "%"+value+"%", field);
                     break;
                 case "not like":
-                    addCriterion(field+" not like ", value, field);
+                    addCriterion(field+" not like ", "%"+value+"%", field);
                     break;
                 case "in":
                     List<Object> invalues = (List<Object>)value;
