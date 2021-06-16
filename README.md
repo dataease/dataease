@@ -7,10 +7,6 @@ DataEase 是开源的数据可视化分析工具，帮助用户分析数据、�
 - 数据引擎: 支持直连模式、本地模式(基于 Apache Doris / Kettle 实现);
 - 数据连接: 支持关系型数据库、Excel 等文件、Hadoop 等大数据平台、NoSQL 等各种数据源。
 
-## 功能架构
-
-![de-architecture](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/de-architecture.png)
-
 ## UI 展示
 
 ![de-ui](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/de-ui.png)
@@ -38,6 +34,10 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 ## 微信群
 
 ![wechat-group](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png)
+
+## 功能架构
+
+![de-architecture](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/de-architecture.png)
 
 ## 产品优势
 
