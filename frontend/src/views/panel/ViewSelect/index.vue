@@ -28,7 +28,7 @@
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
-              <span v-if="data.type==='scene'">
+              <span v-if="data.type==='scene'||data.type==='group'">
                 <el-button
                   icon="el-icon-folder"
                   type="text"

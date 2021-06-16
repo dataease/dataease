@@ -21,6 +21,14 @@ public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<Pane
 
     private String privileges;
 
+    private String defaultPanelId;
+
+    private String defaultPanelName;
+
+    private Boolean isDefault;
+
+    private String sourcePanelName;
+
     private List<PanelGroupDTO> children = new ArrayList<>();
 
 

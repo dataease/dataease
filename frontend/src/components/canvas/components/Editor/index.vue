@@ -375,8 +375,13 @@ export default {
       let left = 0
       // 如果档期有计划的组件 坐标取当前组件的加上偏移量
       if (this.curComponent && !target.className.includes('editor')) {
-        top = this.curComponent.style.top * this.scaleHeight / 100 + e.offsetY
-        left = this.curComponent.style.left * this.scaleWidth / 100 + e.offsetX
+        if (this.canvasStyleData.selfAdaption) {
+          top = this.curComponent.style.top * this.scaleHeight / 100 + e.offsetY
+          left = this.curComponent.style.left * this.scaleWidth / 100 + e.offsetX
+        } else {
+          top = this.curComponent.style.top + e.offsetY
+          left = this.curComponent.style.left + e.offsetX
+        }
       } else {
         // 计算菜单相对于编辑器的位移
         top = e.offsetY

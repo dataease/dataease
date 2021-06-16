@@ -839,7 +839,9 @@ export default {
     dataset_group: '数据集分组',
     m1: '将 ',
     m2: ' 移动到',
-    char_can_not_more_50: '数据集名称不能超过50个字符'
+    char_can_not_more_50: '数据集名称不能超过50个字符',
+    task_add_title: '添加任务',
+    task_edit_title: '编辑任务'
   },
   datasource: {
     datasource: '数据源',
@@ -989,7 +991,9 @@ export default {
     border_style_dashed: '虚线',
     select_component: '请选择组件',
     other_module: '其他',
-    content: '内容'
+    content: '内容',
+    default_panel_name: '默认仪表板名称',
+    source_panel_name: '原仪表板名称'
   },
   plugin: {
     local_install: '本地安装',

@@ -21,7 +21,7 @@
       <el-table-column prop="type" :label="$t('datasource.type')">
         <template slot-scope="scope">
           <span v-if="scope.row.type ==='mysql'">MySQL</span>
-          <span v-if="scope.row.type ==='sqlserver'">SQL Server</span>
+          <span v-if="scope.row.type ==='sqlServer'">SQL Server</span>
         </template>
       </el-table-column>
       <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
@@ -151,7 +151,7 @@ export default {
             field: 'type',
             label: this.$t('datasource.type'),
             component: 'FuComplexSelect',
-            options: [{ label: 'mysql', value: 'mysql' }, { label: 'sqlServer', value: 'sqlServer' }],
+            options: [{ label: 'MySQL', value: 'mysql' }, { label: 'SQL Server', value: 'sqlServer' }],
             multiple: false
           }
         //   { field: 'deptId', label: '组织', component: conditionTable }

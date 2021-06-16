@@ -115,7 +115,7 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
                         {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-copy-document" :command="beforeClickMore('toDefaultPanel',data,node)">
+                      <el-dropdown-item v-if="data.nodeType==='panel'" :disabled="data.isDefault" icon="el-icon-copy-document" :command="beforeClickMore('toDefaultPanel',data,node)">
                         {{ $t('panel.to_default_panel') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
@@ -575,7 +575,9 @@ export default {
       this.activeTree = data.panelType
       if (data.nodeType === 'panel') {
         // 加载视图数据
-        findOne(data.id).then(response => {
+        // 如果是默认仪表盘 需要查询原仪表板的详细数据
+        const queryPanelId = data.panelType === 'system' ? data.source : data.id
+        findOne(queryPanelId).then(response => {
           const componentDatas = JSON.parse(response.data.panelData)
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])

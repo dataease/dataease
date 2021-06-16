@@ -69,7 +69,7 @@ public class PanelGroupService {
     public List<PanelGroupDTO> defaultTree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
-        List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(panelGroupRequest);
+        List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupListDefault(panelGroupRequest);
         List<PanelGroupDTO> result = TreeUtils.mergeTree(panelGroupDTOList,"default_panel");
         return result;
     }
@@ -132,6 +132,7 @@ public class PanelGroupService {
 
     public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
+        // 同时会删除对应默认仪表盘
         extPanelGroupMapper.deleteCircle(id);
         storeService.removeByPanelId(id);
         shareService.delete(id, null);

@@ -6,6 +6,9 @@
         <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
           <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
             <span>{{ panelInfo.name || '测试仪表板' }}</span>
+            &nbsp;
+            <span v-if="panelInfo.isDefault" style="color: green;font-size: 12px">({{ $t('panel.default_panel_name') }}:{{ panelInfo.defaultPanelName }})</span>
+            <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
             <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
@@ -47,7 +50,7 @@
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
-          <fullscreen style="height: 100%;background: #f7f8fa" :fullscreen.sync="fullscreen">
+          <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
             <Preview v-if="showMain" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
           </fullscreen>
         </div>
