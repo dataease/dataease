@@ -989,7 +989,9 @@ export default {
     border_style_dashed: 'Dashed',
     select_component: 'Check Component',
     other_module: 'Other',
-    content: 'Content'
+    content: 'Content',
+    default_panel_name: 'Default Dashboard Name',
+    source_panel_name: 'Source Dashboard Name'
   },
   plugin: {
     local_install: 'Local installation',

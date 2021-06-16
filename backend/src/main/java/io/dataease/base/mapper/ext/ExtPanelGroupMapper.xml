@@ -6,6 +6,10 @@
                extends="io.dataease.base.mapper.PanelGroupMapper.BaseResultMap">
         <result column="label" jdbcType="VARCHAR" property="label"/>
         <result column="privileges" jdbcType="VARCHAR" property="privileges"/>
+        <result column="default_panel_id" jdbcType="VARCHAR" property="defaultPanelId"/>
+        <result column="default_panel_name" jdbcType="VARCHAR" property="defaultPanelName"/>
+        <result column="source_panel_name" jdbcType="VARCHAR" property="sourcePanelName"/>
+        <result column="is_default" property="isDefault"/>
     </resultMap>
 
     <select id="panelGroup" resultMap="BaseResultMapDTO">
@@ -14,32 +18,70 @@
 
     <select id="panelGroupListDefault" resultMap="BaseResultMapDTO">
         SELECT
-        id,
-        `name`,
-        pid,
-        `level`,
-        node_type,
-        create_by,
-        create_time,
-        panel_type,
-        `name` AS label
-        from panel_group
-        where panel_group.panel_type=#{panelType}
+        panel_group.id,
+        panel_group.`name`,
+        panel_group.pid,
+        panel_group.`level`,
+        panel_group.node_type,
+        panel_group.create_by,
+        panel_group.create_time,
+        panel_group.panel_type,
+        panel_group.`name` AS label,
+        panel_group.`source`,
+        panel_group.`panel_type`,
+        sourcePanelGroup.`name` as source_panel_name,
+        get_auths(panel_group.id,'panel',#{userId}) as `privileges`
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
+        LEFT JOIN (select id,`name` from panel_group) sourcePanelGroup
+        on sourcePanelGroup.id=panel_group.source
+        <where>
+            FIND_IN_SET(panel_group.id,cids)
+            <if test="name != null">
+                and panel_group.name like CONCAT('%', #{name},'%')
+            </if>
+            <if test="nodeType != null">
+                and panel_group.node_type = #{nodeType}
+            </if>
+            <if test="panelType != null">
+                and panel_group.panel_type = #{panelType}
+            </if>
+            <if test="id != null">
+                and panel_group.id = #{id}
+            </if>
+            <if test="pid != null">
+                and panel_group.pid = #{pid}
+            </if>
+            <if test="level != null">
+                and panel_group.level = #{level}
+            </if>
+        </where>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+        <if test="sort == null">
+            order by panel_group.create_time desc
+        </if>
     </select>
 
     <select id="panelGroupList" resultMap="BaseResultMapDTO">
         SELECT
-        id,
-        `name`,
-        pid,
-        `level`,
-        node_type,
-        create_by,
-        create_time,
-        panel_type,
-        `name` AS label,
-        get_auths(id,'panel',#{userId}) as `privileges`
+        panel_group.id,
+        panel_group.`name`,
+        panel_group.pid,
+        panel_group.`level`,
+        panel_group.node_type,
+        panel_group.create_by,
+        panel_group.create_time,
+        panel_group.panel_type,
+        panel_group.`name` AS label,
+        panel_group.`node_type`,
+        (case when ISNULL(defaultPanelGroup.id) then false else true end) is_default,
+        defaultPanelGroup.id as default_panel_id,
+        defaultPanelGroup.`name` as default_panel_name,
+        get_auths(panel_group.id,'panel',#{userId}) as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
+        LEFT JOIN (select source,id,`name` from panel_group where source is not null) defaultPanelGroup
+        on defaultPanelGroup.source=panel_group.id
         <where>
             FIND_IN_SET(panel_group.id,cids)
             <if test="name != null">
@@ -70,6 +112,7 @@
     </select>
 
     <delete id="deleteCircle">
-        delete from panel_group where FIND_IN_SET(panel_group.id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        delete from panel_group where FIND_IN_SET(panel_group.id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid})) or FIND_IN_SET(panel_group.source,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
     </delete>
+
 </mapper>
