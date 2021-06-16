@@ -112,7 +112,7 @@ public class ExtractDataService {
     private String passwd;
     private static String creatTableSql = "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
             "Column_Fields" +
-            "DUPLICATE KEY(dataease_uuid)\n" +
+            "UNIQUE KEY(dataease_uuid)\n" +
             "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS 10\n" +
             "PROPERTIES(\"replication_num\" = \"1\");";
 
