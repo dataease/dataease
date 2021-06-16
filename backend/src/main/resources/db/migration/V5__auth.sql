@@ -400,7 +400,7 @@ SELECT
 		GROUP BY
 			sys_auth.auth_source_type,
 			sys_auth.auth_source
-			having  (sum( sys_auth_detail.privilege_value )> 0 or 1 = ( SELECT is_admin FROM sys_user WHERE user_id = 1 ))) temp;
+			having  (sum( sys_auth_detail.privilege_value )> 0 or 1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))) temp;
 
 			select GROUP_CONCAT(id) into oTempAllIds from (select GET_V_AUTH_MODEL_WITH_PARENT ( oTempLeafIds ,modelType) cids) t, v_auth_model where v_auth_model.model_type=modelType and FIND_IN_SET(v_auth_model.id,cids);
 
