@@ -1,24 +1,25 @@
 <template>
-  <div @click="handleClick">
+  <div
+    :style="getOutStyleDefault(config.style)"
+    :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
+    class="component"
+    @click="handleClick"
+  >
     <component
       :is="config.component"
       v-if="config.type==='custom'"
       :id="'component' + config.id"
-      class="component"
-      :style="getStyle(config.style)"
+      :style="getComponentStyleDefault(config.style)"
       :out-style="config.style"
       :element="config"
-      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     />
     <component
       :is="config.component"
       v-else
-      class="component"
       :out-style="config.style"
-      :style="getStyle(config.style)"
+      :style="getComponentStyleDefault(config.style)"
       :prop-value="config.propValue"
       :element="config"
-      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     />
   </div>
 </template>
@@ -54,6 +55,26 @@ export default {
   methods: {
     getStyle,
 
+    getOutStyleDefault(style) {
+      const result = {};
+      ['width', 'left'].forEach(attr => {
+        result[attr] = style[attr] + 'px'
+      });
+      ['height', 'top'].forEach(attr => {
+        result[attr] = style[attr] + 'px'
+      })
+      result['rotate'] = style['rotate']
+      result['opacity'] = style['opacity']
+
+      return result
+      // return style
+    },
+
+    getComponentStyleDefault(style) {
+      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // return style
+    },
+
     handleClick() {
       const events = this.config.events
       Object.keys(events).forEach(event => {
@@ -67,5 +88,9 @@ export default {
 <style lang="scss" scoped>
 .component {
     position: absolute;
+}
+
+.gap_class{
+  padding:3px;
 }
 </style>

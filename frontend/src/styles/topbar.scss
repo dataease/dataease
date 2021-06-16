@@ -32,12 +32,12 @@
 
       .nav-item {
         display: inline-block;
-        .el-menu-item {
+        .el-menu-item:not(.is-active) {
           // color: rgb(191, 203, 217);
           color: $menuText;
           &:hover {
-            background-color: $subMenuHover !important;
-            color: $subMenuActiveText !important;
+            background-color: $menuHover !important;
+            // color: $subMenuActiveText !important;
           }
           &:focus {
             background-color: $subMenuHover !important;

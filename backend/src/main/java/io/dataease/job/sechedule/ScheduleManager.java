@@ -2,13 +2,13 @@ package io.dataease.job.sechedule;
 
 import io.dataease.commons.utils.LogUtil;
 import org.quartz.*;
-import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class ScheduleManager {
@@ -84,6 +84,8 @@ public class ScheduleManager {
                 } else {
                     triggerBuilder.endAt(endTime);
                 }
+            } else {
+                triggerBuilder.endAt(null);
             }
 
             triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cron));
@@ -167,6 +169,8 @@ public class ScheduleManager {
                 } else {
                     triggerBuilder.endAt(endTime);
                 }
+            } else {
+                triggerBuilder.endAt(null);
             }
 
             triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cron));// 触发器时间设定
