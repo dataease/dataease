@@ -20,6 +20,7 @@ import widgets from '@/components/widget'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
+import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
 
 import '@/components/canvas/custom-component' // 注册自定义组件
 Vue.config.productionTip = false
@@ -69,6 +70,7 @@ Vue.use(filter)
 Vue.use(directives)
 Vue.use(message)
 Vue.component('Treeselect', Treeselect)
+Vue.component('DeComplexInput', DeComplexInput)
 Vue.config.productionTip = false
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
