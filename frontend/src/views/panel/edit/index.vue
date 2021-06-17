@@ -105,7 +105,7 @@
         </div>
       </de-main-container>
       <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">
-        <AttrList v-if="curComponent" />
+        <AttrListExtend v-if="curComponent" />
         <p v-else class="placeholder">{{ $t('panel.select_component') }}</p>
       </de-aside-container>
 
@@ -162,6 +162,7 @@ import { findOne } from '@/api/panel/panel'
 import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrList from '@/components/canvas/components/AttrList'
+import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
 
@@ -187,6 +188,7 @@ export default {
     PreviewFullScreen,
     Preview,
     AttrList,
+    AttrListExtend,
     AssistComponent
   },
   data() {
@@ -586,8 +588,8 @@ export default {
   background-color: #ffffff!important;
 }
 .style-aside{
-  width: 200px;
-  max-width:200px!important;
+  width: 250px;
+  max-width:250px!important;
   border: 1px solid #E6E6E6;
   padding: 10px;
   transition: all 0.3s;
