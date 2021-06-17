@@ -578,6 +578,7 @@ export default {
       view.type = 'bar'
       view.customAttr = JSON.stringify({
         color: DEFAULT_COLOR_CASE,
+        tableColor: DEFAULT_COLOR_CASE,
         size: DEFAULT_SIZE,
         label: DEFAULT_LABEL,
         tooltip: DEFAULT_TOOLTIP

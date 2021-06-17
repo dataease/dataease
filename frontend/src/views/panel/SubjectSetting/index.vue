@@ -6,7 +6,7 @@
       <slider />
     </div>
     <!--折叠面板-->
-    <div style="margin: 10px;overflow-y: auto">
+    <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
       <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row style="background-color: #f7f8fa; margin: 5px">
@@ -16,7 +16,7 @@
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.module_style')" name="component">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-<!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
+            <!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
             <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
@@ -27,7 +27,7 @@
         </el-collapse-item>
         <el-collapse-item :title="$t('panel.table')" name="table">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <color-selector :source-type="'panelTable'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+            <color-selector v-if="tableChart" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
           </el-row>
         </el-collapse-item>
       </el-collapse>
@@ -41,10 +41,10 @@ import BackgroundSelector from './PanelStyle/BackgroundSelector'
 import ComponentGap from './PanelStyle/ComponentGap'
 
 import ColorSelector from '@/views/chart/components/shape-attr/ColorSelector'
-import TitleSelector from '@/views/chart/components/component-style/TitleSelector'
 import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import bus from '@/utils/bus'
 
 export default {
   components: {
@@ -52,14 +52,15 @@ export default {
     BackgroundSelector,
     ComponentGap,
     ColorSelector,
-    TitleSelector,
     BackgroundColorSelector
   },
   data() {
     return {
       panelInfo: this.$store.state.panel.panelInfo,
       activeNames: ['panel'],
-      chart: null
+      chart: null,
+      tableChart: null,
+      collapseShow: true
     }
   },
   computed: mapState([
@@ -68,22 +69,38 @@ export default {
 
   watch: {
   },
+
+  mounted() {
+    bus.$on('onSubjectChange', () => {
+      this.collapseShow = false
+      this.$nextTick(() => (this.collapseShow = true))
+    })
+  },
   created() {
-    // 初始化赋值
-    const chart = deepCopy(this.canvasStyleData.chart)
-    if (chart.xaxis) {
-      chart.xaxis = JSON.parse(chart.xaxis)
-    }
-    if (chart.yaxis) {
-      chart.yaxis = JSON.parse(chart.yaxis)
-    }
-    chart.customAttr = JSON.parse(chart.customAttr)
-    chart.customStyle = JSON.parse(chart.customStyle)
-    chart.customFilter = JSON.parse(chart.customFilter)
-    this.chart = chart
+    debugger
+    this.init()
   },
 
   methods: {
+
+    init() {
+      // 初始化赋值
+      const chart = deepCopy(this.canvasStyleData.chart)
+      if (chart.xaxis) {
+        chart.xaxis = JSON.parse(chart.xaxis)
+      }
+      if (chart.yaxis) {
+        chart.yaxis = JSON.parse(chart.yaxis)
+      }
+      chart.customAttr = JSON.parse(chart.customAttr)
+      chart.customStyle = JSON.parse(chart.customStyle)
+      chart.customFilter = JSON.parse(chart.customFilter)
+      this.chart = chart
+
+      // 因为 table 的color 设置和view的共用 所以单独设置一个对象
+      this.tableChart = deepCopy(this.chart)
+      this.tableChart.customAttr.color = this.tableChart.customAttr.tableColor
+    },
     handleChange(val) {
       // console.log(val)
     },
@@ -92,6 +109,10 @@ export default {
     },
     onColorChange(val) {
       this.chart.customAttr.color = val
+      this.save()
+    },
+    onTableColorChange(val) {
+      this.chart.customAttr.tableColor = val
       this.save()
     },
     onTextChange(val) {

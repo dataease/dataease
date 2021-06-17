@@ -57,6 +57,7 @@
 <script>
 import { chartTransStr2Object } from '@/views/panel/panel'
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 
 export default {
   name: 'StyleTemplateItem',
@@ -131,8 +132,8 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          opacity: this.subjectItemDetails.chart.customAttr.color.alpha / 100,
-          background: this.subjectItemDetails.chart.customAttr.color.tableHeaderBgColor
+          opacity: this.subjectItemDetails.chart.customAttr.tableColor.alpha / 100,
+          background: this.subjectItemDetails.chart.customAttr.tableColor.tableHeaderBgColor
         }
       }
       return style
@@ -141,7 +142,7 @@ export default {
       let style = {}
       if (this.subjectItemDetails) {
         style = {
-          background: this.subjectItemDetails.chart.customAttr.color.tableFontColor
+          background: this.subjectItemDetails.chart.customAttr.tableColor.tableFontColor
         }
       }
       return style
@@ -189,6 +190,7 @@ export default {
     subjectChange() {
       this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
       this.$store.commit('recordSnapshot')
+      bus.$emit('onSubjectChange')
     },
     templateEdit() {
       this.$emit('templateEdit', this.template)

@@ -68,6 +68,7 @@ export default {
         title: '',
         customAttr: JSON.stringify({
           color: DEFAULT_COLOR_CASE,
+          tableColor: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE,
           label: DEFAULT_LABEL,
           tooltip: DEFAULT_TOOLTIP
@@ -148,7 +149,11 @@ export default {
         // 组件样式-背景设置
         customStyleChart.background = customStylePanel.background
         // 图形属性-颜色设置
-        customAttrChart.color = customAttrPanel.color
+        if (this.chart.type.includes('table')) {
+          customAttrChart.color = customAttrPanel.tableColor
+        } else {
+          customAttrChart.color = customAttrPanel.color
+        }
 
         this.chart = {
           ...this.chart,

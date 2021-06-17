@@ -36,6 +36,7 @@ export const DEFAULT_COMMON_CANVAS_STYLE = {
     title: '',
     customAttr: {
       color: DEFAULT_COLOR_CASE,
+      tableColor: DEFAULT_COLOR_CASE,
       size: DEFAULT_SIZE,
       label: DEFAULT_LABEL,
       tooltip: DEFAULT_TOOLTIP
