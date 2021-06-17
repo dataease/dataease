@@ -8,7 +8,13 @@ export function dsGrid(pageIndex, pageSize, data) {
     data
   })
 }
-
+export function listDatasource() {
+  return request({
+    url: '/datasource/list',
+    loading: true,
+    method: 'get'
+  })
+}
 export function addDs(data) {
   return request({
     url: 'datasource/add/',
@@ -40,4 +46,4 @@ export function validateDs(data) {
   })
 }
 
-export default { dsGrid, addDs, editDs, delDs, validateDs }
+export default { dsGrid, addDs, editDs, delDs, validateDs, listDatasource }

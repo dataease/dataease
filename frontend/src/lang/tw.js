@@ -846,6 +846,8 @@ export default {
   },
   datasource: {
     datasource: '數據源',
+    please_select_left: '請從左側選擇數據源',
+    show_info: '數據源信息',
     create: '新建數據源',
     type: '類型',
     please_choose_type: '請選擇數據源類型',
