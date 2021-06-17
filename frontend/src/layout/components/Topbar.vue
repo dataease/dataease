@@ -211,7 +211,7 @@ export default {
     // 设置侧边栏的显示和隐藏
     setSidebarHide(route) {
     //   if (!route.children || route.children.length === 1) {
-      if (!route.children || this.showChildLength(route) === 1) {
+      if (route.name !== 'system' && (!route.children || this.showChildLength(route) === 1)) {
         this.$store.dispatch('app/toggleSideBarHide', true)
       } else {
         this.$store.dispatch('app/toggleSideBarHide', false)
