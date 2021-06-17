@@ -703,7 +703,7 @@ public class DataSetTableService {
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
             String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(sql);
+            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);
@@ -716,7 +716,7 @@ public class DataSetTableService {
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
             String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(sql);
+            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);

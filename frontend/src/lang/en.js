@@ -446,7 +446,8 @@ export default {
     origin_passwd: 'Origin Password',
     new_passwd: 'New Password',
     confirm_passwd: 'Confirm Password',
-    change_password: 'Change Password'
+    change_password: 'Change Password',
+    search_by_name: 'Search by name'
   },
   role: {
     menu_authorization: 'Menu Authorization',

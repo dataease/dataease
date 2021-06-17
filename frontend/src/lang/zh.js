@@ -446,7 +446,8 @@ export default {
     origin_passwd: '原始密码',
     new_passwd: '新密码',
     confirm_passwd: '确认密码',
-    change_password: '修改密码'
+    change_password: '修改密码',
+    search_by_name: '按姓名搜索'
   },
   role: {
     menu_authorization: '菜单授权',

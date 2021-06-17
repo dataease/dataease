@@ -120,6 +120,7 @@ export default {
       .sidebar-container {
         width: 100% !important;
         position: initial !important;
+        height: calc(100vh - 80px) !important;
       }
   }
 </style>

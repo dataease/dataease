@@ -14,6 +14,10 @@ public class DorisTableUtils {
         return "delete_" + dorisName;
     }
 
+    public static String dorisAddName(String dorisName) {
+        return "add_" + dorisName;
+    }
+
     public static String dorisFieldName(String dorisName) {
         return "f_" + Md5Utils.md5(dorisName);
     }

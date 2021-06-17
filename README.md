@@ -1,3 +1,8 @@
+![license](https://img.shields.io/github/license/dataease/dataease?color=%231890FF&style=flat-square)
+![release](https://img.shields.io/github/v/release/dataease/dataease?color=%231890FF&sort=semver&style=flat-square)
+![stars](https://img.shields.io/github/stars/dataease/dataease?color=%231890FF&style=flat-square)
+![downloads](https://img.shields.io/github/downloads/dataease/dataease/total)
+
 # DataEase - 人人可用的开源数据可视化分析工具
 
 DataEase 是开源的数据可视化分析工具，帮助用户分析数据、改善业务。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。

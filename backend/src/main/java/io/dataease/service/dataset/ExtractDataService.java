@@ -491,12 +491,12 @@ public class ExtractDataService {
             case "all_scope":
                 transName = "trans_" + DorisTableUtils.dorisName(datasetTable.getId());
                 outFile = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId()));
-                jobName = "job_" + datasetTable.getId();
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
+                jobName = "job_" + DorisTableUtils.dorisName(datasetTable.getId());
+                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId())), root_path + outFile + "." + extention);
                 break;
             case "incremental_add":
                 transName = "trans_add_" + DorisTableUtils.dorisName(datasetTable.getId());
-                outFile = DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisAddName(datasetTable.getId());
                 jobName = "job_add_" + DorisTableUtils.dorisName(datasetTable.getId());
                 script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
                 break;
@@ -566,11 +566,10 @@ public class ExtractDataService {
     }
 
     private String fetchSqlField(String sql, Datasource ds) throws Exception {
-        String tmpSql = "SELECT * FROM (" + sqlFix(sql) + ") AS tmp " + " LIMIT 0";
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        datasourceRequest.setQuery(tmpSql);
+        datasourceRequest.setQuery(sqlFix(sql));
         List<String> dorisFileds = new ArrayList<>();
         datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
             dorisFileds.add(DorisTableUtils.columnName(filed));
@@ -578,12 +577,13 @@ public class ExtractDataService {
         return String.join(",", dorisFileds);
     }
 
-    private String sqlFix(String sql) {
+    public String sqlFix(String sql) {
         sql = sql.trim();
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
         }
-        return sql;
+        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0";
+        return tmpSql;
     }
 
 
@@ -649,7 +649,7 @@ public class ExtractDataService {
                 break;
             case "incremental_add":
                 transName = "trans_add_" + DorisTableUtils.dorisName(datasetTable.getId());
-                outFile = DorisTableUtils.dorisName(datasetTable.getId());
+                outFile = DorisTableUtils.dorisAddName(datasetTable.getId());
                 transMeta.setName(transName);
                 break;
             case "incremental_delete":
@@ -789,18 +789,18 @@ public class ExtractDataService {
 
         switch (type) {
             case "all_scope":
-                transName = "trans_" + dataSetTableId;
-                jobName = "job_" + dataSetTableId;
+                transName = "trans_" + DorisTableUtils.dorisName(dataSetTableId);
+                jobName = "job_" + DorisTableUtils.dorisName(dataSetTableId);
                 fileName = DorisTableUtils.dorisTmpName(dataSetTableId);
                 break;
             case "incremental_add":
-                transName = "trans_add_" + dataSetTableId;
-                jobName = "job_add_" + dataSetTableId;
-                fileName = DorisTableUtils.dorisName(dataSetTableId);
+                transName = "trans_add_" + DorisTableUtils.dorisName(dataSetTableId);
+                jobName = "job_add_" + DorisTableUtils.dorisName(dataSetTableId);
+                fileName = DorisTableUtils.dorisAddName(dataSetTableId);
                  break;
             case "incremental_delete":
-                transName = "trans_delete_" + dataSetTableId;
-                jobName = "job_delete_" + dataSetTableId;
+                transName = "trans_delete_" + DorisTableUtils.dorisName(dataSetTableId);
+                jobName = "job_delete_" + DorisTableUtils.dorisName(dataSetTableId);
                 fileName = DorisTableUtils.dorisDeleteName(dataSetTableId);
                 break;
             default:

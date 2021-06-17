@@ -92,7 +92,7 @@
             width="500"
             trigger="click"
           >
-            <dataset-group-selector :custom-type="customType" :mode="1" @getTable="getTable" />
+            <dataset-group-selector show-mode="union" :custom-type="customType" :mode="1" @getTable="getTable" />
             <el-button slot="reference" size="mini" style="width: 100%;">
               <p class="table-name-css" :title="targetTable.name || $t('dataset.pls_slc_union_table')">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</p>
             </el-button>
@@ -193,21 +193,21 @@ export default {
 
     showUnionEdit() {
       // 校验同步状态
-      post('/dataset/table/checkDorisTableIsExists/' + this.table.id, {}, true).then(response => {
-        if (response.data) {
-          this.union.sourceTableId = this.table.id
-          fieldList(this.table.id).then(response => {
-            this.sourceFieldOption = response.data
-          })
-          this.editUnion = true
-        } else {
-          this.$message({
-            type: 'error',
-            message: this.$t('dataset.invalid_table_check'),
-            showClose: true
-          })
-        }
+      // post('/dataset/table/checkDorisTableIsExists/' + this.table.id, {}, true).then(response => {
+      //   if (response.data) {
+      this.union.sourceTableId = this.table.id
+      fieldList(this.table.id).then(response => {
+        this.sourceFieldOption = response.data
       })
+      this.editUnion = true
+      //   } else {
+      //     this.$message({
+      //       type: 'error',
+      //       message: this.$t('dataset.invalid_table_check'),
+      //       showClose: true
+      //     })
+      //   }
+      // })
     },
     saveUnion() {
       // console.log(this.union)

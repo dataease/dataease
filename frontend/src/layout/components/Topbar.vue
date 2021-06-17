@@ -37,6 +37,11 @@
         </el-tooltip> -->
 
         <lang-select class="right-menu-item hover-effect" />
+        <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
+          <a href="https://de-docs.fit2cloud.com/" target="_blank" style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">
+            <svg-icon icon-class="docs" />
+          </a>
+        </div>
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center;">
@@ -50,9 +55,9 @@
           <router-link to="/person-pwd/index">
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link>
-          <a href="https://de-docs.fit2cloud.com/" target="_blank">
-            <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>
-          </a>
+          <!--          <a href="https://de-docs.fit2cloud.com/" target="_blank">-->
+          <!--            <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>-->
+          <!--          </a>-->
           <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link>
@@ -206,7 +211,7 @@ export default {
     // 设置侧边栏的显示和隐藏
     setSidebarHide(route) {
     //   if (!route.children || route.children.length === 1) {
-      if (!route.children || this.showChildLength(route) === 1) {
+      if (route.name !== 'system' && (!route.children || this.showChildLength(route) === 1)) {
         this.$store.dispatch('app/toggleSideBarHide', true)
       } else {
         this.$store.dispatch('app/toggleSideBarHide', false)

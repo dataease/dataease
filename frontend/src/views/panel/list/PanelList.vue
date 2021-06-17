@@ -134,7 +134,7 @@
       </el-col>
 
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="500px">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
+        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keyup.enter.native="saveGroup(groupForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>

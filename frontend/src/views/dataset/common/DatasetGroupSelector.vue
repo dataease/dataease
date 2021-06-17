@@ -132,6 +132,11 @@ export default {
       type: Object,
       required: false,
       default: null
+    },
+    showMode: {
+      type: String,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -283,7 +288,7 @@ export default {
         return
       }
       // check mode=1的数据集是否创建doris表
-      if (data.mode === 1) {
+      if (data.mode === 1 && !this.showMode) {
         post('/dataset/table/checkDorisTableIsExists/' + data.id, {}, false).then(response => {
           if (response.data) {
             this.$nextTick(function() {
