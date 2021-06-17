@@ -124,6 +124,7 @@ export default {
           form.configuration = JSON.stringify(form.configuration)
           method(form).then(res => {
             this.$success(this.$t('commons.save_success'))
+            this.refreshTree()
             this.backToList()
           })
         } else {
@@ -155,6 +156,9 @@ export default {
     backToList() {
       this.$emit('switch-component', { })
       // this.$router.push({ name: 'datasource' })
+    },
+    refreshTree() {
+      this.$emit('refresh-left-tree')
     }
   }
 }

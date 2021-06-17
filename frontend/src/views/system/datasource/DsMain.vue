@@ -1,10 +1,10 @@
 <template>
   <de-container>
-    <de-aside-container style="padding: 0 10px;">
-      <ds-tree @switch-main="switchMain" />
+    <de-aside-container style="padding: 20px 10px 0;">
+      <ds-tree ref="dsTree" @switch-main="switchMain" />
     </de-aside-container>
     <de-main-container>
-      <component :is="component" v-if="!!component" :params="param" @switch-component="switchMain" />
+      <component :is="component" v-if="!!component" :params="param" @refresh-left-tree="refreshTree" @switch-component="switchMain" />
     </de-main-container>
   </de-container>
 </template>
@@ -38,17 +38,23 @@ export default {
     // 切换main区内容
     switchMain(param) {
       const { component, componentParam } = param
-
-      switch (component) {
-        case 'DsForm':
-          this.component = DsForm
-          this.param = componentParam
-          break
-        default:
-          this.component = DataHome
-          this.param = null
-          break
-      }
+      this.component = DataHome
+      this.param = null
+      this.$nextTick(() => {
+        switch (component) {
+          case 'DsForm':
+            this.component = DsForm
+            this.param = componentParam
+            break
+          default:
+            this.component = DataHome
+            this.param = null
+            break
+        }
+      })
+    },
+    refreshTree() {
+      this.$refs.dsTree && this.$refs.dsTree.queryTreeDatas()
     }
   }
 }

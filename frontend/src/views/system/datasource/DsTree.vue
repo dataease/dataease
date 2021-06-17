@@ -144,7 +144,7 @@ export default {
       }).then(() => {
         delDs(datasource.id).then(res => {
           this.$success(this.$t('commons.delete_success'))
-          this.search()
+          this.queryTreeDatas()
         })
       }).catch(() => {
         this.$message({
