@@ -1,7 +1,7 @@
 <!-- TODO: 这个页面后续将用 JSX 重构 -->
 <template>
   <div class="attr-list">
-    <el-form label-width="80px">
+    <el-form label-width="80px" size="mini">
       <el-form-item v-for="(key, index) in styleKeys.filter(item => item != 'rotate')" :key="index" :label="map[key]+':'">
         <el-color-picker v-if="key == 'borderColor'" v-model="curComponent.style[key]" />
         <el-color-picker v-else-if="key == 'color'" v-model="curComponent.style[key]" />

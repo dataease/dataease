@@ -9,6 +9,7 @@ export default {
   },
   mutations: {
     undo(state) {
+      store.commit('setCurComponent', { component: null, index: null })
       if (state.snapshotIndex > 0) {
         state.snapshotIndex--
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
@@ -17,6 +18,7 @@ export default {
     },
 
     redo(state) {
+      store.commit('setCurComponent', { component: null, index: null })
       if (state.snapshotIndex < state.snapshotData.length - 1) {
         state.snapshotIndex++
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
