@@ -80,7 +80,25 @@ export default {
   created() {
     // this.getTree()
   },
+  mounted() {
+    this.bindKey()
+  },
+  destroyed() {
+    this.unBindKey()
+  },
   methods: {
+    entryKey(event) {
+      const keyCode = event.keyCode
+      if (keyCode === 13) {
+        this.save()
+      }
+    },
+    bindKey() {
+      document.addEventListener('keyup', this.entryKey)
+    },
+    unBindKey() {
+      document.removeEventListener('keyup', this.entryKey)
+    },
     showCurrentTemplateInfo(data) {
       this.editPanel.panelInfo.name = data.name
       this.editPanel.panelInfo.panelStyle = data.templateStyle

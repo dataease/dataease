@@ -102,7 +102,7 @@
 
       <!--group add/edit-->
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules">
+        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keyup.enter.native="saveGroup(groupForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>
@@ -183,7 +183,7 @@
 
       <!--rename chart-->
       <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
-        <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules">
+        <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="tableForm.name" />
           </el-form-item>
