@@ -34,7 +34,7 @@
         </el-select>
         <el-input v-else v-model="curComponent.style[key]" type="number" />
       </el-form-item>
-      <el-form-item v-if="curComponent && !excludes.includes(curComponent.component)" :label="$t('panel.content')">
+      <el-form-item v-if="curComponent && !excludes.includes(curComponent.component)" :label="$t('panel.content')+':'">
         <el-input v-model="curComponent.propValue" type="textarea" />
       </el-form-item>
     </el-form>

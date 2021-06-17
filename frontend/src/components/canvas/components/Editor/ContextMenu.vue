@@ -8,7 +8,7 @@
           <li @click="paste"> {{ $t('panel.paste') }}</li>
           <li @click="cut"> {{ $t('panel.cut') }}</li>
           <li @click="deleteComponent"> {{ $t('panel.delete') }}</li>
-          <li @click="lock"> {{ $t('panel.lock') }}</li>
+<!--          <li @click="lock"> {{ $t('panel.lock') }}</li>-->
           <li @click="topComponent"> {{ $t('panel.topComponent') }}</li>
           <li @click="bottomComponent"> {{ $t('panel.bottomComponent') }}</li>
           <li @click="upComponent"> {{ $t('panel.upComponent') }}</li>
