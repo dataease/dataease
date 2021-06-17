@@ -197,12 +197,12 @@ export default {
       searchConfig: {
         useQuickSearch: true,
         useComplexSearch: true,
-        quickPlaceholder: '按姓名搜索',
+        quickPlaceholder: this.$t('user.search_by_name'),
         components: [
-          { field: 'nick_name', label: '姓名', component: 'DeComplexInput' },
+          { field: 'nick_name', label: this.$t('commons.nick_name'), component: 'DeComplexInput' },
           {
             field: 'u.enabled',
-            label: '状态',
+            label: this.$t('commons.status'),
             component: 'FuComplexSelect',
             options: [
               { label: '启用', value: '1' },
