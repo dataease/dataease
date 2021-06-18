@@ -547,7 +547,7 @@ export default {
         this.taskForm.endTime = ''
         this.taskForm.cron = ''
       } else {
-        this.taskForm.cron = '0 0 * ? * * *'
+        this.taskForm.cron = '00 00 * ? * * *'
       }
     },
     listTaskLog(loading = true) {

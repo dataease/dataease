@@ -39,6 +39,9 @@
         <el-checkbox v-for="i in 7" :key="i" :label="i+''" @change="type = '4'" />
       </el-checkbox-group>
     </div>
+    <div>
+      <span style="font-size: 12px;">{{ $t('cron.week_tips') }}</span>
+    </div>
   </div>
 </template>
 

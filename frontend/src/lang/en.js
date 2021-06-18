@@ -1099,6 +1099,7 @@ export default {
     every_week: 'Every week',
     week_start: 'From week',
     week_end: 'to week',
-    every_year: 'Every year'
+    every_year: 'Every year',
+    week_tips: 'Tips：1-7 mapping SUN-SAT'
   }
 }
