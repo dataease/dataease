@@ -1099,6 +1099,7 @@ export default {
     every_week: '每周',
     week_start: '從星期',
     week_end: '至星期',
-    every_year: '每年'
+    every_year: '每年',
+    week_tips: '說明：1-7 分別對應 周日-周六'
   }
 }
