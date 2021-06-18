@@ -1,6 +1,10 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')" back-name="datasource">
-    <el-form ref="dsForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
+  <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')">
+    <template v-slot:header>
+      <el-icon name="back" class="back-button" @click.native="backToList" />
+      {{ params && params.id && params.showModel && params.showModel === 'show' ? $t('datasource.show_info') : formType=='add' ? $t('datasource.create') : $t('datasource.modify') }}
+    </template>
+    <el-form ref="dsForm" :model="form" :rules="rule" size="small" :disabled="params && params.id && params.showModel && params.showModel === 'show'" label-width="auto" label-position="right">
       <el-form-item :label="$t('commons.name')" prop="name">
         <el-input v-model="form.name" autocomplete="off" />
       </el-form-item>
@@ -35,7 +39,7 @@
         <el-input v-model="form.configuration.port" autocomplete="off" />
       </el-form-item>
 
-      <el-form-item>
+      <el-form-item v-if="!(params && params.id && params.showModel && params.showModel === 'show')">
         <el-button @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
         <el-button type="primary" @click="save">{{ $t('commons.save') }}</el-button>
       </el-form-item>
@@ -48,8 +52,14 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import { addDs, editDs, validateDs } from '@/api/system/datasource'
 export default {
-
+  name: 'DsForm',
   components: { LayoutContent },
+  props: {
+    params: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       form: { configuration: {}},
@@ -71,12 +81,26 @@ export default {
   },
 
   created() {
-    if (this.$router.currentRoute.params && this.$router.currentRoute.params.id) {
-      const row = this.$router.currentRoute.params
+    // if (this.$router.currentRoute.params && this.$router.currentRoute.params.id) {
+    //   const row = this.$router.currentRoute.params
+    //   this.edit(row)
+    // } else {
+    //   this.create()
+    // }
+    if (this.params && this.params.id) {
+      const row = this.params
       this.edit(row)
     } else {
       this.create()
     }
+  },
+  mounted() {
+    // if (this.params && this.params.type) {
+    //   this.form.type = this.params.type
+    //   this.$nextTick(() => {
+    //     this.changeType()
+    //   })
+    // }
   },
   methods: {
     create() {
@@ -100,6 +124,7 @@ export default {
           form.configuration = JSON.stringify(form.configuration)
           method(form).then(res => {
             this.$success(this.$t('commons.save_success'))
+            this.refreshTree()
             this.backToList()
           })
         } else {
@@ -129,8 +154,26 @@ export default {
       }
     },
     backToList() {
-      this.$router.push({ name: 'datasource' })
+      this.$emit('switch-component', { })
+      // this.$router.push({ name: 'datasource' })
+    },
+    refreshTree() {
+      this.$emit('refresh-left-tree')
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+@import "~@/styles/mixin.scss";
+@import "~@/styles/variables.scss";
+
+.back-button {
+  cursor: pointer;
+  margin-right: 10px;
+  font-weight: 600;
+
+  &:active {
+    transform: scale(0.85);
+  }
+}
+</style>

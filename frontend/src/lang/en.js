@@ -846,6 +846,8 @@ export default {
   },
   datasource: {
     datasource: 'Data Source',
+    please_select_left: 'Please select the data source from the left',
+    show_info: 'Data Source Info',
     create: 'Create Data Source',
     type: 'Type',
     please_choose_type: 'Please select data source type',
