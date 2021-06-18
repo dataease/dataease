@@ -12,7 +12,7 @@
         <span>自适应画布区域 </span>
       </div>
 
-      <div class="canvas-config" style="margin-right: 10px">
+      <div class="canvas-config" style="margin-right: 40px">
         <span> {{ $t('panel.canvas_size') }} </span>
         <input v-model="canvasStyleData.width" :disabled="canvasStyleData.selfAdaption">
         <span>*</span>
@@ -44,10 +44,10 @@
       <!--      <el-tooltip :content="$t('panel.insert_picture') ">-->
       <!--        <el-button class="el-icon-upload" size="mini" circle @click="goFile" />-->
       <!--      </el-tooltip>-->
-      <el-tooltip :content="$t('panel.clean_canvas')" style="margin-right: 10px">
+      <el-tooltip :content="$t('panel.clean_canvas')">
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>
-      <input id="input" ref="files" type="file" hidden @change="handleFileChange">
+      <!--      <input id="input" ref="files" type="file" hidden @change="handleFileChange">-->
       <el-tooltip :content="$t('panel.fullscreen_preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
