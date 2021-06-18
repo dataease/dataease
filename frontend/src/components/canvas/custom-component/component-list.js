@@ -17,7 +17,7 @@ export const assistList = [
     component: 'v-text',
     type: 'v-text',
     label: '文字',
-    icon: 'iconfont icon-shuru',
+    icon: 'iconfont icon-text',
     defaultClass: 'text-filter'
   },
   {
@@ -25,7 +25,18 @@ export const assistList = [
     component: 'rect-shape',
     type: 'rect-shape',
     label: '矩形',
-    icon: 'iconfont icon-xialakuang',
+    icon: 'iconfont icon-juxing',
+    defaultClass: 'text-filter'
+  }
+]
+
+export const pictureList = [
+  {
+    id: '20001',
+    component: 'picture',
+    type: 'picture',
+    label: '点击上传',
+    icon: 'iconfont icon-picture',
     defaultClass: 'text-filter'
   }
 ]

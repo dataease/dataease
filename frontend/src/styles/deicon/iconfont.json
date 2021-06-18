@@ -1,0 +1,135 @@
+{
+  "id": "2459092",
+  "name": "DataEase",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2404485",
+      "name": "矩形",
+      "font_class": "juxing",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "924549",
+      "name": "text",
+      "font_class": "text",
+      "unicode": "e959",
+      "unicode_decimal": 59737
+    },
+    {
+      "icon_id": "5994104",
+      "name": "picture",
+      "font_class": "picture",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
+      "icon_id": "4016505",
+      "name": "输入",
+      "font_class": "shuru",
+      "unicode": "e6ab",
+      "unicode_decimal": 59051
+    },
+    {
+      "icon_id": "16852593",
+      "name": "树",
+      "font_class": "tree",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "17407748",
+      "name": "查询搜索",
+      "font_class": "chaxunsousuo",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "1281301",
+      "name": "季度",
+      "font_class": "jidu",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "4553739",
+      "name": "数字顺序",
+      "font_class": "shuzishunxu",
+      "unicode": "e7de",
+      "unicode_decimal": 59358
+    },
+    {
+      "icon_id": "4685765",
+      "name": "树列表",
+      "font_class": "Group-",
+      "unicode": "e6a6",
+      "unicode_decimal": 59046
+    },
+    {
+      "icon_id": "4770736",
+      "name": "日期",
+      "font_class": "riqi",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "4878484",
+      "name": "左侧-区间",
+      "font_class": "zuoce-qujian",
+      "unicode": "e6dd",
+      "unicode_decimal": 59101
+    },
+    {
+      "icon_id": "6056156",
+      "name": "列表",
+      "font_class": "liebiao",
+      "unicode": "e66f",
+      "unicode_decimal": 58991
+    },
+    {
+      "icon_id": "10907065",
+      "name": "下拉框",
+      "font_class": "xialakuang",
+      "unicode": "e8ca",
+      "unicode_decimal": 59594
+    },
+    {
+      "icon_id": "10908304",
+      "name": "下拉树",
+      "font_class": "xialashu",
+      "unicode": "e8d0",
+      "unicode_decimal": 59600
+    },
+    {
+      "icon_id": "12978136",
+      "name": "重置",
+      "font_class": "zhongzhi",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "16197990",
+      "name": "日",
+      "font_class": "ri",
+      "unicode": "e691",
+      "unicode_decimal": 59025
+    },
+    {
+      "icon_id": "16197997",
+      "name": "年",
+      "font_class": "nian",
+      "unicode": "e692",
+      "unicode_decimal": 59026
+    },
+    {
+      "icon_id": "16198002",
+      "name": "月",
+      "font_class": "yue",
+      "unicode": "e695",
+      "unicode_decimal": 59029
+    }
+  ]
+}
