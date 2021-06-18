@@ -2,19 +2,31 @@
   <el-col style="padding: 0 5px 0 5px;">
     <el-col>
       <el-row>
-        <span class="header-title">
-          {{ $t('commons.datasource') }}
-          <el-button style="float: right;padding-right: 7px;margin-top: -8px" icon="el-icon-plus" type="text" @click="addFolder" />
+        <span v-show="!showSearchInput" class="header-title">
+          <div class="de-input" style="margin-top: 7px !important;">
+            {{ $t('commons.datasource') }}
+            <el-button style="float: right;padding-right: 7px;margin-top: -8px" icon="el-icon-plus" type="text" @click="addFolder" />
+            <el-button style="float: right;padding-right: 15px;margin-top: -8px" icon="el-icon-search" type="text" @click="showSearchWidget" />
+          </div>
+        </span>
+        <span v-show="showSearchInput" class="header-title">
+          <div class="de-input" style="margin-top: 0px !important;margin-bottom: 12px !important">
+            <el-input v-model="key">
+              <el-button slot="append" icon="el-icon-close" @click="closeSearchWidget" />
+            </el-input>
+          </div>
         </span>
       </el-row>
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
-            ref="panel_list_tree"
+            ref="myDsTree"
             :default-expanded-keys="expandedArray"
             :data="tData"
             node-key="id"
+            default-expand-all
             :expand-on-click-node="true"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
@@ -74,13 +86,31 @@ export default {
   data() {
     return {
       expandedArray: [],
-      tData: []
+      tData: [],
+      showSearchInput: false,
+      key: ''
+    }
+  },
+  watch: {
+    key(val) {
+      this.$refs.myDsTree.filter(val)
     }
   },
   mounted() {
     this.queryTreeDatas()
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    },
+    showSearchWidget() {
+      this.showSearchInput = true
+    },
+    closeSearchWidget() {
+      this.key = ''
+      this.showSearchInput = false
+    },
     queryTreeDatas() {
       listDatasource().then(res => {
         this.tData = this.buildTree(res.data)
