@@ -33,7 +33,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户分析数据、�
 curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_start.sh | sh
 ```
 
-- [在线文档](https://dataease.io/docs/)
+- [在线文档](https://docs.dataease.io/)
 - [演示视频](https://dataease.oss-cn-hangzhou.aliyuncs.com/video/de-v1-demo.mp4)
 
 ## 微信群
@@ -155,7 +155,7 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
    <tr height="18" style='height:18.00pt;'>
     <td class="xl67" height="36" rowspan="2" style='height:36.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据源</td>
     <td class="xl68" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据源管理</td>
-    <td class="xl70" x:str>支持 MySQL 和 SQL Server 类型的数据源</td>
+    <td class="xl70" x:str>支持 MySQL 数据源</td>
    </tr>
    <tr height="18" style='height:18.00pt;'>
     <td class="xl70" x:str>支持对数据源有效性校验</td>
