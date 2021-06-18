@@ -30,17 +30,21 @@ public class ScheduleService {
                     scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId(), datasetTableTask.getType()));
         } else if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), ScheduleType.CRON.toString())) {
             Date endTime;
-            if (datasetTableTask.getEndTime() == null || datasetTableTask.getEndTime() == 0) {
-                endTime = null;
-            } else {
-                endTime = new Date(datasetTableTask.getEndTime());
+            if (StringUtils.equalsIgnoreCase(datasetTableTask.getEnd(), "1")) {
+                if (datasetTableTask.getEndTime() == null || datasetTableTask.getEndTime() == 0) {
+                    endTime = null;
+                } else {
+                    endTime = new Date(datasetTableTask.getEndTime());
 //                if (endTime.before(new Date())) {
 //                    return;
 //                }
-                if (endTime.before(new Date())) {
-                    deleteSchedule(datasetTableTask);
-                    return;
+                    if (endTime.before(new Date())) {
+                        deleteSchedule(datasetTableTask);
+                        return;
+                    }
                 }
+            } else {
+                endTime = null;
             }
 
             scheduleManager.addOrUpdateCronJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()),
