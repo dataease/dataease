@@ -41,9 +41,9 @@
       <el-tooltip :content="$t('panel.redo') ">
         <el-button class="el-icon-refresh-left" size="mini" circle @click="redo" />
       </el-tooltip>
-      <el-tooltip :content="$t('panel.insert_picture') ">
-        <el-button class="el-icon-upload" size="mini" circle @click="goFile" />
-      </el-tooltip>
+      <!--      <el-tooltip :content="$t('panel.insert_picture') ">-->
+      <!--        <el-button class="el-icon-upload" size="mini" circle @click="goFile" />-->
+      <!--      </el-tooltip>-->
       <el-tooltip :content="$t('panel.clean_canvas')" style="margin-right: 10px">
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>

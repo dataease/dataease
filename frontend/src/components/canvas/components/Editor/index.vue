@@ -64,16 +64,6 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
       />
-      <!-- <component
-        :is="item.component"
-        v-else
-        :id="'component' + item.id"
-        class="component"
-        :style="getComponentStyle(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        @input="handleInput"
-      /> -->
     </de-drag>
     <!-- 右击菜单 -->
     <ContextMenu />

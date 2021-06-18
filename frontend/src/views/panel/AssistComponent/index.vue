@@ -4,7 +4,7 @@
 
     <div class="widget-subject">
       <div class="filter-header">
-        <div class="filter-header-text"> 样式组件 </div>
+        <div class="filter-header-text"> 样式 </div>
       </div>
 
       <div class="filter-widget-content">
@@ -24,17 +24,48 @@
       </div>
     </div>
 
+    <div class="widget-subject">
+      <div class="filter-header">
+        <div class="filter-header-text">
+          <span>图片</span>
+        </div>
+      </div>
+
+      <div class="filter-widget-content">
+        <div
+          v-for="(item, index) in pictureList"
+          :key="index"
+          :data-id="item.id"
+          :data-index="index"
+          :class="'filter-widget '+ (item.defaultClass || '')"
+          @click="goFile"
+        >
+          <div class="filter-widget-icon">
+            <i :class="(item.icon || 'el-icon-setting') + ' widget-icon-i'" />
+          </div>
+          <div class="filter-widget-text">{{ item.label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <input id="input" ref="files" type="file" hidden @change="handleFileChange">
+
   </div>
 
 </template>
 
 <script>
-import { assistList } from '@/components/canvas/custom-component/component-list'
+import { assistList, pictureList } from '@/components/canvas/custom-component/component-list'
+import toast from '@/components/canvas/utils/toast'
+import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
+import generateID from '@/components/canvas/utils/generateID'
+
 export default {
   name: 'FilterGroup',
   data() {
     return {
-      assistList
+      assistList,
+      pictureList
     }
   },
 
@@ -46,6 +77,51 @@ export default {
         id: ev.target.dataset.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+    },
+    goFile() {
+      this.$refs.files.click()
+    },
+    handleFileChange(e) {
+      const file = e.target.files[0]
+      if (!file.type.includes('image')) {
+        toast('只能插入图片')
+        return
+      }
+
+      const reader = new FileReader()
+      reader.onload = (res) => {
+        const fileResult = res.target.result
+        const img = new Image()
+        img.onload = () => {
+          const scaleWith = img.width / 400
+          const scaleHeight = img.height / 200
+          let scale = scaleWith > scaleHeight ? scaleWith : scaleHeight
+          scale = scale > 1 ? scale : 1
+          this.$store.commit('addComponent', {
+            component: {
+              ...commonAttr,
+              id: generateID(),
+              component: 'Picture',
+              label: '图片',
+              icon: '',
+              propValue: fileResult,
+              style: {
+                ...commonStyle,
+                top: 0,
+                left: 500,
+                width: img.width / scale,
+                height: img.height / scale
+              }
+            }
+          })
+
+          this.$store.commit('recordSnapshot')
+        }
+
+        img.src = fileResult
+      }
+
+      reader.readAsDataURL(file)
     }
   }
 }
