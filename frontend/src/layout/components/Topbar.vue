@@ -38,7 +38,7 @@
 
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
-          <a href="https://de-docs.fit2cloud.com/" target="_blank" style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">
+          <a href="https://docs.dataease.io/" target="_blank" style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">
             <svg-icon icon-class="docs" />
           </a>
         </div>
