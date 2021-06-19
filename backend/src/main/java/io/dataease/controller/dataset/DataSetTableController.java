@@ -44,6 +44,11 @@ public class DataSetTableController {
         return dataSetTableService.list(dataSetTableRequest);
     }
 
+    @PostMapping("listAndGroup")
+    public List<DataSetTableDTO> listAndGroup(@RequestBody DataSetTableRequest dataSetTableRequest) {
+        return dataSetTableService.listAndGroup(dataSetTableRequest);
+    }
+
     @PostMapping("get/{id}")
     public DatasetTable get(@PathVariable String id) {
         return dataSetTableService.get(id);

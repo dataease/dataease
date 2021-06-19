@@ -2,12 +2,12 @@
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
 
     <de-aside-container>
-      <group @switchComponent="switchComponent" />
+      <group :save-status="saveStatus" @switchComponent="switchComponent" />
     </de-aside-container>
 
     <de-main-container>
       <!--        <router-view />-->
-      <component :is="component" :param="param" @switchComponent="switchComponent" />
+      <component :is="component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" />
     </de-main-container>
   </de-container>
 </template>
@@ -28,7 +28,8 @@ export default {
   data() {
     return {
       component: ChartHome,
-      param: {}
+      param: {},
+      saveStatus: null
     }
   },
   mounted() {
@@ -45,6 +46,9 @@ export default {
           this.component = ChartHome
           break
       }
+    },
+    saveSuccess(val) {
+      this.saveStatus = val
     }
   }
 }

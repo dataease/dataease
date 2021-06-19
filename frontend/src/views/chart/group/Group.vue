@@ -6,17 +6,20 @@
         <span class="title-text">
           {{ $t('chart.datalist') }}
         </span>
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')">
+          <!--          {{ $t('chart.add_group') }}-->
+        </el-button>
       </el-row>
       <el-divider />
 
-      <el-row>
-        <el-button type="primary" size="mini" @click="add('group')">
-          {{ $t('chart.add_group') }}
-        </el-button>
-        <el-button type="primary" size="mini" @click="add('scene')">
-          {{ $t('chart.add_scene') }}
-        </el-button>
-      </el-row>
+      <!--      <el-row>-->
+      <!--        <el-button type="primary" size="mini" @click="add('group')">-->
+      <!--          {{ $t('chart.add_group') }}-->
+      <!--        </el-button>-->
+      <!--        <el-button type="primary" size="mini" @click="add('scene')">-->
+      <!--          {{ $t('chart.add_scene') }}-->
+      <!--        </el-button>-->
+      <!--      </el-row>-->
 
       <!--      <el-row>-->
       <!--        <el-form>-->
@@ -35,24 +38,29 @@
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
+            ref="asyncTree"
             :default-expanded-keys="expandedArray"
             :data="data"
             node-key="id"
             :expand-on-click-node="true"
+            :load="loadNode"
+            lazy
+            :props="treeProps"
+            highlight-current
             @node-click="nodeClick"
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node father">
+            <span v-if="data.type ==='group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
-                <span v-if="data.type === 'scene'">
-                  <!--                  <el-button-->
-                  <!--                    icon="el-icon-folder-opened"-->
-                  <!--                    type="text"-->
-                  <!--                    size="mini"-->
-                  <!--                  />-->
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
-                </span>
+                <!--                <span v-if="data.type === 'scene'">-->
+                <!--                  &lt;!&ndash;                  <el-button&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                    icon="el-icon-folder-opened"&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                    type="text"&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                    size="mini"&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                  />&ndash;&gt;-->
+                <!--                  <svg-icon icon-class="scene" class="ds-icon-scene" />-->
+                <!--                </span>-->
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
@@ -69,8 +77,11 @@
                       <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('group',data,node)">
                         {{ $t('chart.group') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">
-                        {{ $t('chart.scene') }}
+                      <!--                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">-->
+                      <!--                        {{ $t('chart.scene') }}-->
+                      <!--                      </el-dropdown-item>-->
+                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('chart',data,node)">
+                        {{ $t('chart.add_chart') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -89,6 +100,33 @@
                         {{ $t('chart.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                        {{ $t('chart.delete') }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </span>
+              </span>
+            </span>
+            <span v-else slot-scope="{ node, data }" class="custom-tree-node-list father">
+              <span style="display: flex;flex: 1;width: 0;">
+                <span><svg-icon :icon-class="data.type" /></span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+              </span>
+              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
+                <span style="margin-left: 12px;" @click.stop>
+                  <el-dropdown trigger="click" size="small" @command="clickMore">
+                    <span class="el-dropdown-link">
+                      <el-button
+                        icon="el-icon-more"
+                        type="text"
+                        size="small"
+                      />
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">-->
+                      <!--                    {{ $t('chart.rename') }}-->
+                      <!--                  </el-dropdown-item>-->
+                      <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -115,110 +153,147 @@
     </el-col>
 
     <!--scene-->
-    <el-col v-if="sceneMode">
-      <el-row class="title-css scene-title">
-        <span class="title-text scene-title-name" :title="currGroup.name">
-          {{ currGroup.name }}
-        </span>
-        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
-          <!--          {{ $t('chart.back') }}-->
-        </el-button>
-      </el-row>
-      <el-divider />
-      <el-row>
-        <el-button type="primary" size="mini" plain @click="selectTable">
-          {{ $t('chart.add_chart') }}
-        </el-button>
-      </el-row>
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('chart.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
+    <!--    <el-col v-if="sceneMode">-->
+    <!--      <el-row class="title-css scene-title">-->
+    <!--        <span class="title-text scene-title-name" :title="currGroup.name">-->
+    <!--          {{ currGroup.name }}-->
+    <!--        </span>-->
+    <!--        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">-->
+    <!--          &lt;!&ndash;          {{ $t('chart.back') }}&ndash;&gt;-->
+    <!--        </el-button>-->
+    <!--      </el-row>-->
+    <!--      <el-divider />-->
+    <!--      <el-row>-->
+    <!--        <el-button type="primary" size="mini" plain @click="selectTable">-->
+    <!--          {{ $t('chart.add_chart') }}-->
+    <!--        </el-button>-->
+    <!--      </el-row>-->
+    <!--      <el-row>-->
+    <!--        <el-form>-->
+    <!--          <el-form-item class="form-item">-->
+    <!--            <el-input-->
+    <!--              v-model="search"-->
+    <!--              size="mini"-->
+    <!--              :placeholder="$t('chart.search')"-->
+    <!--              prefix-icon="el-icon-search"-->
+    <!--              clearable-->
+    <!--            />-->
+    <!--          </el-form-item>-->
+    <!--        </el-form>-->
+    <!--      </el-row>-->
+    <!--      <span v-show="false">{{ sceneData }}</span>-->
+    <!--      <el-tree-->
+    <!--        :data="chartData"-->
+    <!--        node-key="id"-->
+    <!--        :expand-on-click-node="true"-->
+    <!--        class="tree-list"-->
+    <!--        highlight-current-->
+    <!--        @node-click="sceneClick"-->
+    <!--      >-->
+    <!--        <span slot-scope="{ node, data }" class="custom-tree-node-list father">-->
+    <!--          <span style="display: flex;flex: 1;width: 0;">-->
+    <!--            <span><svg-icon :icon-class="data.type" /></span>-->
+    <!--            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>-->
+    <!--          </span>-->
+    <!--          <span v-if="hasDataPermission('manage',data.privileges)" class="child">-->
+    <!--            <span style="margin-left: 12px;" @click.stop>-->
+    <!--              <el-dropdown trigger="click" size="small" @command="clickMore">-->
+    <!--                <span class="el-dropdown-link">-->
+    <!--                  <el-button-->
+    <!--                    icon="el-icon-more"-->
+    <!--                    type="text"-->
+    <!--                    size="small"-->
+    <!--                  />-->
+    <!--                </span>-->
+    <!--                <el-dropdown-menu slot="dropdown">-->
+    <!--                  &lt;!&ndash;                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">&ndash;&gt;-->
+    <!--                  &lt;!&ndash;                    {{ $t('chart.rename') }}&ndash;&gt;-->
+    <!--                  &lt;!&ndash;                  </el-dropdown-item>&ndash;&gt;-->
+    <!--                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">-->
+    <!--                    {{ $t('chart.delete') }}-->
+    <!--                  </el-dropdown-item>-->
+    <!--                </el-dropdown-menu>-->
+    <!--              </el-dropdown>-->
+    <!--            </span>-->
+    <!--          </span>-->
+    <!--        </span>-->
+    <!--      </el-tree>-->
+
+    <!--      &lt;!&ndash;rename chart&ndash;&gt;-->
+    <!--      <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">-->
+    <!--        <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">-->
+    <!--          <el-form-item :label="$t('commons.name')" prop="name">-->
+    <!--            <el-input v-model="tableForm.name" />-->
+    <!--          </el-form-item>-->
+    <!--        </el-form>-->
+    <!--        <div slot="footer" class="dialog-footer">-->
+    <!--          <el-button size="mini" @click="closeTable()">{{ $t('chart.cancel') }}</el-button>-->
+    <!--          <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('chart.confirm') }}</el-button>-->
+    <!--        </div>-->
+    <!--      </el-dialog>-->
+
+    <!--      &lt;!&ndash;添加视图-选择数据集&ndash;&gt;-->
+    <!--      &lt;!&ndash;      <el-dialog&ndash;&gt;-->
+    <!--      &lt;!&ndash;        v-dialogDrag&ndash;&gt;-->
+    <!--      &lt;!&ndash;        :title="$t('chart.add_chart')"&ndash;&gt;-->
+    <!--      &lt;!&ndash;        :visible="selectTableFlag"&ndash;&gt;-->
+    <!--      &lt;!&ndash;        :show-close="false"&ndash;&gt;-->
+    <!--      &lt;!&ndash;        width="70%"&ndash;&gt;-->
+    <!--      &lt;!&ndash;        class="dialog-css"&ndash;&gt;-->
+    <!--      &lt;!&ndash;        :destroy-on-close="true"&ndash;&gt;-->
+    <!--      &lt;!&ndash;      >&ndash;&gt;-->
+    <!--      &lt;!&ndash;        <el-row style="width: 400px;">&ndash;&gt;-->
+    <!--      &lt;!&ndash;          <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">&ndash;&gt;-->
+    <!--      &lt;!&ndash;            <el-form-item :label="$t('chart.view_name')">&ndash;&gt;-->
+    <!--      &lt;!&ndash;              <el-input v-model="chartName" size="mini" />&ndash;&gt;-->
+    <!--      &lt;!&ndash;            </el-form-item>&ndash;&gt;-->
+    <!--      &lt;!&ndash;          </el-form>&ndash;&gt;-->
+    <!--      &lt;!&ndash;        </el-row>&ndash;&gt;-->
+    <!--      &lt;!&ndash;        <table-selector @getTable="getTable" />&ndash;&gt;-->
+    <!--      &lt;!&ndash;        <div slot="footer" class="dialog-footer">&ndash;&gt;-->
+    <!--      &lt;!&ndash;          <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>&ndash;&gt;-->
+    <!--      &lt;!&ndash;          <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>&ndash;&gt;-->
+    <!--      &lt;!&ndash;        </div>&ndash;&gt;-->
+    <!--      &lt;!&ndash;      </el-dialog>&ndash;&gt;-->
+
+    <!--    </el-col>-->
+
+    <!--rename chart-->
+    <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="tableForm.name" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeTable()">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--添加视图-选择数据集-->
+    <el-dialog
+      v-dialogDrag
+      :title="$t('chart.add_chart')"
+      :visible="selectTableFlag"
+      :show-close="false"
+      width="70%"
+      class="dialog-css"
+      :destroy-on-close="true"
+    >
+      <el-row style="width: 400px;">
+        <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
+          <el-form-item :label="$t('chart.view_name')">
+            <el-input v-model="chartName" size="mini" />
           </el-form-item>
         </el-form>
       </el-row>
-      <span v-show="false">{{ sceneData }}</span>
-      <el-tree
-        :data="chartData"
-        node-key="id"
-        :expand-on-click-node="true"
-        class="tree-list"
-        highlight-current
-        @node-click="sceneClick"
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list father">
-          <span style="display: flex;flex: 1;width: 0;">
-            <span><svg-icon :icon-class="data.type" /></span>
-            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
-          </span>
-          <span v-if="hasDataPermission('manage',data.privileges)" class="child">
-            <span style="margin-left: 12px;" @click.stop>
-              <el-dropdown trigger="click" size="small" @command="clickMore">
-                <span class="el-dropdown-link">
-                  <el-button
-                    icon="el-icon-more"
-                    type="text"
-                    size="small"
-                  />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">-->
-                  <!--                    {{ $t('chart.rename') }}-->
-                  <!--                  </el-dropdown-item>-->
-                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">
-                    {{ $t('chart.delete') }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-          </span>
-        </span>
-      </el-tree>
-
-      <!--rename chart-->
-      <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
-        <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
-          <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="tableForm.name" />
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="closeTable()">{{ $t('chart.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('chart.confirm') }}</el-button>
-        </div>
-      </el-dialog>
-
-      <!--添加视图-选择数据集-->
-      <el-dialog
-        v-dialogDrag
-        :title="$t('chart.add_chart')"
-        :visible="selectTableFlag"
-        :show-close="false"
-        width="70%"
-        class="dialog-css"
-        :destroy-on-close="true"
-      >
-        <el-row style="width: 400px;">
-          <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
-            <el-form-item :label="$t('chart.view_name')">
-              <el-input v-model="chartName" size="mini" />
-            </el-form-item>
-          </el-form>
-        </el-row>
-        <table-selector @getTable="getTable" />
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
-          <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
-        </div>
-      </el-dialog>
-
-    </el-col>
+      <table-selector @getTable="getTable" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 
@@ -240,6 +315,13 @@ import {
 export default {
   name: 'Group',
   components: { TableSelector },
+  props: {
+    saveStatus: {
+      type: Object,
+      required: false,
+      default: null
+    }
+  },
   data() {
     return {
       sceneMode: false,
@@ -278,14 +360,19 @@ export default {
       selectTableFlag: false,
       table: {},
       tables: [],
-      chartName: this.$t('chart.chartName')
+      chartName: this.$t('chart.chartName'),
+      treeProps: {
+        label: 'name',
+        children: 'children',
+        isLeaf: 'isLeaf'
+      }
     }
   },
   computed: {
-    sceneData: function() {
-      this.reviewChartList()
-      return this.$store.state.chart.chartSceneData
-    }
+    // sceneData: function() {
+    //   this.reviewChartList()
+    //   return this.$store.state.chart.chartSceneData
+    // }
   },
   watch: {
     search(val) {
@@ -294,18 +381,26 @@ export default {
       } else {
         this.chartData = JSON.parse(JSON.stringify(this.tables))
       }
+    },
+    saveStatus() {
+      this.refreshNodeBy(this.saveStatus.sceneId)
     }
   },
   mounted() {
-    this.groupTree(this.groupForm)
+    this.treeNode(this.groupForm)
     this.refresh()
-    this.chartTree()
+    // this.chartTree()
   },
   methods: {
     clickAdd(param) {
-      this.add(param.type)
-      this.groupForm.pid = param.data.id
-      this.groupForm.level = param.data.level + 1
+      this.currGroup = param.data
+      if (param.type === 'group') {
+        this.add(param.type)
+        this.groupForm.pid = param.data.id
+        this.groupForm.level = param.data.level + 1
+      } else {
+        this.selectTable()
+      }
     },
 
     beforeClickAdd(type, data, node) {
@@ -369,7 +464,7 @@ export default {
               type: 'success',
               showClose: true
             })
-            this.groupTree(this.groupForm)
+            this.treeNode(this.groupForm)
           })
         } else {
           // this.$message({
@@ -392,7 +487,8 @@ export default {
               type: 'success',
               showClose: true
             })
-            this.chartTree()
+            // this.chartTree()
+            this.refreshNodeBy(view.sceneId)
             // this.$router.push('/chart/home')
             this.$emit('switchComponent', { name: '' })
             this.$store.dispatch('chart/setTable', null)
@@ -420,7 +516,7 @@ export default {
             message: this.$t('chart.delete_success'),
             showClose: true
           })
-          this.groupTree(this.groupForm)
+          this.treeNode(this.groupForm)
         })
       }).catch(() => {
       })
@@ -438,7 +534,8 @@ export default {
             message: this.$t('chart.delete_success'),
             showClose: true
           })
-          this.chartTree()
+          // this.chartTree()
+          this.refreshNodeBy(data.sceneId)
           // this.$router.push('/chart/home')
           this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('chart/setTable', null)
@@ -473,6 +570,12 @@ export default {
       })
     },
 
+    treeNode(group) {
+      post('/chart/group/treeNode', group).then(res => {
+        this.data = res.data
+      })
+    },
+
     chartTree() {
       this.tables = []
       this.chartData = []
@@ -488,12 +591,15 @@ export default {
     },
 
     nodeClick(data, node) {
-      if (data.type === 'scene') {
-        this.sceneMode = true
-        this.currGroup = data
-        this.$store.dispatch('chart/setSceneId', this.currGroup.id)
-        this.chartTree()
+      if (data.type !== 'group') {
+        this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
       }
+      // if (data.type === 'scene') {
+      //   this.sceneMode = true
+      //   this.currGroup = data
+      //   this.$store.dispatch('chart/setSceneId', this.currGroup.id)
+      //   this.chartTree()
+      // }
       // if (node.expanded) {
       //   this.expandedArray.push(data.id)
       // } else {
@@ -514,15 +620,6 @@ export default {
       return {
         'type': type
       }
-    },
-
-    addDB() {
-      this.$router.push({
-        name: 'add_db',
-        params: {
-          scene: this.currGroup
-        }
-      })
     },
 
     sceneClick(data, node) {
@@ -598,7 +695,8 @@ export default {
         // this.$router.push('/chart/chart-edit')
         this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': response.data.id }})
         // this.$store.dispatch('chart/setViewId', response.data.id)
-        this.chartTree()
+        // this.chartTree()
+        this.refreshNodeBy(view.sceneId)
       })
     },
 
@@ -625,6 +723,35 @@ export default {
     nodeCollapse(data) {
       if (data.id) {
         this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
+      }
+    },
+
+    loadNode(node, resolve) {
+      // if (!this.isTreeSearch) {
+      if (node.level > 0) {
+        this.tables = []
+        this.chartData = []
+        if (node.data.id) {
+          post('/chart/view/listAndGroup', {
+            sort: 'name asc,create_time desc',
+            sceneId: node.data.id
+          }).then(response => {
+            this.tables = response.data
+            this.chartData = JSON.parse(JSON.stringify(this.tables))
+            resolve(this.chartData)
+          })
+        }
+      }
+      // }
+    },
+
+    refreshNodeBy(id) {
+      if (!id || id === '0') {
+        this.treeNode(this.groupForm)
+      } else {
+        const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
+        node.loaded = false
+        node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
       }
     }
   }

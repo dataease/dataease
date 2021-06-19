@@ -1,4 +1,4 @@
-<template xmlns:el-col="http://www.w3.org/1999/html">
+<template>
   <el-col>
     <!-- group -->
     <el-col v-if="!sceneMode">
@@ -6,17 +6,20 @@
         <span class="title-text">
           {{ $t('dataset.datalist') }}
         </span>
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')">
+          <!--          {{ $t('dataset.add_group') }}-->
+        </el-button>
       </el-row>
       <el-divider />
 
-      <el-row>
-        <el-button type="primary" size="mini" @click="add('group')">
-          {{ $t('dataset.add_group') }}
-        </el-button>
-        <el-button type="primary" size="mini" @click="add('scene')">
-          {{ $t('dataset.add_scene') }}
-        </el-button>
-      </el-row>
+      <!--      <el-row>-->
+      <!--        <el-button type="primary" size="mini" @click="add('group')">-->
+      <!--          {{ $t('dataset.add_group') }}-->
+      <!--        </el-button>-->
+      <!--        <el-button type="primary" size="mini" @click="add('scene')">-->
+      <!--          {{ $t('dataset.add_scene') }}-->
+      <!--        </el-button>-->
+      <!--      </el-row>-->
 
       <!--      <el-row>-->
       <!--        <el-form>-->
@@ -35,24 +38,29 @@
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
+            ref="asyncTree"
             :default-expanded-keys="expandedArray"
             :data="tData"
             node-key="id"
             :expand-on-click-node="true"
+            :load="loadNode"
+            lazy
+            :props="treeProps"
+            highlight-current
             @node-click="nodeClick"
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node father">
+            <span v-if="data.type === 'group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
-                <span v-if="data.type === 'scene'">
-                  <!--                  <el-button-->
-                  <!--                    icon="el-icon-folder-opened"-->
-                  <!--                    type="text"-->
-                  <!--                    size="mini"-->
-                  <!--                  />-->
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
-                </span>
+                <!--                <span v-if="data.type === 'scene'">-->
+                <!--                  &lt;!&ndash;                  <el-button&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                    icon="el-icon-folder-opened"&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                    type="text"&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                    size="mini"&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                  />&ndash;&gt;-->
+                <!--                  <svg-icon icon-class="scene" class="ds-icon-scene" />-->
+                <!--                </span>-->
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
@@ -67,10 +75,40 @@
                     </span>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('group',data,node)">
-                        {{ $t('dataset.group') }}
+                        <span style="font-size: 13px;">{{ $t('dataset.group') }}</span>
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">
-                        {{ $t('dataset.scene') }}
+                      <el-dropdown-item icon="el-icon-folder-add">
+                        <!--                        {{ $t('dataset.scene') }}-->
+                        <el-dropdown size="small" placement="right-start" @command="clickAddData">
+                          <!--                          <el-button type="primary" size="mini" plain>-->
+                          <!--                            {{ $t('dataset.add_table') }}-->
+                          <!--                          </el-button>-->
+                          <span class="el-dropdown-link inner-dropdown-menu">
+                            <span>
+                              <!--                              <i class="el-icon-sort" />-->
+                              <span style="font-size: 13px;">{{ $t('dataset.add_table') }}</span>
+                            </span>
+                            <i class="el-icon-arrow-right el-icon--right" />
+                          </span>
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item :command="beforeClickAddData('db',data)">
+                              <svg-icon icon-class="ds-db" class="ds-icon-db" />
+                              {{ $t('dataset.db_data') }}
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="beforeClickAddData('sql',data)">
+                              <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
+                              {{ $t('dataset.sql_data') }}
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="beforeClickAddData('excel',data)">
+                              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+                              {{ $t('dataset.excel_data') }}
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="beforeClickAddData('custom',data)">
+                              <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
+                              {{ $t('dataset.custom_data') }}
+                            </el-dropdown-item>
+                          </el-dropdown-menu>
+                        </el-dropdown>
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -99,6 +137,45 @@
                 </span>
               </span>
             </span>
+            <span v-else slot-scope="{ node, data }" class="custom-tree-node-list father">
+              <span style="display: flex;flex: 1;width: 0;">
+                <span>
+                  <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                  <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                  <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                  <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                </span>
+                <span v-if="data.type === 'db' || data.type === 'sql'">
+                  <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+                  <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                </span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+              </span>
+              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
+                <span style="margin-left: 12px;" @click.stop>
+                  <el-dropdown trigger="click" size="small" @command="clickMore">
+                    <span class="el-dropdown-link">
+                      <el-button
+                        icon="el-icon-more"
+                        type="text"
+                        size="small"
+                      />
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
+                        {{ $t('dataset.rename') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">
+                        {{ $t('dataset.move_to') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteTable',data,node)">
+                        {{ $t('dataset.delete') }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </span>
+              </span>
+            </span>
           </el-tree>
         </div>
       </el-col>
@@ -118,128 +195,127 @@
     </el-col>
 
     <!--scene-->
-    <el-col v-if="sceneMode">
-      <el-row class="title-css scene-title">
-        <span class="title-text scene-title-name" :title="currGroup.name">
-          {{ currGroup.name }}
-        </span>
-        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
-          <!--          {{ $t('dataset.back') }}-->
-        </el-button>
-      </el-row>
-      <el-divider />
-      <el-row>
-        <el-dropdown style="margin-right: 10px;" size="small" trigger="click" @command="clickAddData">
-          <el-button type="primary" size="mini" plain>
-            {{ $t('dataset.add_table') }}
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item :command="beforeClickAddData('db')">
-              <svg-icon icon-class="ds-db" class="ds-icon-db" />
-              {{ $t('dataset.db_data') }}
-            </el-dropdown-item>
-            <el-dropdown-item :command="beforeClickAddData('sql')">
-              <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
-              {{ $t('dataset.sql_data') }}
-            </el-dropdown-item>
-            <el-dropdown-item :command="beforeClickAddData('excel')">
-              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
-              {{ $t('dataset.excel_data') }}
-            </el-dropdown-item>
-            <el-dropdown-item :command="beforeClickAddData('custom')">
-              <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
-              {{ $t('dataset.custom_data') }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <!-- <el-button type="primary" size="mini" plain>
-          {{ $t('dataset.update') }}
-        </el-button>
-        <el-button type="primary" size="mini" plain>
-          {{ $t('dataset.process') }}
-        </el-button> -->
-      </el-row>
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('dataset.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <span v-show="false">{{ sceneData }}</span>
-      <el-tree
-        :data="tableData"
-        node-key="id"
-        :expand-on-click-node="true"
-        class="tree-list"
-        highlight-current
-        @node-click="sceneClick"
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list father">
-          <span style="display: flex;flex: 1;width: 0;">
-            <span>
-              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
-              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-            </span>
-            <span v-if="data.type === 'db' || data.type === 'sql'">
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
-            </span>
-            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
-          </span>
-          <span v-if="hasDataPermission('manage',data.privileges)" class="child">
-            <span style="margin-left: 12px;" @click.stop>
-              <el-dropdown trigger="click" size="small" @command="clickMore">
-                <span class="el-dropdown-link">
-                  <el-button
-                    icon="el-icon-more"
-                    type="text"
-                    size="small"
-                  />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">
-                    {{ $t('dataset.rename') }}
-                  </el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">
-                    {{ $t('dataset.move_to') }}
-                  </el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteTable',data,node)">
-                    {{ $t('dataset.delete') }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-          </span>
-        </span>
-      </el-tree>
+    <!--    <el-col v-if="sceneMode">-->
+    <!--      <el-row class="title-css scene-title">-->
+    <!--        <span class="title-text scene-title-name" :title="currGroup.name">-->
+    <!--          {{ currGroup.name }}-->
+    <!--        </span>-->
+    <!--        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">-->
+    <!--          &lt;!&ndash;          {{ $t('dataset.back') }}&ndash;&gt;-->
+    <!--        </el-button>-->
+    <!--      </el-row>-->
+    <!--      <el-divider />-->
+    <!--      <el-row>-->
+    <!--        <el-dropdown style="margin-right: 10px;" size="small" trigger="click" @command="clickAddData">-->
+    <!--          <el-button type="primary" size="mini" plain>-->
+    <!--            {{ $t('dataset.add_table') }}-->
+    <!--          </el-button>-->
+    <!--          <el-dropdown-menu slot="dropdown">-->
+    <!--            <el-dropdown-item :command="beforeClickAddData('db')">-->
+    <!--              <svg-icon icon-class="ds-db" class="ds-icon-db" />-->
+    <!--              {{ $t('dataset.db_data') }}-->
+    <!--            </el-dropdown-item>-->
+    <!--            <el-dropdown-item :command="beforeClickAddData('sql')">-->
+    <!--              <svg-icon icon-class="ds-sql" class="ds-icon-sql" />-->
+    <!--              {{ $t('dataset.sql_data') }}-->
+    <!--            </el-dropdown-item>-->
+    <!--            <el-dropdown-item :command="beforeClickAddData('excel')">-->
+    <!--              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />-->
+    <!--              {{ $t('dataset.excel_data') }}-->
+    <!--            </el-dropdown-item>-->
+    <!--            <el-dropdown-item :command="beforeClickAddData('custom')">-->
+    <!--              <svg-icon icon-class="ds-custom" class="ds-icon-custom" />-->
+    <!--              {{ $t('dataset.custom_data') }}-->
+    <!--            </el-dropdown-item>-->
+    <!--          </el-dropdown-menu>-->
+    <!--        </el-dropdown>-->
+    <!--        &lt;!&ndash; <el-button type="primary" size="mini" plain>-->
+    <!--          {{ $t('dataset.update') }}-->
+    <!--        </el-button>-->
+    <!--        <el-button type="primary" size="mini" plain>-->
+    <!--          {{ $t('dataset.process') }}-->
+    <!--        </el-button> &ndash;&gt;-->
+    <!--      </el-row>-->
+    <!--      <el-row>-->
+    <!--        <el-form>-->
+    <!--          <el-form-item class="form-item">-->
+    <!--            <el-input-->
+    <!--              v-model="search"-->
+    <!--              size="mini"-->
+    <!--              :placeholder="$t('dataset.search')"-->
+    <!--              prefix-icon="el-icon-search"-->
+    <!--              clearable-->
+    <!--            />-->
+    <!--          </el-form-item>-->
+    <!--        </el-form>-->
+    <!--      </el-row>-->
+    <!--      <span v-show="false">{{ sceneData }}</span>-->
+    <!--      <el-tree-->
+    <!--        :data="tableData"-->
+    <!--        node-key="id"-->
+    <!--        :expand-on-click-node="true"-->
+    <!--        class="tree-list"-->
+    <!--        highlight-current-->
+    <!--        @node-click="sceneClick"-->
+    <!--      >-->
+    <!--        <span slot-scope="{ node, data }" class="custom-tree-node-list father">-->
+    <!--          <span style="display: flex;flex: 1;width: 0;">-->
+    <!--            <span>-->
+    <!--              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />-->
+    <!--              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />-->
+    <!--              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />-->
+    <!--              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />-->
+    <!--            </span>-->
+    <!--            <span v-if="data.type === 'db' || data.type === 'sql'">-->
+    <!--              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>-->
+    <!--              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>-->
+    <!--            </span>-->
+    <!--            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>-->
+    <!--          </span>-->
+    <!--          <span v-if="hasDataPermission('manage',data.privileges)" class="child">-->
+    <!--            <span style="margin-left: 12px;" @click.stop>-->
+    <!--              <el-dropdown trigger="click" size="small" @command="clickMore">-->
+    <!--                <span class="el-dropdown-link">-->
+    <!--                  <el-button-->
+    <!--                    icon="el-icon-more"-->
+    <!--                    type="text"-->
+    <!--                    size="small"-->
+    <!--                  />-->
+    <!--                </span>-->
+    <!--                <el-dropdown-menu slot="dropdown">-->
+    <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('editTable',data,node)">-->
+    <!--                    {{ $t('dataset.rename') }}-->
+    <!--                  </el-dropdown-item>-->
+    <!--                  <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">-->
+    <!--                    {{ $t('dataset.move_to') }}-->
+    <!--                  </el-dropdown-item>-->
+    <!--                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteTable',data,node)">-->
+    <!--                    {{ $t('dataset.delete') }}-->
+    <!--                  </el-dropdown-item>-->
+    <!--                </el-dropdown-menu>-->
+    <!--              </el-dropdown>-->
+    <!--            </span>-->
+    <!--          </span>-->
+    <!--        </span>-->
+    <!--      </el-tree>-->
+    <!--    </el-col>-->
 
-      <el-dialog v-dialogDrag :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
-        <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
-          <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="tableForm.name" />
-          </el-form-item>
-          <!--          <el-form-item :label="$t('dataset.mode')" prop="mode">-->
-          <!--            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>-->
-          <!--            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>-->
-          <!--          </el-form-item>-->
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="closeTable()">{{ $t('dataset.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('dataset.confirm') }}
-          </el-button>
-        </div>
-      </el-dialog>
-
-    </el-col>
+    <el-dialog v-dialogDrag :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="tableForm.name" />
+        </el-form-item>
+        <!--          <el-form-item :label="$t('dataset.mode')" prop="mode">-->
+        <!--            <el-radio v-model="tableForm.mode" label="0">{{ $t('dataset.direct_connect') }}</el-radio>-->
+        <!--            <el-radio v-model="tableForm.mode" label="1">{{ $t('dataset.sync_data') }}</el-radio>-->
+        <!--          </el-form-item>-->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeTable()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('dataset.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
 
     <!--移动分组、场景-->
     <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
@@ -264,13 +340,21 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree } from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post } from '@/api/dataset/dataset'
+import { authModel } from '@/api/system/sysAuth'
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
 
 export default {
   name: 'Group',
   components: { GroupMoveSelector, DsMoveSelector },
+  props: {
+    saveStatus: {
+      type: Object,
+      required: false,
+      default: null
+    }
+  },
   data() {
     return {
       sceneMode: false,
@@ -322,28 +406,51 @@ export default {
       tDs: {},
       groupMoveConfirmDisabled: true,
       dsMoveConfirmDisabled: true,
-      moveDialogTitle: ''
+      moveDialogTitle: '',
+      treeProps: {
+        label: 'name',
+        children: 'children',
+        isLeaf: 'isLeaf'
+      },
+      isTreeSearch: false
     }
   },
   computed: {
-    sceneData: function() {
-      this.tableTree()
-      return this.$store.state.dataset.sceneData
-    }
+    // sceneData: function() {
+    //   // this.tableTree()
+    //   // console.log(this.$store.state.dataset.sceneData)
+    //   this.refreshNodeBy(this.currGroup.id)
+    //   return this.$store.state.dataset.sceneData
+    // }
   },
   watch: {
     search(val) {
-      if (val && val !== '') {
-        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
-      } else {
-        this.tableData = JSON.parse(JSON.stringify(this.tables))
+      // if (val && val !== '') {
+      //   this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
+      // } else {
+      //   this.tableData = JSON.parse(JSON.stringify(this.tables))
+      // }
+      if (this.timer) {
+        clearTimeout(this.timer)
       }
+      this.timer = setTimeout(() => {
+        if (val) {
+          this.searchTree(val)
+          this.isTreeSearch = true
+        } else {
+          this.treeNode(this.groupForm)
+          this.isTreeSearch = false
+        }
+      }, 500)
+    },
+    saveStatus() {
+      this.refreshNodeBy(this.saveStatus.sceneId)
     }
   },
   mounted() {
-    this.tree(this.groupForm)
+    this.treeNode(this.groupForm)
     this.refresh()
-    this.tableTree()
+    // this.tableTree()
   },
   methods: {
     clickAdd(param) {
@@ -422,7 +529,8 @@ export default {
               type: 'success',
               showClose: true
             })
-            this.tree(this.groupForm)
+            // this.tree(this.groupForm)
+            this.refreshNodeBy(group.pid)
           })
         } else {
           // this.$message({
@@ -448,7 +556,8 @@ export default {
               type: 'success',
               showClose: true
             })
-            this.tableTree()
+            // this.tableTree()
+            this.refreshNodeBy(table.sceneId)
             // this.$router.push('/dataset/home')
             this.$emit('switchComponent', { name: '' })
             this.$store.dispatch('dataset/setTable', null)
@@ -476,7 +585,8 @@ export default {
             message: this.$t('dataset.delete_success'),
             showClose: true
           })
-          this.tree(this.groupForm)
+          // this.tree(this.groupForm)
+          this.refreshNodeBy(data.pid)
         })
       }).catch(() => {
       })
@@ -494,7 +604,8 @@ export default {
             message: this.$t('dataset.delete_success'),
             showClose: true
           })
-          this.tableTree()
+          // this.tableTree()
+          this.refreshNodeBy(data.sceneId)
           // this.$router.push('/dataset/home')
           this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('dataset/setTable', null)
@@ -523,8 +634,14 @@ export default {
       }
     },
 
-    tree(group) {
-      groupTree(group).then(res => {
+    // tree(group) {
+    //   groupTree(group).then(res => {
+    //     this.tData = res.data
+    //   })
+    // },
+
+    treeNode(group) {
+      post('/dataset/group/treeNode', group).then(res => {
         this.tData = res.data
       })
     },
@@ -546,10 +663,14 @@ export default {
     nodeClick(data, node) {
       // console.log(data);
       // console.log(node);
-      if (data.type === 'scene') {
-        this.sceneMode = true
-        this.currGroup = data
-        this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
+      // if (data.type === 'scene') {
+      //   this.sceneMode = true
+      //   this.currGroup = data
+      //   this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
+      // }
+
+      if (data.type !== 'group') {
+        this.$emit('switchComponent', { name: 'ViewTable', param: data.id })
       }
       // if (node.expanded) {
       //   this.expandedArray.push(data.id)
@@ -569,6 +690,8 @@ export default {
 
     clickAddData(param) {
       // console.log(param);
+      this.currGroup = param.data
+      this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
       switch (param.type) {
         case 'db':
           this.addData('AddDB')
@@ -585,9 +708,10 @@ export default {
       }
     },
 
-    beforeClickAddData(type) {
+    beforeClickAddData(type, data) {
       return {
-        'type': type
+        'type': type,
+        'data': data
       }
     },
 
@@ -640,7 +764,8 @@ export default {
       this.groupForm.pid = this.tGroup.id
       addGroup(this.groupForm).then(res => {
         this.closeMoveGroup()
-        this.tree(this.groupForm)
+        // this.tree(this.groupForm)
+        this.refreshNodeBy(this.groupForm.pid)
       })
     },
     targetGroup(val) {
@@ -664,23 +789,90 @@ export default {
       }
     },
     saveMoveDs() {
-      if (this.tDs && this.tDs.type === 'group') {
-        return
-      }
+      // if (this.tDs && this.tDs.type === 'group') {
+      //   return
+      // }
       this.dsForm.sceneId = this.tDs.id
       this.dsForm.isRename = true
       addTable(this.dsForm).then(res => {
         this.closeMoveDs()
-        this.tableTree()
+        // this.tableTree()
+        this.refreshNodeBy(this.dsForm.sceneId)
       })
     },
     targetDs(val) {
       this.tDs = val
       if (this.tDs.type === 'group') {
-        this.dsMoveConfirmDisabled = true
+        this.dsMoveConfirmDisabled = false
       } else {
         this.dsMoveConfirmDisabled = false
       }
+    },
+
+    loadNode(node, resolve) {
+      if (!this.isTreeSearch) {
+        if (node.level > 0) {
+          this.tables = []
+          this.tableData = []
+          if (node.data.id) {
+            post('/dataset/table/listAndGroup', {
+              sort: 'type asc,name asc,create_time desc',
+              sceneId: node.data.id
+            }).then(res => {
+              this.tables = res.data
+              this.tableData = JSON.parse(JSON.stringify(this.tables))
+              resolve(this.tableData)
+            })
+          }
+        }
+      }
+    },
+
+    refreshNodeBy(id) {
+      if (!id || id === '0') {
+        this.treeNode(this.groupForm)
+      } else {
+        const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
+        node.loaded = false
+        node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+      }
+    },
+
+    searchTree(val) {
+      const queryCondition = {
+        withExtend: 'parent',
+        modelType: 'dataset',
+        name: val
+      }
+      authModel(queryCondition).then(res => {
+        debugger
+        this.tData = this.buildTree(res.data)
+      })
+    },
+
+    buildTree(arrs) {
+      const idMapping = arrs.reduce((acc, el, i) => {
+        acc[el[this.defaultProps.id]] = i
+        return acc
+      }, {})
+      const roots = []
+      arrs.forEach(el => {
+        // 判断根节点 ###
+        if (el[this.defaultProps.parentId] === null || el[this.defaultProps.parentId] === 0 || el[this.defaultProps.parentId] === '0') {
+          roots.push(el)
+          return
+        }
+        // 用映射表找到父元素
+        const parentEl = arrs[idMapping[el[this.defaultProps.parentId]]]
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el]
+
+        // 设置展开节点 如果没有子节点则不进行展开
+        if (parentEl.children.length > 0) {
+          this.expandedKey.push(parentEl[this.defaultProps.id])
+        }
+      })
+      return roots
     }
   }
 }
@@ -761,5 +953,12 @@ export default {
 
   .dialog-css >>> .el-dialog__body {
     padding: 10px 20px 20px;
+  }
+
+  .inner-dropdown-menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%
   }
 </style>

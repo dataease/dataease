@@ -32,6 +32,11 @@ public class ChartViewController {
         return chartViewService.list(chartViewRequest);
     }
 
+    @PostMapping("/listAndGroup")
+    public List<ChartViewDTO> listAndGroup(@RequestBody ChartViewRequest chartViewRequest) {
+        return chartViewService.listAndGroup(chartViewRequest);
+    }
+
     @PostMapping("/get/{id}")
     public ChartViewWithBLOBs get(@PathVariable String id) {
         return chartViewService.get(id);

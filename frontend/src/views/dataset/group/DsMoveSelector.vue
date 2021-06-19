@@ -38,7 +38,7 @@ export default {
         name: '',
         pid: '0',
         level: 0,
-        type: '',
+        type: 'group',
         children: [],
         sort: 'type desc,name asc'
       },
