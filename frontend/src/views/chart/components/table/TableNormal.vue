@@ -117,23 +117,24 @@ export default {
       }
     },
     calcHeight() {
-      const that = this
-      this.$nextTick(function() {
-        if (that.$refs.tableContainer) {
-          const currentHeight = that.$refs.tableContainer.offsetHeight
-          const tableMaxHeight = currentHeight - that.$refs.title.offsetHeight
-          let tableHeight
-          if (that.chart.data) {
-            tableHeight = (that.chart.data.tableRow.length + 2) * 36
-          } else {
-            tableHeight = 0
+      this.$nextTick(() => {
+        setTimeout(() => {
+          if (this.$refs.tableContainer) {
+            const currentHeight = this.$refs.tableContainer.offsetHeight
+            const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight
+            let tableHeight
+            if (this.chart.data) {
+              tableHeight = (this.chart.data.tableRow.length + 2) * 36
+            } else {
+              tableHeight = 0
+            }
+            if (tableHeight > tableMaxHeight) {
+              this.height = tableMaxHeight + 'px'
+            } else {
+              this.height = 'auto'
+            }
           }
-          if (tableHeight > tableMaxHeight) {
-            that.height = tableMaxHeight + 'px'
-          } else {
-            that.height = 'auto'
-          }
-        }
+        }, 100)
       })
     },
     initStyle() {
