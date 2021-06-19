@@ -74,7 +74,7 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('group',data,node)">
+                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('group',data,node)">
                         {{ $t('chart.group') }}
                       </el-dropdown-item>
                       <!--                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">-->

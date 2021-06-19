@@ -74,10 +74,10 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('group',data,node)">
+                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('group',data,node)">
                         <span style="font-size: 13px;">{{ $t('dataset.group') }}</span>
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-folder-add">
+                      <el-dropdown-item icon="el-icon-circle-plus">
                         <!--                        {{ $t('dataset.scene') }}-->
                         <el-dropdown size="small" placement="right-start" @command="clickAddData">
                           <!--                          <el-button type="primary" size="mini" plain>-->
