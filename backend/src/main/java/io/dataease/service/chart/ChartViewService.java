@@ -86,6 +86,7 @@ public class ChartViewService {
         chartGroupRequest.setType("group");
         chartGroupRequest.setPid(chartViewRequest.getSceneId());
         chartGroupRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        chartGroupRequest.setSort("name asc,create_time desc");
         List<ChartGroupDTO> groups = extChartGroupMapper.search(chartGroupRequest);
         List<ChartViewDTO> group = groups.stream().map(ele -> {
             ChartViewDTO dto = new ChartViewDTO();

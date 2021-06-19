@@ -197,6 +197,7 @@ public class DataSetTableService {
         datasetGroup.setType("group");
         datasetGroup.setPid(dataSetTableRequest.getSceneId());
         datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        datasetGroup.setSort("name asc,create_time desc");
         List<DataSetGroupDTO> groups = extDataSetGroupMapper.search(datasetGroup);
         List<DataSetTableDTO> group = groups.stream().map(ele -> {
             DataSetTableDTO dto = new DataSetTableDTO();
