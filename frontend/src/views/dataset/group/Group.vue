@@ -410,7 +410,9 @@ export default {
       treeProps: {
         label: 'name',
         children: 'children',
-        isLeaf: 'isLeaf'
+        isLeaf: 'isLeaf',
+        id: 'id',
+        parentId: 'pid'
       },
       isTreeSearch: false
     }
@@ -845,31 +847,30 @@ export default {
         name: val
       }
       authModel(queryCondition).then(res => {
-        debugger
         this.tData = this.buildTree(res.data)
       })
     },
 
     buildTree(arrs) {
       const idMapping = arrs.reduce((acc, el, i) => {
-        acc[el[this.defaultProps.id]] = i
+        acc[el[this.treeProps.id]] = i
         return acc
       }, {})
       const roots = []
       arrs.forEach(el => {
         // 判断根节点 ###
-        if (el[this.defaultProps.parentId] === null || el[this.defaultProps.parentId] === 0 || el[this.defaultProps.parentId] === '0') {
+        if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
           roots.push(el)
           return
         }
         // 用映射表找到父元素
-        const parentEl = arrs[idMapping[el[this.defaultProps.parentId]]]
+        const parentEl = arrs[idMapping[el[this.treeProps.parentId]]]
         // 把当前元素添加到父元素的`children`数组中
         parentEl.children = [...(parentEl.children || []), el]
 
         // 设置展开节点 如果没有子节点则不进行展开
         if (parentEl.children.length > 0) {
-          this.expandedKey.push(parentEl[this.defaultProps.id])
+          this.expandedArray.push(parentEl[this.treeProps.id])
         }
       })
       return roots

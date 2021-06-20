@@ -471,15 +471,17 @@ export default {
       }
     },
     initTableField(id) {
-      post('/dataset/table/getFieldsFromDE', this.table).then(response => {
-        this.dimension = response.data.dimension
-        this.quota = response.data.quota
-      }).catch(err => {
-        this.resetView()
-        this.httpRequest.status = err.response.data.success
-        this.httpRequest.msg = err.response.data.message
-        return true
-      })
+      if (this.table) {
+        post('/dataset/table/getFieldsFromDE', this.table).then(response => {
+          this.dimension = response.data.dimension
+          this.quota = response.data.quota
+        }).catch(err => {
+          this.resetView()
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
+          return true
+        })
+      }
     },
     save(getData, trigger, needRefreshGroup = false) {
       const view = JSON.parse(JSON.stringify(this.view))

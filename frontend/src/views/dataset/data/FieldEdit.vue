@@ -57,9 +57,9 @@
               <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
               <span class="field-class">{{ $t('dataset.time') }}</span>
             </span>
-            <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3">
-              <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3" icon-class="field_value" class="field-icon-value" />
-              <span v-if="scope.row.deExtractType === 2" class="field-class">{{ $t('dataset.value') }}</span>
+            <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3 || scope.row.deExtractType === 4">
+              <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3 || scope.row.deExtractType === 4" icon-class="field_value" class="field-icon-value" />
+              <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 4" class="field-class">{{ $t('dataset.value') }}</span>
               <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
             </span>
           </span>
