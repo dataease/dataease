@@ -32,5 +32,5 @@ public abstract class DatasourceProvider {
 
     abstract public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception;
 
-    abstract public void initDataSource(DatasourceRequest datasourceRequest) throws Exception;
+    abstract public void initDataSource(DatasourceRequest datasourceRequest, String type) throws Exception;
 }

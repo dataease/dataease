@@ -271,7 +271,7 @@ public class JdbcProvider extends DatasourceProvider {
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
         ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
-            initDataSource(datasourceRequest);
+            initDataSource(datasourceRequest, "add");
         }
         dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         Connection co = dataSource.getConnection();
@@ -279,28 +279,46 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public void initDataSource(DatasourceRequest datasourceRequest) throws Exception {
-        ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
-        if (dataSource == null) {
-            dataSource = new ComboPooledDataSource();
-            setCredential(datasourceRequest, dataSource);
-            dataSource.setMaxIdleTime(30); // 最大空闲时间
-            dataSource.setAcquireIncrement(5);// 增长数
-            dataSource.setInitialPoolSize(initPoolSize);// 初始连接数
-            dataSource.setMinPoolSize(initPoolSize); // 最小连接数
-            dataSource.setMaxPoolSize(maxConnections); // 最大连接数
-            dataSource.setAcquireRetryAttempts(30);// 获取连接重试次数
-            dataSource.setIdleConnectionTestPeriod(60); // 每60s检查数据库空闲连接
-            dataSource.setMaxStatements(0); // c3p0全局的PreparedStatements缓存的大小
-            dataSource.setBreakAfterAcquireFailure(false);  // 获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试获取连接失败后该数据源将申明已断开并永久关闭。Default: false
-            dataSource.setTestConnectionOnCheckout(false); // 在每个connection 提交是校验有效性
-            dataSource.setTestConnectionOnCheckin(true); // 取得连接的同时将校验连接的有效性
-            dataSource.setCheckoutTimeout(60000); // 从连接池获取连接的超时时间，如设为0则无限期等待。单位毫秒，默认为0
-            dataSource.setPreferredTestQuery("SELECT 1");
-            dataSource.setDebugUnreturnedConnectionStackTraces(true);
-            dataSource.setUnreturnedConnectionTimeout(3600);
-            jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
+    public void initDataSource(DatasourceRequest datasourceRequest, String type) throws Exception {
+        switch (type){
+            case "add":
+                ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+                if (dataSource == null) {
+                    extracted(datasourceRequest);
+                }
+                break;
+            case "edit":
+                jdbcConnection.remove(datasourceRequest.getDatasource().getId());
+                extracted(datasourceRequest);
+                break;
+            case "delete":
+                jdbcConnection.remove(datasourceRequest.getDatasource().getId());
+                break;
+            default:
+                break;
         }
+    }
+
+    private void extracted(DatasourceRequest datasourceRequest) throws PropertyVetoException {
+        ComboPooledDataSource dataSource;
+        dataSource = new ComboPooledDataSource();
+        setCredential(datasourceRequest, dataSource);
+        dataSource.setMaxIdleTime(30); // 最大空闲时间
+        dataSource.setAcquireIncrement(5);// 增长数
+        dataSource.setInitialPoolSize(initPoolSize);// 初始连接数
+        dataSource.setMinPoolSize(initPoolSize); // 最小连接数
+        dataSource.setMaxPoolSize(maxConnections); // 最大连接数
+        dataSource.setAcquireRetryAttempts(30);// 获取连接重试次数
+        dataSource.setIdleConnectionTestPeriod(60); // 每60s检查数据库空闲连接
+        dataSource.setMaxStatements(0); // c3p0全局的PreparedStatements缓存的大小
+        dataSource.setBreakAfterAcquireFailure(false);  // 获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试获取连接失败后该数据源将申明已断开并永久关闭。Default: false
+        dataSource.setTestConnectionOnCheckout(false); // 在每个connection 提交是校验有效性
+        dataSource.setTestConnectionOnCheckin(true); // 取得连接的同时将校验连接的有效性
+        dataSource.setCheckoutTimeout(60000); // 从连接池获取连接的超时时间，如设为0则无限期等待。单位毫秒，默认为0
+        dataSource.setPreferredTestQuery("SELECT 1");
+        dataSource.setDebugUnreturnedConnectionStackTraces(true);
+        dataSource.setUnreturnedConnectionTimeout(3600);
+        jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
     }
 
     private static Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {

@@ -21,19 +21,19 @@
       <!--        </el-button>-->
       <!--      </el-row>-->
 
-      <!--      <el-row>-->
-      <!--        <el-form>-->
-      <!--          <el-form-item class="form-item">-->
-      <!--            <el-input-->
-      <!--              v-model="search"-->
-      <!--              size="mini"-->
-      <!--              :placeholder="$t('dataset.search')"-->
-      <!--              prefix-icon="el-icon-search"-->
-      <!--              clearable-->
-      <!--            />-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--      </el-row>-->
+      <el-row>
+        <el-form>
+          <el-form-item class="form-item">
+            <el-input
+              v-model="search"
+              size="mini"
+              :placeholder="$t('dataset.search')"
+              prefix-icon="el-icon-search"
+              clearable
+            />
+          </el-form-item>
+        </el-form>
+      </el-row>
 
       <el-col class="custom-tree-container">
         <div class="block">
@@ -435,17 +435,14 @@ export default {
       // } else {
       //   this.tableData = JSON.parse(JSON.stringify(this.tables))
       // }
+      this.$emit('switchComponent', { name: '' })
+      this.tData = []
+      this.expandedArray = []
       if (this.timer) {
         clearTimeout(this.timer)
       }
       this.timer = setTimeout(() => {
-        if (val) {
-          this.searchTree(val)
-          this.isTreeSearch = true
-        } else {
-          this.treeNode(this.groupForm)
-          this.isTreeSearch = false
-        }
+        this.getTreeData(val)
       }, 500)
     },
     saveStatus() {
@@ -830,16 +827,24 @@ export default {
             })
           }
         }
+      } else {
+        resolve(node.data.children)
       }
     },
 
     refreshNodeBy(id) {
-      if (!id || id === '0') {
-        this.treeNode(this.groupForm)
+      if (this.isTreeSearch) {
+        this.tData = []
+        this.expandedArray = []
+        this.searchTree(this.search)
       } else {
-        const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
-        node.loaded = false
-        node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+        if (!id || id === '0') {
+          this.treeNode(this.groupForm)
+        } else {
+          const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
+          node.loaded = false
+          node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+        }
       }
     },
 
@@ -850,7 +855,9 @@ export default {
         name: val
       }
       authModel(queryCondition).then(res => {
+        // this.highlights(res.data)
         this.tData = this.buildTree(res.data)
+        console.log(this.tData)
       })
     },
 
@@ -862,6 +869,8 @@ export default {
       const roots = []
       arrs.forEach(el => {
         // 判断根节点 ###
+        el.type = el.modelInnerType
+        el.isLeaf = el.leaf
         if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
           roots.push(el)
           return
@@ -877,6 +886,28 @@ export default {
         }
       })
       return roots
+    },
+
+    // 高亮显示搜索内容
+    highlights(data) {
+      if (data && this.search && this.search.length > 0) {
+        const replaceReg = new RegExp(this.search, 'g')// 匹配关键字正则
+        const replaceString = '<span style="color: #0a7be0">' + this.search + '</span>' // 高亮替换v-html值
+        data.forEach(item => {
+          item.name = item.name.replace(replaceReg, replaceString) // 开始替换
+          item.label = item.label.replace(replaceReg, replaceString) // 开始替换
+        })
+      }
+    },
+
+    getTreeData(val) {
+      if (val) {
+        this.isTreeSearch = true
+        this.searchTree(val)
+      } else {
+        this.isTreeSearch = false
+        this.treeNode(this.groupForm)
+      }
     }
   }
 }
