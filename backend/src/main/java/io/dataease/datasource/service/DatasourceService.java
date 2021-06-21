@@ -55,7 +55,22 @@ public class DatasourceService {
         datasource.setCreateTime(currentTimeMillis);
         datasource.setCreateBy(String.valueOf(AuthUtils.getUser().getUsername()));
         datasourceMapper.insertSelective(datasource);
+        initConnectionPool(datasource, "add");
         return datasource;
+    }
+
+    private void initConnectionPool(Datasource datasource, String type) {
+        commonThreadPool.addTask(() -> {
+            try {
+                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(datasource);
+                datasourceProvider.initDataSource(datasourceRequest, type);
+                LogUtil.info("Succsss to init datasource connection pool: " + datasource.getName());
+            } catch (Exception e) {
+                LogUtil.error("Failed to init datasource connection pool: " + datasource.getName(), e);
+            }
+        });
     }
 
     public List<DatasourceDTO> getDatasourceList(DatasourceUnionRequest request) throws Exception {
@@ -92,6 +107,7 @@ public class DatasourceService {
         datasource.setCreateTime(null);
         datasource.setUpdateTime(System.currentTimeMillis());
         datasourceMapper.updateByPrimaryKeySelective(datasource);
+        initConnectionPool(datasource, "edit");
     }
 
     public void validate(Datasource datasource) throws Exception {
@@ -148,17 +164,7 @@ public class DatasourceService {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
             try {
-                commonThreadPool.addTask(() -> {
-                    try {
-                        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-                        DatasourceRequest datasourceRequest = new DatasourceRequest();
-                        datasourceRequest.setDatasource(datasource);
-                        datasourceProvider.initDataSource(datasourceRequest);
-                        LogUtil.info("Succsss to init datasource connection pool: " + datasource.getName());
-                    } catch (Exception e) {
-                        LogUtil.error("Failed to init datasource connection pool: " + datasource.getName(), e);
-                    }
-                });
+                initConnectionPool(datasource, "add");
             } catch (Exception e) {
                 e.printStackTrace();
             }
