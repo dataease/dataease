@@ -443,7 +443,7 @@ export default {
       }
       this.timer = setTimeout(() => {
         this.getTreeData(val)
-      }, 500)
+      }, (val && val !== '') ? 500 : 0)
     },
     saveStatus() {
       this.refreshNodeBy(this.saveStatus.sceneId)
