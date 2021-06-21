@@ -1,13 +1,15 @@
 package io.dataease.service.dataset;
 
-import io.dataease.base.domain.*;
+import io.dataease.base.domain.DatasetTable;
+import io.dataease.base.domain.DatasetTableTask;
+import io.dataease.base.domain.DatasetTableTaskExample;
+import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.i18n.Translator;
 import io.dataease.service.ScheduleService;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
@@ -44,25 +46,29 @@ public class DataSetTableTaskService {
         dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
 
         // check
-        if (StringUtils.isNotEmpty(datasetTableTask.getCron())) {
-            if (!CronExpression.isValidExpression(datasetTableTask.getCron())) {
-                throw new RuntimeException(Translator.get("i18n_cron_expression_error"));
+        if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(),"CRON")){
+            if (StringUtils.isNotEmpty(datasetTableTask.getCron())) {
+                if (!CronExpression.isValidExpression(datasetTableTask.getCron())) {
+                    throw new RuntimeException(Translator.get("i18n_cron_expression_error"));
+                }
+            }
+            // check start time and end time
+            if (StringUtils.equalsIgnoreCase(datasetTableTask.getEnd(), "1")
+                    && ObjectUtils.isNotEmpty(datasetTableTask.getStartTime())
+                    && ObjectUtils.isNotEmpty(datasetTableTask.getEndTime())
+                    && datasetTableTask.getStartTime() != 0
+                    && datasetTableTask.getEndTime() != 0
+                    && datasetTableTask.getStartTime() > datasetTableTask.getEndTime()) {
+                throw new RuntimeException(Translator.get("i18n_cron_time_error"));
             }
         }
-        // check start time and end time
-        if (ObjectUtils.isNotEmpty(datasetTableTask.getStartTime())
-                && ObjectUtils.isNotEmpty(datasetTableTask.getEndTime())
-                && datasetTableTask.getStartTime() != 0
-                && datasetTableTask.getEndTime() != 0
-                && datasetTableTask.getStartTime() > datasetTableTask.getEndTime()) {
-            throw new RuntimeException(Translator.get("i18n_cron_time_error"));
-        }
+
         if (StringUtils.isEmpty(datasetTableTask.getId())) {
             datasetTableTask.setId(UUID.randomUUID().toString());
             datasetTableTask.setCreateTime(System.currentTimeMillis());
             // SIMPLE 类型，提前占位
             if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                if(datasetTableTask.getType().equalsIgnoreCase("add_scope")){
+                if (datasetTableTask.getType().equalsIgnoreCase("add_scope")) {
                     DatasetTable datasetTable = dataSetTableService.get(datasetTableTask.getTableId());
                     if (datasetTable.getLastUpdateTime() == 0 || datasetTable.getLastUpdateTime() == null) {
                         throw new Exception(Translator.get("i18n_not_exec_add_sync"));
@@ -70,7 +76,7 @@ public class DataSetTableTaskService {
                 }
                 if (extractDataService.updateSyncStatusIsNone(dataSetTableService.get(datasetTableTask.getTableId()))) {
                     throw new Exception(Translator.get("i18n_sync_job_exists"));
-                }else {
+                } else {
                     //write log
                     DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
                     datasetTableTaskLog.setTableId(datasetTableTask.getTableId());

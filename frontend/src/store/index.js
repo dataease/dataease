@@ -71,7 +71,6 @@ const data = {
     },
 
     setCurComponent(state, { component, index }) {
-      console.log('curComponent' + JSON.stringify(component))
       state.curComponent = component
       state.curComponentIndex = index
     },

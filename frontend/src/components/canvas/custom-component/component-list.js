@@ -33,9 +33,9 @@ export const assistList = [
 export const pictureList = [
   {
     id: '20001',
-    component: 'picture',
-    type: 'picture',
-    label: '点击上传',
+    component: 'picture-add',
+    type: 'picture-add',
+    label: '拖拽上传',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter'
   }
@@ -137,6 +137,14 @@ const list = [
       height: 300,
       borderRadius: ''
     }
+  },
+  {
+    id: '20001',
+    component: 'picture-add',
+    type: 'picture-add',
+    label: '拖拽上传',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter'
   }
 ]
 

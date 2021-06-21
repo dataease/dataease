@@ -175,7 +175,7 @@ export default {
             this.requestStatus = 'success'
           } else {
             this.requestStatus = 'error'
-            this.message = response.massage
+            this.message = response.message
           }
           return true
         }).catch(err => {

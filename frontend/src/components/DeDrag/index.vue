@@ -1252,7 +1252,7 @@ export default {
               this.top = this.mouseClickPosition.top
               this.left = this.mouseClickPosition.left
               this.width = this.mouseClickPosition.width
-              console.log('width5:' + this.width)
+              // console.log('width5:' + this.width)
               this.height = this.mouseClickPosition.height
             }
           }
@@ -1436,7 +1436,7 @@ export default {
       let groupLeft = 0
       let groupTop = 0
       for (const item of nodes) {
-        console.log('===' + typeof item.tagName)
+        // console.log('===' + typeof item.tagName)
         // 修复判断条件
         // if (item.className !== undefined && item.className.split(' ').includes(this.classNameActive)) {
         if (item.tagName !== 'svg' && item.className !== undefined && item.className.split(' ').includes(this.classNameActive)) {

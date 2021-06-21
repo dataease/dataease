@@ -154,6 +154,8 @@
       <Preview v-if="previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
     </fullscreen>
 
+    <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
+
   </el-row>
 </template>
 
@@ -188,6 +190,10 @@ import '@/components/canvas/styles/animate.css'
 
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import FilterDialog from '../filter/filterDialog'
+import toast from '@/components/canvas/utils/toast'
+import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
+import generateID from '@/components/canvas/utils/generateID'
+
 export default {
   name: 'PanelEdit',
   components: {
@@ -238,7 +244,8 @@ export default {
         height: null
       },
       beforeDialogValue: [],
-      styleDialogVisible: false
+      styleDialogVisible: false,
+      currentDropElement: null
     }
   },
 
@@ -248,6 +255,7 @@ export default {
     },
     ...mapState([
       'curComponent',
+      'curCanvasScale',
       'isClickComponent',
       'canvasStyleData',
       'curComponentIndex',
@@ -384,13 +392,12 @@ export default {
       return data
     },
     handleDrop(e) {
+      this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
       let component
       const newComponentId = uuid.v1()
-
       const componentInfo = JSON.parse(e.dataTransfer.getData('componentInfo'))
-
       if (componentInfo.type === 'assist') {
         // 辅助设计组件
         componentList.forEach(componentTemp => {
@@ -398,6 +405,12 @@ export default {
             component = deepCopy(componentTemp)
           }
         })
+
+        if (component.type === 'picture-add') {
+          this.goFile()
+          this.clearCurrentInfo()
+          return
+        }
       } else if (componentInfo.type === 'view') {
         // 用户视图设置 复制一个模板
         componentList.forEach(componentTemp => {
@@ -415,8 +428,8 @@ export default {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
 
         this.currentFilterCom = this.currentWidget.getDrawPanel()
-        this.currentFilterCom.style.top = e.offsetY
-        this.currentFilterCom.style.left = e.offsetX
+        this.currentFilterCom.style.top = this.getPositionY(e.layerY)
+        this.currentFilterCom.style.left = this.getPositionX(e.layerX)
         this.currentFilterCom.id = newComponentId
         if (this.currentWidget.filterDialog) {
           this.show = false
@@ -427,8 +440,8 @@ export default {
       }
 
       // position = absolution 或导致有偏移 这里中和一下偏移量
-      component.style.top = e.offsetY
-      component.style.left = e.offsetX
+      component.style.top = this.getPositionY(e.layerY)
+      component.style.left = this.getPositionX(e.layerX)
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
@@ -525,6 +538,64 @@ export default {
     },
     closeStyleDialog() {
       this.styleDialogVisible = false
+    },
+    goFile() {
+      this.$refs.files.click()
+    },
+    handleFileChange(e) {
+      const file = e.target.files[0]
+      if (!file.type.includes('image')) {
+        toast('只能插入图片')
+        return
+      }
+      const reader = new FileReader()
+      reader.onload = (res) => {
+        const fileResult = res.target.result
+        const img = new Image()
+        img.onload = () => {
+          const scaleWith = img.width / 400
+          const scaleHeight = img.height / 200
+          let scale = scaleWith > scaleHeight ? scaleWith : scaleHeight
+          scale = scale > 1 ? scale : 1
+          this.$store.commit('addComponent', {
+            component: {
+              ...commonAttr,
+              id: generateID(),
+              component: 'Picture',
+              label: '图片',
+              icon: '',
+              propValue: fileResult,
+              style: {
+                ...commonStyle,
+                top: this.getPositionY(this.currentDropElement.layerY),
+                left: this.getPositionX(this.currentDropElement.layerX),
+                width: img.width / scale,
+                height: img.height / scale
+              }
+            }
+          })
+
+          this.$store.commit('recordSnapshot')
+        }
+
+        img.src = fileResult
+      }
+
+      reader.readAsDataURL(file)
+    },
+    getPositionX(x) {
+      if (this.canvasStyleData.selfAdaption) {
+        return x * 100 / this.curCanvasScale.scaleWidth
+      } else {
+        return x
+      }
+    },
+    getPositionY(y) {
+      if (this.canvasStyleData.selfAdaption) {
+        return y * 100 / this.curCanvasScale.scaleHeight
+      } else {
+        return y
+      }
     }
   }
 }
