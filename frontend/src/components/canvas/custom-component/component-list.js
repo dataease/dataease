@@ -127,7 +127,7 @@ const list = [
   },
   {
     id: '10005',
-    component: 'view',
+    component: 'user-view',
     label: '用户视图',
     propValue: '',
     icon: 'juxing',
