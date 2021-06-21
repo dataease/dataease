@@ -61,6 +61,9 @@
                 <!--                  &lt;!&ndash;                  />&ndash;&gt;-->
                 <!--                  <svg-icon icon-class="scene" class="ds-icon-scene" />-->
                 <!--                </span>-->
+                <span>
+                  <i class="el-icon-folder" />
+                </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
