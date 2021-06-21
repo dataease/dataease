@@ -29,7 +29,7 @@
       :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
       :snap-tolerance="1"
-      :change-style="customStyleHistory"
+      :change-style="customStyle"
       @refLineParams="getRefLineParams"
     >
       <component
@@ -193,6 +193,16 @@ export default {
     ])
   },
   watch: {
+    customStyle: {
+      handler(newVal, oldVla) {
+        // 获取当前宽高（宽高改变后重新渲染画布）
+        // if (oldVla && newVal !== oldVla) {
+        //   this.showDrag = false
+        //   this.$nextTick(() => (this.showDrag = true))
+        // }
+      },
+      deep: true
+    },
     outStyle: {
       handler(newVal, oldVla) {
         this.changeScale()
@@ -454,17 +464,6 @@ export default {
       }
     },
     changeScale() {
-      // 获取当前宽高（宽高改变后重新渲染画布）
-      const style = {
-        width: this.format(this.canvasStyleData.width, this.scaleWidth) + 'px',
-        height: this.format(this.canvasStyleData.height, this.scaleHeight) + 'px'
-      }
-      if (this.customStyleHistory && this.customStyleHistory !== style) {
-        this.showDrag = false
-        this.$nextTick(() => (this.showDrag = true))
-      }
-      this.customStyleHistory = style
-
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }

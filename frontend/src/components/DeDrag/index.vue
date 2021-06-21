@@ -298,6 +298,10 @@ export default {
     horizontal: {
       type: Boolean,
       default: true
+    },
+    changeStyle: {
+      require: true,
+      type: Object
     }
   },
   data: function() {
@@ -542,69 +546,21 @@ export default {
         this.bounds = this.calcResizeLimits()
       }
       this.changeHeight(val)
+    },
+    changeStyle(val) {
+      this.beforeDestroyFunction()
+      this.createdFunction()
+      this.mountedFunction()
     }
   },
   created: function() {
-    // eslint-disable-next-line 无效的prop：minWidth不能大于maxWidth
-    if (this.maxWidth && this.minWidth > this.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
-    // eslint-disable-next-line 无效prop：minHeight不能大于maxHeight'
-    if (this.maxWidth && this.minHeight > this.maxHeight) console.warn('[Vdr warn]: Invalid prop: minHeight cannot be greater than maxHeight')
-    this.elmX = 0
-    this.elmY = 0
-    this.elmW = 0
-    this.elmH = 0
-    this.lastCenterX = 0
-    this.lastCenterY = 0
-    this.fixedXName = ''
-    this.fixedYName = ''
-    this.fixedX = 0
-    this.fixedY = 0
-    this.TL = {}
-    this.TR = {}
-    this.BL = {}
-    this.BR = {}
-    this.resetBoundsAndMouseState()
+    this.createdFunction()
   },
   mounted: function() {
-    // private 冲突检测 和水平设计值保持一致
-    // this.isConflictCheck = this.horizontal
-    // this.snap = this.horizontal
-    // this.snapTolerance = 5
-    // this.grid = [10, 10]
-
-    if (!this.enableNativeDrag) {
-      this.$el.ondragstart = () => false
-    }
-    const [parentWidth, parentHeight] = this.getParentSize()
-    this.parentWidth = parentWidth
-    this.parentHeight = parentHeight
-    const [width, height] = getComputedSize(this.$el)
-    this.aspectFactor = (this.w !== 'auto' ? this.w : width) / (this.h !== 'auto' ? this.h : height)
-    if (this.outsideAspectRatio) {
-      this.aspectFactor = this.outsideAspectRatio
-    }
-    this.width = this.w !== 'auto' ? this.w : width
-    // console.log('width1:' + this.width)
-    this.height = this.h !== 'auto' ? this.h : height
-    this.right = this.parentWidth - this.width - this.left
-    this.bottom = this.parentHeight - this.height - this.top
-
-    // 绑定data-*属性
-    this.settingAttribute()
-    // 监听取消操作
-    addEvent(document.documentElement, 'mousedown', this.deselect)
-    addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
-    //  窗口变化时，检查容器大小
-    addEvent(window, 'resize', this.checkParentSize)
+    this.mountedFunction()
   },
   beforeDestroy: function() {
-    removeEvent(document.documentElement, 'mousedown', this.deselect)
-    removeEvent(document.documentElement, 'touchstart', this.handleUp)
-    removeEvent(document.documentElement, 'mousemove', this.move)
-    removeEvent(document.documentElement, 'touchmove', this.move)
-    removeEvent(document.documentElement, 'mouseup', this.handleUp)
-    removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
-    removeEvent(window, 'resize', this.checkParentSize)
+    this.beforeDestroyFunction()
   },
   methods: {
     // 重置边界和鼠标状态
@@ -1506,6 +1462,68 @@ export default {
       style.rotate = this.rotate
       this.hasMove = true
       this.$store.commit('setShapeStyle', style)
+    },
+    mountedFunction() {
+      // private 冲突检测 和水平设计值保持一致
+      // this.isConflictCheck = this.horizontal
+      // this.snap = this.horizontal
+      // this.snapTolerance = 5
+      // this.grid = [10, 10]
+
+      if (!this.enableNativeDrag) {
+        this.$el.ondragstart = () => false
+      }
+      const [parentWidth, parentHeight] = this.getParentSize()
+      this.parentWidth = parentWidth
+      this.parentHeight = parentHeight
+      const [width, height] = getComputedSize(this.$el)
+      this.aspectFactor = (this.w !== 'auto' ? this.w : width) / (this.h !== 'auto' ? this.h : height)
+      if (this.outsideAspectRatio) {
+        this.aspectFactor = this.outsideAspectRatio
+      }
+      this.width = this.w !== 'auto' ? this.w : width
+      // console.log('width1:' + this.width)
+      this.height = this.h !== 'auto' ? this.h : height
+      this.right = this.parentWidth - this.width - this.left
+      this.bottom = this.parentHeight - this.height - this.top
+
+      // 绑定data-*属性
+      this.settingAttribute()
+      // 监听取消操作
+      addEvent(document.documentElement, 'mousedown', this.deselect)
+      addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
+      //  窗口变化时，检查容器大小
+      addEvent(window, 'resize', this.checkParentSize)
+    },
+    createdFunction() {
+      // eslint-disable-next-line 无效的prop：minWidth不能大于maxWidth
+      if (this.maxWidth && this.minWidth > this.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
+      // eslint-disable-next-line 无效prop：minHeight不能大于maxHeight'
+      if (this.maxWidth && this.minHeight > this.maxHeight) console.warn('[Vdr warn]: Invalid prop: minHeight cannot be greater than maxHeight')
+      this.elmX = 0
+      this.elmY = 0
+      this.elmW = 0
+      this.elmH = 0
+      this.lastCenterX = 0
+      this.lastCenterY = 0
+      this.fixedXName = ''
+      this.fixedYName = ''
+      this.fixedX = 0
+      this.fixedY = 0
+      this.TL = {}
+      this.TR = {}
+      this.BL = {}
+      this.BR = {}
+      this.resetBoundsAndMouseState()
+    },
+    beforeDestroyFunction() {
+      removeEvent(document.documentElement, 'mousedown', this.deselect)
+      removeEvent(document.documentElement, 'touchstart', this.handleUp)
+      removeEvent(document.documentElement, 'mousemove', this.move)
+      removeEvent(document.documentElement, 'touchmove', this.move)
+      removeEvent(document.documentElement, 'mouseup', this.handleUp)
+      removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
+      removeEvent(window, 'resize', this.checkParentSize)
     }
   }
 
