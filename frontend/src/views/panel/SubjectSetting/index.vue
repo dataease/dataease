@@ -27,7 +27,7 @@
         </el-collapse-item>
         <el-collapse-item :title="$t('panel.table')" name="table">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <color-selector v-if="tableChart" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
+            <color-selector v-if="tableChartShow" index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
           </el-row>
         </el-collapse-item>
       </el-collapse>
@@ -58,9 +58,10 @@ export default {
     return {
       panelInfo: this.$store.state.panel.panelInfo,
       activeNames: ['panel'],
-      chart: null,
+      chart: {},
       tableChart: null,
-      collapseShow: true
+      collapseShow: true,
+      tableChartShow: true
     }
   },
   computed: mapState([
@@ -75,10 +76,9 @@ export default {
       this.collapseShow = false
       this.$nextTick(() => (this.collapseShow = true))
     })
+    this.init()
   },
   created() {
-    debugger
-    this.init()
   },
 
   methods: {
@@ -100,6 +100,8 @@ export default {
       // 因为 table 的color 设置和view的共用 所以单独设置一个对象
       this.tableChart = deepCopy(this.chart)
       this.tableChart.customAttr.color = this.tableChart.customAttr.tableColor
+      this.tableChartShow = false
+      this.$nextTick(() => (this.tableChartShow = true))
     },
     handleChange(val) {
       // console.log(val)
