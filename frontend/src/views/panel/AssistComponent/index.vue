@@ -37,8 +37,8 @@
           :key="index"
           :data-id="item.id"
           :data-index="index"
+          draggable
           :class="'filter-widget '+ (item.defaultClass || '')"
-          @click="goFile"
         >
           <div class="filter-widget-icon">
             <i :class="(item.icon || 'el-icon-setting') + ' widget-icon-i'" />
