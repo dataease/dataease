@@ -2,7 +2,7 @@
 <template>
   <div class="attr-list">
     <el-form label-width="80px" size="mini">
-      <el-form-item v-for="(key, index) in styleKeys.filter(item => item != 'rotate')" :key="index" :label="map[key]+':'">
+      <el-form-item v-for="(key, index) in styleKeys.filter(item => styleFilter.includes(item))" :key="index" :label="map[key]+':'">
         <el-color-picker v-if="key == 'borderColor'" v-model="curComponent.style[key]" />
         <el-color-picker v-else-if="key == 'color'" v-model="curComponent.style[key]" />
         <el-color-picker v-else-if="key == 'backgroundColor'" v-model="curComponent.style[key]" />
@@ -34,18 +34,39 @@
         </el-select>
         <el-input v-else v-model="curComponent.style[key]" type="number" />
       </el-form-item>
-      <el-form-item v-if="curComponent && !excludes.includes(curComponent.component)" :label="$t('panel.content')+':'">
-        <el-input v-model="curComponent.propValue" type="textarea" />
+      <el-form-item :label="$t('panel.content_style')+':'">
+        <div v-if="curComponent.type==='v-text'" style="width: 100%;max-height: 400px;overflow: auto">
+          <VText
+            style="border: 1px solid #dcdfe6;border-radius:4px;background-color: #f7f8fa;"
+            :prop-value="curComponent.propValue"
+            :element="curComponent"
+            :edit-mode="'edit'"
+            :style="getComponentStyleDefault(curComponent.style)"
+          />
+        </div>
+        <rect-shape
+          v-if="curComponent.type==='rect-shape'"
+          style="width: 200px!important;height: 100px!important;"
+          :prop-value="curComponent.propValue"
+          :element="curComponent"
+          :style="getComponentStyleDefault(curComponent.style)"
+        />
       </el-form-item>
+
     </el-form>
   </div>
+
 </template>
 
 <script>
+import VText from '@/components/canvas/custom-component/VText'
+import RectShape from '@/components/canvas/custom-component/RectShape'
+import { getStyle } from '@/components/canvas/utils/style'
 export default {
+  components: { VText, RectShape },
   data() {
     return {
-      excludes: ['Picture', 'Group', 'user-view'], // 这些组件不显示内容
+      excludes: ['Picture', 'Group', 'view'], // 这些组件不显示内容
       textAlignOptions: [
         {
           label: this.$t('panel.text_align_left'),
@@ -113,6 +134,35 @@ export default {
     },
     curComponent() {
       return this.$store.state.curComponent
+    },
+    styleFilter() {
+      const filter = [
+        'fontSize',
+        'fontWeight',
+        'lineHeight',
+        'letterSpacing',
+        'textAlign',
+        'color',
+        'borderColor',
+        'borderWidth',
+        'backgroundColor',
+        'borderStyle',
+        'verticalAlign'
+      ]
+      if (this.$store.state.curComponent.type === 'v-text') {
+        filter.push('width', 'height')
+      }
+      return filter
+    }
+  },
+  methods: {
+    getComponentStyleDefault(style) {
+      if (this.$store.state.curComponent.type === 'v-text') {
+        return getStyle(style, ['top', 'left', 'rotate'])
+      } else {
+        return getStyle(style, ['top', 'left', 'rotate', 'height', 'width'])
+      }
+      // return style
     }
   }
 }

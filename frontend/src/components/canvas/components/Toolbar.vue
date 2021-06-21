@@ -12,7 +12,7 @@
         <span>自适应画布区域 </span>
       </div>
 
-      <div class="canvas-config" style="margin-right: 40px">
+      <div class="canvas-config" style="margin-right: 55px">
         <span> {{ $t('panel.canvas_size') }} </span>
         <input v-model="canvasStyleData.width" :disabled="canvasStyleData.selfAdaption">
         <span>*</span>
@@ -27,13 +27,13 @@
         <el-button :class="styleButtonActive?'button-show':'button-closed'" class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
       </el-tooltip>
 
-      <el-tooltip v-if="!aidedButtonActive" :content="$t('panel.open_aided_design') ">
-        <el-button class="el-icon-help button-closed" size="mini" circle @click="changeAidedDesign" />
-      </el-tooltip>
+      <!--      <el-tooltip v-if="!aidedButtonActive" :content="$t('panel.open_aided_design') ">-->
+      <!--        <el-button class="el-icon-help button-closed" size="mini" circle @click="changeAidedDesign" />-->
+      <!--      </el-tooltip>-->
 
-      <el-tooltip v-if="aidedButtonActive" :content="$t('panel.close_aided_design') ">
-        <el-button class="el-icon-help button-show" size="mini" circle @click="changeAidedDesign" />
-      </el-tooltip>
+      <!--      <el-tooltip v-if="aidedButtonActive" :content="$t('panel.close_aided_design') ">-->
+      <!--        <el-button class="el-icon-help button-show" size="mini" circle @click="changeAidedDesign" />-->
+      <!--      </el-tooltip>-->
 
       <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />

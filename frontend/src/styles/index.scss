@@ -103,6 +103,24 @@ div:focus {
     }
 }
 
+.de-style-dialog {
+  min-width: 500px !important;
+  width: 300px !important;
+
+  .el-dialog__header{
+    // background-color: #f4f4f5;
+    padding: 10px 20px !important;
+
+    .el-dialog__headerbtn {
+      top: 15px !important;
+    }
+  }
+  .el-dialog__body{
+    padding: 1px 15px !important;
+
+  }
+}
+
 .preview-dialog {
   padding: 0px!important;
   .el-dialog--center{

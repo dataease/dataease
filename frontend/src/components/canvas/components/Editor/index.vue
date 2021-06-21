@@ -29,6 +29,7 @@
       :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
       :snap-tolerance="1"
+      :change-style="customStyleHistory"
       @refLineParams="getRefLineParams"
     >
       <component

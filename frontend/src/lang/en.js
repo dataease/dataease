@@ -996,7 +996,8 @@ export default {
     other_module: 'Other',
     content: 'Content',
     default_panel_name: 'Default Dashboard Name',
-    source_panel_name: 'Source Dashboard Name'
+    source_panel_name: 'Source Dashboard Name',
+    content_style: 'Content Style',
   },
   plugin: {
     local_install: 'Local installation',

@@ -104,10 +104,10 @@
           <Editor v-if="!previewVisible" :out-style="outStyle" />
         </div>
       </de-main-container>
-      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">
-        <AttrListExtend v-if="curComponent" />
-        <p v-else class="placeholder">{{ $t('panel.select_component') }}</p>
-      </de-aside-container>
+      <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
+      <!--        <AttrListExtend v-if="curComponent" />-->
+      <!--        <p v-else class="placeholder">{{ $t('panel.select_component') }}</p>-->
+      <!--      </de-aside-container>-->
 
     </de-container>
 
@@ -131,6 +131,21 @@
         <span slot="footer">
           <el-button size="mini" @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
           <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
+        </span>
+      </div>
+    </el-dialog>
+
+    <!--文字组件对话框-->
+    <el-dialog
+      v-if="styleDialogVisible"
+      :title="$t('panel.style')"
+      :visible.sync="styleDialogVisible"
+      custom-class="de-style-dialog"
+    >
+      <AttrListExtend v-if="curComponent" />
+      <div style="text-align: center">
+        <span slot="footer">
+          <el-button size="mini" @click="closeStyleDialog">{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </el-dialog>
@@ -222,7 +237,8 @@ export default {
         width: null,
         height: null
       },
-      beforeDialogValue: []
+      beforeDialogValue: [],
+      styleDialogVisible: false
     }
   },
 
@@ -234,7 +250,8 @@ export default {
       'curComponent',
       'isClickComponent',
       'canvasStyleData',
-      'curComponentIndex'
+      'curComponentIndex',
+      'componentData'
     ])
   },
 
@@ -266,7 +283,10 @@ export default {
     })
 
     bus.$on('component-dialog-edit', () => {
-      this.eidtDialog()
+      this.editDialog()
+    })
+    bus.$on('component-dialog-style', () => {
+      this.styleDialogVisible = true
     })
 
     bus.$on('previewFullScreenClose', () => {
@@ -400,7 +420,7 @@ export default {
         this.currentFilterCom.id = newComponentId
         if (this.currentWidget.filterDialog) {
           this.show = false
-          this.openFilterDiolog()
+          this.openFilterDialog()
           return
         }
         component = deepCopy(this.currentFilterCom)
@@ -413,6 +433,14 @@ export default {
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot')
       this.clearCurrentInfo()
+
+      debugger
+      // 文字组件
+      if (component.type === 'v-text' || component.type === 'rect-shape') {
+        this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
+        this.styleDialogVisible = true
+        this.show = false
+      }
     },
     clearCurrentInfo() {
       this.currentWidget = null
@@ -440,7 +468,7 @@ export default {
         this.$store.commit('hideContextMenu')
       }
     },
-    openFilterDiolog() {
+    openFilterDialog() {
       this.beforeDialogValue = []
       this.filterVisible = true
     },
@@ -463,11 +491,11 @@ export default {
       this.currentFilterCom = component
       this.$forceUpdate()
     },
-    eidtDialog() {
+    editDialog() {
       const serviceName = this.curComponent.serviceName
       this.currentWidget = ApplicationContext.getService(serviceName)
       this.currentFilterCom = this.curComponent
-      this.openFilterDiolog()
+      this.openFilterDialog()
     },
     closeLeftPanel() {
       this.show = false
@@ -494,6 +522,9 @@ export default {
           // console.log(canvasHeight + '--' + canvasWidth)
         })
       }
+    },
+    closeStyleDialog() {
+      this.styleDialogVisible = false
     }
   }
 }

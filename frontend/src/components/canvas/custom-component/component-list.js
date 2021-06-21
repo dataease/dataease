@@ -47,18 +47,18 @@ const list = [
     id: '10001',
     component: 'v-text',
     label: '文字',
-    propValue: '双击编辑文字',
+    propValue: '双击输入文字',
     icon: 'wenben',
     type: 'v-text',
     style: {
-      width: 200,
-      height: 22,
-      fontSize: 14,
+      width: 300,
+      height: 100,
+      fontSize: 18,
       fontWeight: 500,
       lineHeight: '',
       letterSpacing: 0,
       textAlign: '',
-      color: ''
+      color: '#000000'
     }
   },
   {
@@ -119,22 +119,15 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      fontSize: 14,
-      fontWeight: 500,
-      lineHeight: '',
-      letterSpacing: 0,
-      textAlign: 'center',
-      color: '',
       borderColor: '#000',
       borderWidth: 1,
       backgroundColor: '',
-      borderStyle: 'solid',
-      verticalAlign: 'middle'
+      borderStyle: 'solid'
     }
   },
   {
     id: '10005',
-    component: 'user-view',
+    component: 'view',
     label: '用户视图',
     propValue: '',
     icon: 'juxing',

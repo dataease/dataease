@@ -1,16 +1,16 @@
 <template>
-    <div class="rect-shape">
-        <v-text :propValue="element.propValue" :element="element" />
-    </div>
+  <div class="rect-shape">
+    <v-text :prop-value="element.propValue" :element="element" />
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
-        element: {
-            type: Object,
-        },
-    },
+  props: {
+    element: {
+      type: Object
+    }
+  }
 }
 </script>
 

@@ -45,7 +45,7 @@
 export default {
   data() {
     return {
-      excludes: ['Picture', 'Group', 'user-view'], // 这些组件不显示内容
+      excludes: ['Picture', 'Group', 'view'], // 这些组件不显示内容
       textAlignOptions: [
         {
           label: this.$t('panel.text_align_left'),

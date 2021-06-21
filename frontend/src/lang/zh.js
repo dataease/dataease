@@ -996,7 +996,8 @@ export default {
     other_module: '其他',
     content: '内容',
     default_panel_name: '默认仪表板名称',
-    source_panel_name: '原仪表板名称'
+    source_panel_name: '原仪表板名称',
+    content_style: '内容样式'
   },
   plugin: {
     local_install: '本地安装',

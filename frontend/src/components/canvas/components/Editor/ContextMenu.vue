@@ -3,12 +3,12 @@
     <ul @mouseup="handleMouseUp">
       <template v-if="curComponent">
         <template v-if="!curComponent.isLock">
-          <li @click="edit"> {{ $t('panel.edit') }}</li>
-<!--          <li @click="copy"> {{ $t('panel.copy') }}</li>-->
+          <li v-if="editFilter.includes(curComponent.type)" @click="edit"> {{ $t('panel.edit') }}</li>
+          <!--          <li @click="copy"> {{ $t('panel.copy') }}</li>-->
           <li @click="paste"> {{ $t('panel.paste') }}</li>
           <li @click="cut"> {{ $t('panel.cut') }}</li>
           <li @click="deleteComponent"> {{ $t('panel.delete') }}</li>
-<!--          <li @click="lock"> {{ $t('panel.lock') }}</li>-->
+          <!--          <li @click="lock"> {{ $t('panel.lock') }}</li>-->
           <li @click="topComponent"> {{ $t('panel.topComponent') }}</li>
           <li @click="bottomComponent"> {{ $t('panel.bottomComponent') }}</li>
           <li @click="upComponent"> {{ $t('panel.upComponent') }}</li>
@@ -28,7 +28,13 @@ import bus from '@/utils/bus'
 export default {
   data() {
     return {
-      copyData: null
+      copyData: null,
+      editFilter: [
+        'view',
+        'v-text',
+        'rect-shape',
+        'custom'
+      ]
     }
   },
   computed: mapState([
@@ -44,7 +50,7 @@ export default {
       // 编辑时临时保存 当前修改的画布
       this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
       this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
-      if (this.curComponent.component === 'user-view') {
+      if (this.curComponent.type === 'view') {
         this.$store.dispatch('chart/setViewId', null)
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
         bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId }})
@@ -52,7 +58,12 @@ export default {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
       }
-      // 编辑组件
+
+      //编辑样式组件
+
+      if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+        bus.$emit('component-dialog-style')
+      }
     },
     lock() {
       this.$store.commit('lock')
