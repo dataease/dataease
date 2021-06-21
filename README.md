@@ -33,7 +33,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户分析数据、�
 curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_start.sh | sh
 ```
 
-- [在线文档](https://docs.dataease.io/)
+- [在线文档](https://dataease.io/docs/)
 - [演示视频](https://dataease.oss-cn-hangzhou.aliyuncs.com/video/de-v1-demo.mp4)
 
 ## 微信群
@@ -184,15 +184,15 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 
 ## 技术栈
 
--   后端: [Spring Boot](https://www.tutorialspoint.com/spring_boot/spring_boot_introduction.htm)；
+-   后端: [Spring Boot](https://spring.io/projects/spring-boot)；
 -   前端: [Vue.js](https://vuejs.org/)；
 -   中间件: [MySQL](https://www.mysql.com/)；
--   数据处理: [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/)、[Apache Doris](https://doris.apache.org/)；
+-   数据处理: [Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)；
 -   基础设施: [Docker](https://www.docker.com/)。
 
 ## 致谢
 
--   [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/)：DataEase 使用了 Kettle 进行数据处理工作；
+-   [Kettle](https://github.com/pentaho/pentaho-kettle/)：DataEase 使用了 Kettle 进行数据处理工作；
 -   [Apache Doris](https://doris.apache.org/)：DataEase 使用了 Apache Doris 进行快速的数据分析；
 -   [Element](https://element.eleme.cn/)：感谢 Element 提供的优秀组件库。
 
