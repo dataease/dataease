@@ -322,6 +322,7 @@ export default {
               message: this.$t('dataset.invalid_table_check'),
               showClose: true
             })
+            this.$emit('getTable', {})
           }
         })
       } else {
