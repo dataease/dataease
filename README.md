@@ -155,7 +155,7 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
    <tr height="18" style='height:18.00pt;'>
     <td class="xl67" height="36" rowspan="2" style='height:36.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据源</td>
     <td class="xl68" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据源管理</td>
-    <td class="xl70" x:str>支持 MySQL 和 SQL Server 类型的数据源</td>
+    <td class="xl70" x:str>支持 MySQL 数据源</td>
    </tr>
    <tr height="18" style='height:18.00pt;'>
     <td class="xl70" x:str>支持对数据源有效性校验</td>
@@ -184,15 +184,15 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 
 ## 技术栈
 
--   后端: [Spring Boot](https://www.tutorialspoint.com/spring_boot/spring_boot_introduction.htm)；
+-   后端: [Spring Boot](https://spring.io/projects/spring-boot)；
 -   前端: [Vue.js](https://vuejs.org/)；
 -   中间件: [MySQL](https://www.mysql.com/)；
--   数据处理: [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/)、[Apache Doris](https://doris.apache.org/)；
+-   数据处理: [Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)；
 -   基础设施: [Docker](https://www.docker.com/)。
 
 ## 致谢
 
--   [Kettle](https://community.hitachivantara.com/s/article/data-integration-kettle/)：DataEase 使用了 Kettle 进行数据处理工作；
+-   [Kettle](https://github.com/pentaho/pentaho-kettle/)：DataEase 使用了 Kettle 进行数据处理工作；
 -   [Apache Doris](https://doris.apache.org/)：DataEase 使用了 Apache Doris 进行快速的数据分析；
 -   [Element](https://element.eleme.cn/)：感谢 Element 提供的优秀组件库。
 

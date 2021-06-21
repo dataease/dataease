@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import { groupTree } from '@/api/dataset/dataset'
+import { post } from '@/api/chart/chart'
 
 export default {
-  name: 'DsMoveSelector',
+  name: 'GroupMoveSelector',
   props: {
     item: {
       type: Object,
@@ -55,13 +55,20 @@ export default {
   },
   methods: {
     tree(group) {
-      groupTree(group).then(res => {
-        this.tData = res.data
+      post('/chart/group/tree', group).then(res => {
+        this.tData = [{
+          id: '0',
+          name: this.$t('dataset.dataset_group'),
+          pid: '0',
+          privileges: 'grant,manage,use',
+          type: 'group',
+          children: res.data
+        }]
       })
     },
     nodeClick(data, node) {
       this.targetGroup = data
-      this.$emit('targetDs', data)
+      this.$emit('targetGroup', data)
     },
     treeClass(data, node) {
       if (data.id === this.item.id) {

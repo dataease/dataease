@@ -117,23 +117,24 @@ export default {
       }
     },
     calcHeight() {
-      const that = this
-      this.$nextTick(function() {
-        if (that.$refs.tableContainer) {
-          const currentHeight = that.$refs.tableContainer.offsetHeight
-          const tableMaxHeight = currentHeight - that.$refs.title.offsetHeight
-          let tableHeight
-          if (that.chart.data) {
-            tableHeight = (that.chart.data.tableRow.length + 2) * 36
-          } else {
-            tableHeight = 0
+      this.$nextTick(() => {
+        setTimeout(() => {
+          if (this.$refs.tableContainer) {
+            const currentHeight = this.$refs.tableContainer.offsetHeight
+            const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight
+            let tableHeight
+            if (this.chart.data) {
+              tableHeight = (this.chart.data.tableRow.length + 2) * 36
+            } else {
+              tableHeight = 0
+            }
+            if (tableHeight > tableMaxHeight) {
+              this.height = tableMaxHeight + 'px'
+            } else {
+              this.height = 'auto'
+            }
           }
-          if (tableHeight > tableMaxHeight) {
-            that.height = tableMaxHeight + 'px'
-          } else {
-            that.height = 'auto'
-          }
-        }
+        }, 100)
       })
     },
     initStyle() {
@@ -150,15 +151,16 @@ export default {
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        if (customAttr.color.tableStripe) {
-          // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
-          if (this.chart.customStyle) {
-            const customStyle = JSON.parse(this.chart.customStyle)
-            if (customStyle.background) {
-              this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
-            }
-          }
-        }
+        // 暂不支持斑马纹
+        // if (customAttr.color.tableStripe) {
+        //   // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
+        //   if (this.chart.customStyle) {
+        //     const customStyle = JSON.parse(this.chart.customStyle)
+        //     if (customStyle.background) {
+        //       this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+        //     }
+        //   }
+        // }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)

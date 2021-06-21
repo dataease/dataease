@@ -87,6 +87,16 @@ public class DataSetGroupService {
         }
     }
 
+    public List<DataSetGroupDTO> treeNode(DataSetGroupRequest datasetGroup) {
+        datasetGroup.setLevel(null);
+        datasetGroup.setPid("0");
+        datasetGroup.setType("group");
+        datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(datasetGroup);
+        List<DataSetGroupDTO> result = TreeUtils.mergeTree(treeInfo);
+        return result;
+    }
+
     public List<DataSetGroupDTO> tree(DataSetGroupRequest datasetGroup) {
         datasetGroup.setLevel(null);
         datasetGroup.setPid(null);

@@ -15,4 +15,7 @@ import java.util.List;
 public class DataSetTableDTO extends DatasetTable {
     private List<DataSetTableDTO> children;
     private String privileges;
+
+    private Boolean isLeaf;
+    private String pid;
 }

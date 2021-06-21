@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import { groupTree } from '@/api/dataset/dataset'
+import { post } from '@/api/chart/chart'
 
 export default {
-  name: 'DsMoveSelector',
+  name: 'ChartMoveSelector',
   props: {
     item: {
       type: Object,
@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     tree(group) {
-      groupTree(group).then(res => {
+      post('/chart/group/tree', group).then(res => {
         this.tData = res.data
       })
     },

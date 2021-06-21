@@ -9,32 +9,22 @@
       </el-row>
       <el-divider />
 
-      <!--      <el-row>-->
-      <!--        <el-form>-->
-      <!--          <el-form-item class="form-item">-->
-      <!--            <el-input-->
-      <!--              v-model="search"-->
-      <!--              size="mini"-->
-      <!--              :placeholder="$t('dataset.search')"-->
-      <!--              prefix-icon="el-icon-search"-->
-      <!--              clearable-->
-      <!--            />-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--      </el-row>-->
-
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
             :default-expanded-keys="expandedArray"
             :data="data"
             node-key="id"
-            :expand-on-click-node="false"
+            :expand-on-click-node="true"
+            :load="loadNode"
+            lazy
+            :props="treeProps"
+            highlight-current
             @node-click="nodeClick"
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span v-if="data.type === 'group'" slot-scope="{ node, data }" class="custom-tree-node">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
@@ -47,60 +37,75 @@
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
             </span>
+            <span v-else slot-scope="{ node, data }" class="custom-tree-node-list">
+              <span :id="data.id" style="display: flex;flex: 1;width: 0;">
+                <span>
+                  <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                  <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                  <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                  <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                </span>
+                <span v-if="data.type === 'db' || data.type === 'sql'">
+                  <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+                  <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                </span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+              </span>
+            </span>
           </el-tree>
         </div>
       </el-col>
     </el-col>
 
     <!--scene-->
-    <el-col v-if="sceneMode" v-loading="dsLoading">
-      <el-row class="title-css scene-title">
-        <span class="title-text scene-title-name" :title="currGroup.name">
-          {{ currGroup.name }}
-        </span>
-        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
-          <!--          {{ $t('dataset.back') }}-->
-        </el-button>
-      </el-row>
-      <el-divider />
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('dataset.search')"
-              prefix-icon="el-icon-search"
-              clearable
-            />
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <el-tree
-        :data="tableData"
-        node-key="id"
-        :expand-on-click-node="true"
-        class="tree-list"
-        highlight-current
-        @node-click="sceneClick"
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list">
-          <span :id="data.id" style="display: flex;flex: 1;width: 0;">
-            <span>
-              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
-              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-            </span>
-            <span v-if="data.type === 'db' || data.type === 'sql'">
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
-            </span>
-            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
-          </span>
-        </span>
-      </el-tree>
-    </el-col>
+    <!--    <el-col v-if="sceneMode" v-loading="dsLoading">-->
+    <!--      <el-row class="title-css scene-title">-->
+    <!--        <span class="title-text scene-title-name" :title="currGroup.name">-->
+    <!--          {{ currGroup.name }}-->
+    <!--        </span>-->
+    <!--        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">-->
+    <!--          &lt;!&ndash;          {{ $t('dataset.back') }}&ndash;&gt;-->
+    <!--        </el-button>-->
+    <!--      </el-row>-->
+    <!--      <el-divider />-->
+    <!--      <el-row>-->
+    <!--        <el-form>-->
+    <!--          <el-form-item class="form-item">-->
+    <!--            <el-input-->
+    <!--              v-model="search"-->
+    <!--              size="mini"-->
+    <!--              :placeholder="$t('dataset.search')"-->
+    <!--              prefix-icon="el-icon-search"-->
+    <!--              clearable-->
+    <!--            />-->
+    <!--          </el-form-item>-->
+    <!--        </el-form>-->
+    <!--      </el-row>-->
+    <!--      <el-tree-->
+    <!--        :data="tableData"-->
+    <!--        node-key="id"-->
+    <!--        :expand-on-click-node="true"-->
+    <!--        class="tree-list"-->
+    <!--        highlight-current-->
+    <!--        @node-click="sceneClick"-->
+    <!--      >-->
+    <!--        <span slot-scope="{ node, data }" class="custom-tree-node-list">-->
+    <!--          <span :id="data.id" style="display: flex;flex: 1;width: 0;">-->
+    <!--            <span>-->
+    <!--              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />-->
+    <!--              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />-->
+    <!--              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />-->
+    <!--              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />-->
+    <!--            </span>-->
+    <!--            <span v-if="data.type === 'db' || data.type === 'sql'">-->
+    <!--              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>-->
+    <!--              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>-->
+    <!--            </span>-->
+    <!--            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>-->
+    <!--          </span>-->
+    <!--        </span>-->
+    <!--      </el-tree>-->
+    <!--    </el-col>-->
   </el-col>
 </template>
 
@@ -163,7 +168,12 @@ export default {
         name: '',
         sort: 'type asc,create_time desc,name asc'
       },
-      dsLoading: false
+      dsLoading: false,
+      treeProps: {
+        label: 'name',
+        children: 'children',
+        isLeaf: 'isLeaf'
+      }
     }
   },
   computed: {},
@@ -192,8 +202,8 @@ export default {
     }
   },
   mounted() {
-    this.tree(this.groupForm)
-    this.tableTree()
+    this.treeNode(this.groupForm)
+    // this.tableTree()
   },
   created() {
     this.kettleState()
@@ -223,10 +233,17 @@ export default {
       }
     },
 
-    tree(group) {
-      this.dsLoading = true
-      post('/dataset/group/tree', group, false).then(response => {
-        this.data = response.data
+    // tree(group) {
+    //   this.dsLoading = true
+    //   post('/dataset/group/tree', group, false).then(response => {
+    //     this.data = response.data
+    //     this.dsLoading = false
+    //   })
+    // },
+
+    treeNode(group) {
+      post('/dataset/group/treeNode', group).then(res => {
+        this.data = res.data
         this.dsLoading = false
       })
     },
@@ -260,10 +277,13 @@ export default {
     },
 
     nodeClick(data, node) {
+      if (data.type !== 'group') {
+        this.sceneClick(data, node)
+      }
       // if (data.type === 'scene') {
-      this.sceneMode = true
-      this.currGroup = data
-      this.tableTree()
+      // this.sceneMode = true
+      // this.currGroup = data
+      // this.tableTree()
       // }
       // if (node.expanded) {
       //   this.expandedArray.push(data.id)
@@ -302,6 +322,7 @@ export default {
               message: this.$t('dataset.invalid_table_check'),
               showClose: true
             })
+            this.$emit('getTable', {})
           }
         })
       } else {
@@ -352,6 +373,35 @@ export default {
       if (data.id) {
         this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
       }
+    },
+
+    loadNode(node, resolve) {
+      if (node.data.id) {
+        this.dsLoading = true
+        post('/dataset/table/listAndGroup', {
+          sort: 'type asc,name asc,create_time desc',
+          sceneId: node.data.id,
+          mode: this.mode < 0 ? null : this.mode,
+          typeFilter: this.customType ? this.customType : null
+        }, false).then(response => {
+          this.tables = response.data
+          for (let i = 0; i < this.tables.length; i++) {
+            if (this.tables[i].mode === 1 && this.kettleRunning === false) {
+              this.$set(this.tables[i], 'disabled', true)
+            }
+          }
+          this.tableData = JSON.parse(JSON.stringify(this.tables))
+
+          this.$nextTick(function() {
+            this.unionDataChange()
+          })
+          this.dsLoading = false
+          resolve(this.tableData)
+        }).catch(res => {
+          this.dsLoading = false
+        })
+      }
+      // }
     }
   }
 }

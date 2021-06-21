@@ -208,7 +208,8 @@ export default {
         info: '{"list":' + JSON.stringify(this.checkedList) + '}'
       }
       post('/dataset/table/update', table).then(response => {
-        this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        // this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        this.$emit('saveSuccess', table)
         this.cancel()
       })
     },

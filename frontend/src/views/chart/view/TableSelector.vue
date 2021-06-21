@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector @getTable="getTable" />
+      <dataset-group-selector-tree @getTable="getTable" />
     </de-aside-container>
 
     <de-main-container>
@@ -15,14 +15,15 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 
-import DatasetGroupSelector from '../../dataset/common/DatasetGroupSelector'
+// import DatasetGroupSelector from '../../dataset/common/DatasetGroupSelector'
+import DatasetGroupSelectorTree from '../../dataset/common/DatasetGroupSelectorTree'
 import DatasetTableData from '../../dataset/common/DatasetTableData'
 
 export default {
   name: 'TableSelector',
   components: {
     DatasetTableData,
-    DeMainContainer, DeContainer, DeAsideContainer, DatasetGroupSelector
+    DeMainContainer, DeContainer, DeAsideContainer, DatasetGroupSelectorTree
   },
   data() {
     return {

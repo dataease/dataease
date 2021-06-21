@@ -21,6 +21,7 @@ public class DataSetGroupController {
     private DataSetGroupService dataSetGroupService;
     @Resource
     private ExtractDataService extractDataService;
+
     @PostMapping("/save")
     public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) {
         return dataSetGroupService.save(datasetGroup);
@@ -31,8 +32,13 @@ public class DataSetGroupController {
         return dataSetGroupService.tree(datasetGroup);
     }
 
+    @PostMapping("/treeNode")
+    public List<DataSetGroupDTO> treeNode(@RequestBody DataSetGroupRequest datasetGroup) {
+        return dataSetGroupService.treeNode(datasetGroup);
+    }
+
     @PostMapping("/delete/{id}")
-    public void tree(@PathVariable String id) throws Exception{
+    public void tree(@PathVariable String id) throws Exception {
         dataSetGroupService.delete(id);
     }
 
@@ -42,7 +48,7 @@ public class DataSetGroupController {
     }
 
     @PostMapping("/isKettleRunning")
-    public  boolean isKettleRunning(){
+    public boolean isKettleRunning() {
         return extractDataService.isKettleRunning();
     }
 }

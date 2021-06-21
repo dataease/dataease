@@ -4,21 +4,23 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
+import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
+import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
+import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
-import io.dataease.dto.chart.ChartCustomFilterDTO;
-import io.dataease.dto.chart.ChartViewDTO;
-import io.dataease.dto.chart.ChartViewFieldDTO;
-import io.dataease.dto.chart.Series;
+import io.dataease.dto.chart.*;
+import io.dataease.dto.dataset.DataSetGroupDTO;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.provider.QueryProvider;
@@ -51,6 +53,8 @@ public class ChartViewService {
     private DatasourceService datasourceService;
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
+    @Resource
+    private ExtChartGroupMapper extChartGroupMapper;
 
     public ChartViewWithBLOBs save(ChartViewWithBLOBs chartView) {
         checkName(chartView);
@@ -70,6 +74,31 @@ public class ChartViewService {
     public List<ChartViewDTO> list(ChartViewRequest chartViewRequest) {
         chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         return extChartViewMapper.search(chartViewRequest);
+    }
+
+    public List<ChartViewDTO> listAndGroup(ChartViewRequest chartViewRequest) {
+        chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        List<ChartViewDTO> charts = extChartViewMapper.search(chartViewRequest);
+        charts.forEach(ele -> ele.setIsLeaf(true));
+        // 获取group下的子group
+        ChartGroupRequest chartGroupRequest = new ChartGroupRequest();
+        chartGroupRequest.setLevel(null);
+        chartGroupRequest.setType("group");
+        chartGroupRequest.setPid(chartViewRequest.getSceneId());
+        chartGroupRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        chartGroupRequest.setSort("name asc,create_time desc");
+        List<ChartGroupDTO> groups = extChartGroupMapper.search(chartGroupRequest);
+        List<ChartViewDTO> group = groups.stream().map(ele -> {
+            ChartViewDTO dto = new ChartViewDTO();
+            dto.setId(ele.getId());
+            dto.setName(ele.getName());
+            dto.setIsLeaf(false);
+            dto.setType("group");
+            dto.setPid(ele.getPid());
+            return dto;
+        }).collect(Collectors.toList());
+        group.addAll(charts);
+        return group;
     }
 
     public ChartViewWithBLOBs get(String id) {

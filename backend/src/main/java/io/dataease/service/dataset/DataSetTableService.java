@@ -5,21 +5,19 @@ import com.fit2cloud.quartz.anno.QuartzScheduled;
 import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
+import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.utils.*;
+import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.dto.dataset.DataSetPreviewPage;
-import io.dataease.dto.dataset.DataSetTableDTO;
-import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.dto.dataset.DataTableInfoCustomUnion;
-import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.dto.dataset.*;
 import io.dataease.i18n.Translator;
 import io.dataease.provider.DDLProvider;
 import io.dataease.provider.QueryProvider;
@@ -81,6 +79,8 @@ public class DataSetTableService {
     private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
     @Resource
     private DatasetTableTaskLogMapper datasetTableTaskLogMapper;
+    @Resource
+    private ExtDataSetGroupMapper extDataSetGroupMapper;
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
 
@@ -184,6 +184,32 @@ public class DataSetTableService {
         dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         dataSetTableRequest.setTypeFilter(dataSetTableRequest.getTypeFilter());
         return extDataSetTableMapper.search(dataSetTableRequest);
+    }
+
+    public List<DataSetTableDTO> listAndGroup(DataSetTableRequest dataSetTableRequest) {
+        dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        dataSetTableRequest.setTypeFilter(dataSetTableRequest.getTypeFilter());
+        List<DataSetTableDTO> ds = extDataSetTableMapper.search(dataSetTableRequest);
+        ds.forEach(ele -> ele.setIsLeaf(true));
+        // 获取group下的子group
+        DataSetGroupRequest datasetGroup = new DataSetGroupRequest();
+        datasetGroup.setLevel(null);
+        datasetGroup.setType("group");
+        datasetGroup.setPid(dataSetTableRequest.getSceneId());
+        datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        datasetGroup.setSort("name asc,create_time desc");
+        List<DataSetGroupDTO> groups = extDataSetGroupMapper.search(datasetGroup);
+        List<DataSetTableDTO> group = groups.stream().map(ele -> {
+            DataSetTableDTO dto = new DataSetTableDTO();
+            dto.setId(ele.getId());
+            dto.setName(ele.getName());
+            dto.setIsLeaf(false);
+            dto.setType("group");
+            dto.setPid(ele.getPid());
+            return dto;
+        }).collect(Collectors.toList());
+        group.addAll(ds);
+        return group;
     }
 
     public DatasetTable get(String id) {

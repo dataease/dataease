@@ -26,6 +26,11 @@ public class ChartGroupController {
         return chartGroupService.tree(ChartGroup);
     }
 
+    @PostMapping("/treeNode")
+    public List<ChartGroupDTO> treeNode(@RequestBody ChartGroupRequest ChartGroup) {
+        return chartGroupService.tree(ChartGroup);
+    }
+
     @PostMapping("/delete/{id}")
     public void tree(@PathVariable String id) {
         chartGroupService.delete(id);

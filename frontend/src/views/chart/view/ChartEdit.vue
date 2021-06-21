@@ -98,7 +98,7 @@
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
-                @change="save(true,'chart')"
+                @change="save(true,'chart',true)"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                   <el-radio value="table-normal" label="table-normal">
@@ -471,17 +471,19 @@ export default {
       }
     },
     initTableField(id) {
-      post('/dataset/table/getFieldsFromDE', this.table).then(response => {
-        this.dimension = response.data.dimension
-        this.quota = response.data.quota
-      }).catch(err => {
-        this.resetView()
-        this.httpRequest.status = err.response.data.success
-        this.httpRequest.msg = err.response.data.message
-        return true
-      })
+      if (this.table) {
+        post('/dataset/table/getFieldsFromDE', this.table).then(response => {
+          this.dimension = response.data.dimension
+          this.quota = response.data.quota
+        }).catch(err => {
+          this.resetView()
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
+          return true
+        })
+      }
     },
-    save(getData, trigger) {
+    save(getData, trigger, needRefreshGroup = false) {
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -549,8 +551,11 @@ export default {
           this.getChart(response.data.id)
         }
 
-        this.$store.dispatch('chart/setChartSceneData', null)
-        this.$store.dispatch('chart/setChartSceneData', response.data)
+        // this.$store.dispatch('chart/setChartSceneData', null)
+        // this.$store.dispatch('chart/setChartSceneData', response.data)
+        if (needRefreshGroup) {
+          this.refreshGroup(view)
+        }
       })
     },
 
@@ -797,7 +802,7 @@ export default {
     onTextChange(val) {
       this.view.customStyle.text = val
       this.view.title = val.title
-      this.save()
+      this.save(false, '', true)
     },
 
     onLegendChange(val) {
@@ -921,6 +926,10 @@ export default {
         yAxis: [],
         type: ''
       }
+    },
+
+    refreshGroup(view) {
+      this.$emit('saveSuccess', view)
     }
   }
 }

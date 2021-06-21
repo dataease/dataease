@@ -32,7 +32,7 @@
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span v-if="data.type !== 'folder'">
-                  <svg-icon icon-class="panel" class="ds-icon-scene" />
+                  <svg-icon icon-class="datasource" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.type === 'folder'">
                   <i class="el-icon-folder" />

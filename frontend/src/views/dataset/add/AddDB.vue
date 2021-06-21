@@ -141,7 +141,8 @@ export default {
         })
       })
       post('/dataset/table/batchAdd', tables).then(response => {
-        this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        // this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        this.$emit('saveSuccess', tables[0])
         this.cancel()
       })
     },
