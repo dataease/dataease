@@ -82,8 +82,7 @@ public class ChartGroupService {
 
     public List<ChartGroupDTO> tree(ChartGroupRequest chartGroup) {
         chartGroup.setLevel(null);
-        chartGroup.setPid("0");
-        chartGroup.setType("group");
+        chartGroup.setPid(null);
         chartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(chartGroup);
         List<ChartGroupDTO> result = TreeUtils.mergeTree(treeInfo);
@@ -92,7 +91,8 @@ public class ChartGroupService {
 
     public List<ChartGroupDTO> treeNode(ChartGroupRequest chartGroup) {
         chartGroup.setLevel(null);
-        chartGroup.setPid(null);
+        chartGroup.setPid("0");
+        chartGroup.setType("group");
         chartGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<ChartGroupDTO> treeInfo = extChartGroupMapper.search(chartGroup);
         List<ChartGroupDTO> result = TreeUtils.mergeTree(treeInfo);

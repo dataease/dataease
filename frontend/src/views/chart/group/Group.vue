@@ -99,6 +99,9 @@
                       <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
                         {{ $t('chart.rename') }}
                       </el-dropdown-item>
+                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">
+                        {{ $t('dataset.move_to') }}
+                      </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
@@ -126,6 +129,9 @@
                       <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">-->
                       <!--                    {{ $t('chart.rename') }}-->
                       <!--                  </el-dropdown-item>-->
+                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">
+                        {{ $t('dataset.move_to') }}
+                      </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
@@ -294,12 +300,34 @@
         <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <!--移动分组-->
+    <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
+      <group-move-selector :item="groupForm" @targetGroup="targetGroup" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeMoveGroup()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{ $t('dataset.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <!--移动视图-->
+    <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveDs" :show-close="false" width="30%" class="dialog-css">
+      <chart-move-selector :item="dsForm" @targetDs="targetDs" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeMoveDs()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button :disabled="dsMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveDs(tDs)">{{ $t('dataset.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 
 <script>
 import { post } from '@/api/chart/chart'
 import TableSelector from '../view/TableSelector'
+import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
+import ChartMoveSelector from '../components/TreeSelector/ChartMoveSelector'
 import {
   DEFAULT_COLOR_CASE,
   DEFAULT_LABEL,
@@ -314,7 +342,7 @@ import {
 
 export default {
   name: 'Group',
-  components: { TableSelector },
+  components: { TableSelector, GroupMoveSelector, ChartMoveSelector },
   props: {
     saveStatus: {
       type: Object,
@@ -365,7 +393,22 @@ export default {
         label: 'name',
         children: 'children',
         isLeaf: 'isLeaf'
-      }
+      },
+      dsForm: {
+        name: '',
+        pid: '0',
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      },
+      moveGroup: false,
+      tGroup: {},
+      moveDs: false,
+      tDs: {},
+      groupMoveConfirmDisabled: true,
+      dsMoveConfirmDisabled: true,
+      moveDialogTitle: ''
     }
   },
   computed: {
@@ -418,7 +461,12 @@ export default {
           this.groupForm = JSON.parse(JSON.stringify(param.data))
           break
         case 'move':
-
+          this.moveTo(param.data)
+          this.groupForm = JSON.parse(JSON.stringify(param.data))
+          break
+        case 'moveDs':
+          this.moveToDs(param.data)
+          this.dsForm = JSON.parse(JSON.stringify(param.data))
           break
         case 'delete':
           this.delete(param.data)
@@ -752,6 +800,69 @@ export default {
         const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
         node.loaded = false
         node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+      }
+    },
+
+    moveTo(data) {
+      this.moveGroup = true
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
+    },
+    closeMoveGroup() {
+      this.moveGroup = false
+      this.groupForm = {
+        name: '',
+        pid: '0',
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      }
+    },
+    saveMoveGroup() {
+      this.groupForm.pid = this.tGroup.id
+      post('/chart/group/save', this.groupForm).then(res => {
+        this.closeMoveGroup()
+        // this.tree(this.groupForm)
+        this.refreshNodeBy(this.groupForm.pid)
+      })
+    },
+    targetGroup(val) {
+      this.tGroup = val
+      this.groupMoveConfirmDisabled = false
+    },
+
+    moveToDs(data) {
+      this.moveDs = true
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
+    },
+    closeMoveDs() {
+      this.moveDs = false
+      this.dsForm = {
+        name: '',
+        pid: '0',
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      }
+    },
+    saveMoveDs() {
+      // if (this.tDs && this.tDs.type === 'group') {
+      //   return
+      // }
+      this.dsForm.sceneId = this.tDs.id
+      post('/chart/view/save', this.dsForm).then(res => {
+        this.closeMoveDs()
+        // this.tableTree()
+        this.refreshNodeBy(this.dsForm.sceneId)
+      })
+    },
+    targetDs(val) {
+      this.tDs = val
+      if (this.tDs.type === 'group') {
+        this.dsMoveConfirmDisabled = false
+      } else {
+        this.dsMoveConfirmDisabled = false
       }
     }
   }

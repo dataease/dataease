@@ -317,7 +317,7 @@
       </div>
     </el-dialog>
 
-    <!--移动分组、场景-->
+    <!--移动分组-->
     <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
       <group-move-selector :item="groupForm" @targetGroup="targetGroup" />
       <div slot="footer" class="dialog-footer">
