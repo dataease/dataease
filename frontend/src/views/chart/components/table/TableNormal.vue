@@ -151,15 +151,16 @@ export default {
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        if (customAttr.color.tableStripe) {
-          // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
-          if (this.chart.customStyle) {
-            const customStyle = JSON.parse(this.chart.customStyle)
-            if (customStyle.background) {
-              this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
-            }
-          }
-        }
+        // 暂不支持斑马纹
+        // if (customAttr.color.tableStripe) {
+        //   // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
+        //   if (this.chart.customStyle) {
+        //     const customStyle = JSON.parse(this.chart.customStyle)
+        //     if (customStyle.background) {
+        //       this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+        //     }
+        //   }
+        // }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
