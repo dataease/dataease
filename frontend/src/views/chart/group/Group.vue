@@ -21,26 +21,26 @@
       <!--        </el-button>-->
       <!--      </el-row>-->
 
-      <!--      <el-row>-->
-      <!--        <el-form>-->
-      <!--          <el-form-item class="form-item">-->
-      <!--            <el-input-->
-      <!--              v-model="search"-->
-      <!--              size="mini"-->
-      <!--              :placeholder="$t('chart.search')"-->
-      <!--              prefix-icon="el-icon-search"-->
-      <!--              clearable-->
-      <!--            />-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--      </el-row>-->
+      <el-row>
+        <el-form>
+          <el-form-item class="form-item">
+            <el-input
+              v-model="search"
+              size="mini"
+              :placeholder="$t('chart.search')"
+              prefix-icon="el-icon-search"
+              clearable
+            />
+          </el-form-item>
+        </el-form>
+      </el-row>
 
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
             ref="asyncTree"
             :default-expanded-keys="expandedArray"
-            :data="data"
+            :data="tData"
             node-key="id"
             :expand-on-click-node="true"
             :load="loadNode"
@@ -328,6 +328,7 @@
 
 <script>
 import { post } from '@/api/chart/chart'
+import { authModel } from '@/api/system/sysAuth'
 import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
 import ChartMoveSelector from '../components/TreeSelector/ChartMoveSelector'
@@ -360,7 +361,7 @@ export default {
       search: '',
       editGroup: false,
       editTable: false,
-      data: [],
+      tData: [],
       chartData: [],
       currGroup: {},
       expandedArray: [],
@@ -395,7 +396,9 @@ export default {
       treeProps: {
         label: 'name',
         children: 'children',
-        isLeaf: 'isLeaf'
+        isLeaf: 'isLeaf',
+        id: 'id',
+        parentId: 'pid'
       },
       dsForm: {
         name: '',
@@ -411,7 +414,8 @@ export default {
       tDs: {},
       groupMoveConfirmDisabled: true,
       dsMoveConfirmDisabled: true,
-      moveDialogTitle: ''
+      moveDialogTitle: '',
+      isTreeSearch: false
     }
   },
   computed: {
@@ -422,11 +426,20 @@ export default {
   },
   watch: {
     search(val) {
-      if (val && val !== '') {
-        this.chartData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
-      } else {
-        this.chartData = JSON.parse(JSON.stringify(this.tables))
+      // if (val && val !== '') {
+      //   this.chartData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
+      // } else {
+      //   this.chartData = JSON.parse(JSON.stringify(this.tables))
+      // }
+      this.$emit('switchComponent', { name: '' })
+      this.tData = []
+      this.expandedArray = []
+      if (this.timer) {
+        clearTimeout(this.timer)
       }
+      this.timer = setTimeout(() => {
+        this.getTreeData(val)
+      }, 500)
     },
     saveStatus() {
       this.refreshNodeBy(this.saveStatus.sceneId)
@@ -617,13 +630,13 @@ export default {
 
     groupTree(group) {
       post('/chart/group/tree', group).then(response => {
-        this.data = response.data
+        this.tData = response.data
       })
     },
 
     treeNode(group) {
       post('/chart/group/treeNode', group).then(res => {
-        this.data = res.data
+        this.tData = res.data
       })
     },
 
@@ -778,31 +791,39 @@ export default {
     },
 
     loadNode(node, resolve) {
-      // if (!this.isTreeSearch) {
-      if (node.level > 0) {
-        this.tables = []
-        this.chartData = []
-        if (node.data.id) {
-          post('/chart/view/listAndGroup', {
-            sort: 'name asc,create_time desc',
-            sceneId: node.data.id
-          }).then(response => {
-            this.tables = response.data
-            this.chartData = JSON.parse(JSON.stringify(this.tables))
-            resolve(this.chartData)
-          })
+      if (!this.isTreeSearch) {
+        if (node.level > 0) {
+          this.tables = []
+          this.chartData = []
+          if (node.data.id) {
+            post('/chart/view/listAndGroup', {
+              sort: 'name asc,create_time desc',
+              sceneId: node.data.id
+            }).then(response => {
+              this.tables = response.data
+              this.chartData = JSON.parse(JSON.stringify(this.tables))
+              resolve(this.chartData)
+            })
+          }
         }
+      } else {
+        resolve(node.data.children)
       }
-      // }
     },
 
     refreshNodeBy(id) {
-      if (!id || id === '0') {
-        this.treeNode(this.groupForm)
+      if (this.isTreeSearch) {
+        this.tData = []
+        this.expandedArray = []
+        this.searchTree(this.search)
       } else {
-        const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
-        node.loaded = false
-        node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+        if (!id || id === '0') {
+          this.treeNode(this.groupForm)
+        } else {
+          const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
+          node.loaded = false
+          node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+        }
       }
     },
 
@@ -866,6 +887,68 @@ export default {
         this.dsMoveConfirmDisabled = false
       } else {
         this.dsMoveConfirmDisabled = false
+      }
+    },
+
+    searchTree(val) {
+      const queryCondition = {
+        withExtend: 'parent',
+        modelType: 'chart',
+        name: val
+      }
+      authModel(queryCondition).then(res => {
+        // this.highlights(res.data)
+        this.tData = this.buildTree(res.data)
+        console.log(this.tData)
+      })
+    },
+
+    buildTree(arrs) {
+      const idMapping = arrs.reduce((acc, el, i) => {
+        acc[el[this.treeProps.id]] = i
+        return acc
+      }, {})
+      const roots = []
+      arrs.forEach(el => {
+        // 判断根节点 ###
+        el.type = el.modelInnerType
+        el.isLeaf = el.leaf
+        if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
+          roots.push(el)
+          return
+        }
+        // 用映射表找到父元素
+        const parentEl = arrs[idMapping[el[this.treeProps.parentId]]]
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el]
+
+        // 设置展开节点 如果没有子节点则不进行展开
+        if (parentEl.children.length > 0) {
+          this.expandedArray.push(parentEl[this.treeProps.id])
+        }
+      })
+      return roots
+    },
+
+    // 高亮显示搜索内容
+    highlights(data) {
+      if (data && this.search && this.search.length > 0) {
+        const replaceReg = new RegExp(this.search, 'g')// 匹配关键字正则
+        const replaceString = '<span style="color: #0a7be0">' + this.search + '</span>' // 高亮替换v-html值
+        data.forEach(item => {
+          item.name = item.name.replace(replaceReg, replaceString) // 开始替换
+          item.label = item.label.replace(replaceReg, replaceString) // 开始替换
+        })
+      }
+    },
+
+    getTreeData(val) {
+      if (val) {
+        this.isTreeSearch = true
+        this.searchTree(val)
+      } else {
+        this.isTreeSearch = false
+        this.treeNode(this.groupForm)
       }
     }
   }
