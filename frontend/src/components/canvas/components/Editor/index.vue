@@ -101,6 +101,7 @@ import Area from './Area'
 import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag },
@@ -128,8 +129,10 @@ export default {
       height: 0,
       isShowArea: false,
       conditions: [],
-      scaleWidth: 100,
-      scaleHeight: 100,
+
+      // 初始化 设置放大比例为3倍 防止在边框限制时 出现较小的父级支持造成组件位移
+      scaleWidth: 300,
+      scaleHeight: 300,
       timer: null,
       needToChangeHeight: [
         'top',
@@ -156,7 +159,10 @@ export default {
       customStyleHistory: null,
       showDrag: true,
       vLine: [],
-      hLine: []
+      hLine: [],
+      changeIndex: 0,
+      timeMachine: null,
+      outStyleOld: null
     }
   },
   computed: {
@@ -165,7 +171,6 @@ export default {
         width: this.format(this.canvasStyleData.width, this.scaleWidth) + 'px',
         height: this.format(this.canvasStyleData.height, this.scaleHeight) + 'px'
       }
-      // console.log('customStyle=>' + JSON.stringify(style))
 
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -180,6 +185,8 @@ export default {
           }
         }
       }
+      // console.log('customStyle=>' + JSON.stringify(style) + JSON.stringify(this.canvasStyleData))
+
       return style
     },
     panelInfo() {
@@ -194,7 +201,7 @@ export default {
   },
   watch: {
     customStyle: {
-      handler(newVal, oldVla) {
+      handler(newVal) {
         // 获取当前宽高（宽高改变后重新渲染画布）
         // if (oldVla && newVal !== oldVla) {
         //   this.showDrag = false
@@ -206,12 +213,21 @@ export default {
     outStyle: {
       handler(newVal, oldVla) {
         this.changeScale()
+        console.log('newVal:' + JSON.stringify(newVal) + 'oldVla:' + JSON.stringify(this.outStyleOld))
+        if (this.outStyleOld && (newVal.width > this.outStyleOld.width || newVal.height > this.outStyleOld.height)) {
+          this.resizeParentBounds()
+        }
+        this.outStyleOld = deepCopy(newVal)
       },
       deep: true
     },
     canvasStyleData: {
       handler(newVal, oldVla) {
-        this.changeScale()
+        // 第一次变化 不需要 重置边界 待改进
+        if (this.changeIndex++ > 0) {
+          this.resizeParentBounds()
+        }
+        // this.changeScale()
       },
       deep: true
     },
@@ -509,6 +525,24 @@ export default {
       const { vLine, hLine } = params
       this.vLine = vLine
       this.hLine = hLine
+    },
+    resizeParentBounds() {
+      this.destroyTimeMachine()
+      this.changeIndex++
+      this.parentBoundsChange(this.changeIndex)
+    },
+    parentBoundsChange(index) {
+      this.timeMachine = setTimeout(() => {
+        if (index === this.changeIndex) {
+          this.showDrag = false
+          this.$nextTick(() => (this.showDrag = true))
+        }
+        this.destroyTimeMachine()
+      }, 500)
+    },
+    destroyTimeMachine() {
+      this.timeMachine && clearTimeout(this.timeMachine)
+      this.timeMachine = null
     }
   }
 }
