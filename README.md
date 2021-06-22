@@ -58,11 +58,11 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 
 ## 技术栈
 
--   后端: [Spring Boot](https://spring.io/projects/spring-boot)；
--   前端: [Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)；
--   中间件: [MySQL](https://www.mysql.com/)；
--   数据处理: [Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)；
--   基础设施: [Docker](https://www.docker.com/)。
+-   后端：[Spring Boot](https://spring.io/projects/spring-boot)；
+-   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)；
+-   中间件：[MySQL](https://www.mysql.com/)；
+-   数据处理：[Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)；
+-   基础设施：[Docker](https://www.docker.com/)。
 
 ## License & Copyright
 
