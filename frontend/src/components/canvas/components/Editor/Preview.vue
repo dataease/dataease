@@ -111,7 +111,7 @@ export default {
       })
     })
     // 数据刷新计时器
-    let refreshTime = 60000
+    let refreshTime = 300000
     if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
       refreshTime = this.canvasStyleData.refreshTime * 1000
     }
