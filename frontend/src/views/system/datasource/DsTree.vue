@@ -1,22 +1,28 @@
-<template>
-  <el-col style="padding: 0 5px 0 5px;">
+<template xmlns:el-col="http://www.w3.org/1999/html">
+  <el-col>
     <el-col>
-      <el-row>
-        <span v-show="!showSearchInput" class="header-title">
-          <div class="de-input" style="margin-top: 7px !important;">
-            {{ $t('commons.datasource') }}
-            <el-button style="float: right;padding-right: 7px;margin-top: -8px" icon="el-icon-plus" type="text" @click="addFolder" />
-            <el-button style="float: right;padding-right: 15px;margin-top: -8px" icon="el-icon-search" type="text" @click="showSearchWidget" />
-          </div>
+      <el-row class="title-css">
+        <span class="title-text">
+          {{ $t('commons.datasource') }}
         </span>
-        <span v-show="showSearchInput" class="header-title">
-          <div class="de-input" style="margin-top: 0px !important;margin-bottom: 12px !important">
-            <el-input v-model="key">
-              <el-button slot="append" icon="el-icon-close" @click="closeSearchWidget" />
-            </el-input>
-          </div>
-        </span>
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="addFolder" />
+
       </el-row>
+      <el-divider />
+      <el-row>
+        <el-form>
+          <el-form-item class="form-item">
+            <el-input
+              v-model="key"
+              size="mini"
+              :placeholder="$t('chart.search')"
+              prefix-icon="el-icon-search"
+              clearable
+            />
+          </el-form-item>
+        </el-form>
+      </el-row>
+
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
@@ -30,7 +36,7 @@
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
-              <span style="display: flex; flex: 1 1 0%; width: 0px;">
+              <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type !== 'folder'">
                   <svg-icon icon-class="datasource" class="ds-icon-scene" />
                 </span>
@@ -193,14 +199,16 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.header-title {
-    font-size: 14px;
-    flex: 1;
-    color: #606266;
-    font-weight: bold;
-    display: block;
-    height: 100%;
-    /*line-height: 36px;*/
+  .el-divider--horizontal {
+    margin: 12px 0
+  }
+
+  .search-input {
+    padding: 12px 0;
+  }
+
+  .custom-tree-container{
+    margin-top: 10px;
   }
 
   .custom-tree-node {
@@ -221,13 +229,53 @@ export default {
     padding:0 8px;
   }
 
-  .dialog-css>>>.el-dialog__body {
-    padding: 15px 20px;
+  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+    display: none;
   }
-  .dialog-css >>>.el-dialog__body {
+
+  .custom-position {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    flex-flow: row nowrap;
+  }
+
+  .form-item {
+    margin-bottom: 0;
+  }
+
+  .title-css {
+    height: 26px;
+  }
+
+  .title-text {
+    line-height: 26px;
+  }
+
+  .dialog-css >>> .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+
+  .dialog-css >>> .el-dialog__body {
     padding: 10px 20px 20px;
   }
 
+  .form-item>>>.el-form-item__label{
+    font-size: 12px;
+  }
+
+  .scene-title{
+    width: 100%;
+    display: flex;
+  }
+  .scene-title-name{
+    width: 100%;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
   .father .child {
     display: none;
   }

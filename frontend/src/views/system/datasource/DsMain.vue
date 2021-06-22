@@ -1,6 +1,6 @@
 <template>
-  <de-container>
-    <de-aside-container style="padding: 20px 10px 0;">
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <de-aside-container style="padding: 10px 15px;">
       <ds-tree ref="dsTree" @switch-main="switchMain" />
     </de-aside-container>
     <de-main-container>
@@ -70,26 +70,5 @@ export default {
   .ms-main-container {
     height: calc(100vh - 56px);
     padding: 0px;
-  }
-
-  /*.tab-panel>>>.is-stretch{*/
-  /*  min-width: 80% !important;*/
-  /*}*/
-  /*.tab-panel>>>.el-tabs__nav-scroll {*/
-  /*  overflow: hidden;*/
-  /*  text-align: center;*/
-  /*  display: flex;*/
-  /*  align-items: center;*/
-  /*  justify-content: center;*/
-  /*}*/
-  .tab-panel>>>.el-tabs__nav-wrap{
-    padding: 0 10px;
-  }
-  .tab-panel>>>.el-tabs__nav-wrap::after {
-    height: 1px;
-  }
-  .tab-panel>>>.el-tabs__item{
-    /* width: 10px; */
-    padding: 0 10px;
   }
 </style>
