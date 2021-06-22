@@ -20,6 +20,7 @@
       :style="getComponentStyleDefault(config.style)"
       :prop-value="config.propValue"
       :element="config"
+      :search-count="searchCount"
     />
   </div>
 </template>
@@ -42,6 +43,11 @@ export default {
       type: Object,
       require: false,
       default: null
+    },
+    searchCount: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   computed: {

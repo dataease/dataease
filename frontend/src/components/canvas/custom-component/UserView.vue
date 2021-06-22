@@ -54,6 +54,11 @@ export default {
       default: function() {
         return {}
       }
+    },
+    searchCount: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data() {
@@ -123,6 +128,12 @@ export default {
         }
       },
       deep: true
+    },
+    // 监听外部计时器变化
+    searchCount: function(val1) {
+      if (val1 > 0) {
+        this.getData(this.element.propValue.viewId)
+      }
     }
   },
 

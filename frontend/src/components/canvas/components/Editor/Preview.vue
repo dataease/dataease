@@ -7,6 +7,7 @@
       v-for="(item, index) in componentDataInfo"
       :key="index"
       :config="item"
+      :search-count="searchCount"
     />
   </div>
 </template>
@@ -57,7 +58,8 @@ export default {
       timer: null,
       componentDataShow: [],
       mainWidth: '100%',
-      mainHeight: '100%'
+      mainHeight: '100%',
+      searchCount: -1
     }
   },
   computed: {
@@ -108,10 +110,17 @@ export default {
         _this.restore()
       })
     })
+    // 数据刷新计时器
+    let refreshTime = 60000
+    if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
+      refreshTime = this.canvasStyleData.refreshTime * 1000
+    }
+    this.timer = setInterval(() => {
+      this.searchCount++
+    }, refreshTime)
   },
-  created() {
-    // 先清除查询条件
-    // this.$store.dispatch('conditions/clear')
+  beforeDestroy() {
+    clearInterval(this.timer)
   },
   methods: {
     changeStyleWithScale,
