@@ -19,6 +19,7 @@ export function addDs(data) {
   return request({
     url: 'datasource/add/',
     method: 'post',
+    loading: true,
     data
   })
 }
@@ -27,6 +28,7 @@ export function editDs(data) {
   return request({
     url: 'datasource/update/',
     method: 'post',
+    loading: true,
     data
   })
 }
@@ -34,6 +36,7 @@ export function editDs(data) {
 export function delDs(id) {
   return request({
     url: 'datasource/delete/' + id,
+    loading: true,
     method: 'post'
   })
 }
@@ -42,6 +45,7 @@ export function validateDs(data) {
   return request({
     url: 'datasource/validate/',
     method: 'post',
+    loading: true,
     data
   })
 }

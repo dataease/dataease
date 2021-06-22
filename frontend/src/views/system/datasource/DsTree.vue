@@ -58,7 +58,15 @@
 
                 </span>
                 <span v-if="data.type !=='folder'" style="margin-left: 12px;" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="clickFileMore">
+                  <span class="el-dropdown-link">
+                    <el-button
+                      icon="el-icon-delete"
+                      type="text"
+                      size="small"
+                      @click="_handleDelete(data)"
+                    />
+                  </span>
+                  <!-- <el-dropdown trigger="click" size="small" @command="clickFileMore">
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"
@@ -75,7 +83,7 @@
                         {{ $t('panel.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
-                  </el-dropdown>
+                  </el-dropdown> -->
                 </span>
               </span>
             </span>

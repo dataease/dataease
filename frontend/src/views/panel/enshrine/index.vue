@@ -15,7 +15,7 @@
               <span> {{ scope.row.name }}</span>
             </div>
             <div class="star-item-close">
-              <i class="el-icon-close " @click="remove(scope.row)" />
+              <i class="el-icon-delete " @click="remove(scope.row)" />
             </div>
           </div>
         </template>

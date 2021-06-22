@@ -90,11 +90,9 @@ public class ChartViewService {
         List<ChartGroupDTO> groups = extChartGroupMapper.search(chartGroupRequest);
         List<ChartViewDTO> group = groups.stream().map(ele -> {
             ChartViewDTO dto = new ChartViewDTO();
-            dto.setId(ele.getId());
-            dto.setName(ele.getName());
+            BeanUtils.copyBean(dto, ele);
             dto.setIsLeaf(false);
             dto.setType("group");
-            dto.setPid(ele.getPid());
             return dto;
         }).collect(Collectors.toList());
         group.addAll(charts);
