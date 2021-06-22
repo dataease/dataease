@@ -126,22 +126,12 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        if (chart.customAttr) {
-          let customAttr = null
-          if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
-            customAttr = JSON.parse(JSON.stringify(chart.customAttr))
-          } else {
-            customAttr = JSON.parse(chart.customAttr)
-          }
-          if (customAttr.color) {
-            this.colorForm = customAttr.color
-          }
-        }
+        this.init()
       }
     }
   },
   mounted() {
+    this.init()
   },
   methods: {
     changeColorCase() {
@@ -153,6 +143,20 @@ export default {
       val.value = items[0].value
       val.colors = items[0].colors
       this.$emit('onColorChange', val)
+    },
+    init() {
+      const chart = JSON.parse(JSON.stringify(this.chart))
+      if (chart.customAttr) {
+        let customAttr = null
+        if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+          customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+        } else {
+          customAttr = JSON.parse(chart.customAttr)
+        }
+        if (customAttr.color) {
+          this.colorForm = customAttr.color
+        }
+      }
     }
   }
 }

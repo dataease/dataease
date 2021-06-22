@@ -42,26 +42,30 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        if (chart.customStyle) {
-          let customStyle = null
-          if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
-            customStyle = JSON.parse(JSON.stringify(chart.customStyle))
-          } else {
-            customStyle = JSON.parse(chart.customStyle)
-          }
-          if (customStyle.background) {
-            this.colorForm = customStyle.background
-          }
-        }
+        this.init()
       }
     }
   },
   mounted() {
+    this.init()
   },
   methods: {
     changeBackgroundStyle() {
       this.$emit('onChangeBackgroundForm', this.colorForm)
+    },
+    init() {
+      const chart = JSON.parse(JSON.stringify(this.chart))
+      if (chart.customStyle) {
+        let customStyle = null
+        if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
+          customStyle = JSON.parse(JSON.stringify(chart.customStyle))
+        } else {
+          customStyle = JSON.parse(chart.customStyle)
+        }
+        if (customStyle.background) {
+          this.colorForm = customStyle.background
+        }
+      }
     }
   }
 }

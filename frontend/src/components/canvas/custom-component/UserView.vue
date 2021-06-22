@@ -2,10 +2,10 @@
   <div v-loading="requestStatus==='waiting'" class="rect-shape">
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
-        <span v-if="message.response.data.message">{{ message.response.data.message }}<span>,{{ $t('chart.chart_show_error') }}
-          <br>
-          {{ $t('chart.chart_error_tips') }}
-        </span></span></div>
+        {{ message }},{{ $t('chart.chart_show_error') }}
+        <br>
+        {{ $t('chart.chart_error_tips') }}
+      </div>
     </div>
     <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" />
     <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
@@ -180,7 +180,11 @@ export default {
           return true
         }).catch(err => {
           this.requestStatus = 'error'
-          this.message = err
+          if (err && err.response && err.response.data) {
+            this.message = err.response.data.message
+          } else {
+            this.message = err
+          }
           return true
         })
       }

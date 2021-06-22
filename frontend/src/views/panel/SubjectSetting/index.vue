@@ -17,7 +17,7 @@
         <el-collapse-item :title="$t('chart.module_style')" name="component">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
-            <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+            <background-color-selector v-if="chart" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
@@ -27,7 +27,7 @@
         </el-collapse-item>
         <el-collapse-item :title="$t('panel.table')" name="table">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <color-selector v-if="tableChartShow" index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
+            <color-selector index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
           </el-row>
         </el-collapse-item>
       </el-collapse>
@@ -58,7 +58,7 @@ export default {
     return {
       panelInfo: this.$store.state.panel.panelInfo,
       activeNames: ['panel'],
-      chart: {},
+      chart: null,
       tableChart: null,
       collapseShow: true,
       tableChartShow: true
@@ -76,9 +76,9 @@ export default {
       this.collapseShow = false
       this.$nextTick(() => (this.collapseShow = true))
     })
-    this.init()
   },
   created() {
+    this.init()
   },
 
   methods: {
