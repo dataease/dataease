@@ -367,3 +367,50 @@ export const BASE_GAUGE = {
     }
   ]
 }
+
+export const BASE_CHART_STRING = {
+  stylePriority: 'panel',
+  xaxis: '[]',
+  yaxis: '[]',
+  show: true,
+  type: 'panel',
+  title: '',
+  customAttr: JSON.stringify({
+    color: DEFAULT_COLOR_CASE,
+    tableColor: DEFAULT_COLOR_CASE,
+    size: DEFAULT_SIZE,
+    label: DEFAULT_LABEL,
+    tooltip: DEFAULT_TOOLTIP
+  }),
+  customStyle: JSON.stringify({
+    text: DEFAULT_TITLE_STYLE,
+    legend: DEFAULT_LEGEND_STYLE,
+    xAxis: DEFAULT_XAXIS_STYLE,
+    yAxis: DEFAULT_YAXIS_STYLE,
+    background: DEFAULT_BACKGROUND_COLOR
+  }),
+  customFilter: '[]'
+}
+
+export const BASE_CHART = {
+  xaxis: [],
+  yaxis: [],
+  show: true,
+  type: 'panel',
+  title: '',
+  customAttr: {
+    color: DEFAULT_COLOR_CASE,
+    tableColor: DEFAULT_COLOR_CASE,
+    size: DEFAULT_SIZE,
+    label: DEFAULT_LABEL,
+    tooltip: DEFAULT_TOOLTIP
+  },
+  customStyle: {
+    text: DEFAULT_TITLE_STYLE,
+    legend: DEFAULT_LEGEND_STYLE,
+    xAxis: DEFAULT_XAXIS_STYLE,
+    yAxis: DEFAULT_YAXIS_STYLE,
+    background: DEFAULT_BACKGROUND_COLOR
+  },
+  customFilter: []
+}

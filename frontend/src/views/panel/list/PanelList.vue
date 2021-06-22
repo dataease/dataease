@@ -48,9 +48,6 @@
         <span class="header-title">
           {{ $t('panel.panel_list') }}
           <el-button style="float: right;padding-right: 7px;margin-top: -8px" icon="el-icon-plus" type="text" @click="showEditPanel(newFolder)" />
-          <!--          <el-button style="float: right;" type="primary" size="mini" @click="showEditPanel(newFolder)">-->
-          <!--            {{ $t('panel.groupAdd') }}-->
-          <!--          </el-button>-->
         </span>
       </el-row>
       <el-col class="custom-tree-container">
@@ -181,21 +178,8 @@ import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
 import { addGroup, delGroup, groupTree, defaultTree, findOne } from '@/api/panel/panel'
 import {
-  DEFAULT_COLOR_CASE,
-  DEFAULT_SIZE,
-  DEFAULT_TITLE_STYLE,
-  DEFAULT_LEGEND_STYLE,
-  DEFAULT_LABEL,
-  DEFAULT_TOOLTIP,
-  DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE,
-  DEFAULT_BACKGROUND_COLOR
-} from '@/views/chart/chart/chart'
-import {
-  DEFAULT_COMMON_CANVAS_STYLE
+  DEFAULT_COMMON_CANVAS_STYLE, DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
-
-import { DEFAULT_PANEL_STYLE } from '@/views/panel/panel'
 
 export default {
   name: 'PanelList',
@@ -216,38 +200,7 @@ export default {
           level: null,
           nodeType: null,
           panelType: null,
-          panelStyle: JSON.stringify({
-            width: 1600,
-            height: 900,
-            scale: 100,
-            scaleWidth: 100,
-            scaleHeight: 100,
-            selfAdaption: true,
-            auxiliaryMatrix: true,
-            openCommonStyle: true,
-            panel: DEFAULT_PANEL_STYLE,
-            chart: {
-              xaxis: '[]',
-              yaxis: '[]',
-              show: true,
-              type: 'panel',
-              title: '',
-              customAttr: JSON.stringify({
-                color: DEFAULT_COLOR_CASE,
-                tableColor: DEFAULT_COLOR_CASE,
-                size: DEFAULT_SIZE,
-                label: DEFAULT_LABEL,
-                tooltip: DEFAULT_TOOLTIP
-              }),
-              customStyle: JSON.stringify({
-                text: DEFAULT_TITLE_STYLE,
-                legend: DEFAULT_LEGEND_STYLE,
-                xAxis: DEFAULT_XAXIS_STYLE,
-                yAxis: DEFAULT_YAXIS_STYLE,
-                background: DEFAULT_BACKGROUND_COLOR
-              }),
-              customFilter: '[]'
-            }}),
+          panelStyle: JSON.stringify(DEFAULT_COMMON_CANVAS_STYLE_STRING),
           panelData: '[]'
         }
       },
@@ -262,38 +215,7 @@ export default {
           level: null,
           nodeType: null,
           panelType: null,
-          panelStyle: JSON.stringify({
-            width: 1600,
-            height: 900,
-            scale: 100,
-            scaleWidth: 100,
-            scaleHeight: 100,
-            selfAdaption: true,
-            auxiliaryMatrix: true,
-            openCommonStyle: true,
-            panel: DEFAULT_PANEL_STYLE,
-            chart: {
-              xaxis: '[]',
-              yaxis: '[]',
-              show: true,
-              type: 'panel',
-              title: '',
-              customAttr: JSON.stringify({
-                color: DEFAULT_COLOR_CASE,
-                tableColor: DEFAULT_COLOR_CASE,
-                size: DEFAULT_SIZE,
-                label: DEFAULT_LABEL,
-                tooltip: DEFAULT_TOOLTIP
-              }),
-              customStyle: JSON.stringify({
-                text: DEFAULT_TITLE_STYLE,
-                legend: DEFAULT_LEGEND_STYLE,
-                xAxis: DEFAULT_XAXIS_STYLE,
-                yAxis: DEFAULT_YAXIS_STYLE,
-                background: DEFAULT_BACKGROUND_COLOR
-              }),
-              customFilter: '[]'
-            }}),
+          panelStyle: JSON.stringify(DEFAULT_COMMON_CANVAS_STYLE_STRING),
           panelData: '[]'
         }
       },

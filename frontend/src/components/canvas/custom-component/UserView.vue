@@ -23,17 +23,7 @@ import { uuid } from 'vue-uuid'
 
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
-import {
-  DEFAULT_COLOR_CASE,
-  DEFAULT_SIZE,
-  DEFAULT_TITLE_STYLE,
-  DEFAULT_LEGEND_STYLE,
-  DEFAULT_LABEL,
-  DEFAULT_TOOLTIP,
-  DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE,
-  DEFAULT_BACKGROUND_COLOR
-} from '@/views/chart/chart/chart'
+import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 
 export default {
   name: 'UserView',
@@ -64,29 +54,7 @@ export default {
   data() {
     return {
       refId: null,
-      chart: {
-        stylePriority: 'panel',
-        xaxis: '[]',
-        yaxis: '[]',
-        show: true,
-        type: 'panel',
-        title: '',
-        customAttr: JSON.stringify({
-          color: DEFAULT_COLOR_CASE,
-          tableColor: DEFAULT_COLOR_CASE,
-          size: DEFAULT_SIZE,
-          label: DEFAULT_LABEL,
-          tooltip: DEFAULT_TOOLTIP
-        }),
-        customStyle: JSON.stringify({
-          text: DEFAULT_TITLE_STYLE,
-          legend: DEFAULT_LEGEND_STYLE,
-          xAxis: DEFAULT_XAXIS_STYLE,
-          yAxis: DEFAULT_YAXIS_STYLE,
-          background: DEFAULT_BACKGROUND_COLOR
-        }),
-        customFilter: '[]'
-      },
+      chart: BASE_CHART_STRING,
       requestStatus: 'waiting',
       message: null
     }
