@@ -53,134 +53,305 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 
 ## 功能列表
 
-<body link="blue" vlink="purple" class="xl65">
-<table width="577.40" border="0" cellpadding="0" cellspacing="0" style='width:577.40pt;border-collapse:collapse;'>
-   <col width="56.80" style='mso-width-source:userset;mso-width-alt:2423;'/>
-   <col width="83.60" class="xl65" style='mso-width-source:userset;mso-width-alt:3566;'/>
-   <col width="437" class="xl66" style='mso-width-source:userset;mso-width-alt:18645;'/>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl67" height="216" width="56.80" rowspan="12" style='height:216.00pt;width:56.80pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>仪表板</td>
-    <td class="xl68" width="83.60" rowspan="10" style='width:83.60pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>仪表板管理</td>
-    <td class="xl69" width="437" style='width:437.00pt;' x:str>在线编辑仪表板</td>
+<table>
+   <tr>
+      <td bgcolor="#3779d9" align="middle" style="font-weight:bold;color: white;width: 150px">
+         功能模块
+      </td>
+      <td bgcolor="#3779d9" align="middle" style="font-weight:bold;color: white;width: 170px">
+         功能
+      </td>
+      <td bgcolor="#3779d9" align="middle" style="font-weight:bold;color: white;width: 750px">
+         功能描述
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>仪表板展示内容支持视图/时间组件/文本组件/数字组件/样式组件等</td>
+   <tr>
+      <td rowspan="19">
+         仪表板
+      </td>
+      <td rowspan="7">
+         仪表板管理
+      </td>
+      <td>
+         支持新建仪表板
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持视图及组件样式的设置</td>
+   <tr>
+      <td>
+         支持重命名仪表板
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持仪表板主题</td>
+   <tr>
+      <td>
+         支持删除仪表板
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持仪表板的全屏预览</td>
+   <tr>
+      <td>
+         支持在线编辑仪表板
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持仪表板模板的导出</td>
+   <tr>
+      <td>
+         支持以树状形式展示仪表板分组
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>以树状形式展示仪表板分组</td>
+   <tr>
+      <td>
+         支持重命名仪表板分组
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持仪表板分组的拖拽排序</td>
+   <tr>
+      <td>
+         支持删除仪表板分组
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持默认仪表板的设置</td>
+   <tr>
+      <td rowspan="10">
+         仪表板制作
+      </td>
+      <td>
+         支持多种组件，视图/时间组件/文本组件/数字组件/样式组件/图片等
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持仪表板的收藏</td>
+   <tr>
+      <td>
+         支持组件样式设置，如图形属性、组件样式等
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl68" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>仪表板分享</td>
-    <td class="xl69" x:str>支持按组织/角色/用户分享</td>
+   <tr>
+      <td>
+         支持仪表板背景、以及组件间隙设置等
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl69" x:str>支持生成外部可访问的带密码保护的分享链接</td>
+   <tr>
+      <td>
+         支持一键切换仪表板主题
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl67" height="180" rowspan="9" style='height:180.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>视图</td>
-    <td class="xl68" rowspan="9" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>视图管理</td>
-    <td class="xl69" x:str>在线编辑视图</td>
+   <tr>
+      <td>
+         支持调整仪表板画布大小
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持可视化拖拽进行视图操作</td>
+   <tr>
+      <td>
+         支持撤销、重做、清空画布内容
+      </td>
    </tr>
-   <tr height="36" style='height:36.00pt;'>
-    <td class="xl70" x:str>支持明细表/指标卡/基础柱状图/堆叠柱状图/横向柱状图/横向堆叠柱状图/基础折线图/堆叠折线图/饼图/南丁格尔玫瑰图/漏斗图/雷达图/仪表盘等多种图表类型</td>
+   <tr>
+      <td>
+         支持仪表板的全屏预览
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持维度/指标的排序展示</td>
+   <tr>
+      <td>
+         支持仪表板模板的导出
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持指标的多种汇总计算方式</td>
+   <tr>
+      <td>
+         支持默认仪表板的设置
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持对图表类型的图形属性进行设置</td>
+   <tr>
+      <td>
+         支持仪表板的收藏
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持对图表类型的组件样式进行设置</td>
+   <tr>
+      <td rowspan="2">
+         仪表板共享
+      </td>
+      <td>
+         支持按组织/角色/用户分享
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持过滤条件筛选视图展示的数据</td>
+   <tr>
+      <td>
+         支持生成分享链接，外部用户可通过密码访问
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持下载视图图片</td>
+   <tr>
+      <td rowspan="14">
+         视图
+      </td>
+      <td rowspan="6">
+         视图管理
+      </td>
+      <td>
+         支持新增视图
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl67" height="144" rowspan="8" style='height:144.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据集</td>
-    <td class="xl68" rowspan="8" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据集管理</td>
-    <td class="xl70" x:str>支持数据库数据集/SQL 数据集/Excel 数据集/自定义数据集等多种类型的数据集</td>
+   <tr>
+      <td>
+         支持编辑视图
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>数据库数据集和 SQL 数据集支持直连和定时同步两种连接方式</td>
+   <tr>
+      <td>
+         支持删除视图
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>定时同步类型数据集支持全量更新和增量更新两种方式</td>
+   <tr>
+      <td>
+         支持对视图进行分组
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持定时更新的频率控制</td>
+   <tr>
+      <td>
+         支持重命名视图分组
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持定时更新任务的查看</td>
+   <tr>
+      <td>
+         支持删除视图分组
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持对数据集的字段类型/字段名/展示字段进行设置</td>
+   <tr>
+      <td rowspan="8">
+         视图制作
+      </td>
+      <td>
+         支持通过简单的拖拉操作，制作视图
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持创建不同类型数据集与数据集之间的关联</td>
+   <tr>
+      <td>
+         支持多种图表类型，明细表/指标卡/基础柱状图/堆叠柱状图/横向柱状图/横向堆叠柱状图/基础折线图/堆叠折线图/饼图/南丁格尔玫瑰图/漏斗图/雷达图/仪表盘等
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持 Excel 数据集数据的替换和更新</td>
+   <tr>
+      <td>
+         支持选择图表的样式优先级
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl67" height="36" rowspan="2" style='height:36.00pt;border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据源</td>
-    <td class="xl68" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>数据源管理</td>
-    <td class="xl70" x:str>支持 MySQL 数据源</td>
+   <tr>
+      <td>
+         支持选择图表的排序方式，根据维度、指标升序、降序展示
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持对数据源有效性校验</td>
+   <tr>
+      <td>
+         支持指标的多种汇总计算方式，如求和、平均、最大值、最小值等
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl67" height="90" rowspan="5" style='height:90.00pt;border-right:.5pt solid windowtext;' x:str>系统管理</td>
-    <td class="xl68" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>用户租户管理</td>
-    <td class="xl70" x:str>支持多级租户体系</td>
+   <tr>
+      <td>
+         支持对图表类型的图形属性进行设置
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持多种租户角色</td>
+   <tr>
+      <td>
+         支持对图表类型的组件样式进行设置
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl68" rowspan="2" style='border-right:.5pt solid windowtext;border-bottom:.5pt solid windowtext;' x:str>权限管理</td>
-    <td class="xl70" x:str>支持组织/角色/用户三个维度的权限管理</td>
+   <tr>
+      <td>
+         支持通过过滤条件筛选视图数据
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl70" x:str>支持数据源/数据集/视图/仪表板/菜单和操作权限的细颗粒度权限控制</td>
+   <tr>
+      <td rowspan="8">
+         数据集
+      </td>
+      <td rowspan="8">
+         数据集管理
+      </td>
+      <td>
+         支持多种类型的数据集，数据库数据集/SQL 数据集/Excel 数据集/自定义数据集
+      </td>
    </tr>
-   <tr height="18" style='height:18.00pt;'>
-    <td class="xl68" style='border-right:.5pt solid windowtext;' x:str>显示设置</td>
-    <td class="xl70" x:str>支持对Logo/系统名/标题等属性的设置</td>
+   <tr>
+      <td>
+         数据库数据集和 SQL 数据集支持直连和定时同步两种连接方式
+      </td>
    </tr>
-  </table>
-</body>
+   <tr>
+      <td>
+         定时同步类型数据集，支持全量更新和增量更新两种方式
+      </td>
+   </tr>
+   <tr>
+      <td>
+         支持创建定时任务，以此控制数据集的更新
+      </td>
+   </tr>
+   <tr>
+      <td>
+         支持定时更新任务的查看
+      </td>
+   </tr>
+   <tr>
+      <td>
+         支持对数据集的字段类型/字段名/展示字段进行设置
+      </td>
+   </tr>
+   <tr>
+      <td>
+         支持创建数据集间的关联关系（1：1，一对一；1：N，一对N；N：1，N对1）
+      </td>
+   </tr>
+   <tr>
+      <td>
+         支持 Excel 数据集数据的替换和追加
+      </td>
+   </tr>
+   <tr>
+      <td rowspan="2">
+         数据源
+      </td>
+      <td rowspan="2">
+         数据源管理
+      </td>
+      <td>
+         创建 MySQL数据源
+      </td>
+   </tr>
+   </tr>
+   <tr>
+      <td>
+         校验数据源的有效性
+      </td>
+   </tr>
+   <tr>
+      <td rowspan="5">
+         系统管理
+      </td>
+      <td rowspan="2">
+         用户租户管理
+      </td>
+      <td>
+         支持多级租户体系
+      </td>
+   </tr>
+   <tr>
+      <td>
+         支持多种租户角色
+      </td>
+   </tr>
+   <tr>
+      <td rowspan="2">
+         权限管理
+      </td>
+      <td>
+         支持组织/角色/用户三个维度的权限管理
+      </td>
+   </tr>
+   <tr>
+      <td>
+         支持数据源/数据集/视图/仪表板/菜单和操作权限的细颗粒度权限控制
+      </td>
+   </tr>
+   <tr>
+      <td>
+         显示设置
+      </td>
+      <td>
+         支持对Logo/系统名/标题等属性的设置
+      </td>
+   </tr>
+</table>
 
 ## 技术栈
 
