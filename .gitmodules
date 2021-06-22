@@ -1,6 +1,0 @@
-[submodule "dataease-plugins"]
-	path = dataease-plugins
-	url = git@github.com:dataease/dataease-plugins.git
-[submodule "dataease-plugin-xpack"]
-	path = dataease-plugin-xpack
-	url = git@github.com:dataease/dataease-plugin-xpack.git
