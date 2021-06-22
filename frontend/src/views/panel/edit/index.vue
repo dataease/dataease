@@ -447,7 +447,6 @@ export default {
       this.$store.commit('recordSnapshot')
       this.clearCurrentInfo()
 
-      debugger
       // 文字组件
       if (component.type === 'v-text' || component.type === 'rect-shape') {
         this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
