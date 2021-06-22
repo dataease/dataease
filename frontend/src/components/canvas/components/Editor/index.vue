@@ -213,7 +213,7 @@ export default {
     outStyle: {
       handler(newVal, oldVla) {
         this.changeScale()
-        console.log('newVal:' + JSON.stringify(newVal) + 'oldVla:' + JSON.stringify(this.outStyleOld))
+        // console.log('newVal:' + JSON.stringify(newVal) + 'oldVla:' + JSON.stringify(this.outStyleOld))
         if (this.outStyleOld && (newVal.width > this.outStyleOld.width || newVal.height > this.outStyleOld.height)) {
           this.resizeParentBounds()
         }
