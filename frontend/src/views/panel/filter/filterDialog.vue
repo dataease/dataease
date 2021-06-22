@@ -15,32 +15,19 @@
           <div class="component-result-content filter-common">
             <el-tree
               v-if="showDomType === 'tree'"
-              :data="data"
+              :data="datas"
               :props="defaultProps"
-              :render-content="renderNode"
+              lazy
+              :load="loadTree"
               @node-click="handleNodeClick"
-            />
-
-            <el-table
-              v-else-if="showDomType === 'db'"
-              class="de-filter-data-table"
-              :data="sceneDatas"
-              :show-header="false"
-              size="mini"
-              :highlight-current-row="true"
-              style="width: 100%"
             >
-              <el-table-column prop="name" :label="$t('commons.name')">
-                <template v-if="showDomType === 'db'" :id="scope.row.id" slot-scope="scope">
-                  <div class="filter-db-row" @click="showFieldDatas(scope.row)">
-                    <i class="el-icon-s-data" />
-                    <span> {{ scope.row.name }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
+              <div slot-scope="{ node, data }" class="custom-tree-node">
+                <el-button v-if="data.type === 'db'" icon="el-icon-s-data" type="text" size="mini" />
+                <span class="label-span">{{ node.label }}</span>
+              </div>
+            </el-tree>
 
-            <div v-else-if="showDomType === 'field'">
+            <div v-if="showDomType === 'field'">
               <draggable
                 v-model="fieldDatas"
                 :disabled="selectField.length !== 0"
@@ -212,7 +199,7 @@ import draggable from 'vuedraggable'
 import DragItem from '@/components/DragItem'
 import { mapState } from 'vuex'
 // import { ApplicationContext } from '@/utils/ApplicationContext'
-import { groupTree, loadTable, fieldList, fieldValues } from '@/api/dataset/dataset'
+import { groupTree, fieldList, fieldValues, post } from '@/api/dataset/dataset'
 import { viewsWithIds } from '@/api/panel/view'
 export default {
   name: 'FilterDialog',
@@ -246,20 +233,33 @@ export default {
       componentSetBreads: [
         { label: this.$t('panel.component_list'), link: false, type: 'root' }
       ],
-      data: [],
+      datas: [],
       sceneDatas: [],
       //   viewDatas: [],
       fieldDatas: [],
       comFieldDatas: [],
       defaultProps: {
+        label: 'name',
         children: 'children',
-        label: 'label'
+        isLeaf: 'isLeaf',
+        id: 'id',
+        parentId: 'pid'
       },
       selectField: [],
       widget: null,
       fieldValues: [],
       popovervisible: false,
-      viewInfos: []
+      viewInfos: [],
+      groupForm: {
+        name: '',
+        pid: '0',
+        level: 0,
+        type: '',
+        children: [],
+        sort: 'type desc,name asc'
+      },
+      isTreeSearch: false,
+      defaultDatas: []
     }
   },
   computed: {
@@ -301,7 +301,7 @@ export default {
   created() {
     // this.widget = ApplicationContext.getService(this.widgetId)
     this.widget = this.widgetInfo
-    this.loadDataSetTree()
+    this.treeNode(this.groupForm)
 
     if (this.componentInfo && this.componentInfo.options.attrs.dragItems) {
       this.selectField = this.componentInfo.options.attrs.dragItems
@@ -310,9 +310,7 @@ export default {
   },
 
   methods: {
-    attr() {
-      return 'aaa'
-    },
+
     loadViews() {
       const viewIds = this.componentData
         .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
@@ -323,9 +321,31 @@ export default {
       })
     },
     handleNodeClick(data) {
-      if (data.type === 'scene') {
-        this.showSceneTable(data)
+      if (data.type !== 'group') {
+        this.showFieldDatas(data)
       }
+    },
+    loadTree(node, resolve) {
+      if (!this.isTreeSearch) {
+        if (node.level > 0) {
+          if (node.data.id) {
+            post('/dataset/table/listAndGroup', {
+              sort: 'type asc,name asc,create_time desc',
+              sceneId: node.data.id
+            }).then(res => {
+              resolve(res.data)
+            })
+          }
+        }
+      } else {
+        resolve(node.data.children)
+      }
+    },
+    treeNode(group) {
+      post('/dataset/group/treeNode', group).then(res => {
+        this.defaultDatas = res.data
+        this.datas = res.data
+      })
     },
     loadDataSetTree() {
       groupTree({}).then(res => {
@@ -334,25 +354,7 @@ export default {
         this.data = datas
       })
     },
-    renderNode(h, { node, data, store }) {
-      return (
-        <div class='custom-tree-node' >
 
-          { data.type === 'scene' ? (
-            <el-button icon='el-icon-folder' type='text' size='mini' />
-          ) : (
-            ''
-          )}
-          <span class='label-span' >{node.label}</span>
-        </div>
-      )
-    },
-    showSceneTable(node) {
-      this.showDomType = 'db'
-      this.setTailLink(node)
-      this.addTail(node)
-      this.loadTable(node.id)
-    },
     setTailLink(node) {
       const tail = this.dataSetBreads[this.dataSetBreads.length - 1]
       tail.type = node.type
@@ -389,26 +391,30 @@ export default {
       this.componentSetBreads[this.componentSetBreads.length - 1]['link'] = false
     },
     backToLink(bread) {
-      if (bread.type === 'db') {
-        this.showDomType = 'db'
-      } else {
-        this.showDomType = 'tree'
-      }
+    //   if (bread.type === 'field') {
+    //     this.showDomType = 'db'
+    //   } else {
+    //     this.showDomType = 'tree'
+    //   }
+      this.showDomType = 'tree'
 
       this.removeTail(bread)
+      this.$nextTick(() => {
+        this.datas = JSON.parse(JSON.stringify(this.defaultDatas))
+      })
     },
     comBackLink(bread) {
       this.comShowDomType = 'view'
       this.comRemoveTail()
     },
-    loadTable(sceneId) {
-      loadTable({ sceneId: sceneId, sort: 'type asc,create_time desc,name asc' }).then(res => {
-        res && res.data && (this.sceneDatas = res.data.map(tb => {
-          tb.type = 'db'
-          return tb
-        }))
-      })
-    },
+    // loadTable(sceneId) {
+    //   loadTable({ sceneId: sceneId, sort: 'type asc,create_time desc,name asc' }).then(res => {
+    //     res && res.data && (this.sceneDatas = res.data.map(tb => {
+    //       tb.type = 'db'
+    //       return tb
+    //     }))
+    //   })
+    // },
 
     loadField(tableId) {
       fieldList(tableId).then(res => {
