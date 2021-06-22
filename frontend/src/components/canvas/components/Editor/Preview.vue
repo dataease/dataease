@@ -126,7 +126,6 @@ export default {
     changeStyleWithScale,
     getStyle,
     restore() {
-      debugger
       const canvasHeight = document.getElementById('canvasInfoTemp').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoTemp').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比

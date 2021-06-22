@@ -57,7 +57,6 @@ export default {
   watch: {
     active: {
       handler(newVal, oldVla) {
-        debugger
         this.removeSelectText()
       },
       deep: true

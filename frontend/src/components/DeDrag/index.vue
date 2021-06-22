@@ -1083,7 +1083,6 @@ export default {
       this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)
     },
     changeWidth(val) {
-      debugger
       // console.log('parentWidth', this.parentWidth)
       // console.log('parentHeight', this.parentHeight)
       const [newWidth, _] = snapToGrid(this.grid, val, 0, this.scale)
