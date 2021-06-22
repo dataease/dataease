@@ -13,39 +13,58 @@
             </el-breadcrumb>
           </div>
           <div class="component-result-content filter-common">
-            <el-tree
-              v-if="showDomType === 'tree'"
-              :data="datas"
-              :props="defaultProps"
-              lazy
-              :load="loadTree"
-              @node-click="handleNodeClick"
-            >
-              <div slot-scope="{ node, data }" class="custom-tree-node">
-                <el-button v-if="data.type === 'db'" icon="el-icon-s-data" type="text" size="mini" />
-                <span class="label-span">{{ node.label }}</span>
-              </div>
-            </el-tree>
-
-            <div v-if="showDomType === 'field'">
-              <draggable
-                v-model="fieldDatas"
-                :disabled="selectField.length !== 0"
-                :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
-                animation="300"
-                :move="onMove"
-                class="drag-list"
-                @end="end1"
-                @start="start1"
-              >
-                <transition-group>
-                  <div v-for="item in fieldDatas" :key="item.id" class="filter-db-row">
-                    <i class="el-icon-s-data" />
-                    <span> {{ item.name }}</span>
+            <el-col>
+              <el-row>
+                <el-form>
+                  <el-form-item class="my-form-item">
+                    <el-input
+                      v-model="keyWord"
+                      size="mini"
+                      :placeholder="$t('dataset.search')"
+                      prefix-icon="el-icon-search"
+                      clearable
+                    />
+                  </el-form-item>
+                </el-form>
+              </el-row>
+              <el-row>
+                <el-tree
+                  v-if="showDomType === 'tree'"
+                  :default-expanded-keys="expandedArray"
+                  node-key="id"
+                  :data="datas"
+                  :props="defaultProps"
+                  lazy
+                  :load="loadTree"
+                  @node-click="handleNodeClick"
+                >
+                  <div slot-scope="{ node, data }" class="custom-tree-node">
+                    <el-button v-if="data.type === 'db'" icon="el-icon-s-data" type="text" size="mini" />
+                    <span class="label-span">{{ node.label }}</span>
                   </div>
-                </transition-group>
-              </draggable>
-            </div>
+                </el-tree>
+
+                <div v-if="showDomType === 'field'">
+                  <draggable
+                    v-model="fieldDatas"
+                    :disabled="selectField.length !== 0"
+                    :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
+                    animation="300"
+                    :move="onMove"
+                    class="drag-list"
+                    @end="end1"
+                    @start="start1"
+                  >
+                    <transition-group>
+                      <div v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))" :key="item.id" class="filter-db-row">
+                        <i class="el-icon-s-data" />
+                        <span> {{ item.name }}</span>
+                      </div>
+                    </transition-group>
+                  </draggable>
+                </div>
+              </el-row>
+            </el-col>
           </div>
         </el-tab-pane>
         <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_module')" name="assembly">
@@ -59,44 +78,62 @@
           </div>
 
           <div class="component-result-content filter-common">
-            <el-table
-              v-if="comShowDomType === 'view'"
-              class="de-filter-data-table"
-              :data="viewInfos"
-              :show-header="false"
-              size="mini"
-              :highlight-current-row="true"
-              style="width: 100%"
-            >
-              <el-table-column prop="name" :label="$t('commons.name')">
-                <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
-                  <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
-                    <i class="el-icon-s-data" />
-                    <span> {{ scope.row.name }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
 
-            <div v-else-if="comShowDomType === 'field'">
-              <draggable
-                v-model="comFieldDatas"
-                :disabled="selectField.length !== 0"
-                :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
-                animation="300"
-                :move="onMove"
-                class="drag-list"
-                @end="end1"
-                @start="start1"
-              >
-                <transition-group>
-                  <div v-for="item in comFieldDatas" :key="item.id" class="filter-db-row">
-                    <i class="el-icon-s-data" />
-                    <span> {{ item.name }}</span>
-                  </div>
-                </transition-group>
-              </draggable>
-            </div>
+            <el-col>
+              <el-row>
+                <el-form>
+                  <el-form-item class="my-form-item">
+                    <el-input
+                      v-model="viewKeyWord"
+                      size="mini"
+                      :placeholder="$t('dataset.search')"
+                      prefix-icon="el-icon-search"
+                      clearable
+                    />
+                  </el-form-item>
+                </el-form>
+              </el-row>
+              <el-row>
+                <el-table
+                  v-if="comShowDomType === 'view'"
+                  class="de-filter-data-table"
+                  :data="viewInfos.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))"
+                  :show-header="false"
+                  size="mini"
+                  :highlight-current-row="true"
+                  style="width: 100%"
+                >
+                  <el-table-column prop="name" :label="$t('commons.name')">
+                    <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
+                      <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
+                        <i class="el-icon-s-data" />
+                        <span> {{ scope.row.name }}</span>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+
+                <div v-else-if="comShowDomType === 'field'">
+                  <draggable
+                    v-model="comFieldDatas"
+                    :disabled="selectField.length !== 0"
+                    :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
+                    animation="300"
+                    :move="onMove"
+                    class="drag-list"
+                    @end="end1"
+                    @start="start1"
+                  >
+                    <transition-group>
+                      <div v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))" :key="item.id" class="filter-db-row">
+                        <i class="el-icon-s-data" />
+                        <span> {{ item.name }}</span>
+                      </div>
+                    </transition-group>
+                  </draggable>
+                </div>
+              </el-row>
+            </el-col>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -201,6 +238,7 @@ import { mapState } from 'vuex'
 // import { ApplicationContext } from '@/utils/ApplicationContext'
 import { groupTree, fieldList, fieldValues, post } from '@/api/dataset/dataset'
 import { viewsWithIds } from '@/api/panel/view'
+import { authModel } from '@/api/system/sysAuth'
 export default {
   name: 'FilterDialog',
   components: {
@@ -259,7 +297,11 @@ export default {
         sort: 'type desc,name asc'
       },
       isTreeSearch: false,
-      defaultDatas: []
+      defaultDatas: [],
+      keyWord: '',
+      timer: null,
+      expandedArray: [],
+      viewKeyWord: ''
     }
   },
   computed: {
@@ -296,6 +338,18 @@ export default {
         this.componentInfo.options.attrs.fieldId = null
         this.$emit('re-fresh-component', this.componentInfo)
       }
+    },
+    keyWord(val) {
+      this.expandedArray = []
+      if (this.showDomType === 'field') {
+        return
+      }
+      if (this.timer) {
+        clearTimeout(this.timer)
+      }
+      this.timer = setTimeout(() => {
+        this.getTreeData(val)
+      }, (val && val !== '') ? 1000 : 0)
     }
   },
   created() {
@@ -310,7 +364,52 @@ export default {
   },
 
   methods: {
+    getTreeData(val) {
+      if (val) {
+        this.isTreeSearch = true
+        this.searchTree(val)
+      } else {
+        this.isTreeSearch = false
+        this.treeNode(this.groupForm)
+      }
+    },
+    searchTree(val) {
+      this.expandedArray = []
+      const queryCondition = {
+        withExtend: 'parent',
+        modelType: 'dataset',
+        name: val
+      }
+      authModel(queryCondition).then(res => {
+        this.datas = this.buildTree(res.data)
+      })
+    },
+    buildTree(arrs) {
+      const idMapping = arrs.reduce((acc, el, i) => {
+        acc[el[this.defaultProps.id]] = i
+        return acc
+      }, {})
+      const roots = []
+      arrs.forEach(el => {
+        // 判断根节点 ###
+        el.type = el.modelInnerType
+        el.isLeaf = el.leaf
+        if (el[this.defaultProps.parentId] === null || el[this.defaultProps.parentId] === 0 || el[this.defaultProps.parentId] === '0') {
+          roots.push(el)
+          return
+        }
+        // 用映射表找到父元素
+        const parentEl = arrs[idMapping[el[this.defaultProps.parentId]]]
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el]
 
+        // 设置展开节点 如果没有子节点则不进行展开
+        if (parentEl.children.length > 0) {
+          this.expandedArray.push(parentEl[this.defaultProps.id])
+        }
+      })
+      return roots
+    },
     loadViews() {
       const viewIds = this.componentData
         .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
@@ -338,7 +437,7 @@ export default {
           }
         }
       } else {
-        resolve(node.data.children)
+        node.data.children && resolve(node.data.children)
       }
     },
     treeNode(group) {
@@ -400,11 +499,15 @@ export default {
 
       this.removeTail(bread)
       this.$nextTick(() => {
+        this.expandedArray = []
+        this.keyWord = ''
+        this.isTreeSearch = false
         this.datas = JSON.parse(JSON.stringify(this.defaultDatas))
       })
     },
     comBackLink(bread) {
       this.comShowDomType = 'view'
+      this.viewKeyWord = ''
       this.comRemoveTail()
     },
     // loadTable(sceneId) {
@@ -435,12 +538,14 @@ export default {
       })
     },
     showFieldDatas(row) {
+      this.keyWord = ''
       this.showDomType = 'field'
       this.setTailLink(row)
       this.addTail(row)
       this.loadField(row.id)
     },
     comShowFieldDatas(row) {
+      this.viewKeyWord = ''
       this.comShowDomType = 'field'
       this.comSetTailLink(row)
       this.comAddTail(row)
@@ -511,6 +616,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .my-form-item {
+      cursor: text;
+  }
   .de-dialog-container {
     height: 50vh !important;
 
