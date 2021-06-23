@@ -1,5 +1,6 @@
 package io.dataease.auth.service.impl;
 
+import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.base.domain.SysUser;
@@ -105,8 +106,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Transactional
     public void syncPluginMenu() {
         List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
-        extPluginSysMenuMapper.deletePluginMenu();
+        int i = extPluginSysMenuMapper.deletePluginMenu();
+        LogUtil.info("删除插件菜单记录数{}", i);
+
         if(CollectionUtils.isNotEmpty(pluginSysMenuList)){
+            LogUtil.info("待插入插件菜单记录是"+new Gson().toJson(pluginSysMenuList));
             extPluginSysMenuMapper.savePluginMenu(pluginSysMenuList);
         }
     }
