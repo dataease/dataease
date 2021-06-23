@@ -70,4 +70,8 @@
         select id  from sys_auth where auth_source=#{authSource} and auth_source_type=#{authSourceType} and auth_target=#{authTarget} and auth_target_type=#{authTargetType} limit 1
     </select>
 
+    <select id="checkTreeNoManageCount" resultType="Boolean">
+      select if(CHECK_TREE_NO_MANAGE_PRIVILEGE(#{userId},#{modelType},#{nodeId})>0,1,0)
+    </select>
+
 </mapper>

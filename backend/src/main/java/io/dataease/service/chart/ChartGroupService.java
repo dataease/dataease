@@ -11,10 +11,12 @@ import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
 import io.dataease.i18n.Translator;
+import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ public class ChartGroupService {
     private ExtChartGroupMapper extChartGroupMapper;
     @Resource
     private ExtDataSetGroupMapper extDataSetGroupMapper;
+    @Resource
+    private SysAuthService sysAuthService;
 
     public ChartGroupDTO save(ChartGroup chartGroup) {
         checkName(chartGroup);
@@ -52,6 +56,9 @@ public class ChartGroupService {
     }
 
     public void delete(String id) {
+        Assert.notNull(id, "id cannot be null");
+        sysAuthService.checkTreeNoManageCount("chart",id);
+
         ChartGroup cg = chartGroupMapper.selectByPrimaryKey(id);
         ChartGroupRequest ChartGroup = new ChartGroupRequest();
         BeanUtils.copyBean(ChartGroup, cg);

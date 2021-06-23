@@ -52,12 +52,12 @@
       </el-form-item> -->
       </el-form>
       <div v-if="canEdit" slot="footer" class="dialog-footer">
-        <el-button @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
-        <el-button type="primary" @click="save">{{ $t('commons.save') }}</el-button>
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary" @click="save">{{ $t('commons.save') }}</el-button>
       </div>
       <div v-else slot="footer" class="dialog-footer">
-        <el-button @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
-        <el-button type="primary" @click="changeEdit">{{ $t('commons.edit') }}</el-button>
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary" @click="changeEdit">{{ $t('commons.edit') }}</el-button>
       </div>
     </div>
   </layout-content>

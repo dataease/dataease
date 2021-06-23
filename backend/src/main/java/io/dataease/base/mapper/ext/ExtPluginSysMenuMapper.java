@@ -11,5 +11,5 @@ public interface ExtPluginSysMenuMapper {
 
     void savePluginMenu(@Param("menuList") List<PluginSysMenu> menuList);
 
-    void deletePluginMenu();
+    int deletePluginMenu();
 }

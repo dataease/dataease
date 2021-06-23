@@ -20,19 +20,19 @@
         <el-input v-model="form.confirmPassword" autocomplete="off" show-password />
       </el-form-item>
 
-      <el-form-item :label="$t('commons.gender')">
+      <el-form-item :label="$t('commons.gender')" prop="gender">
         <el-radio-group v-model="form.gender" style="width: 178px">
           <el-radio :label="$t('commons.man')">{{ $t('commons.man') }}</el-radio>
           <el-radio :label="$t('commons.woman')">{{ $t('commons.woman') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item :label="$t('commons.status')">
+      <el-form-item :label="$t('commons.status')" prop="enabled">
         <el-radio-group v-model="form.enabled" :disabled="formType !== 'add' && form.isAdmin" style="width: 140px">
           <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
           <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item :label="$t('commons.organization')" prop="dept">
+      <el-form-item :label="$t('commons.organization')" prop="deptId">
         <treeselect
           ref="deptTreeSelect"
           v-model="form.deptId"
@@ -148,7 +148,10 @@ export default {
             trigger: 'blur'
           }
         ],
-        roleIds: [{ required: true, message: this.$t('user.input_roles'), trigger: 'change' }]
+        roleIds: [{ required: true, message: this.$t('user.input_roles'), trigger: 'change' }],
+        deptId: [],
+        gender: [],
+        enable: []
 
       },
       defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null, roleIds: [2] },
@@ -285,6 +288,7 @@ export default {
     save() {
       this.$refs.createUserForm.validate(valid => {
         if (valid) {
+          !this.form.deptId && (this.form.deptId = 0)
           const method = this.formType === 'add' ? addUser : editUser
           method(this.form).then(res => {
             this.$success(this.$t('commons.save_success'))
