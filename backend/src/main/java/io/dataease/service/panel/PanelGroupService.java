@@ -17,6 +17,7 @@ import io.dataease.dto.panel.PanelDesignDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.service.chart.ChartViewService;
+import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,6 +58,8 @@ public class PanelGroupService {
     private ShareService shareService;
     @Resource
     private PanelLinkService panelLinkService;
+    @Resource
+    private SysAuthService sysAuthService;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -132,6 +135,7 @@ public class PanelGroupService {
 
     public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
+        sysAuthService.checkTreeNoManageCount("panel",id);
         // 同时会删除对应默认仪表盘
         extPanelGroupMapper.deleteCircle(id);
         storeService.removeByPanelId(id);

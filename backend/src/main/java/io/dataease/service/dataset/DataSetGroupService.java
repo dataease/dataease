@@ -13,11 +13,13 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.i18n.Translator;
+import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -36,6 +38,8 @@ public class DataSetGroupService {
     private DataSetTableService dataSetTableService;
     @Resource
     private ExtDataSetGroupMapper extDataSetGroupMapper;
+    @Resource
+    private SysAuthService sysAuthService;
 
     public DataSetGroupDTO save(DatasetGroup datasetGroup) {
         checkName(datasetGroup);
@@ -54,6 +58,10 @@ public class DataSetGroupService {
     }
 
     public void delete(String id) throws Exception {
+
+        Assert.notNull(id, "id cannot be null");
+        sysAuthService.checkTreeNoManageCount("dataset",id);
+
         DatasetGroup dg = datasetGroupMapper.selectByPrimaryKey(id);
         DataSetGroupRequest datasetGroup = new DataSetGroupRequest();
         BeanUtils.copyBean(datasetGroup, dg);

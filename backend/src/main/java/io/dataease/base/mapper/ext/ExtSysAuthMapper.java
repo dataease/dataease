@@ -16,5 +16,8 @@ public interface ExtSysAuthMapper {
                       @Param("authTarget") String authTarget,
                       @Param("authTargetType") String authTargetType);
 
+    Boolean checkTreeNoManageCount(@Param("userId") Long userId , @Param("modelType") String modelType, @Param("nodeId") String nodeId);
+
+
 
 }

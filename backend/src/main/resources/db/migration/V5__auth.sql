@@ -65,6 +65,31 @@ DROP VIEW IF EXISTS `v_auth_privilege`;
 CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `v_auth_privilege` AS select `sys_auth`.`auth_source` AS `auth_source`,`sys_auth`.`auth_source_type` AS `auth_source_type`,group_concat(`sys_auth_detail`.`privilege_extend` separator ',') AS `privileges` from (`sys_auth` left join `sys_auth_detail` on((`sys_auth`.`id` = `sys_auth_detail`.`auth_id`))) where ((`sys_auth_detail`.`privilege_value` = 1) and (((`sys_auth`.`auth_target_type` = 'dept') and (`sys_auth`.`auth_target` = (select `sys_user`.`dept_id` from `sys_user` where (`sys_user`.`user_id` = '4')))) or ((`sys_auth`.`auth_target_type` = 'user') and (`sys_auth`.`auth_target` = '4')) or ((`sys_auth`.`auth_target_type` = 'role') and (`sys_auth`.`auth_target` = (select `sys_users_roles`.`role_id` from `sys_users_roles` where (`sys_users_roles`.`user_id` = '4')))))) group by `sys_auth`.`auth_source`,`sys_auth`.`auth_source_type`;
 
 -- ----------------------------
+-- Function structure for CHECK_TREE_NO_MANAGE_PRIVILEGE
+-- ----------------------------
+DROP FUNCTION IF EXISTS `CHECK_TREE_NO_MANAGE_PRIVILEGE`;
+delimiter ;;
+CREATE FUNCTION `CHECK_TREE_NO_MANAGE_PRIVILEGE`(userId varchar(255),modelType varchar(255),nodeId varchar(255))
+ RETURNS int(11)
+  READS SQL DATA
+BEGIN
+
+DECLARE privilegeType INTEGER;
+DECLARE allTreeIds longtext;
+DECLARE allPrivilegeTreeIds longtext;
+DECLARE result INTEGER;
+
+select privilege_type into privilegeType from sys_auth_detail where auth_id =modelType and privilege_extend ='manage';
+select GET_V_AUTH_MODEL_WITH_CHILDREN( nodeId ,modelType) into allTreeIds;
+select GET_V_AUTH_MODEL_WITH_PRIVILEGE(userId,modelType,privilegeType) into allPrivilegeTreeIds;
+select count(id) into result from v_auth_model where v_auth_model.model_type=modelType and FIND_IN_SET(v_auth_model.id,allTreeIds) and (!FIND_IN_SET(v_auth_model.id,allPrivilegeTreeIds) or ISNULL(allPrivilegeTreeIds));
+
+RETURN result;
+END
+;;
+delimiter ;
+
+-- ----------------------------
 -- Function structure for copy_auth
 -- ----------------------------
 DROP FUNCTION IF EXISTS `copy_auth`;
@@ -372,37 +397,10 @@ BEGIN
 
 DECLARE oTempLeafIds longtext;
 DECLARE oTempAllIds longtext;
-select GROUP_CONCAT(auth_source) into oTempLeafIds from (
-SELECT
-			sys_auth.auth_source_type,
-			sys_auth.auth_source
-		FROM
-			sys_auth
-			LEFT JOIN sys_auth_detail ON sys_auth.id = sys_auth_detail.auth_id
-		WHERE
-			sys_auth_detail.privilege_type = 1
-			and sys_auth.auth_source_type = modelType
-			AND (
-				(
-					sys_auth.auth_target_type = 'dept'
-					AND sys_auth.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = userId )
-				)
-				OR (
-					sys_auth.auth_target_type = 'user'
-					AND sys_auth.auth_target = userId
-				)
-				OR (
-					sys_auth.auth_target_type = 'role'
-					AND sys_auth.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = userId )
-				)
-				OR (1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))
-			)
-		GROUP BY
-			sys_auth.auth_source_type,
-			sys_auth.auth_source
-			having  (sum( sys_auth_detail.privilege_value )> 0 or 1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))) temp;
 
-			select GROUP_CONCAT(id) into oTempAllIds from (select GET_V_AUTH_MODEL_WITH_PARENT ( oTempLeafIds ,modelType) cids) t, v_auth_model where v_auth_model.model_type=modelType and FIND_IN_SET(v_auth_model.id,cids);
+select GET_V_AUTH_MODEL_WITH_PRIVILEGE(userId,modelType,1) into oTempLeafIds;
+
+select GROUP_CONCAT(id) into oTempAllIds from (select GET_V_AUTH_MODEL_WITH_PARENT ( oTempLeafIds ,modelType) cids) t, v_auth_model where v_auth_model.model_type=modelType and FIND_IN_SET(v_auth_model.id,cids) order by id asc;
 
 RETURN oTempAllIds;
 END
@@ -433,7 +431,7 @@ DO
 
 SET oTemp = CONCAT(oTemp,',',oTempChild);
 
-SELECT GROUP_CONCAT(id) INTO oTempChild FROM V_AUTH_MODEL WHERE FIND_IN_SET(pid,oTempChild) > 0 and V_AUTH_MODEL.model_type=modelType;
+SELECT GROUP_CONCAT(id) INTO oTempChild FROM V_AUTH_MODEL WHERE FIND_IN_SET(pid,oTempChild) > 0 and V_AUTH_MODEL.model_type=modelType order by id asc;
 
 END WHILE;
 
@@ -467,7 +465,7 @@ DO
 
 SET oTemp = CONCAT(oTemp,',',oTempParent);
 
-SELECT GROUP_CONCAT(pid) INTO oTempParent FROM V_AUTH_MODEL WHERE FIND_IN_SET(id,oTempParent) > 0 and V_AUTH_MODEL.model_type=modelType;
+SELECT GROUP_CONCAT(distinct pid) INTO oTempParent FROM V_AUTH_MODEL WHERE FIND_IN_SET(id,oTempParent) > 0 and V_AUTH_MODEL.model_type=modelType order by pid asc;
 
 END WHILE;
 
@@ -476,6 +474,52 @@ RETURN oTemp;
 END
 ;;
 delimiter ;
+
+-- ----------------------------
+-- Function structure for GET_V_AUTH_MODEL_WITH_PRIVILEGE
+-- ----------------------------
+DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_WITH_PRIVILEGE`;
+delimiter ;;
+CREATE FUNCTION `GET_V_AUTH_MODEL_WITH_PRIVILEGE`(userId longtext,modelType varchar(255),privilegeType varchar(255))
+ RETURNS longtext CHARSET utf8
+  READS SQL DATA
+BEGIN
+
+DECLARE oTempLeafIds longtext;
+select GROUP_CONCAT(auth_source) into oTempLeafIds from (
+SELECT
+			sys_auth.auth_source_type,
+			sys_auth.auth_source
+		FROM
+			sys_auth
+			LEFT JOIN sys_auth_detail ON sys_auth.id = sys_auth_detail.auth_id
+		WHERE
+			sys_auth_detail.privilege_type = privilegeType
+			and sys_auth.auth_source_type = modelType
+			AND (
+				(
+					sys_auth.auth_target_type = 'dept'
+					AND sys_auth.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = userId )
+				)
+				OR (
+					sys_auth.auth_target_type = 'user'
+					AND sys_auth.auth_target = userId
+				)
+				OR (
+					sys_auth.auth_target_type = 'role'
+					AND sys_auth.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = userId )
+				)
+				OR (1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))
+			)
+		GROUP BY
+			sys_auth.auth_source_type,
+			sys_auth.auth_source
+			having  (sum( sys_auth_detail.privilege_value )> 0 or 1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))) temp;
+RETURN oTempLeafIds;
+END
+;;
+delimiter ;
+
 
 
 

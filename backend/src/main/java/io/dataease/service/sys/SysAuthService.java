@@ -41,7 +41,9 @@ public class SysAuthService {
     @Resource
     private ExtVAuthModelMapper extVAuthModelMapper;
 
+
     private static List<String> PRI_MODEL_TYPE = Arrays.asList("link", "dataset", "chart", "panel", "menu");
+
 
 
     /**
@@ -137,5 +139,10 @@ public class SysAuthService {
         return authId;
     }
 
+    public void checkTreeNoManageCount(String modelType,String nodeId){
+        if(extSysAuthMapper.checkTreeNoManageCount(AuthUtils.getUser().getUserId(),modelType,nodeId)){
+            throw new RuntimeException(Translator.get("i18n_no_all_delete_privilege_folder"));
+        }
+    }
 
 }

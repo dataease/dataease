@@ -5,7 +5,7 @@
         <span class="title-text">
           {{ $t('commons.datasource') }}
         </span>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="addFolder" />
+        <el-button v-permission="['datasource:add']" icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="addFolder" />
 
       </el-row>
       <el-divider />
@@ -49,6 +49,7 @@
                 <span v-if="data.type ==='folder'" @click.stop>
                   <span class="el-dropdown-link">
                     <el-button
+                      v-permission="['datasource:add']"
                       icon="el-icon-plus"
                       type="text"
                       size="small"
@@ -58,7 +59,7 @@
 
                 </span>
                 <span v-if="data.type !=='folder'" style="margin-left: 12px;" @click.stop>
-                  <span class="el-dropdown-link">
+                  <span v-if="hasDataPermission('manage',data.privileges)" class="el-dropdown-link">
                     <el-button
                       icon="el-icon-delete"
                       type="text"
@@ -95,6 +96,7 @@
 </template>
 <script>
 import { listDatasource, delDs } from '@/api/system/datasource'
+
 export default {
   name: 'DsTree',
   data() {
@@ -112,6 +114,7 @@ export default {
   },
   mounted() {
     this.queryTreeDatas()
+    console.log('permis:' + JSON.stringify(this.$store.getters.permissions))
   },
   methods: {
     filterNode(value, data) {
