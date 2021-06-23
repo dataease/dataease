@@ -561,8 +561,8 @@ export default {
             // this.tableTree()
             this.refreshNodeBy(table.sceneId)
             // this.$router.push('/dataset/home')
-            this.$emit('switchComponent', { name: '' })
-            this.$store.dispatch('dataset/setTable', null)
+            // this.$emit('switchComponent', { name: 'ViewTable', param: table.id })
+            this.$store.dispatch('dataset/setTable', new Date().getTime())
           })
         } else {
           // this.$message({
@@ -609,8 +609,8 @@ export default {
           // this.tableTree()
           this.refreshNodeBy(data.sceneId)
           // this.$router.push('/dataset/home')
-          this.$emit('switchComponent', { name: '' })
-          this.$store.dispatch('dataset/setTable', null)
+          // this.$emit('switchComponent', { name: '' })
+          this.$store.dispatch('dataset/setTable', new Date().getTime())
         })
       }).catch(() => {
       })

@@ -6,6 +6,7 @@ import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -366,6 +367,9 @@ public class DorisQueryProvider extends QueryProvider {
         for (ChartCustomFilterDTO request : requestList) {
             String value = request.getValue();
             DatasetTableField field = request.getField();
+            if (ObjectUtils.isEmpty(field)) {
+                continue;
+            }
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 filter.append(" AND FROM_UNIXTIME(cast(")
                         .append(field.getDataeaseName())
