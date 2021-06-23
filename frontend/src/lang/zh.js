@@ -998,7 +998,8 @@ export default {
     content: '内容',
     default_panel_name: '默认仪表板名称',
     source_panel_name: '原仪表板名称',
-    content_style: '内容样式'
+    content_style: '内容样式',
+    canvas_self_adaption: '自适应画布区域'
   },
   plugin: {
     local_install: '本地安装',

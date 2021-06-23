@@ -999,6 +999,7 @@ export default {
     default_panel_name: 'Default Dashboard Name',
     source_panel_name: 'Source Dashboard Name',
     content_style: 'Content Style',
+    canvas_self_adaption: 'Canvas Self Adaption'
   },
   plugin: {
     local_install: 'Local installation',
