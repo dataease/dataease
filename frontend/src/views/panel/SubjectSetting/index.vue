@@ -60,8 +60,7 @@ export default {
       activeNames: ['panel'],
       chart: null,
       tableChart: null,
-      collapseShow: true,
-      tableChartShow: true
+      collapseShow: true
     }
   },
   computed: mapState([
@@ -74,7 +73,10 @@ export default {
   mounted() {
     bus.$on('onSubjectChange', () => {
       this.collapseShow = false
-      this.$nextTick(() => (this.collapseShow = true))
+      this.$nextTick(() => {
+        this.init()
+        this.collapseShow = true
+      })
     })
   },
   created() {
@@ -100,8 +102,6 @@ export default {
       // 因为 table 的color 设置和view的共用 所以单独设置一个对象
       this.tableChart = deepCopy(this.chart)
       this.tableChart.customAttr.color = this.tableChart.customAttr.tableColor
-      this.tableChartShow = false
-      this.$nextTick(() => (this.tableChartShow = true))
     },
     handleChange(val) {
       // console.log(val)
