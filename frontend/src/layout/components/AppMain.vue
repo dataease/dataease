@@ -23,6 +23,7 @@ export default {
     @import "~@/styles/variables.scss";
 
     .app-main {
+        height: 100%;
         /* topbar 56  */
         // min-height: calc(100vh - 56px);
         // width: 100%;
