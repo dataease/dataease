@@ -5,10 +5,10 @@
     </div>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item :disabled="language==='zh_CN'" command="zh_CN">
-        简体
+        简体中文
       </el-dropdown-item>
       <el-dropdown-item :disabled="language==='zh_TW'" command="zh_TW">
-        繁体
+        繁体中文
       </el-dropdown-item>
       <el-dropdown-item :disabled="language==='en_US'" command="en_US">
         English
@@ -35,7 +35,7 @@ export default {
       this.$i18n.locale = lang
       this.$store.dispatch('user/setLanguage', lang)
       this.$message({
-        message: 'Switch Language Success',
+        message: this.$t('commons.switch_lang'),
         type: 'success'
       })
     }

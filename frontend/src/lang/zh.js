@@ -87,6 +87,7 @@ export default {
     password_error: '密码不小于 8 位'
   },
   commons: {
+    switch_lang: '切换语言成功',
     close: '关闭',
     icon: '图标',
     all: '全部',
