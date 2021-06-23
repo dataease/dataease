@@ -33,7 +33,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Resource
     private SysUserMapper sysUserMapper;
     @Resource
-    private ExtPluginSysMenuMapper extPluginSysMenuMapper;
+    private DynamicMenuServiceImpl dynamicMenuService;
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
@@ -65,7 +65,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public List<String> permissions(Long userId){
         // 用户登录获取菜单权限时同时更新插件菜单表
-        this.syncPluginMenu();
+        dynamicMenuService.syncPluginMenu();
         List<String> permissions;
         SysUser sysUser = sysUserMapper.selectByPrimaryKey(userId);
         if(sysUser.getIsAdmin()!=null&&sysUser.getIsAdmin()){
@@ -102,12 +102,4 @@ public class AuthUserServiceImpl implements AuthUserService {
         LogUtil.info("正在清除用户缓存【{}】",userId);
     }
 
-    @Transactional
-    public void syncPluginMenu() {
-        List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
-        extPluginSysMenuMapper.deletePluginMenu();
-        if(CollectionUtils.isNotEmpty(pluginSysMenuList)){
-            extPluginSysMenuMapper.savePluginMenu(pluginSysMenuList);
-        }
-    }
 }
