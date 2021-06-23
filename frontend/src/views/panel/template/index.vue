@@ -84,7 +84,8 @@ export default {
       currentTemplateType: 'system',
       templateEditFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'change' }
+          { required: true, message: this.$t('commons.input_content'), trigger: 'change' },
+          { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       },
       templateEditForm: {},
