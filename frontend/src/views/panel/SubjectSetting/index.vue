@@ -14,6 +14,12 @@
             <component-gap class="attr-selector" />
           </el-row>
         </el-collapse-item>
+        <el-collapse-item :title="$t('chart.module_style')" name="component">
+          <el-row style="background-color: #f7f8fa; margin: 5px">
+            <!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
+            <background-color-selector v-if="chart" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+          </el-row>
+        </el-collapse-item>
         <el-collapse-item :title="$t('panel.table')" name="table">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <color-selector index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
@@ -22,12 +28,6 @@
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <color-selector :source-type="'panelEchart'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-          </el-row>
-        </el-collapse-item>
-        <el-collapse-item :title="$t('chart.module_style')" name="component">
-          <el-row style="background-color: #f7f8fa; margin: 5px">
-            <!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
-            <background-color-selector v-if="chart" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
       </el-collapse>
