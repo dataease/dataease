@@ -899,7 +899,7 @@ export default {
       authModel(queryCondition).then(res => {
         // this.highlights(res.data)
         this.tData = this.buildTree(res.data)
-        console.log(this.tData)
+        // console.log(this.tData)
       })
     },
 
