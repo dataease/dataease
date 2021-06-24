@@ -2,13 +2,9 @@ package io.dataease.controller.panel.server;
 
 import io.dataease.base.domain.ChartView;
 import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.panel.api.ViewApi;
-import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.panel.PanelViewDto;
-import io.dataease.dto.panel.po.PanelViewPo;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.panel.PanelViewService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

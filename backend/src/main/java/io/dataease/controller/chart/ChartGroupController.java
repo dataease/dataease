@@ -1,7 +1,6 @@
 package io.dataease.controller.chart;
 
 import io.dataease.base.domain.ChartGroup;
-import io.dataease.base.domain.DatasetGroup;
 import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
 import io.dataease.service.chart.ChartGroupService;

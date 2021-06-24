@@ -1,14 +1,9 @@
 package io.dataease.controller.sys;
 
-import io.dataease.base.domain.SysAuth;
 import io.dataease.base.domain.SysAuthDetail;
-import io.dataease.base.domain.SysDept;
-import io.dataease.controller.ResultHolder;
 import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.BaseTreeRequest;
-import io.dataease.controller.request.SysAuthDetailRequest;
 import io.dataease.controller.request.SysAuthRequest;
-import io.dataease.dto.BaseAuthDetail;
 import io.dataease.dto.SysAuthDetailDTO;
 import io.dataease.dto.VAuthModelDTO;
 import io.dataease.service.sys.SysAuthService;

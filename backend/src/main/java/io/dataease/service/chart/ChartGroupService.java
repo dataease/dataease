@@ -8,7 +8,6 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.chart.ChartGroupRequest;
-import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.service.sys.SysAuthService;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @Service
