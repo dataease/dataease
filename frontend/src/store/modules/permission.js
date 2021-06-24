@@ -69,9 +69,9 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
 
 // 后台设计时未考虑activeMenu字段 这里先前端处理一下
 export const fillMeta = (router) => {
-  router.name.includes('system-user') && (router.meta.activeMenu = '/system/user')
-  router.name.includes('system-role') && (router.meta.activeMenu = '/system/role')
-  router.name.includes('system-dept') && (router.meta.activeMenu = '/system/dept')
+  router.name.includes('system-user-form') && (router.meta.activeMenu = '/system/user')
+  router.name.includes('system-role-form') && (router.meta.activeMenu = '/system/role')
+  router.name.includes('system-dept-form') && (router.meta.activeMenu = '/system/dept')
   // return router
 }
 
