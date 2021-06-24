@@ -53,6 +53,7 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
         router.component = loadView(component)
       }
     }
+    router.name && fillMeta(router)
     if (router.children && router.children.length) {
       router.children = filterAsyncRouter(router.children)
     }
@@ -64,6 +65,14 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
     router.hasOwnProperty('redirect') && !router['redirect'] && delete router.redirect
     return router
   })
+}
+
+// 后台设计时未考虑activeMenu字段 这里先前端处理一下
+export const fillMeta = (router) => {
+  router.name.includes('system-user-form') && (router.meta.activeMenu = '/system/user')
+  router.name.includes('system-role-form') && (router.meta.activeMenu = '/system/role')
+  router.name.includes('system-dept-form') && (router.meta.activeMenu = '/system/dept')
+  // return router
 }
 
 // 包装一层父级目录

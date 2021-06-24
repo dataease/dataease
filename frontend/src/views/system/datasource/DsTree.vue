@@ -47,7 +47,7 @@
               </span>
               <span class="child">
                 <span v-if="data.type ==='folder'" @click.stop>
-                  <!-- <span class="el-dropdown-link">
+                  <span class="el-dropdown-link">
                     <el-button
                       v-permission="['datasource:add']"
                       icon="el-icon-plus"
@@ -55,7 +55,7 @@
                       size="small"
                       @click="addFolderWithType(data)"
                     />
-                  </span> -->
+                  </span>
 
                 </span>
                 <span v-if="data.type !=='folder'" style="margin-left: 12px;" @click.stop>
@@ -141,12 +141,20 @@ export default {
         if (!(element.type in types)) {
           types[element.type] = []
           // newArr.push(...element, ...{ children: types[element.type] })
-          newArr.push({ id: element.type, name: element.type, type: 'folder', children: types[element.type] })
+          newArr.push({ id: element.type, name: this.transTypeToName(element.type), type: 'folder', children: types[element.type] })
         }
         types[element.type].push(element)
         // newArr.children.push({ id: element.id, label: element.name })
       }
       return newArr
+    },
+
+    transTypeToName(type) {
+      if (type === 'mysql') {
+        return 'MySQL'
+      } else if (type === 'sqlServer') {
+        return 'SQL Server'
+      }
     },
 
     addFolder() {

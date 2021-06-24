@@ -46,7 +46,7 @@
       </el-table-column>
       <el-table-column prop="status" sortable="custom" :label="$t('commons.status')">
         <template v-slot:default="scope">
-          <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" :disabled="!checkPermission(['user:edit'])" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
+          <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" :disabled="!checkPermission(['user:edit']) || scope.row.isAdmin" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
         </template>
       </el-table-column>
       <el-table-column prop="createTime" sortable="custom" :label="$t('commons.create_time')">

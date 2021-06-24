@@ -1,9 +1,9 @@
 <template>
   <div class="top-nav" :style="{'background-color': '#f1f3f8'}">
-    <div class="log">
+    <div v-loading="!axiosFinished" class="log">
       <!--      <img      v-if="!logoUrl" src="@/assets/DataEase-color.png" width="140" alt="" style="padding-top: 10px;">-->
-      <svg-icon v-if="!logoUrl" icon-class="DataEase" custom-class="top-nav-logo-icon" />
-      <img v-else :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
+      <svg-icon v-if="!logoUrl && axiosFinished" icon-class="DataEase" custom-class="top-nav-logo-icon" />
+      <img v-else :src="logoUrl && axiosFinished" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
       :active-text-color="variables.topMenuActiveText"
@@ -92,7 +92,8 @@ export default {
   data() {
     return {
       uiInfo: null,
-      logoUrl: null
+      logoUrl: null,
+      axiosFinished: false
     }
   },
 
@@ -137,6 +138,7 @@ export default {
       if (this.uiInfo['ui.logo'] && this.uiInfo['ui.logo'].paramValue) {
         this.logoUrl = '/system/ui/image/' + this.uiInfo['ui.logo'].paramValue
       }
+      this.axiosFinished = true
     })
   },
   methods: {

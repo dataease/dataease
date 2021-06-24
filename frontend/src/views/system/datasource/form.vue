@@ -15,7 +15,7 @@
           <el-input v-model="form.desc" autocomplete="off" type="textarea" />
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type">
-          <el-select v-model="form.type" :placeholder="$t('datasource.please_choose_type')" class="select-width" :disabled="formType=='modify'" @change="changeType()">
+          <el-select v-model="form.type" :placeholder="$t('datasource.please_choose_type')" class="select-width" :disabled="formType=='modify' || (formType==='add' && params && !!params.type)" @change="changeType()">
             <el-option
               v-for="item in allTypes"
               :key="item.name"
@@ -108,6 +108,9 @@ export default {
       this.edit(row)
     } else {
       this.create()
+      if (this.params && this.params.type) {
+        this.setType()
+      }
     }
   },
   mounted() {
@@ -119,6 +122,12 @@ export default {
     // }
   },
   methods: {
+    setType() {
+      this.form.type = this.params.type
+      this.form.configuration = {}
+      this.changeType()
+      console.log(this.form)
+    },
     changeEdit() {
       this.canEdit = true
       this.formType = 'modify'
