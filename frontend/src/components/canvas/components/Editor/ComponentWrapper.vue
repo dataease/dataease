@@ -9,6 +9,7 @@
       :is="config.component"
       v-if="config.type==='custom'"
       :id="'component' + config.id"
+      class="component-custom"
       :style="getComponentStyleDefault(config.style)"
       :out-style="config.style"
       :element="config"
@@ -98,5 +99,10 @@ export default {
 
 .gap_class{
   padding:3px;
+}
+.component-custom {
+  outline: none;
+  width: 100%;
+  height: 100%;
 }
 </style>

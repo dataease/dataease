@@ -628,7 +628,7 @@ export default {
     min-width: 230px !important;
     max-width: 260px !important;
     height: 100%;
-    min-height: 390px;
+    min-height: 100px;
     padding: 5px;
     border: none;
     padding-bottom: 20px !important;
