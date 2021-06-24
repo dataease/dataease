@@ -4,7 +4,7 @@
       <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document" />{{ $t('panel.panel_list') }}</span>
-          <panel-list />
+          <panel-list v-if="activeName==='PanelList'" />
         </el-tab-pane>
         <el-tab-pane name="panels_star" :lazy="true">
           <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.store') }}</span>
@@ -52,6 +52,9 @@ export default {
       if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
+    },
+    activeName: function(newVal, oldVal) {
+      this.clear()
     }
   },
   mounted() {
