@@ -8,6 +8,7 @@
     :start-placeholder="options.attrs.startPlaceholder"
     :end-placeholder="options.attrs.endPlaceholder"
     :placeholder="options.attrs.placeholder"
+    style="min-height: 36px;"
     @change="dateChange"
   />
 </template>

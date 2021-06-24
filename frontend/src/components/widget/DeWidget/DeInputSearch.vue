@@ -2,7 +2,7 @@
 
   <el-input
     v-if="options!== null && options.attrs!==null"
-    v-model="options.value"
+    v-model="values"
     resize="vertical"
     :placeholder="options.attrs.placeholder"
     @keyup.enter.native="search"
@@ -46,7 +46,7 @@ export default {
     setCondition() {
       const param = {
         component: this.element,
-        value: !this.options.value ? [] : Array.isArray(this.options.value) ? this.options.value : [this.options.value],
+        value: !this.values ? [] : Array.isArray(this.values) ? this.values : [this.values],
         operator: this.operator
       }
       this.inDraw && this.$store.commit('addViewFilter', param)
