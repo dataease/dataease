@@ -178,7 +178,7 @@ import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
 import { addGroup, delGroup, groupTree, defaultTree, findOne } from '@/api/panel/panel'
 import {
-  DEFAULT_COMMON_CANVAS_STYLE, DEFAULT_COMMON_CANVAS_STYLE_STRING
+   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 
 export default {
@@ -286,7 +286,7 @@ export default {
   },
   mounted() {
     this.$store.commit('setComponentData', [])
-    this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
+    this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
     this.defaultTree()
     this.tree(this.groupForm)
   },
@@ -546,7 +546,7 @@ export default {
       // 清空当前缓存,快照
       this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
-      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
+      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
       // 清空临时画布数据
       this.$store.dispatch('panel/setComponentDataTemp', null)
       this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
