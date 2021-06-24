@@ -1,5 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
+    <span v-show="false">{{ tableRefresh }}</span>
     <el-row style="height: 26px;">
       <el-popover
         placement="right-start"
@@ -92,6 +93,12 @@ export default {
       tabStatus: false
     }
   },
+  computed: {
+    tableRefresh() {
+      this.initTable(this.param)
+      return this.$store.state.dataset.table
+    }
+  },
   watch: {
     'param': function() {
       this.initTable(this.param)
@@ -107,9 +114,11 @@ export default {
       if (id !== null) {
         this.fields = []
         this.data = []
-        getTable(id).then(response => {
+        getTable(id, true).then(response => {
           this.table = response.data
           this.initPreviewData(this.page)
+        }).catch(res => {
+          this.$emit('switchComponent', { name: '' })
         })
       }
     },

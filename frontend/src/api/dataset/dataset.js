@@ -68,11 +68,12 @@ export function listDatasource() {
   })
 }
 
-export function getTable(id) {
+export function getTable(id, hideMsg = false) {
   return request({
     url: '/dataset/table/get/' + id,
     loading: true,
-    method: 'post'
+    method: 'post',
+    hideMsg: hideMsg
   })
 }
 

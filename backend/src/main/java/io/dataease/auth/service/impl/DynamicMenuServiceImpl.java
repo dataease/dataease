@@ -6,11 +6,15 @@ import io.dataease.auth.service.DynamicMenuService;
 import io.dataease.base.domain.SysMenu;
 import io.dataease.base.domain.SysMenuExample;
 import io.dataease.base.mapper.SysMenuMapper;
+import io.dataease.base.mapper.ext.ExtPluginSysMenuMapper;
 import io.dataease.plugins.common.dto.PluginSysMenu;
 import io.dataease.plugins.util.PluginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +25,9 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
 
     @Autowired(required = false)
     private SysMenuMapper sysMenuMapper;
+
+    @Resource
+    private ExtPluginSysMenuMapper extPluginSysMenuMapper;
 
     @Override
     public List<DynamicMenuDto> load(String userId) {
@@ -108,5 +115,14 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
 
     private Boolean isParent(Long pid){
         return null == pid || pid==0L;
+    }
+
+    @Transactional
+    public void syncPluginMenu() {
+        List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
+        extPluginSysMenuMapper.deletePluginMenu();
+        if(CollectionUtils.isNotEmpty(pluginSysMenuList)){
+            extPluginSysMenuMapper.savePluginMenu(pluginSysMenuList);
+        }
     }
 }
