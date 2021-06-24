@@ -178,7 +178,7 @@ import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
 import { addGroup, delGroup, groupTree, defaultTree, findOne } from '@/api/panel/panel'
 import {
-   DEFAULT_COMMON_CANVAS_STYLE_STRING
+  DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 
 export default {
