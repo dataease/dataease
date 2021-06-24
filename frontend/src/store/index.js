@@ -21,7 +21,7 @@ import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
 import { valueValid, formatCondition } from '@/utils/conditionUtil'
 import {
-  DEFAULT_COMMON_CANVAS_STYLE
+  DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 
 Vue.use(Vuex)
@@ -38,7 +38,7 @@ const data = {
     ...lock.state,
 
     editMode: 'edit', // 编辑器模式 edit preview
-    canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE, // 页面全局数据  //扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
+    canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING, // 页面全局数据  //扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
     componentData: [], // 画布组件数据
     curComponent: null,
     curCanvasScale: null,
@@ -46,7 +46,7 @@ const data = {
     // 点击画布时是否点中组件，主要用于取消选中组件用。
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
-    canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE
+    canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING
   },
   mutations: {
     ...animation.mutations,

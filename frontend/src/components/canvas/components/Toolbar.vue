@@ -74,7 +74,7 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import { panelSave } from '@/api/panel/panel'
 import bus from '@/utils/bus'
 import {
-  DEFAULT_COMMON_CANVAS_STYLE
+  DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 
 export default {
@@ -248,7 +248,7 @@ export default {
     },
     clearCanvas() {
       this.$store.commit('setComponentData', [])
-      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE)
+      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
       this.$store.commit('recordSnapshot')
     },
 

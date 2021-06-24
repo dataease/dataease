@@ -20,11 +20,6 @@ export const CANVAS_STYLE = {
   panel: DEFAULT_PANEL_STYLE
 }
 
-export const DEFAULT_COMMON_CANVAS_STYLE = {
-  ...CANVAS_STYLE,
-  chart: BASE_CHART
-}
-
 export const DEFAULT_COMMON_CANVAS_STYLE_STRING = {
   ...CANVAS_STYLE,
   chart: BASE_CHART_STRING
