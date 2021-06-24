@@ -871,6 +871,13 @@ export default {
     input_limit_2_25: '2-25 chars',
     input_limit_0_50: '0-50 chars'
   },
+  pblink: {
+    key_pwd: 'Please enter the password to open the link',
+    input_placeholder: 'Please enter the 4-digit password',
+    pwd_error: 'Wrong password',
+    pwd_format_error: 'Please enter the 4-digit password',
+    sure_bt: 'Confirm'
+  },
   panel: {
     no_auth_role: 'Unshared roles',
     auth_role: 'Shared roles',

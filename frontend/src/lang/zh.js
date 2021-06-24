@@ -871,6 +871,13 @@ export default {
     input_limit_2_25: '2-25字符',
     input_limit_0_50: '0-50字符'
   },
+  pblink: {
+    key_pwd: '请输入密码打开链接',
+    input_placeholder: '请输入4位数字密码',
+    pwd_error: '密码错误',
+    pwd_format_error: '请输入4位数字密码',
+    sure_bt: '确定'
+  },
   panel: {
     no_auth_role: '未分享角色',
     auth_role: '已分享角色',
