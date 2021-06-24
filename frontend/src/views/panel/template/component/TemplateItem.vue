@@ -11,6 +11,7 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
 import { get, post } from '@/api/panel/panel'
 export default {
   name: 'TemplateItem',

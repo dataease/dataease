@@ -14,7 +14,9 @@ export default {
   components: { DeComplexOperator },
   //   mixins: [mixins],
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     field: String,
+    // eslint-disable-next-line vue/require-default-prop
     label: String,
     defaultOperator: {
       type: String,

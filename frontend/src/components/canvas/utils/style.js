@@ -33,7 +33,7 @@ export function getStyle(style, filter = []) {
 // 获取一个组件旋转 rotate 后的样式
 export function getComponentRotatedStyle(style) {
   style = { ...style }
-  if (style.rotate != 0) {
+  if (style.rotate !== 0) {
     const newWidth = style.width * cos(style.rotate) + style.height * sin(style.rotate)
     const diffX = (style.width - newWidth) / 2 // 旋转后范围变小是正值，变大是负值
     style.left += diffX

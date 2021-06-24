@@ -14,13 +14,16 @@
 export default {
   props: {
     start: {
-      type: Object
+      type: Object,
+      default: null
     },
     width: {
-      type: Number
+      type: Number,
+      default: null
     },
     height: {
-      type: Number
+      type: Number,
+      default: null
     }
   }
 }

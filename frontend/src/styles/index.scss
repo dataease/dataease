@@ -73,34 +73,32 @@ div:focus {
 }
 
 .de-dialog {
-    width: 30% !important;
+  width: 30% !important;
 
-    .el-dialog__header{
-        background-color: #f4f4f5;
-        padding: 10px 20px !important;
-    }
-    .el-dialog__body{
-        padding: 1px 20px !important;
-
-    }
+  .el-dialog__header{
+    background-color: #f4f4f5;
+    padding: 10px 20px !important;
+  }
+  .el-dialog__body{
+    padding: 1px 20px !important;
+  }
 }
 
 .de-filter-dialog {
-    min-width: 500px !important;
-    width: 50% !important;
+  min-width: 500px !important;
+  width: 50% !important;
 
-    .el-dialog__header{
-        // background-color: #f4f4f5;
-        padding: 10px 20px !important;
+  .el-dialog__header{
+    // background-color: #f4f4f5;
+    padding: 10px 20px !important;
 
-        .el-dialog__headerbtn {
-            top: 15px !important;
-        }
+    .el-dialog__headerbtn {
+      top: 15px !important;
     }
-    .el-dialog__body{
-        padding: 1px 15px !important;
-
-    }
+  }
+  .el-dialog__body{
+    padding: 1px 15px !important;
+  }
 }
 
 .de-style-dialog {
@@ -117,7 +115,6 @@ div:focus {
   }
   .el-dialog__body{
     padding: 1px 15px !important;
-
   }
 }
 
@@ -129,7 +126,6 @@ div:focus {
 
   .el-dialog__header{
     display:none!important;
-
   }
   .el-dialog__body{
     padding: 0px!important;
@@ -138,79 +134,74 @@ div:focus {
 }
 
 .de-search-header {
-    .el-tabs__header{
-        display: none !important;;
-    }
+  .el-tabs__header{
+    display: none !important;;
+  }
 }
 
 .de-input{
-    margin-bottom: 14px;
-    margin-top: 10px;
-    .el-input{
-        .el-input__inner {
-            line-height: 30px !important;
-            height: 30px !important;
-            border-right: none;
-
-        }
+  margin-bottom: 14px;
+  margin-top: 10px;
+  .el-input{
+    .el-input__inner {
+      line-height: 30px !important;
+      height: 30px !important;
+      border-right: none;
     }
-    .el-input__inner:focus{
-        border-color: #E6E6E6 !important;
-    }
-    .el-input-group__append {
-        background-color: #ffffff;
-    }
-
+  }
+  .el-input__inner:focus{
+    border-color: #E6E6E6 !important;
+  }
+  .el-input-group__append {
+    background-color: #ffffff;
+  }
 }
 
 .filter-card-class {
-    width: 100%;
-    .el-card__header {
-        padding: 5px 0 !important;
-        border-bottom: none !important;
-    }
+  width: 100%;
+  .el-card__header {
+    padding: 5px 0 !important;
+    border-bottom: none !important;
+  }
 
-    .el-card__body {
-        padding: 10px;
-    }
+  .el-card__body {
+    padding: 10px;
+  }
 }
 
 .real-input {
-
-    .el-input__inner {
-        height: 25px !important;
-        border: none !important;
-    }
+  .el-input__inner {
+    height: 25px !important;
+    border: none !important;
+  }
 }
 
 .de-filter-data-table {
-    .el-table__body-wrapper >table>{
-        tbody {
-            .el-table__row {
-                :hover {
-                    cursor: pointer;
-                }
-                td {
-                    border: none !important;
-                }
-            }
-
+  .el-table__body-wrapper >table>{
+    tbody {
+      .el-table__row {
+        :hover {
+          cursor: pointer;
         }
-
+        td {
+          border: none !important;
+        }
+      }
     }
+  }
 }
 .de-filter-data-table::before {
-    height: 0px !important;
+  height: 0px !important;
 }
 
 .custom-component-class {
-    width: 100%;
-    div.el-input-group__append {
-        width: 10% !important;
-    }
-    div {
-      width: 100% !important;
-    }
+  width: 100%;
+  div.el-input-group__append {
+    width: 10% !important;
+  }
+  div {
+    width: 100% !important;
+  }
 }
 
 %field-icon{

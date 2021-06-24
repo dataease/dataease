@@ -52,6 +52,7 @@ import LazyTree from './components/LazyTree'
 
 export default {
   name: 'Authority',
+  // eslint-disable-next-line vue/no-unused-components
   components: { LazyTree, DeMainContainer, DeAsideContainer, DeContainer },
   props: {
     resourceId: {

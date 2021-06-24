@@ -213,6 +213,7 @@ export function formatCondition(param) {
     return null
   }
   const result = { conditions: [] }
+  // eslint-disable-next-line no-unused-vars
   for (const [key, value] of Object.entries(param)) {
     result.conditions.push(value)
   }

@@ -1,118 +1,116 @@
 .top-nav {
-    // margin-left: $sideBarWidth;
-    width: 100%;
-    // background-color: #304156;
-    // background-color: $--color-primary;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1001;
-    overflow: hidden;
-    border-bottom: 1px solid #DCDFE6;
+  // margin-left: $sideBarWidth;
+  width: 100%;
+  // background-color: #304156;
+  // background-color: $--color-primary;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1001;
+  overflow: hidden;
+  border-bottom: 1px solid #DCDFE6;
 
-    .log {
-      padding: 0 16px;
-      line-height: 56px;
-      height: 56px;
-      font-size: 24px;
-      font-weight: bold;
-      // color: rgb(191, 203, 217);
-      color: rgba(255,255,255,0.87);
-      float: left;
-      img{
-        width: auto;
-        max-height: 45px;
-      }
+  .log {
+    padding: 0 16px;
+    line-height: 56px;
+    height: 56px;
+    font-size: 24px;
+    font-weight: bold;
+    // color: rgb(191, 203, 217);
+    color: rgba(255,255,255,0.87);
+    float: left;
+    img{
+      width: auto;
+      max-height: 45px;
     }
-    .el-menu {
-      float: left;
-      border: none!important;
-      // background-color: #304156;
+  }
+  .el-menu {
+    float: left;
+    border: none!important;
+    // background-color: #304156;
     //   background-color: $--color-primary;
 
-      .nav-item {
-        display: inline-block;
-        .el-menu-item:not(.is-active) {
-          // color: rgb(191, 203, 217);
-          color: $menuText;
-          &:hover {
-            background-color: $menuHover !important;
-            // color: $subMenuActiveText !important;
-          }
-          &:focus {
-            background-color: $subMenuHover !important;
-            color: $subMenuActiveText !important;
-          }
-
+    .nav-item {
+      display: inline-block;
+      .el-menu-item:not(.is-active) {
+        // color: rgb(191, 203, 217);
+        color: $menuText;
+        &:hover {
+          background-color: $menuHover !important;
+          // color: $subMenuActiveText !important;
         }
-        .is-active {
-            background-color: $subMenuHover !important;
-            color: $subMenuActiveText !important;
+        &:focus {
+          background-color: $subMenuHover !important;
+          color: $subMenuActiveText !important;
+        }
+
+      }
+      .is-active {
+        background-color: $subMenuHover !important;
+        color: $subMenuActiveText !important;
+      }
+    }
+  }
+
+  .right-menu {
+    float: right;
+    height: 56px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    &:focus {
+      outline: none;
+    }
+
+    .right-menu-item {
+      display: inline-block;
+      padding: 10px 8px;
+      height: 100%;
+      font-size: 18px;
+      // color: #5a5e66;
+      color: #606266;
+      vertical-align: text-bottom;
+
+      &.hover-effect {
+        cursor: pointer;
+        transition: background .3s;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, .025)
         }
       }
     }
 
-    .right-menu {
-      float: right;
-      height: 56px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-
-      &:focus {
-        outline: none;
-      }
-
-      .right-menu-item {
-        display: inline-block;
-        padding: 10px 8px;
-        height: 100%;
-        font-size: 18px;
-        // color: #5a5e66;
-        color: #606266;
-        vertical-align: text-bottom;
-
-        &.hover-effect {
+    .avatar-container {
+      margin-right: 30px;
+      .avatar-wrapper {
+        margin-top: 5px;
+        position: relative;
+        .user-avatar {
           cursor: pointer;
-          transition: background .3s;
-
-          &:hover {
-            background-color: rgba(0, 0, 0, .025)
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+        }
+        .de-user-avatar {
+          cursor: pointer;
+          height: 40px;
+          border-radius: 10px;
+          span {
+            color: #ffffff;
           }
         }
-      }
 
-      .avatar-container {
-        margin-right: 30px;
-
-        .avatar-wrapper {
-          margin-top: 5px;
-          position: relative;
-
-          .user-avatar {
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-          }
-          .de-user-avatar {
-            cursor: pointer;
-            height: 40px;
-            border-radius: 10px;
-            span {
-                color: #ffffff;
-            }
-          }
-
-          .el-icon-caret-bottom {
-            cursor: pointer;
-            position: absolute;
-            right: -20px;
-            top: 25px;
-            font-size: 12px;
-          }
+        .el-icon-caret-bottom {
+          cursor: pointer;
+          position: absolute;
+          right: -20px;
+          top: 25px;
+          font-size: 12px;
         }
       }
     }
   }
+}

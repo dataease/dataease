@@ -58,7 +58,7 @@ export function stackLineOption(chart_option, chart) {
   baseLineOption(chart_option, chart)
 
   // ext
-  chart_option.tooltip.trigger = 'axis'
+  // chart_option.tooltip.trigger = 'axis'
   chart_option.series.forEach(function(s) {
     s.stack = 'stack'
   })

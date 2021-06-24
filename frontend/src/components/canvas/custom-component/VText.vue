@@ -25,10 +25,12 @@ import { keycodes } from '@/components/canvas/utils/shortcutKey.js'
 
 export default {
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     propValue: {
       type: String,
       require: true
     },
+    // eslint-disable-next-line vue/require-default-prop
     element: {
       type: Object
     },
@@ -68,17 +70,17 @@ export default {
     },
 
     handleKeydown(e) {
-      if (e.keyCode == this.ctrlKey) {
+      if (e.keyCode === this.ctrlKey) {
         this.isCtrlDown = true
       } else if (this.isCtrlDown && this.canEdit && keycodes.includes(e.keyCode)) {
         e.stopPropagation()
-      } else if (e.keyCode == 46) { // deleteKey
+      } else if (e.keyCode === 46) { // deleteKey
         e.stopPropagation()
       }
     },
 
     handleKeyup(e) {
-      if (e.keyCode == this.ctrlKey) {
+      if (e.keyCode === this.ctrlKey) {
         this.isCtrlDown = false
       }
     },

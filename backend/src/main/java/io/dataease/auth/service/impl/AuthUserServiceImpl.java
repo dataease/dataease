@@ -59,8 +59,13 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Cacheable(value = AuthConstants.USER_PERMISSION_CACHE_NAME,  key = "'user' + #userId" )
     @Override
     public List<String> permissions(Long userId){
-        // 用户登录获取菜单权限时同时更新插件菜单表
-        dynamicMenuService.syncPluginMenu();
+        try {
+            // 用户登录获取菜单权限时同时更新插件菜单表
+            dynamicMenuService.syncPluginMenu();
+        }catch (Exception e){
+            LogUtil.error(e);
+            //ignore
+        }
         List<String> permissions;
         SysUser sysUser = sysUserMapper.selectByPrimaryKey(userId);
         if(sysUser.getIsAdmin()!=null&&sysUser.getIsAdmin()){
