@@ -106,7 +106,7 @@ export default {
       const { meta, path } = route
       // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
-        return meta.activeMenu
+        // return meta.activeMenu
       }
       // 如果是首页，首页高亮
       if (path === '/panel') {
