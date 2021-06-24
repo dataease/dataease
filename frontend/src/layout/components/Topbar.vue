@@ -3,7 +3,7 @@
     <div v-loading="!axiosFinished" class="log">
       <!--      <img      v-if="!logoUrl" src="@/assets/DataEase-color.png" width="140" alt="" style="padding-top: 10px;">-->
       <svg-icon v-if="!logoUrl && axiosFinished" icon-class="DataEase" custom-class="top-nav-logo-icon" />
-      <img v-else :src="logoUrl && axiosFinished" width="140" alt="" style="padding-top: 10px;">
+      <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
       :active-text-color="variables.topMenuActiveText"
