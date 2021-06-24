@@ -8,6 +8,7 @@ import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.service.ScheduleService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -71,11 +72,11 @@ public class DataSetTableTaskService {
                 if (datasetTableTask.getType().equalsIgnoreCase("add_scope")) {
                     DatasetTable datasetTable = dataSetTableService.get(datasetTableTask.getTableId());
                     if (datasetTable.getLastUpdateTime() == 0 || datasetTable.getLastUpdateTime() == null) {
-                        throw new Exception(Translator.get("i18n_not_exec_add_sync"));
+                        DataEaseException.throwException(Translator.get("i18n_not_exec_add_sync"));
                     }
                 }
                 if (extractDataService.updateSyncStatusIsNone(dataSetTableService.get(datasetTableTask.getTableId()))) {
-                    throw new Exception(Translator.get("i18n_sync_job_exists"));
+                    DataEaseException.throwException(Translator.get("i18n_sync_job_exists"));
                 } else {
                     //write log
                     DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();

@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.exception.DataEaseException;
 import io.dataease.exception.ExcelException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,10 +32,10 @@ public class EasyExcelExporter {
             EasyExcel.write(response.getOutputStream(), this.clazz).registerWriteHandler(horizontalCellStyleStrategy).sheet(sheetName).doWrite(data);
         } catch (UnsupportedEncodingException e) {
             LogUtil.error(e.getMessage(), e);
-            throw new ExcelException("Utf-8 encoding is not supported");
+            DataEaseException.throwException("Utf-8 encoding is not supported");
         } catch (IOException e) {
             LogUtil.error(e.getMessage(), e);
-            throw new ExcelException("IO exception");
+            DataEaseException.throwException("IO exception");
         }
     }
 

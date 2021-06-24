@@ -5,6 +5,7 @@ package io.dataease.controller;
 import com.google.gson.Gson;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
+import io.dataease.exception.DataEaseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,11 +36,12 @@ public class LicenseController {
                 return ResultHolder.success(null);
             case expired:
                 String expired = f2CLicenseResponse.getLicense().getExpired();
-                throw new Exception("License has expired since " + expired + ", please update license.");
+                DataEaseException.throwException("License has expired since " + expired + ", please update license.");
             case invalid:
-                throw new Exception(f2CLicenseResponse.getMessage());
+                DataEaseException.throwException(f2CLicenseResponse.getMessage());
             default:
-                throw new Exception("Invalid License.");
+                DataEaseException.throwException("Invalid License.");
         }
+        return new ResultHolder();
     }
 }

@@ -7,6 +7,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -95,7 +96,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         AuthUserService authUserService = CommonBeanFactory.getBean(AuthUserService.class);
         SysUserEntity user = authUserService.getUserById(tokenInfo.getUserId());
         if(user == null){
-            throw new Exception(Translator.get("i18n_not_find_user"));
+            DataEaseException.throwException(Translator.get("i18n_not_find_user"));
         }
         String password = user.getPassword();
 

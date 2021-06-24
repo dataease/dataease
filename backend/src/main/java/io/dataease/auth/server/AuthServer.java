@@ -14,6 +14,7 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
 
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,10 +41,10 @@ public class AuthServer implements AuthApi {
         SysUserEntity user = authUserService.getUserByName(username);
 
         if (ObjectUtils.isEmpty(user)) {
-            throw new RuntimeException(Translator.get("i18n_id_or_pwd_error"));
+            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         if (user.getEnabled() == 0) {
-            throw new RuntimeException(Translator.get("i18n_id_or_pwd_error"));
+            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
         //私钥解密
@@ -52,7 +53,7 @@ public class AuthServer implements AuthApi {
         pwd = CodingUtil.md5(pwd);
 
         if (!StringUtils.equals(pwd, realPwd)) {
-            throw new RuntimeException(Translator.get("i18n_id_or_pwd_error"));
+            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();

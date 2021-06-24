@@ -18,6 +18,7 @@ import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.*;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.provider.DDLProvider;
 import io.dataease.provider.QueryProvider;
@@ -412,7 +413,7 @@ public class DataSetTableService {
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
 
         if (StringUtils.isEmpty(sql)) {
-            throw new Exception(Translator.get("i18n_sql_not_empty"));
+            DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
@@ -734,7 +735,7 @@ public class DataSetTableService {
             });
             sort(sqlFileds);
             if (!originNameFileds.equals(sqlFileds)) {
-                throw new Exception(Translator.get("i18n_sql_add_not_matching") + sqlFileds.toString());
+                DataEaseException.throwException(Translator.get("i18n_sql_add_not_matching") + sqlFileds.toString());
             }
         }
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
@@ -747,7 +748,7 @@ public class DataSetTableService {
             });
             sort(sqlFileds);
             if (!originNameFileds.equals(sqlFileds)) {
-                throw new Exception(Translator.get("i18n_sql_delete_not_matching") + sqlFileds.toString());
+                DataEaseException.throwException(Translator.get("i18n_sql_delete_not_matching") + sqlFileds.toString());
             }
         }
     }

@@ -1,6 +1,7 @@
 package io.dataease.job.sechedule;
 
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.exception.DataEaseException;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 
@@ -96,7 +97,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -126,7 +127,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -187,7 +188,7 @@ public class ScheduleManager {
             // addJob(jobName, jobGroupName, triggerName, triggerGroupName, jobClass, cron);
             /** 方式二 ：先删除，然后在创建一个新的Job */
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -239,7 +240,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -271,7 +272,7 @@ public class ScheduleManager {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -295,7 +296,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -305,7 +306,7 @@ public class ScheduleManager {
             sched.start();
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -317,7 +318,7 @@ public class ScheduleManager {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -435,7 +436,7 @@ public class ScheduleManager {
 
     public static CronTrigger getCronTrigger(String cron) {
         if (!CronExpression.isValidExpression(cron)) {
-            throw new RuntimeException("cron :" + cron + " error");
+            DataEaseException.throwException("cron :" + cron + " error");
         }
         return TriggerBuilder.newTrigger().withIdentity("Calculate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
 

@@ -15,6 +15,7 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.panel.PanelDesignDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.sys.SysAuthService;
@@ -128,7 +129,7 @@ public class PanelGroupService {
 
         List<PanelGroup> checkResult = panelGroupMapper.selectByExample(groupExample);
         if (CollectionUtils.isNotEmpty(checkResult)) {
-            throw new RuntimeException(Translator.get("i18n_same_folder_can_not_repeat"));
+            DataEaseException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
         }
     }
 

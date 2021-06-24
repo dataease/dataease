@@ -22,6 +22,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.exception.DataEaseException;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -461,7 +462,7 @@ public class ExtractDataService {
         if (jobStatus.getStatusDescription().equals("Finished")) {
             return;
         } else {
-            throw new Exception(jobStatus.getLoggingString());
+            DataEaseException.throwException((jobStatus.getLoggingString()));
         }
     }
 
