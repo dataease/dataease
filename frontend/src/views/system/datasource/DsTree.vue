@@ -47,7 +47,7 @@
               </span>
               <span class="child">
                 <span v-if="data.type ==='folder'" @click.stop>
-                  <!-- <span class="el-dropdown-link">
+                  <span class="el-dropdown-link">
                     <el-button
                       v-permission="['datasource:add']"
                       icon="el-icon-plus"
@@ -55,7 +55,7 @@
                       size="small"
                       @click="addFolderWithType(data)"
                     />
-                  </span> -->
+                  </span>
 
                 </span>
                 <span v-if="data.type !=='folder'" style="margin-left: 12px;" @click.stop>
