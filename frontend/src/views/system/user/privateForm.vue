@@ -151,6 +151,7 @@ export default {
   },
 
   created() {
+    this.$store.dispatch('app/toggleSideBarHide', true)
     this.queryPerson()
     this.initRoles()
   },
