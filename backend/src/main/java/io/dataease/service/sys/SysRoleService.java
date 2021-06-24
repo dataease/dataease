@@ -7,7 +7,6 @@ import io.dataease.base.mapper.SysRoleMapper;
 import io.dataease.base.mapper.SysUsersRolesMapper;
 import io.dataease.base.mapper.ext.ExtSysRoleMapper;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.request.RoleMenusRequest;
 import io.dataease.controller.sys.response.RoleUserItem;
 import org.springframework.stereotype.Service;

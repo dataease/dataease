@@ -6,7 +6,6 @@ import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.base.domain.PanelLink;
 import io.dataease.base.mapper.PanelLinkMapper;
-import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;

@@ -4,7 +4,6 @@ package io.dataease.controller.panel.api;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
-import io.dataease.controller.request.panel.link.ValidateRequest;
 import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.ValidateDto;
 import io.swagger.annotations.Api;

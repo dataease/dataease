@@ -1,7 +1,6 @@
 package io.dataease.controller.handler;
 
 import io.dataease.controller.ResultHolder;
-import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;

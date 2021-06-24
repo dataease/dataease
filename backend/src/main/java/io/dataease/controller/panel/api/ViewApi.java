@@ -3,7 +3,6 @@ package io.dataease.controller.panel.api;
 
 import io.dataease.base.domain.ChartView;
 import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelViewDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,10 +16,6 @@ import java.util.List;
 @RequestMapping("/api/panelView")
 public interface ViewApi {
 
-
-//    @ApiOperation("视图树")
-//    @PostMapping("/tree")
-//    List<PanelViewDto> tree(BaseGridRequest request);
 
     @ApiOperation("授权的视图树")
     @PostMapping("/tree")

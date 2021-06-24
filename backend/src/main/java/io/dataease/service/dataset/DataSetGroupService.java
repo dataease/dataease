@@ -2,7 +2,6 @@ package io.dataease.service.dataset;
 
 import io.dataease.base.domain.DatasetGroup;
 import io.dataease.base.domain.DatasetGroupExample;
-import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.mapper.DatasetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.utils.AuthUtils;
@@ -23,7 +22,6 @@ import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Author gin

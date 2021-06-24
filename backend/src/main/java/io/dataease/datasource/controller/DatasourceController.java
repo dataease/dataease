@@ -9,7 +9,6 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.datasource.dto.DBTableDTO;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.DatasourceDTO;
 import org.springframework.web.bind.annotation.*;

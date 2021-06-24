@@ -1,7 +1,6 @@
 package io.dataease.controller.chart;
 
 import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.dto.chart.ChartViewDTO;

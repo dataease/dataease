@@ -1,16 +1,11 @@
 package io.dataease.controller.panel;
 
-import io.dataease.base.domain.DatasetGroup;
 import io.dataease.base.domain.PanelGroup;
 import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.controller.handler.annotation.I18n;
-import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
-import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
-import io.dataease.service.CommonFilesService;
 import io.dataease.service.panel.PanelGroupService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

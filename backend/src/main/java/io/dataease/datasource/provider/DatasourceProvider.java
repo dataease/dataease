@@ -1,11 +1,8 @@
 package io.dataease.datasource.provider;
 
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.Datasource;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

@@ -11,7 +11,6 @@ import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
 import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
-import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.service.sys.SysUserService;
 import io.swagger.annotations.Api;

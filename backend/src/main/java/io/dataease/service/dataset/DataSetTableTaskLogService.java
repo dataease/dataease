@@ -4,7 +4,6 @@ import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.domain.DatasetTableTaskLogExample;
 import io.dataease.base.mapper.DatasetTableTaskLogMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
-import io.dataease.commons.constants.JobStatus;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
