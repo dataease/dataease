@@ -21,21 +21,21 @@
               </el-form-item>
 
               <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
-                <colorPicker v-model="colorForm.dimensionColor" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeColorCase" />
+                <colorPicker v-model="colorForm.dimensionColor" style="margin-top: 6px;cursor: pointer;z-index: 1003;border: solid 1px black" @change="changeColorCase" />
               </el-form-item>
               <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
-                <colorPicker v-model="colorForm.quotaColor" style="margin-top: 6px;cursor: pointer;z-index: 1003;border: solid 1px black" @change="changeColorCase" />
+                <colorPicker v-model="colorForm.quotaColor" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeColorCase" />
               </el-form-item>
             </div>
             <div v-if="sourceType==='view' || sourceType==='panelTable'">
               <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
-                <colorPicker v-model="colorForm.tableHeaderBgColor" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeColorCase" />
+                <colorPicker v-model="colorForm.tableHeaderBgColor" style="margin-top: 6px;cursor: pointer;z-index: 1002;border: solid 1px black" @change="changeColorCase" />
               </el-form-item>
               <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
                 <colorPicker v-model="colorForm.tableItemBgColor" style="margin-top: 6px;cursor: pointer;z-index: 1003;border: solid 1px black" @change="changeColorCase" />
               </el-form-item>
               <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_font_color')" class="form-item">
-                <colorPicker v-model="colorForm.tableFontColor" style="margin-top: 6px;cursor: pointer;z-index: 1002;border: solid 1px black" @change="changeColorCase" />
+                <colorPicker v-model="colorForm.tableFontColor" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeColorCase" />
               </el-form-item>
               <!--              暂时不支持该功能-->
               <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
