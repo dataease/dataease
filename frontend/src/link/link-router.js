@@ -8,8 +8,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: () =>
-              import('../views/link/index.vue'),
+      component: () => import('../views/link/index.vue'),
       meta: {
         title: '首页'
       }

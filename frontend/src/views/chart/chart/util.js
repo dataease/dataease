@@ -9,6 +9,7 @@ export function hexColorToRGBA(hex, alpha) {
   }
   if (/^#[0-9A-F]{6}$/i.test(hex)) { // 判断传入是否为#六位十六进制数
     hex.replace(/[0-9A-F]{2}/ig, function(kw) {
+      // eslint-disable-next-line no-eval
       rgb.push(eval('0x' + kw)) // 十六进制转化为十进制并存如数组
     })
     return `rgba(${rgb.join(',')},${alpha / 100})` // 输出RGB格式颜色

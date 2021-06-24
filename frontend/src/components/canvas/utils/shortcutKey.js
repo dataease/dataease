@@ -56,9 +56,9 @@ let isCtrlDown = false
 export function listenGlobalKeyDown() {
   window.onkeydown = (e) => {
     const { curComponent } = store.state
-    if (e.keyCode == ctrlKey) {
+    if (e.keyCode === ctrlKey) {
       isCtrlDown = true
-    } else if (e.keyCode == deleteKey && curComponent) {
+    } else if (e.keyCode === deleteKey && curComponent) {
       store.commit('deleteComponent')
       store.commit('recordSnapshot')
     } else if (isCtrlDown) {
@@ -73,7 +73,7 @@ export function listenGlobalKeyDown() {
   }
 
   window.onkeyup = (e) => {
-    if (e.keyCode == ctrlKey) {
+    if (e.keyCode === ctrlKey) {
       isCtrlDown = false
     }
   }
@@ -109,7 +109,7 @@ function compose() {
 
 function decompose() {
   const curComponent = store.state.curComponent
-  if (curComponent && !curComponent.isLock && curComponent.component == 'Group') {
+  if (curComponent && !curComponent.isLock && curComponent.component === 'Group') {
     store.commit('decompose')
     store.commit('recordSnapshot')
   }
