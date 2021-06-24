@@ -50,7 +50,7 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 ```
 
 -   [在线文档](https://dataease.io/docs/)
--   [演示视频](https://dataease.oss-cn-hangzhou.aliyuncs.com/video/de-v1-demo.mp4)
+-   [演示视频](https://www.bilibili.com/video/BV1UB4y1K7jA)
 
 ## 微信群
 
