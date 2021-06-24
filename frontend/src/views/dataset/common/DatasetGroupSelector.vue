@@ -9,27 +9,29 @@
       </el-row>
       <el-divider />
 
-      <!--      <el-row>-->
-      <!--        <el-form>-->
-      <!--          <el-form-item class="form-item">-->
-      <!--            <el-input-->
-      <!--              v-model="search"-->
-      <!--              size="mini"-->
-      <!--              :placeholder="$t('dataset.search')"-->
-      <!--              prefix-icon="el-icon-search"-->
-      <!--              clearable-->
-      <!--            />-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--      </el-row>-->
+      <el-row>
+        <el-form>
+          <el-form-item class="form-item">
+            <el-input
+              v-model="filterText"
+              size="mini"
+              :placeholder="$t('dataset.search')"
+              prefix-icon="el-icon-search"
+              clearable
+            />
+          </el-form-item>
+        </el-form>
+      </el-row>
 
       <el-col class="custom-tree-container">
         <div class="block" :style="treeStyle">
           <el-tree
+            ref="tree"
             :default-expanded-keys="expandedArray"
             :data="data"
             node-key="id"
             :expand-on-click-node="false"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
@@ -172,7 +174,8 @@ export default {
       treeStyle: this.fixHeight ? {
         height: '200px',
         overflow: 'auto'
-      } : {}
+      } : {},
+      filterText: ''
     }
   },
   computed: {},
@@ -198,6 +201,9 @@ export default {
       } else {
         this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
+    },
+    filterText(val) {
+      this.$refs.tree.filter(val)
     }
   },
   mounted() {
@@ -208,6 +214,10 @@ export default {
     this.kettleState()
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    },
     kettleState() {
       isKettleRunning(false).then(res => {
         this.kettleRunning = res.data
@@ -270,6 +280,7 @@ export default {
 
     nodeClick(data, node) {
       // if (data.type === 'scene') {
+      this.filterText = ''
       this.sceneMode = true
       this.currGroup = data
       this.tableTree()
