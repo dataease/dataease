@@ -34,6 +34,9 @@
               <el-button type="primary" class="submit" size="default" @click.native.prevent="handleLogin">
                 {{ $t('commons.login') }}
               </el-button>
+              <div  v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue"  class="demo-tips">
+                {{ uiInfo['ui.demo.tips'].paramValue }}
+              </div>
             </div>
             <div class="login-msg">
               {{ msg }}
@@ -226,6 +229,18 @@ export default {
     margin-top: 20px;
     font-size: 14px;
     color: $--color-primary;
+    letter-spacing: 0;
+    line-height: 18px;
+    text-align: center;
+    @media only screen and (max-width: 1280px) {
+      margin-top: 20px;
+    }
+  }
+
+  .demo-tips {
+    margin-top: 20px;
+    font-size: 14px;
+    color: $--color-danger;
     letter-spacing: 0;
     line-height: 18px;
     text-align: center;
