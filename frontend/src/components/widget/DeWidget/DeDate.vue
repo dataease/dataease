@@ -39,6 +39,9 @@ export default {
     if ((this.options.attrs.type === 'date' || this.options.attrs.type === 'daterange') && Array.isArray(this.options.value) && this.options.value.length === 0) {
       this.options.value = null
     }
+    if (!!this.options && !!this.options.value && Object.keys(this.options.value).length === 0) {
+      this.options.value = null
+    }
   },
   methods: {
     search() {

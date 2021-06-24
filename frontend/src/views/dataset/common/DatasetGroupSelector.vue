@@ -24,7 +24,7 @@
       <!--      </el-row>-->
 
       <el-col class="custom-tree-container">
-        <div class="block">
+        <div class="block" :style="treeStyle">
           <el-tree
             :default-expanded-keys="expandedArray"
             :data="data"
@@ -110,6 +110,11 @@ import { isKettleRunning, post } from '@/api/dataset/dataset'
 export default {
   name: 'DatasetGroupSelector',
   props: {
+    fixHeight: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     customType: {
       type: Array,
       required: false,
@@ -163,7 +168,11 @@ export default {
         name: '',
         sort: 'type asc,create_time desc,name asc'
       },
-      dsLoading: false
+      dsLoading: false,
+      treeStyle: this.fixHeight ? {
+        height: '200px',
+        overflow: 'auto'
+      } : {}
     }
   },
   computed: {},

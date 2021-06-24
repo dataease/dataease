@@ -56,7 +56,7 @@ export default {
   },
 
   created() {
-
+    this.$store.dispatch('app/toggleSideBarHide', true)
   },
   methods: {
     repeatValidator(rule, value, callback) {
