@@ -20,6 +20,7 @@ import AuthQuickConfig from './authQuickConfig'
 
 export default {
   name: 'Authority',
+  // eslint-disable-next-line vue/no-unused-components
   components: { DeContainer, DeMainContainer, AuthConfig, AuthQuickConfig },
   data() {
     return {

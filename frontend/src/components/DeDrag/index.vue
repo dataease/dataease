@@ -20,14 +20,14 @@
     @mouseleave="leave"
   >
     <div
-      v-for="(handle, index) in actualHandles"
-      :key="index"
-      :class="[classNameHandle, classNameHandle + '-' + handle]"
-      :style="handleStyle(handle, index)"
-      @mousedown.stop.prevent="handleDown(handle, $event)"
-      @touchstart.stop.prevent="handleTouchDown(handle, $event)"
+      v-for="(handlei, indexi) in actualHandles"
+      :key="indexi"
+      :class="[classNameHandle, classNameHandle + '-' + handlei]"
+      :style="handleStyle(handlei, indexi)"
+      @mousedown.stop.prevent="handleDown(handlei, $event)"
+      @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
     >
-      <slot :name="handle" />
+      <slot :name="handlei" />
     </div>
     <slot />
   </div>
@@ -282,14 +282,17 @@ export default {
       type: String,
       default: 'mouseOn'
     },
+    // eslint-disable-next-line vue/require-default-prop
     element: {
       require: true,
       type: Object
     },
+    // eslint-disable-next-line vue/require-default-prop
     defaultStyle: {
       require: true,
       type: Object
     },
+    // eslint-disable-next-line vue/require-default-prop
     index: {
       require: true,
       type: [Number, String]
@@ -299,6 +302,7 @@ export default {
       type: Boolean,
       default: true
     },
+    // eslint-disable-next-line vue/require-default-prop
     changeStyle: {
       require: true,
       type: Object

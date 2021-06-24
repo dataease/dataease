@@ -195,6 +195,9 @@ module.exports = {
     'object-curly-spacing': [2, 'always', {
       objectsInObjects: false
     }],
-    'array-bracket-spacing': [2, 'never']
+    'array-bracket-spacing': [2, 'never'],
+    "vue/no-use-v-if-with-v-for": ["error", {
+      "allowUsingIterationVar": true
+    }]
   }
 }
