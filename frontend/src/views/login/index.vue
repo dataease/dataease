@@ -5,8 +5,8 @@
         <el-col :span="12">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
-              <svg-icon v-if="!loginLogoUrl" icon-class="DataEase" custom-class="login-logo-icon" />
-              <img v-else :src="loginLogoUrl" alt="">
+              <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="DataEase" custom-class="login-logo-icon" />
+              <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
             </div>
             <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
               {{ uiInfo['ui.loginTitle'].paramValue }}
