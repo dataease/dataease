@@ -1,8 +1,10 @@
 package io.dataease.listener;
 
 import io.dataease.base.domain.DatasetTableTask;
+import io.dataease.commons.constants.ScheduleType;
 import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetTableTaskService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
@@ -26,8 +28,16 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
         List<DatasetTableTask> list = dataSetTableTaskService.list(new DatasetTableTask());
         for (DatasetTableTask task : list) {
             try {
-                if (task.getEndTime() != null && task.getEndTime() > 0) {
-                    if (task.getEndTime() > System.currentTimeMillis()) {
+                if (StringUtils.equalsIgnoreCase(task.getRate(), ScheduleType.CRON.toString())) {
+                    if (StringUtils.equalsIgnoreCase(task.getEnd(), "1")) {
+                        if (task.getEndTime() != null && task.getEndTime() > 0) {
+                            if (task.getEndTime() > System.currentTimeMillis()) {
+                                scheduleService.addSchedule(task);
+                            }
+                        } else {
+                            scheduleService.addSchedule(task);
+                        }
+                    } else {
                         scheduleService.addSchedule(task);
                     }
                 } else {
