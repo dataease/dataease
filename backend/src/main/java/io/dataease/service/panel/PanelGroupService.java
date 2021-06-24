@@ -108,7 +108,7 @@ public class PanelGroupService {
         authRequest.setId(panelId);
         authRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(authRequest);
-        if(CollectionUtils.isNotEmpty(panelGroupDTOList)){
+        if(!CollectionUtils.isNotEmpty(panelGroupDTOList)){
             DataEaseException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
         }
 
