@@ -40,9 +40,9 @@
             </div>
           </el-form>
         </el-col>
-        <el-col :span="12">
-          <div v-if="!loginImageUrl" class="login-image" />
-          <div v-else class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'cover'}" />
+        <el-col v-loading="!axiosFinished" :span="12">
+          <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
+          <div v-if="loginImageUrl && axiosFinished" class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}" />
         </el-col>
       </el-row>
     </div>
@@ -95,7 +95,8 @@ export default {
       redirect: undefined,
       uiInfo: null,
       loginImageUrl: null,
-      loginLogoUrl: null
+      loginLogoUrl: null,
+      axiosFinished: false
     }
   },
   computed: {
@@ -115,6 +116,14 @@ export default {
     this.$store.dispatch('user/getUI').then(() => {
       // const uiLists = this.$store.state.user.uiInfo
       // this.uiInfo = format(uiLists)
+      this.axiosFinished = true
+      this.showLoginImage()
+    }).catch(err => {
+      console.error(err)
+    })
+  },
+  methods: {
+    showLoginImage() {
       this.uiInfo = getSysUI()
       if (this.uiInfo['ui.loginImage'] && this.uiInfo['ui.loginImage'].paramValue) {
         this.loginImageUrl = '/system/ui/image/' + this.uiInfo['ui.loginImage'].paramValue
@@ -122,11 +131,7 @@ export default {
       if (this.uiInfo['ui.loginLogo'] && this.uiInfo['ui.loginLogo'].paramValue) {
         this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
       }
-    }).catch(err => {
-      console.error(err)
-    })
-  },
-  methods: {
+    },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
