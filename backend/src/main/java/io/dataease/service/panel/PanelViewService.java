@@ -1,10 +1,8 @@
 package io.dataease.service.panel;
 
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
-import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelViewDto;
 import io.dataease.dto.panel.po.PanelViewPo;
 import org.apache.commons.collections.CollectionUtils;

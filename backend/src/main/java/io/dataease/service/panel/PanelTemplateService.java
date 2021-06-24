@@ -4,7 +4,6 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.PanelTemplateMapper;
 import io.dataease.base.mapper.ext.ExtPanelTemplateMapper;
 import io.dataease.commons.constants.CommonConstants;
-import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.panel.PanelTemplateRequest;

@@ -2,18 +2,13 @@ package io.dataease.service.panel;
 
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
-import io.dataease.base.mapper.PanelDesignMapper;
 import io.dataease.base.mapper.PanelGroupMapper;
-import io.dataease.base.mapper.ext.ExtPanelDesignMapper;
 import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
-import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.chart.ChartViewDTO;
-import io.dataease.dto.dataset.DataSetGroupDTO;
-import io.dataease.dto.panel.PanelDesignDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.service.chart.ChartViewService;
@@ -22,17 +17,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Author: wangjiahao

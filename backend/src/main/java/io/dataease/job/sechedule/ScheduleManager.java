@@ -1,7 +1,22 @@
 package io.dataease.job.sechedule;
 
 import io.dataease.commons.utils.LogUtil;
-import org.quartz.*;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.TriggerKey;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.SimpleTrigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
+import org.quartz.CronExpression;
+import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -413,25 +428,6 @@ public class ScheduleManager {
 
         return returnMap;
     }
-
-//    public static Date getNTimeByCron(String cron) {
-//        try {
-//            CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
-//            cronTriggerImpl.setCronExpression(cron);
-//            Calendar calendar = Calendar.getInstance();
-//            Date now = calendar.getTime();
-////            calendar.add(java.util.Calendar.YEAR, 1);
-//            calendar.add(Calendar.MONTH, 2);
-//
-//            List<Date> dates = TriggerUtils.computeFireTimesBetween(cronTriggerImpl, null, now, calendar.getTime());
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            String nextTime = dateFormat.format(dates.get(0));
-//            Date date = dateFormat.parse(nextTime);
-//            return date;
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     public static CronTrigger getCronTrigger(String cron) {
         if (!CronExpression.isValidExpression(cron)) {

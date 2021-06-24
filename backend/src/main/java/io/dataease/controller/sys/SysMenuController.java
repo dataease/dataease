@@ -8,8 +8,6 @@ import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.MenuCreateRequest;
 import io.dataease.controller.sys.request.MenuDeleteRequest;
-import io.dataease.controller.sys.request.SimpleTreeNode;
-import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.controller.sys.response.MenuNodeResponse;
 import io.dataease.controller.sys.response.MenuTreeNode;
 import io.dataease.service.sys.MenuService;

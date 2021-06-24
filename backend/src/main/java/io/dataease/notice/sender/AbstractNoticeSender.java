@@ -5,7 +5,6 @@ import io.dataease.commons.constants.NoticeConstants;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.notice.domain.MessageDetail;
 import io.dataease.notice.domain.UserDetail;
-/*import io.dataease.service.UserService;*/
 import io.dataease.service.sys.SysUserService;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.IOUtils;

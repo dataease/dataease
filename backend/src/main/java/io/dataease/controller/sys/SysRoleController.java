@@ -7,7 +7,6 @@ import io.dataease.base.domain.SysRole;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.RoleGridRequest;
 import io.dataease.controller.sys.request.RoleMenusRequest;
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.service.sys.SysRoleService;

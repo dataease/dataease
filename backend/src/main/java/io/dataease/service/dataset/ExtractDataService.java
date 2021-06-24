@@ -20,7 +20,6 @@ import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;

@@ -3,7 +3,6 @@ package io.dataease.base.mapper.ext;
 import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 

@@ -3,7 +3,6 @@ package io.dataease.notice.service;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.base.domain.MessageTask;
 import io.dataease.base.domain.MessageTaskExample;
-import io.dataease.base.domain.SysUser;
 import io.dataease.base.mapper.MessageTaskMapper;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;

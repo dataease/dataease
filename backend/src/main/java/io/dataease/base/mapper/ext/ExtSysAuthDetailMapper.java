@@ -1,9 +1,6 @@
 package io.dataease.base.mapper.ext;
 
 import io.dataease.base.domain.SysAuthDetail;
-import io.dataease.controller.request.SysAuthDetailRequest;
-import io.dataease.controller.request.SysAuthRequest;
-import io.dataease.dto.SysAuthDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

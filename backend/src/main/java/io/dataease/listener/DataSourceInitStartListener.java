@@ -1,17 +1,12 @@
 package io.dataease.listener;
 
-import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.datasource.service.DatasourceService;
-import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetTableService;
-import io.dataease.service.dataset.DataSetTableTaskService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
-import java.util.List;
 
 @Component
 @Order(value = 1)

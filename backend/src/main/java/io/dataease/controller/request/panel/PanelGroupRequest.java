@@ -1,6 +1,5 @@
 package io.dataease.controller.request.panel;
 
-import io.dataease.base.domain.PanelGroup;
 import io.dataease.dto.panel.PanelGroupDTO;
 import lombok.Data;
 

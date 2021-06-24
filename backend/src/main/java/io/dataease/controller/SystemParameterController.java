@@ -2,13 +2,10 @@ package io.dataease.controller;
 
 import io.dataease.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
-import io.dataease.commons.constants.RoleConstants;
-import io.dataease.dto.BaseSystemConfigDTO;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.notice.domain.MailInfo;
 import io.dataease.service.FileService;
 import io.dataease.service.system.SystemParameterService;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
