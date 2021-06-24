@@ -321,10 +321,10 @@ public class ExtractDataService {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
-                    if (datasetTableField.getSize() > 65533) {
+                    if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
                         Column_Fields = Column_Fields + "varchar(65533)" + ",`";
                     } else {
-                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize()*3)) + ",`";
                     }
                     break;
                 case 1:
