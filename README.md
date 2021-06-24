@@ -2,7 +2,7 @@
 <h3 align="center">人人可用的开源数据可视化分析工具</h3>
 <p align="center">
   <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0"><img src="https://img.shields.io/github/license/dataease/dataease?color=%231890FF&style=flat-square" alt="License: GPL v2"></a>
-  <a href="https://app.codacy.com/gh/metersphere/metersphere?utm_source=github.com&utm_medium=referral&utm_content=metersphere/metersphere&utm_campaign=Badge_Grade_Dashboard"><img src="https://api.codacy.com/project/badge/Grade/176186d132df448b955f8bdd5e6ef9c0" alt="Codacy"></a>
+  <a href="https://app.codacy.com/gh/dataease/dataease?utm_source=github.com&utm_medium=referral&utm_content=dataease/dataease&utm_campaign=Badge_Grade_Dashboard"><img src="https://app.codacy.com/project/badge/Grade/da67574fd82b473992781d1386b937ef" alt="Codacy"></a>
   <a href="https://github.com/dataease/dataease/releases/latest"><img src="https://img.shields.io/github/v/release/dataease/dataease" alt="Latest release"></a>
   <a href="https://github.com/dataease/dataease"><img src="https://img.shields.io/github/stars/dataease/dataease?color=%231890FF&style=flat-square" alt="Stars"></a>
   <a href="https://github.com/dataease/dataease/releases/latest"><img src="https://img.shields.io/github/downloads/dataease/dataease/total" alt="Downloads"></a>
@@ -12,17 +12,17 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ### DataEase 的功能：
 
-- 图表展示：支持 PC 端、移动端及大屏;
-- 图表制作：支持丰富的图表类型(基于 Apache ECharts 实现)、支持拖拉拽方式快速制作仪表板;
-- 数据引擎：支持直连模式、本地模式(基于 Apache Doris / Kettle 实现);
-- 数据连接：支持关系型数据库、Excel 等文件、Hadoop 等大数据平台、NoSQL 等各种数据源。
+-   图表展示：支持 PC 端、移动端及大屏;
+-   图表制作：支持丰富的图表类型(基于 Apache ECharts 实现)、支持拖拉拽方式快速制作仪表板;
+-   数据引擎：支持直连模式、本地模式(基于 Apache Doris / Kettle 实现);
+-   数据连接：支持关系型数据库、Excel 等文件、Hadoop 等大数据平台、NoSQL 等各种数据源。
 
 ### DataEase 的优势：
 
-- 开源开放：零门槛，线上快速获取和安装；快速获取用户反馈、按月发布新版本；
-- 简单易用：极易上手，通过鼠标点击和拖拽即可完成分析；
-- 秒级响应：集成 Apache Doris，超大数据量下秒级查询返回延时；
-- 安全分享：支持多种数据分享方式，确保数据安全。
+-   开源开放：零门槛，线上快速获取和安装；快速获取用户反馈、按月发布新版本；
+-   简单易用：极易上手，通过鼠标点击和拖拽即可完成分析；
+-   秒级响应：集成 Apache Doris，超大数据量下秒级查询返回延时；
+-   安全分享：支持多种数据分享方式，确保数据安全。
 
 ## UI 展示
 
@@ -49,8 +49,8 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_start.sh | sh
 ```
 
-- [在线文档](https://dataease.io/docs/)
-- [演示视频](https://dataease.oss-cn-hangzhou.aliyuncs.com/video/de-v1-demo.mp4)
+-   [在线文档](https://dataease.io/docs/)
+-   [演示视频](https://dataease.oss-cn-hangzhou.aliyuncs.com/video/de-v1-demo.mp4)
 
 ## 微信群
 
