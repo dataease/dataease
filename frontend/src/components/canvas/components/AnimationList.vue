@@ -1,41 +1,41 @@
 <template>
-    <div class="animation-list">
-        <div class="div-animation">
-            <el-button @click="isShowAnimation = true">添加动画</el-button>
-            <el-button @click="previewAnimate">预览动画</el-button>
-            <div>
-                <el-tag
-                    v-for="(tag, index) in curComponent.animations"
-                    :key="index"
-                    closable
-                    @close="removeAnimation(index)"
-                >
-                    {{ tag.label }}
-                </el-tag>
-            </div>
-        </div>
-
-        <!-- 选择动画 -->
-        <Modal v-model="isShowAnimation">
-            <el-tabs v-model="animationActiveName">
-                <el-tab-pane v-for="item in animationClassData" :key="item.label" :label="item.label" :name="item.label">
-                    <el-scrollbar class="animate-container">
-                        <div
-                            class="animate"
-                            v-for="(animate, index) in item.children"
-                            :key="index"
-                            @mouseover="hoverPreviewAnimate = animate.value"
-                            @click="addAnimation(animate)"
-                        >
-                            <div :class="[hoverPreviewAnimate === animate.value && animate.value + ' animated']">
-                                {{ animate.label }}
-                            </div>
-                        </div>
-                    </el-scrollbar>
-                </el-tab-pane>
-            </el-tabs>
-        </Modal>
+  <div class="animation-list">
+    <div class="div-animation">
+      <el-button @click="isShowAnimation = true">添加动画</el-button>
+      <el-button @click="previewAnimate">预览动画</el-button>
+      <div>
+        <el-tag
+          v-for="(tag, index) in curComponent.animations"
+          :key="index"
+          closable
+          @close="removeAnimation(index)"
+        >
+          {{ tag.label }}
+        </el-tag>
+      </div>
     </div>
+
+    <!-- 选择动画 -->
+    <Modal v-model="isShowAnimation">
+      <el-tabs v-model="animationActiveName">
+        <el-tab-pane v-for="item in animationClassData" :key="item.label" :label="item.label" :name="item.label">
+          <el-scrollbar class="animate-container">
+            <div
+              v-for="(animate, index) in item.children"
+              :key="index"
+              class="animate"
+              @mouseover="hoverPreviewAnimate = animate.value"
+              @click="addAnimation(animate)"
+            >
+              <div :class="[hoverPreviewAnimate === animate.value && animate.value + ' animated']">
+                {{ animate.label }}
+              </div>
+            </div>
+          </el-scrollbar>
+        </el-tab-pane>
+      </el-tabs>
+    </Modal>
+  </div>
 </template>
 
 <script>
@@ -45,33 +45,33 @@ import animationClassData from '@/components/canvas/utils/animationClassData'
 import { mapState } from 'vuex'
 
 export default {
-    components: { Modal },
-    data() {
-        return {
-            isShowAnimation: false,
-            hoverPreviewAnimate: '',
-            animationActiveName: '进入',
-            animationClassData,
-            showAnimatePanel: false,
-        }
+  components: { Modal },
+  data() {
+    return {
+      isShowAnimation: false,
+      hoverPreviewAnimate: '',
+      animationActiveName: '进入',
+      animationClassData,
+      showAnimatePanel: false
+    }
+  },
+  computed: mapState([
+    'curComponent'
+  ]),
+  methods: {
+    addAnimation(animate) {
+      this.$store.commit('addAnimation', animate)
+      this.isShowAnimation = false
     },
-    computed: mapState([
-        'curComponent',
-    ]),
-    methods: {
-        addAnimation(animate) {
-            this.$store.commit('addAnimation', animate)
-            this.isShowAnimation = false
-        },
 
-        previewAnimate() {
-            eventBus.$emit('runAnimation')
-        },
-
-        removeAnimation(index) {
-            this.$store.commit('removeAnimation', index)
-        },
+    previewAnimate() {
+      eventBus.$emit('runAnimation')
     },
+
+    removeAnimation(index) {
+      this.$store.commit('removeAnimation', index)
+    }
+  }
 }
 </script>
 
