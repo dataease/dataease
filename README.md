@@ -54,7 +54,7 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 
 ## 微信群
 
-![wechat-group](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png)
+<img src="https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png" width="156" height="156"/>
 
 ## 技术栈
 
