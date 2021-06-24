@@ -4,9 +4,9 @@ ARG IMAGE_TAG
 
 RUN mkdir -p /opt/apps
 
-ADD backend/target/backend-1.0.jar /opt/apps
+ADD backend/target/backend-1.0.0.jar /opt/apps
 
-ENV JAVA_APP_JAR=/opt/apps/backend-1.0.jar
+ENV JAVA_APP_JAR=/opt/apps/backend-1.0.0.jar
 
 ENV AB_OFF=true
 
