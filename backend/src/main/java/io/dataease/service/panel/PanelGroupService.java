@@ -92,6 +92,7 @@ public class PanelGroupService {
             newDefaultPanel.setPid(PanelConstants.PANEL_GATHER_DEFAULT_PANEL);
             newDefaultPanel.setLevel(0);
             newDefaultPanel.setSource(request.getId());
+            newDefaultPanel.setCreateBy(AuthUtils.getUser().getUsername());
             checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId());
             panelGroupMapper.insertSelective(newDefaultPanel);
         } else {
