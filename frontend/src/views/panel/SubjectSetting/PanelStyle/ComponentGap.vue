@@ -17,6 +17,7 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
 import { DEFAULT_PANEL_STYLE } from '@/views/panel/panel'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'

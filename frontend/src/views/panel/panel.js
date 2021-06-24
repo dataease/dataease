@@ -1,3 +1,5 @@
+
+// eslint-disable-next-line no-unused-vars
 import { BASE_CHART, BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
 
@@ -48,6 +50,7 @@ export function chartTransStr2Object(targetIn, copy) {
 }
 
 export function chartTransObject2Str(targetIn, deepCopy) {
+  // eslint-disable-next-line no-undef
   const target = copy === 'Y' ? deepCopy(targetIn) : targetIn
   if (target.chart) {
     if (target.chart.xaxis && typeof target.chart.xaxis !== 'string') {
