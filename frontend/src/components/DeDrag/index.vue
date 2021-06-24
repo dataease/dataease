@@ -1495,9 +1495,9 @@ export default {
       addEvent(window, 'resize', this.checkParentSize)
     },
     createdFunction() {
-      // eslint-disable-next-line 无效的prop：minWidth不能大于maxWidth
+      // minWidth不能大于maxWidth
       if (this.maxWidth && this.minWidth > this.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
-      // eslint-disable-next-line 无效prop：minHeight不能大于maxHeight'
+      // minHeight不能大于maxHeight
       if (this.maxWidth && this.minHeight > this.maxHeight) console.warn('[Vdr warn]: Invalid prop: minHeight cannot be greater than maxHeight')
       this.elmX = 0
       this.elmY = 0
