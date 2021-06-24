@@ -239,7 +239,7 @@ export default {
 
   .demo-tips {
     margin-top: 20px;
-    font-size: 14px;
+    font-size: 18px;
     color: $--color-danger;
     letter-spacing: 0;
     line-height: 18px;
