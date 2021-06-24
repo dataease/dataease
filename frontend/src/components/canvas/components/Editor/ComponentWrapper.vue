@@ -102,7 +102,7 @@ export default {
 }
 .component-custom {
   outline: none;
-  width: 100%;
+  width: 100% !important;
   height: 100%;
 }
 </style>
