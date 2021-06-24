@@ -77,7 +77,7 @@ export default {
     batchDeleteComponent({ componentData }, deleteData) {
       deleteData.forEach(component => {
         for (let i = 0, len = componentData.length; i < len; i++) {
-          if (component.id == componentData[i].id) {
+          if (component.id === componentData[i].id) {
             componentData.splice(i, 1)
             break
           }

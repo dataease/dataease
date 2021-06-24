@@ -30,8 +30,11 @@ export default {
     event: 'change'
   },
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     label: String,
+    // eslint-disable-next-line vue/require-default-prop
     operator: String,
+    // eslint-disable-next-line vue/require-default-prop
     operators: Array
   },
   data() {

@@ -38,6 +38,7 @@ import generateID from '@/utils/generateID'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 
 export default {
+  // eslint-disable-next-line vue/no-unused-components
   components: { Editor, ComponentList, AttrList, AnimationList, EventList, Toolbar },
   data() {
     return {
@@ -71,6 +72,7 @@ export default {
     resetID(data) {
       if (data) {
         data.forEach(item => {
+          // eslint-disable-next-line no-undef
           item.type !== 'custom' && (item.id = uuid.v1())
         })
       }
@@ -85,7 +87,7 @@ export default {
       let component
       const id = e.dataTransfer.getData('componentId')
       componentList.forEach(componentTemp => {
-        if (id == componentTemp.id) {
+        if (id === componentTemp.id) {
           component = deepCopy(componentTemp)
         }
       })
@@ -112,7 +114,7 @@ export default {
       }
 
       // 0 左击 1 滚轮 2 右击
-      if (e.button != 2) {
+      if (e.button !== 2) {
         this.$store.commit('hideContextMenu')
       }
     }

@@ -911,6 +911,7 @@ export default {
     },
     // 外部传参改动x
     moveHorizontally(val) {
+      // eslint-disable-next-line no-unused-vars
       const [deltaX, _] = snapToGrid(this.grid, val, this.top, this.scale)
       const left = restrictToBounds(deltaX, this.bounds.minLeft, this.bounds.maxLeft)
       this.left = left
@@ -918,6 +919,7 @@ export default {
     },
     // 外部传参改动y
     moveVertically(val) {
+      // eslint-disable-next-line no-unused-vars
       const [_, deltaY] = snapToGrid(this.grid, this.left, val, this.scale)
       const top = restrictToBounds(deltaY, this.bounds.minTop, this.bounds.maxTop)
       this.top = top
@@ -926,6 +928,7 @@ export default {
     // 控制柄移动
     handleResize(e) {
       const handle = this.handle
+      // eslint-disable-next-line no-unused-vars
       const scaleRatio = this.scaleRatio
       const { TL, TR, BL, BR } = this
       let { x: mouseX, y: mouseY } = this.getMouseCoordinate(e)
@@ -1085,6 +1088,7 @@ export default {
     changeWidth(val) {
       // console.log('parentWidth', this.parentWidth)
       // console.log('parentHeight', this.parentHeight)
+      // eslint-disable-next-line no-unused-vars
       const [newWidth, _] = snapToGrid(this.grid, val, 0, this.scale)
       // const right = restrictToBounds(this.parentWidth - newWidth - this.left, this.bounds.minRight, this.bounds.maxRight)
       // private 将 this.bounds.minRight 设置为0
@@ -1102,6 +1106,7 @@ export default {
       this.height = height
     },
     changeHeight(val) {
+      // eslint-disable-next-line no-unused-vars
       const [_, newHeight] = snapToGrid(this.grid, 0, val, this.scale)
       // const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, this.bounds.minBottom, this.bounds.maxBottom)
       // private 将 this.bounds.minBottom 设置为0
@@ -1418,6 +1423,7 @@ export default {
     },
     // 修复 正则获取left与top
     formatTransformVal(string) {
+      // eslint-disable-next-line prefer-const
       let [left, top, rotate = 0] = string.match(/[\d|\.]+/g)
       if (top === undefined) top = 0
       return [Number(left), Number(top), rotate]

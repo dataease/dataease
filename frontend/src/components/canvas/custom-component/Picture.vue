@@ -7,6 +7,7 @@
 <script>
 export default {
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     propValue: {
       type: String,
       require: true
