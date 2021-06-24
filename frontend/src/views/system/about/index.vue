@@ -85,6 +85,7 @@ export default {
     ])
   },
   created() {
+    this.$store.dispatch('app/toggleSideBarHide', true)
     this.initVersion()
     this.getLicenseInfo()
   },
