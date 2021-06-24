@@ -7,6 +7,7 @@ import io.dataease.datasource.dto.MysqlConfigration;
 import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +32,9 @@ public class JdbcProvider extends DatasourceProvider {
             ResultSet rs = stat.executeQuery(datasourceRequest.getQuery());
             list = fetchResult(rs);
         } catch (SQLException e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } catch (Exception e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(connection != null){
                 connection.close();
@@ -50,9 +51,9 @@ public class JdbcProvider extends DatasourceProvider {
             Boolean result = stat.execute(datasourceRequest.getQuery());
             stat.close();
         } catch (SQLException e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } catch (Exception e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(connection != null){
                 connection.close();
@@ -70,14 +71,15 @@ public class JdbcProvider extends DatasourceProvider {
             rs = stat.executeQuery(datasourceRequest.getQuery());
             return fetchResult(rs);
         } catch (SQLException e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } catch (Exception e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(connection != null){
                 connection.close();
             }
         }
+        return new ArrayList<>();
     }
 
     private List<String[]> fetchResult(ResultSet rs) throws Exception {
@@ -112,14 +114,15 @@ public class JdbcProvider extends DatasourceProvider {
             rs = stat.executeQuery(datasourceRequest.getQuery());
             return fetchResultField(rs);
         } catch (SQLException e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } catch (Exception e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(connection != null){
                 connection.close();
             }
         }
+        return new ArrayList<>();
     }
 
     @Override
@@ -139,14 +142,15 @@ public class JdbcProvider extends DatasourceProvider {
             result.put("fieldList", fieldList);
             return result;
         } catch (SQLException e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } catch (Exception e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(connection != null){
                 connection.close();
             }
         }
+        return new HashMap<>();
     }
 
     private List<TableFiled> fetchResultField(ResultSet rs) throws Exception {
@@ -183,12 +187,13 @@ public class JdbcProvider extends DatasourceProvider {
             statement.close();
             return tables;
         } catch (Exception e) {
-            throw new Exception("ERROR: " + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(con != null){
                 con.close();
             }
         }
+        return new ArrayList<>();
     }
 
     @Override
@@ -222,9 +227,9 @@ public class JdbcProvider extends DatasourceProvider {
             }
             resultSet.close();
         } catch (SQLException e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } catch (Exception e) {
-            throw new Exception("ERROR:" + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(connection != null){
                 connection.close();
@@ -244,7 +249,7 @@ public class JdbcProvider extends DatasourceProvider {
             resultSet.close();
             ps.close();
         } catch (Exception e) {
-            throw new Exception("ERROR: " + e.getMessage(), e);
+            DataEaseException.throwException(e);
         } finally {
             if(con != null){con.close();}
         }
@@ -261,7 +266,7 @@ public class JdbcProvider extends DatasourceProvider {
                 return resultSet.getLong(1);
             }
         } catch (Exception e) {
-            throw new Exception("ERROR: " + e.getMessage(), e);
+            DataEaseException.throwException( e);
         } finally {
             con.close();
         }

@@ -8,6 +8,7 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.request.panel.PanelTemplateRequest;
 import io.dataease.dto.panel.PanelTemplateDTO;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public class PanelTemplateService {
                 request.setPid(request.getTemplateType());
                 String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.INSERT,request.getName(),request.getPid(),null);
                 if(CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)){
-                    throw new RuntimeException(Translator.get("i18n_same_folder_can_not_repeat"));
+                    DataEaseException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
                 }
             }else{//模板插入 相同文件夹同名的模板进行覆盖(先删除)
                 PanelTemplateExample exampleDelete = new PanelTemplateExample();
@@ -81,7 +82,7 @@ public class PanelTemplateService {
         } else {
             String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.UPDATE,request.getName(),request.getPid(),request.getId());
             if(CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)){
-                throw new RuntimeException(Translator.get("i18n_same_folder_can_not_repeat"));
+                DataEaseException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
             }
             panelTemplateMapper.updateByPrimaryKeySelective(request);
         }

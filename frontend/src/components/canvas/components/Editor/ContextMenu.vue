@@ -59,7 +59,7 @@ export default {
         bus.$emit('component-dialog-edit')
       }
 
-      //编辑样式组件
+      // 编辑样式组件
 
       if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')

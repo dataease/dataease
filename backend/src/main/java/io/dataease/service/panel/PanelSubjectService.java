@@ -41,13 +41,16 @@ public class PanelSubjectService {
 
     public List<PanelSubject> query(PanelSubjectRequest request){
         PanelSubjectExample example = new PanelSubjectExample();
-        return panelSubjectMapper.selectByExampleWithBLOBs(null);
+        example.setOrderByClause( "create_time asc");
+        return panelSubjectMapper.selectByExampleWithBLOBs(example);
     }
 
     public List querySubjectWithGroup(PanelSubjectRequest request){
         List result = new ArrayList();
         int pageSize = 4;
-        List<PanelSubject> allInfo  = panelSubjectMapper.selectByExampleWithBLOBs(null);
+        PanelSubjectExample example = new PanelSubjectExample();
+        example.setOrderByClause( "create_time asc");
+        List<PanelSubject> allInfo  = panelSubjectMapper.selectByExampleWithBLOBs(example);
         for(int i =0;i<allInfo.size();i=i+pageSize){
             List<PanelSubject> tmp = allInfo.subList(i,i+pageSize<allInfo.size()?i+pageSize:allInfo.size());
             result.add(tmp);

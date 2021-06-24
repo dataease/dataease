@@ -1,17 +1,17 @@
 <template>
-    <div style="overflow: hidden">
-        <img :src="propValue">
-    </div>
+  <div style="overflow: hidden">
+    <img :src="propValue">
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
-        propValue: {
-            type: String,
-            require: true,
-        },
-    },
+  props: {
+    propValue: {
+      type: String,
+      require: true
+    }
+  }
 }
 </script>
 

@@ -1,32 +1,32 @@
 <template>
-    <div class="modal-bg" v-if="show" @click="hide">
-        <div class="fadeInLeft animated modal" @click="stopPropagation">
-            <slot></slot>
-        </div>
+  <div v-if="show" class="modal-bg" @click="hide">
+    <div class="fadeInLeft animated modal" @click="stopPropagation">
+      <slot />
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-    model: {
-        prop: 'show',
-        event: 'change',
+  model: {
+    prop: 'show',
+    event: 'change'
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    hide() {
+      this.$emit('change')
     },
-    props: {
-        show: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    methods: {
-        hide() {
-            this.$emit('change')
-        },
 
-        stopPropagation(e) {
-            e.stopPropagation()
-        },
-    },
+    stopPropagation(e) {
+      e.stopPropagation()
+    }
+  }
 }
 </script>
 

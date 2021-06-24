@@ -18,6 +18,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.service.dataset.DataSetGroupService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -97,7 +98,7 @@ public class DatasourceService {
         example.createCriteria().andDataSourceIdEqualTo(datasourceId);
         List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(example);
         if(CollectionUtils.isNotEmpty(datasetTables)){
-            throw new Exception(datasetTables.size() +  Translator.get("i18n_datasource_not_allow_delete_msg"));
+            DataEaseException.throwException(datasetTables.size() +  Translator.get("i18n_datasource_not_allow_delete_msg"));
         }
         datasourceMapper.deleteByPrimaryKey(datasourceId);
     }
