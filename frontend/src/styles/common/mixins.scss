@@ -1,16 +1,15 @@
 @mixin flex-row($justify: flex-start, $align: stretch) {
-    display: flex;
-    @if $justify != flex-start {
-      justify-content: $justify;
-    }
-    @if $align != stretch {
-      align-items: $align;
-    }
+  display: flex;
+  @if $justify != flex-start {
+    justify-content: $justify;
   }
-  
-  @mixin variant($color, $background-color, $border-color) {
-    color: $color;
-    background-color: $background-color;
-    border-color: $border-color;
+  @if $align != stretch {
+    align-items: $align;
   }
-  
+}
+
+@mixin variant($color, $background-color, $border-color) {
+  color: $color;
+  background-color: $background-color;
+  border-color: $border-color;
+}

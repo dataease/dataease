@@ -38,8 +38,8 @@
 }
 
 @mixin variant($color, $background-color, $border-color) {
-    color: $color;
-    background-color: $background-color;
-    border-color: $border-color;
-  }
-  
+  color: $color;
+  background-color: $background-color;
+  border-color: $border-color;
+}
+
