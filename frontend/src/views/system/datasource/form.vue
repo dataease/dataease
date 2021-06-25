@@ -90,8 +90,7 @@ export default {
         'configuration.host': [{ required: true, message: this.$t('datasource.please_input_host'), trigger: 'change' }],
         'configuration.port': [{ required: true, message: this.$t('datasource.please_input_port'), trigger: 'change' }]
       },
-      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
-        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' }],
+      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' }],
       canEdit: false
     }
   },
