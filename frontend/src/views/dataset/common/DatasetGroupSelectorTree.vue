@@ -113,7 +113,7 @@
 import { isKettleRunning, post } from '@/api/dataset/dataset'
 
 export default {
-  name: 'DatasetGroupSelector',
+  name: 'DatasetGroupSelectorTree',
   props: {
     customType: {
       type: Array,

@@ -288,7 +288,7 @@ export default {
     save() {
       this.$refs.createUserForm.validate(valid => {
         if (valid) {
-          !this.form.deptId && (this.form.deptId = 0)
+          // !this.form.deptId && (this.form.deptId = 0)
           const method = this.formType === 'add' ? addUser : editUser
           method(this.form).then(res => {
             this.$success(this.$t('commons.save_success'))

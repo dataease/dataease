@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -117,6 +118,7 @@ public class SysUserService {
         user.setUpdateTime(now);
         deleteUserRoles(user.getUserId());//先删除用户角色关联
         saveUserRoles(user.getUserId(), request.getRoleIds());//再插入角色关联
+        if (ObjectUtils.isEmpty(user.getDeptId())) user.setDeptId(0L);
         return sysUserMapper.updateByPrimaryKeySelective(user);
     }
 

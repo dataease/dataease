@@ -9,27 +9,29 @@
       </el-row>
       <el-divider />
 
-      <!--      <el-row>-->
-      <!--        <el-form>-->
-      <!--          <el-form-item class="form-item">-->
-      <!--            <el-input-->
-      <!--              v-model="search"-->
-      <!--              size="mini"-->
-      <!--              :placeholder="$t('dataset.search')"-->
-      <!--              prefix-icon="el-icon-search"-->
-      <!--              clearable-->
-      <!--            />-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--      </el-row>-->
+      <el-row>
+        <el-form>
+          <el-form-item class="form-item">
+            <el-input
+              v-model="filterText"
+              size="mini"
+              :placeholder="$t('dataset.search')"
+              prefix-icon="el-icon-search"
+              clearable
+            />
+          </el-form-item>
+        </el-form>
+      </el-row>
 
       <el-col class="custom-tree-container">
         <div class="block" :style="treeStyle">
           <el-tree
+            ref="tree"
             :default-expanded-keys="expandedArray"
             :data="data"
             node-key="id"
             :expand-on-click-node="false"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
@@ -76,30 +78,35 @@
           </el-form-item>
         </el-form>
       </el-row>
-      <el-tree
-        :data="tableData"
-        node-key="id"
-        :expand-on-click-node="true"
-        class="tree-list"
-        highlight-current
-        @node-click="sceneClick"
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list">
-          <span :id="data.id" style="display: flex;flex: 1;width: 0;">
-            <span>
-              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
-              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+
+      <el-col class="custom-tree-container">
+        <div class="block" :style="treeStyle">
+          <el-tree
+            :data="tableData"
+            node-key="id"
+            :expand-on-click-node="true"
+            class="tree-list"
+            highlight-current
+            @node-click="sceneClick"
+          >
+            <span slot-scope="{ node, data }" class="custom-tree-node-list">
+              <span :id="data.id" style="display: flex;flex: 1;width: 0;">
+                <span>
+                  <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                  <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                  <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                  <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                </span>
+                <span v-if="data.type === 'db' || data.type === 'sql'">
+                  <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+                  <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                </span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+              </span>
             </span>
-            <span v-if="data.type === 'db' || data.type === 'sql'">
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
-            </span>
-            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
-          </span>
-        </span>
-      </el-tree>
+          </el-tree>
+        </div>
+      </el-col>
     </el-col>
   </el-col>
 </template>
@@ -172,7 +179,8 @@ export default {
       treeStyle: this.fixHeight ? {
         height: '200px',
         overflow: 'auto'
-      } : {}
+      } : {},
+      filterText: ''
     }
   },
   computed: {},
@@ -198,6 +206,9 @@ export default {
       } else {
         this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
+    },
+    filterText(val) {
+      this.$refs.tree.filter(val)
     }
   },
   mounted() {
@@ -208,6 +219,10 @@ export default {
     this.kettleState()
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    },
     kettleState() {
       isKettleRunning(false).then(res => {
         this.kettleRunning = res.data
@@ -270,6 +285,7 @@ export default {
 
     nodeClick(data, node) {
       // if (data.type === 'scene') {
+      this.filterText = ''
       this.sceneMode = true
       this.currGroup = data
       this.tableTree()

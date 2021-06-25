@@ -5,7 +5,8 @@
 
         <div class="span-header">
           <div class="bi-text">
-            {{ $t('pblink.key_pwd') }}
+            <span style="text-align: center;">{{ $t('pblink.key_pwd') }}
+            </span>
           </div>
         </div>
 

@@ -36,7 +36,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 -   环境地址：<https://demo.dataease.io/>
 -   用户名：demo
--   密码：P@ssw0rd123..
+-   密码：dataease
 
 ## 快速开始
 
@@ -50,11 +50,11 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 ```
 
 -   [在线文档](https://dataease.io/docs/)
--   [演示视频](https://dataease.oss-cn-hangzhou.aliyuncs.com/video/de-v1-demo.mp4)
+-   [演示视频](https://www.bilibili.com/video/BV1UB4y1K7jA)
 
 ## 微信群
 
-![wechat-group](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png)
+<img src="https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-group.png" width="156" height="156"/>
 
 ## 技术栈
 
