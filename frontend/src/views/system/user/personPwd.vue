@@ -1,22 +1,27 @@
 <template>
-  <layout-content :header="$t('user.change_password')">
+  <layout-content>
+    <div style="width: 100%;display: flex;justify-content: center;">
+      <el-card class="box-card about-card">
+        <div class="form-header">
+          <span>{{ $t('user.change_password') }}</span>
+        </div>
+        <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
+          <el-form-item :label="$t('user.origin_passwd')" prop="oldPwd">
+            <el-input v-model="form.oldPwd" type="password" />
+          </el-form-item>
+          <el-form-item :label="$t('user.new_passwd')" prop="newPwd">
+            <el-input v-model="form.newPwd" type="password" />
+          </el-form-item>
+          <el-form-item :label="$t('user.confirm_passwd')" prop="repeatPwd">
+            <el-input v-model="form.repeatPwd" type="password" />
+          </el-form-item>
 
-    <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-      <el-form-item :label="$t('user.origin_passwd')" prop="oldPwd">
-        <el-input v-model="form.oldPwd" type="password" />
-      </el-form-item>
-      <el-form-item :label="$t('user.new_passwd')" prop="newPwd">
-        <el-input v-model="form.newPwd" type="password" />
-      </el-form-item>
-      <el-form-item :label="$t('user.confirm_passwd')" prop="repeatPwd">
-        <el-input v-model="form.repeatPwd" type="password" />
-      </el-form-item>
-
-      <el-form-item>
-        <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
-      </el-form-item>
-    </el-form>
-
+          <el-form-item>
+            <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </div>
   </layout-content>
 </template>
 
@@ -54,7 +59,11 @@ export default {
 
     }
   },
-
+  mounted() {
+    this.$nextTick(() => {
+      this.$store.dispatch('app/toggleSideBarHide', true)
+    })
+  },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)
   },
@@ -86,3 +95,21 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.about-card {
+  background: inherit;
+  margin-top: 5%;
+  flex-direction: row;
+  width: 640px;
+  min-width: 640px;
+  height: auto;
+  position: relative;
+  >>>div.el-card__header {
+    padding: 0;
+  }
+}
+.form-header {
+    line-height: 60px;
+    font-size: 18px;
+}
+</style>

@@ -1,65 +1,70 @@
 <template>
-  <layout-content header="个人信息">
-    <div>
-      <el-form ref="createUserForm" :disabled="formType !== 'modify'" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-        <el-form-item label="ID" prop="username">
-          <el-input v-model="form.username" disabled />
-        </el-form-item>
-        <el-form-item :label="$t('commons.phone')" prop="phone">
-          <el-input v-model="form.phone" />
-        </el-form-item>
-        <el-form-item :label="$t('commons.nick_name')" prop="nickName">
-          <el-input v-model="form.nickName" />
-        </el-form-item>
-        <el-form-item :label="$t('commons.email')" prop="email">
-          <el-input v-model="form.email" />
-        </el-form-item>
+  <layout-content>
+    <div style="width: 100%;display: flex;justify-content: center;">
+      <el-card class="box-card about-card">
+        <div class="form-header">
+          <span>{{ $t('commons.personal_info') }}</span>
+        </div>
+        <el-form ref="createUserForm" :disabled="formType !== 'modify'" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
+          <el-form-item label="ID" prop="username">
+            <el-input v-model="form.username" disabled />
+          </el-form-item>
+          <el-form-item :label="$t('commons.phone')" prop="phone">
+            <el-input v-model="form.phone" />
+          </el-form-item>
+          <el-form-item :label="$t('commons.nick_name')" prop="nickName">
+            <el-input v-model="form.nickName" />
+          </el-form-item>
+          <el-form-item :label="$t('commons.email')" prop="email">
+            <el-input v-model="form.email" />
+          </el-form-item>
 
-        <el-form-item :label="$t('commons.status')">
-          <el-radio-group v-model="form.enabled" disabled style="width: 140px">
-            <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
-            <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item disabled :label="$t('commons.organization')" prop="dept">
-          <treeselect
-            v-model="form.deptId"
-            disabled
-            :options="depts"
-            :load-options="loadDepts"
-            :auto-load-root-options="false"
-            :placeholder="$t('user.choose_org')"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('commons.role')" prop="roleIds">
-          <el-select
-            v-model="form.roleIds"
-            disabled
-            style="width: 100%"
-            multiple
-            :placeholder="$t('commons.please_select')"
-            @remove-tag="deleteTag"
-            @change="changeRole"
-          >
-            <el-option
-              v-for="item in roles"
-              :key="item.name"
-              :label="item.name"
-              :value="item.id"
+          <el-form-item :label="$t('commons.status')">
+            <el-radio-group v-model="form.enabled" disabled style="width: 140px">
+              <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
+              <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item disabled :label="$t('commons.organization')" prop="dept">
+            <treeselect
+              v-model="form.deptId"
+              disabled
+              :options="depts"
+              :load-options="loadDepts"
+              :auto-load-root-options="false"
+              :placeholder="$t('user.choose_org')"
             />
-          </el-select>
-        </el-form-item>
-      <!-- <el-form-item>
+          </el-form-item>
+          <el-form-item :label="$t('commons.role')" prop="roleIds">
+            <el-select
+              v-model="form.roleIds"
+              disabled
+              style="width: 100%"
+              multiple
+              :placeholder="$t('commons.please_select')"
+              @remove-tag="deleteTag"
+              @change="changeRole"
+            >
+              <el-option
+                v-for="item in roles"
+                :key="item.name"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+          <!-- <el-form-item>
         <el-button v-if="formType==='modify'" type="primary" @click="save">保存</el-button>
         <el-button v-if="formType==='modify'" @click="reset">重置</el-button>
       </el-form-item> -->
-      </el-form>
+        </el-form>
 
-      <div slot="footer" style="margin-left: 30px;" class="dialog-footer">
-        <el-button v-if="formType==='modify'" type="text" @click="reset">{{ $t('commons.cancel') }}</el-button>
-        <el-button v-if="formType==='modify'" type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
-        <el-button v-if="formType!=='modify'" type="primary" @click="edit">{{ $t('commons.edit') }}</el-button>
-      </div>
+        <div slot="footer" style="margin-left: 30px;" class="dialog-footer">
+          <el-button v-if="formType==='modify'" type="text" @click="reset">{{ $t('commons.cancel') }}</el-button>
+          <el-button v-if="formType==='modify'" type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
+          <el-button v-if="formType!=='modify'" type="primary" @click="edit">{{ $t('commons.edit') }}</el-button>
+        </div>
+      </el-card>
     </div>
 
   </layout-content>
@@ -149,7 +154,11 @@ export default {
       formType: 'add'
     }
   },
-
+  mounted() {
+    this.$nextTick(() => {
+      this.$store.dispatch('app/toggleSideBarHide', true)
+    })
+  },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)
     this.queryPerson()
@@ -259,3 +268,21 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.about-card {
+  background: inherit;
+  margin-top: 5%;
+  flex-direction: row;
+  width: 640px;
+  min-width: 640px;
+  height: auto;
+  position: relative;
+  >>>div.el-card__header {
+    padding: 0;
+  }
+}
+.form-header {
+    line-height: 60px;
+    font-size: 18px;
+}
+</style>

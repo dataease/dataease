@@ -84,6 +84,11 @@ export default {
       'user'
     ])
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.$store.dispatch('app/toggleSideBarHide', true)
+    })
+  },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)
     this.initVersion()
