@@ -66,6 +66,11 @@ export default {
       defaultForm: { enablePwd: false, pwd: null, uri: null }
     }
   },
+  computed: {
+    origin() {
+      return window.location.origin
+    }
+  },
   created() {
     this.form = this.defaultForm
     this.currentGenerate()
@@ -76,7 +81,7 @@ export default {
         const { valid, enablePwd, pwd, uri } = res.data
         this.valid = valid
         this.form.enablePwd = enablePwd
-        this.form.uri = uri
+        this.form.uri = uri ? (this.origin + uri) : uri
         // 返回的密码是共钥加密后的 所以展示需要私钥解密一波
         pwd && (this.form.pwd = decrypt(pwd))
       })

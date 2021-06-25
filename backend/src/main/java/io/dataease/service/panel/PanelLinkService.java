@@ -24,8 +24,7 @@ import java.util.Map;
 @Service
 public class PanelLinkService {
 
-    @Value("${public-link-url:http://localhost:9528/link.html?link=}")
-    private String baseUrl;
+    private static final String baseUrl = "/link.html?link=";
 
     @Value("${public-link-salt:DataEaseLinkSalt}")
     private String salt;
