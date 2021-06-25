@@ -122,6 +122,7 @@ export default {
 
     onCopy(e) {
     //   alert('You just copied: ' + e.text)
+      this.$success(this.$t('commons.copy_success'))
     },
     onError(e) {
     //   alert('Failed to copy texts')
