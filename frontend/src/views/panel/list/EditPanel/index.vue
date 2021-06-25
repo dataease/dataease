@@ -35,11 +35,12 @@
 import { panelSave } from '@/api/panel/panel'
 import { showTemplateList } from '@/api/system/template'
 import TemplateAllList from './TemplateAllList'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   components: { TemplateAllList },
   props: {
-    editPanel: {
+    editPanelOut: {
       type: Object,
       required: true
     }
@@ -55,7 +56,8 @@ export default {
       templateList: [],
       importTemplateInfo: {
         snapshot: ''
-      }
+      },
+      editPanel: null
     }
   },
   computed: {
@@ -70,14 +72,20 @@ export default {
     }
   },
   watch: {
-    inputType() {
-      this.editPanel.panelInfo.name = null
-      this.editPanel.panelInfo.panelStyle = null
-      this.editPanel.panelInfo.panelData = null
-      this.importTemplateInfo.snapshot = null
+    inputType(newVal) {
+      debugger
+      if (newVal === 'self') {
+        this.editPanel = deepCopy(this.editPanelOut)
+      } else {
+        this.editPanel.panelInfo.name = null
+        this.editPanel.panelInfo.panelStyle = null
+        this.editPanel.panelInfo.panelData = null
+        this.importTemplateInfo.snapshot = null
+      }
     }
   },
   created() {
+    this.editPanel = deepCopy(this.editPanelOut)
     // this.getTree()
   },
   mounted() {
