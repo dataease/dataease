@@ -26,7 +26,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ## UI 展示
 
-![de-ui](https://dataease.oss-cn-hangzhou.aliyuncs.com/img/de-ui.png)
+![de-ui](https://www.fit2cloud.com/dataease/images/screenshot/dataease-v1.gif)
 
 ## 功能架构
 
