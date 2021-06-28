@@ -1,4 +1,46 @@
 export default {
+  fu: {
+    search_bar: {
+      search: '搜索',
+      adv_search: '高級搜索',
+      ok: '確定',
+      cancel: '取消',
+      please_select: '請選擇',
+      please_input: '請輸入',
+      like: '包含',
+      not_like: '不包含',
+      in: '屬于',
+      not_in: '不屬于',
+      gt: '大于',
+      ge: '大于等于',
+      lt: '小于',
+      le: '小于等于',
+      eq: '等于',
+      ne: '不等于',
+      between: '之間',
+      select_date: '選擇日期',
+      start_date: '開始日期',
+      end_date: '結束日期',
+      select_date_time: '選擇日期時間',
+      start_date_time: '開始日期時間',
+      end_date_time: '結束日期時間',
+      range_separator: '至',
+      data_time_error: '開始日期不能大于結束日期',
+      clean: '清空',
+      refresh: '刷新'
+    },
+    table: {
+      ok: '確定',
+      custom_table_fields: '自定義表格字段',
+      custom_table_fields_desc: '固定字段不在選擇範圍'
+    },
+    steps: {
+      cancel: '取消',
+      next: '下一步',
+      prev: '上一步',
+      finish: '完成'
+    }
+  },
   route: {
     dashboard: '首頁',
     documentation: '文檔',
