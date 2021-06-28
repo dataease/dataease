@@ -760,7 +760,9 @@ export default {
     chartName: '新建視圖',
     chart_show_error: '無法正常顯示',
     chart_error_tips: '如有疑問請聯系管理員',
-    title_cannot_empty: '標題不能為空'
+    title_cannot_empty: '標題不能為空',
+    table_title_height: '表頭行高',
+    table_item_height: '表格行高'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

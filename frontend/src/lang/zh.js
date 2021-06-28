@@ -718,7 +718,9 @@ export default {
     chartName: '新建视图',
     chart_show_error: '无法正常显示',
     chart_error_tips: '如有疑问请联系管理员',
-    title_cannot_empty: '标题不能为空'
+    title_cannot_empty: '标题不能为空',
+    table_title_height: '表头行高',
+    table_item_height: '表格行高'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

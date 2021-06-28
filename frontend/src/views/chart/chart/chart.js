@@ -27,6 +27,8 @@ export const DEFAULT_SIZE = {
   radarShape: 'polygon',
   tableTitleFontSize: 12,
   tableItemFontSize: 12,
+  tableTitleHeight: 36,
+  tableItemHeight: 36,
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
