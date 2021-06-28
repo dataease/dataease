@@ -128,7 +128,7 @@ public class MysqlQueryProvider extends QueryProvider {
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
             if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-                f.append(y.getSummary()).append("(`").append(y.getOriginName()).append("`)");
+                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
@@ -266,7 +266,7 @@ public class MysqlQueryProvider extends QueryProvider {
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
             if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-                f.append(y.getSummary()).append("(`").append(y.getOriginName()).append("`)");
+                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
