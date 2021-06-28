@@ -92,7 +92,7 @@
             width="500"
             trigger="click"
           >
-            <dataset-group-selector :fix-height="true" show-mode="union" :custom-type="customType" :mode="1" @getTable="getTable" />
+            <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="1" @getTable="getTable" />
             <el-button slot="reference" size="mini" style="width: 100%;">
               <p class="table-name-css" :title="targetTable.name || $t('dataset.pls_slc_union_table')">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</p>
             </el-button>
@@ -134,11 +134,11 @@
 
 <script>
 import { post, fieldList } from '../../../api/dataset/dataset'
-import DatasetGroupSelector from '../common/DatasetGroupSelector'
+import DatasetGroupSelectorTree from '../common/DatasetGroupSelectorTree'
 
 export default {
   name: 'UnionView',
-  components: { DatasetGroupSelector },
+  components: { DatasetGroupSelectorTree },
   props: {
     table: {
       type: Object,
