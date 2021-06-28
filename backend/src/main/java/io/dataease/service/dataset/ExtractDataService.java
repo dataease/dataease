@@ -30,6 +30,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -824,7 +825,7 @@ public class ExtractDataService {
             if (!InetAddress.getByName(carte).isReachable(1000)) {
                 return false;
             }
-            HttpClient httpClient;
+            CloseableHttpClient httpClient;
             HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
             HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
             clientBuilder.setConnectionTimeout(1);
