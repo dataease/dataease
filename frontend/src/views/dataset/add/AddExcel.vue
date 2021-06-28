@@ -132,6 +132,14 @@ export default {
       this.uploading = true
     },
     uploadFail(response, file, fileList) {
+      this.path = ''
+      this.fields = []
+      this.sheets = []
+      this.data = []
+      const datas = this.data
+      this.$refs.plxTable.reloadData(datas)
+      this.name = ''
+      this.fileList = []
       this.uploading = false
       this.$message({
         type: 'error',
