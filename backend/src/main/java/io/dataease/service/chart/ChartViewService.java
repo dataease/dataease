@@ -6,6 +6,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -20,6 +21,7 @@ import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -65,6 +67,10 @@ public class ChartViewService {
             chartView.setUpdateTime(timestamp);
             chartViewMapper.insertSelective(chartView);
         }
+        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
+            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
+        });
+
         return chartView;
     }
 
@@ -188,6 +194,17 @@ public class ChartViewService {
                 }
             }
             data = datasourceProvider.getData(datasourceRequest);
+            /**
+             * 直连不实用缓存
+            String key = "provider_sql_"+datasourceRequest.getDatasource().getId() + "_" + datasourceRequest.getTable() + "_" +datasourceRequest.getQuery();
+            Object cache;
+            if ((cache = CacheUtils.get(JdbcConstants.JDBC_PROVIDER_KEY, key)) == null) {
+                data = datasourceProvider.getData(datasourceRequest);
+                CacheUtils.put(JdbcConstants.JDBC_PROVIDER_KEY,key ,data, null, null);
+            }else {
+                data = (List<String[]>) cache;
+            }
+             */
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
             Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -202,7 +219,15 @@ public class ChartViewService {
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList));
             }
-            data = datasourceProvider.getData(datasourceRequest);
+            // String key = "provider_sql_"+datasourceRequest.getDatasource().getId() + "_" + datasourceRequest.getTable() + "_" +datasourceRequest.getQuery();
+            // 定时抽取使用缓存
+            Object cache;
+            if ((cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, id)) == null) {
+                data = datasourceProvider.getData(datasourceRequest);
+                CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, id, data, null, null);
+            }else {
+                data = (List<String[]>) cache;
+            }
         }
         if (StringUtils.containsIgnoreCase(view.getType(), "pie") && data.size() > 1000) {
             data = data.subList(0, 1000);

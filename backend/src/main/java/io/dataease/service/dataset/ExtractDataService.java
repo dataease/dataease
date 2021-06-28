@@ -5,6 +5,8 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
+import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.UpdateType;
@@ -22,6 +24,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -95,6 +98,9 @@ public class ExtractDataService {
     private DatasetTableMapper datasetTableMapper;
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -277,7 +283,15 @@ public class ExtractDataService {
                     }
                 }
                 break;
-            }
+        }
+        //侵入式清除下属视图缓存
+        List<String> viewIds = extChartViewMapper.allViewIds(datasetTableId);
+        if (CollectionUtils.isNotEmpty(viewIds)){
+            viewIds.forEach(viewId -> {
+                CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, viewId);
+            });
+        }
+
     }
 
     private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed, Long execTime) {

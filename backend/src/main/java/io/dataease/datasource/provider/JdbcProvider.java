@@ -10,7 +10,6 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
 import java.beans.PropertyVetoException;
 import java.sql.*;
 import java.util.*;
@@ -22,14 +21,29 @@ public class JdbcProvider extends DatasourceProvider {
     private static int initPoolSize = 5;
     private static int maxConnections = 200;
 
+    /**
+     * 增加缓存机制 key 由 'provider_sql_' dsr.datasource.id dsr.table dsr.query共4部分组成，命中则使用缓存直接返回不再执行sql逻辑
+     * @param dsr
+     * @return
+     * @throws Exception
+     */
+    /**
+     * 这里使用声明式缓存不是很妥当
+     * 改为chartViewService中使用编程式缓存
+    @Cacheable(
+            value = JdbcConstants.JDBC_PROVIDER_KEY,
+            key = "'provider_sql_' + #dsr.datasource.id + '_' + #dsr.table + '_' + #dsr.query",
+            condition = "#dsr.pageSize == null || #dsr.pageSize == 0L"
+    )
+     */
     @Override
-    public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
+    public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
         Connection connection = null;
         try {
-            connection = getConnectionFromPool(datasourceRequest);
+            connection = getConnectionFromPool(dsr);
             Statement stat = connection.createStatement();
-            ResultSet rs = stat.executeQuery(datasourceRequest.getQuery());
+            ResultSet rs = stat.executeQuery(dsr.getQuery());
             list = fetchResult(rs);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
