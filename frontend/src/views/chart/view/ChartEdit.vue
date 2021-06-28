@@ -208,10 +208,10 @@
               <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
-              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
               <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
             </el-tab-pane>
           </el-tabs>

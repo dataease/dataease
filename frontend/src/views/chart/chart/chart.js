@@ -81,8 +81,19 @@ export const DEFAULT_XAXIS_STYLE = {
   position: 'bottom',
   name: '',
   axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
     rotate: 0,
     formatter: '{value}'
+  },
+  splitLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
   }
 }
 export const DEFAULT_YAXIS_STYLE = {
@@ -90,8 +101,19 @@ export const DEFAULT_YAXIS_STYLE = {
   position: 'left',
   name: '',
   axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
     rotate: 0,
     formatter: '{value}'
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {

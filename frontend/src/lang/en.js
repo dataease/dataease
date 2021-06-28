@@ -720,7 +720,17 @@ export default {
     chart_error_tips: 'Please contact admin ',
     title_cannot_empty: 'Title can not be empty',
     table_title_height: 'Table header height',
-    table_item_height: 'Table row height'
+    table_item_height: 'Table row height',
+    axis_show: 'Axis Show',
+    axis_color: 'Axis Color',
+    axis_width: 'Axis Width',
+    axis_type: 'Axis Type',
+    axis_type_solid: 'Solid',
+    axis_type_dashed: 'Dashed',
+    axis_type_dotted: 'Dotted',
+    axis_label_show: 'Label Show',
+    axis_label_color: 'Label Color',
+    axis_label_fontsize: 'Label Fontsize'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

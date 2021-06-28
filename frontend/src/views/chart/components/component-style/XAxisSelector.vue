@@ -24,6 +24,40 @@
             <el-form-item :label="$t('chart.rotate')" class="form-item form-item-slider">
               <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle" />
             </el-form-item>
+            <el-divider />
+            <el-form-item :label="$t('chart.axis_show')" class="form-item">
+              <el-checkbox v-model="axisForm.splitLine.show" @change="changeXAxisStyle">{{ $t('chart.axis_show') }}</el-checkbox>
+            </el-form-item>
+            <span v-show="axisForm.splitLine.show">
+              <el-form-item :label="$t('chart.axis_color')" class="form-item">
+                <colorPicker v-model="axisForm.splitLine.lineStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeXAxisStyle" />
+              </el-form-item>
+              <el-form-item :label="$t('chart.axis_width')" class="form-item form-item-slider">
+                <el-slider v-model="axisForm.splitLine.lineStyle.width" :min="1" :max="10" show-input :show-input-controls="false" input-size="mini" @change="changeXAxisStyle" />
+              </el-form-item>
+              <el-form-item :label="$t('chart.axis_type')" class="form-item">
+                <el-radio-group v-model="axisForm.splitLine.lineStyle.type" size="mini" @change="changeXAxisStyle">
+                  <el-radio-button label="solid">{{ $t('chart.axis_type_solid') }}</el-radio-button>
+                  <el-radio-button label="dashed">{{ $t('chart.axis_type_dashed') }}</el-radio-button>
+                  <el-radio-button label="dotted">{{ $t('chart.axis_type_dotted') }}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+            </span>
+            <el-divider />
+            <el-form-item :label="$t('chart.axis_label_show')" class="form-item">
+              <el-checkbox v-model="axisForm.axisLabel.show" @change="changeXAxisStyle">{{ $t('chart.axis_label_show') }}</el-checkbox>
+            </el-form-item>
+            <span v-show="axisForm.axisLabel.show">
+              <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
+                <colorPicker v-model="axisForm.axisLabel.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeXAxisStyle" />
+              </el-form-item>
+              <el-form-item :label="$t('chart.axis_label_fontsize')" class="form-item form-item-slider">
+                <el-select v-model="axisForm.axisLabel.fontSize" :placeholder="$t('chart.axis_label_fontsize')" @change="changeXAxisStyle">
+                  <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+                </el-select>
+              </el-form-item>
+            </span>
+            <el-divider />
             <el-form-item :label="$t('chart.content_formatter')" class="form-item">
               <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeXAxisStyle" />
             </el-form-item>
@@ -58,7 +92,8 @@ export default {
   data() {
     return {
       axisForm: JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE)),
-      isSetting: false
+      isSetting: false,
+      fontSize: []
     }
   },
   watch: {
@@ -74,14 +109,28 @@ export default {
           }
           if (customStyle.xAxis) {
             this.axisForm = customStyle.xAxis
+            if (!this.axisForm.splitLine) {
+              this.axisForm.splitLine = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.splitLine))
+            }
           }
         }
       }
     }
   },
   mounted() {
+    this.init()
   },
   methods: {
+    init() {
+      const arr = []
+      for (let i = 10; i <= 40; i = i + 2) {
+        arr.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.fontSize = arr
+    },
     changeXAxisStyle() {
       if (!this.axisForm.show) {
         this.isSetting = false
@@ -93,6 +142,9 @@ export default {
 </script>
 
 <style scoped>
+  .el-divider--horizontal {
+    margin: 10px 0
+  }
 .shape-item{
   padding: 6px;
   border: none;

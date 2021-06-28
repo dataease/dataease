@@ -762,7 +762,17 @@ export default {
     chart_error_tips: '如有疑問請聯系管理員',
     title_cannot_empty: '標題不能為空',
     table_title_height: '表頭行高',
-    table_item_height: '表格行高'
+    table_item_height: '表格行高',
+    axis_show: '軸線顯示',
+    axis_color: '軸線顏色',
+    axis_width: '軸線寬度',
+    axis_type: '軸線類型',
+    axis_type_solid: '實線',
+    axis_type_dashed: '虛線',
+    axis_type_dotted: '點',
+    axis_label_show: '標簽顯示',
+    axis_label_color: '標簽顏色',
+    axis_label_fontsize: '標簽大小'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
