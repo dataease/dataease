@@ -222,10 +222,17 @@ public class ChartViewService {
             // String key = "provider_sql_"+datasourceRequest.getDatasource().getId() + "_" + datasourceRequest.getTable() + "_" +datasourceRequest.getQuery();
             // 定时抽取使用缓存
             Object cache;
-            if ((cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, id)) == null) {
+            // 仪表板有参数不实用缓存
+            if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
+                data = datasourceProvider.getData(datasourceRequest);
+            }
+            // 仪表板无参数 且 未缓存过该视图 则查询后缓存
+            else if ((cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, id)) == null) {
                 data = datasourceProvider.getData(datasourceRequest);
                 CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, id, data, null, null);
-            }else {
+            }
+            // 仪表板有缓存 使用缓存
+            else {
                 data = (List<String[]>) cache;
             }
         }
