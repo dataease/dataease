@@ -946,6 +946,12 @@ public class DataSetTableService {
         }
 
         String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
+
+        // 校验excel字段是否重名
+        if (checkIsRepeat(fieldArray)) {
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+        }
+
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
                 Map<String, Object> map = new HashMap<>();
@@ -1085,6 +1091,21 @@ public class DataSetTableService {
             extractDataService.deleteFile("incremental_add", jobStoppeddDatasetTable.getId());
             extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
 
+        }
+    }
+
+    /*
+     * 判断数组中是否有重复的值
+     */
+    public static boolean checkIsRepeat(String[] array) {
+        HashSet<String> hashSet = new HashSet<String>();
+        for (int i = 0; i < array.length; i++) {
+            hashSet.add(array[i]);
+        }
+        if (hashSet.size() == array.length) {
+            return false;
+        } else {
+            return true;
         }
     }
 }
