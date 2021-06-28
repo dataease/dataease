@@ -189,7 +189,7 @@ public class DorisQueryProvider extends QueryProvider {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                             filter.append("%").append(f.getValue()).append("%");
                         } else {
-                            filter.append("'" + f.getValue() + "'");
+                            filter.append("'").append(f.getValue()).append("'");
                         }
                         return filter.toString();
                     }).toArray(String[]::new);
@@ -225,7 +225,7 @@ public class DorisQueryProvider extends QueryProvider {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                             filter.append("%").append(f.getValue()).append("%");
                         } else {
-                            filter.append("'" + f.getValue() + "'");
+                            filter.append("'").append(f.getValue()).append("'");
                         }
                         return filter.toString();
                     }).toArray(String[]::new);
@@ -234,9 +234,10 @@ public class DorisQueryProvider extends QueryProvider {
         if (resultFilter.length == 0) {
             return sql;
         } else {
-            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1}",
+            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
                     "(" + sql + ") AS tmp",
-                    StringUtils.join(resultFilter, " "));
+                    StringUtils.join(resultFilter, " "),
+                    StringUtils.join(yOrder, ","));
             return filterSql;
         }
     }
@@ -314,9 +315,10 @@ public class DorisQueryProvider extends QueryProvider {
         if (resultFilter.length == 0) {
             return sql;
         } else {
-            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1}",
+            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
                     "(" + sql + ") AS tmp",
-                    StringUtils.join(resultFilter, " "));
+                    StringUtils.join(resultFilter, " "),
+                    StringUtils.join(order, ","));
             return filterSql;
         }
     }
