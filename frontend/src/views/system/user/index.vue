@@ -205,8 +205,8 @@ export default {
             label: this.$t('commons.status'),
             component: 'FuComplexSelect',
             options: [
-              { label: '启用', value: '1' },
-              { label: '禁用', value: '0' }
+              { label: this.$t('commons.enable'), value: '1' },
+              { label: this.$t('commons.disable'), value: '0' }
             ],
             multiple: false
           }
