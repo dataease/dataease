@@ -59,7 +59,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryCountSQL(String table) {
-        return MessageFormat.format("SELECT count(*) FROM {0}", table);
+        return MessageFormat.format("SELECT COUNT(*) FROM {0}", table);
     }
 
     @Override
@@ -79,25 +79,25 @@ public class MysqlQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (f.getDeExtractType() == 1) {
                 if (f.getDeType() == 2 || f.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(f.getOriginName()).append(")*1000 as ").append(f.getOriginName());
+                    stringBuilder.append("UNIX_TIMESTAMP(`").append(f.getOriginName()).append("`)*1000 AS ").append(f.getDataeaseName());
                 } else {
-                    stringBuilder.append(f.getOriginName());
+                    stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
                 }
             } else if (f.getDeExtractType() == 0) {
                 if (f.getDeType() == 2) {
-                    stringBuilder.append("cast(").append(f.getOriginName()).append(" as decimal(20,0)) as ").append(f.getOriginName());
+                    stringBuilder.append("CAST(`").append(f.getOriginName()).append("` AS DECIMAL(20,0)) AS ").append(f.getDataeaseName());
                 } else if (f.getDeType() == 3) {
-                    stringBuilder.append("cast(").append(f.getOriginName()).append(" as decimal(20,2)) as ").append(f.getOriginName());
+                    stringBuilder.append("CAST(`").append(f.getOriginName()).append("` AS DECIMAL(20,2)) AS ").append(f.getDataeaseName());
                 } else if (f.getDeType() == 1) {
-                    stringBuilder.append("DATE_FORMAT(").append(f.getOriginName()).append(",'%Y-%m-%d %H:%i:%S') as _").append(f.getOriginName());
+                    stringBuilder.append("DATE_FORMAT(`").append(f.getOriginName()).append("`,'%Y-%m-%d %H:%i:%S') AS _").append(f.getDataeaseName());
                 } else {
-                    stringBuilder.append(f.getOriginName());
+                    stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
                 }
             } else {
                 if (f.getDeType() == 1) {
-                    stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getOriginName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getOriginName());
+                    stringBuilder.append("FROM_UNIXTIME(CAST(`").append(f.getOriginName()).append("` AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') AS ").append(f.getDataeaseName());
                 } else {
-                    stringBuilder.append(f.getOriginName());
+                    stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
                 }
             }
             return stringBuilder.toString();
@@ -128,20 +128,20 @@ public class MysqlQueryProvider extends QueryProvider {
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
             if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
+                f.append(y.getSummary()).append("(`").append(y.getOriginName()).append("`)");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
                             .append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getOriginName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST(`").append(y.getOriginName()).append("` AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(") AS DECIMAL(20,2)").append(")");
                 } else {
                     f.append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getOriginName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST(`").append(y.getOriginName()).append("` AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(")");
                 }
             }
-            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName());
+            f.append(" AS `_").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("`");
             return f.toString();
         }).toArray(String[]::new);
         String[] groupField = xAxis.stream().map(x -> {
@@ -149,32 +149,32 @@ public class MysqlQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (x.getDeExtractType() == 1) {
                 if (x.getDeType() == 2 || x.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(x.getOriginName()).append(")*1000 as _").append(x.getOriginName());
+                    stringBuilder.append("UNIX_TIMESTAMP(`").append(x.getOriginName()).append("`)*1000 AS `_").append(x.getOriginName()).append("`");
                 } else if (x.getDeType() == 1) {
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    stringBuilder.append("DATE_FORMAT(").append(x.getOriginName()).append(",'").append(format).append("') as _").append(x.getOriginName());
+                    stringBuilder.append("DATE_FORMAT(`").append(x.getOriginName()).append("`,'").append(format).append("') AS `_").append(x.getOriginName()).append("`");
                 } else {
-                    stringBuilder.append(x.getOriginName()).append(" as _").append(x.getOriginName());
+                    stringBuilder.append("`").append(x.getOriginName()).append("` AS `_").append(x.getOriginName()).append("`");
                 }
             } else {
                 if (x.getDeType() == 1) {
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                     if (x.getDeExtractType() == 0) {
-                        stringBuilder.append("DATE_FORMAT(").append(x.getOriginName()).append(",'").append(format).append("') as _").append(x.getOriginName());
+                        stringBuilder.append("DATE_FORMAT(`").append(x.getOriginName()).append("`,'").append(format).append("') AS `_").append(x.getOriginName()).append("`");
                     } else {
-                        stringBuilder.append("DATE_FORMAT(").append("FROM_UNIXTIME(cast(").append(x.getOriginName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S')").append(",'").append(format).append("') as _").append(x.getOriginName());
+                        stringBuilder.append("DATE_FORMAT(").append("FROM_UNIXTIME(CAST(`").append(x.getOriginName()).append("` AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S')").append(",'").append(format).append("') AS `_").append(x.getOriginName()).append("`");
                     }
                 } else {
-                    stringBuilder.append(x.getOriginName()).append(" as _").append(x.getOriginName());
+                    stringBuilder.append("`").append(x.getOriginName()).append("` AS `_").append(x.getOriginName()).append("`");
                 }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        String[] group = xAxis.stream().map(x -> "_" + x.getOriginName()).toArray(String[]::new);
+        String[] group = xAxis.stream().map(x -> "`_" + x.getOriginName() + "`").toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getOriginName() + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> "`_" + f.getOriginName() + "` " + f.getSort()).toArray(String[]::new);
         String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> "`_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + "` " + f.getSort()).toArray(String[]::new);
         String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
         System.arraycopy(yOrder, 0, order, xOrder.length, yOrder.length);
 
@@ -183,11 +183,11 @@ public class MysqlQueryProvider extends QueryProvider {
                     String[] s = x.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
                         if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(cast(")
+                            filter.append(" AND FROM_UNIXTIME(cast(`")
                                     .append(x.getOriginName())
-                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                                    .append("` AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND ").append(x.getOriginName());
+                            filter.append(" AND `").append(x.getOriginName()).append("`");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -220,11 +220,11 @@ public class MysqlQueryProvider extends QueryProvider {
                         StringBuilder filter = new StringBuilder();
                         // 原始类型不是时间，在de中被转成时间的字段做处理
                         if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(cast(_")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())
-                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                            filter.append(" AND FROM_UNIXTIME(CAST(`_")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("`")
+                                    .append(" AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName());
+                            filter.append(" AND `_").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("`");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -242,9 +242,10 @@ public class MysqlQueryProvider extends QueryProvider {
         if (resultFilter.length == 0) {
             return sql;
         } else {
-            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1}",
+            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
                     "(" + sql + ") AS tmp",
-                    StringUtils.join(resultFilter, " "));
+                    StringUtils.join(resultFilter, " "),
+                    StringUtils.join(yOrder, ","));
             return filterSql;
         }
     }
@@ -265,25 +266,25 @@ public class MysqlQueryProvider extends QueryProvider {
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
             if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
+                f.append(y.getSummary()).append("(`").append(y.getOriginName()).append("`)");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
                             .append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getOriginName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST(`").append(y.getOriginName()).append("` AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(") AS DECIMAL(20,2)").append(")");
                 } else {
                     f.append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getOriginName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST(`").append(y.getOriginName()).append("` AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(")");
                 }
             }
-            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName());
+            f.append(" AS `_").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("`");
             return f.toString();
         }).toArray(String[]::new);
 
         String[] order = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> "`_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + "` " + f.getSort()).toArray(String[]::new);
 
         String sql = MessageFormat.format("SELECT {0} FROM {1} WHERE 1=1 {2} ORDER BY null,{3}",
                 StringUtils.join(field, ","),
@@ -300,11 +301,11 @@ public class MysqlQueryProvider extends QueryProvider {
                         StringBuilder filter = new StringBuilder();
                         // 原始类型不是时间，在de中被转成时间的字段做处理
                         if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(cast(_")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())
-                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                            filter.append(" AND FROM_UNIXTIME(CAST(`_")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("`")
+                                    .append(" AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName());
+                            filter.append(" AND `_").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("`");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -322,9 +323,10 @@ public class MysqlQueryProvider extends QueryProvider {
         if (resultFilter.length == 0) {
             return sql;
         } else {
-            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1}",
+            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
                     "(" + sql + ") AS tmp",
-                    StringUtils.join(resultFilter, " "));
+                    StringUtils.join(resultFilter, " "),
+                    StringUtils.join(order, ","));
             return filterSql;
         }
     }
@@ -379,11 +381,11 @@ public class MysqlQueryProvider extends QueryProvider {
                 continue;
             }
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                filter.append(" AND FROM_UNIXTIME(cast(")
+                filter.append(" AND FROM_UNIXTIME(CAST(`")
                         .append(field.getOriginName())
-                        .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                        .append("` AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
             } else {
-                filter.append(" AND ").append(field.getOriginName());
+                filter.append(" AND `").append(field.getOriginName()).append("`");
             }
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getTerm()))
@@ -412,11 +414,11 @@ public class MysqlQueryProvider extends QueryProvider {
             }
             DatasetTableField field = request.getDatasetTableField();
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                filter.append(" AND FROM_UNIXTIME(cast(")
+                filter.append(" AND FROM_UNIXTIME(CAST(`")
                         .append(field.getOriginName())
-                        .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                        .append("` AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
             } else {
-                filter.append(" AND ").append(field.getOriginName());
+                filter.append(" AND `").append(field.getOriginName()).append("`");
             }
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getOperator()))

@@ -220,7 +220,7 @@ export default {
         dataSourceId: this.dataSource,
         type: 'sql',
         // info: '{"sql":"' + this.sql + '"}',
-        info: JSON.stringify({ sql: this.sql })
+        info: JSON.stringify({ sql: this.sql.trim() })
       }).then(response => {
         this.fields = response.data.fields
         this.data = response.data.data
@@ -262,7 +262,7 @@ export default {
         type: 'sql',
         mode: parseInt(this.mode),
         // info: '{"sql":"' + this.sql + '"}',
-        info: JSON.stringify({ sql: this.sql })
+        info: JSON.stringify({ sql: this.sql.trim() })
       }
       post('/dataset/table/update', table).then(response => {
         // this.$store.dispatch('dataset/setSceneData', new Date().getTime())
