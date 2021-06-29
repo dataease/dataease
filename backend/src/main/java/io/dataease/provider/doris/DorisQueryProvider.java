@@ -237,7 +237,7 @@ public class DorisQueryProvider extends QueryProvider {
             String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
                     "(" + sql + ") AS tmp",
                     StringUtils.join(resultFilter, " "),
-                    StringUtils.join(yOrder, ","));
+                    ObjectUtils.isNotEmpty(yOrder) ? StringUtils.join(yOrder, ",") : "null");
             return filterSql;
         }
     }
@@ -318,7 +318,7 @@ public class DorisQueryProvider extends QueryProvider {
             String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
                     "(" + sql + ") AS tmp",
                     StringUtils.join(resultFilter, " "),
-                    StringUtils.join(order, ","));
+                    ObjectUtils.isNotEmpty(order) ? StringUtils.join(order, ",") : "null");
             return filterSql;
         }
     }
