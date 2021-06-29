@@ -732,7 +732,9 @@ export default {
     axis_label_color: 'Label Color',
     axis_label_fontsize: 'Label Fontsize',
     text_style: 'Font Style',
-    bolder: 'Bolder'
+    bolder: 'Bolder',
+    change_ds: 'Change Dataset',
+    change_ds_tip: 'Tips：Change Dataset will change fields,you need rebuild chart'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

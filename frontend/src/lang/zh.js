@@ -732,7 +732,9 @@ export default {
     axis_label_color: '标签颜色',
     axis_label_fontsize: '标签大小',
     text_style: '字体样式',
-    bolder: '加粗'
+    bolder: '加粗',
+    change_ds: '更换数据集',
+    change_ds_tip: '提示：更换数据集将导致字段发生变化，需重新制作视图'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
