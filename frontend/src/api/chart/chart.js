@@ -27,3 +27,11 @@ export function getChartTree(data) {
     data
   })
 }
+
+export function chartCopy(id) {
+  return request({
+    url: '/chart/view/chartCopy/' + id,
+    method: 'post',
+    loading: true
+  })
+}

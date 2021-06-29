@@ -12,6 +12,8 @@ import java.util.List;
 public interface ExtChartViewMapper {
     List<ChartViewDTO> search(ChartViewRequest request);
 
+    void chartCopy(@Param("newChartId")String newChartId,@Param("oldChartId")String oldChartId);
+
     @Select("select id from chart_view where table_id = #{tableId}")
     List<String> allViewIds(@Param("tableId") String tableId);
 }

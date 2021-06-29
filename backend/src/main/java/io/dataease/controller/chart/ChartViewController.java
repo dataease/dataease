@@ -55,4 +55,9 @@ public class ChartViewController {
     public Map<String, Object> chartDetail(@PathVariable String id) {
         return chartViewService.getChartDetail(id);
     }
+
+    @PostMapping("chartCopy/{id}")
+    public String chartCopy(@PathVariable String id) {
+        return chartViewService.chartCopy(id);
+    }
 }
