@@ -355,7 +355,7 @@
         https://github.com/dataease/dataease-plugins-->
         <dependency>
             <groupId>io.dataease</groupId>
-            <artifactId>dataease-plugin-xpack</artifactId>
+            <artifactId>dataease-plugin-interface</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>
