@@ -11,6 +11,7 @@ export function componentStyle(chart_option, chart) {
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
       customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
+      customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.textStyle = style
     }
     if (customStyle.legend) {

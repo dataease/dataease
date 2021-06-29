@@ -44,8 +44,9 @@
                 <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item :label="$t('chart.text_italic')" class="form-item">
+            <el-form-item :label="$t('chart.text_style')" class="form-item">
               <el-checkbox v-model="titleForm.isItalic" @change="changeTitleStyle">{{ $t('chart.italic') }}</el-checkbox>
+              <el-checkbox v-model="titleForm.isBolder" @change="changeTitleStyle">{{ $t('chart.bolder') }}</el-checkbox>
             </el-form-item>
           </el-form>
         </el-col>

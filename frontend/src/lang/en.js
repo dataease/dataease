@@ -730,7 +730,9 @@ export default {
     axis_type_dotted: 'Dotted',
     axis_label_show: 'Label Show',
     axis_label_color: 'Label Color',
-    axis_label_fontsize: 'Label Fontsize'
+    axis_label_fontsize: 'Label Fontsize',
+    text_style: 'Font Style',
+    bolder: 'Bolder'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

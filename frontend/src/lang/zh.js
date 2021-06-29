@@ -730,7 +730,9 @@ export default {
     axis_type_dotted: '点',
     axis_label_show: '标签显示',
     axis_label_color: '标签颜色',
-    axis_label_fontsize: '标签大小'
+    axis_label_fontsize: '标签大小',
+    text_style: '字体样式',
+    bolder: '加粗'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
