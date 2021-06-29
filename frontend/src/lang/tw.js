@@ -772,7 +772,9 @@ export default {
     axis_type_dotted: '點',
     axis_label_show: '標簽顯示',
     axis_label_color: '標簽顏色',
-    axis_label_fontsize: '標簽大小'
+    axis_label_fontsize: '標簽大小',
+    text_style: '字體樣式',
+    bolder: '加粗'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

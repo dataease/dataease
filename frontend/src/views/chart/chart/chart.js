@@ -63,7 +63,8 @@ export const DEFAULT_TITLE_STYLE = {
   color: '#303133',
   hPosition: 'center',
   vPosition: 'top',
-  isItalic: false
+  isItalic: false,
+  isBolder: false
 }
 export const DEFAULT_LEGEND_STYLE = {
   show: true,
