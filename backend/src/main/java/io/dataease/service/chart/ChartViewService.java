@@ -342,4 +342,10 @@ public class ChartViewService {
     public ChartViewWithBLOBs findOne(String id) {
         return chartViewMapper.selectByPrimaryKey(id);
     }
+
+    public String chartCopy(String id) {
+        String newChartId = UUID.randomUUID().toString();
+       extChartViewMapper.chartCopy(newChartId,id);
+        return newChartId;
+    }
 }

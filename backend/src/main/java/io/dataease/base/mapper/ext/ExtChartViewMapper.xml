@@ -27,4 +27,45 @@
 
 
     </select>
+
+    <insert id="chartCopy">
+        INSERT INTO chart_view (
+            `id`,
+            `name`,
+            `scene_id`,
+            `table_id`,
+            `type`,
+            `title`,
+            `x_axis`,
+            `y_axis`,
+            `custom_attr`,
+            `custom_style`,
+            `custom_filter`,
+            `create_by`,
+            `create_time`,
+            `update_time`,
+            `snapshot`,
+            `style_priority`
+        ) SELECT
+        #{newChartId},
+        GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
+        `scene_id`,
+        `table_id`,
+        `type`,
+        `title`,
+        `x_axis`,
+        `y_axis`,
+        `custom_attr`,
+        `custom_style`,
+        `custom_filter`,
+        `create_by`,
+        `create_time`,
+        `update_time`,
+        `snapshot`,
+        `style_priority`
+        FROM
+            chart_view
+        WHERE
+            id = #{oldChartId}
+    </insert>
 </mapper>
