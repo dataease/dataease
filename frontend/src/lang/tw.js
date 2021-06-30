@@ -1169,5 +1169,10 @@ export default {
     week_end: '至星期',
     every_year: '每年',
     week_tips: '說明：1-7 分別對應 周日-周六'
+  },
+  dept: {
+    can_not_move_change_sort: '不能移動以改變排序',
+    can_not_move_parent_to_children: '父組織不能移動到自己的子節點下',
+    move_success: '移動成功'
   }
 }

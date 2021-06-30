@@ -1127,5 +1127,10 @@ export default {
     week_end: 'to week',
     every_year: 'Every year',
     week_tips: 'Tips：1-7 mapping SUN-SAT'
+  },
+  dept: {
+    can_not_move_change_sort: 'Cannot move to change sort',
+    can_not_move_parent_to_children: 'Parent organization cannot move to its own child node',
+    move_success: 'Mobile success'
   }
 }
