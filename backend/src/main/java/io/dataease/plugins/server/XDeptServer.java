@@ -7,6 +7,7 @@ import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.dept.dto.request.XpackCreateDept;
 import io.dataease.plugins.xpack.dept.dto.request.XpackDeleteDept;
+import io.dataease.plugins.xpack.dept.dto.request.XpackMoveDept;
 import io.dataease.plugins.xpack.dept.dto.response.XpackDeptTreeNode;
 import io.dataease.plugins.xpack.dept.dto.response.XpackSysDept;
 import io.dataease.plugins.xpack.dept.service.DeptXpackService;
@@ -76,5 +77,11 @@ public class XDeptServer {
     public List<XpackDeptTreeNode> nodesByDeptId(@PathVariable("deptId") Long deptId){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         return deptService.searchTree(deptId);
+    }
+
+    @PostMapping("/move")
+    public void move(@RequestBody XpackMoveDept xpackMoveDept){
+        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
+        deptService.move(xpackMoveDept);
     }
 }
