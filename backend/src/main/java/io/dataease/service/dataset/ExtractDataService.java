@@ -830,6 +830,7 @@ public class ExtractDataService {
        }catch (Exception e){
            return false;
        }
+
         HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
         HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
         clientBuilder.setConnectionTimeout(1);
@@ -839,18 +840,13 @@ public class ExtractDataService {
             HttpResponse httpResponse = httpClient.execute(getMethod);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != -1 && statusCode < 400) {
+                httpResponse.getEntity().getContent().close();
                 return true;
             } else {
                 return false;
             }
         } catch (Exception e) {
             return false;
-        }finally {
-            try {
-                httpClient.close();
-            } catch (Exception e) {
-                LoggerFactory.getLogger(HttpClientUtil.class).error("HttpClient关闭连接失败", e);
-            }
         }
     }
 
