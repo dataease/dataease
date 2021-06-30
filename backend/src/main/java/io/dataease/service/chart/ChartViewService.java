@@ -6,6 +6,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -20,6 +21,7 @@ import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -32,6 +34,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +56,9 @@ public class ChartViewService {
     @Resource
     private ExtChartGroupMapper extChartGroupMapper;
 
+    //默认使用非公平
+    private ReentrantLock lock = new ReentrantLock();
+
     public ChartViewWithBLOBs save(ChartViewWithBLOBs chartView) {
         checkName(chartView);
         long timestamp = System.currentTimeMillis();
@@ -65,6 +71,10 @@ public class ChartViewService {
             chartView.setUpdateTime(timestamp);
             chartViewMapper.insertSelective(chartView);
         }
+        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
+            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
+        });
+
         return chartView;
     }
 
@@ -188,6 +198,17 @@ public class ChartViewService {
                 }
             }
             data = datasourceProvider.getData(datasourceRequest);
+            /**
+             * 直连不实用缓存
+            String key = "provider_sql_"+datasourceRequest.getDatasource().getId() + "_" + datasourceRequest.getTable() + "_" +datasourceRequest.getQuery();
+            Object cache;
+            if ((cache = CacheUtils.get(JdbcConstants.JDBC_PROVIDER_KEY, key)) == null) {
+                data = datasourceProvider.getData(datasourceRequest);
+                CacheUtils.put(JdbcConstants.JDBC_PROVIDER_KEY,key ,data, null, null);
+            }else {
+                data = (List<String[]>) cache;
+            }
+             */
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
             Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -202,7 +223,23 @@ public class ChartViewService {
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList));
             }
-            data = datasourceProvider.getData(datasourceRequest);
+            /*// 定时抽取使用缓存
+            Object cache;
+            // 仪表板有参数不实用缓存
+            if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
+                data = datasourceProvider.getData(datasourceRequest);
+            }
+            // 仪表板无参数 且 未缓存过该视图 则查询后缓存
+            else if ((cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, id)) == null) {
+                lock.lock();
+                data = datasourceProvider.getData(datasourceRequest);
+                CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, id, data, null, null);
+            }
+            // 仪表板有缓存 使用缓存
+            else {
+                data = (List<String[]>) cache;
+            }*/
+            data = cacheViewData(datasourceProvider, datasourceRequest, id);
         }
         if (StringUtils.containsIgnoreCase(view.getType(), "pie") && data.size() > 1000) {
             data = data.subList(0, 1000);
@@ -269,6 +306,35 @@ public class ChartViewService {
         return dto;
     }
 
+    /**
+     * 避免缓存击穿
+     * 虽然流量不一定能够达到击穿的水平
+     * @param datasourceProvider
+     * @param datasourceRequest
+     * @param viewId
+     * @return
+     * @throws Exception
+     */
+    public List<String[]> cacheViewData(DatasourceProvider datasourceProvider, DatasourceRequest datasourceRequest, String viewId) throws Exception{
+        List<String[]> result ;
+        Object cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, viewId);
+        if (cache == null) {
+            if (lock.tryLock()) {// 获取锁成功
+                result = datasourceProvider.getData(datasourceRequest);
+                if (result != null) {
+                    CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, viewId, result, null, null);
+                }
+                lock.unlock();
+            }else {//获取锁失败
+                Thread.sleep(100);//避免CAS自旋频率过大 占用cpu资源过高
+                result = cacheViewData(datasourceProvider, datasourceRequest, viewId);
+            }
+        }else {
+            result = (List<String[]>)cache;
+        }
+        return result;
+    }
+
     private void checkName(ChartViewWithBLOBs chartView) {
 //        if (StringUtils.isEmpty(chartView.getId())) {
 //            return;
@@ -309,5 +375,11 @@ public class ChartViewService {
 
     public ChartViewWithBLOBs findOne(String id) {
         return chartViewMapper.selectByPrimaryKey(id);
+    }
+
+    public String chartCopy(String id) {
+        String newChartId = UUID.randomUUID().toString();
+       extChartViewMapper.chartCopy(newChartId,id);
+        return newChartId;
     }
 }

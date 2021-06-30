@@ -5,11 +5,14 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
+import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.UpdateType;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.DorisTableUtils;
+import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.*;
@@ -19,6 +22,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -27,6 +31,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -59,6 +64,7 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.quartz.JobExecutionContext;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -92,6 +98,9 @@ public class ExtractDataService {
     private DatasetTableMapper datasetTableMapper;
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -274,7 +283,15 @@ public class ExtractDataService {
                     }
                 }
                 break;
-            }
+        }
+        //侵入式清除下属视图缓存
+        List<String> viewIds = extChartViewMapper.allViewIds(datasetTableId);
+        if (CollectionUtils.isNotEmpty(viewIds)){
+            viewIds.forEach(viewId -> {
+                CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, viewId);
+            });
+        }
+
     }
 
     private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed, Long execTime) {
@@ -840,16 +857,19 @@ public class ExtractDataService {
     }
 
     public boolean isKettleRunning() {
+       try {
+           if (!InetAddress.getByName(carte).isReachable(1000)) {
+               return false;
+           }
+       }catch (Exception e){
+           return false;
+       }
+        HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
+        HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+        clientBuilder.setConnectionTimeout(1);
+        clientBuilder.setCredentials(user, passwd);
+        CloseableHttpClient httpClient = clientBuilder.build();
         try {
-            if (!InetAddress.getByName(carte).isReachable(1000)) {
-                return false;
-            }
-            HttpClient httpClient;
-            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
-            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
-            clientBuilder.setConnectionTimeout(1);
-            clientBuilder.setCredentials(user, passwd);
-            httpClient = clientBuilder.build();
             HttpResponse httpResponse = httpClient.execute(getMethod);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != -1 && statusCode < 400) {
@@ -859,6 +879,12 @@ public class ExtractDataService {
             }
         } catch (Exception e) {
             return false;
+        }finally {
+            try {
+                httpClient.close();
+            } catch (Exception e) {
+                LoggerFactory.getLogger(HttpClientUtil.class).error("HttpClient关闭连接失败", e);
+            }
         }
     }
 

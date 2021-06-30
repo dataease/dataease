@@ -11,6 +11,7 @@ export function componentStyle(chart_option, chart) {
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
       customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
+      customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.textStyle = style
     }
     if (customStyle.legend) {
@@ -26,12 +27,14 @@ export function componentStyle(chart_option, chart) {
       chart_option.xAxis.position = customStyle.xAxis.position
       chart_option.xAxis.name = customStyle.xAxis.name
       chart_option.xAxis.axisLabel = customStyle.xAxis.axisLabel
+      chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
     }
     if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line'))) {
       chart_option.yAxis.show = customStyle.yAxis.show
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name
       chart_option.yAxis.axisLabel = customStyle.yAxis.axisLabel
+      chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
     }
     if (customStyle.background) {
       chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

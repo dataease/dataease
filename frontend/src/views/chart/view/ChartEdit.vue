@@ -13,6 +13,9 @@
         <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
+        <el-button size="mini" @click="changeDs">
+          {{ $t('chart.change_ds') }}
+        </el-button>
         <el-button size="mini" @click="closeEdit">
           {{ $t('commons.save') }}
         </el-button>
@@ -208,10 +211,10 @@
               <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
-              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
               <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
             </el-tab-pane>
           </el-tabs>
@@ -330,6 +333,24 @@
         <el-button type="primary" size="mini" @click="saveResultFilter">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <!--视图更换数据集-->
+    <el-dialog
+      v-dialogDrag
+      :title="$t('chart.change_ds')+'['+table.name+']'"
+      :visible="selectTableFlag"
+      :show-close="false"
+      width="70%"
+      class="dialog-css"
+      :destroy-on-close="true"
+    >
+      <table-selector @getTable="getTable" />
+      <span>{{ $t('chart.change_ds_tip') }}</span>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!table.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -368,10 +389,11 @@ import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
 import html2canvas from 'html2canvas'
+import TableSelector from './TableSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { TableSelector, ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,
@@ -430,7 +452,9 @@ export default {
       httpRequest: {
         status: true,
         msg: ''
-      }
+      },
+      selectTableFlag: false,
+      changeTable: {}
     }
   },
   computed: {
@@ -556,6 +580,7 @@ export default {
         if (needRefreshGroup) {
           this.refreshGroup(view)
         }
+        this.closeChangeChart()
       })
     },
 
@@ -628,6 +653,7 @@ export default {
       // 从仪表板入口关闭
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
       // this.$emit('switchComponent', { name: '' })
+      this.$success(this.$t('commons.save_success'))
     },
     getData(id) {
       if (id) {
@@ -930,6 +956,26 @@ export default {
 
     refreshGroup(view) {
       this.$emit('saveSuccess', view)
+    },
+
+    getTable(table) {
+      this.changeTable = JSON.parse(JSON.stringify(table))
+    },
+
+    changeDs() {
+      this.selectTableFlag = true
+    },
+
+    closeChangeChart() {
+      this.selectTableFlag = false
+    },
+
+    changeChart() {
+      this.view.tableId = this.changeTable.id
+      this.view.xaxis = []
+      this.view.yaxis = []
+      this.view.customFilter = []
+      this.save(true, 'chart', false)
     }
   }
 }

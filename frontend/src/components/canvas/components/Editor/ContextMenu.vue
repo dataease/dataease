@@ -4,7 +4,7 @@
       <template v-if="curComponent">
         <template v-if="!curComponent.isLock">
           <li v-if="editFilter.includes(curComponent.type)" @click="edit"> {{ $t('panel.edit') }}</li>
-          <!--          <li @click="copy"> {{ $t('panel.copy') }}</li>-->
+          <li @click="copy"> {{ $t('panel.copy') }}</li>
           <li @click="paste"> {{ $t('panel.paste') }}</li>
           <li @click="cut"> {{ $t('panel.cut') }}</li>
           <li @click="deleteComponent"> {{ $t('panel.delete') }}</li>

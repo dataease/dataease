@@ -60,7 +60,8 @@ export default {
         fontSize: '18px',
         color: '#303133',
         textAlign: 'left',
-        fontStyle: 'normal'
+        fontStyle: 'normal',
+        fontWeight: 'normal'
       },
       bg_class: {
         background: hexColorToRGBA('#ffffff', 0)
@@ -175,6 +176,7 @@ export default {
           this.title_class.color = customStyle.text.color
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
+          this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
         }
         if (customStyle.background) {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

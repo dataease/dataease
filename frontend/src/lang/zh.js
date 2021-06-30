@@ -720,7 +720,21 @@ export default {
     chart_error_tips: '如有疑问请联系管理员',
     title_cannot_empty: '标题不能为空',
     table_title_height: '表头行高',
-    table_item_height: '表格行高'
+    table_item_height: '表格行高',
+    axis_show: '轴线显示',
+    axis_color: '轴线颜色',
+    axis_width: '轴线宽度',
+    axis_type: '轴线类型',
+    axis_type_solid: '实线',
+    axis_type_dashed: '虚线',
+    axis_type_dotted: '点',
+    axis_label_show: '标签显示',
+    axis_label_color: '标签颜色',
+    axis_label_fontsize: '标签大小',
+    text_style: '字体样式',
+    bolder: '加粗',
+    change_ds: '更换数据集',
+    change_ds_tip: '提示：更换数据集将导致字段发生变化，需重新制作视图'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

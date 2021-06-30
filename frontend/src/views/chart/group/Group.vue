@@ -129,9 +129,9 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">-->
-                      <!--                    {{ $t('chart.rename') }}-->
-                      <!--                  </el-dropdown-item>-->
+                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">
+                        {{ $t('chart.rename') }}
+                      </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
@@ -544,6 +544,7 @@ export default {
     saveTable(view) {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
+          view.title = view.name
           post('/chart/view/save', view).then(response => {
             this.closeTable()
             this.$message({

@@ -82,5 +82,17 @@
         <cacheEventListenerFactory class="io.dataease.listener.LicCacheEventListener" />
     </cache>
 
+    <cache
+            name="jdbc_provider_cache"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="10000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="28800"
+            timeToLiveSeconds="86400"
+            memoryStoreEvictionPolicy="LRU"
+    />
+
 
 </ehcache>
