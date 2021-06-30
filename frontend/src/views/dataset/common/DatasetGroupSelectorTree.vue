@@ -9,6 +9,20 @@
       </el-row>
       <el-divider />
 
+      <el-row>
+        <el-form>
+          <el-form-item class="form-item">
+            <el-input
+              v-model="search"
+              size="mini"
+              :placeholder="$t('dataset.search')"
+              prefix-icon="el-icon-search"
+              clearable
+            />
+          </el-form-item>
+        </el-form>
+      </el-row>
+
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
@@ -56,61 +70,12 @@
         </div>
       </el-col>
     </el-col>
-
-    <!--scene-->
-    <!--    <el-col v-if="sceneMode" v-loading="dsLoading">-->
-    <!--      <el-row class="title-css scene-title">-->
-    <!--        <span class="title-text scene-title-name" :title="currGroup.name">-->
-    <!--          {{ currGroup.name }}-->
-    <!--        </span>-->
-    <!--        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">-->
-    <!--          &lt;!&ndash;          {{ $t('dataset.back') }}&ndash;&gt;-->
-    <!--        </el-button>-->
-    <!--      </el-row>-->
-    <!--      <el-divider />-->
-    <!--      <el-row>-->
-    <!--        <el-form>-->
-    <!--          <el-form-item class="form-item">-->
-    <!--            <el-input-->
-    <!--              v-model="search"-->
-    <!--              size="mini"-->
-    <!--              :placeholder="$t('dataset.search')"-->
-    <!--              prefix-icon="el-icon-search"-->
-    <!--              clearable-->
-    <!--            />-->
-    <!--          </el-form-item>-->
-    <!--        </el-form>-->
-    <!--      </el-row>-->
-    <!--      <el-tree-->
-    <!--        :data="tableData"-->
-    <!--        node-key="id"-->
-    <!--        :expand-on-click-node="true"-->
-    <!--        class="tree-list"-->
-    <!--        highlight-current-->
-    <!--        @node-click="sceneClick"-->
-    <!--      >-->
-    <!--        <span slot-scope="{ node, data }" class="custom-tree-node-list">-->
-    <!--          <span :id="data.id" style="display: flex;flex: 1;width: 0;">-->
-    <!--            <span>-->
-    <!--              <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />-->
-    <!--              <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />-->
-    <!--              <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />-->
-    <!--              <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />-->
-    <!--            </span>-->
-    <!--            <span v-if="data.type === 'db' || data.type === 'sql'">-->
-    <!--              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>-->
-    <!--              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>-->
-    <!--            </span>-->
-    <!--            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>-->
-    <!--          </span>-->
-    <!--        </span>-->
-    <!--      </el-tree>-->
-    <!--    </el-col>-->
   </el-col>
 </template>
 
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
+import { authModel } from '@/api/system/sysAuth'
 
 export default {
   name: 'DatasetGroupSelectorTree',
@@ -172,8 +137,11 @@ export default {
       treeProps: {
         label: 'name',
         children: 'children',
-        isLeaf: 'isLeaf'
-      }
+        isLeaf: 'isLeaf',
+        id: 'id',
+        parentId: 'pid'
+      },
+      isTreeSearch: false
     }
   },
   computed: {},
@@ -194,11 +162,15 @@ export default {
       }
     },
     search(val) {
-      if (val && val !== '') {
-        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
-      } else {
-        this.tableData = JSON.parse(JSON.stringify(this.tables))
+      this.$emit('switchComponent', { name: '' })
+      this.data = []
+      this.expandedArray = []
+      if (this.timer) {
+        clearTimeout(this.timer)
       }
+      this.timer = setTimeout(() => {
+        this.getTreeData(val)
+      }, (val && val !== '') ? 500 : 0)
     }
   },
   mounted() {
@@ -376,32 +348,111 @@ export default {
     },
 
     loadNode(node, resolve) {
-      if (node.data.id) {
-        this.dsLoading = true
-        post('/dataset/table/listAndGroup', {
-          sort: 'type asc,name asc,create_time desc',
-          sceneId: node.data.id,
-          mode: this.mode < 0 ? null : this.mode,
-          typeFilter: this.customType ? this.customType : null
-        }, false).then(response => {
-          this.tables = response.data
-          for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].mode === 1 && this.kettleRunning === false) {
-              this.$set(this.tables[i], 'disabled', true)
+      if (!this.isTreeSearch) {
+        if (node.data.id) {
+          this.dsLoading = true
+          post('/dataset/table/listAndGroup', {
+            sort: 'type asc,name asc,create_time desc',
+            sceneId: node.data.id,
+            mode: this.mode < 0 ? null : this.mode,
+            typeFilter: this.customType ? this.customType : null
+          }, false).then(response => {
+            this.tables = response.data
+            for (let i = 0; i < this.tables.length; i++) {
+              if (this.tables[i].mode === 1 && this.kettleRunning === false) {
+                this.$set(this.tables[i], 'disabled', true)
+              }
             }
-          }
-          this.tableData = JSON.parse(JSON.stringify(this.tables))
+            this.tableData = JSON.parse(JSON.stringify(this.tables))
 
-          this.$nextTick(function() {
-            this.unionDataChange()
+            this.$nextTick(function() {
+              this.unionDataChange()
+            })
+            this.dsLoading = false
+            resolve(this.tableData)
+          }).catch(res => {
+            this.dsLoading = false
           })
-          this.dsLoading = false
-          resolve(this.tableData)
-        }).catch(res => {
-          this.dsLoading = false
+        }
+      } else {
+        node.data.children ? resolve(node.data.children) : resolve([])
+      }
+    },
+
+    refreshNodeBy(id) {
+      if (this.isTreeSearch) {
+        this.data = []
+        this.expandedArray = []
+        this.searchTree(this.search)
+      } else {
+        if (!id || id === '0') {
+          this.treeNode(this.groupForm)
+        } else {
+          const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
+          node.loaded = false
+          node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+        }
+      }
+    },
+
+    searchTree(val) {
+      const queryCondition = {
+        withExtend: 'parent',
+        modelType: 'dataset',
+        name: val
+      }
+      authModel(queryCondition).then(res => {
+        this.data = this.buildTree(res.data)
+      })
+    },
+
+    buildTree(arrs) {
+      const idMapping = arrs.reduce((acc, el, i) => {
+        acc[el[this.treeProps.id]] = i
+        return acc
+      }, {})
+      const roots = []
+      arrs.forEach(el => {
+        // 判断根节点 ###
+        el.type = el.modelInnerType
+        el.isLeaf = el.leaf
+        if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
+          roots.push(el)
+          return
+        }
+        // 用映射表找到父元素
+        const parentEl = arrs[idMapping[el[this.treeProps.parentId]]]
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el]
+
+        // 设置展开节点 如果没有子节点则不进行展开
+        if (parentEl.children.length > 0) {
+          this.expandedArray.push(parentEl[this.treeProps.id])
+        }
+      })
+      return roots
+    },
+
+    // 高亮显示搜索内容
+    highlights(data) {
+      if (data && this.search && this.search.length > 0) {
+        const replaceReg = new RegExp(this.search, 'g')// 匹配关键字正则
+        const replaceString = '<span style="color: #0a7be0">' + this.search + '</span>' // 高亮替换v-html值
+        data.forEach(item => {
+          item.name = item.name.replace(replaceReg, replaceString) // 开始替换
+          item.label = item.label.replace(replaceReg, replaceString) // 开始替换
         })
       }
-      // }
+    },
+
+    getTreeData(val) {
+      if (val) {
+        this.isTreeSearch = true
+        this.searchTree(val)
+      } else {
+        this.isTreeSearch = false
+        this.treeNode(this.groupForm)
+      }
     }
   }
 }

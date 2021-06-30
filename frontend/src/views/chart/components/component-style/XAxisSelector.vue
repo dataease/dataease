@@ -123,7 +123,7 @@ export default {
   methods: {
     init() {
       const arr = []
-      for (let i = 10; i <= 40; i = i + 2) {
+      for (let i = 6; i <= 40; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
