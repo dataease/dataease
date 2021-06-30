@@ -12,6 +12,7 @@ import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.UpdateType;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.DorisTableUtils;
+import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.DorisConfigration;
@@ -66,6 +67,7 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.quartz.JobExecutionContext;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -835,16 +837,19 @@ public class ExtractDataService {
     }
 
     public boolean isKettleRunning() {
+       try {
+           if (!InetAddress.getByName(carte).isReachable(1000)) {
+               return false;
+           }
+       }catch (Exception e){
+           return false;
+       }
+        HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
+        HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+        clientBuilder.setConnectionTimeout(1);
+        clientBuilder.setCredentials(user, passwd);
+        CloseableHttpClient httpClient = clientBuilder.build();
         try {
-            if (!InetAddress.getByName(carte).isReachable(1000)) {
-                return false;
-            }
-            CloseableHttpClient httpClient;
-            HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
-            HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
-            clientBuilder.setConnectionTimeout(1);
-            clientBuilder.setCredentials(user, passwd);
-            httpClient = clientBuilder.build();
             HttpResponse httpResponse = httpClient.execute(getMethod);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != -1 && statusCode < 400) {
@@ -854,6 +859,12 @@ public class ExtractDataService {
             }
         } catch (Exception e) {
             return false;
+        }finally {
+            try {
+                httpClient.close();
+            } catch (Exception e) {
+                LoggerFactory.getLogger(HttpClientUtil.class).error("HttpClient关闭连接失败", e);
+            }
         }
     }
 
