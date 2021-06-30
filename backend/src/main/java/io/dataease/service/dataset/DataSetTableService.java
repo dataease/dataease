@@ -293,6 +293,7 @@ public class DataSetTableService {
             String table = dataTableInfoDTO.getTable();
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
+            System.out.println(datasourceRequest.getQuery());
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
