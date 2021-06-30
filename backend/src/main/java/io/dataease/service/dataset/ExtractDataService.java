@@ -649,8 +649,6 @@ public class ExtractDataService {
                 break;
             case oracle:
                 OracleConfigration oracleConfigration = new Gson().fromJson(datasource.getConfiguration(), OracleConfigration.class);
-                System.out.println(new Gson().toJson(oracleConfigration));
-                System.out.println(oracleConfigration.getConnectionType().equalsIgnoreCase("serviceName"));
                 if(oracleConfigration.getConnectionType().equalsIgnoreCase("serviceName")){
                     String database = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ORACLE_HOSTNAME)(PORT = ORACLE_PORT))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = ORACLE_SERVICE_NAME )))".replace("ORACLE_HOSTNAME", oracleConfigration.getHost()).replace("ORACLE_PORT", oracleConfigration.getPort().toString()).replace("ORACLE_SERVICE_NAME", oracleConfigration.getDataBase());
                     dataMeta = new DatabaseMeta("db", "ORACLE", "Native", "", database, "-1", oracleConfigration.getUsername(), oracleConfigration.getPassword());

@@ -26,6 +26,7 @@ public class OracleQueryProvider extends QueryProvider {
     public Integer transFieldType(String field) {
         switch (field) {
             case "CHAR":
+            case "VARCHAR2":
             case "VARCHAR":
             case "TEXT":
             case "TINYTEXT":
@@ -69,7 +70,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY null " + " LIMIT 0,1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp " + " WHERE rownum <= 1000";
     }
 
     @Override
@@ -102,7 +103,7 @@ public class OracleQueryProvider extends QueryProvider {
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1} ", StringUtils.join(array, ","), table);
     }
 
     @Override
@@ -112,7 +113,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return createQuerySQL(table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+        return createQuerySQL(table, fields) + " where rownum <= " + page * realSize + " minus " + createQuerySQL(table, fields) + " where rownum <= " + (page - 1) * pageSize;
     }
 
     @Override
