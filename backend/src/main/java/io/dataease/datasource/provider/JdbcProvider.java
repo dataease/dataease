@@ -100,7 +100,9 @@ public class JdbcProvider extends DatasourceProvider {
     private List<String[]> fetchResult(ResultSet rs) throws Exception {
         List<String[]> list = new LinkedList<>();
         ResultSetMetaData metaData = rs.getMetaData();
+        System.out.println(metaData.getColumnName(1));
         int columnCount = metaData.getColumnCount();
+        System.out.println(columnCount);
         while (rs.next()) {
             String[] row = new String[columnCount];
             for (int j = 0; j < columnCount; j++) {
@@ -181,6 +183,7 @@ public class JdbcProvider extends DatasourceProvider {
             field.setRemarks(l);
             field.setFieldType(t);
             field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
+            if(t.equalsIgnoreCase("LONG")){field.setFieldSize(65533);} //oracle LONG
             fieldList.add(field);
         }
         return fieldList;
@@ -259,6 +262,7 @@ public class JdbcProvider extends DatasourceProvider {
         tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
         String dbType = resultSet.getString("TYPE_NAME");
         tableFiled.setFieldType(dbType);
+        if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
         if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
             tableFiled.setFieldSize(50);
         }

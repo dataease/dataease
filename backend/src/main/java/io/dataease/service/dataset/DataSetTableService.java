@@ -293,14 +293,13 @@ public class DataSetTableService {
             String table = dataTableInfoDTO.getTable();
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
-            System.out.println(datasourceRequest.getQuery());
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(qp.createQuerySQL(table, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
+                datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
                 dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -317,13 +316,15 @@ public class DataSetTableService {
             String sql = dataTableInfoDTO.getSql();
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize));
+            System.out.println(datasourceRequest.getQuery());
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
+                datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                System.out.println(datasourceRequest.getQuery());
                 dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -418,9 +419,6 @@ public class DataSetTableService {
         }
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
-//        datasourceRequest.setQuery(sqlAsTable);
-//        List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
-        // 正式执行
         datasourceRequest.setQuery(sqlAsTable);
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");

@@ -118,6 +118,16 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit) {
+        return createQuerySQL(table, fields) + " LIMIT 0," + limit;
+    }
+
+    @Override
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit) {
+        return createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + limit;
+    }
+
+    @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
         return createQuerySQLAsTmp(sql, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }

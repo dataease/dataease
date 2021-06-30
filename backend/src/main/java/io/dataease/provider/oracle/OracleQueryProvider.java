@@ -5,6 +5,7 @@ import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.provider.QueryProvider;
+import io.swagger.models.auth.In;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,9 @@ public class OracleQueryProvider extends QueryProvider {
             case "MEDIUMTEXT":
             case "LONGTEXT":
             case "ENUM":
+            case "LONG":
+            case "NVARCHAR2":
+            case "NCHAR":
                 return 0;// 文本
             case "DATE":
             case "TIME":
@@ -46,6 +50,7 @@ public class OracleQueryProvider extends QueryProvider {
             case "INTEGER":
             case "BIGINT":
                 return 2;// 整型
+            case "NUMBER":
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
@@ -70,7 +75,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp " + " WHERE rownum <= 1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") tmp " + " WHERE rownum <= 1000";
     }
 
     @Override
@@ -80,7 +85,11 @@ public class OracleQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (f.getDeExtractType() == 1) {
                 if (f.getDeType() == 2 || f.getDeType() == 3) {
-                    stringBuilder.append("UNIX_TIMESTAMP( ").append(f.getOriginName()).append(" )*1000 AS ").append(f.getDataeaseName());
+                    if(f.getType().equalsIgnoreCase("DATE")){
+                        stringBuilder.append("TO_NUMBER( ").append(f.getOriginName()).append(" - TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
+                    }else {
+                        stringBuilder.append("TO_NUMBER(to_date(to_char( ").append(f.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') -  TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
+                    }
                 } else {
                     stringBuilder.append(" ").append(f.getOriginName()).append("  AS ").append(f.getDataeaseName());
                 }
@@ -90,15 +99,15 @@ public class OracleQueryProvider extends QueryProvider {
                 } else if (f.getDeType() == 3) {
                     stringBuilder.append("CAST( ").append(f.getOriginName()).append("  AS DECIMAL(20,2)) AS ").append(f.getDataeaseName());
                 } else if (f.getDeType() == 1) {
-                    stringBuilder.append("DATE_FORMAT( ").append(f.getOriginName()).append(" ,'%Y-%m-%d %H:%i:%S') AS _").append(f.getDataeaseName());
+                    stringBuilder.append("to_date( ").append(f.getOriginName()).append(" ,'yyyy-mm-dd,hh24:mi:ss') AS ").append(f.getDataeaseName());
                 } else {
-                    stringBuilder.append(" ").append(f.getOriginName()).append("  AS ").append(f.getDataeaseName());
+                    stringBuilder.append(" ").append(f.getOriginName()).append(" AS ").append(f.getDataeaseName());
                 }
             } else {
                 if (f.getDeType() == 1) {
-                    stringBuilder.append("FROM_UNIXTIME(CAST( ").append(f.getOriginName()).append("  AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') AS ").append(f.getDataeaseName());
+                    stringBuilder.append("TO_CHAR( ").append(f.getOriginName()).append(" / (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') AS ").append(f.getDataeaseName());
                 } else {
-                    stringBuilder.append(" ").append(f.getOriginName()).append("  AS ").append(f.getDataeaseName());
+                    stringBuilder.append(" ").append(f.getOriginName()).append(" AS ").append(f.getDataeaseName());
                 }
             }
             return stringBuilder.toString();
@@ -106,19 +115,38 @@ public class OracleQueryProvider extends QueryProvider {
         return MessageFormat.format("SELECT {0} FROM {1} ", StringUtils.join(array, ","), table);
     }
 
+    private String sqlColumn(List<DatasetTableField> fields){
+        String[] array = fields.stream().map(f -> {
+           return f.getDataeaseName();
+        }).toArray(String[]::new);
+        return StringUtils.join(array, ",");
+    }
+
     @Override
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields);
+        return createQuerySQL(" (" + sqlFix(sql) + ") sqltmp ", fields);
     }
 
     @Override
     public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return createQuerySQL(table, fields) + " where rownum <= " + page * realSize + " minus " + createQuerySQL(table, fields) + " where rownum <= " + (page - 1) * pageSize;
+        return MessageFormat.format("SELECT {0} FROM ( SELECT tmp.*, rownum r FROM ( {1} ) tmp WHERE rownum <= {2} ) tmp2 WHERE r > {3} ",
+                sqlColumn(fields), createQuerySQL(table, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+    }
+
+    @Override
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit) {
+        return createQuerySQL(table, fields) + " WHERE rownum <= " + limit;
+    }
+
+    @Override
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit) {
+        return createQuerySQLAsTmp(sql, fields) + " WHERE rownum <= " + limit;
     }
 
     @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return createQuerySQLAsTmp(sql, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+        return MessageFormat.format("SELECT {0} FROM ( SELECT tmp.*, rownum r FROM ( {1} ) tmp WHERE rownum <= {2} ) tmp2 WHERE r > {3} ",
+                sqlColumn(fields), createQuerySQLAsTmp(sql, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
@@ -455,7 +483,7 @@ public class OracleQueryProvider extends QueryProvider {
 
         switch (dateStyle) {
             case "y":
-                return "%Y";
+                return "Y";
             case "y_M":
                 return "%Y" + split + "%m";
             case "y_M_d":
