@@ -808,7 +808,7 @@ export default {
           }
         }
       } else {
-        node.data.children && resolve(node.data.children)
+        node.data.children ? resolve(node.data.children) : resolve([])
       }
     },
 
