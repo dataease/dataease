@@ -38,6 +38,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/link/**", ANON);
         filterChainDefinitionMap.put("/index.html", ANON);
         filterChainDefinitionMap.put("/link.html", ANON);
+        filterChainDefinitionMap.put("/axios.map", ANON);
 
         //验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
