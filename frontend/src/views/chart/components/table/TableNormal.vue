@@ -84,14 +84,12 @@ export default {
     }
   },
   watch: {
-    chart() {
+    chart: function() {
       this.init()
-      this.calcHeight()
     }
   },
   mounted() {
     this.init()
-    this.calcHeight()
     // 监听元素变动事件
     eventBus.$on('resizing', (componentId) => {
       this.chartResize()
@@ -99,6 +97,13 @@ export default {
   },
   methods: {
     init() {
+      this.resetHeight()
+      this.$nextTick(() => {
+        this.initData()
+        this.calcHeightDelay()
+      })
+    },
+    initData() {
       const that = this
       let datas = []
       if (this.chart.data) {
@@ -113,29 +118,32 @@ export default {
         this.initStyle()
       })
       window.onresize = function() {
-        that.calcHeight()
+        that.calcHeightDelay()
       }
     },
-    calcHeight() {
+    calcHeightRightNow() {
       this.$nextTick(() => {
-        setTimeout(() => {
-          if (this.$refs.tableContainer) {
-            const currentHeight = this.$refs.tableContainer.offsetHeight
-            const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight
-            let tableHeight
-            if (this.chart.data) {
-              tableHeight = (this.chart.data.tableRow.length + 2) * 36
-            } else {
-              tableHeight = 0
-            }
-            if (tableHeight > tableMaxHeight) {
-              this.height = tableMaxHeight + 'px'
-            } else {
-              this.height = 'auto'
-            }
+        if (this.$refs.tableContainer) {
+          const currentHeight = this.$refs.tableContainer.offsetHeight
+          const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight
+          let tableHeight
+          if (this.chart.data) {
+            tableHeight = (this.chart.data.tableRow.length + 2) * 36
+          } else {
+            tableHeight = 0
           }
-        }, 100)
+          if (tableHeight > tableMaxHeight) {
+            this.height = tableMaxHeight + 'px'
+          } else {
+            this.height = 'auto'
+          }
+        }
       })
+    },
+    calcHeightDelay() {
+      setTimeout(() => {
+        this.calcHeightRightNow()
+      }, 100)
     },
     initStyle() {
       if (this.chart.customAttr) {
@@ -236,6 +244,10 @@ export default {
 
     initClass() {
       return this.chart.id
+    },
+
+    resetHeight() {
+      this.height = 100
     }
   }
 }
