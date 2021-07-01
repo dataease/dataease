@@ -71,7 +71,7 @@ export default {
     // 插件
     plugins: {
       type: [String, Array],
-      default: 'advlist autolink link image lists charmap  media wordcount table'
+      default: 'advlist autolink link image lists charmap  media wordcount'
     },
     // 工具栏
     toolbar: {
