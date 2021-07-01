@@ -3,8 +3,8 @@ import Cookies from 'js-cookie'
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
 import Fit2CloudUI from 'fit2cloud-ui'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
+// import axios from 'axios'
+// import VueAxios from 'vue-axios'
 import i18n from './lang' // internationalization
 import App from './App'
 import store from './store'
@@ -65,7 +65,7 @@ Vue.use(ElementUI, {
 Vue.use(Fit2CloudUI, {
   i18n: (key, value) => i18n.t(key, value)
 })
-Vue.use(VueAxios, axios)
+// Vue.use(VueAxios, axios)
 Vue.use(filter)
 Vue.use(directives)
 Vue.use(message)
