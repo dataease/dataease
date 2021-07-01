@@ -678,10 +678,10 @@ export default {
   position: relative;
 }
 
-.el-main >>> .el-drawer__wrapper{
+.el-main ::v-deep .el-drawer__wrapper{
   width: 310px!important;
 }
-.el-main >>> .el-drawer__body{
+.el-main ::v-deep .el-drawer__body{
   overflow-y: auto;
 }
 .button-show{
