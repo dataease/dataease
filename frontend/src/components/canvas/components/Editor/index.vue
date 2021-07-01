@@ -153,8 +153,8 @@ export default {
       },
       // 矩阵数量 默认 12 * 24
       matrixCount: {
-        x: 12,
-        y: 24
+        x: 24,
+        y: 48
       },
       customStyleHistory: null,
       showDrag: true,
