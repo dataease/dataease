@@ -197,7 +197,6 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList));
                 }
             }
-            System.out.println(datasourceRequest.getQuery());
             data = datasourceProvider.getData(datasourceRequest);
             /**
              * 直连不实用缓存
