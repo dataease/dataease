@@ -81,6 +81,10 @@ export const DEFAULT_XAXIS_STYLE = {
   show: true,
   position: 'bottom',
   name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
   axisLabel: {
     show: true,
     color: '#333333',
@@ -101,6 +105,10 @@ export const DEFAULT_YAXIS_STYLE = {
   show: true,
   position: 'left',
   name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
   axisLabel: {
     show: true,
     color: '#333333',
