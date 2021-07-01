@@ -490,6 +490,16 @@ public class OracleQueryProvider extends QueryProvider {
         return sql;
     }
 
+    @Override
+    public String wrapSql(String sql) {
+        sql = sql.trim();
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        String tmpSql = "SELECT * FROM (" + sql + ") tmp " + " where rownum <= 0";
+        return tmpSql;
+    }
+
     private String transDateFormat(String dateStyle, String datePattern) {
         String split = "-";
         if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {

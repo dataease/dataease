@@ -580,26 +580,17 @@ public class ExtractDataService {
     }
 
     private String fetchSqlField(String sql, Datasource ds) throws Exception {
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        datasourceRequest.setQuery(sqlFix(sql));
+        datasourceRequest.setQuery(qp.wrapSql(sql));
         List<String> dorisFileds = new ArrayList<>();
         datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
             dorisFileds.add(DorisTableUtils.columnName(filed));
         });
         return String.join(",", dorisFileds);
     }
-
-    public String sqlFix(String sql) {
-        sql = sql.trim();
-        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
-            sql = sql.substring(0, sql.length() - 1);
-        }
-        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0";
-        return tmpSql;
-    }
-
 
     private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception {
         TransMeta transMeta = new TransMeta();
