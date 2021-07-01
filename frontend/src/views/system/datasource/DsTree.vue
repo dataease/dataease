@@ -1,5 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col>
+  <el-col class="tree-style">
     <el-col>
       <el-row class="title-css">
         <span class="title-text">
@@ -300,5 +300,10 @@ export default {
   }
   .father:hover .child {
     display: inline;
+  }
+  .tree-style {
+    padding: 10px 15px;
+    height: 100%;
+    overflow-y: auto;
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <el-col>
+  <el-col class="tree-style">
     <!-- group -->
     <el-col v-if="!sceneMode" v-loading="dsLoading">
       <el-row class="title-css">
@@ -24,7 +24,7 @@
       </el-row>
 
       <el-col class="custom-tree-container">
-        <div class="block">
+        <div class="block" :style="treeStyle">
           <el-tree
             :default-expanded-keys="expandedArray"
             :data="data"
@@ -80,6 +80,11 @@ import { authModel } from '@/api/system/sysAuth'
 export default {
   name: 'DatasetGroupSelectorTree',
   props: {
+    fixHeight: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     customType: {
       type: Array,
       required: false,
@@ -141,7 +146,11 @@ export default {
         id: 'id',
         parentId: 'pid'
       },
-      isTreeSearch: false
+      isTreeSearch: false,
+      treeStyle: this.fixHeight ? {
+        height: '200px',
+        overflow: 'auto'
+      } : {}
     }
   },
   computed: {},
@@ -519,5 +528,10 @@ export default {
     display: inline-block;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .tree-style {
+    padding: 10px;
+    height: 100%;
+    overflow-y: auto;
   }
 </style>

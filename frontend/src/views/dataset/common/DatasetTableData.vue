@@ -60,8 +60,10 @@ export default {
     //   })()
     // }
     // this.height = window.innerHeight / 3
-    this.height = document.getElementById('dsData').parentNode.offsetHeight - 16 - 14 - 5
-    this.initData()
+    this.$nextTick(() => {
+      this.height = document.getElementById('dsData').parentNode.offsetHeight - 16 - 14 - 5
+      this.initData()
+    })
   },
   methods: {
     initData() {

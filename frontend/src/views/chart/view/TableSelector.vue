@@ -55,6 +55,7 @@ export default {
     height: 50vh;
     min-width: 180px;
     max-width: 280px;
+    padding: 0 0;
   }
 
   .ms-main-container {

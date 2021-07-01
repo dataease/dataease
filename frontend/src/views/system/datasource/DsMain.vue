@@ -1,6 +1,6 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-    <de-aside-container style="padding: 10px 15px;">
+    <de-aside-container style="padding: 0 0;">
       <ds-tree ref="dsTree" @switch-main="switchMain" />
     </de-aside-container>
     <de-main-container>
