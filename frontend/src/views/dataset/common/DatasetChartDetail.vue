@@ -68,6 +68,7 @@
             <p class="info-title">{{ $t('datasource.type') }}</p>
             <p v-if="detail.datasource.type === 'mysql'" class="info-content">MySQL</p>
             <p v-if="detail.datasource.type === 'sqlServer'" class="info-content">SQL Server</p>
+            <p v-if="detail.datasource.type === 'oracle'" class="info-content">Oracle</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('dataset.create_time') }}</p>
