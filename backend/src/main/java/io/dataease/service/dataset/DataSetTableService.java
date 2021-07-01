@@ -721,13 +721,14 @@ public class DataSetTableService {
         });
         List<String> originNameFileds = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
             String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
+            datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);
@@ -740,7 +741,7 @@ public class DataSetTableService {
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
             String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
+            datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);

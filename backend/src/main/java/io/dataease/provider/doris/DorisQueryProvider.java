@@ -338,6 +338,16 @@ public class DorisQueryProvider extends QueryProvider {
         return getSQLSummary(" (" + sql + ") AS tmp ", yAxis, customFilter, extFilterRequestList);
     }
 
+    @Override
+    public String wrapSql(String sql) {
+        sql = sql.trim();
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0";
+        return tmpSql;
+    }
+
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":
