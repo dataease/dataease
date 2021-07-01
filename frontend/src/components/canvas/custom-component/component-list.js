@@ -119,10 +119,10 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderColor: '#000',
+      borderStyle: 'solid',
       borderWidth: 1,
-      backgroundColor: '',
-      borderStyle: 'solid'
+      borderColor: '#000000',
+      backgroundColor: '#ffffff'
     }
   },
   {
