@@ -874,6 +874,7 @@ export default {
     host: '主机名/IP地址',
     port: '端口',
     please_input_data_base: '请输入数据库名称',
+    please_select_oracle_type: '选择连接类型',
     please_input_user_name: '请输入用户名',
     please_input_password: '请输入密码',
     please_input_host: '请输入主机',
@@ -885,7 +886,10 @@ export default {
     delete_warning: '确定要删除吗?',
     input_name: '请输入名称',
     input_limit_2_25: '2-25字符',
-    input_limit_0_50: '0-50字符'
+    input_limit_0_50: '0-50字符',
+    oracle_connection_type: '服务名/SID',
+    oracle_sid: 'SID',
+    oracle_service_name: '服务名',
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

@@ -42,6 +42,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("dorisQuery", QueryProvider.class);
             case sqlServer:
                 return context.getBean("sqlserverQuery", QueryProvider.class);
+            case oracle:
+                return context.getBean("oracleQuery", QueryProvider.class);
             default:
                 return context.getBean("mysqlQuery", QueryProvider.class);
         }
@@ -54,6 +56,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("mysqlDDL", DDLProvider.class);
             case doris:
                 return context.getBean("dorisDDL", DDLProvider.class);
+            case oracle:
+                return context.getBean("oracleDDL", DDLProvider.class);
             case sqlServer:
                 return context.getBean("mysqlDDL", DDLProvider.class);
             default:

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigration;
+import io.dataease.datasource.dto.OracleConfigration;
 import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -18,8 +19,8 @@ import java.util.*;
 public class JdbcProvider extends DatasourceProvider {
 
     private static Map<String, ComboPooledDataSource> jdbcConnection = new HashMap<>();
-    private static int initPoolSize = 5;
-    private static int maxConnections = 200;
+    private static int initPoolSize = 1;
+    private static int maxConnections = 1;
 
     /**
      * 增加缓存机制 key 由 'provider_sql_' dsr.datasource.id dsr.table dsr.query共4部分组成，命中则使用缓存直接返回不再执行sql逻辑
@@ -99,7 +100,9 @@ public class JdbcProvider extends DatasourceProvider {
     private List<String[]> fetchResult(ResultSet rs) throws Exception {
         List<String[]> list = new LinkedList<>();
         ResultSetMetaData metaData = rs.getMetaData();
+        System.out.println(metaData.getColumnName(1));
         int columnCount = metaData.getColumnCount();
+        System.out.println(columnCount);
         while (rs.next()) {
             String[] row = new String[columnCount];
             for (int j = 0; j < columnCount; j++) {
@@ -180,6 +183,7 @@ public class JdbcProvider extends DatasourceProvider {
             field.setRemarks(l);
             field.setFieldType(t);
             field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
+            if(t.equalsIgnoreCase("LONG")){field.setFieldSize(65533);} //oracle LONG
             fieldList.add(field);
         }
         return fieldList;
@@ -221,22 +225,16 @@ public class JdbcProvider extends DatasourceProvider {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database = resultSet.getString("TABLE_CAT");
-                if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                    TableFiled tableFiled = new TableFiled();
-                    String colName = resultSet.getString("COLUMN_NAME");
-                    tableFiled.setFieldName(colName);
-                    String remarks = resultSet.getString("REMARKS");
-                    if (remarks == null || remarks.equals("")) {
-                        remarks = colName;
+                if(database != null){
+                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                        TableFiled tableFiled = getTableFiled(resultSet);
+                        list.add(tableFiled);
                     }
-                    tableFiled.setRemarks(remarks);
-                    tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
-                    String dbType = resultSet.getString("TYPE_NAME");
-                    tableFiled.setFieldType(dbType);
-                    if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
-                        tableFiled.setFieldSize(50);
+                }else {
+                    if (tableName.equals(datasourceRequest.getTable())) {
+                        TableFiled tableFiled = getTableFiled(resultSet);
+                        list.add(tableFiled);
                     }
-                    list.add(tableFiled);
                 }
             }
             resultSet.close();
@@ -250,6 +248,25 @@ public class JdbcProvider extends DatasourceProvider {
             }
         }
         return list;
+    }
+
+    private TableFiled getTableFiled(ResultSet resultSet) throws SQLException {
+        TableFiled tableFiled = new TableFiled();
+        String colName = resultSet.getString("COLUMN_NAME");
+        tableFiled.setFieldName(colName);
+        String remarks = resultSet.getString("REMARKS");
+        if (remarks == null || remarks.equals("")) {
+            remarks = colName;
+        }
+        tableFiled.setRemarks(remarks);
+        tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
+        String dbType = resultSet.getString("TYPE_NAME");
+        tableFiled.setFieldType(dbType);
+        if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
+        if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
+            tableFiled.setFieldSize(50);
+        }
+        return tableFiled;
     }
 
     @Override
@@ -334,7 +351,7 @@ public class JdbcProvider extends DatasourceProvider {
         dataSource.setTestConnectionOnCheckout(false); // 在每个connection 提交是校验有效性
         dataSource.setTestConnectionOnCheckin(true); // 取得连接的同时将校验连接的有效性
         dataSource.setCheckoutTimeout(60000); // 从连接池获取连接的超时时间，如设为0则无限期等待。单位毫秒，默认为0
-        dataSource.setPreferredTestQuery("SELECT 1");
+//        dataSource.setPreferredTestQuery("SELECT 1");
         dataSource.setDebugUnreturnedConnectionStackTraces(true);
         dataSource.setUnreturnedConnectionTimeout(3600);
         jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
@@ -367,6 +384,13 @@ public class JdbcProvider extends DatasourceProvider {
                 password = sqlServerConfigration.getPassword();
                 driver = sqlServerConfigration.getDriver();
                 jdbcurl = sqlServerConfigration.getJdbc();
+                break;
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                username = oracleConfigration.getUsername();
+                password = oracleConfigration.getPassword();
+                driver = oracleConfigration.getDriver();
+                jdbcurl = oracleConfigration.getJdbc();
                 break;
             default:
                 break;
@@ -406,6 +430,13 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setPassword(sqlServerConfigration.getPassword());
                 dataSource.setJdbcUrl(sqlServerConfigration.getJdbc());
                 break;
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                dataSource.setUser(oracleConfigration.getUsername());
+                dataSource.setDriverClass(oracleConfigration.getDriver());
+                dataSource.setPassword(oracleConfigration.getPassword());
+                dataSource.setJdbcUrl(oracleConfigration.getJdbc());
+                break;
             default:
                 break;
         }
@@ -438,6 +469,8 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';".replace("DATABASE", sqlServerConfigration.getDataBase());
+            case oracle:
+                return "select TABLE_NAME from USER_TABLES";
             default:
                 return "show tables;";
         }

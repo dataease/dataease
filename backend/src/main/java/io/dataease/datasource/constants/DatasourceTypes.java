@@ -1,5 +1,5 @@
 package io.dataease.datasource.constants;
 
 public enum DatasourceTypes {
-    mysql, sqlServer, excel, doris
+    mysql, sqlServer, excel, doris, oracle
 }

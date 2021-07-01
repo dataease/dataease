@@ -1,10 +1,12 @@
-package io.dataease.provider.doris;
+package io.dataease.provider.oracle;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.provider.QueryProvider;
+import io.swagger.models.auth.In;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,20 +20,31 @@ import java.util.List;
 
 /**
  * @Author gin
- * @Date 2021/5/17 4:11 下午
+ * @Date 2021/5/17 2:43 下午
  */
-@Service("dorisQuery")
-public class DorisQueryProvider extends QueryProvider {
+@Service("oracleQuery")
+public class OracleQueryProvider extends QueryProvider {
+
+    private static Integer STRING = 0;
+    private static Integer TIME = 1;
+    private static Integer INT = 2;
+    private static Integer FLOAT = 3;
+    private static Integer BOOLEAN = 4;
+
     @Override
     public Integer transFieldType(String field) {
         switch (field) {
             case "CHAR":
+            case "VARCHAR2":
             case "VARCHAR":
             case "TEXT":
             case "TINYTEXT":
             case "MEDIUMTEXT":
             case "LONGTEXT":
             case "ENUM":
+            case "LONG":
+            case "NVARCHAR2":
+            case "NCHAR":
                 return 0;// 文本
             case "DATE":
             case "TIME":
@@ -45,6 +58,7 @@ public class DorisQueryProvider extends QueryProvider {
             case "INTEGER":
             case "BIGINT":
                 return 2;// 整型
+            case "NUMBER":
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
@@ -59,17 +73,17 @@ public class DorisQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryCountSQL(String table) {
-        return MessageFormat.format("SELECT count(*) FROM {0}", table);
+        return MessageFormat.format("SELECT COUNT(*) FROM {0}", table);
     }
 
     @Override
     public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sql + ") AS tmp ");
+        return createQueryCountSQL(" (" + sqlFix(sql) + ") AS tmp ");
     }
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sql + ") AS tmp ORDER BY " + orderBy + " LIMIT 0,1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") tmp " + " WHERE rownum <= 1000";
     }
 
     @Override
@@ -77,58 +91,70 @@ public class DorisQueryProvider extends QueryProvider {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
             // 如果原始类型为时间
-            if (f.getDeExtractType() == 1) {
-                if (f.getDeType() == 2 || f.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(f.getDataeaseName()).append(")*1000 as ").append(f.getDataeaseName());
+            if (f.getDeExtractType() == TIME) {
+                if (f.getDeType() == INT || f.getDeType() == FLOAT) { //日期转数值
+                    if(f.getType().equalsIgnoreCase("DATE")){
+                        stringBuilder.append("TO_NUMBER( ").append(f.getOriginName()).append(" - TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
+                    }else {
+                        stringBuilder.append("TO_NUMBER(to_date(to_char( ").append(f.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') -  TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
+                    }
                 } else {
-                    stringBuilder.append(f.getDataeaseName());
+                    stringBuilder.append(" ").append(f.getOriginName()).append("  AS ").append(f.getDataeaseName());
                 }
-            } else if (f.getDeExtractType() == 0) {
-                if (f.getDeType() == 2) {
-                    stringBuilder.append("cast(").append(f.getDataeaseName()).append(" as decimal(20,0)) as ").append(f.getDataeaseName());
-                } else if (f.getDeType() == 3) {
-                    stringBuilder.append("cast(").append(f.getDataeaseName()).append(" as decimal(20,2)) as ").append(f.getDataeaseName());
-                } else if (f.getDeType() == 1) {
-                    stringBuilder.append("DATE_FORMAT(").append(f.getDataeaseName()).append(",'%Y-%m-%d %H:%i:%S') as _").append(f.getDataeaseName());
+            } else if (f.getDeExtractType() == STRING) {
+                if (f.getDeType() == INT) { // 字符串转数值
+                    stringBuilder.append("CAST( ").append(f.getOriginName()).append("  AS DECIMAL(20,0)) AS ").append(f.getDataeaseName());
+                } else if (f.getDeType() == FLOAT) {// 字符串转数值
+                    stringBuilder.append("CAST( ").append(f.getOriginName()).append("  AS DECIMAL(20,2)) AS ").append(f.getDataeaseName());
+                } else if (f.getDeType() == TIME) {// 字符串转时间
+                    stringBuilder.append("TO_DATE( ").append(f.getOriginName()).append(" ,'yyyy-mm-dd,hh24:mi:ss') AS \"_").append(f.getDataeaseName()).append("\"");
                 } else {
-                    stringBuilder.append(f.getDataeaseName());
+                    stringBuilder.append(" ").append(f.getOriginName()).append(" AS ").append(f.getDataeaseName());
                 }
             } else {
-                if (f.getDeType() == 1) {
-                    stringBuilder.append("FROM_UNIXTIME(cast(").append(f.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') as ").append(f.getDataeaseName());
+                if (f.getDeType() == TIME) { //数值转时间
+                    stringBuilder.append("TO_CHAR( ").append(f.getOriginName()).append(" / (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') AS ").append(f.getDataeaseName());
                 } else {
-                    stringBuilder.append(f.getDataeaseName());
+                    stringBuilder.append(" ").append(f.getOriginName()).append(" AS ").append(f.getDataeaseName());
                 }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
+        return MessageFormat.format("SELECT {0} FROM {1} ", StringUtils.join(array, ","), table);
+    }
 
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY " + (fields.size() > 0 ? fields.get(0).getDataeaseName() : "null"), StringUtils.join(array, ","), table);
+    private String sqlColumn(List<DatasetTableField> fields){
+        String[] array = fields.stream().map(f -> {
+           return f.getDataeaseName();
+        }).toArray(String[]::new);
+        return StringUtils.join(array, ",");
     }
 
     @Override
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createQuerySQL(" (" + sql + ") AS tmp ", fields);
+        return createQuerySQL(" (" + sqlFix(sql) + ") sqltmp ", fields);
     }
 
     @Override
     public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return createQuerySQL(table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+        return MessageFormat.format("SELECT {0} FROM ( SELECT tmp.*, rownum r FROM ( {1} ) tmp WHERE rownum <= {2} ) tmp2 WHERE r > {3} ",
+                sqlColumn(fields), createQuerySQL(table, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit) {
-        return createQuerySQL(table, fields) + " LIMIT 0," + limit;
+        return createQuerySQL(table, fields) + " WHERE rownum <= " + limit;
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit) {
-        return createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + limit;
+        return createQuerySQLAsTmp(sql, fields) + " WHERE rownum <= " + limit;
     }
 
     @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return createQuerySQLAsTmp(sql, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+        return MessageFormat.format("SELECT {0} FROM ( SELECT tmp.*, rownum r FROM ( {1} ) tmp WHERE rownum <= {2} ) tmp2 WHERE r > {3} ",
+                sqlColumn(fields), createQuerySQLAsTmp(sql, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
@@ -136,48 +162,63 @@ public class DorisQueryProvider extends QueryProvider {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
-            if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
-                f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
+            if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
+                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
             } else {
-                f.append("ROUND(")
-                        .append(y.getSummary()).append("(")
-                        .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                        .append("),2").append(")");
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
+                    f.append("CAST(")
+                            .append(y.getSummary()).append("(")
+                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append(") AS DECIMAL(20,2)").append(")");
+                } else {
+                    f.append(y.getSummary()).append("(")
+                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append(")");
+                }
             }
-            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+            f.append(" AS  \"_").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("\" ");
             return f.toString();
         }).toArray(String[]::new);
         String[] groupField = xAxis.stream().map(x -> {
             StringBuilder stringBuilder = new StringBuilder();
             // 如果原始类型为时间
-            if (x.getDeExtractType() == 1) {
-                if (x.getDeType() == 2 || x.getDeType() == 3) {
-                    stringBuilder.append("unix_timestamp(").append(x.getDataeaseName()).append(")*1000 as _").append(x.getDataeaseName());
-                } else if (x.getDeType() == 1) {
+            if (x.getDeExtractType() == TIME) {
+                if (x.getDeType() == INT || x.getDeType() == FLOAT) { //时间转数值
+                    if(x.getType().equalsIgnoreCase("DATE")){
+                        stringBuilder.append("TO_NUMBER( ").append(x.getOriginName()).append(" - TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS \"_").append(x.getDataeaseName()).append("\" ");
+                    }else {
+                        stringBuilder.append("TO_NUMBER(to_date(to_char( ").append(x.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') -  TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ")
+                                .append(x.getDataeaseName()).append("\" ");
+                    }
+                } else if (x.getDeType() == TIME) { //格式化显示时间
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    stringBuilder.append("DATE_FORMAT(").append(x.getDataeaseName()).append(",'").append(format).append("') as _").append(x.getDataeaseName());
-                } else {
-                    stringBuilder.append(x.getDataeaseName()).append(" as _").append(x.getDataeaseName());
-                }
-            } else {
-                if (x.getDeType() == 1) {
-                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    if (x.getDeExtractType() == 0) {
-                        stringBuilder.append("DATE_FORMAT(").append(x.getDataeaseName()).append(",'").append(format).append("') as _").append(x.getDataeaseName());
-                    } else {
-                        stringBuilder.append("DATE_FORMAT(").append("FROM_UNIXTIME(cast(").append(x.getDataeaseName()).append(" as decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S')").append(",'").append(format).append("') as _").append(x.getDataeaseName());
+                    if(x.getType().equalsIgnoreCase("DATE")){
+                        stringBuilder.append("to_char( ").append(x.getOriginName()).append(" ,'").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
+                    }else {
+                        stringBuilder.append("to_char(to_date(to_char( ").append(x.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
                     }
                 } else {
-                    stringBuilder.append(x.getDataeaseName()).append(" as _").append(x.getDataeaseName());
+                    stringBuilder.append(" ").append(x.getOriginName()).append("  AS  _").append(x.getOriginName()).append(" ");
+                }
+            } else {
+                if (x.getDeType() == TIME) {
+                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                    if (x.getDeExtractType() == STRING) { //字符串转时间
+                        stringBuilder.append("to_char(to_date(").append(x.getOriginName()).append(" , 'yyyy-MM-dd hh24:mi:ss'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
+                    } else {                            //数值转时间
+                        stringBuilder.append("to_char(").append(x.getOriginName()) .append("/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
+                    }
+                } else {
+                    stringBuilder.append(" ").append(x.getOriginName()).append("  AS  \"_").append(x.getOriginName()).append("\" ");
                 }
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        String[] group = xAxis.stream().map(x -> "_" + x.getDataeaseName()).toArray(String[]::new);
+        String[] group = xAxis.stream().map(x -> " " + x.getOriginName() + " ").toArray(String[]::new);
         String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getDataeaseName() + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> " _" + f.getOriginName() + "  " + f.getSort()).toArray(String[]::new);
         String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getDataeaseName(), "*") ? "" : f.getDataeaseName()) + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> " _" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + "  " + f.getSort()).toArray(String[]::new);
         String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
         System.arraycopy(yOrder, 0, order, xOrder.length, yOrder.length);
 
@@ -186,11 +227,11 @@ public class DorisQueryProvider extends QueryProvider {
                     String[] s = x.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
                         if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(cast(")
-                                    .append(x.getDataeaseName())
-                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                            filter.append(" AND FROM_UNIXTIME(cast( ")
+                                    .append(x.getOriginName())
+                                    .append("  AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND ").append(x.getDataeaseName());
+                            filter.append(" AND  ").append(x.getOriginName()).append(" ");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -221,12 +262,13 @@ public class DorisQueryProvider extends QueryProvider {
                 .map(y -> {
                     String[] s = y.getFilter().stream().map(f -> {
                         StringBuilder filter = new StringBuilder();
+                        // 原始类型不是时间，在de中被转成时间的字段做处理
                         if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(cast(_")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
-                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                            filter.append(" AND FROM_UNIXTIME(CAST( _")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ")
+                                    .append(" AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+                            filter.append(" AND  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -245,16 +287,16 @@ public class DorisQueryProvider extends QueryProvider {
             return sql;
         } else {
             String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
-                    "(" + sql + ") AS tmp",
+                    "(" + sql + ") tmp",
                     StringUtils.join(resultFilter, " "),
-                    ObjectUtils.isNotEmpty(yOrder) ? StringUtils.join(yOrder, ",") : "null");
+                    StringUtils.join(yOrder, ","));
             return filterSql;
         }
     }
 
     @Override
     public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
-        return getSQL(" (" + sql + ") AS tmp ", xAxis, yAxis, customFilter, extFilterRequestList);
+        return getSQL(" (" + sqlFix(sql) + ") tmp ", xAxis, yAxis, customFilter, extFilterRequestList);
     }
 
     @Override
@@ -267,26 +309,26 @@ public class DorisQueryProvider extends QueryProvider {
         // 字段汇总 排序等
         String[] field = yAxis.stream().map(y -> {
             StringBuilder f = new StringBuilder();
-            if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
-                f.append(y.getSummary()).append("(").append(y.getDataeaseName()).append(")");
+            if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
+                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
                             .append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(") AS DECIMAL(20,2)").append(")");
                 } else {
                     f.append(y.getSummary()).append("(")
-                            .append("CAST(").append(y.getDataeaseName()).append(" AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
+                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
                             .append(")");
                 }
             }
-            f.append(" AS _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+            f.append(" AS  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
             return f.toString();
         }).toArray(String[]::new);
 
         String[] order = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> "_" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getDataeaseName(), "*") ? "" : f.getDataeaseName()) + " " + f.getSort()).toArray(String[]::new);
+                .map(f -> " _" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + "  " + f.getSort()).toArray(String[]::new);
 
         String sql = MessageFormat.format("SELECT {0} FROM {1} WHERE 1=1 {2} ORDER BY null,{3}",
                 StringUtils.join(field, ","),
@@ -303,11 +345,11 @@ public class DorisQueryProvider extends QueryProvider {
                         StringBuilder filter = new StringBuilder();
                         // 原始类型不是时间，在de中被转成时间的字段做处理
                         if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(cast(_")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
-                                    .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                            filter.append(" AND FROM_UNIXTIME(CAST( _")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ")
+                                    .append(" AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
                         } else {
-                            filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
+                            filter.append(" AND  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
@@ -326,16 +368,16 @@ public class DorisQueryProvider extends QueryProvider {
             return sql;
         } else {
             String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
-                    "(" + sql + ") AS tmp",
+                    "(" + sql + ") tmp",
                     StringUtils.join(resultFilter, " "),
-                    ObjectUtils.isNotEmpty(order) ? StringUtils.join(order, ",") : "null");
+                    StringUtils.join(order, ","));
             return filterSql;
         }
     }
 
     @Override
     public String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
-        return getSQLSummary(" (" + sql + ") AS tmp ", yAxis, customFilter, extFilterRequestList);
+        return getSQLSummary(" (" + sqlFix(sql) + ") tmp ", yAxis, customFilter, extFilterRequestList);
     }
 
     public String transMysqlFilterTerm(String term) {
@@ -383,11 +425,11 @@ public class DorisQueryProvider extends QueryProvider {
                 continue;
             }
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                filter.append(" AND FROM_UNIXTIME(cast(")
-                        .append(field.getDataeaseName())
-                        .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                filter.append(" AND FROM_UNIXTIME(CAST( ")
+                        .append(field.getOriginName())
+                        .append("  AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
             } else {
-                filter.append(" AND ").append(field.getDataeaseName());
+                filter.append(" AND  ").append(field.getOriginName()).append(" ");
             }
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getTerm()))
@@ -416,11 +458,11 @@ public class DorisQueryProvider extends QueryProvider {
             }
             DatasetTableField field = request.getDatasetTableField();
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                filter.append(" AND FROM_UNIXTIME(cast(")
-                        .append(field.getDataeaseName())
-                        .append(" AS decimal(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                filter.append(" AND FROM_UNIXTIME(CAST( ")
+                        .append(field.getOriginName())
+                        .append("  AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
             } else {
-                filter.append(" AND ").append(field.getDataeaseName());
+                filter.append(" AND  ").append(field.getOriginName()).append(" ");
             }
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getOperator()))
@@ -441,6 +483,13 @@ public class DorisQueryProvider extends QueryProvider {
         return filter.toString();
     }
 
+    private String sqlFix(String sql) {
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        return sql;
+    }
+
     private String transDateFormat(String dateStyle, String datePattern) {
         String split = "-";
         if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
@@ -451,17 +500,17 @@ public class DorisQueryProvider extends QueryProvider {
 
         switch (dateStyle) {
             case "y":
-                return "%Y";
+                return "YYYY";
             case "y_M":
-                return "%Y" + split + "%m";
+                return "YYYY" + split + "MM";
             case "y_M_d":
-                return "%Y" + split + "%m" + split + "%d";
+                return "YYYY" + split + "MM" + split + "DD";
             case "H_m_s":
-                return "%H:%i:%S";
+                return "HH24:MI:SS";
             case "y_M_d_H_m":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i";
+                return "YYYY" + split + "MM" + split + "DD" + " HH24:MI";
             case "y_M_d_H_m_s":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i:%S";
+                return "YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS";
             default:
                 return "%Y-%m-%d %H:%i:%S";
         }
