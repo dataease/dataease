@@ -206,13 +206,13 @@ public class ExtractDataService {
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
-//                    deleteFile("all_scope", datasetTableId);
+                    deleteFile("all_scope", datasetTableId);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-//                    deleteFile("all_scope", datasetTableId);
+                    deleteFile("all_scope", datasetTableId);
                 }finally {
                     if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                         datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
@@ -788,12 +788,13 @@ public class ExtractDataService {
         fields.add(fieldInfo);
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
-        String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
+        String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType);
+
         tmp_code = tmp_code.replace("handleWraps", handleWraps);
         if(isExcel){
-            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn);
+            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList())));;
         }else {
-            tmp_code = tmp_code.replace("handleExcelIntColumn", "");
+            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));;
         }
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
