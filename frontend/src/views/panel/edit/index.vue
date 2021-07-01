@@ -137,12 +137,13 @@
 
     <!--文字组件对话框-->
     <el-dialog
-      v-if="styleDialogVisible"
+      v-if="styleDialogVisible && curComponent"
       :title="$t('panel.style')"
       :visible.sync="styleDialogVisible"
       custom-class="de-style-dialog"
     >
-      <AttrListExtend v-if="curComponent" />
+      <PanelTextEditor v-if="curComponent.type==='v-text'" />
+      <AttrListExtend v-else />
       <div style="text-align: center">
         <span slot="footer">
           <el-button size="mini" @click="closeStyleDialog">{{ $t('commons.confirm') }}</el-button>
@@ -182,6 +183,7 @@ import AttrList from '@/components/canvas/components/AttrList'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
+import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -210,7 +212,8 @@ export default {
     Preview,
     AttrList,
     AttrListExtend,
-    AssistComponent
+    AssistComponent,
+    PanelTextEditor
   },
   data() {
     return {
@@ -706,6 +709,23 @@ export default {
 
 .hidden {
   transform: translateX(100%);
+}
+
+.style-edit-dialog {
+  width: 300px!important;
+  height: 400px!important;
+
+  .el-dialog__header{
+    // background-color: #f4f4f5;
+    padding: 10px 20px !important;
+
+    .el-dialog__headerbtn {
+      top: 15px !important;
+    }
+  }
+  .el-dialog__body{
+    padding: 1px 15px !important;
+  }
 }
 
 </style>

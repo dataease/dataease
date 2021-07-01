@@ -102,8 +102,7 @@ div:focus {
 }
 
 .de-style-dialog {
-  min-width: 500px !important;
-  width: 300px !important;
+  width: 600px !important;
 
   .el-dialog__header{
     // background-color: #f4f4f5;
@@ -270,3 +269,7 @@ div:focus {
   bottom:20px;
 }
 
+
+.tox-tinymce-aux {
+  z-index: 10000 !important;
+}
