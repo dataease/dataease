@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_STYLE } from '../../chart/chart'
+import { DEFAULT_YAXIS_STYLE } from '../../chart/chart'
 
 export default {
   name: 'YAxisSelector',
@@ -121,7 +121,7 @@ export default {
               this.axisForm.splitLine = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE.splitLine))
             }
             if (!this.axisForm.nameTextStyle) {
-              this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.nameTextStyle))
+              this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE.nameTextStyle))
             }
           }
         }
