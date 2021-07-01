@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "20374711",
+      "name": "实线",
+      "font_class": "solid_line",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
+      "icon_id": "930673",
+      "name": "画笔",
+      "font_class": "huabi",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "15952264",
+      "name": "点线",
+      "font_class": "dianxian",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "15952269",
+      "name": "虚线",
+      "font_class": "xuxian",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "19990890",
+      "name": "背景色‘",
+      "font_class": "beijingse1",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
       "icon_id": "2404485",
       "name": "矩形",
       "font_class": "juxing",

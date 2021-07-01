@@ -154,8 +154,11 @@
     <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
       <Preview v-if="previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
     </fullscreen>
-
     <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
+
+    <!--矩形样式组件-->
+    test--------{{ curComponent&&curComponent.type }}
+    <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" />
 
   </el-row>
 </template>
@@ -195,6 +198,7 @@ import FilterDialog from '../filter/filterDialog'
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
+import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 
 export default {
   name: 'PanelEdit',
@@ -213,7 +217,8 @@ export default {
     AttrList,
     AttrListExtend,
     AssistComponent,
-    PanelTextEditor
+    PanelTextEditor,
+    RectangleAttr
   },
   data() {
     return {
@@ -451,7 +456,7 @@ export default {
       this.clearCurrentInfo()
 
       // 文字组件
-      if (component.type === 'v-text' || component.type === 'rect-shape') {
+      if (component.type === 'v-text') {
         this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
         this.styleDialogVisible = true
         this.show = false
