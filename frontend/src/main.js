@@ -42,6 +42,9 @@ Vue.use(vcolorpicker)
 import fullscreen from 'vue-fullscreen'
 Vue.use(fullscreen)
 
+// import TEditor from '@/components/Tinymce/index.vue'
+// Vue.component('TEditor', TEditor)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
