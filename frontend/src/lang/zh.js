@@ -734,7 +734,9 @@ export default {
     text_style: '字体样式',
     bolder: '加粗',
     change_ds: '更换数据集',
-    change_ds_tip: '提示：更换数据集将导致字段发生变化，需重新制作视图'
+    change_ds_tip: '提示：更换数据集将导致字段发生变化，需重新制作视图',
+    axis_name_color: '名称颜色',
+    axis_name_fontsize: '名称字体'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -848,7 +850,7 @@ export default {
     edit_field: '编辑字段',
     preview_100_data: '显示前100行数据',
     invalid_table_check: '非直连数据集请先完成数据同步',
-    parse_error: 'Excel解析错误，请检查格式、字段等信息。具体参考：https://dataease.io/docs/faq/dataset_faq/',
+    parse_error: 'Excel解析失败，请检查格式、字段等信息。具体参考：https://dataease.io/docs/faq/dataset_faq/',
     origin_field_type: '原始类型',
     edit_excel_table: '编辑Excel数据集',
     edit_excel: '编辑Excel',
@@ -889,7 +891,7 @@ export default {
     input_limit_0_50: '0-50字符',
     oracle_connection_type: '服务名/SID',
     oracle_sid: 'SID',
-    oracle_service_name: '服务名',
+    oracle_service_name: '服务名'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
