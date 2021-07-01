@@ -848,7 +848,7 @@ export default {
     edit_field: 'Edit Field',
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
-    parse_error: 'Parse Error,please check',
+    parse_error: 'Parse Error,please check.Reference：https://dataease.io/docs/faq/dataset_faq/',
     origin_field_type: 'Origin Type',
     edit_excel_table: 'Edit Excel Dataset',
     edit_excel: 'Edit Excel',

@@ -848,7 +848,7 @@ export default {
     edit_field: '编辑字段',
     preview_100_data: '显示前100行数据',
     invalid_table_check: '非直连数据集请先完成数据同步',
-    parse_error: 'Excel解析错误，请检查格式、字段等信息',
+    parse_error: 'Excel解析错误，请检查格式、字段等信息。具体参考：https://dataease.io/docs/faq/dataset_faq/',
     origin_field_type: '原始类型',
     edit_excel_table: '编辑Excel数据集',
     edit_excel: '编辑Excel',
