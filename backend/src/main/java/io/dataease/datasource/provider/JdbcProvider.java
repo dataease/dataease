@@ -100,9 +100,7 @@ public class JdbcProvider extends DatasourceProvider {
     private List<String[]> fetchResult(ResultSet rs) throws Exception {
         List<String[]> list = new LinkedList<>();
         ResultSetMetaData metaData = rs.getMetaData();
-        System.out.println(metaData.getColumnName(1));
         int columnCount = metaData.getColumnCount();
-        System.out.println(columnCount);
         while (rs.next()) {
             String[] row = new String[columnCount];
             for (int j = 0; j < columnCount; j++) {

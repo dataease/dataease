@@ -154,6 +154,8 @@ export default {
         return 'MySQL'
       } else if (type === 'sqlServer') {
         return 'SQL Server'
+      }else if (type === 'oracle') {
+        return 'Oracle'
       }
     },
 
