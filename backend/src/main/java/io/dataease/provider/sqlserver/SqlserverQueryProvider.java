@@ -270,6 +270,21 @@ public class SqlserverQueryProvider extends QueryProvider {
         return tmpSql;
     }
 
+    @Override
+    public String createRawQuerySQL(String table, List<DatasetTableField> fields){
+        String[] array = fields.stream().map(f -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
+    }
+
+    @Override
+    public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields);
+    }
+
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":
