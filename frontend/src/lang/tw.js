@@ -890,7 +890,7 @@ export default {
     edit_field: '編輯自斷',
     preview_100_data: '顯示前100行數據',
     invalid_table_check: '非直連數據集請先完成數據同步',
-    parse_error: 'Excel解析錯誤，請檢查格式、字段等信息',
+    parse_error: 'Excel解析錯誤，請檢查格式、字段等信息。具體參考：https://dataease.io/docs/faq/dataset_faq/',
     origin_field_type: '原始類型',
     edit_excel_table: '編輯Excel數據集',
     edit_excel: '編輯Excel',
@@ -1169,5 +1169,10 @@ export default {
     week_end: '至星期',
     every_year: '每年',
     week_tips: '說明：1-7 分別對應 周日-周六'
+  },
+  dept: {
+    can_not_move_change_sort: '不能移動以改變排序',
+    can_not_move_parent_to_children: '父組織不能移動到自己的子節點下',
+    move_success: '移動成功'
   }
 }

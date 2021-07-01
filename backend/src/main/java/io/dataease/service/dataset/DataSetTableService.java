@@ -974,6 +974,38 @@ public class DataSetTableService {
             return "";
         }
         CellType cellTypeEnum = cell.getCellTypeEnum();
+        if (cellTypeEnum.equals(CellType.FORMULA)) {
+            try {
+                double d = cell.getNumericCellValue();
+                try {
+                    Double value = new Double(d);
+                    double eps = 1e-10;
+                    if (value - Math.floor(value) < eps) {
+                        if (cellType) {
+                            tableFiled.setFieldType("LONG");
+                        }
+                        return value.longValue() + "";
+                    } else {
+                        if (cellType) {
+                            tableFiled.setFieldType("DOUBLE");
+                        }
+                        NumberFormat nf = NumberFormat.getInstance();
+                        nf.setGroupingUsed(false);
+                        return nf.format(value);
+                    }
+                } catch (Exception e) {
+                    BigDecimal b = new BigDecimal(d);
+                    return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
+                }
+            } catch (IllegalStateException e) {
+                String s = String.valueOf(cell.getRichStringCellValue());
+                if (cellType) {
+                    tableFiled.setFieldType("TEXT");
+                    tableFiled.setFieldSize(65533);
+                }
+                return s;
+            }
+        }
         if (cellTypeEnum.equals(CellType.STRING)) {
             if (cellType) {
                 tableFiled.setFieldType("TEXT");

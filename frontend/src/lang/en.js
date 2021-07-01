@@ -848,7 +848,7 @@ export default {
     edit_field: 'Edit Field',
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
-    parse_error: 'Parse Error,please check',
+    parse_error: 'Parse Error,please check.Reference：https://dataease.io/docs/faq/dataset_faq/',
     origin_field_type: 'Origin Type',
     edit_excel_table: 'Edit Excel Dataset',
     edit_excel: 'Edit Excel',
@@ -1127,5 +1127,10 @@ export default {
     week_end: 'to week',
     every_year: 'Every year',
     week_tips: 'Tips：1-7 mapping SUN-SAT'
+  },
+  dept: {
+    can_not_move_change_sort: 'Cannot move to change sort',
+    can_not_move_parent_to_children: 'Parent organization cannot move to its own child node',
+    move_success: 'Mobile success'
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <el-col>
+  <el-col class="tree-style">
     <!-- group -->
     <el-col v-if="!sceneMode">
       <el-row class="title-css">
@@ -828,7 +828,7 @@ export default {
           }
         }
       } else {
-        node.data.children && resolve(node.data.children)
+        node.data.children ? resolve(node.data.children) : resolve([])
       }
     },
 
@@ -995,5 +995,10 @@ export default {
     justify-content: space-between;
     align-items: center;
     width: 100%
+  }
+  .tree-style {
+    padding: 10px 15px;
+    height: 100%;
+    overflow-y: auto;
   }
 </style>

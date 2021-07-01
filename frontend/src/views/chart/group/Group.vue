@@ -1,5 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col>
+  <el-col class="tree-style">
     <!-- group -->
     <el-col v-if="!sceneMode">
       <el-row class="title-css">
@@ -808,7 +808,7 @@ export default {
           }
         }
       } else {
-        node.data.children && resolve(node.data.children)
+        node.data.children ? resolve(node.data.children) : resolve([])
       }
     },
 
@@ -1039,5 +1039,10 @@ export default {
   }
   .father:hover .child {
     display: inline;
+  }
+  .tree-style {
+    padding: 10px 15px;
+    height: 100%;
+    overflow-y: auto;
   }
 </style>

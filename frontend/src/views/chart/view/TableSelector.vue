@@ -18,6 +18,7 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 // import DatasetGroupSelector from '../../dataset/common/DatasetGroupSelector'
 import DatasetGroupSelectorTree from '../../dataset/common/DatasetGroupSelectorTree'
 import DatasetTableData from '../../dataset/common/DatasetTableData'
+import { getTable } from '@/api/dataset/dataset'
 
 export default {
   name: 'TableSelector',
@@ -37,8 +38,13 @@ export default {
   },
   methods: {
     getTable(table) {
-      this.table = table
-      this.$emit('getTable', table)
+      // this.table = table
+      getTable(table.id).then(response => {
+        this.table = response.data
+        this.$emit('getTable', this.table)
+      }).catch(res => {
+        this.table = {}
+      })
     }
   }
 }
@@ -49,6 +55,7 @@ export default {
     height: 50vh;
     min-width: 180px;
     max-width: 280px;
+    padding: 0 0;
   }
 
   .ms-main-container {
