@@ -29,6 +29,7 @@ export function basePieOption(chart_option, chart) {
       // label
       if (customAttr.label) {
         chart_option.series[0].label = customAttr.label
+        chart_option.series[0].labelLine = customAttr.label.labelLine
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {

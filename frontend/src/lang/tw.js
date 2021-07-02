@@ -778,7 +778,10 @@ export default {
     change_ds: '更換數據集',
     change_ds_tip: '提示：更換數據集將導致字段發生變化，需重新製作視圖',
     axis_name_color: '名稱顏色',
-    axis_name_fontsize: '名稱字體'
+    axis_name_fontsize: '名稱字體',
+    pie_label_line_show: '引導線',
+    outside: '外',
+    center: '中心'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

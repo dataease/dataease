@@ -736,7 +736,10 @@ export default {
     change_ds: '更换数据集',
     change_ds_tip: '提示：更换数据集将导致字段发生变化，需重新制作视图',
     axis_name_color: '名称颜色',
-    axis_name_fontsize: '名称字体'
+    axis_name_fontsize: '名称字体',
+    pie_label_line_show: '引导线',
+    outside: '外',
+    center: '中心'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
