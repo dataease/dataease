@@ -736,7 +736,10 @@ export default {
     change_ds: 'Change Dataset',
     change_ds_tip: 'Tips：Change Dataset will change fields,you need rebuild chart',
     axis_name_color: 'Name Color',
-    axis_name_fontsize: 'Name Fontsize'
+    axis_name_fontsize: 'Name Fontsize',
+    pie_label_line_show: 'Line',
+    outside: 'Outside',
+    center: 'Center'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
