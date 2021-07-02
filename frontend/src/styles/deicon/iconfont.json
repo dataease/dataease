@@ -6,6 +6,69 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4283405",
+      "name": "font-weight-bold",
+      "font_class": "font-weight-bold",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "9356145",
+      "name": "letter_spacing",
+      "font_class": "letter_spacing",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "13169265",
+      "name": "letter-spacing",
+      "font_class": "letter-spacing",
+      "unicode": "e679",
+      "unicode_decimal": 59001
+    },
+    {
+      "icon_id": "7620139",
+      "name": "字体颜色",
+      "font_class": "zimua",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "13016621",
+      "name": "format_letter_spacing_2",
+      "font_class": "format_letter_spacing_",
+      "unicode": "e6c3",
+      "unicode_decimal": 59075
+    },
+    {
+      "icon_id": "18354433",
+      "name": "font_size",
+      "font_class": "font_size",
+      "unicode": "e710",
+      "unicode_decimal": 59152
+    },
+    {
+      "icon_id": "3717684",
+      "name": "居中",
+      "font_class": "align-center",
+      "unicode": "e972",
+      "unicode_decimal": 59762
+    },
+    {
+      "icon_id": "14764786",
+      "name": "居右",
+      "font_class": "juyou",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "22405859",
+      "name": "居左",
+      "font_class": "juzuo",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
       "icon_id": "20374711",
       "name": "实线",
       "font_class": "solid_line",

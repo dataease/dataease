@@ -157,8 +157,8 @@
     <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
 
     <!--矩形样式组件-->
-    test--------{{ curComponent&&curComponent.type }}
     <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" />
+    <TextAttr v-if="curComponent&&curComponent.type==='v-text'" />
 
   </el-row>
 </template>
@@ -199,6 +199,7 @@ import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
 import RectangleAttr from '@/components/canvas/components/RectangleAttr'
+import TextAttr from '@/views/Tinymce/TextAttr'
 
 export default {
   name: 'PanelEdit',
@@ -218,7 +219,8 @@ export default {
     AttrListExtend,
     AssistComponent,
     PanelTextEditor,
-    RectangleAttr
+    RectangleAttr,
+    TextAttr
   },
   data() {
     return {
@@ -455,12 +457,12 @@ export default {
       this.$store.commit('recordSnapshot')
       this.clearCurrentInfo()
 
-      // 文字组件
-      if (component.type === 'v-text') {
-        this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
-        this.styleDialogVisible = true
-        this.show = false
-      }
+      // // 文字组件
+      // if (component.type === 'v-text') {
+      //   this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
+      //   this.styleDialogVisible = true
+      //   this.show = false
+      // }
     },
     clearCurrentInfo() {
       this.currentWidget = null

@@ -54,10 +54,10 @@ const list = [
       width: 300,
       height: 100,
       fontSize: 18,
-      fontWeight: 500,
+      fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
-      textAlign: '',
+      textAlign: 'left',
       color: '#000000'
     }
   },
@@ -75,7 +75,7 @@ const list = [
       borderColor: '',
       borderRadius: '',
       fontSize: 14,
-      fontWeight: 500,
+      fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
       textAlign: '',
