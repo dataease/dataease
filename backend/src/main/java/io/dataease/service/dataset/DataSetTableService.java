@@ -890,7 +890,7 @@ public class DataSetTableService {
                     if (row == null) {
                         throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
                     }
-                    columnNum = row.getPhysicalNumberOfCells();
+                    columnNum = row.getLastCellNum();
                 }
                 String[] r = new String[columnNum];
                 for (int j = 0; j < columnNum; j++) {
@@ -902,6 +902,7 @@ public class DataSetTableService {
                         if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
+
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
