@@ -46,6 +46,24 @@
 
     </select>
 
+    <select id="queryUserIdWithRoleIds" >
+        select user_id
+        from sys_user
+        where role_id in
+        <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+            #{roleId}
+        </foreach>
+    </select>
+
+
+    <select id="queryUserIdWithDeptIds" >
+        select user_id
+        from sys_user
+        where dept_id in
+        <foreach collection="deptIds" item="deptId" open='(' separator=',' close=')'>
+            #{deptId}
+        </foreach>
+    </select>
 
 
 

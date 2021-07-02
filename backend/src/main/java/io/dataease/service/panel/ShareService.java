@@ -14,15 +14,14 @@ import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelSharePo;
+import io.dataease.service.message.DeMsgutil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -31,7 +30,6 @@ public class ShareService {
 
     @Autowired(required = false)
     private PanelShareMapper mapper;
-
 
     @Resource
     private ExtPanelShareMapper extPanelShareMapper;
@@ -66,6 +64,27 @@ public class ShareService {
         if (CollectionUtils.isNotEmpty(shares)){
             extPanelShareMapper.batchInsert(shares);
         }
+
+        // 下面是发送提醒消息逻辑
+        Set<Long> userIdSet = new HashSet<Long>();
+        if (type == 0) {
+            userIdSet.addAll(targetIds);
+        }else if(type == 1) {
+            Map<String, List<Long>> param = new HashMap<>();
+            param.put("roleIds", targetIds);
+            List<Long> userIdList = extPanelShareMapper.queryUserIdWithRoleIds(param);
+            userIdSet.addAll(userIdList);
+        } else if (type == 2) {
+            Map<String, List<Long>> param = new HashMap<>();
+            param.put("deptIds", targetIds);
+            List<Long> userIdList = extPanelShareMapper.queryUserIdWithDeptIds(param);
+            userIdSet.addAll(userIdList);
+        }
+        CurrentUserDto user = AuthUtils.getUser();
+        userIdSet.forEach(userId -> {
+            DeMsgutil.sendMsg(userId, 0, "用户 [" + user.getNickName()+"] 分享了仪表板给您，请查收!");
+        });
+
     }
 
     /**

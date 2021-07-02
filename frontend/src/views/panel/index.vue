@@ -1,7 +1,7 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
     <de-main-container>
-      <panel-main v-show="componentName==='PanelMain'" />
+      <panel-main v-show="componentName==='PanelMain'" ref="panel_main" />
       <chart-edit v-if="componentName==='ChartEdit'" :param="param" />
       <panel-edit v-if="componentName==='PanelEdit'" />
       <!--      <component :is="component" :param="param" />-->
@@ -47,6 +47,20 @@ export default {
       //     break
       // }
     })
+  },
+  created() {
+    this.$store.dispatch('app/toggleSideBarHide', true)
+    let routerParam
+    if ((routerParam = this.$router.currentRoute.params) !== null && routerParam.msgNotification) {
+      // 说明是从消息通知跳转过来的
+      console.log(this.$router.currentRoute.params)
+      if (routerParam.msgType === 0) { // 是仪表板分享
+        this.componentName = 'PanelMain'
+        this.$nextTick(() => {
+          this.$refs.panel_main.msg2Current()
+        })
+      }
+    }
   },
   methods: {
 

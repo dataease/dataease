@@ -86,6 +86,10 @@ export default {
         preStyle: null
       })
       this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
+    },
+    msg2Current() {
+      this.activeName = 'panels_share'
+      this.refreshShare()
     }
 
   }
