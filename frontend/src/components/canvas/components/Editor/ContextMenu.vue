@@ -31,8 +31,6 @@ export default {
       copyData: null,
       editFilter: [
         'view',
-        'v-text',
-        'rect-shape',
         'custom'
       ]
     }
