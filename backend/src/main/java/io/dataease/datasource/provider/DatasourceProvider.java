@@ -19,7 +19,7 @@ public abstract class DatasourceProvider {
         return new ArrayList<>();
     };
 
-    public void test(DatasourceRequest datasourceRequest) throws Exception {
+    public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         getData(datasourceRequest);
     }
 
@@ -29,5 +29,5 @@ public abstract class DatasourceProvider {
 
     abstract public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception;
 
-    abstract public void initDataSource(DatasourceRequest datasourceRequest, String type) throws Exception;
+    abstract public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception;
 }
