@@ -19,8 +19,8 @@ import java.util.*;
 public class JdbcProvider extends DatasourceProvider {
 
     private static Map<String, ComboPooledDataSource> jdbcConnection = new HashMap<>();
-    private static int initPoolSize = 1;
-    private static int maxConnections = 1;
+    private static int initPoolSize = 5;
+    private static int maxConnections = 200;
 
     /**
      * 增加缓存机制 key 由 'provider_sql_' dsr.datasource.id dsr.table dsr.query共4部分组成，命中则使用缓存直接返回不再执行sql逻辑
@@ -268,7 +268,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public void test(DatasourceRequest datasourceRequest) throws Exception {
+    public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
         Connection con = null;
         try {
@@ -305,7 +305,7 @@ public class JdbcProvider extends DatasourceProvider {
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
         ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
-            initDataSource(datasourceRequest, "add");
+            handleDatasource(datasourceRequest, "add");
         }
         dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         Connection co = dataSource.getConnection();
@@ -313,27 +313,36 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public void initDataSource(DatasourceRequest datasourceRequest, String type) throws Exception {
+    public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception {
+        ComboPooledDataSource dataSource = null;
         switch (type){
             case "add":
-                ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+                checkStatus(datasourceRequest);
+                dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
                 if (dataSource == null) {
-                    extracted(datasourceRequest);
+                    addToPool(datasourceRequest);
                 }
                 break;
             case "edit":
-                jdbcConnection.remove(datasourceRequest.getDatasource().getId());
-                extracted(datasourceRequest);
+                dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+                if (dataSource != null) {
+                    dataSource.close();
+                }
+                checkStatus(datasourceRequest);
+                addToPool(datasourceRequest);
                 break;
             case "delete":
-                jdbcConnection.remove(datasourceRequest.getDatasource().getId());
+                dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+                if (dataSource != null) {
+                    dataSource.close();
+                }
                 break;
             default:
                 break;
         }
     }
 
-    private void extracted(DatasourceRequest datasourceRequest) throws PropertyVetoException {
+    private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
         ComboPooledDataSource dataSource;
         dataSource = new ComboPooledDataSource();
         setCredential(datasourceRequest, dataSource);
