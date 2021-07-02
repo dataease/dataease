@@ -37,4 +37,10 @@ public abstract class QueryProvider {
     public abstract String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList);
 
     public abstract String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList);
+
+    public abstract String wrapSql(String sql);
+
+    public abstract String createRawQuerySQL(String table, List<DatasetTableField> fields);
+
+    public abstract String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields);
 }

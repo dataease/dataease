@@ -336,6 +336,31 @@ public class MysqlQueryProvider extends QueryProvider {
         return getSQLSummary(" (" + sqlFix(sql) + ") AS tmp ", yAxis, customFilter, extFilterRequestList);
     }
 
+    @Override
+    public String wrapSql(String sql) {
+        sql = sql.trim();
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0";
+        return tmpSql;
+    }
+
+    @Override
+    public String createRawQuerySQL(String table, List<DatasetTableField> fields){
+        String[] array = fields.stream().map(f -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
+    }
+
+    @Override
+    public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields);
+    }
+
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":
