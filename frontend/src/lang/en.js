@@ -1137,5 +1137,12 @@ export default {
     can_not_move_change_sort: 'Cannot move to change sort',
     can_not_move_parent_to_children: 'Parent organization cannot move to its own child node',
     move_success: 'Mobile success'
+  },
+  webmsg: {
+    web_msg: 'On site message notification',
+    show_more: 'View more',
+    all_type: 'All type',
+    panel_type: 'Panel Share',
+    dataset_type: 'Dataset sync'
   }
 }

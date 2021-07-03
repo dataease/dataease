@@ -189,10 +189,26 @@ div:focus {
     }
   }
 }
+.de-msg-data-table {
+  .el-table__body-wrapper >table>{
+    tbody {
+      .el-table__row {
+        :hover {
+          cursor: pointer;
+        }        
+      }
+      td {
+        padding: 3px 0 !important;
+      }
+    }
+  }
+}
 .de-filter-data-table::before {
   height: 0px !important;
 }
-
+.de-msg-data-table::before {
+  height: 0px !important;
+}
 .custom-component-class {
   width: 100%;
   div.el-input-group__append {

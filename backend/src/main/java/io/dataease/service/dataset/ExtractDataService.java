@@ -10,10 +10,8 @@ import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.UpdateType;
-import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.commons.utils.DorisTableUtils;
-import io.dataease.commons.utils.HttpClientUtil;
-import io.dataease.commons.utils.LogUtil;
+import io.dataease.commons.model.AuthURD;
+import io.dataease.commons.utils.*;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.*;
 import io.dataease.datasource.provider.DatasourceProvider;
@@ -24,6 +22,7 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
+import io.dataease.service.message.DeMsgutil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -74,8 +73,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -206,10 +204,15 @@ public class ExtractDataService {
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
+
+                    sendWebMsg(datasetTable, taskId,true);
+
 //                    deleteFile("all_scope", datasetTableId);
+
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
+                    sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
 //                    deleteFile("all_scope", datasetTableId);
@@ -230,6 +233,7 @@ public class ExtractDataService {
                         Long execTime = System.currentTimeMillis();
                         extractData(datasetTable, "incremental_add");
                         saveSucessLog(datasetTableTaskLog);
+                        sendWebMsg(datasetTable, taskId,true);
                         updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                     }else {
                         DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
@@ -267,12 +271,17 @@ public class ExtractDataService {
                             extractData(datasetTable, "incremental_delete");
                         }
                         saveSucessLog(datasetTableTaskLog);
+
+                        sendWebMsg(datasetTable, taskId,true);
+
 //                        deleteFile("incremental_add", datasetTableId);
 //                        deleteFile("incremental_delete", datasetTableId);
+
                         updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                     }
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
+                    sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
 //                    deleteFile("incremental_add", datasetTableId);
 //                    deleteFile("incremental_delete", datasetTableId);
@@ -292,6 +301,20 @@ public class ExtractDataService {
             });
         }
 
+    }
+
+    private void sendWebMsg(DatasetTable datasetTable, String taskId, Boolean status) {
+        String msg = status ? "成功" : "失败";
+        String id = datasetTable.getId();
+        AuthURD authURD = AuthUtils.authURDR(id);
+        Set<Long> userIds = AuthUtils.userIdsByURD(authURD);
+        Gson gson = new Gson();
+        userIds.forEach(userId -> {
+            Map<String,Object> param = new HashMap<>();
+            param.put("tableId", id);
+            param.put("taskId", taskId);
+            DeMsgutil.sendMsg(userId, 1, "数据集【"+datasetTable.getName()+"】同步"+msg, gson.toJson(param));
+        });
     }
 
     private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed, Long execTime) {

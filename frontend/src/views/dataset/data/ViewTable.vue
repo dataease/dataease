@@ -104,6 +104,9 @@ export default {
       this.initTable(this.param)
     }
   },
+  created() {
+
+  },
   mounted() {
     this.initTable(this.param)
   },
@@ -187,6 +190,10 @@ export default {
       return {
         'type': type
       }
+    },
+    msg2Current(sourceParam) {
+      this.tabActive = 'updateInfo'
+      this.table.msgTaskId = sourceParam.taskId
     }
   }
 }

@@ -85,7 +85,7 @@
     }
 
     .is-active>.el-submenu__title {
-      color: $subMenuActiveText !important;
+      color: $menuActiveText !important;
     }
 
     & .nest-menu .el-submenu>.el-submenu__title,
@@ -94,7 +94,7 @@
       background-color: $subMenuBg !important;
 
       &:hover {
-        background-color: $subMenuHover !important;
+        background-color: $menuHover !important;
       }
     }
   }

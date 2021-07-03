@@ -1142,5 +1142,12 @@ export default {
     can_not_move_change_sort: '不能移动以改变排序',
     can_not_move_parent_to_children: '父组织不能移动到自己的子节点下',
     move_success: '移动成功'
+  },
+  webmsg: {
+    web_msg: '站内消息通知',
+    show_more: '查看更多',
+    all_type: '全部类型',
+    panel_type: '仪表板分享',
+    dataset_type: '数据集同步'
   }
 }

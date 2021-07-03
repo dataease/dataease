@@ -76,6 +76,7 @@ export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     const filterDatas = filterRouter(res.data)
     const asyncRouter = filterAsyncRouter(filterDatas)
+    addMsgMenu(asyncRouter)
     asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)
@@ -85,6 +86,44 @@ export const loadMenus = (next, to) => {
         next('/')
       }
     })
+  })
+}
+
+export const addMsgMenu = asyncRouter => {
+  const menu = {
+    path: 'system-msg-web',
+    component: () => import('@/views/msg/index'),
+    name: 'sys-msg-web',
+    meta: { title: '站内消息', icon: 'all-msg' },
+    children: [
+      {
+        path: 'all',
+        component: () => import('@/views/msg/all'),
+        name: 'sys-msg-web-all',
+        meta: { title: '所有消息', icon: 'web-msg' }
+      },
+      {
+        path: 'unread',
+        component: () => import('@/views/msg/unread'),
+        name: 'sys-msg-web-unread',
+        meta: { title: '未读消息', icon: 'unread-msg' }
+
+      },
+      {
+        path: 'readed',
+        component: () => import('@/views/msg/readed'),
+        name: 'sys-msg-web-readed',
+        meta: { title: '已读消息', icon: 'readed-msg' }
+      }
+    ]
+  }
+  asyncRouter.forEach(element => {
+    if (element.name === 'system') {
+      if (element.children) {
+        element.children.splice(0, 0, menu)
+      }
+      // element.children.push(menu)
+    }
   })
 }
 /**

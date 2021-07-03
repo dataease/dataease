@@ -15,4 +15,8 @@ public interface ExtPanelShareMapper {
     List<PanelSharePo> query(Map<String, Object> param);
 
     List<PanelShare> queryWithResource(GridExample example);
+
+    List<Long> queryUserIdWithRoleIds(Map<String, List<Long>> param);
+
+    List<Long> queryUserIdWithDeptIds(Map<String, List<Long>> param);
 }
