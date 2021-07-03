@@ -299,7 +299,7 @@ public class DataSetTableService {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(qp.createQuerySQL(table, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
+                datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
                 dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -316,13 +316,15 @@ public class DataSetTableService {
             String sql = dataTableInfoDTO.getSql();
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize));
+            System.out.println(datasourceRequest.getQuery());
             try {
                 data.addAll(datasourceProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
+                datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                System.out.println(datasourceRequest.getQuery());
                 dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -417,9 +419,6 @@ public class DataSetTableService {
         }
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
-//        datasourceRequest.setQuery(sqlAsTable);
-//        List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
-        // 正式执行
         datasourceRequest.setQuery(sqlAsTable);
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
@@ -722,13 +721,14 @@ public class DataSetTableService {
         });
         List<String> originNameFileds = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
             String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
+            datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);
@@ -741,7 +741,7 @@ public class DataSetTableService {
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
             String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
+            datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);
@@ -890,7 +890,7 @@ public class DataSetTableService {
                     if (row == null) {
                         throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
                     }
-                    columnNum = row.getPhysicalNumberOfCells();
+                    columnNum = row.getLastCellNum();
                 }
                 String[] r = new String[columnNum];
                 for (int j = 0; j < columnNum; j++) {
@@ -902,6 +902,7 @@ public class DataSetTableService {
                         if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
+
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);

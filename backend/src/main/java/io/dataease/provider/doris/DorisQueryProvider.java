@@ -117,6 +117,16 @@ public class DorisQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit) {
+        return createQuerySQL(table, fields) + " LIMIT 0," + limit;
+    }
+
+    @Override
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit) {
+        return createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + limit;
+    }
+
+    @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
         return createQuerySQLAsTmp(sql, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
@@ -326,6 +336,38 @@ public class DorisQueryProvider extends QueryProvider {
     @Override
     public String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
         return getSQLSummary(" (" + sql + ") AS tmp ", yAxis, customFilter, extFilterRequestList);
+    }
+
+    @Override
+    public String wrapSql(String sql) {
+        sql = sql.trim();
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0";
+        return tmpSql;
+    }
+
+    @Override
+    public String createRawQuerySQL(String table, List<DatasetTableField> fields){
+        String[] array = fields.stream().map(f -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
+    }
+
+    @Override
+    public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields);
+    }
+
+    private String sqlFix(String sql) {
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        return sql;
     }
 
     public String transMysqlFilterTerm(String term) {

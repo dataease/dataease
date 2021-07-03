@@ -734,7 +734,12 @@ export default {
     text_style: 'Font Style',
     bolder: 'Bolder',
     change_ds: 'Change Dataset',
-    change_ds_tip: 'Tips：Change Dataset will change fields,you need rebuild chart'
+    change_ds_tip: 'Tips：Change Dataset will change fields,you need rebuild chart',
+    axis_name_color: 'Name Color',
+    axis_name_fontsize: 'Name Fontsize',
+    pie_label_line_show: 'Line',
+    outside: 'Outside',
+    center: 'Center'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -848,7 +853,7 @@ export default {
     edit_field: 'Edit Field',
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
-    parse_error: 'Parse Error,please check.Reference：https://dataease.io/docs/faq/dataset_faq/',
+    parse_error: 'Parse failed,please check.Reference：https://dataease.io/docs/faq/dataset_faq/',
     origin_field_type: 'Origin Type',
     edit_excel_table: 'Edit Excel Dataset',
     edit_excel: 'Edit Excel',

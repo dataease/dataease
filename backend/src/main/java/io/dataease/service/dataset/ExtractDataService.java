@@ -13,10 +13,7 @@ import io.dataease.commons.constants.UpdateType;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.datasource.constants.DatasourceTypes;
-import io.dataease.datasource.dto.DorisConfigration;
-import io.dataease.datasource.dto.MysqlConfigration;
-import io.dataease.datasource.dto.SqlServerConfigration;
-import io.dataease.datasource.dto.TableFiled;
+import io.dataease.datasource.dto.*;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
@@ -207,15 +204,18 @@ public class ExtractDataService {
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
+
                     sendWebMsg(datasetTable, taskId,true);
-                    deleteFile("all_scope", datasetTableId);
+
+//                    deleteFile("all_scope", datasetTableId);
+
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-                    deleteFile("all_scope", datasetTableId);
+//                    deleteFile("all_scope", datasetTableId);
                 }finally {
                     if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                         datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
@@ -271,17 +271,20 @@ public class ExtractDataService {
                             extractData(datasetTable, "incremental_delete");
                         }
                         saveSucessLog(datasetTableTaskLog);
+
                         sendWebMsg(datasetTable, taskId,true);
-                        deleteFile("incremental_add", datasetTableId);
-                        deleteFile("incremental_delete", datasetTableId);
+
+//                        deleteFile("incremental_add", datasetTableId);
+//                        deleteFile("incremental_delete", datasetTableId);
+
                         updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                     }
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
-                    deleteFile("incremental_add", datasetTableId);
-                    deleteFile("incremental_delete", datasetTableId);
+//                    deleteFile("incremental_add", datasetTableId);
+//                    deleteFile("incremental_delete", datasetTableId);
                 }finally {
                     if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                         datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
@@ -600,26 +603,17 @@ public class ExtractDataService {
     }
 
     private String fetchSqlField(String sql, Datasource ds) throws Exception {
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        datasourceRequest.setQuery(sqlFix(sql));
+        datasourceRequest.setQuery(qp.wrapSql(sql));
         List<String> dorisFileds = new ArrayList<>();
         datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
             dorisFileds.add(DorisTableUtils.columnName(filed));
         });
         return String.join(",", dorisFileds);
     }
-
-    public String sqlFix(String sql) {
-        sql = sql.trim();
-        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
-            sql = sql.substring(0, sql.length() - 1);
-        }
-        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0";
-        return tmpSql;
-    }
-
 
     private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception {
         TransMeta transMeta = new TransMeta();
@@ -639,15 +633,7 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost(), mysqlConfigration.getDataBase(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
                 dataMeta.addExtraOption("MYSQL","characterEncoding", "UTF-8");
                 transMeta.addDatabase(dataMeta);
-                if (extractType.equalsIgnoreCase("all_scope")) {
-                    if(datasetTable.getType().equalsIgnoreCase("sql")){
-                        selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
-                    }else {
-                        String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
-                        QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-                        selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
-                    }
-                }
+                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, false);
                 break;
@@ -655,15 +641,21 @@ public class ExtractDataService {
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfigration.class);
                 dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
-                if (extractType.equalsIgnoreCase("all_scope")) {
-                    if(datasetTable.getType().equalsIgnoreCase("sql")){
-                        selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
-                    }else {
-                        String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
-                        QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-                        selectSQL = qp.createQuerySQL(tableName, datasetTableFields);
-                    }
+                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL);
+                udjcStep = udjc(datasetTableFields, false);
+                break;
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasource.getConfiguration(), OracleConfigration.class);
+                if(oracleConfigration.getConnectionType().equalsIgnoreCase("serviceName")){
+                    String database = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ORACLE_HOSTNAME)(PORT = ORACLE_PORT))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = ORACLE_SERVICE_NAME )))".replace("ORACLE_HOSTNAME", oracleConfigration.getHost()).replace("ORACLE_PORT", oracleConfigration.getPort().toString()).replace("ORACLE_SERVICE_NAME", oracleConfigration.getDataBase());
+                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", "", database, "-1", oracleConfigration.getUsername(), oracleConfigration.getPassword());
+                }else {
+                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfigration.getHost(), oracleConfigration.getDataBase(), oracleConfigration.getPort().toString(), oracleConfigration.getUsername(), oracleConfigration.getPassword());
                 }
+               transMeta.addDatabase(dataMeta);
+
+                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, false);
                 break;
@@ -708,6 +700,25 @@ public class ExtractDataService {
         String transXml = transMeta.getXML();
         File file = new File(root_path + transName + ".ktr");
         FileUtils.writeStringToFile(file, transXml, "UTF-8");
+    }
+
+    private String getSelectSQL(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) {
+        if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("db")) {
+            String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
+            QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
+            selectSQL = qp.createRawQuerySQL(tableName, datasetTableFields);
+        }
+
+        if(extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("sql")){
+            selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
+            QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
+            selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
+        }
+        if(!extractType.equalsIgnoreCase("all_scope")){
+            QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
+            selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
+        }
+        return selectSQL;
     }
 
     private StepMeta inputStep(TransMeta transMeta, String selectSQL) {
@@ -786,7 +797,7 @@ public class ExtractDataService {
         String needToChangeColumnType = "";
         for (DatasetTableField datasetTableField : datasetTableFields) {
             if (datasetTableField.getDeExtractType() != null && datasetTableField.getDeExtractType() == 4) {
-                needToChangeColumnType = needToChangeColumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getOriginName());
+                needToChangeColumnType = needToChangeColumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getDataeaseName());
             }
         }
 
@@ -796,12 +807,13 @@ public class ExtractDataService {
         fields.add(fieldInfo);
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
-        String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList())));
+        String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType);
+
         tmp_code = tmp_code.replace("handleWraps", handleWraps);
         if(isExcel){
-            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn);
+            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList())));;
         }else {
-            tmp_code = tmp_code.replace("handleExcelIntColumn", "");
+            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));;
         }
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 

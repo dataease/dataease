@@ -734,7 +734,12 @@ export default {
     text_style: '字体样式',
     bolder: '加粗',
     change_ds: '更换数据集',
-    change_ds_tip: '提示：更换数据集将导致字段发生变化，需重新制作视图'
+    change_ds_tip: '提示：更换数据集将导致字段发生变化，需重新制作视图',
+    axis_name_color: '名称颜色',
+    axis_name_fontsize: '名称字体',
+    pie_label_line_show: '引导线',
+    outside: '外',
+    center: '中心'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -848,7 +853,7 @@ export default {
     edit_field: '编辑字段',
     preview_100_data: '显示前100行数据',
     invalid_table_check: '非直连数据集请先完成数据同步',
-    parse_error: 'Excel解析错误，请检查格式、字段等信息。具体参考：https://dataease.io/docs/faq/dataset_faq/',
+    parse_error: 'Excel解析失败，请检查格式、字段等信息。具体参考：https://dataease.io/docs/faq/dataset_faq/',
     origin_field_type: '原始类型',
     edit_excel_table: '编辑Excel数据集',
     edit_excel: '编辑Excel',
@@ -874,6 +879,7 @@ export default {
     host: '主机名/IP地址',
     port: '端口',
     please_input_data_base: '请输入数据库名称',
+    please_select_oracle_type: '选择连接类型',
     please_input_user_name: '请输入用户名',
     please_input_password: '请输入密码',
     please_input_host: '请输入主机',
@@ -885,7 +891,10 @@ export default {
     delete_warning: '确定要删除吗?',
     input_name: '请输入名称',
     input_limit_2_25: '2-25字符',
-    input_limit_0_50: '0-50字符'
+    input_limit_0_50: '0-50字符',
+    oracle_connection_type: '服务名/SID',
+    oracle_sid: 'SID',
+    oracle_service_name: '服务名'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

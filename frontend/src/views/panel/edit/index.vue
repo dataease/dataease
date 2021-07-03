@@ -137,12 +137,13 @@
 
     <!--文字组件对话框-->
     <el-dialog
-      v-if="styleDialogVisible"
+      v-if="styleDialogVisible && curComponent"
       :title="$t('panel.style')"
       :visible.sync="styleDialogVisible"
       custom-class="de-style-dialog"
     >
-      <AttrListExtend v-if="curComponent" />
+      <PanelTextEditor v-if="curComponent.type==='v-text'" />
+      <AttrListExtend v-else />
       <div style="text-align: center">
         <span slot="footer">
           <el-button size="mini" @click="closeStyleDialog">{{ $t('commons.confirm') }}</el-button>
@@ -153,8 +154,11 @@
     <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
       <Preview v-if="previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
     </fullscreen>
-
     <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
+
+    <!--矩形样式组件-->
+    <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" />
+    <TextAttr v-if="curComponent&&curComponent.type==='v-text'" />
 
   </el-row>
 </template>
@@ -182,6 +186,7 @@ import AttrList from '@/components/canvas/components/AttrList'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
+import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -193,6 +198,8 @@ import FilterDialog from '../filter/filterDialog'
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
+import RectangleAttr from '@/components/canvas/components/RectangleAttr'
+import TextAttr from '@/views/Tinymce/TextAttr'
 
 export default {
   name: 'PanelEdit',
@@ -210,7 +217,10 @@ export default {
     Preview,
     AttrList,
     AttrListExtend,
-    AssistComponent
+    AssistComponent,
+    PanelTextEditor,
+    RectangleAttr,
+    TextAttr
   },
   data() {
     return {
@@ -447,12 +457,12 @@ export default {
       this.$store.commit('recordSnapshot')
       this.clearCurrentInfo()
 
-      // 文字组件
-      if (component.type === 'v-text' || component.type === 'rect-shape') {
-        this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
-        this.styleDialogVisible = true
-        this.show = false
-      }
+      // // 文字组件
+      // if (component.type === 'v-text') {
+      //   this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
+      //   this.styleDialogVisible = true
+      //   this.show = false
+      // }
     },
     clearCurrentInfo() {
       this.currentWidget = null
@@ -675,10 +685,10 @@ export default {
   position: relative;
 }
 
-.el-main >>> .el-drawer__wrapper{
+.el-main ::v-deep .el-drawer__wrapper{
   width: 310px!important;
 }
-.el-main >>> .el-drawer__body{
+.el-main ::v-deep .el-drawer__body{
   overflow-y: auto;
 }
 .button-show{
@@ -706,6 +716,23 @@ export default {
 
 .hidden {
   transform: translateX(100%);
+}
+
+.style-edit-dialog {
+  width: 300px!important;
+  height: 400px!important;
+
+  .el-dialog__header{
+    // background-color: #f4f4f5;
+    padding: 10px 20px !important;
+
+    .el-dialog__headerbtn {
+      top: 15px !important;
+    }
+  }
+  .el-dialog__body{
+    padding: 1px 15px !important;
+  }
 }
 
 </style>

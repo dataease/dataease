@@ -10,7 +10,7 @@
         [classNameResizable]: resizable,
         [classNameRotating]: rotating,
         [classNameRotatable]: rotatable,
-        [classNameMouseOn]: mouseOn
+        [classNameMouseOn]: mouseOn || active
       },
       className
     ]"

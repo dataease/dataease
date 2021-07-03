@@ -24,6 +24,14 @@
             <el-form-item :label="$t('chart.rotate')" class="form-item form-item-slider">
               <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle" />
             </el-form-item>
+            <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
+              <colorPicker v-model="axisForm.nameTextStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeXAxisStyle" />
+            </el-form-item>
+            <el-form-item :label="$t('chart.axis_name_fontsize')" class="form-item form-item-slider">
+              <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.axis_name_fontsize')" @change="changeXAxisStyle">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
             <el-divider />
             <el-form-item :label="$t('chart.axis_show')" class="form-item">
               <el-checkbox v-model="axisForm.splitLine.show" @change="changeXAxisStyle">{{ $t('chart.axis_show') }}</el-checkbox>
@@ -111,6 +119,9 @@ export default {
             this.axisForm = customStyle.xAxis
             if (!this.axisForm.splitLine) {
               this.axisForm.splitLine = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.splitLine))
+            }
+            if (!this.axisForm.nameTextStyle) {
+              this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.nameTextStyle))
             }
           }
         }

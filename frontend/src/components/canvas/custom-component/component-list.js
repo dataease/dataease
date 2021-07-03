@@ -54,10 +54,10 @@ const list = [
       width: 300,
       height: 100,
       fontSize: 18,
-      fontWeight: 500,
+      fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
-      textAlign: '',
+      textAlign: 'left',
       color: '#000000'
     }
   },
@@ -75,7 +75,7 @@ const list = [
       borderColor: '',
       borderRadius: '',
       fontSize: 14,
-      fontWeight: 500,
+      fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
       textAlign: '',
@@ -119,10 +119,10 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderColor: '#000',
+      borderStyle: 'solid',
       borderWidth: 1,
-      backgroundColor: '',
-      borderStyle: 'solid'
+      borderColor: '#000000',
+      backgroundColor: '#ffffff'
     }
   },
   {

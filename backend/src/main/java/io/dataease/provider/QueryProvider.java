@@ -26,6 +26,10 @@ public abstract class QueryProvider {
 
     public abstract String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize);
 
+    public abstract String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit);
+
+    public abstract String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit);
+
     public abstract String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize);
 
     public abstract String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList);
@@ -37,4 +41,10 @@ public abstract class QueryProvider {
     public abstract String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList);
 
     public abstract String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList);
+
+    public abstract String wrapSql(String sql);
+
+    public abstract String createRawQuerySQL(String table, List<DatasetTableField> fields);
+
+    public abstract String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields);
 }

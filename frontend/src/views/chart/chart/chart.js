@@ -20,7 +20,7 @@ export const DEFAULT_SIZE = {
   lineSmooth: false,
   lineArea: false,
   pieInnerRadius: 0,
-  pieOuterRadius: 60,
+  pieOuterRadius: 80,
   pieRoseType: 'radius',
   pieRoseRadius: 5,
   funnelWidth: 80,
@@ -45,7 +45,10 @@ export const DEFAULT_LABEL = {
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',
-  gaugeFormatter: '{value}'
+  gaugeFormatter: '{value}',
+  labelLine: {
+    show: true
+  }
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
@@ -81,6 +84,10 @@ export const DEFAULT_XAXIS_STYLE = {
   show: true,
   position: 'bottom',
   name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
   axisLabel: {
     show: true,
     color: '#333333',
@@ -101,6 +108,10 @@ export const DEFAULT_YAXIS_STYLE = {
   show: true,
   position: 'left',
   name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
   axisLabel: {
     show: true,
     color: '#333333',
