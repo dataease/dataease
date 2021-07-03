@@ -1,12 +1,16 @@
 package io.dataease.service.panel;
 
+import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.base.domain.PanelGroup;
 import io.dataease.base.domain.PanelShare;
 import io.dataease.base.domain.PanelShareExample;
+import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelShareMapper;
 import io.dataease.base.mapper.ext.ExtPanelShareMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -32,11 +36,14 @@ public class ShareService {
     private PanelShareMapper mapper;
 
     @Resource
+    private PanelGroupMapper panelGroupMapper;
+
+    @Resource
     private ExtPanelShareMapper extPanelShareMapper;
 
     @Transactional
     public void save(PanelShareRequest request){
-
+        List<PanelGroup> panelGroups = queryGroup(request.getPanelIds());
         //1.先根据仪表板删除所有已经分享的
         Integer type = request.getType();
         List<String> panelIds = request.getPanelIds();
@@ -67,24 +74,30 @@ public class ShareService {
 
         // 下面是发送提醒消息逻辑
         Set<Long> userIdSet = new HashSet<Long>();
+        AuthURD authURD = new AuthURD();
         if (type == 0) {
-            userIdSet.addAll(targetIds);
-        }else if(type == 1) {
-            Map<String, List<Long>> param = new HashMap<>();
-            param.put("roleIds", targetIds);
-            List<Long> userIdList = extPanelShareMapper.queryUserIdWithRoleIds(param);
-            userIdSet.addAll(userIdList);
-        } else if (type == 2) {
-            Map<String, List<Long>> param = new HashMap<>();
-            param.put("deptIds", targetIds);
-            List<Long> userIdList = extPanelShareMapper.queryUserIdWithDeptIds(param);
-            userIdSet.addAll(userIdList);
+            authURD.setUserIds(targetIds);
         }
+        if (type == 1) {
+            authURD.setRoleIds(targetIds);
+        }
+        if(type == 2) {
+            authURD.setDeptIds(targetIds);
+        }
+        userIdSet = AuthUtils.userIdsByURD(authURD);
+
         CurrentUserDto user = AuthUtils.getUser();
+        String msg = StringUtils.joinWith("，", panelGroups.stream().map(PanelGroup::getName).collect(Collectors.toList()));
+        Gson gson = new Gson();
         userIdSet.forEach(userId -> {
-            DeMsgutil.sendMsg(userId, 0, "用户 [" + user.getNickName()+"] 分享了仪表板给您，请查收!");
+            // DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!");
+            DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds));
         });
 
+    }
+
+    private List<PanelGroup> queryGroup(List<String> panelIds) {
+        return panelIds.stream().map(panelGroupMapper::selectByPrimaryKey).collect(Collectors.toList());
     }
 
     /**

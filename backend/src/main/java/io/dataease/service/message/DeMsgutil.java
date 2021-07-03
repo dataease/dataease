@@ -16,8 +16,8 @@ public class DeMsgutil {
     @PostConstruct
     public void  init() {
         routerMap = new HashMap<>();
-        routerMap.put(0, "/panel/index");
-        routerMap.put(1, "/dataset/index");
+        routerMap.put(0, "panel");
+        routerMap.put(1, "dataset");
     }
 
     private static SysMsgService sysMsgService;
@@ -35,6 +35,18 @@ public class DeMsgutil {
         sysMsg.setRouter(routerMap.get(type));
         sysMsg.setStatus(false);
         sysMsg.setCreateTime(System.currentTimeMillis());
+        sysMsgService.save(sysMsg);
+    }
+
+    public static void sendMsg(Long userId, int type, String content, String param) {
+        SysMsg sysMsg = new SysMsg();
+        sysMsg.setUserId(userId);
+        sysMsg.setType(type);
+        sysMsg.setContent(content);
+        sysMsg.setRouter(routerMap.get(type));
+        sysMsg.setStatus(false);
+        sysMsg.setCreateTime(System.currentTimeMillis());
+        sysMsg.setParam(param);
         sysMsgService.save(sysMsg);
     }
 

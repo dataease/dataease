@@ -12,7 +12,7 @@
         </el-tab-pane>
         <el-tab-pane name="panels_share" :lazy="true">
           <span slot="label"><i class="el-icon-share" />{{ $t('panel.share') }}</span>
-          <share-tree v-if="showShare" />
+          <share-tree v-if="showShare" ref="share_tree" :msg-panel-ids="msgPanelIds" />
         </el-tab-pane>
       </el-tabs>
     </de-aside-container>
@@ -38,7 +38,8 @@ export default {
     return {
       activeName: 'PanelList',
       showShare: false,
-      showEnshrine: false
+      showEnshrine: false,
+      msgPanelIds: null
     }
   },
   computed: {
@@ -87,9 +88,19 @@ export default {
       })
       this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
     },
-    msg2Current() {
-      this.activeName = 'panels_share'
+    msg2Current(panelIds) {
       this.refreshShare()
+      this.$nextTick(() => {
+        if (panelIds) {
+          try {
+            panelIds = JSON.parse(panelIds)
+            this.msgPanelIds = panelIds
+            this.activeName = 'panels_share'
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      })
     }
 
   }

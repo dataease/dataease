@@ -2,7 +2,7 @@
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <el-radio-group v-model="selectType" style="margin-bottom: 15px;" @change="typeChange">
-      <el-radio-button v-for="(item,index) in msgTypes" :key="index" class="de-msg-radio-class" :label="item.value">{{ item.label }}</el-radio-button>
+      <el-radio-button v-for="(item,index) in msgTypes" :key="index" class="de-msg-radio-class" :label="item.value">{{ $t(item.label) }}</el-radio-button>
 
     </el-radio-group>
     <complex-table
@@ -37,7 +37,7 @@
 
       <el-table-column prop="type" :label="$t('datasource.type')" width="120">
         <template slot-scope="scope">
-          <span>{{ getTypeName(scope.row.type) }}</span>
+          <span>{{ $t(getTypeName(scope.row.type)) }}</span>
         </template>
       </el-table-column>
 
@@ -87,10 +87,9 @@ export default {
 
     search() {
       const param = {}
-
+      param.status = true
       if (this.selectType >= 0) {
         param.type = this.selectType
-        param.status = true
       }
       const { currentPage, pageSize } = this.paginationConfig
       query(currentPage, pageSize, param).then(response => {
@@ -105,8 +104,8 @@ export default {
       this.search()
     },
     toDetail(row) {
-      const param = { ...{ msgNotification: true, msgType: row.type }}
-      this.$router.push({ name: 'panel', params: param })
+      const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
+      this.$router.push({ name: row.router, params: param })
     }
 
   }

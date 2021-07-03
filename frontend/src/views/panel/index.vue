@@ -53,11 +53,10 @@ export default {
     let routerParam
     if ((routerParam = this.$router.currentRoute.params) !== null && routerParam.msgNotification) {
       // 说明是从消息通知跳转过来的
-      console.log(this.$router.currentRoute.params)
       if (routerParam.msgType === 0) { // 是仪表板分享
         this.componentName = 'PanelMain'
         this.$nextTick(() => {
-          this.$refs.panel_main.msg2Current()
+          this.$refs.panel_main.msg2Current(routerParam.sourceParam)
         })
       }
     }

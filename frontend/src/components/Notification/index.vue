@@ -11,7 +11,7 @@
   >
     <div style="height: 30px;">
       <div style="float: left;font-size:16px;font-weight:bold;">
-        <span>站内消息通知</span>
+        <span>{{ $t('webmsg.web_msg') }}</span>
       </div>
       <div v-if="showSetting" style="float: right;">
         <a href="#" style="text-detext-decoratext-decoration:none;cursor:point;" @click="msgSetting">消息规则</a>
@@ -31,7 +31,7 @@
           <div class="start-item">
             <div class="filter-db-row star-item-content" @click="showDetail(scope.row)">
               <!-- <svg-icon icon-class="panel" class="ds-icon-scene" /> -->
-              <div class="title-div"><span>【{{ getTypeName(scope.row.type) }}】&nbsp;&nbsp;{{ scope.row.content }}</span></div>
+              <div class="title-div"><span>【{{ $t(getTypeName(scope.row.type)) }}】&nbsp;&nbsp;{{ scope.row.content }}</span></div>
               <div class="title-div"><span>{{ scope.row.createTime | timestampFormatDate }}</span></div>
             </div>
             <!-- <div class="star-item-close">
@@ -43,7 +43,7 @@
     </el-table>
     <div class="msg-foot-class">
       <el-row style="padding: 5px 0;margin-bottom: -5px;cursor:point;" @click="showMore">
-        <span @click="showMore">查看更多</span>
+        <span @click="showMore">{{ $t('webmsg.show_more') }}</span>
       </el-row>
     </div>
 
@@ -53,7 +53,7 @@
           class-name="notification"
           icon-class="notification"
         />
-        <span class="msg-number">9</span>
+        <span v-if="paginationConfig.total" class="msg-number">{{ paginationConfig.total }}</span>
       </div>
     </div>
   </el-popover>
@@ -81,15 +81,19 @@ export default {
   },
   created() {
     this.search()
+    // 每30s定时刷新拉取消息
+    setInterval(() => {
+      this.search()
+    }, 30000)
   },
   methods: {
     handClick(lang) {
       console.log(lang)
     },
     showDetail(row) {
-      const param = { ...{ msgNotification: true, msgType: row.type }}
+      const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
       this.visible = false
-      this.$router.push({ name: 'panel', params: param })
+      this.$router.push({ name: row.router, params: param })
       this.setReaded(row.msgId)
     },
     remove(row) {
@@ -105,7 +109,9 @@ export default {
       this.$emit('refresh-top-bar')
     },
     search() {
-      const param = {}
+      const param = {
+        status: false
+      }
       const { currentPage, pageSize } = this.paginationConfig
       query(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject

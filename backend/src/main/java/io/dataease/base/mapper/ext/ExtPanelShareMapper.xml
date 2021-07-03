@@ -46,9 +46,9 @@
 
     </select>
 
-    <select id="queryUserIdWithRoleIds" >
+    <select id="queryUserIdWithRoleIds" resultType="java.lang.Long" >
         select user_id
-        from sys_user
+        from sys_users_roles
         where role_id in
         <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
             #{roleId}
@@ -56,7 +56,7 @@
     </select>
 
 
-    <select id="queryUserIdWithDeptIds" >
+    <select id="queryUserIdWithDeptIds" resultType="java.lang.Long" >
         select user_id
         from sys_user
         where dept_id in
