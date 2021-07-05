@@ -747,8 +747,8 @@ export default {
     chart_funnel: 'Funnel',
     chart_radar: 'Radar',
     chart_gauge: 'Gauge',
-    dateStyle: '日期顯示',
-    datePattern: '日期格式',
+    dateStyle: 'Date Style',
+    datePattern: 'Date Format',
     y: 'Year',
     y_M: 'Year Month',
     y_M_d: 'Year Month Day',
@@ -788,7 +788,9 @@ export default {
     label_fontsize: 'Label Fontsize',
     split_line: 'Split Line',
     split_color: 'Split Color',
-    shadow: 'Shadow'
+    shadow: 'Shadow',
+    condition: 'Filter Value',
+    filter_value_can_null: 'Filter value can not empty'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
