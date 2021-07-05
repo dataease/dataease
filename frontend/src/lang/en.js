@@ -1,4 +1,46 @@
 export default {
+  fu: {
+    search_bar: {
+      search: 'Search',
+      adv_search: 'Advanced search',
+      ok: 'Confirm',
+      cancel: 'Cancel',
+      please_select: 'Please select',
+      please_input: 'Please input',
+      like: 'like ',
+      not_like: 'not like',
+      in: 'in',
+      not_in: 'not in',
+      gt: 'greater than',
+      ge: 'Greater than or equal to',
+      lt: 'less than',
+      le: 'Less than or equal to',
+      eq: 'equal to',
+      ne: 'bot equal to',
+      between: 'between',
+      select_date: 'Select a date',
+      start_date: 'Start date',
+      end_date: 'End date',
+      select_date_time: 'Select date time',
+      start_date_time: 'Start date time',
+      end_date_time: 'End date time',
+      range_separator: 'To',
+      data_time_error: 'The start date cannot be greater than the end date',
+      clean: 'Clean',
+      refresh: 'Refresh'
+    },
+    table: {
+      ok: 'Confirm',
+      custom_table_fields: 'Custom table fields',
+      custom_table_fields_desc: 'Fixed field is not in the selection range'
+    },
+    steps: {
+      cancel: 'Cancle',
+      next: 'next',
+      prev: 'Last step',
+      finish: 'Finish'
+    }
+  },
   route: {
     dashboard: 'Dashboard',
     documentation: 'Documentation',
