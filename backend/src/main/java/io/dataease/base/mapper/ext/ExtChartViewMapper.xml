@@ -52,7 +52,7 @@
         `scene_id`,
         `table_id`,
         `type`,
-        `title`,
+        GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
         `x_axis`,
         `y_axis`,
         `custom_attr`,
