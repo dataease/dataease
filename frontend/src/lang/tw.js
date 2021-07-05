@@ -760,7 +760,9 @@ export default {
     chartName: '新建視圖',
     chart_show_error: '無法正常顯示',
     chart_error_tips: '如有疑問請聯系管理員',
-    title_cannot_empty: '標題不能為空'
+    title_cannot_empty: '標題不能為空',
+    condition: '過濾值',
+    filter_value_can_null: '過濾值不能為空'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

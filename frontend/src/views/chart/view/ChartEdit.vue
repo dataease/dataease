@@ -843,6 +843,17 @@ export default {
       this.dimensionFilterEdit = false
     },
     saveDimensionFilter() {
+      for (let i = 0; i < this.dimensionItem.filter.length; i++) {
+        const f = this.dimensionItem.filter[i]
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.view.xaxis[this.dimensionItem.index].filter = this.dimensionItem.filter
       this.save(true)
       this.closeDimensionFilter()
@@ -856,6 +867,17 @@ export default {
       this.quotaFilterEdit = false
     },
     saveQuotaFilter() {
+      for (let i = 0; i < this.quotaItem.filter.length; i++) {
+        const f = this.quotaItem.filter[i]
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
       this.save(true)
       this.closeQuotaFilter()
@@ -874,6 +896,14 @@ export default {
         if (!f.fieldId || f.fieldId === '') {
           this.$message({
             message: this.$t('chart.filter_field_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
             type: 'error',
             showClose: true
           })
