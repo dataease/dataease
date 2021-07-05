@@ -76,7 +76,7 @@ export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     const filterDatas = filterRouter(res.data)
     const asyncRouter = filterAsyncRouter(filterDatas)
-    addMsgMenu(asyncRouter)
+    // addMsgMenu(asyncRouter)
     asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)

@@ -73,7 +73,8 @@ export default {
         currentPage: 1,
         pageSize: 5,
         total: 0
-      }
+      },
+      timer: null
     }
   },
   computed: {
@@ -82,14 +83,20 @@ export default {
   created() {
     this.search()
     // 每30s定时刷新拉取消息
-    setInterval(() => {
+    this.timer = setInterval(() => {
       this.search()
     }, 30000)
   },
+  beforeDestroy() {
+    this.timer && clearInterval(this.timer)
+  },
+  destroyed() {
+    this.timer && clearInterval(this.timer)
+  },
   methods: {
-    handClick(lang) {
-      console.log(lang)
-    },
+    // handClick(lang) {
+    //   console.log(lang)
+    // },
     showDetail(row) {
       const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
       this.visible = false
