@@ -781,7 +781,14 @@ export default {
     axis_name_fontsize: 'Name Fontsize',
     pie_label_line_show: 'Line',
     outside: 'Outside',
-    center: 'Center'
+    center: 'Center',
+    split: 'Axis',
+    axis_line: 'Axis Line',
+    axis_label: 'Axis Label',
+    label_fontsize: 'Label Fontsize',
+    split_line: 'Split Line',
+    split_color: 'Split Color',
+    shadow: 'Shadow'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -938,7 +945,7 @@ export default {
     oracle_service_name: 'Service Name',
     get_schema: 'Get Schema',
     schema: 'Database Schema',
-    please_choose_schema: 'Please select Schema',
+    please_choose_schema: 'Please select Schema'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',

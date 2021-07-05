@@ -781,7 +781,14 @@ export default {
     axis_name_fontsize: '名称字体',
     pie_label_line_show: '引导线',
     outside: '外',
-    center: '中心'
+    center: '中心',
+    split: '轴线',
+    axis_line: '轴线',
+    axis_label: '轴标签',
+    label_fontsize: '标签大小',
+    split_line: '分割线',
+    split_color: '分割颜色',
+    shadow: '阴影'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -939,7 +946,7 @@ export default {
     oracle_service_name: '服务名',
     get_schema: '获取 Schema',
     schema: '数据库 Schema',
-    please_choose_schema: '请选择数据库 Schema',
+    please_choose_schema: '请选择数据库 Schema'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

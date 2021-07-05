@@ -781,7 +781,14 @@ export default {
     axis_name_fontsize: '名稱字體',
     pie_label_line_show: '引導線',
     outside: '外',
-    center: '中心'
+    center: '中心',
+    split: '軸線',
+    axis_line: '軸線',
+    axis_label: '軸標簽',
+    label_fontsize: '標簽大小',
+    split_line: '分割線',
+    split_color: '分割顏色',
+    shadow: '陰影'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
