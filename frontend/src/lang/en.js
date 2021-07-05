@@ -718,7 +718,9 @@ export default {
     chartName: 'New Chart',
     chart_show_error: 'can not show normal',
     chart_error_tips: 'Please contact admin ',
-    title_cannot_empty: 'Title can not be empty'
+    title_cannot_empty: 'Title can not be empty',
+    condition: 'Filter Value',
+    filter_value_can_null: 'Filter value can not empty'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
