@@ -61,4 +61,11 @@ public class DatasourceController {
     public List<DBTableDTO> getTables(@RequestBody Datasource datasource) throws Exception {
         return datasourceService.getTables(datasource);
     }
+
+    @PostMapping("/getSchema")
+    public List<String> getSchema(@RequestBody Datasource datasource) throws Exception {
+       return datasourceService.getSchema(datasource);
+    }
+
+
 }

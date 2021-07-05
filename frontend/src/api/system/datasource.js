@@ -50,4 +50,13 @@ export function validateDs(data) {
   })
 }
 
-export default { dsGrid, addDs, editDs, delDs, validateDs, listDatasource }
+export function getSchema(data) {
+  return request({
+    url: 'datasource/getSchema/',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export default { dsGrid, addDs, editDs, delDs, validateDs, listDatasource, getSchema }

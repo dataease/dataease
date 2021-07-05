@@ -120,6 +120,13 @@ public class DatasourceService {
         datasourceProvider.checkStatus(datasourceRequest);
     }
 
+    public List<String> getSchema(Datasource datasource) throws Exception {
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(datasource);
+        return datasourceProvider.getSchema(datasourceRequest);
+    }
+
     public List<DBTableDTO> getTables(Datasource datasource) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasource.getId());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
