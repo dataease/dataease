@@ -890,7 +890,13 @@ export default {
     delete_warning: 'Confirm to delete?',
     input_name: 'Please input name',
     input_limit_2_25: '2-25 chars',
-    input_limit_0_50: '0-50 chars'
+    input_limit_0_50: '0-50 chars',
+    oracle_connection_type: 'Service Name/SID',
+    oracle_sid: 'SID',
+    oracle_service_name: 'Service Name',
+    get_schema: 'Get Schema',
+    schema: 'Database Schema',
+    please_choose_schema: 'Please select Schema',
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',

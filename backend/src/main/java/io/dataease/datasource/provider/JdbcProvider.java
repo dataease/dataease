@@ -2,6 +2,7 @@ package io.dataease.datasource.provider;
 
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigration;
 import io.dataease.datasource.dto.OracleConfigration;
@@ -9,10 +10,12 @@ import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.beans.PropertyVetoException;
 import java.sql.*;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service("jdbc")
@@ -202,6 +205,31 @@ public class JdbcProvider extends DatasourceProvider {
             resultSet.close();
             statement.close();
             return tables;
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        } finally {
+            if(con != null){
+                con.close();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
+        List<String> schemas = new ArrayList<>();
+        String queryStr = getSchemaSql(datasourceRequest);
+        Connection con = null;
+        try {
+            con = getConnection(datasourceRequest);
+            Statement statement = con.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr);
+            while (resultSet.next()) {
+                schemas.add(resultSet.getString(1));
+            }
+            resultSet.close();
+            statement.close();
+            return schemas;
         } catch (Exception e) {
             DataEaseException.throwException(e);
         } finally {
@@ -466,7 +494,7 @@ public class JdbcProvider extends DatasourceProvider {
         }
     }
 
-    private String getTablesSql(DatasourceRequest datasourceRequest) {
+    private String getTablesSql(DatasourceRequest datasourceRequest) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
@@ -477,7 +505,21 @@ public class JdbcProvider extends DatasourceProvider {
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';".replace("DATABASE", sqlServerConfigration.getDataBase());
             case oracle:
-                return "select TABLE_NAME from USER_TABLES";
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                if(StringUtils.isEmpty(oracleConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "select table_name, owner from all_tables where owner='" + oracleConfigration.getSchema() + "'";
+            default:
+                return "show tables;";
+        }
+    }
+
+    private String getSchemaSql(DatasourceRequest datasourceRequest) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType) {
+            case oracle:
+                return "select * from all_users";
             default:
                 return "show tables;";
         }

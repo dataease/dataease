@@ -894,7 +894,10 @@ export default {
     input_limit_0_50: '0-50字符',
     oracle_connection_type: '服务名/SID',
     oracle_sid: 'SID',
-    oracle_service_name: '服务名'
+    oracle_service_name: '服务名',
+    get_schema: '获取 Schema',
+    schema: '数据库 Schema',
+    please_choose_schema: '请选择数据库 Schema',
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
