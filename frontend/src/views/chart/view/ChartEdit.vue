@@ -213,6 +213,7 @@
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
               <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
               <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <split-selector v-show="view.type.includes('radar')" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
               <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
               <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
@@ -373,7 +374,8 @@ import {
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_SPLIT
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -384,6 +386,7 @@ import TooltipSelector from '../components/shape-attr/TooltipSelector'
 import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
 import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
+import SplitSelector from '../components/component-style/SplitSelector'
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
@@ -393,7 +396,7 @@ import TableSelector from './TableSelector'
 
 export default {
   name: 'ChartEdit',
-  components: { TableSelector, ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { SplitSelector, TableSelector, ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,
@@ -423,7 +426,8 @@ export default {
           legend: DEFAULT_LEGEND_STYLE,
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
-          background: DEFAULT_BACKGROUND_COLOR
+          background: DEFAULT_BACKGROUND_COLOR,
+          split: DEFAULT_SPLIT
         },
         customFilter: []
       },
@@ -858,6 +862,11 @@ export default {
 
     onChangeBackgroundForm(val) {
       this.view.customStyle.background = val
+      this.save()
+    },
+
+    onChangeSplitForm(val) {
+      this.view.customStyle.split = val
       this.save()
     },
 
