@@ -790,7 +790,9 @@ export default {
     split_color: '分割颜色',
     shadow: '阴影',
     condition: '过滤值',
-    filter_value_can_null: '过滤值不能为空'
+    filter_value_can_null: '过滤值不能为空',
+    filter_like: '包含',
+    filter_not_like: '不包含'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

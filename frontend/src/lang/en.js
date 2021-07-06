@@ -790,7 +790,9 @@ export default {
     split_color: 'Split Color',
     shadow: 'Shadow',
     condition: 'Filter Value',
-    filter_value_can_null: 'Filter value can not empty'
+    filter_value_can_null: 'Filter value can not empty',
+    filter_like: 'Contain',
+    filter_not_like: 'Not Contain'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

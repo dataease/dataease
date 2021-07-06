@@ -200,7 +200,7 @@ public class DorisQueryProvider extends QueryProvider {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -241,7 +241,7 @@ public class DorisQueryProvider extends QueryProvider {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -327,7 +327,7 @@ public class DorisQueryProvider extends QueryProvider {
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
