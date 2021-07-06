@@ -53,7 +53,18 @@ export default {
           value: 'not_eq',
           label: this.$t('chart.filter_not_eq')
         }]
-      }, {
+      },
+      {
+        label: '',
+        options: [{
+          value: 'like',
+          label: this.$t('chart.filter_like')
+        }, {
+          value: 'not like',
+          label: this.$t('chart.filter_not_like')
+        }]
+      },
+      {
         label: '',
         options: [{
           value: 'lt',
