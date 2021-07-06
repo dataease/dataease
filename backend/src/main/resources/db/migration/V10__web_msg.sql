@@ -17,3 +17,15 @@ CREATE TABLE `sys_msg` (
   KEY `inx_msg_type` (`type`) USING BTREE,
   KEY `inx_msg_status` (`status`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='消息通知表';
+
+BEGIN;
+INSERT INTO `sys_menu` VALUES (53, 1, 3, 1, '站内消息', 'sys-msg-web', 'msg/index', 1000, 'all-msg', 'system-msg-web', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (54, 53, 0, 1, '所有消息', 'sys-msg-web-all', 'msg/all', 1, 'web-msg', 'all', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (55, 53, 0, 1, '未读消息', 'sys-msg-web-unread', 'msg/unread', 2, 'unread-msg', 'unread', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (56, 53, 0, 1, '已读消息', 'sys-msg-web-readed', 'msg/readed', 3, 'readed-msg', 'readed', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
+COMMIT;
+
+BEGIN;
+UPDATE `sys_menu` SET permission = null WHERE menu_id = 1;
+COMMIT;
+
