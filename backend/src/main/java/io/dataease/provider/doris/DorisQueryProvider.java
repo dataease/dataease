@@ -233,11 +233,11 @@ public class DorisQueryProvider extends QueryProvider {
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                            filter.append("(null,'')");
+                            filter.append("(null)");
                         } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                            filter.append(" AND _")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
-                                    .append(" <> ''");
+//                            filter.append(" AND _")
+//                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
+//                                    .append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
@@ -319,11 +319,11 @@ public class DorisQueryProvider extends QueryProvider {
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
                         if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                            filter.append("(null,'')");
+                            filter.append("(null)");
                         } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                            filter.append(" AND _")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
-                                    .append(" <> ''");
+//                            filter.append(" AND _")
+//                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
+//                                    .append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
