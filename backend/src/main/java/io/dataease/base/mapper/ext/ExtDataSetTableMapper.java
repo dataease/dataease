@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ExtDataSetTableMapper {
     List<DataSetTableDTO> search(DataSetTableRequest request);
+
+    DataSetTableDTO searchOne(DataSetTableRequest request);
 }

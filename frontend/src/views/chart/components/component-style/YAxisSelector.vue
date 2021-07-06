@@ -72,10 +72,11 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!axisForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!axisForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.yAxis') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="axisForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeYAxisStyle"
@@ -92,6 +93,10 @@ import { DEFAULT_YAXIS_STYLE } from '../../chart/chart'
 export default {
   name: 'YAxisSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

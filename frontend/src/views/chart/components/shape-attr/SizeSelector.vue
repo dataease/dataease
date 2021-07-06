@@ -143,7 +143,7 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>
@@ -154,6 +154,10 @@ import { DEFAULT_SIZE } from '../../chart/chart'
 export default {
   name: 'SizeSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

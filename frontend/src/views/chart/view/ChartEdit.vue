@@ -13,7 +13,7 @@
         <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini" @click="changeDs">
+        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">
           {{ $t('chart.change_ds') }}
         </el-button>
         <el-button size="mini" @click="closeEdit">
@@ -37,7 +37,7 @@
             prefix-icon="el-icon-search"
             clearable
           />
-          <el-button icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 6px;" @click="editField" />
+          <el-button :disabled="!table || !hasDataPermission('manage',table.privileges)" icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 6px;" @click="editField" />
         </div>
         <div style="border-bottom: 1px solid #E6E6E6;" class="padding-lr field-height">
           <span>{{ $t('chart.dimension') }}</span>
@@ -47,6 +47,7 @@
             animation="300"
             :move="onMove"
             class="drag-list"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             @end="end1"
             @start="start1"
           >
@@ -68,6 +69,7 @@
             animation="300"
             :move="onMove"
             class="drag-list"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             @end="end1"
             @start="start1"
           >
@@ -111,6 +113,7 @@
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
+                :disabled="!hasDataPermission('manage',param.privileges)"
                 @change="save(true,'chart',true)"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
@@ -207,7 +210,7 @@
           <el-row class="padding-lr">
             <span>{{ $t('chart.style_priority') }}</span>
             <el-row>
-              <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
+              <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
                 <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
                 <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
               </el-radio-group>
@@ -215,24 +218,24 @@
           </el-row>
           <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
-              <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-              <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-              <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-              <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+              <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+              <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+              <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+              <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
-              <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
-              <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
-              <split-selector v-show="view.type.includes('radar')" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
-              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
-              <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+              <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+              <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <split-selector v-show="view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
+              <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+              <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
             </el-tab-pane>
           </el-tabs>
         </div>
         <div style="height:60px;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
           <span>{{ $t('chart.result_filter') }}</span>
-          <el-button size="mini" class="filter-btn-class" @click="showResultFilter">
+          <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">
             {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon--right" />
           </el-button>
         </div>
@@ -245,6 +248,7 @@
               <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.dimension') }}</span>
               <draggable
                 v-model="view.xaxis"
+                :disabled="!hasDataPermission('manage',param.privileges)"
                 group="dimension"
                 animation="300"
                 :move="onMove"
@@ -252,7 +256,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
+                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -260,6 +264,7 @@
               <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.quota') }}</span>
               <draggable
                 v-model="view.yaxis"
+                :disabled="!hasDataPermission('manage',param.privileges)"
                 group="quota"
                 animation="300"
                 :move="onMove"
@@ -267,7 +272,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
+                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -348,7 +353,7 @@
     <!--视图更换数据集-->
     <el-dialog
       v-dialogDrag
-      :title="$t('chart.change_ds')+'['+table.name+']'"
+      :title="changeDsTitle"
       :visible="selectTableFlag"
       :show-close="false"
       width="70%"
@@ -359,7 +364,7 @@
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!table || !table.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -485,7 +490,8 @@ export default {
       selectTableFlag: false,
       changeTable: {},
       searchField: '',
-      editDsField: false
+      editDsField: false,
+      changeDsTitle: ''
     }
   },
   computed: {
@@ -520,7 +526,7 @@ export default {
   methods: {
     initTableData(id) {
       if (id != null) {
-        post('/dataset/table/get/' + id, null).then(response => {
+        post('/dataset/table/getWithPermission/' + id, null).then(response => {
           this.table = response.data
           this.initTableField(id)
         }).catch(err => {
@@ -1038,6 +1044,7 @@ export default {
     },
 
     changeDs() {
+      this.changeDsTitle = this.$t('chart.change_ds') + '[' + this.table.name + ']'
       this.selectTableFlag = true
     },
 

@@ -51,10 +51,11 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!titleForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!titleForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.title') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="titleForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeTitleStyle"
@@ -71,6 +72,10 @@ import { DEFAULT_TITLE_STYLE } from '../../chart/chart'
 export default {
   name: 'TitleSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

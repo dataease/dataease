@@ -77,6 +77,10 @@ export default {
       type: Object,
       required: true
     },
+    param: {
+      type: Object,
+      required: true
+    },
     fields: {
       type: Array,
       required: true
