@@ -1,6 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <span v-show="false">{{ tableRefresh }}</span>
+<!--    <span v-show="false">{{ tableRefresh }}</span>-->
     <el-row style="height: 26px;">
       <el-popover
         placement="right-start"
@@ -94,10 +94,10 @@ export default {
     }
   },
   computed: {
-    tableRefresh() {
-      this.initTable(this.param)
-      return this.$store.state.dataset.table
-    }
+    // tableRefresh() {
+    //   this.initTable(this.param)
+    //   return this.$store.state.dataset.table
+    // }
   },
   watch: {
     'param': function() {
