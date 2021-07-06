@@ -290,17 +290,29 @@
       class="dialog-css"
       :destroy-on-close="true"
     >
-      <el-row style="width: 400px;">
+      <el-row style="width: 800px;">
         <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
-          <el-form-item :label="$t('chart.view_name')">
-            <el-input v-model="chartName" size="mini" />
-          </el-form-item>
+          <el-col :span="12">
+            <el-form-item :label="$t('chart.view_name')">
+              <el-input v-model="chartName" style="height: 34px" size="mini" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if="optFrom==='panel'">
+            <el-form-item :label="$t('chart.belong_group')">
+              <treeselect
+                v-model="currGroup.id"
+                :options="chartGroupTreeAvailable"
+                :normalizer="normalizer"
+                :placeholder="$t('chart.select_group')"
+              />
+            </el-form-item>
+          </el-col>
         </el-form>
       </el-row>
       <table-selector @getTable="getTable" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!table.id || !currGroup.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -327,7 +339,7 @@
 </template>
 
 <script>
-import { post } from '@/api/chart/chart'
+import { post, chartGroupTree } from '@/api/chart/chart'
 import { authModel } from '@/api/system/sysAuth'
 import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
@@ -351,6 +363,17 @@ export default {
   props: {
     saveStatus: {
       type: Object,
+      required: false,
+      default: null
+    },
+    // 操作来源 'panel' 为仪表板
+    optFrom: {
+      type: String,
+      required: false,
+      default: null
+    },
+    adviceGroupId: {
+      type: String,
       required: false,
       default: null
     }
@@ -416,7 +439,8 @@ export default {
       groupMoveConfirmDisabled: true,
       dsMoveConfirmDisabled: true,
       moveDialogTitle: '',
-      isTreeSearch: false
+      isTreeSearch: false,
+      chartGroupTreeAvailable: []
     }
   },
   computed: {
@@ -444,12 +468,19 @@ export default {
     },
     saveStatus() {
       this.refreshNodeBy(this.saveStatus.sceneId)
+    },
+    adviceGroupId() {
+      // 仪表板新建视图建议的存放路径
+      if (this.optFrom === 'panel') {
+        this.currGroup['id'] = this.adviceGroupId
+      }
     }
   },
   mounted() {
     this.treeNode(this.groupForm)
     this.refresh()
     // this.chartTree()
+    this.getChartGroupTree()
   },
   methods: {
     clickAdd(param) {
@@ -760,10 +791,14 @@ export default {
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
         // this.$router.push('/chart/chart-edit')
-        this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': response.data.id }})
-        // this.$store.dispatch('chart/setViewId', response.data.id)
-        // this.chartTree()
-        this.refreshNodeBy(view.sceneId)
+        if (this.optFrom === 'panel') {
+          this.$emit('newViewInfo', { 'id': response.data.id })
+        } else {
+          this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': response.data.id }})
+          // this.$store.dispatch('chart/setViewId', response.data.id)
+          // this.chartTree()
+          this.refreshNodeBy(view.sceneId)
+        }
       })
     },
 
@@ -953,6 +988,18 @@ export default {
         this.isTreeSearch = false
         this.treeNode(this.groupForm)
       }
+    },
+
+    getChartGroupTree() {
+      chartGroupTree({}).then(res => {
+        this.chartGroupTreeAvailable = res.data
+      })
+    },
+    normalizer(node) {
+      // 去掉children=null的属性
+      if (node.children === null || node.children === 'null') {
+        delete node.children
+      }
     }
   }
 }
@@ -1046,5 +1093,12 @@ export default {
     padding: 10px 15px;
     height: 100%;
     overflow-y: auto;
+  }
+  /deep/ .vue-treeselect__control{
+    height: 28px;
+  }
+  /deep/ .vue-treeselect__single-value{
+    color:#606266;
+    line-height: 28px!important;
   }
 </style>

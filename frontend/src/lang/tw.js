@@ -708,6 +708,8 @@ export default {
     area_mode: '面積',
     rose_radius: '園角',
     view_name: '視圖標題',
+    belong_group: '所属分组',
+    select_group: '选择分组',
     name_can_not_empty: '名稱不能為空',
     template_can_not_empty: '請選擇儀表板',
     custom_count: '記錄數',
