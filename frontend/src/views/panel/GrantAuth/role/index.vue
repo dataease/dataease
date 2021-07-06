@@ -78,6 +78,13 @@ export default {
         this.setCheckNodes()
       })
     },
+
+    getSelected() {
+      return {
+        roleIds: this.$refs.table.store.states.selection.map(item => item.roleId)
+      }
+    },
+
     save(msg) {
       const rows = this.$refs.table.store.states.selection
       const request = this.buildRequest(rows)

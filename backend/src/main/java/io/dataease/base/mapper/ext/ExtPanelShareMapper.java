@@ -12,6 +12,8 @@ public interface ExtPanelShareMapper {
 
     int batchInsert(@Param("shares") List<PanelShare> shares);
 
+    int batchDelete(@Param("shareIds") List<Long> shareIds);
+
     List<PanelSharePo> query(Map<String, Object> param);
 
     List<PanelShare> queryWithResource(GridExample example);

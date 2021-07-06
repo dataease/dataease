@@ -29,10 +29,20 @@
       <el-col
         style="height: 100%;width: 20%;min-width: 180px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
-        <div style="height: 50%;border-bottom: 1px solid #E6E6E6;" class="padding-lr">
+        <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
+          <el-input
+            v-model="searchField"
+            size="mini"
+            :placeholder="$t('chart.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+          <el-button icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 6px;" @click="editField" />
+        </div>
+        <div style="border-bottom: 1px solid #E6E6E6;" class="padding-lr field-height">
           <span>{{ $t('chart.dimension') }}</span>
           <draggable
-            v-model="dimension"
+            v-model="dimensionData"
             :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
@@ -41,7 +51,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in dimension" :key="item.id" class="item" :title="item.name">
+              <span v-for="item in dimensionData" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -50,10 +60,10 @@
             </transition-group>
           </draggable>
         </div>
-        <div style="height: 50%;" class="padding-lr">
+        <div class="padding-lr field-height">
           <span>{{ $t('chart.quota') }}</span>
           <draggable
-            v-model="quota"
+            v-model="quotaData"
             :options="{group:{name: 'quota',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
@@ -62,7 +72,7 @@
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in quota" :key="item.id" class="item" :title="item.name">
+              <span v-for="item in quotaData" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -213,6 +223,7 @@
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
               <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
               <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <split-selector v-show="view.type.includes('radar')" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
               <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
               <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
               <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
@@ -351,6 +362,18 @@
         <el-button type="primary" size="mini" :disabled="!table.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <!--编辑视图使用的数据集的字段-->
+    <el-dialog
+      v-dialogDrag
+      :visible="editDsField"
+      :show-close="false"
+      class="dialog-css"
+      :destroy-on-close="true"
+      :fullscreen="true"
+    >
+      <field-edit :param="{table:table}" @switchComponent="closeEditDsField" />
+    </el-dialog>
   </el-row>
 </template>
 
@@ -373,7 +396,8 @@ import {
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_SPLIT
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -384,16 +408,18 @@ import TooltipSelector from '../components/shape-attr/TooltipSelector'
 import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
 import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
+import SplitSelector from '../components/component-style/SplitSelector'
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
 import html2canvas from 'html2canvas'
 import TableSelector from './TableSelector'
+import FieldEdit from '../../dataset/data/FieldEdit'
 
 export default {
   name: 'ChartEdit',
-  components: { TableSelector, ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { FieldEdit, SplitSelector, TableSelector, ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,
@@ -406,6 +432,8 @@ export default {
       table: {},
       dimension: [],
       quota: [],
+      dimensionData: [],
+      quotaData: [],
       view: {
         xaxis: [],
         yaxis: [],
@@ -423,7 +451,8 @@ export default {
           legend: DEFAULT_LEGEND_STYLE,
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
-          background: DEFAULT_BACKGROUND_COLOR
+          background: DEFAULT_BACKGROUND_COLOR,
+          split: DEFAULT_SPLIT
         },
         customFilter: []
       },
@@ -454,7 +483,9 @@ export default {
         msg: ''
       },
       selectTableFlag: false,
-      changeTable: {}
+      changeTable: {},
+      searchField: '',
+      editDsField: false
     }
   },
   computed: {
@@ -463,7 +494,6 @@ export default {
     //   this.getData(this.$store.state.chart.viewId)
     //   return this.$store.state.chart.viewId
     // }
-
   },
   watch: {
     'param': function() {
@@ -472,6 +502,9 @@ export default {
       }else{
         this.getData(this.param.id)
       }
+    },
+    searchField(val) {
+      this.fieldFilter(val)
     }
   },
   created() {
@@ -503,6 +536,9 @@ export default {
         post('/dataset/table/getFieldsFromDE', this.table).then(response => {
           this.dimension = response.data.dimension
           this.quota = response.data.quota
+          this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
+          this.quotaData = JSON.parse(JSON.stringify(this.quota))
+          this.fieldFilter(this.searchField)
         }).catch(err => {
           this.resetView()
           this.httpRequest.status = err.response.data.success
@@ -865,6 +901,11 @@ export default {
       this.save()
     },
 
+    onChangeSplitForm(val) {
+      this.view.customStyle.split = val
+      this.save()
+    },
+
     showDimensionEditFilter(item) {
       this.dimensionItem = JSON.parse(JSON.stringify(item))
       this.dimensionFilterEdit = true
@@ -873,6 +914,17 @@ export default {
       this.dimensionFilterEdit = false
     },
     saveDimensionFilter() {
+      for (let i = 0; i < this.dimensionItem.filter.length; i++) {
+        const f = this.dimensionItem.filter[i]
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.view.xaxis[this.dimensionItem.index].filter = this.dimensionItem.filter
       this.save(true)
       this.closeDimensionFilter()
@@ -886,6 +938,17 @@ export default {
       this.quotaFilterEdit = false
     },
     saveQuotaFilter() {
+      for (let i = 0; i < this.quotaItem.filter.length; i++) {
+        const f = this.quotaItem.filter[i]
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
       this.save(true)
       this.closeQuotaFilter()
@@ -904,6 +967,14 @@ export default {
         if (!f.fieldId || f.fieldId === '') {
           this.$message({
             message: this.$t('chart.filter_field_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
             type: 'error',
             showClose: true
           })
@@ -980,6 +1051,25 @@ export default {
       this.view.yaxis = []
       this.view.customFilter = []
       this.save(true, 'chart', false)
+    },
+
+    fieldFilter(val) {
+      if (val && val !== '') {
+        this.dimensionData = JSON.parse(JSON.stringify(this.dimension.filter(ele => { return ele.name.includes(val) })))
+        this.quotaData = JSON.parse(JSON.stringify(this.quota.filter(ele => { return ele.name.includes(val) })))
+      } else {
+        this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
+        this.quotaData = JSON.parse(JSON.stringify(this.quota))
+      }
+    },
+
+    editField() {
+      this.editDsField = true
+    },
+
+    closeEditDsField() {
+      this.editDsField = false
+      this.initTableField()
     }
   }
 }
@@ -1172,5 +1262,8 @@ export default {
     align-items: center;
     justify-content: center;
     background-color: #ece7e7;
+  }
+  .field-height{
+    height: calc(50% - 20px);
   }
 </style>

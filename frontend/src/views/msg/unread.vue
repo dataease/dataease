@@ -9,12 +9,22 @@
       :data="data"
       :columns="columns"
       :pagination-config="paginationConfig"
+      :search-config="searchConfig"
       @select="select"
       @search="search"
+      @selection-change="handleSelectionChange"
+      @sort-change="sortChange"
     >
-
-      <el-table-column prop="content" :label="$t('commons.name')">
-        <template v-slot:default="scope">
+      <template #toolbar>
+        <el-button :disabled="multipleSelection.length === 0" @click="markReaded">{{ $t('webmsg.mark_readed') }}</el-button>
+        <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
+      </template>
+      <el-table-column
+        type="selection"
+        width="55"
+      />
+      <el-table-column prop="content" :label="$t('webmsg.content')">
+        <template slot-scope="scope">
 
           <span style="display: flex;flex: 1;">
             <span>
@@ -29,13 +39,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="createTime" :label="$t('commons.create_time')" width="180">
-        <template v-slot:default="scope">
+      <el-table-column prop="createTime" sortable="custom" :label="$t('webmsg.sned_time')" width="180">
+        <template slot-scope="scope">
           <span>{{ scope.row.createTime | timestampFormatDate }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column prop="type" :label="$t('datasource.type')" width="120">
+      <el-table-column prop="type" sortable="custom" :label="$t('webmsg.type')" width="120">
         <template slot-scope="scope">
           <span>{{ $t(getTypeName(scope.row.type)) }}</span>
         </template>
@@ -50,8 +60,11 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import { query, updateStatus } from '@/api/system/msg'
+import { query, updateStatus, batchRead } from '@/api/system/msg'
 import { msgTypes, getTypeName } from '@/utils/webMsg'
+import bus from '@/utils/bus'
+import { addOrder, formatOrders } from '@/utils/index'
+
 export default {
   components: {
     LayoutContent,
@@ -75,7 +88,13 @@ export default {
         currentPage: 1,
         pageSize: 10,
         total: 0
-      }
+      },
+      searchConfig: {
+        useQuickSearch: false,
+        useComplexSearch: false
+      },
+      multipleSelection: [],
+      orderConditions: []
     }
   },
   mounted() {
@@ -91,6 +110,13 @@ export default {
       if (this.selectType >= 0) {
         param.type = this.selectType
       }
+
+      if (this.orderConditions.length === 0) {
+        param.orders = [' create_time desc ']
+      } else {
+        param.orders = formatOrders(this.orderConditions)
+      }
+
       const { currentPage, pageSize } = this.paginationConfig
       query(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject
@@ -111,9 +137,37 @@ export default {
     // 设置已读
     setReaded(row) {
       updateStatus(row.msgId).then(res => {
+        bus.$emit('refresh-top-notification')
         this.search()
       })
+    },
+    markReaded() {
+      if (this.multipleSelection.length === 0) {
+        this.$warning(this.$t('webmsg.please_select'))
+        return
+      }
+      const param = this.multipleSelection.map(item => item.msgId)
+      batchRead(param).then(res => {
+        this.$success('webmsg.mark_success')
+        this.search()
+      })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    sortChange({ column, prop, order }) {
+      this.orderConditions = []
+      if (!order) {
+        this.search()
+        return
+      }
+      if (prop === 'createTime') {
+        prop = 'create_time'
+      }
+      addOrder({ field: prop, value: order }, this.orderConditions)
+      this.search()
     }
+
   }
 
 }

@@ -353,7 +353,8 @@ import {
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
-  DEFAULT_BACKGROUND_COLOR
+  DEFAULT_BACKGROUND_COLOR,
+  DEFAULT_SPLIT
 } from '../chart/chart'
 
 export default {
@@ -781,7 +782,8 @@ export default {
         legend: DEFAULT_LEGEND_STYLE,
         xAxis: DEFAULT_XAXIS_STYLE,
         yAxis: DEFAULT_YAXIS_STYLE,
-        background: DEFAULT_BACKGROUND_COLOR
+        background: DEFAULT_BACKGROUND_COLOR,
+        split: DEFAULT_SPLIT
       })
       view.customFilter = JSON.stringify([])
       post('/chart/view/save', view).then(response => {

@@ -783,7 +783,18 @@ export default {
     axis_name_fontsize: '名稱字體',
     pie_label_line_show: '引導線',
     outside: '外',
-    center: '中心'
+    center: '中心',
+    split: '軸線',
+    axis_line: '軸線',
+    axis_label: '軸標簽',
+    label_fontsize: '標簽大小',
+    split_line: '分割線',
+    split_color: '分割顏色',
+    shadow: '陰影',
+    condition: '過濾值',
+    filter_value_can_null: '過濾值不能為空',
+    filter_like: '包含',
+    filter_not_like: '不包含'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -934,7 +945,13 @@ export default {
     delete_warning: '確認刪除？',
     input_name: '請輸入名稱',
     input_limit_2_25: '2-25字符',
-    input_limit_0_50: '0-50字符'
+    input_limit_0_50: '0-50字符',
+    oracle_connection_type: '服務名/SID',
+    oracle_sid: 'SID',
+    oracle_service_name: '服務名',
+    get_schema: '獲取 Schema',
+    schema: '數據庫 Schema',
+    please_choose_schema: '請選擇數據庫 Schema'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
@@ -1187,6 +1204,13 @@ export default {
     show_more: '查看更多',
     all_type: '全部類型',
     panel_type: '儀表板分享',
-    dataset_type: '數據集同步'
+    dataset_type: '數據集同步',
+    content: '消息內容',
+    sned_time: '提交時間',
+    read_time: '查看時間',
+    type: '類型',
+    mark_readed: '標記已讀',
+    please_select: '請至少選擇一條消息',
+    mark_success: '標記已讀成功'
   }
 }

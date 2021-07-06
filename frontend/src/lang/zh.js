@@ -1,4 +1,46 @@
 export default {
+  fu: {
+    search_bar: {
+      search: '搜索',
+      adv_search: '高級搜索',
+      ok: '确定',
+      cancel: '取消',
+      please_select: '请选择',
+      please_input: '请输入',
+      like: '包含',
+      not_like: '不包含',
+      in: '属于',
+      not_in: '不屬于',
+      gt: '大于',
+      ge: '大于等于',
+      lt: '小于',
+      le: '小于等于',
+      eq: '等于',
+      ne: '不等于',
+      between: '之间',
+      select_date: '选择日期',
+      start_date: '开始日期',
+      end_date: '結束日期',
+      select_date_time: '选择日期时间',
+      start_date_time: '开始日期时间',
+      end_date_time: '結束日期时间',
+      range_separator: '至',
+      data_time_error: '开始日期不能大于結束日期',
+      clean: '清空',
+      refresh: '刷新'
+    },
+    table: {
+      ok: '确定',
+      custom_table_fields: '自定义表格字段',
+      custom_table_fields_desc: '固定字段不在选择范围'
+    },
+    steps: {
+      cancel: '取消',
+      next: '下一步',
+      prev: '上一步',
+      finish: '完成'
+    }
+  },
   route: {
     dashboard: '首页',
     documentation: '文档',
@@ -741,7 +783,18 @@ export default {
     axis_name_fontsize: '名称字体',
     pie_label_line_show: '引导线',
     outside: '外',
-    center: '中心'
+    center: '中心',
+    split: '轴线',
+    axis_line: '轴线',
+    axis_label: '轴标签',
+    label_fontsize: '标签大小',
+    split_line: '分割线',
+    split_color: '分割颜色',
+    shadow: '阴影',
+    condition: '过滤值',
+    filter_value_can_null: '过滤值不能为空',
+    filter_like: '包含',
+    filter_not_like: '不包含'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -896,7 +949,10 @@ export default {
     input_limit_0_50: '0-50字符',
     oracle_connection_type: '服务名/SID',
     oracle_sid: 'SID',
-    oracle_service_name: '服务名'
+    oracle_service_name: '服务名',
+    get_schema: '获取 Schema',
+    schema: '数据库 Schema',
+    please_choose_schema: '请选择数据库 Schema'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
@@ -1150,6 +1206,13 @@ export default {
     show_more: '查看更多',
     all_type: '全部类型',
     panel_type: '仪表板分享',
-    dataset_type: '数据集同步'
+    dataset_type: '数据集同步',
+    content: '消息内容',
+    sned_time: '提交时间',
+    read_time: '查看时间',
+    type: '类型',
+    mark_readed: '标记已读',
+    please_select: '请至少选择一条消息',
+    mark_success: '标记已读成功'
   }
 }

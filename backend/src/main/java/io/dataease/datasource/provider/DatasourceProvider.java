@@ -30,4 +30,6 @@ public abstract class DatasourceProvider {
     abstract public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception;
 
     abstract public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception;
+
+    abstract public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception;
 }

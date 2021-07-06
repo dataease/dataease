@@ -26,6 +26,7 @@
 import GrantDept from './dept'
 import GrantRole from './role'
 import GrantUser from './user'
+import { fineSave } from '@/api/panel/share'
 export default {
   name: 'GrantAuth',
   components: { GrantDept, GrantRole, GrantUser },
@@ -58,8 +59,27 @@ export default {
       this.showSearchInput = false
     },
     save() {
-      this.$refs[this.activeName].save(this.$t('commons.share_success'))
-      this.$emit('close-grant', 0)
+    //   this.$refs[this.activeName].save(this.$t('commons.share_success'))
+    //   this.$emit('close-grant', 0)
+      this.fineSave()
+    },
+    fineSave() {
+      let targetDto = {}
+      this.tabNames.forEach(tabName => {
+        if (this.$refs[tabName] && this.$refs[tabName].getSelected) {
+          const tempSelected = this.$refs[tabName].getSelected()
+          targetDto = Object.assign({}, targetDto, tempSelected)
+        }
+      })
+      const resourceId = this.resourceId
+      const param = {
+        resourceId,
+        authURD: targetDto
+      }
+      fineSave(param).then(res => {
+        this.$success(this.$t('commons.share_success'))
+        this.$emit('close-grant', 0)
+      })
     },
     cancel() {
       this.$refs[this.activeName].cancel()

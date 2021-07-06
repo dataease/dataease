@@ -11,10 +11,11 @@
       :pagination-config="paginationConfig"
       @select="select"
       @search="search"
+      @sort-change="sortChange"
     >
 
-      <el-table-column prop="content" :label="$t('commons.name')">
-        <template v-slot:default="scope">
+      <el-table-column prop="content" :label="$t('webmsg.content')">
+        <template slot-scope="scope">
 
           <span style="display: flex;flex: 1;">
             <span>
@@ -29,13 +30,19 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="createTime" :label="$t('commons.create_time')" width="180">
-        <template v-slot:default="scope">
+      <el-table-column prop="createTime" sortable="custom" :label="$t('webmsg.sned_time')" width="180">
+        <template slot-scope="scope">
           <span>{{ scope.row.createTime | timestampFormatDate }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column prop="type" :label="$t('datasource.type')" width="120">
+      <el-table-column prop="readTime" sortable="custom" :label="$t('webmsg.read_time')" width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.row.readTime | timestampFormatDate }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column prop="type" sortable="custom" :label="$t('webmsg.type')" width="120">
         <template slot-scope="scope">
           <span>{{ $t(getTypeName(scope.row.type)) }}</span>
         </template>
@@ -52,6 +59,7 @@ import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 import { query } from '@/api/system/msg'
 import { msgTypes, getTypeName } from '@/utils/webMsg'
+import { addOrder, formatOrders } from '@/utils/index'
 export default {
   components: {
     LayoutContent,
@@ -70,6 +78,7 @@ export default {
       allTypes: [{ name: 'mysql', type: 'jdbc' }, { name: 'sqlServer', type: 'jdbc' }],
 
       columns: [],
+      orderConditions: [],
 
       paginationConfig: {
         currentPage: 1,
@@ -91,6 +100,13 @@ export default {
       if (this.selectType >= 0) {
         param.type = this.selectType
       }
+
+      if (this.orderConditions.length === 0) {
+        param.orders = [' create_time desc ']
+      } else {
+        param.orders = formatOrders(this.orderConditions)
+      }
+
       const { currentPage, pageSize } = this.paginationConfig
       query(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject
@@ -106,6 +122,21 @@ export default {
     toDetail(row) {
       const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
       this.$router.push({ name: row.router, params: param })
+    },
+    sortChange({ column, prop, order }) {
+      this.orderConditions = []
+      if (!order) {
+        this.search()
+        return
+      }
+      if (prop === 'createTime') {
+        prop = 'create_time'
+      }
+      if (prop === 'readTime') {
+        prop = 'read_time'
+      }
+      addOrder({ field: prop, value: order }, this.orderConditions)
+      this.search()
     }
 
   }

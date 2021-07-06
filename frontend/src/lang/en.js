@@ -1,4 +1,46 @@
 export default {
+  fu: {
+    search_bar: {
+      search: 'Search',
+      adv_search: 'Advanced search',
+      ok: 'Confirm',
+      cancel: 'Cancel',
+      please_select: 'Please select',
+      please_input: 'Please input',
+      like: 'like ',
+      not_like: 'not like',
+      in: 'in',
+      not_in: 'not in',
+      gt: 'greater than',
+      ge: 'Greater than or equal to',
+      lt: 'less than',
+      le: 'Less than or equal to',
+      eq: 'equal to',
+      ne: 'bot equal to',
+      between: 'between',
+      select_date: 'Select a date',
+      start_date: 'Start date',
+      end_date: 'End date',
+      select_date_time: 'Select date time',
+      start_date_time: 'Start date time',
+      end_date_time: 'End date time',
+      range_separator: 'To',
+      data_time_error: 'The start date cannot be greater than the end date',
+      clean: 'Clean',
+      refresh: 'Refresh'
+    },
+    table: {
+      ok: 'Confirm',
+      custom_table_fields: 'Custom table fields',
+      custom_table_fields_desc: 'Fixed field is not in the selection range'
+    },
+    steps: {
+      cancel: 'Cancle',
+      next: 'next',
+      prev: 'Last step',
+      finish: 'Finish'
+    }
+  },
   route: {
     dashboard: 'Dashboard',
     documentation: 'Documentation',
@@ -707,8 +749,8 @@ export default {
     chart_funnel: 'Funnel',
     chart_radar: 'Radar',
     chart_gauge: 'Gauge',
-    dateStyle: '日期顯示',
-    datePattern: '日期格式',
+    dateStyle: 'Date Style',
+    datePattern: 'Date Format',
     y: 'Year',
     y_M: 'Year Month',
     y_M_d: 'Year Month Day',
@@ -741,7 +783,18 @@ export default {
     axis_name_fontsize: 'Name Fontsize',
     pie_label_line_show: 'Line',
     outside: 'Outside',
-    center: 'Center'
+    center: 'Center',
+    split: 'Axis',
+    axis_line: 'Axis Line',
+    axis_label: 'Axis Label',
+    label_fontsize: 'Label Fontsize',
+    split_line: 'Split Line',
+    split_color: 'Split Color',
+    shadow: 'Shadow',
+    condition: 'Filter Value',
+    filter_value_can_null: 'Filter value can not empty',
+    filter_like: 'Contain',
+    filter_not_like: 'Not Contain'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -892,7 +945,13 @@ export default {
     delete_warning: 'Confirm to delete?',
     input_name: 'Please input name',
     input_limit_2_25: '2-25 chars',
-    input_limit_0_50: '0-50 chars'
+    input_limit_0_50: '0-50 chars',
+    oracle_connection_type: 'Service Name/SID',
+    oracle_sid: 'SID',
+    oracle_service_name: 'Service Name',
+    get_schema: 'Get Schema',
+    schema: 'Database Schema',
+    please_choose_schema: 'Please select Schema'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
@@ -1145,6 +1204,13 @@ export default {
     show_more: 'View more',
     all_type: 'All type',
     panel_type: 'Panel Share',
-    dataset_type: 'Dataset sync'
+    dataset_type: 'Dataset sync',
+    content: 'Content',
+    sned_time: 'Send Time',
+    read_time: 'Read Time',
+    type: 'Type',
+    mark_readed: 'Mark As Read',
+    please_select: 'Please select at least one message',
+    mark_success: 'Mark read successfully'
   }
 }

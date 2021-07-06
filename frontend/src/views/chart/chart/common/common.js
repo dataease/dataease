@@ -38,6 +38,15 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis.nameTextStyle = customStyle.yAxis.nameTextStyle
     }
+    if (customStyle.split && chart.type.includes('radar')) {
+      chart_option.radar.name = customStyle.split.name
+      chart_option.radar.splitNumber = customStyle.split.splitNumber
+      chart_option.radar.axisLine = customStyle.split.axisLine
+      chart_option.radar.axisTick = customStyle.split.axisTick
+      chart_option.radar.axisLabel = customStyle.split.axisLabel
+      chart_option.radar.splitLine = customStyle.split.splitLine
+      chart_option.radar.splitArea = customStyle.split.splitArea
+    }
     if (customStyle.background) {
       chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
