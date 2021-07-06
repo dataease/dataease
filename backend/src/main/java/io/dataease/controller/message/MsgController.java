@@ -36,4 +36,15 @@ public class MsgController {
     public void setReaded(@PathVariable Long msgId) {
         sysMsgService.setReaded(msgId);
     }
+
+
+    @PostMapping("/batchRead")
+    public void batchRead(@RequestBody List<Long> msgIds) {
+        sysMsgService.setBatchReaded(msgIds);
+    }
+
+    @PostMapping("/batchDelete")
+    public void batchDelete(@RequestBody List<Long> msgIds) {
+        sysMsgService.batchDelete(msgIds);
+    }
 }

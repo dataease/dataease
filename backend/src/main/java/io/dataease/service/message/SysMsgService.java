@@ -4,7 +4,9 @@ package io.dataease.service.message;
 import io.dataease.base.domain.SysMsg;
 import io.dataease.base.domain.SysMsgExample;
 import io.dataease.base.mapper.SysMsgMapper;
+import io.dataease.base.mapper.ext.ExtSysMsgMapper;
 import io.dataease.controller.message.dto.MsgRequest;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
@@ -16,12 +18,20 @@ public class SysMsgService {
     @Resource
     private SysMsgMapper sysMsgMapper;
 
+    @Resource
+    private ExtSysMsgMapper extSysMsgMapper;
+
     public List<SysMsg> query(Long userId, MsgRequest msgRequest) {
-        String orderClause = "";
+        String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
         criteria.andUserIdEqualTo(userId);
 
+        List<String> orders = msgRequest.getOrders();
+
+        if (CollectionUtils.isNotEmpty(orders)) {
+            orderClause = String.join(", ", orders);
+        }
 
         if (ObjectUtils.isNotEmpty(msgRequest.getType())) {
             criteria.andTypeEqualTo(msgRequest.getType());
@@ -29,11 +39,8 @@ public class SysMsgService {
 
         if (ObjectUtils.isNotEmpty(msgRequest.getStatus())) {
             criteria.andStatusEqualTo(msgRequest.getStatus());
-        }else {
-            orderClause += " status asc ,";
         }
 
-        orderClause += " create_time desc";
         example.setOrderByClause(orderClause);
         List<SysMsg> sysMsgs = sysMsgMapper.selectByExample(example);
         return sysMsgs;
@@ -43,18 +50,20 @@ public class SysMsgService {
         SysMsg sysMsg = new SysMsg();
         sysMsg.setMsgId(msgId);
         sysMsg.setStatus(true);
+        sysMsg.setReadTime(System.currentTimeMillis());
         sysMsgMapper.updateByPrimaryKeySelective(sysMsg);
     }
 
-    public void save(SysMsg sysMsg) {
-//        sysMsg.setStatus(false);
-//        sysMsg.setCreateTime(System.currentTimeMillis());
-        sysMsgMapper.insert(sysMsg);
+    public void setBatchReaded(List<Long> msgIds) {
+        extSysMsgMapper.batchStatus(msgIds);
     }
 
-    public void update(SysMsg sysMsg) {
+    public void batchDelete(List<Long> msgIds) {
+        extSysMsgMapper.batchDelete(msgIds);
+    }
 
-        sysMsgMapper.updateByPrimaryKey(sysMsg);
+    public void save(SysMsg sysMsg) {
+        sysMsgMapper.insert(sysMsg);
     }
 
 

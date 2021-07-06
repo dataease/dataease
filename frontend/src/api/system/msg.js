@@ -17,3 +17,12 @@ export function updateStatus(msgId) {
   })
 }
 
+export function batchRead(data) {
+  return request({
+    url: '/api/sys_msg/batchRead',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+

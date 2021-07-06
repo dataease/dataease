@@ -1200,6 +1200,13 @@ export default {
     show_more: 'View more',
     all_type: 'All type',
     panel_type: 'Panel Share',
-    dataset_type: 'Dataset sync'
+    dataset_type: 'Dataset sync',
+    content: 'Content',
+    sned_time: 'Send Time',
+    read_time: 'Read Time',
+    type: 'Type',
+    mark_readed: 'Mark As Read',
+    please_select: 'Please select at least one message',
+    mark_success: 'Mark read successfully'
   }
 }
