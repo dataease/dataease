@@ -46,6 +46,10 @@ public class ShiroServiceImpl implements ShiroService {
 
 
         filterChainDefinitionMap.put("/system/ui/**", ANON);
+        filterChainDefinitionMap.put("/**/*.js", ANON);
+        filterChainDefinitionMap.put("/**/*.css", ANON);
+        filterChainDefinitionMap.put("/**/*.map", ANON);
+        // filterChainDefinitionMap.put("/axios.map", ANON);
 
         filterChainDefinitionMap.put("/api/auth/login", ANON);
         filterChainDefinitionMap.put("/api/auth/logout", ANON);

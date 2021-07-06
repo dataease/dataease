@@ -1,6 +1,7 @@
 package io.dataease.controller.panel.api;
 
 import io.dataease.base.domain.PanelShare;
+import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
@@ -31,5 +32,9 @@ public interface ShareApi {
     @PostMapping("/queryWithResourceId")
     List<PanelShare> queryWithResourceId(BaseGridRequest request);
 
+
+    @ApiOperation("优化创建分享")
+    @PostMapping("/fineSave")
+    void fineSave(PanelShareFineDto panelShareFineDto);
     
 }

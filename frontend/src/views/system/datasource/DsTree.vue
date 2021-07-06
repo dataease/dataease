@@ -114,7 +114,7 @@ export default {
   },
   mounted() {
     this.queryTreeDatas()
-    console.log('permis:' + JSON.stringify(this.$store.getters.permissions))
+    // console.log('permis:' + JSON.stringify(this.$store.getters.permissions))
   },
   methods: {
     filterNode(value, data) {
@@ -154,7 +154,7 @@ export default {
         return 'MySQL'
       } else if (type === 'sqlServer') {
         return 'SQL Server'
-      }else if (type === 'oracle') {
+      } else if (type === 'oracle') {
         return 'Oracle'
       }
     },
