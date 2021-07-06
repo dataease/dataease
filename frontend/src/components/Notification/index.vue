@@ -41,9 +41,9 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="msg-foot-class">
+    <div class="msg-foot-class" @click="showMore">
       <el-row style="padding: 5px 0;margin-bottom: -5px;cursor:point;" @click="showMore">
-        <span @click="showMore">{{ $t('webmsg.show_more') }}</span>
+        <span>{{ $t('webmsg.show_more') }}</span>
       </el-row>
     </div>
 
@@ -62,6 +62,8 @@
 <script>
 import { query, updateStatus } from '@/api/system/msg'
 import { msgTypes, getTypeName } from '@/utils/webMsg'
+import { mapGetters } from 'vuex'
+import bus from '@/utils/bus'
 export default {
   data() {
     return {
@@ -78,7 +80,9 @@ export default {
     }
   },
   computed: {
-
+    ...mapGetters([
+      'permission_routes'
+    ])
   },
   created() {
     this.search()
@@ -86,6 +90,11 @@ export default {
     this.timer = setInterval(() => {
       this.search()
     }, 30000)
+  },
+  mounted() {
+    bus.$on('refresh-top-notification', () => {
+      this.search()
+    })
   },
   beforeDestroy() {
     this.timer && clearInterval(this.timer)
@@ -100,8 +109,15 @@ export default {
     showDetail(row) {
       const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
       this.visible = false
-      this.$router.push({ name: row.router, params: param })
-      this.setReaded(row.msgId)
+      if (this.$route && this.$route.name && this.$route.name.includes('panel') && row.type === 0) {
+        bus.$emit('to-msg-share', param)
+      } else if (this.$route && this.$route.name && this.$route.name.includes('dataset') && row.type === 1) {
+        bus.$emit('to-msg-dataset', param)
+      } else {
+        this.$router.push({ name: row.router, params: param })
+      }
+
+      row.status || this.setReaded(row.msgId)
     },
     remove(row) {
 
@@ -113,11 +129,24 @@ export default {
       const routerName = 'sys-msg-web-all'
       this.visible = false
       this.$router.push({ name: routerName })
-      this.$emit('refresh-top-bar')
+      this.openSystem()
+    },
+    openSystem() {
+      const path = '/system'
+      let route = this.permission_routes.find(
+        item => item.path === '/' + path.split('/')[1]
+      )
+      // 如果找不到这个路由，说明是首页
+      if (!route) {
+        route = this.permission_routes.find(item => item.path === '/')
+      }
+      this.$store.commit('permission/SET_CURRENT_ROUTES', route)
+      // this.setSidebarHide(route)
     },
     search() {
       const param = {
-        status: false
+        status: false,
+        orders: [' create_time desc ']
       }
       const { currentPage, pageSize } = this.paginationConfig
       query(currentPage, pageSize, param).then(response => {

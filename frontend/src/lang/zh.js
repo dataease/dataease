@@ -1204,6 +1204,13 @@ export default {
     show_more: '查看更多',
     all_type: '全部类型',
     panel_type: '仪表板分享',
-    dataset_type: '数据集同步'
+    dataset_type: '数据集同步',
+    content: '消息内容',
+    sned_time: '提交时间',
+    read_time: '查看时间',
+    type: '类型',
+    mark_readed: '标记已读',
+    please_select: '请至少选择一条消息',
+    mark_success: '标记已读成功'
   }
 }

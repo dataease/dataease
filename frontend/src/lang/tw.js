@@ -949,7 +949,7 @@ export default {
     oracle_service_name: '服務名',
     get_schema: '獲取 Schema',
     schema: '數據庫 Schema',
-    please_choose_schema: '請選擇數據庫 Schema',
+    please_choose_schema: '請選擇數據庫 Schema'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
@@ -1202,6 +1202,13 @@ export default {
     show_more: '查看更多',
     all_type: '全部類型',
     panel_type: '儀表板分享',
-    dataset_type: '數據集同步'
+    dataset_type: '數據集同步',
+    content: '消息內容',
+    sned_time: '提交時間',
+    read_time: '查看時間',
+    type: '類型',
+    mark_readed: '標記已讀',
+    please_select: '請至少選擇一條消息',
+    mark_success: '標記已讀成功'
   }
 }
