@@ -7,6 +7,33 @@
         <result column="privileges" property="privileges"/>
     </resultMap>
 
+    <select id="searchOne" resultMap="BaseResultMapDTO">
+        select
+        id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
+        get_auths(id,'dataset',#{userId}) as `privileges`
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_table
+        <where>
+            FIND_IN_SET(dataset_table.id,cids)
+            <if test="id != null">
+                and id = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="sceneId != null">
+                and scene_id = #{sceneId,jdbcType=VARCHAR}
+            </if>
+            <if test="mode != null">
+                and mode = #{mode,jdbcType=INTEGER}
+            </if>
+            <if test="typeFilter != null">
+                and type in
+                <foreach collection="typeFilter" item="item" open="(" separator="," close=")">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+        </where>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+    </select>
 
     <select id="search" resultMap="BaseResultMapDTO">
         select
@@ -31,7 +58,5 @@
         <if test="sort != null">
             order by ${sort}
         </if>
-
-
     </select>
 </mapper>

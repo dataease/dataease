@@ -17,7 +17,7 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.background') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" :disabled="param && !hasDataPermission('manage',param.privileges)" size="mini" class="shape-item">{{ $t('chart.background') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>
@@ -29,6 +29,10 @@ import { DEFAULT_BACKGROUND_COLOR } from '../../chart/chart'
 export default {
   name: 'BackgroundColorSelector',
   props: {
+    param: {
+      type: Object,
+      required: false
+    },
     chart: {
       type: Object,
       required: true

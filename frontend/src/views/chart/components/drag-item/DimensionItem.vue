@@ -5,7 +5,7 @@
         <el-tag size="small" class="item-axis">
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
-        <el-dropdown-menu slot="dropdown">
+        <el-dropdown-menu v-if="hasDataPermission('manage',param.privileges)" slot="dropdown">
           <el-dropdown-item>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
@@ -80,6 +80,10 @@
 export default {
   name: 'DimensionItem',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     item: {
       type: Object,
       required: true

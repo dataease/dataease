@@ -672,7 +672,7 @@ export default {
       // }
 
       if (data.type !== 'group') {
-        this.$emit('switchComponent', { name: 'ViewTable', param: data.id })
+        this.$emit('switchComponent', { name: 'ViewTable', param: data })
       }
       // if (node.expanded) {
       //   this.expandedArray.push(data.id)

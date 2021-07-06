@@ -49,7 +49,7 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.color') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" :disabled="param && !hasDataPermission('manage',param.privileges)" size="mini" class="shape-item">{{ $t('chart.color') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>
@@ -61,6 +61,10 @@ import { DEFAULT_COLOR_CASE } from '../../chart/chart'
 export default {
   name: 'ColorSelector',
   props: {
+    param: {
+      type: Object,
+      required: false
+    },
     chart: {
       type: Object,
       required: true

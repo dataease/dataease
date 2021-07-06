@@ -54,6 +54,11 @@ public class DataSetTableController {
         return dataSetTableService.get(id);
     }
 
+    @PostMapping("getWithPermission/{id}")
+    public DataSetTableDTO getWithPermission(@PathVariable String id) {
+        return dataSetTableService.getWithPermission(id);
+    }
+
     @PostMapping("getFields")
     public List<TableFiled> getFields(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getFields(dataSetTableRequest);

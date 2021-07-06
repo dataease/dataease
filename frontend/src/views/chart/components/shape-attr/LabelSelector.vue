@@ -67,10 +67,11 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!labelForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!labelForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.label') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="labelForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeLabelAttr"
@@ -87,6 +88,10 @@ import { DEFAULT_LABEL } from '../../chart/chart'
 export default {
   name: 'LabelSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

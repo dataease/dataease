@@ -689,7 +689,7 @@ export default {
 
     nodeClick(data, node) {
       if (data.type !== 'group') {
-        this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
+        this.$emit('switchComponent', { name: 'ChartEdit', param: data })
       }
       // if (data.type === 'scene') {
       //   this.sceneMode = true
