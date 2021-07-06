@@ -53,6 +53,8 @@ public class PanelGroupService {
     private PanelLinkService panelLinkService;
     @Resource
     private SysAuthService sysAuthService;
+    @Resource
+    private PanelViewService panelViewService;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -72,6 +74,12 @@ public class PanelGroupService {
 
     @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
+        try{
+            panelViewService.syncPanelViews(request);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("更新panelView出错panelId：{}" ,request.getId());
+        }
         String panelId = request.getId();
         if (StringUtils.isEmpty(panelId)) {
             // 新建
@@ -163,4 +171,5 @@ public class PanelGroupService {
         });
         return chartViewDTOList;
     }
+
 }

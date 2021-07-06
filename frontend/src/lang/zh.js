@@ -666,6 +666,8 @@ export default {
     area_mode: '面积',
     rose_radius: '圆角',
     view_name: '视图标题',
+    belong_group: '所属分组',
+    select_group: '选择分组',
     name_can_not_empty: '名称不能为空',
     template_can_not_empty: '请选择仪表版',
     custom_count: '记录数',

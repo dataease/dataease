@@ -666,6 +666,8 @@ export default {
     area_mode: 'Area',
     rose_radius: 'Fillet',
     view_name: 'Chart Title',
+    belong_group: 'Belong Group',
+    select_group: 'Select Group',
     name_can_not_empty: 'Name cannot be empty',
     template_can_not_empty: 'Please check a Template',
     custom_count: 'Number of records',

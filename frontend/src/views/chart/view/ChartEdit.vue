@@ -467,7 +467,11 @@ export default {
   },
   watch: {
     'param': function() {
-      this.getData(this.param.id)
+      if(this.param.optType === 'new'){
+
+      }else{
+        this.getData(this.param.id)
+      }
     }
   },
   created() {

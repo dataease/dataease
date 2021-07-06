@@ -16,4 +16,6 @@ public interface ExtChartViewMapper {
 
     @Select("select id from chart_view where table_id = #{tableId}")
     List<String> allViewIds(@Param("tableId") String tableId);
+
+    String searchAdviceSceneId(@Param("userId") String userId,@Param("panelId") String panelId);
 }

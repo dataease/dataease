@@ -382,4 +382,8 @@ public class ChartViewService {
        extChartViewMapper.chartCopy(newChartId,id);
         return newChartId;
     }
+
+    public String searchAdviceSceneId(String panelId){
+       return extChartViewMapper.searchAdviceSceneId(AuthUtils.getUser().getUserId().toString(),panelId);
+    }
 }

@@ -2,13 +2,19 @@
   <el-col v-loading="loading">
     <el-row style="margin-top: 5px">
       <el-row style="margin-left: 5px;margin-right: 5px">
-        <el-input
-          v-model="templateFilterText"
-          :placeholder="$t('panel.filter_keywords')"
-          size="mini"
-          clearable
-          prefix-icon="el-icon-search"
-        />
+        <el-col :span="16">
+          <el-input
+            v-model="templateFilterText"
+            :placeholder="$t('panel.filter_keywords')"
+            size="mini"
+            clearable
+            prefix-icon="el-icon-search"
+          />
+        </el-col>
+        <el-col :span="7">
+          <el-button type="primary" size="mini" style="float: right" @click="newChart">新建 </el-button>
+        </el-col>
+
       </el-row>
       <el-row style="margin-top: 5px">
         <el-tree
@@ -117,6 +123,9 @@ export default {
     },
     allowDrop(draggingNode, dropNode, type) {
       return false
+    },
+    newChart() {
+      this.$emit('newChart')
     }
 
   }
