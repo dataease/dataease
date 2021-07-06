@@ -240,16 +240,22 @@ public class ChartViewService {
             else {
                 data = (List<String[]>) cache;
             }*/
-            try{
-                data = cacheViewData(datasourceProvider, datasourceRequest, id);
-            }catch (Exception e) {
-                LogUtil.error(e);
-            }finally {
-                // 如果当前对象被锁 且 当前线程冲入次数 > 0 则释放锁
-                if (lock.isLocked() && lock.getHoldCount() > 0) {
-                    lock.unlock();
+            // 仪表板有参数不实用缓存
+            if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
+                data = datasourceProvider.getData(datasourceRequest);
+            }else {
+                try{
+                    data = cacheViewData(datasourceProvider, datasourceRequest, id);
+                }catch (Exception e) {
+                    LogUtil.error(e);
+                }finally {
+                    // 如果当前对象被锁 且 当前线程冲入次数 > 0 则释放锁
+                    if (lock.isLocked() && lock.getHoldCount() > 0) {
+                        lock.unlock();
+                    }
                 }
             }
+
 
         }
         if (StringUtils.containsIgnoreCase(view.getType(), "pie") && data.size() > 1000) {

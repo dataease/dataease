@@ -52,8 +52,8 @@
           </el-button>
         </el-form-item>
 
-        <el-form-item :label="$t('datasource.schema')"  v-if="form.type=='oracle'">
-          <el-select v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width" :disabled="formType=='modify'" >
+        <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.schema')">
+          <el-select v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width" :disabled="formType=='modify'">
             <el-option
               v-for="item in schemas"
               :key="item"
@@ -78,7 +78,7 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import {addDs, editDs, getSchema, validateDs} from '@/api/system/datasource'
+import { addDs, editDs, getSchema, validateDs } from '@/api/system/datasource'
 export default {
   name: 'DsForm',
   components: { LayoutContent },
@@ -148,7 +148,7 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
-      if(!this.form.configuration.schema){
+      if (!this.form.configuration.schema) {
         this.$message.error(this.$t('datasource.please_choose_schema'))
         return
       }
@@ -167,7 +167,7 @@ export default {
         }
       })
     },
-    getSchema(){
+    getSchema() {
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
