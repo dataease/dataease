@@ -8,7 +8,7 @@
         </el-tab-pane>
         <el-tab-pane name="panels_star" :lazy="true">
           <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.store') }}</span>
-          <enshrine v-if="showEnshrine" />
+          <enshrine v-if="activeName==='panels_star'" />
         </el-tab-pane>
         <el-tab-pane name="panels_share" :lazy="true">
           <span slot="label"><i class="el-icon-share" />{{ $t('panel.share') }}</span>
