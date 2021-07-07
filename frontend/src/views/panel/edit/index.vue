@@ -166,7 +166,7 @@
       ref="chartGroup"
       :opt-from="'panel'"
       :advice-group-id="adviceGroupId"
-      style="height: 0px;width:0px;overflow: hidden"
+      style="height: 0px;width:0px;padding:0px;overflow: hidden"
       @newViewInfo="newViewInfo"
     />
 
