@@ -17,7 +17,7 @@
       </el-tabs>
     </de-aside-container>
     <de-main-container>
-      <PanelViewShow v-if="mainActiveName==='PanelMain'" />
+      <PanelViewShow v-if="mainActiveName==='PanelMain'" :active-tab="activeName" />
     </de-main-container>
   </de-container>
 </template>

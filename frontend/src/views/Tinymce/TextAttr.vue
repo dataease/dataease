@@ -165,8 +165,8 @@ export default {
 
   }
 
-  >>> .el-radio-button__inner{
-    padding: 5px;
-    width: 30px;
+  ::v-deep .el-radio-button__inner{
+    padding: 5px!important;
+    width: 30px!important;
   }
 </style>
