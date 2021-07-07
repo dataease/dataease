@@ -35,7 +35,7 @@
                   <span>{{ $t('chart.content_formatter') }}</span>
                   <el-tooltip class="item" effect="dark" placement="bottom">
                     <div slot="content">
-                      字符串支持用 \n 换行<br>字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。
+                      字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。<br>{d}：百分比（用于饼图等）。
                     </div>
                     <i class="el-icon-info" style="cursor: pointer;" />
                   </el-tooltip>
