@@ -101,6 +101,7 @@
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
+          @scroll="canvasScroll"
         >
           <Editor v-if="!previewVisible" :out-style="outStyle" />
         </div>
@@ -158,8 +159,8 @@
     <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
 
     <!--矩形样式组件-->
-    <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" />
-    <TextAttr v-if="curComponent&&curComponent.type==='v-text'" />
+    <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <TextAttr v-if="curComponent&&curComponent.type==='v-text'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
 
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
@@ -269,7 +270,9 @@ export default {
       beforeDialogValue: [],
       styleDialogVisible: false,
       currentDropElement: null,
-      adviceGroupId: null
+      adviceGroupId: null,
+      scrollLeft: 0,
+      scrollTop: 0
     }
   },
 
@@ -307,6 +310,8 @@ export default {
     // this.restore()
     // 全局监听按键事件
     listenGlobalKeyDown()
+
+    this.$store.commit('setCurComponent', { component: null, index: null })
   },
   mounted() {
     // this.insertToBody()
@@ -662,6 +667,11 @@ export default {
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
         bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
       }
+    },
+    canvasScroll(event) {
+      debugger
+      this.scrollLeft = event.target.scrollLeft
+      this.scrollTop = event.target.scrollTop
     }
   }
 }

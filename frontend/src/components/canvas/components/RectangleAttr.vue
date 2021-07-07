@@ -58,6 +58,16 @@
 <script>
 import { mapState } from 'vuex'
 export default {
+  props: {
+    scrollLeft: {
+      type: Number,
+      default: 0
+    },
+    scrollTop: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       lineStyle: [{
@@ -113,8 +123,8 @@ export default {
 
     mainStyle() {
       const style = {
-        left: this.getPositionX(this.curComponent.style.left) + 'px',
-        top: (this.getPositionY(this.curComponent.style.top) - 3) + 'px'
+        left: this.getPositionX(this.curComponent.style.left - this.scrollLeft) + 'px',
+        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop - 3) + 'px'
       }
       return style
     },
@@ -139,7 +149,7 @@ export default {
       if (this.canvasStyleData.selfAdaption) {
         return (x * this.curCanvasScale.scaleWidth / 100) + 60
       } else {
-        return x + 190
+        return x + 60
       }
     },
     getPositionY(y) {
