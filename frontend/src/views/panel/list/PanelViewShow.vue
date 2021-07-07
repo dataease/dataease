@@ -83,6 +83,12 @@ import bus from '@/utils/bus'
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate },
+  props: {
+    activeTab: {
+      type: String,
+      required: false
+    }
+  },
   data() {
     return {
       showMain: true,
@@ -194,7 +200,9 @@ export default {
       })
     },
     refreshStarList(isStar) {
-      bus.$emit('panle_start_list_refresh', isStar)
+      if (this.activeTab !== 'PanelList') {
+        bus.$emit('panle_start_list_refresh', isStar)
+      }
     }
 
   }
