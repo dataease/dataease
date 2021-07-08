@@ -795,7 +795,14 @@ export default {
     condition: '過濾值',
     filter_value_can_null: '過濾值不能為空',
     filter_like: '包含',
-    filter_not_like: '不包含'
+    filter_not_like: '不包含',
+    color_light: '明亮',
+    color_classical: '經典',
+    color_fresh: '清新',
+    color_energy: '活力',
+    color_red: '火紅',
+    color_fast: '輕快',
+    color_spiritual: '靈動'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

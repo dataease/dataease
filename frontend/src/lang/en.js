@@ -795,7 +795,14 @@ export default {
     condition: 'Filter Value',
     filter_value_can_null: 'Filter value can not empty',
     filter_like: 'Contain',
-    filter_not_like: 'Not Contain'
+    filter_not_like: 'Not Contain',
+    color_light: 'Light',
+    color_classical: 'Classical',
+    color_fresh: 'Fresh',
+    color_energy: 'Energy',
+    color_red: 'Red',
+    color_fast: 'Fast',
+    color_spiritual: 'Spiritual'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

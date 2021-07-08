@@ -795,7 +795,14 @@ export default {
     condition: '过滤值',
     filter_value_can_null: '过滤值不能为空',
     filter_like: '包含',
-    filter_not_like: '不包含'
+    filter_not_like: '不包含',
+    color_light: '明亮',
+    color_classical: '经典',
+    color_fresh: '清新',
+    color_energy: '活力',
+    color_red: '火红',
+    color_fast: '轻快',
+    color_spiritual: '灵动'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
