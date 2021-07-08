@@ -913,7 +913,23 @@ export default {
     m2: ' 移动到',
     char_can_not_more_50: '数据集名称不能超过50个字符',
     task_add_title: '添加任务',
-    task_edit_title: '编辑任务'
+    task_edit_title: '编辑任务',
+    task: {
+      list: '任务列表',
+      record: '执行记录',
+      create: '新建任务',
+      name: '任务名称',
+      last_exec_time: '上次执行时间',
+      next_exec_time: '下次执行时间',
+      last_exec_status: '上次执行结果',
+      task_status: '任务状态',
+      dataset: '数据集',
+      search_by_name: '根据名称搜索',
+      underway: '运行中',
+      stopped: '停止',
+      exec: '执行',
+      confirm_exec: '手动触发执行？'
+    }
   },
   datasource: {
     datasource: '数据源',

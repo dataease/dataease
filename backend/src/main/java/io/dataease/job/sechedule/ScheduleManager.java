@@ -430,4 +430,10 @@ public class ScheduleManager {
         }
         return trigger.getFireTimeAfter(start);
     }
+
+    public void fireNow(String jobName, String jobGroup) throws SchedulerException {
+        JobKey jobKey = new JobKey(jobName, jobGroup);
+        scheduler.triggerJob(jobKey);
+    }
+
 }

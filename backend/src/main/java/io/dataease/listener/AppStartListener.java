@@ -1,7 +1,9 @@
 package io.dataease.listener;
 
 import io.dataease.base.domain.DatasetTableTask;
+import io.dataease.commons.constants.NoticeConstants;
 import io.dataease.commons.constants.ScheduleType;
+import io.dataease.commons.constants.TaskStatus;
 import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetTableTaskService;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +43,9 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
                         scheduleService.addSchedule(task);
                     }
                 } else {
-                    scheduleService.addSchedule(task);
+                    if(StringUtils.equalsIgnoreCase(task.getStatus(), TaskStatus.Underway.toString())){
+                        scheduleService.addSchedule(task);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -41,11 +41,6 @@
             <span v-if="data.type === 'group'" slot-scope="{ node, data }" class="custom-tree-node">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type === 'scene'">
-                  <!--                  <el-button-->
-                  <!--                    icon="el-icon-folder-opened"-->
-                  <!--                    type="text"-->
-                  <!--                    size="mini"-->
-                  <!--                  />-->
                   <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
@@ -94,6 +89,11 @@ export default {
       type: Number,
       required: false,
       default: -1
+    },
+    type: {
+      type: String,
+      required: false,
+      default: null
     },
     unionData: {
       type: Array,
@@ -184,7 +184,6 @@ export default {
   },
   mounted() {
     this.treeNode(this.groupForm)
-    // this.tableTree()
   },
   created() {
     this.kettleState()
@@ -261,20 +260,6 @@ export default {
       if (data.type !== 'group') {
         this.sceneClick(data, node)
       }
-      // if (data.type === 'scene') {
-      // this.sceneMode = true
-      // this.currGroup = data
-      // this.tableTree()
-      // }
-      // if (node.expanded) {
-      //   this.expandedArray.push(data.id)
-      // } else {
-      //   const index = this.expandedArray.indexOf(data.id)
-      //   if (index > -1) {
-      //     this.expandedArray.splice(index, 1)
-      //   }
-      // }
-      // console.log(this.expandedArray);
     },
 
     back() {
@@ -364,6 +349,7 @@ export default {
             sort: 'type asc,name asc,create_time desc',
             sceneId: node.data.id,
             mode: this.mode < 0 ? null : this.mode,
+            type: this.type,
             typeFilter: this.customType ? this.customType : null
           }, false).then(response => {
             this.tables = response.data

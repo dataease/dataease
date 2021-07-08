@@ -468,7 +468,6 @@ export default {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
         this.incrementalUpdateType = 'incrementalAdd'
-        // console.log(this.sql)
         if (this.incrementalConfig.incrementalAdd) {
           this.sql = this.incrementalConfig.incrementalAdd
         } else {
@@ -551,7 +550,8 @@ export default {
       }
     },
     listTaskLog(loading = true) {
-      post('/dataset/taskLog/list/' + this.page.currentPage + '/' + this.page.pageSize, { tableId: this.table.id }, loading).then(response => {
+      const params = {"conditions":[{"field":"dataset_table_task.table_id","operator":"eq","value": this.table.id}],"orders":[]}
+      post('/dataset/taskLog/list/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
         this.taskLogData = response.data.listObject
         this.page.total = response.data.itemCount
       })

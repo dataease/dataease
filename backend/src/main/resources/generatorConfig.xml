@@ -74,7 +74,7 @@
 <!--        </table>-->
 <!--        <table tableName="v_dataset"/>-->
 <!--        <table tableName="sys_auth_detail"/>-->
-        <table tableName="dataset_table"/>
+        <table tableName="dataset_table_task_log"/>
 
 
     </context>

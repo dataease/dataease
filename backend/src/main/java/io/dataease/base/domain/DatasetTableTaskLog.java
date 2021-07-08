@@ -19,6 +19,8 @@ public class DatasetTableTaskLog implements Serializable {
 
     private Long createTime;
 
+    private String triggerType;
+
     private String info;
 
     private static final long serialVersionUID = 1L;
