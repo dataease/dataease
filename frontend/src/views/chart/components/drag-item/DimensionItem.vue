@@ -1,12 +1,23 @@
 <template>
   <span>
     <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis">
+      <span style="float: left">
+        <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+        <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+        <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+        <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+      </span>
       <span>{{ item.name }}</span>
-      <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
+          <span style="float: left">
+            <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+            <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+            <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+            <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+          </span>
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">

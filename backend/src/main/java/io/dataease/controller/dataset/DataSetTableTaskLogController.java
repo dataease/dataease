@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.service.dataset.DataSetTableTaskLogService;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class DataSetTableTaskLogController {
     }
 
     @PostMapping("list/{goPage}/{pageSize}")
-    public Pager<List<DataSetTaskLogDTO>> list(@RequestBody DatasetTableTaskLog request, @PathVariable int goPage, @PathVariable int pageSize) {
+    public Pager<List<DataSetTaskLogDTO>> list(@RequestBody BaseGridRequest request, @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, dataSetTableTaskLogService.list(request));
     }

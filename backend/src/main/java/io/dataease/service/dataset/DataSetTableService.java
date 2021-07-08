@@ -260,7 +260,7 @@ public class DataSetTableService {
         List<DatasetTableField> quota = new ArrayList<>();
 
         fields.forEach(field -> {
-            if (field.getDeType() == 2 || field.getDeType() == 3) {
+            if (StringUtils.equalsIgnoreCase("q", field.getGroupType())) {
                 quota.add(field);
             } else {
                 dimension.add(field);
@@ -277,6 +277,8 @@ public class DataSetTableService {
                 .checked(true)
                 .columnIndex(999)
                 .deType(2)
+                .extField(1)
+                .groupType("q")
                 .build();
         quota.add(count);
 
@@ -712,6 +714,8 @@ public class DataSetTableService {
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(syncTime);
+                datasetTableField.setExtField(0);
+                datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
                 dataSetTableFieldsService.save(datasetTableField);
             }
         }
@@ -1192,12 +1196,17 @@ public class DataSetTableService {
 
         DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
         datasetTableTaskLogExample.createCriteria().andStatusEqualTo(JobStatus.Underway.name()).andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
+        List<String> taskIds = datasetTableTaskLogMapper.selectByExample(datasetTableTaskLogExample).stream().map(DatasetTableTaskLog::getTaskId).collect(Collectors.toList());
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
+
+        DatasetTableTask datasetTableTask = new DatasetTableTask();
+        datasetTableTask.setLastExecStatus(JobStatus.Error.name());
+        dataSetTableTaskService.update(taskIds, datasetTableTask);
+
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());
             extractDataService.deleteFile("incremental_add", jobStoppeddDatasetTable.getId());
             extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
-
         }
     }
 

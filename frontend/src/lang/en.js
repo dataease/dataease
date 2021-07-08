@@ -129,6 +129,7 @@ export default {
     password_error: 'The password can not be less than 8 digits'
   },
   commons: {
+    success: 'Success',
     switch_lang: 'Switch Language Success',
     close: 'Close',
     icon: 'Icon',
@@ -920,7 +921,26 @@ export default {
     char_can_not_more_50: 'Dataset name can not more 50',
     task_add_title: 'Add Task',
     task_edit_title: 'Edit Task',
-    sync_latter: 'Sync latter'
+    sync_latter: 'Sync latter',
+    task: {
+      list: 'Task list',
+      record: 'Execution record',
+      create: 'New task',
+      name: 'Task name',
+      last_exec_time: 'Last execution time',
+      next_exec_time: 'Next execution time',
+      last_exec_status: 'Last execution result',
+      task_status: 'Task status',
+      dataset: 'Data set',
+      search_by_name: 'Search by name',
+      underway: 'Running',
+      stopped: 'Stopped',
+      exec: 'Execute',
+      confirm_exec: 'Manual trigger execution？',
+      change_success: 'State switch successful'
+    },
+    field_group_type: 'Type',
+    location: 'Location'
   },
   datasource: {
     datasource: 'Data Source',

@@ -25,6 +25,7 @@
                 <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.value === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
+                <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />
               </span>
               <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
             </el-option>
@@ -43,10 +44,14 @@
               <span v-if="scope.row.deType === 2" class="field-class">{{ $t('dataset.value') }}</span>
               <span v-if="scope.row.deType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
             </span>
+            <span v-if="scope.row.deType === 5">
+              <svg-icon v-if="scope.row.deType === 5" icon-class="field_location" class="field-icon-location" />
+              <span class="field-class">{{ $t('dataset.location') }}</span>
+            </span>
           </span>
         </template>
       </el-table-column>
-      <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="140">
+      <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="100">
         <template slot-scope="scope">
           <span>
             <span v-if="scope.row.deExtractType === 0">
@@ -62,6 +67,10 @@
               <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 4" class="field-class">{{ $t('dataset.value') }}</span>
               <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
             </span>
+            <span v-if="scope.row.deExtractType === 5">
+              <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
+              <span class="field-class">{{ $t('dataset.location') }}</span>
+            </span>
           </span>
         </template>
       </el-table-column>
@@ -70,7 +79,21 @@
           <el-input v-model="scope.row.name" size="mini" />
         </template>
       </el-table-column>
-      <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="180" />
+      <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">
+        <template slot-scope="scope">
+          <span :title="scope.row.originName" class="field-class" style="display: inline-block;width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+            {{ scope.row.originName }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">
+        <template slot-scope="scope">
+          <el-radio-group v-model="scope.row.groupType">
+            <el-radio label="d">{{ $t('chart.dimension') }}</el-radio>
+            <el-radio label="q">{{ $t('chart.quota') }}</el-radio>
+          </el-radio-group>
+        </template>
+      </el-table-column>
       <el-table-column property="checked" :label="$t('dataset.field_check')" width="80">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.checked" />
@@ -100,7 +123,8 @@ export default {
         { label: this.$t('dataset.text'), value: 0 },
         { label: this.$t('dataset.time'), value: 1 },
         { label: this.$t('dataset.value'), value: 2 },
-        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 }
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
+        { label: this.$t('dataset.location'), value: 5 }
       ]
     }
   },
@@ -135,7 +159,7 @@ export default {
     },
 
     closeEdit() {
-      this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table.id })
+      this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
     }
   }
 }
@@ -156,5 +180,8 @@ export default {
   }
   .el-select>>>.el-input__suffix{
     right: 0;
+  }
+  .el-radio{
+    margin-right: 10px !important;
   }
 </style>

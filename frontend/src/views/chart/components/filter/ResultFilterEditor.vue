@@ -15,6 +15,7 @@
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
               </span>
               <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
             </el-option>

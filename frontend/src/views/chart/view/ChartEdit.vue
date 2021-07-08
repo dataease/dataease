@@ -56,6 +56,7 @@
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
                 {{ item.name }}
               </span>
             </transition-group>
@@ -78,6 +79,7 @@
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
                 <span>{{ item.name }}</span>
               </span>
             </transition-group>
@@ -503,9 +505,9 @@ export default {
   },
   watch: {
     'param': function() {
-      if(this.param.optType === 'new'){
+      if (this.param.optType === 'new') {
 
-      }else{
+      } else {
         this.getData(this.param.id)
       }
     },
@@ -582,7 +584,7 @@ export default {
       })
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
-          if (ele.id === 'count') {
+          if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
             ele.summary = 'count'
           } else {
             ele.summary = 'sum'

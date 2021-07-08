@@ -35,9 +35,6 @@ public class ScheduleService {
                     endTime = null;
                 } else {
                     endTime = new Date(datasetTableTask.getEndTime());
-//                if (endTime.before(new Date())) {
-//                    return;
-//                }
                     if (endTime.before(new Date())) {
                         deleteSchedule(datasetTableTask);
                         return;
@@ -57,5 +54,9 @@ public class ScheduleService {
 
     public void deleteSchedule(DatasetTableTask datasetTableTask) {
         scheduleManager.removeJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()), new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()));
+    }
+
+    public void fireNow(DatasetTableTask datasetTableTask) throws Exception{
+        scheduleManager.fireNow(datasetTableTask.getId(), datasetTableTask.getTableId());
     }
 }

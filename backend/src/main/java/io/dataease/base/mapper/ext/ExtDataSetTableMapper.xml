@@ -48,6 +48,9 @@
             <if test="mode != null">
                 and mode = #{mode,jdbcType=INTEGER}
             </if>
+            <if test="type != null">
+                and type = #{type,jdbcType=VARCHAR}
+            </if>
             <if test="typeFilter != null">
                 and type in
                 <foreach collection="typeFilter" item="item" open="(" separator="," close=")">

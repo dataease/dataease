@@ -1,12 +1,24 @@
 <template>
   <span>
     <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis">
+      <span style="float: left">
+        <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+        <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+        <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+        <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+      </span>
       <span>{{ item.name }}</span>
       <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
+          <span style="float: left">
+            <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+            <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+            <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+            <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+          </span>
           <span>{{ item.name }}</span>
           <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
           <i class="el-icon-arrow-down el-icon--right" />
@@ -23,13 +35,13 @@
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="item.id === 'count'" :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count'" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count'" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count'" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count'" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count'" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count'" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id === 'count' || item.deType === 0 || item.deType === 1" :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>

@@ -454,6 +454,76 @@ public class DatasetTableFieldExample {
             return (Criteria) this;
         }
 
+        public Criteria andGroupTypeIsNull() {
+            addCriterion("group_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeIsNotNull() {
+            addCriterion("group_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeEqualTo(String value) {
+            addCriterion("group_type =", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeNotEqualTo(String value) {
+            addCriterion("group_type <>", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeGreaterThan(String value) {
+            addCriterion("group_type >", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeGreaterThanOrEqualTo(String value) {
+            addCriterion("group_type >=", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeLessThan(String value) {
+            addCriterion("group_type <", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeLessThanOrEqualTo(String value) {
+            addCriterion("group_type <=", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeLike(String value) {
+            addCriterion("group_type like", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeNotLike(String value) {
+            addCriterion("group_type not like", value, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeIn(List<String> values) {
+            addCriterion("group_type in", values, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeNotIn(List<String> values) {
+            addCriterion("group_type not in", values, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeBetween(String value1, String value2) {
+            addCriterion("group_type between", value1, value2, "groupType");
+            return (Criteria) this;
+        }
+
+        public Criteria andGroupTypeNotBetween(String value1, String value2) {
+            addCriterion("group_type not between", value1, value2, "groupType");
+            return (Criteria) this;
+        }
+
         public Criteria andTypeIsNull() {
             addCriterion("`type` is null");
             return (Criteria) this;
@@ -644,6 +714,66 @@ public class DatasetTableFieldExample {
             return (Criteria) this;
         }
 
+        public Criteria andDeTypeFormatIsNull() {
+            addCriterion("de_type_format is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatIsNotNull() {
+            addCriterion("de_type_format is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatEqualTo(Integer value) {
+            addCriterion("de_type_format =", value, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatNotEqualTo(Integer value) {
+            addCriterion("de_type_format <>", value, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatGreaterThan(Integer value) {
+            addCriterion("de_type_format >", value, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatGreaterThanOrEqualTo(Integer value) {
+            addCriterion("de_type_format >=", value, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatLessThan(Integer value) {
+            addCriterion("de_type_format <", value, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatLessThanOrEqualTo(Integer value) {
+            addCriterion("de_type_format <=", value, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatIn(List<Integer> values) {
+            addCriterion("de_type_format in", values, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatNotIn(List<Integer> values) {
+            addCriterion("de_type_format not in", values, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatBetween(Integer value1, Integer value2) {
+            addCriterion("de_type_format between", value1, value2, "deTypeFormat");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeTypeFormatNotBetween(Integer value1, Integer value2) {
+            addCriterion("de_type_format not between", value1, value2, "deTypeFormat");
+            return (Criteria) this;
+        }
+
         public Criteria andDeExtractTypeIsNull() {
             addCriterion("de_extract_type is null");
             return (Criteria) this;
@@ -701,6 +831,66 @@ public class DatasetTableFieldExample {
 
         public Criteria andDeExtractTypeNotBetween(Integer value1, Integer value2) {
             addCriterion("de_extract_type not between", value1, value2, "deExtractType");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldIsNull() {
+            addCriterion("ext_field is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldIsNotNull() {
+            addCriterion("ext_field is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldEqualTo(Integer value) {
+            addCriterion("ext_field =", value, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldNotEqualTo(Integer value) {
+            addCriterion("ext_field <>", value, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldGreaterThan(Integer value) {
+            addCriterion("ext_field >", value, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldGreaterThanOrEqualTo(Integer value) {
+            addCriterion("ext_field >=", value, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldLessThan(Integer value) {
+            addCriterion("ext_field <", value, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldLessThanOrEqualTo(Integer value) {
+            addCriterion("ext_field <=", value, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldIn(List<Integer> values) {
+            addCriterion("ext_field in", values, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldNotIn(List<Integer> values) {
+            addCriterion("ext_field not in", values, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldBetween(Integer value1, Integer value2) {
+            addCriterion("ext_field between", value1, value2, "extField");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtFieldNotBetween(Integer value1, Integer value2) {
+            addCriterion("ext_field not between", value1, value2, "extField");
             return (Criteria) this;
         }
 
