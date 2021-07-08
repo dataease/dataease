@@ -101,8 +101,7 @@ export default {
         'configuration.username': [{ required: true, message: this.$t('datasource.please_input_user_name'), trigger: 'blur' }],
         'configuration.password': [{ required: true, message: this.$t('datasource.please_input_password'), trigger: 'change' }],
         'configuration.host': [{ required: true, message: this.$t('datasource.please_input_host'), trigger: 'change' }],
-        'configuration.port': [{ required: true, message: this.$t('datasource.please_input_port'), trigger: 'change' }],
-        'configuration.schema': [{ required: true, message: this.$t('datasource.please_choose_schema'), trigger: 'change' }]
+        'configuration.port': [{ required: true, message: this.$t('datasource.please_input_port'), trigger: 'change' }]
       },
       allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' }, { name: 'oracle', label: 'Oracle', type: 'jdbc' }],
       schemas: [],
@@ -148,7 +147,7 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
-      if (!this.form.configuration.schema) {
+      if (!this.form.configuration.schema && this.form.type === 'oracle') {
         this.$message.error(this.$t('datasource.please_choose_schema'))
         return
       }
@@ -174,7 +173,7 @@ export default {
           data.configuration = JSON.stringify(data.configuration)
           getSchema(data).then(res => {
             this.schemas = res.data
-            this.$success(this.$t('datasource.validate_success'))
+            this.$success(this.$t('commons.success'))
           })
         } else {
           return false
@@ -182,6 +181,10 @@ export default {
       })
     },
     validaDatasource() {
+      if (!this.form.configuration.schema && this.form.type === 'oracle') {
+        this.$message.error(this.$t('datasource.please_choose_schema'))
+        return
+      }
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
