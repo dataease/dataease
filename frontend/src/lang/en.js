@@ -913,7 +913,24 @@ export default {
     m2: ' To',
     char_can_not_more_50: 'Dataset name can not more 50',
     task_add_title: 'Add Task',
-    task_edit_title: 'Edit Task'
+    task_edit_title: 'Edit Task',
+    task: {
+      list: 'Task list',
+      record: 'Execution record',
+      create: 'New task',
+      name: 'Task name',
+      last_exec_time: 'Last execution time',
+      next_exec_time: 'Next execution time',
+      last_exec_status: 'Last execution result',
+      task_status: 'Task status',
+      dataset: 'Data set',
+      search_by_name: 'Search by name',
+      underway: 'Running',
+      stopped: 'Stopped',
+      exec: 'Execute',
+      confirm_exec: 'Manual trigger execution？',
+      change_success: 'State switch successful'
+    }
   },
   datasource: {
     datasource: 'Data Source',

@@ -928,7 +928,8 @@ export default {
       underway: '运行中',
       stopped: '停止',
       exec: '执行',
-      confirm_exec: '手动触发执行？'
+      confirm_exec: '手动触发执行？',
+      change_success: '状态切换成功'
     }
   },
   datasource: {

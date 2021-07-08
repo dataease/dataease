@@ -913,7 +913,24 @@ export default {
     m2: ' 移動到',
     char_can_not_more_50: '數據集名稱不能超過50個字符',
     task_add_title: '添加任務',
-    task_edit_title: '編輯任務'
+    task_edit_title: '編輯任務',
+    task: {
+      list: '任務列表',
+      record: '執行紀錄',
+      create: '新建任務',
+      name: '任務名稱',
+      last_exec_time: '上次執行時間',
+      next_exec_time: '下次執行時間',
+      last_exec_status: '上次執行結果',
+      task_status: '任務狀態',
+      dataset: '數據集',
+      search_by_name: '根據名稱搜索',
+      underway: '運行中',
+      stopped: '停止',
+      exec: '執行',
+      confirm_exec: '手動觸發執行？',
+      change_success: '狀態切換成功'
+    }
   },
   datasource: {
     datasource: '數據源',

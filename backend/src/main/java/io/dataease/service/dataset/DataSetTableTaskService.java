@@ -57,7 +57,7 @@ public class DataSetTableTaskService {
     public DatasetTableTask save(DataSetTaskRequest dataSetTaskRequest) throws Exception {
         checkName(dataSetTaskRequest);
         DatasetTableTask datasetTableTask = dataSetTaskRequest.getDatasetTableTask();
-        if(!datasetTableTask.getType().equalsIgnoreCase("all_scope")){
+        if(!datasetTableTask.getType().equalsIgnoreCase("add_scope")){
             dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
         }
         // check
@@ -82,14 +82,24 @@ public class DataSetTableTaskService {
             datasetTableTask.setId(UUID.randomUUID().toString());
             datasetTableTask.setCreateTime(System.currentTimeMillis());
             datasetTableTask.setStatus(TaskStatus.Underway.name());
-            if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) { // SIMPLE 类型，提前占位
-                execNow(datasetTableTask);
-            }
             datasetTableTaskMapper.insert(datasetTableTask);
         } else {
             datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);
         }
-        scheduleService.addSchedule(datasetTableTask);
+        if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString()) && datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Underway.name())) { // SIMPLE 类型，提前占位
+            execNow(datasetTableTask);
+            datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
+            datasetTableTask.setLastExecTime(System.currentTimeMillis());
+            update(datasetTableTask);
+        }
+        if(!datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())){
+            scheduleService.addSchedule(datasetTableTask);
+        }else {
+            if(datasetTableTask.getStatus().equalsIgnoreCase(JobStatus.Underway.name())){
+                scheduleService.addSchedule(datasetTableTask);
+            }
+        }
+
         return datasetTableTask;
     }
 
@@ -100,17 +110,17 @@ public class DataSetTableTaskService {
                 DataEaseException.throwException(Translator.get("i18n_not_exec_add_sync"));
             }
         }
-        if (extractDataService.updateSyncStatusIsNone(dataSetTableService.get(datasetTableTask.getTableId()))) {
+        if (extractDataService.existSyncTask(dataSetTableService.get(datasetTableTask.getTableId()), null)) {
             DataEaseException.throwException(Translator.get("i18n_sync_job_exists"));
-        } else { //write log
-            DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-            datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
-            datasetTableTaskLog.setTaskId(datasetTableTask.getId());
-            datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-            datasetTableTaskLog.setStartTime(System.currentTimeMillis());
-            datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
-            dataSetTableTaskLogService.save(datasetTableTaskLog);
         }
+        //write log
+        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
+        datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
+        datasetTableTaskLog.setTaskId(datasetTableTask.getId());
+        datasetTableTaskLog.setStatus(JobStatus.Underway.name());
+        datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+        datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
+        dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
     public void delete(String id) {
@@ -195,14 +205,16 @@ public class DataSetTableTaskService {
     }
 
     public void execTask(DatasetTableTask datasetTableTask) throws Exception{
+        execNow(datasetTableTask);
+//        datasetTableTask.setStatus(TaskStatus.Underway.name());
+        datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
+        datasetTableTask.setLastExecTime(System.currentTimeMillis());
+        update(datasetTableTask);
+
         if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())){
             scheduleService.fireNow(datasetTableTask);
         }
         if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
-            execNow(datasetTableTask);
-            datasetTableTask.setStatus(TaskStatus.Underway.name());
-            datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
-            update(datasetTableTask);
             scheduleService.addSchedule(datasetTableTask);
         }
 

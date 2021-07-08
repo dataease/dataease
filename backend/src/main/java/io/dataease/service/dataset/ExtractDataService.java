@@ -131,24 +131,42 @@ public class ExtractDataService {
             "fi\n" +
             "rm -rf %s\n";
 
-    public synchronized boolean updateSyncStatusIsNone(DatasetTable  datasetTable ){
+    public synchronized boolean existSyncTask(DatasetTable  datasetTable,  DatasetTableTask datasetTableTask){
         datasetTable.setSyncStatus(JobStatus.Underway.name());
-
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
         example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
-        return datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+        Boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+        if(existSyncTask){
+            if(datasetTableTask != null){
+                DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
+                datasetTableTaskLog.setTaskId(datasetTableTask.getId());
+                datasetTableTaskLog.setTableId(datasetTable.getId());
+                datasetTableTaskLog.setStatus(JobStatus.Underway.name());
+                List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
+                if(CollectionUtils.isNotEmpty(datasetTableTaskLogs) && datasetTableTaskLogs.get(0).getTriggerType().equalsIgnoreCase(TriggerType.Custom.name())){
+                    return false;
+                }
+            }
+            return true;
+        }else {
+            return false;
+        }
     }
 
     public void extractData(String datasetTableId, String taskId, String type, JobExecutionContext context) {
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
         if(datasetTable == null){
             LogUtil.error("Can not find DatasetTable: " + datasetTableId);
+            return;
         }
         DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
-        boolean isCronJob = (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString()));
-        if(updateSyncStatusIsNone(datasetTable) && isCronJob){
-            LogUtil.info("Skip synchronization task for table : " + datasetTableId);
+        if(datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name()) && !datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())){
+            LogUtil.info("Skip synchronization task, task ID : " + datasetTableTask.getId());
+            return;
+        }
+        if(existSyncTask(datasetTable, datasetTableTask)){
+            LogUtil.info("Skip synchronization task for dataset, dataset ID : " + datasetTableId);
             return;
         }
         datasetTableTask.setLastExecTime(System.currentTimeMillis());
@@ -210,21 +228,25 @@ public class ExtractDataService {
 
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
 
+//                    if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
+//                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
+//                    }
                     datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
                     dataSetTableTaskService.update(datasetTableTask);
+
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     datasetTableTask.setLastExecStatus(JobStatus.Error.name());
+//                    if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
+//                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
+//                    }
                     dataSetTableTaskService.update(datasetTableTask);
+
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                     deleteFile("all_scope", datasetTableId);
                 }finally {
-                    if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
-                        dataSetTableTaskService.update(datasetTableTask);
-                    }
                 }
                 break;
 
@@ -283,6 +305,9 @@ public class ExtractDataService {
 
                         updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                         datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
+//                        if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
+//                            datasetTableTask.setStatus(TaskStatus.Stopped.name());
+//                        }
                         dataSetTableTaskService.update(datasetTableTask);
                     }
                 }catch (Exception e){
@@ -290,14 +315,13 @@ public class ExtractDataService {
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     datasetTableTask.setLastExecStatus(JobStatus.Error.name());
+//                    if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
+//                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
+//                    }
                     dataSetTableTaskService.update(datasetTableTask);
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
                 }finally {
-                    if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
-                        dataSetTableTaskService.update(datasetTableTask);
-                    }
                 }
                 break;
         }
