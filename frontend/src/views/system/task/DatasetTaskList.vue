@@ -189,7 +189,7 @@ export default {
       columns: [],
       buttons: [
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.addTask
+          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.addTask, disabled: this.disableEdit
         },
         {
           label: this.$t('dataset.task.exec'), icon: 'el-icon-video-play', type: 'success', click: this.execTask, disabled: this.disableExec
@@ -421,6 +421,9 @@ export default {
     },
     cronChange(val) {
       this.taskForm.cron = val
+    },
+    disableEdit(task) {
+      return task.rate === 'SIMPLE'
     },
     disableExec(task) {
       return task.status === 'Stopped'
