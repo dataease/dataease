@@ -129,6 +129,7 @@ export default {
     password_error: '密碼不小於 8 位'
   },
   commons: {
+    success: '成功',
     switch_lang: '切換語言成功',
     close: '關閉',
     icon: '圖標',
