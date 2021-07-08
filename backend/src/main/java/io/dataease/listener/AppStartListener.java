@@ -42,10 +42,6 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
                     } else {
                         scheduleService.addSchedule(task);
                     }
-                } else {
-                    if(StringUtils.equalsIgnoreCase(task.getStatus(), TaskStatus.Underway.toString())){
-                        scheduleService.addSchedule(task);
-                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
