@@ -921,6 +921,7 @@ export default {
     char_can_not_more_50: '数据集名称不能超过50个字符',
     task_add_title: '添加任务',
     task_edit_title: '编辑任务',
+    sync_latter: '稍后同步',
     task: {
       list: '任务列表',
       record: '执行记录',

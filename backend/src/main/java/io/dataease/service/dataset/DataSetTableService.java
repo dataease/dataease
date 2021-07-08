@@ -9,9 +9,11 @@ import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
+import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
@@ -94,6 +96,26 @@ public class DataSetTableService {
         }
     }
 
+    private void extractData(DataSetTableRequest datasetTable) throws Exception{
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+            commonThreadPool.addTask(() -> {
+                extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
+            });
+        }
+        if (StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
+            DataSetTaskRequest dataSetTaskRequest = new DataSetTaskRequest();
+            DatasetTableTask datasetTableTask = new DatasetTableTask();
+            datasetTableTask.setTableId(datasetTable.getId());
+            datasetTableTask.setRate(ScheduleType.SIMPLE.toString());
+            datasetTableTask.setType("all_scope");
+            datasetTableTask.setName(datasetTable.getName() + " 更新设置");
+            datasetTableTask.setEnd("0");
+            datasetTableTask.setStartTime(System.currentTimeMillis());
+            dataSetTaskRequest.setDatasetTableTask(datasetTableTask);
+            dataSetTableTaskService.save(dataSetTaskRequest);
+        }
+    }
+
     public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
@@ -110,11 +132,7 @@ public class DataSetTableService {
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
                 saveTableField(datasetTable);
-                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-                    commonThreadPool.addTask(() -> {
-                        extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
-                    });
-                }
+                extractData(datasetTable);
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);

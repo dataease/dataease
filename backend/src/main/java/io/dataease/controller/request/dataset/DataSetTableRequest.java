@@ -17,6 +17,7 @@ public class DataSetTableRequest extends DatasetTable {
     private List<String> tableNames;
     private String row = "1000";
     private String userId;
+    private String syncType;
     private Integer editType;
     private Boolean isRename;
     private List<String> typeFilter;

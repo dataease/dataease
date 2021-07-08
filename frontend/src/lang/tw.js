@@ -921,6 +921,7 @@ export default {
     char_can_not_more_50: '數據集名稱不能超過50個字符',
     task_add_title: '添加任務',
     task_edit_title: '編輯任務',
+    sync_latter: '稍後同步',
     task: {
       list: '任務列表',
       record: '執行紀錄',
