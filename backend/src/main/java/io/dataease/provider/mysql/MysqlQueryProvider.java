@@ -5,6 +5,7 @@ import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.provider.QueryProvider;
+import io.dataease.provider.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -137,6 +138,8 @@ public class MysqlQueryProvider extends QueryProvider {
             StringBuilder f = new StringBuilder();
             if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
                 f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
+            } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
+                f.append(y.getSummary()).append("(`").append(y.getOriginName()).append("`)");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
@@ -283,6 +286,8 @@ public class MysqlQueryProvider extends QueryProvider {
             StringBuilder f = new StringBuilder();
             if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
                 f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
+            } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
+                f.append(y.getSummary()).append("(`").append(y.getOriginName()).append("`)");
             } else {
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                     f.append("CAST(")
