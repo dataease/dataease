@@ -7,20 +7,9 @@
           {{ $t('chart.datalist') }}
         </span>
         <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')">
-          <!--          {{ $t('chart.add_group') }}-->
         </el-button>
       </el-row>
       <el-divider />
-
-      <!--      <el-row>-->
-      <!--        <el-button type="primary" size="mini" @click="add('group')">-->
-      <!--          {{ $t('chart.add_group') }}-->
-      <!--        </el-button>-->
-      <!--        <el-button type="primary" size="mini" @click="add('scene')">-->
-      <!--          {{ $t('chart.add_scene') }}-->
-      <!--        </el-button>-->
-      <!--      </el-row>-->
-
       <el-row>
         <el-form>
           <el-form-item class="form-item">
@@ -53,14 +42,6 @@
           >
             <span v-if="data.type ==='group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
-                <!--                <span v-if="data.type === 'scene'">-->
-                <!--                  &lt;!&ndash;                  <el-button&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                    icon="el-icon-folder-opened"&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                    type="text"&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                    size="mini"&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                  />&ndash;&gt;-->
-                <!--                  <svg-icon icon-class="scene" class="ds-icon-scene" />-->
-                <!--                </span>-->
                 <span>
                   <i class="el-icon-folder" />
                 </span>
@@ -80,9 +61,6 @@
                       <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('group',data,node)">
                         {{ $t('chart.group') }}
                       </el-dropdown-item>
-                      <!--                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">-->
-                      <!--                        {{ $t('chart.scene') }}-->
-                      <!--                      </el-dropdown-item>-->
                       <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('chart',data,node)">
                         {{ $t('chart.add_chart') }}
                       </el-dropdown-item>
@@ -691,25 +669,10 @@ export default {
       if (data.type !== 'group') {
         this.$emit('switchComponent', { name: 'ChartEdit', param: data })
       }
-      // if (data.type === 'scene') {
-      //   this.sceneMode = true
-      //   this.currGroup = data
-      //   this.$store.dispatch('chart/setSceneId', this.currGroup.id)
-      //   this.chartTree()
-      // }
-      // if (node.expanded) {
-      //   this.expandedArray.push(data.id)
-      // } else {
-      //   const index = this.expandedArray.indexOf(data.id)
-      //   if (index > -1) {
-      //     this.expandedArray.splice(index, 1)
-      //   }
-      // }
     },
 
     back() {
       this.sceneMode = false
-      // this.$router.push('/chart/home')
       this.$emit('switchComponent', { name: '' })
     },
 
@@ -718,13 +681,9 @@ export default {
         'type': type
       }
     },
-
     sceneClick(data, node) {
-      // this.$store.dispatch('chart/setViewId', null)
-      // this.$store.dispatch('chart/setViewId', data.id)
       this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
     },
-
     reviewChartList() {
       if (this.$store.state.chart.chartSceneData) {
         const that = this
