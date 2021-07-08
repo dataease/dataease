@@ -36,6 +36,13 @@
               <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning" />
             </el-select>
           </el-form-item>
+
+          <el-form-item class="form-item" v-if="mode === '1'">
+            <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
+              <el-option :label="$t('dataset.sync_now')" value="sync_now" />
+              <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+            </el-select>
+          </el-form-item>
         </el-form>
       </el-row>
       <el-row>
@@ -143,6 +150,7 @@ export default {
       data: [],
       fields: [],
       mode: '0',
+      syncType: 'sync_now',
       height: 500,
       kettleRunning: false
     }
@@ -260,6 +268,7 @@ export default {
         sceneId: this.param.id,
         dataSourceId: this.dataSource,
         type: 'sql',
+        syncType: this.syncType,
         mode: parseInt(this.mode),
         // info: '{"sql":"' + this.sql + '"}',
         info: JSON.stringify({ sql: this.sql.trim() })

@@ -919,7 +919,8 @@ export default {
     m2: ' To',
     char_can_not_more_50: 'Dataset name can not more 50',
     task_add_title: 'Add Task',
-    task_edit_title: 'Edit Task'
+    task_edit_title: 'Edit Task',
+    sync_latter: 'Sync latter'
   },
   datasource: {
     datasource: 'Data Source',
