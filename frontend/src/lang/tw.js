@@ -920,7 +920,9 @@ export default {
     m2: ' 移動到',
     char_can_not_more_50: '數據集名稱不能超過50個字符',
     task_add_title: '添加任務',
-    task_edit_title: '編輯任務'
+    task_edit_title: '編輯任務',
+    field_group_type: '分類',
+    location: '地理位置'
   },
   datasource: {
     datasource: '數據源',

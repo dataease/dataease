@@ -18,6 +18,9 @@
             <span v-if="f.deType === 2 || f.deType === 3">
               <svg-icon v-if="f.deType === 2 || f.deType === 3" icon-class="field_value" class="field-icon-value" />
             </span>
+            <span v-if="f.deType === 5">
+              <svg-icon v-if="f.deType === 5" icon-class="field_location" class="field-icon-location" />
+            </span>
           </span>
           <span style="display: flex;flex: 1;width: 100%;">
             <span style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;width: 160px;">{{ f.name }}</span>

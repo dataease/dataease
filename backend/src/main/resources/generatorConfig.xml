@@ -74,7 +74,7 @@
 <!--        </table>-->
 <!--        <table tableName="v_dataset"/>-->
 <!--        <table tableName="sys_auth_detail"/>-->
-        <table tableName="panel_view"/>
+        <table tableName="dataset_table_field"/>
 
 
     </context>
