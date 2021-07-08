@@ -7,10 +7,13 @@
     <result column="origin_name" jdbcType="VARCHAR" property="originName" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="dataease_name" jdbcType="VARCHAR" property="dataeaseName" />
+    <result column="group_type" jdbcType="VARCHAR" property="groupType" />
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="size" jdbcType="INTEGER" property="size" />
     <result column="de_type" jdbcType="INTEGER" property="deType" />
+    <result column="de_type_format" jdbcType="INTEGER" property="deTypeFormat" />
     <result column="de_extract_type" jdbcType="INTEGER" property="deExtractType" />
+    <result column="ext_field" jdbcType="INTEGER" property="extField" />
     <result column="checked" jdbcType="BIT" property="checked" />
     <result column="column_index" jdbcType="INTEGER" property="columnIndex" />
     <result column="last_sync_time" jdbcType="BIGINT" property="lastSyncTime" />
@@ -74,8 +77,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, origin_name, `name`, dataease_name, `type`, `size`, de_type, de_extract_type, 
-    `checked`, column_index, last_sync_time
+    id, table_id, origin_name, `name`, dataease_name, group_type, `type`, `size`, de_type, 
+    de_type_format, de_extract_type, ext_field, `checked`, column_index, last_sync_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableFieldExample" resultMap="BaseResultMap">
     select
@@ -109,13 +112,15 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTableField">
     insert into dataset_table_field (id, table_id, origin_name, 
-      `name`, dataease_name, `type`, 
-      `size`, de_type, de_extract_type, 
+      `name`, dataease_name, group_type, 
+      `type`, `size`, de_type, 
+      de_type_format, de_extract_type, ext_field, 
       `checked`, column_index, last_sync_time
       )
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR}, #{dataeaseName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
-      #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR}, #{dataeaseName,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, 
+      #{deTypeFormat,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, #{extField,jdbcType=INTEGER}, 
       #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT}
       )
   </insert>
@@ -137,6 +142,9 @@
       <if test="dataeaseName != null">
         dataease_name,
       </if>
+      <if test="groupType != null">
+        group_type,
+      </if>
       <if test="type != null">
         `type`,
       </if>
@@ -146,8 +154,14 @@
       <if test="deType != null">
         de_type,
       </if>
+      <if test="deTypeFormat != null">
+        de_type_format,
+      </if>
       <if test="deExtractType != null">
         de_extract_type,
+      </if>
+      <if test="extField != null">
+        ext_field,
       </if>
       <if test="checked != null">
         `checked`,
@@ -175,6 +189,9 @@
       <if test="dataeaseName != null">
         #{dataeaseName,jdbcType=VARCHAR},
       </if>
+      <if test="groupType != null">
+        #{groupType,jdbcType=VARCHAR},
+      </if>
       <if test="type != null">
         #{type,jdbcType=VARCHAR},
       </if>
@@ -184,8 +201,14 @@
       <if test="deType != null">
         #{deType,jdbcType=INTEGER},
       </if>
+      <if test="deTypeFormat != null">
+        #{deTypeFormat,jdbcType=INTEGER},
+      </if>
       <if test="deExtractType != null">
         #{deExtractType,jdbcType=INTEGER},
+      </if>
+      <if test="extField != null">
+        #{extField,jdbcType=INTEGER},
       </if>
       <if test="checked != null">
         #{checked,jdbcType=BIT},
@@ -222,6 +245,9 @@
       <if test="record.dataeaseName != null">
         dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
       </if>
+      <if test="record.groupType != null">
+        group_type = #{record.groupType,jdbcType=VARCHAR},
+      </if>
       <if test="record.type != null">
         `type` = #{record.type,jdbcType=VARCHAR},
       </if>
@@ -231,8 +257,14 @@
       <if test="record.deType != null">
         de_type = #{record.deType,jdbcType=INTEGER},
       </if>
+      <if test="record.deTypeFormat != null">
+        de_type_format = #{record.deTypeFormat,jdbcType=INTEGER},
+      </if>
       <if test="record.deExtractType != null">
         de_extract_type = #{record.deExtractType,jdbcType=INTEGER},
+      </if>
+      <if test="record.extField != null">
+        ext_field = #{record.extField,jdbcType=INTEGER},
       </if>
       <if test="record.checked != null">
         `checked` = #{record.checked,jdbcType=BIT},
@@ -255,10 +287,13 @@
       origin_name = #{record.originName,jdbcType=VARCHAR},
       `name` = #{record.name,jdbcType=VARCHAR},
       dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
+      group_type = #{record.groupType,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
       `size` = #{record.size,jdbcType=INTEGER},
       de_type = #{record.deType,jdbcType=INTEGER},
+      de_type_format = #{record.deTypeFormat,jdbcType=INTEGER},
       de_extract_type = #{record.deExtractType,jdbcType=INTEGER},
+      ext_field = #{record.extField,jdbcType=INTEGER},
       `checked` = #{record.checked,jdbcType=BIT},
       column_index = #{record.columnIndex,jdbcType=INTEGER},
       last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT}
@@ -281,6 +316,9 @@
       <if test="dataeaseName != null">
         dataease_name = #{dataeaseName,jdbcType=VARCHAR},
       </if>
+      <if test="groupType != null">
+        group_type = #{groupType,jdbcType=VARCHAR},
+      </if>
       <if test="type != null">
         `type` = #{type,jdbcType=VARCHAR},
       </if>
@@ -290,8 +328,14 @@
       <if test="deType != null">
         de_type = #{deType,jdbcType=INTEGER},
       </if>
+      <if test="deTypeFormat != null">
+        de_type_format = #{deTypeFormat,jdbcType=INTEGER},
+      </if>
       <if test="deExtractType != null">
         de_extract_type = #{deExtractType,jdbcType=INTEGER},
+      </if>
+      <if test="extField != null">
+        ext_field = #{extField,jdbcType=INTEGER},
       </if>
       <if test="checked != null">
         `checked` = #{checked,jdbcType=BIT},
@@ -311,10 +355,13 @@
       origin_name = #{originName,jdbcType=VARCHAR},
       `name` = #{name,jdbcType=VARCHAR},
       dataease_name = #{dataeaseName,jdbcType=VARCHAR},
+      group_type = #{groupType,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
       `size` = #{size,jdbcType=INTEGER},
       de_type = #{deType,jdbcType=INTEGER},
+      de_type_format = #{deTypeFormat,jdbcType=INTEGER},
       de_extract_type = #{deExtractType,jdbcType=INTEGER},
+      ext_field = #{extField,jdbcType=INTEGER},
       `checked` = #{checked,jdbcType=BIT},
       column_index = #{columnIndex,jdbcType=INTEGER},
       last_sync_time = #{lastSyncTime,jdbcType=BIGINT}
