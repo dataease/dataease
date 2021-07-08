@@ -28,7 +28,7 @@
       class-name-active="de-drag-active"
       :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
-      :snap-tolerance="1"
+      :snap-tolerance="2"
       :change-style="customStyle"
       @refLineParams="getRefLineParams"
     >
@@ -83,6 +83,12 @@
         top: item.origin,
         height: item.lineLength,
       }"
+    />
+    <span
+      v-for="(item, index) in hLine"
+      :key="'h_'+index"
+      class="ref-line h-line"
+      :style="{ top: item.position, left: item.origin, width: item.lineLength }"
     />
   </div>
 </template>
@@ -521,7 +527,7 @@ export default {
       }
     },
     getRefLineParams(params) {
-      // console.log(params)
+      // console.log(JSON.stringify(params))
       const { vLine, hLine } = params
       this.vLine = vLine
       this.hLine = hLine
