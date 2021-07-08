@@ -18,13 +18,19 @@ public class DatasetTableField implements Serializable {
 
     private String dataeaseName;
 
+    private String groupType;
+
     private String type;
 
     private Integer size;
 
     private Integer deType;
 
+    private Integer deTypeFormat;
+
     private Integer deExtractType;
+
+    private Integer extField;
 
     private Boolean checked;
 

@@ -195,7 +195,7 @@ div:focus {
       .el-table__row {
         :hover {
           cursor: pointer;
-        }        
+        }
       }
       td {
         padding: 3px 0 !important;
@@ -234,6 +234,10 @@ div:focus {
 .field-icon-value{
   @extend %field-icon;
   color: #37b4aa;
+}
+.field-icon-location{
+  @extend %field-icon;
+  color: #F56C6C;
 }
 .ds-icon-scene{
   width: 13px;

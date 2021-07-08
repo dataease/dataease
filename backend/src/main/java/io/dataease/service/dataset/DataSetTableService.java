@@ -242,7 +242,7 @@ public class DataSetTableService {
         List<DatasetTableField> quota = new ArrayList<>();
 
         fields.forEach(field -> {
-            if (field.getDeType() == 2 || field.getDeType() == 3) {
+            if (StringUtils.equalsIgnoreCase("q", field.getGroupType())) {
                 quota.add(field);
             } else {
                 dimension.add(field);
@@ -259,6 +259,8 @@ public class DataSetTableService {
                 .checked(true)
                 .columnIndex(999)
                 .deType(2)
+                .extField(1)
+                .groupType("q")
                 .build();
         quota.add(count);
 
@@ -694,6 +696,8 @@ public class DataSetTableService {
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(syncTime);
+                datasetTableField.setExtField(0);
+                datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
                 dataSetTableFieldsService.save(datasetTableField);
             }
         }

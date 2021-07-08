@@ -129,6 +129,7 @@ export default {
     password_error: '密码不小于 8 位'
   },
   commons: {
+    success: '成功',
     switch_lang: '切换语言成功',
     close: '关闭',
     icon: '图标',
@@ -936,7 +937,9 @@ export default {
       exec: '执行',
       confirm_exec: '手动触发执行？',
       change_success: '状态切换成功'
-    }
+    },
+    field_group_type: '分类',
+    location: '地理位置'
   },
   datasource: {
     datasource: '数据源',

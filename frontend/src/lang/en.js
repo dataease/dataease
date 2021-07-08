@@ -129,6 +129,7 @@ export default {
     password_error: 'The password can not be less than 8 digits'
   },
   commons: {
+    success: 'Success',
     switch_lang: 'Switch Language Success',
     close: 'Close',
     icon: 'Icon',
@@ -936,7 +937,9 @@ export default {
       exec: 'Execute',
       confirm_exec: 'Manual trigger execution？',
       change_success: 'State switch successful'
-    }
+    },
+    field_group_type: 'Type',
+    location: 'Location'
   },
   datasource: {
     datasource: 'Data Source',
