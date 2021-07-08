@@ -94,6 +94,7 @@ export default {
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
       this.$store.commit('recordSnapshot')
+      this.$store.commit('setCurComponent', { component: null, index: null })
     },
 
     deleteCurCondition() {
