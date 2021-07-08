@@ -13,7 +13,7 @@
         <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini" @click="changeDs">
+        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">
           {{ $t('chart.change_ds') }}
         </el-button>
         <el-button size="mini" @click="closeEdit">
@@ -29,19 +29,30 @@
       <el-col
         style="height: 100%;width: 20%;min-width: 180px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
       >
-        <div style="height: 50%;border-bottom: 1px solid #E6E6E6;" class="padding-lr">
+        <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
+          <el-input
+            v-model="searchField"
+            size="mini"
+            :placeholder="$t('chart.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+          <el-button :disabled="!table || !hasDataPermission('manage',table.privileges)" icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 6px;" @click="editField" />
+        </div>
+        <div style="border-bottom: 1px solid #E6E6E6;" class="padding-lr field-height">
           <span>{{ $t('chart.dimension') }}</span>
           <draggable
-            v-model="dimension"
+            v-model="dimensionData"
             :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
             class="drag-list"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             @end="end1"
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in dimension" :key="item.id" class="item" :title="item.name">
+              <span v-for="item in dimensionData" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -50,19 +61,20 @@
             </transition-group>
           </draggable>
         </div>
-        <div style="height: 50%;" class="padding-lr">
+        <div class="padding-lr field-height">
           <span>{{ $t('chart.quota') }}</span>
           <draggable
-            v-model="quota"
+            v-model="quotaData"
             :options="{group:{name: 'quota',pull:'clone'},sort: true}"
             animation="300"
             :move="onMove"
             class="drag-list"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             @end="end1"
             @start="start1"
           >
             <transition-group>
-              <span v-for="item in quota" :key="item.id" class="item" :title="item.name">
+              <span v-for="item in quotaData" :key="item.id" class="item" :title="item.name">
                 <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                 <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                 <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -101,6 +113,7 @@
               <el-radio-group
                 v-model="view.type"
                 style="width: 100%"
+                :disabled="!hasDataPermission('manage',param.privileges)"
                 @change="save(true,'chart',true)"
               >
                 <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
@@ -197,7 +210,7 @@
           <el-row class="padding-lr">
             <span>{{ $t('chart.style_priority') }}</span>
             <el-row>
-              <el-radio-group v-model="view.stylePriority" size="mini" @change="save">
+              <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
                 <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
                 <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
               </el-radio-group>
@@ -205,24 +218,24 @@
           </el-row>
           <el-tabs type="card" :stretch="true" class="tab-header">
             <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
-              <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-              <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-              <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-              <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+              <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+              <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+              <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+              <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
             </el-tab-pane>
             <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
-              <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
-              <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
-              <split-selector v-show="view.type.includes('radar')" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
-              <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
-              <background-color-selector class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+              <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+              <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+              <split-selector v-show="view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
+              <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+              <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
             </el-tab-pane>
           </el-tabs>
         </div>
         <div style="height:60px;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
           <span>{{ $t('chart.result_filter') }}</span>
-          <el-button size="mini" class="filter-btn-class" @click="showResultFilter">
+          <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">
             {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon--right" />
           </el-button>
         </div>
@@ -235,6 +248,7 @@
               <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.dimension') }}</span>
               <draggable
                 v-model="view.xaxis"
+                :disabled="!hasDataPermission('manage',param.privileges)"
                 group="dimension"
                 animation="300"
                 :move="onMove"
@@ -242,7 +256,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
+                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -250,6 +264,7 @@
               <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.quota') }}</span>
               <draggable
                 v-model="view.yaxis"
+                :disabled="!hasDataPermission('manage',param.privileges)"
                 group="quota"
                 animation="300"
                 :move="onMove"
@@ -257,7 +272,7 @@
                 @end="end2"
               >
                 <transition-group class="draggable-group">
-                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
+                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
                 </transition-group>
               </draggable>
             </el-row>
@@ -338,7 +353,7 @@
     <!--视图更换数据集-->
     <el-dialog
       v-dialogDrag
-      :title="$t('chart.change_ds')+'['+table.name+']'"
+      :title="changeDsTitle"
       :visible="selectTableFlag"
       :show-close="false"
       width="70%"
@@ -349,8 +364,20 @@
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!table || !table.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
       </div>
+    </el-dialog>
+
+    <!--编辑视图使用的数据集的字段-->
+    <el-dialog
+      v-dialogDrag
+      :visible="editDsField"
+      :show-close="false"
+      class="dialog-css"
+      :destroy-on-close="true"
+      :fullscreen="true"
+    >
+      <field-edit :param="{table:table}" @switchComponent="closeEditDsField" />
     </el-dialog>
   </el-row>
 </template>
@@ -393,10 +420,11 @@ import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
 import html2canvas from 'html2canvas'
 import TableSelector from './TableSelector'
+import FieldEdit from '../../dataset/data/FieldEdit'
 
 export default {
   name: 'ChartEdit',
-  components: { SplitSelector, TableSelector, ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
+  components: { FieldEdit, SplitSelector, TableSelector, ResultFilterEditor, LabelNormal, DimensionFilterEditor, TableNormal, DatasetChartDetail, QuotaFilterEditor, BackgroundColorSelector, XAxisSelector, YAxisSelector, TooltipSelector, LabelSelector, LegendSelector, TitleSelector, SizeSelector, ColorSelector, ChartComponent, QuotaItem, DimensionItem, draggable },
   props: {
     param: {
       type: Object,
@@ -409,6 +437,8 @@ export default {
       table: {},
       dimension: [],
       quota: [],
+      dimensionData: [],
+      quotaData: [],
       view: {
         xaxis: [],
         yaxis: [],
@@ -458,7 +488,10 @@ export default {
         msg: ''
       },
       selectTableFlag: false,
-      changeTable: {}
+      changeTable: {},
+      searchField: '',
+      editDsField: false,
+      changeDsTitle: ''
     }
   },
   computed: {
@@ -467,11 +500,17 @@ export default {
     //   this.getData(this.$store.state.chart.viewId)
     //   return this.$store.state.chart.viewId
     // }
-
   },
   watch: {
     'param': function() {
-      this.getData(this.param.id)
+      if(this.param.optType === 'new'){
+
+      }else{
+        this.getData(this.param.id)
+      }
+    },
+    searchField(val) {
+      this.fieldFilter(val)
     }
   },
   created() {
@@ -487,7 +526,7 @@ export default {
   methods: {
     initTableData(id) {
       if (id != null) {
-        post('/dataset/table/get/' + id, null).then(response => {
+        post('/dataset/table/getWithPermission/' + id, null).then(response => {
           this.table = response.data
           this.initTableField(id)
         }).catch(err => {
@@ -503,6 +542,9 @@ export default {
         post('/dataset/table/getFieldsFromDE', this.table).then(response => {
           this.dimension = response.data.dimension
           this.quota = response.data.quota
+          this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
+          this.quotaData = JSON.parse(JSON.stringify(this.quota))
+          this.fieldFilter(this.searchField)
         }).catch(err => {
           this.resetView()
           this.httpRequest.status = err.response.data.success
@@ -878,6 +920,17 @@ export default {
       this.dimensionFilterEdit = false
     },
     saveDimensionFilter() {
+      for (let i = 0; i < this.dimensionItem.filter.length; i++) {
+        const f = this.dimensionItem.filter[i]
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.view.xaxis[this.dimensionItem.index].filter = this.dimensionItem.filter
       this.save(true)
       this.closeDimensionFilter()
@@ -891,6 +944,17 @@ export default {
       this.quotaFilterEdit = false
     },
     saveQuotaFilter() {
+      for (let i = 0; i < this.quotaItem.filter.length; i++) {
+        const f = this.quotaItem.filter[i]
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
       this.save(true)
       this.closeQuotaFilter()
@@ -909,6 +973,14 @@ export default {
         if (!f.fieldId || f.fieldId === '') {
           this.$message({
             message: this.$t('chart.filter_field_can_null'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+          this.$message({
+            message: this.$t('chart.filter_value_can_null'),
             type: 'error',
             showClose: true
           })
@@ -972,6 +1044,7 @@ export default {
     },
 
     changeDs() {
+      this.changeDsTitle = this.$t('chart.change_ds') + '[' + this.table.name + ']'
       this.selectTableFlag = true
     },
 
@@ -985,6 +1058,25 @@ export default {
       this.view.yaxis = []
       this.view.customFilter = []
       this.save(true, 'chart', false)
+    },
+
+    fieldFilter(val) {
+      if (val && val !== '') {
+        this.dimensionData = JSON.parse(JSON.stringify(this.dimension.filter(ele => { return ele.name.includes(val) })))
+        this.quotaData = JSON.parse(JSON.stringify(this.quota.filter(ele => { return ele.name.includes(val) })))
+      } else {
+        this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
+        this.quotaData = JSON.parse(JSON.stringify(this.quota))
+      }
+    },
+
+    editField() {
+      this.editDsField = true
+    },
+
+    closeEditDsField() {
+      this.editDsField = false
+      this.initTableField()
     }
   }
 }
@@ -1177,5 +1269,8 @@ export default {
     align-items: center;
     justify-content: center;
     background-color: #ece7e7;
+  }
+  .field-height{
+    height: calc(50% - 20px);
   }
 </style>

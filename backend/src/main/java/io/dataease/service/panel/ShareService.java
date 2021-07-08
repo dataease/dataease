@@ -14,11 +14,13 @@ import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelSharePo;
 import io.dataease.service.message.DeMsgutil;
+import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,176 @@ public class ShareService {
 
     @Resource
     private ExtPanelShareMapper extPanelShareMapper;
+
+    /**
+     *  1.查询当前节点已经分享给了哪些目标
+     *  2.过滤出新增的目标
+     *  3.过滤出减少的目标
+     *  4.批量删除
+     *  5.批量新增
+     *  6.发送取消分享消息
+     *  7.发送新增分享消息
+     * @param panelShareFineDto
+     */
+    @Transactional
+    public void fineSave(PanelShareFineDto panelShareFineDto) {
+
+        List<PanelShare> addShares = new ArrayList<>();//新增的分享
+        List<Long> redShareIdLists = new ArrayList<>();//取消的分享
+
+        String panelGroupId = panelShareFineDto.getResourceId();
+        AuthURD authURD = panelShareFineDto.getAuthURD();
+        AuthURD sharedAuthURD = new AuthURD();
+        AuthURD addAuthURD = new AuthURD();
+
+
+
+        Map<Integer, List<Long>> authURDMap = new HashMap<>();
+        authURDMap.put(0, authURD.getUserIds());
+        authURDMap.put(1, authURD.getRoleIds());
+        authURDMap.put(2, authURD.getDeptIds());
+
+        PanelShareExample example = new PanelShareExample();
+        example.createCriteria().andPanelGroupIdEqualTo(panelGroupId);
+        List<PanelShare> panelShares = mapper.selectByExample(example);
+        /*if (CollectionUtils.isEmpty(panelShares)) {
+            return;
+        }*/
+        Map<Integer, List<TempShareNode>> typeSharedMap = panelShares.stream().map(this::convertNode).collect(Collectors.groupingBy(TempShareNode::getType));
+
+        for (Map.Entry<Integer, List<Long>> entry : authURDMap.entrySet()) {
+            Integer key = entry.getKey();
+            List<TempShareNode> shareNodes = null;
+            if (null == typeSharedMap || null == typeSharedMap.get(key)) {
+                shareNodes = new ArrayList<>();
+            }else{
+                shareNodes = typeSharedMap.get(key);
+            }
+
+            if (null != authURDMap.get(key)) {
+                Map<String, Object> dataMap = filterData(authURDMap.get(key), shareNodes);
+                List<Long> newIds = (List<Long>)dataMap.get("add");
+                for (int i = 0; i < newIds.size(); i++) {
+                    Long id = newIds.get(i);
+                    PanelShare share = new PanelShare();
+                    share.setCreateTime(System.currentTimeMillis());
+                    share.setPanelGroupId(panelGroupId);
+                    share.setTargetId(id);
+                    share.setType(key);
+                    addShares.add(share);
+                }
+                List<TempShareNode> redNodes = (List<TempShareNode>)dataMap.get("red");
+                List<Long> redIds = redNodes.stream().map(TempShareNode::getShareId).distinct().collect(Collectors.toList());
+
+                redShareIdLists.addAll(redIds);
+                buildRedAuthURD(key, redNodes.stream().map(TempShareNode::getTargetId).distinct().collect(Collectors.toList()) , sharedAuthURD);
+                buildRedAuthURD(key, newIds, addAuthURD);
+            }
+
+        }
+
+        if (CollectionUtils.isNotEmpty(redShareIdLists)){
+            extPanelShareMapper.batchDelete(redShareIdLists);
+        }
+
+        if (CollectionUtils.isNotEmpty(addShares)){
+            extPanelShareMapper.batchInsert(addShares);
+        }
+
+        // 以上是业务代码
+        // 下面是消息发送
+        Set<Long> addUserIdSet = AuthUtils.userIdsByURD(addAuthURD);
+        Set<Long> redUserIdSet = AuthUtils.userIdsByURD(sharedAuthURD);
+
+
+        PanelGroup panelGroup = panelGroupMapper.selectByPrimaryKey(panelGroupId);;
+        CurrentUserDto user = AuthUtils.getUser();
+        Gson gson = new Gson();
+        String msg = panelGroup.getName();
+
+
+        List<String> msgParam = new ArrayList<String>();
+        msgParam.add(panelGroupId);
+        addUserIdSet.forEach(userId -> {
+            if (!redUserIdSet.contains(userId)){
+                DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+            }
+        });
+
+        redUserIdSet.forEach(userId -> {
+            if (!addUserIdSet.contains(userId)){
+                DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 取消分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+            }
+        });
+
+    }
+
+    private void buildRedAuthURD(Integer type, List<Long> redIds , AuthURD authURD) {
+        if (type == 0) {
+            authURD.setUserIds(redIds);
+        }
+        if (type == 1) {
+            authURD.setRoleIds(redIds);
+        }
+        if (type == 2) {
+            authURD.setDeptIds(redIds);
+        }
+    }
+
+    /**
+     *
+     * @param newTargets 新的分享目标
+     * @param shareNodes 已景分享目标
+     * @return
+     */
+    private Map<String, Object> filterData(List<Long> newTargets, List<TempShareNode> shareNodes) {
+
+        Map<String, Object> result = new HashMap<>();
+        /*if (null == newTargets) {
+            result.put("add", new ArrayList<>());
+            result.put("red", new ArrayList<>());
+            return result;
+        }*/
+        List<Long> newUserIds = new ArrayList<>();
+        for (int i = 0; i < newTargets.size(); i++) {
+            Long newTargetId = newTargets.get(i);
+            Boolean isNew = true;
+            for (int j = 0; j < shareNodes.size(); j++) {
+                TempShareNode shareNode = shareNodes.get(j);
+                Long sharedId = shareNode.getTargetId();
+                if (newTargetId == sharedId) {
+                    shareNode.setMatched(true); // 已分享 重新命中
+                    isNew = false;
+                }
+            }
+            if (isNew) {
+                // 获取新增的
+                newUserIds.add(newTargetId);
+            }
+        }
+        //获取需要取消分享的
+        List<TempShareNode> missNodes = shareNodes.stream().filter(item -> !item.getMatched()).collect(Collectors.toList());
+        result.put("add", newUserIds);
+        result.put("red", missNodes);
+        return result;
+    }
+
+    @Data
+    private class TempShareNode {
+        private Long shareId;
+        private Integer type;
+        private Long targetId;
+        private Boolean matched = false;
+
+        public boolean targetMatch(Long tid) {
+            return targetId == tid;
+        }
+    }
+
+    private TempShareNode convertNode(PanelShare panelShare) {
+        return BeanUtils.copyBean(new TempShareNode(), panelShare);
+    }
+
 
     @Transactional
     public void save(PanelShareRequest request){

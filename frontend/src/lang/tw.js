@@ -708,6 +708,8 @@ export default {
     area_mode: '面積',
     rose_radius: '園角',
     view_name: '視圖標題',
+    belong_group: '所属分组',
+    select_group: '选择分组',
     name_can_not_empty: '名稱不能為空',
     template_can_not_empty: '請選擇儀表板',
     custom_count: '記錄數',
@@ -788,7 +790,11 @@ export default {
     label_fontsize: '標簽大小',
     split_line: '分割線',
     split_color: '分割顏色',
-    shadow: '陰影'
+    shadow: '陰影',
+    condition: '過濾值',
+    filter_value_can_null: '過濾值不能為空',
+    filter_like: '包含',
+    filter_not_like: '不包含'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -962,7 +968,7 @@ export default {
     oracle_service_name: '服務名',
     get_schema: '獲取 Schema',
     schema: '數據庫 Schema',
-    please_choose_schema: '請選擇數據庫 Schema',
+    please_choose_schema: '請選擇數據庫 Schema'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
@@ -1215,6 +1221,13 @@ export default {
     show_more: '查看更多',
     all_type: '全部類型',
     panel_type: '儀表板分享',
-    dataset_type: '數據集同步'
+    dataset_type: '數據集同步',
+    content: '消息內容',
+    sned_time: '提交時間',
+    read_time: '查看時間',
+    type: '類型',
+    mark_readed: '標記已讀',
+    please_select: '請至少選擇一條消息',
+    mark_success: '標記已讀成功'
   }
 }

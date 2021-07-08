@@ -10,6 +10,7 @@ import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartGroupRequest;
@@ -239,7 +240,23 @@ public class ChartViewService {
             else {
                 data = (List<String[]>) cache;
             }*/
-            data = cacheViewData(datasourceProvider, datasourceRequest, id);
+            // 仪表板有参数不实用缓存
+            if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
+                data = datasourceProvider.getData(datasourceRequest);
+            }else {
+                try{
+                    data = cacheViewData(datasourceProvider, datasourceRequest, id);
+                }catch (Exception e) {
+                    LogUtil.error(e);
+                }finally {
+                    // 如果当前对象被锁 且 当前线程冲入次数 > 0 则释放锁
+                    if (lock.isLocked() && lock.getHoldCount() > 0) {
+                        lock.unlock();
+                    }
+                }
+            }
+
+
         }
         if (StringUtils.containsIgnoreCase(view.getType(), "pie") && data.size() > 1000) {
             data = data.subList(0, 1000);
@@ -320,11 +337,17 @@ public class ChartViewService {
         Object cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, viewId);
         if (cache == null) {
             if (lock.tryLock()) {// 获取锁成功
-                result = datasourceProvider.getData(datasourceRequest);
-                if (result != null) {
-                    CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, viewId, result, null, null);
+                try{
+                    result = datasourceProvider.getData(datasourceRequest);
+                    if (result != null) {
+                        CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, viewId, result, null, null);
+                    }
+                }catch (Exception e) {
+                    LogUtil.error(e);
+                    throw e;
+                }finally {
+                    lock.unlock();
                 }
-                lock.unlock();
             }else {//获取锁失败
                 Thread.sleep(100);//避免CAS自旋频率过大 占用cpu资源过高
                 result = cacheViewData(datasourceProvider, datasourceRequest, viewId);
@@ -381,5 +404,9 @@ public class ChartViewService {
         String newChartId = UUID.randomUUID().toString();
        extChartViewMapper.chartCopy(newChartId,id);
         return newChartId;
+    }
+
+    public String searchAdviceSceneId(String panelId){
+       return extChartViewMapper.searchAdviceSceneId(AuthUtils.getUser().getUserId().toString(),panelId);
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <span v-show="false">{{ tableRefresh }}</span>
+    <!--    <span v-show="false">{{ tableRefresh }}</span>-->
     <el-row style="height: 26px;">
       <el-popover
         placement="right-start"
@@ -14,7 +14,7 @@
           {{ table.name }}
         </span>
       </el-popover>
-      <el-row style="float: right">
+      <el-row v-if="hasDataPermission('manage',param.privileges)" style="float: right">
         <el-dropdown v-if="table.type ==='excel'" style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">
           <el-button size="mini">
             {{ $t('dataset.edit_excel') }}
@@ -46,13 +46,13 @@
 
     <el-tabs v-model="tabActive">
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
-        <tab-data-preview :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
+        <tab-data-preview :param="param" :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
       <el-tab-pane v-if="table.type !== 'custom' && table.mode === 1" :label="$t('dataset.join_view')" name="joinView">
-        <union-view :table="table" />
+        <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
-        <update-info :table="table" />
+        <update-info :param="param" :table="table" />
       </el-tab-pane>
     </el-tabs>
   </el-row>
@@ -70,7 +70,7 @@ export default {
   components: { UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
   props: {
     param: {
-      type: String,
+      type: Object,
       required: true
     }
   },
@@ -94,21 +94,21 @@ export default {
     }
   },
   computed: {
-    tableRefresh() {
-      this.initTable(this.param)
-      return this.$store.state.dataset.table
-    }
+    // tableRefresh() {
+    //   this.initTable(this.param)
+    //   return this.$store.state.dataset.table
+    // }
   },
   watch: {
     'param': function() {
-      this.initTable(this.param)
+      this.initTable(this.param.id)
     }
   },
   created() {
 
   },
   mounted() {
-    this.initTable(this.param)
+    this.initTable(this.param.id)
   },
   methods: {
     initTable(id) {

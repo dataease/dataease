@@ -34,7 +34,7 @@
                   <span>{{ $t('chart.content_formatter') }}</span>
                   <el-tooltip class="item" effect="dark" placement="bottom">
                     <div slot="content">
-                      字符串支持用 \n 换行<br>字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。<br>{d}：百分比（用于饼图等）。
+                      字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。<br>{d}：百分比（用于饼图等）。
                     </div>
                     <i class="el-icon-info" style="cursor: pointer;" />
                   </el-tooltip>
@@ -67,10 +67,11 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!labelForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!labelForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.label') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="labelForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeLabelAttr"
@@ -87,6 +88,10 @@ import { DEFAULT_LABEL } from '../../chart/chart'
 export default {
   name: 'LabelSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

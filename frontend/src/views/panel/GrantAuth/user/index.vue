@@ -86,6 +86,12 @@ export default {
       })
     },
 
+    getSelected() {
+      return {
+        userIds: this.$refs.table.store.states.selection.map(item => item.userId)
+      }
+    },
+
     save(msg) {
       const rows = this.$refs.table.store.states.selection
       const request = this.buildRequest(rows)

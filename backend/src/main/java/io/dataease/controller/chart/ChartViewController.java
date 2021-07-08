@@ -60,4 +60,9 @@ public class ChartViewController {
     public String chartCopy(@PathVariable String id) {
         return chartViewService.chartCopy(id);
     }
+
+    @GetMapping("searchAdviceSceneId/{panelId}")
+    public String searchAdviceSceneId(@PathVariable String panelId){
+        return chartViewService.searchAdviceSceneId(panelId);
+    }
 }

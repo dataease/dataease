@@ -158,6 +158,12 @@ export default {
       return roots
     },
 
+    getSelected() {
+      return {
+        deptIds: this.$refs.table.store.states.selection.map(item => item.deptId)
+      }
+    },
+
     save(msg) {
       const rows = this.$refs.table.store.states.selection
       const request = this.buildRequest(rows)

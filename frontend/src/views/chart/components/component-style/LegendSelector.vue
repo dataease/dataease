@@ -53,10 +53,11 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!legendForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!legendForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.legend') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="legendForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeLegendStyle"
@@ -73,6 +74,10 @@ import { DEFAULT_LEGEND_STYLE } from '../../chart/chart'
 export default {
   name: 'LegendSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

@@ -708,6 +708,8 @@ export default {
     area_mode: 'Area',
     rose_radius: 'Fillet',
     view_name: 'Chart Title',
+    belong_group: 'Belong Group',
+    select_group: 'Select Group',
     name_can_not_empty: 'Name cannot be empty',
     template_can_not_empty: 'Please check a Template',
     custom_count: 'Number of records',
@@ -747,8 +749,8 @@ export default {
     chart_funnel: 'Funnel',
     chart_radar: 'Radar',
     chart_gauge: 'Gauge',
-    dateStyle: '日期顯示',
-    datePattern: '日期格式',
+    dateStyle: 'Date Style',
+    datePattern: 'Date Format',
     y: 'Year',
     y_M: 'Year Month',
     y_M_d: 'Year Month Day',
@@ -788,7 +790,11 @@ export default {
     label_fontsize: 'Label Fontsize',
     split_line: 'Split Line',
     split_color: 'Split Color',
-    shadow: 'Shadow'
+    shadow: 'Shadow',
+    condition: 'Filter Value',
+    filter_value_can_null: 'Filter value can not empty',
+    filter_like: 'Contain',
+    filter_not_like: 'Not Contain'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1215,6 +1221,13 @@ export default {
     show_more: 'View more',
     all_type: 'All type',
     panel_type: 'Panel Share',
-    dataset_type: 'Dataset sync'
+    dataset_type: 'Dataset sync',
+    content: 'Content',
+    sned_time: 'Send Time',
+    read_time: 'Read Time',
+    type: 'Type',
+    mark_readed: 'Mark As Read',
+    please_select: 'Please select at least one message',
+    mark_success: 'Mark read successfully'
   }
 }

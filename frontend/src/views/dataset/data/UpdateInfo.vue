@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row>
-      <el-button icon="el-icon-setting" size="mini" @click="showConfig">
+      <el-button v-if="hasDataPermission('manage',param.privileges)" icon="el-icon-setting" size="mini" @click="showConfig">
         {{ $t('dataset.update_setting') }}
       </el-button>
       <el-button icon="el-icon-refresh" size="mini" @click="refreshLog">
@@ -302,6 +302,10 @@ export default {
     table: {
       type: Object,
       default: null
+    },
+    param: {
+      type: Object,
+      required: true
     }
   },
   data() {

@@ -16,6 +16,14 @@
         </foreach>
     </insert>
 
+    <delete id="batchDelete" parameterType="java.lang.Long" >
+        delete from panel_share
+        where share_id in
+        <foreach collection="shareIds" item="shareId" open="(" separator="," close=")" >
+            #{shareId}
+        </foreach>
+    </delete>
+
     <select id="query" resultMap="treeNodeMap">
         select distinct s.panel_group_id as id, g.create_by as creator, g.name
         from panel_share s

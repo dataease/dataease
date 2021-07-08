@@ -55,10 +55,11 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!tooltipForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!tooltipForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.tooltip') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="tooltipForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeTooltipAttr"
@@ -75,6 +76,10 @@ import { DEFAULT_TOOLTIP } from '../../chart/chart'
 export default {
   name: 'TooltipSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

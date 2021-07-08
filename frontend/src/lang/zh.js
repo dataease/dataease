@@ -708,6 +708,8 @@ export default {
     area_mode: '面积',
     rose_radius: '圆角',
     view_name: '视图标题',
+    belong_group: '所属分组',
+    select_group: '选择分组',
     name_can_not_empty: '名称不能为空',
     template_can_not_empty: '请选择仪表版',
     custom_count: '记录数',
@@ -788,7 +790,11 @@ export default {
     label_fontsize: '标签大小',
     split_line: '分割线',
     split_color: '分割颜色',
-    shadow: '阴影'
+    shadow: '阴影',
+    condition: '过滤值',
+    filter_value_can_null: '过滤值不能为空',
+    filter_like: '包含',
+    filter_not_like: '不包含'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1217,6 +1223,13 @@ export default {
     show_more: '查看更多',
     all_type: '全部类型',
     panel_type: '仪表板分享',
-    dataset_type: '数据集同步'
+    dataset_type: '数据集同步',
+    content: '消息内容',
+    sned_time: '提交时间',
+    read_time: '查看时间',
+    type: '类型',
+    mark_readed: '标记已读',
+    please_select: '请至少选择一条消息',
+    mark_success: '标记已读成功'
   }
 }

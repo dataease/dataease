@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-button size="mini" @click="showUnionEdit">{{ $t('dataset.add_union') }}</el-button>
+    <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="showUnionEdit">{{ $t('dataset.add_union') }}</el-button>
     <el-row>
       <el-table
         size="mini"
@@ -34,8 +34,8 @@
           :label="$t('dataset.operate')"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="edit(scope.row)">{{ $t('dataset.edit') }}</el-button>
-            <el-button type="text" size="mini" @click="deleteUnion(scope.row)">{{ $t('dataset.delete') }}</el-button>
+            <el-button v-if="hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="edit(scope.row)">{{ $t('dataset.edit') }}</el-button>
+            <el-button v-if="hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteUnion(scope.row)">{{ $t('dataset.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -141,6 +141,10 @@ export default {
   components: { DatasetGroupSelectorTree },
   props: {
     table: {
+      type: Object,
+      required: true
+    },
+    param: {
       type: Object,
       required: true
     }

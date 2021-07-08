@@ -48,7 +48,7 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">
+        <el-button slot="reference" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="shape-item">
           {{ $t('chart.split') }}<i class="el-icon-setting el-icon--right" />
         </el-button>
       </el-popover>
@@ -62,6 +62,10 @@ import { DEFAULT_SPLIT } from '../../chart/chart'
 export default {
   name: 'SplitSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

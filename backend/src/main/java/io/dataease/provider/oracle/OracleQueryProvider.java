@@ -1,12 +1,10 @@
 package io.dataease.provider.oracle;
 
-import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.provider.QueryProvider;
-import io.swagger.models.auth.In;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,9 +91,9 @@ public class OracleQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (f.getDeExtractType() == TIME) {
                 if (f.getDeType() == INT || f.getDeType() == FLOAT) { //日期转数值
-                    if(f.getType().equalsIgnoreCase("DATE")){
+                    if (f.getType().equalsIgnoreCase("DATE")) {
                         stringBuilder.append("TO_NUMBER( ").append(f.getOriginName()).append(" - TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
-                    }else {
+                    } else {
                         stringBuilder.append("TO_NUMBER(to_date(to_char( ").append(f.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') -  TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
                     }
                 } else {
@@ -123,9 +121,9 @@ public class OracleQueryProvider extends QueryProvider {
         return MessageFormat.format("SELECT {0} FROM {1} ", StringUtils.join(array, ","), table);
     }
 
-    private String sqlColumn(List<DatasetTableField> fields){
+    private String sqlColumn(List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
-           return f.getDataeaseName();
+            return f.getDataeaseName();
         }).toArray(String[]::new);
         return StringUtils.join(array, ",");
     }
@@ -184,17 +182,17 @@ public class OracleQueryProvider extends QueryProvider {
             // 如果原始类型为时间
             if (x.getDeExtractType() == TIME) {
                 if (x.getDeType() == INT || x.getDeType() == FLOAT) { //时间转数值
-                    if(x.getType().equalsIgnoreCase("DATE")){
+                    if (x.getType().equalsIgnoreCase("DATE")) {
                         stringBuilder.append("TO_NUMBER( ").append(x.getOriginName()).append(" - TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS \"_").append(x.getDataeaseName()).append("\" ");
-                    }else {
+                    } else {
                         stringBuilder.append("TO_NUMBER(to_date(to_char( ").append(x.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') -  TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ")
                                 .append(x.getDataeaseName()).append("\" ");
                     }
                 } else if (x.getDeType() == TIME) { //格式化显示时间
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    if(x.getType().equalsIgnoreCase("DATE")){
+                    if (x.getType().equalsIgnoreCase("DATE")) {
                         stringBuilder.append("to_char( ").append(x.getOriginName()).append(" ,'").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
-                    }else {
+                    } else {
                         stringBuilder.append("to_char(to_date(to_char( ").append(x.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
                     }
                 } else {
@@ -206,7 +204,7 @@ public class OracleQueryProvider extends QueryProvider {
                     if (x.getDeExtractType() == STRING) { //字符串转时间
                         stringBuilder.append("to_char(to_date(").append(x.getOriginName()).append(" , 'yyyy-MM-dd hh24:mi:ss'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
                     } else {                            //数值转时间
-                        stringBuilder.append("to_char(").append(x.getOriginName()) .append("/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
+                        stringBuilder.append("to_char(").append(x.getOriginName()).append("/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
                     }
                 } else {
                     stringBuilder.append(" ").append(x.getOriginName()).append("  AS  \"_").append(x.getOriginName()).append("\" ");
@@ -234,11 +232,14 @@ public class OracleQueryProvider extends QueryProvider {
                             filter.append(" AND  ").append(x.getOriginName()).append(" ");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
+                            filter.append("(null,'')");
+                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+                            filter.append(" AND ").append(x.getOriginName()).append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -271,11 +272,16 @@ public class OracleQueryProvider extends QueryProvider {
                             filter.append(" AND  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
+                            filter.append("(null,'')");
+                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+                            filter.append(" AND _")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())
+                                    .append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -352,11 +358,16 @@ public class OracleQueryProvider extends QueryProvider {
                             filter.append(" AND  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
+                            filter.append("(null,'')");
+                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+                            filter.append(" AND _")
+                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ")
+                                    .append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -391,7 +402,7 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createRawQuerySQL(String table, List<DatasetTableField> fields){
+    public String createRawQuerySQL(String table, List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(" ").append(f.getOriginName()).append("  AS ").append(f.getDataeaseName());
@@ -428,7 +439,7 @@ public class OracleQueryProvider extends QueryProvider {
             case "not like":
                 return " NOT LIKE ";
             case "null":
-                return " IS NULL ";
+                return " IN ";
             case "not_null":
                 return " IS NOT NULL ";
             case "between":
@@ -459,7 +470,10 @@ public class OracleQueryProvider extends QueryProvider {
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getTerm()))
                     .append(" ");
-            if (StringUtils.containsIgnoreCase(request.getTerm(), "null")) {
+            if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
+                filter.append("(null,'')");
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
+                filter.append(" AND `").append(field.getOriginName()).append("`").append(" <> ''");
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 filter.append("('").append(StringUtils.join(value, "','")).append("')");
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {

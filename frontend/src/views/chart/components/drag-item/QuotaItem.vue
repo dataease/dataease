@@ -1,6 +1,10 @@
 <template>
   <span>
-    <el-dropdown trigger="click" size="mini" @command="clickItem">
+    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis">
+      <span>{{ item.name }}</span>
+      <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
+    </el-tag>
+    <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
           <span>{{ item.name }}</span>
@@ -81,6 +85,10 @@
 export default {
   name: 'QuotaItem',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     item: {
       type: Object,
       required: true

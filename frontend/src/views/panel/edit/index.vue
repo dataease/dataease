@@ -9,6 +9,7 @@
       <!--横向工具栏-->
       <el-col :span="16">
         <Toolbar
+          ref="toolbar"
           :style-button-active="show&&showIndex===2"
           :aided-button-active="aidedButtonActive"
           @showPanel="showPanel"
@@ -87,7 +88,7 @@
           :close-on-press-escape="false"
           :modal-append-to-body="true"
         >
-          <view-select v-show=" show && showIndex===0" />
+          <view-select v-show=" show && showIndex===0" @newChart="newChart" />
           <filter-group v-show=" show &&showIndex===1" />
           <subject-setting v-show=" show &&showIndex===2" />
           <assist-component v-show=" show &&showIndex===3" />
@@ -100,6 +101,7 @@
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
+          @scroll="canvasScroll"
         >
           <Editor v-if="!previewVisible" :out-style="outStyle" />
         </div>
@@ -157,8 +159,17 @@
     <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
 
     <!--矩形样式组件-->
-    <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" />
-    <TextAttr v-if="curComponent&&curComponent.type==='v-text'" />
+    <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <TextAttr v-if="curComponent&&curComponent.type==='v-text'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+
+    <!--复用ChartGroup组件 不做显示-->
+    <ChartGroup
+      ref="chartGroup"
+      :opt-from="'panel'"
+      :advice-group-id="adviceGroupId"
+      style="height: 0px;width:0px;padding:0px;overflow: hidden"
+      @newViewInfo="newViewInfo"
+    />
 
   </el-row>
 </template>
@@ -187,6 +198,8 @@ import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
+import ChartGroup from '@/views/chart/group/Group'
+import { searchAdviceSceneId } from '@/api/chart/chart'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -220,7 +233,8 @@ export default {
     AssistComponent,
     PanelTextEditor,
     RectangleAttr,
-    TextAttr
+    TextAttr,
+    ChartGroup
   },
   data() {
     return {
@@ -255,7 +269,10 @@ export default {
       },
       beforeDialogValue: [],
       styleDialogVisible: false,
-      currentDropElement: null
+      currentDropElement: null,
+      adviceGroupId: null,
+      scrollLeft: 0,
+      scrollTop: 0
     }
   },
 
@@ -293,6 +310,8 @@ export default {
     // this.restore()
     // 全局监听按键事件
     listenGlobalKeyDown()
+
+    this.$store.commit('setCurComponent', { component: null, index: null })
   },
   mounted() {
     // this.insertToBody()
@@ -605,6 +624,54 @@ export default {
       } else {
         return y
       }
+    },
+    newChart() {
+      this.adviceGroupId = null
+      this.show = false
+      searchAdviceSceneId(this.panelInfo.id).then(res => {
+        this.adviceGroupId = res.data
+        this.$refs['chartGroup'].selectTable()
+      })
+    },
+    newViewInfo(newViewInfo) {
+      debugger
+      let component
+      const newComponentId = uuid.v1()
+      // 用户视图设置 复制一个模板
+      componentList.forEach(componentTemp => {
+        if (componentTemp.type === 'view') {
+          component = deepCopy(componentTemp)
+          const propValue = {
+            id: newComponentId,
+            viewId: newViewInfo.id
+          }
+          component.propValue = propValue
+          component.filters = []
+        }
+      })
+
+      // position = absolution 或导致有偏移 这里中和一下偏移量
+      component.style.top = 0
+      component.style.left = 600
+      component.id = newComponentId
+      this.$store.commit('addComponent', { component })
+      this.$store.commit('recordSnapshot')
+      this.clearCurrentInfo()
+      this.$store.commit('setCurComponent', { component: component, index: this.componentData.length - 1 })
+
+      // 编辑时临时保存 当前修改的画布
+      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
+      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
+      if (this.curComponent.type === 'view') {
+        this.$store.dispatch('chart/setViewId', null)
+        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
+        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
+      }
+    },
+    canvasScroll(event) {
+      debugger
+      this.scrollLeft = event.target.scrollLeft
+      this.scrollTop = event.target.scrollTop
     }
   }
 }

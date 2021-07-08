@@ -35,7 +35,7 @@
         <!-- <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip> -->
-        <notification class="right-menu-item hover-effect" @refresh-top-bar="initCurrentRoutes" />
+        <notification class="right-menu-item hover-effect" />
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
           <a href="https://dataease.io/docs/" target="_blank" style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">

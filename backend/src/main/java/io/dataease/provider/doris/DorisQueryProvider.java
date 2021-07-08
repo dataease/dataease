@@ -193,11 +193,14 @@ public class DorisQueryProvider extends QueryProvider {
                             filter.append(" AND ").append(x.getDataeaseName());
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
+                            filter.append("(null,'')");
+                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+                            filter.append(" AND ").append(x.getDataeaseName()).append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -229,11 +232,16 @@ public class DorisQueryProvider extends QueryProvider {
                             filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
+                            filter.append("(null)");
+                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+//                            filter.append(" AND _")
+//                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
+//                                    .append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -310,11 +318,16 @@ public class DorisQueryProvider extends QueryProvider {
                             filter.append(" AND _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName());
                         }
                         filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
+                            filter.append("(null)");
+                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+//                            filter.append(" AND _")
+//                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*") ? "" : y.getDataeaseName())
+//                                    .append(" <> ''");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                             filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
                         } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("%").append(f.getValue()).append("%");
+                            filter.append("'%").append(f.getValue()).append("%'");
                         } else {
                             filter.append("'").append(f.getValue()).append("'");
                         }
@@ -349,7 +362,7 @@ public class DorisQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createRawQuerySQL(String table, List<DatasetTableField> fields){
+    public String createRawQuerySQL(String table, List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
@@ -393,7 +406,7 @@ public class DorisQueryProvider extends QueryProvider {
             case "not like":
                 return " NOT LIKE ";
             case "null":
-                return " IS NULL ";
+                return " IN ";
             case "not_null":
                 return " IS NOT NULL ";
             case "between":
@@ -424,7 +437,10 @@ public class DorisQueryProvider extends QueryProvider {
             filter.append(" ")
                     .append(transMysqlFilterTerm(request.getTerm()))
                     .append(" ");
-            if (StringUtils.containsIgnoreCase(request.getTerm(), "null")) {
+            if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
+                filter.append("(null,'')");
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
+                filter.append(" AND ").append(field.getDataeaseName()).append(" <> ''");
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 filter.append("('").append(StringUtils.join(value, "','")).append("')");
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
