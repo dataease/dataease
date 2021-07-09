@@ -764,11 +764,11 @@ public class ExtractDataService {
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields, boolean isExcel) {
         String needToChangeColumnType = "";
-        for (DatasetTableField datasetTableField : datasetTableFields) {
-            if (datasetTableField.getDeExtractType() != null && datasetTableField.getDeExtractType() == 4) {
-                needToChangeColumnType = needToChangeColumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getDataeaseName());
-            }
-        }
+//        for (DatasetTableField datasetTableField : datasetTableFields) {
+//            if (datasetTableField.getDeExtractType() != null && datasetTableField.getDeExtractType() == 4) {
+//                needToChangeColumnType = needToChangeColumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getDataeaseName());
+//            }
+//        }
 
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
