@@ -864,6 +864,7 @@ export default {
     select_data_time: '选择日期时间',
     execute_rate: '执行频率',
     execute_once: '立即执行',
+    simple_cron: '简单重复',
     cron_config: '表达式设定',
     no_limit: '无限制',
     set_end_time: '设定结束时间',
@@ -1222,7 +1223,10 @@ export default {
     week_start: '从星期',
     week_end: '至星期',
     every_year: '每年',
-    week_tips: '说明：1-7 分别对应 周日-周六'
+    week_tips: '说明：1-7 分别对应 周日-周六',
+    minute_limit: '分钟不能小于1，大于59',
+    hour_limit: '小时不能小于1，大于23',
+    day_limit: '天不能小于1，大于31'
   },
   dept: {
     can_not_move_change_sort: '不能移动以改变排序',

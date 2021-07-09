@@ -31,5 +31,7 @@ public class DatasetTableTask implements Serializable {
 
     private String lastExecStatus;
 
+    private String extraData;
+
     private static final long serialVersionUID = 1L;
 }

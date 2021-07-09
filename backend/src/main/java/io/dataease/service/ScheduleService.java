@@ -28,7 +28,7 @@ public class ScheduleService {
                     ExtractDataJob.class,
                     new Date(datasetTableTask.getStartTime()),
                     scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId(), datasetTableTask.getType()));
-        } else if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), ScheduleType.CRON.toString())) {
+        } else {
             Date endTime;
             if (StringUtils.equalsIgnoreCase(datasetTableTask.getEnd(), "1")) {
                 if (datasetTableTask.getEndTime() == null || datasetTableTask.getEndTime() == 0) {
