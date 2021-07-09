@@ -1,5 +1,6 @@
 <template>
   <div v-loading="requestStatus==='waiting'" class="rect-shape">
+    <i v-if="requestStatus==='success'" style="right:5px;position: absolute;z-index: 2" class="icon iconfont icon-quanping1" @click.stop="openChartDetailsDialog" />
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -19,15 +20,18 @@ import { viewData } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
+import UserViewDialog from './UserViewDialog'
 import { uuid } from 'vue-uuid'
 
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
+import eventBus from '@/components/canvas/utils/eventBus'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponent, TableNormal, LabelNormal, UserViewDialog },
   props: {
     element: {
       type: Object,
@@ -170,6 +174,19 @@ export default {
     },
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
+    },
+    openChartDetailsDialog() {
+      const tableChart = deepCopy(this.chart)
+      tableChart.customAttr = JSON.parse(this.chart.customAttr)
+      tableChart.customStyle = JSON.parse(this.chart.customStyle)
+      tableChart.customAttr.color.tableHeaderBgColor = '#f8f8f9'
+      tableChart.customAttr.color.tableItemBgColor = '#ffffff'
+      tableChart.customAttr.color.tableFontColor = '#7c7e81'
+      tableChart.customAttr.color.tableStripe = true
+      tableChart.customStyle.text.show = false
+      tableChart.customAttr = JSON.stringify(tableChart.customAttr)
+      tableChart.customStyle = JSON.stringify(tableChart.customStyle)
+      eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart })
     }
   }
 }
@@ -195,4 +212,24 @@ export default {
   justify-content: center;
   background-color: #ece7e7;
 }
+
+.rect-shape > i{
+  right: 5px;
+  color: gray;
+  position: absolute;
+}
+
+.rect-shape > i:hover {
+  color: red;
+}
+
+.rect-shape:hover > .icon-quanping1 {
+  z-index: 2;
+  display:block;
+}
+
+.rect-shape>>>.icon-quanping1 {
+  display:none
+}
+
 </style>

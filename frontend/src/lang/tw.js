@@ -794,7 +794,9 @@ export default {
     condition: '過濾值',
     filter_value_can_null: '過濾值不能為空',
     filter_like: '包含',
-    filter_not_like: '不包含'
+    filter_not_like: '不包含',
+    chart_details: '视图明细',
+    export_details: '导出明细'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

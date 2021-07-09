@@ -794,7 +794,9 @@ export default {
     condition: 'Filter Value',
     filter_value_can_null: 'Filter value can not empty',
     filter_like: 'Contain',
-    filter_not_like: 'Not Contain'
+    filter_not_like: 'Not Contain',
+    chart_details: 'Chart Details',
+    export_details: 'Export Details'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

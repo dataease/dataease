@@ -794,7 +794,9 @@ export default {
     condition: '过滤值',
     filter_value_can_null: '过滤值不能为空',
     filter_like: '包含',
-    filter_not_like: '不包含'
+    filter_not_like: '不包含',
+    chart_details: '视图明细',
+    export_details: '导出明细'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
