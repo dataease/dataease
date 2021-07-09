@@ -797,8 +797,7 @@ export default {
     filter_like: 'Contain',
     filter_not_like: 'Not Contain',
     chart_details: 'Chart Details',
-    export_details: 'Export Details'
-    filter_not_like: 'Not Contain',
+    export_details: 'Export Details',
     color_light: 'Light',
     color_classical: 'Classical',
     color_fresh: 'Fresh',
