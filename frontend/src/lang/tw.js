@@ -856,6 +856,7 @@ export default {
     add_scope: '增量更新',
     select_data_time: '選擇日期時間',
     execute_rate: '執行頻率',
+    simple_cron: '簡單重複',
     execute_once: '立即執行',
     cron_config: '表達時設定',
     no_limit: '無限製',
@@ -1213,7 +1214,10 @@ export default {
     week_start: '從星期',
     week_end: '至星期',
     every_year: '每年',
-    week_tips: '說明：1-7 分別對應 周日-周六'
+    week_tips: '说明：1-7 分别对应 周日-周六',
+    minute_limit: '分鐘不能小於1，大於59',
+    hour_limit: '小時不能小於1，大於523',
+    day_limit: '天不能小於1，大於531'
   },
   dept: {
     can_not_move_change_sort: '不能移動以改變排序',

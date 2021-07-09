@@ -11,8 +11,8 @@
         <el-table-column prop="rate" :label="$t('dataset.execute_rate')">
           <template slot-scope="scope">
             <span v-if="scope.row.rate === 'SIMPLE'">{{ $t('dataset.execute_once') }}</span>
-            <span v-if="scope.row.rate === 'SIMPLE_COMPLETE'">{{ $t('dataset.execute_once') }}</span>
             <span v-if="scope.row.rate === 'CRON'">{{ $t('dataset.cron_config') }}</span>
+            <span v-if="scope.row.rate === 'SIMPLE_CRON'">{{ $t('dataset.simple_cron') }}</span>
           </template>
         </el-table-column>
 
@@ -80,6 +80,7 @@
             <el-select v-model="taskForm.rate" size="mini" @change="onRateChange">
               <el-option :label="$t('dataset.execute_once')" value="SIMPLE"/>
               <el-option :label="$t('dataset.cron_config')" value="CRON"/>
+              <el-option :label="$t('dataset.simple_cron')" value="SIMPLE_CRON"/>
             </el-select>
           </el-form-item>
 
@@ -89,6 +90,25 @@
               <el-input slot="reference" v-model="taskForm.cron" size="mini" style="width: 50%" @click="cronEdit = true" />
             </el-popover>
           </el-form-item>
+
+          <el-form-item v-if="taskForm.rate === 'SIMPLE_CRON'" label="">
+            <el-form :inline="true">
+              <el-form-item :label="$t('cron.every')" >
+                <el-input v-model="taskForm.extraData.simple_cron_value" size="mini" type="number"  min="1" @change="onSimpleCronChange()" />
+              </el-form-item>
+
+              <el-form-item class="form-item">
+                <el-select v-model="taskForm.extraData.simple_cron_type"  filterable size="mini" @change="onSimpleCronChange()" >
+                  <el-option :label="$t('cron.minute')" value="minute" />
+                  <el-option :label="$t('cron.hour')" value="hour"  />
+                  <el-option :label="$t('cron.day')" value="day"  />
+                </el-select>
+              </el-form-item>
+              <el-form-item class="form-item" :label="$t('cron.every_exec')">
+              </el-form-item>
+            </el-form>
+          </el-form-item>
+
           <el-form-item v-if="taskForm.rate === 'CRON'" :label="$t('dataset.start_time')" prop="startTime">
             <el-date-picker v-model="taskForm.startTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="mini"/>
           </el-form-item>
@@ -182,7 +202,11 @@ export default {
         rate: 'SIMPLE',
         cron: '',
         endTime: '',
-        end: '0'
+        end: '0',
+        extraData: {
+          simple_cron_type: 'hour',
+          simple_cron_value: 1
+        }
       },
       update_task: false,
       header: '',
@@ -254,7 +278,7 @@ export default {
       cronEdit: false,
       lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn',
       selectDatasetFlag: false,
-      table: {},
+      table: {}
     }
   },
   computed: {
@@ -370,7 +394,50 @@ export default {
         startTime: '',
         rate: 'SIMPLE',
         endTime: '',
-        end: '0'
+        end: '0',
+        extraData: {
+          simple_cron_type: 'hour',
+          simple_cron_value: 1
+        }
+      }
+    },
+    onSimpleCronChange() {
+      if (this.taskForm.extraData.simple_cron_type === 'minute') {
+        if(this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 59){
+          this.$message({message: this.$t('cron.minute_limit'), type: 'warning', showClose: true})
+          this.taskForm.extraData.simple_cron_value = 59
+        }
+        this.taskForm.cron = '0 0/'+ this.taskForm.extraData.simple_cron_value + ' * * * ? *'
+        return
+      }
+      if (this.taskForm.extraData.simple_cron_type === 'hour') {
+        if(this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 23){
+          this.$message({message: this.$t('cron.hour_limit'), type: 'warning', showClose: true})
+          this.taskForm.extraData.simple_cron_value = 23
+        }
+        this.taskForm.cron = '0 0 0/'+ this.taskForm.extraData.simple_cron_value + ' * * ? *'
+        return
+      }
+      if (this.taskForm.extraData.simple_cron_type === 'day') {
+        if(this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 31){
+          this.$message({message: this.$t('cron.day_limit'), type: 'warning', showClose: true})
+          this.taskForm.extraData.simple_cron_value = 31
+        }
+        this.taskForm.cron = '0 0 0 1/'+ this.taskForm.extraData.simple_cron_value + ' * ? *'
+        return
+      }
+    },
+    onRateChange() {
+      if (this.taskForm.rate === 'SIMPLE') {
+        this.taskForm.end = '0'
+        this.taskForm.endTime = ''
+        this.taskForm.cron = ''
+      }
+      if (this.taskForm.rate === 'SIMPLE_CRON'){
+        this.taskForm.cron = '0 0 0/1 *  * ? *'
+      }
+      if (this.taskForm.rate === 'CRON'){
+        this.taskForm.cron = '00 00 * ? * * *'
       }
     },
     incrementalUpdateTypeChange: function() {
@@ -454,6 +521,7 @@ export default {
       } else { // update
         this.getIncrementalConfig(task.tableId)
         this.taskForm = JSON.parse(JSON.stringify(task))
+        this.taskForm.extraData = JSON.parse(this.taskForm.extraData)
         this.update_task_dialog_title = this.$t('dataset.task_edit_title')
       }
       this.update_task = true
@@ -484,8 +552,10 @@ export default {
       }
       task.startTime = new Date(task.startTime).getTime()
       task.endTime = new Date(task.endTime).getTime()
+      const form = JSON.parse(JSON.stringify(task))
+      form.extraData = JSON.stringify(form.extraData)
       const dataSetTaskRequest = {
-        datasetTableTask: task,
+        datasetTableTask: form,
         datasetTableIncrementalConfig: task.type === 'add_scope' ? this.incrementalConfig : undefined
       }
       post('/dataset/task/save', dataSetTaskRequest).then(response => {
@@ -498,15 +568,6 @@ export default {
         this.resetTaskForm()
         this.search()
       })
-    },
-    onRateChange() {
-      if (this.taskForm.rate === 'SIMPLE') {
-        this.taskForm.end = '0'
-        this.taskForm.endTime = ''
-        this.taskForm.cron = ''
-      } else {
-        this.taskForm.cron = '00 00 * ? * * *'
-      }
     },
     handleClose() {
       this.depts = null

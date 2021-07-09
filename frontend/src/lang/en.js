@@ -857,6 +857,7 @@ export default {
     select_data_time: 'Select date time',
     execute_rate: 'Execution frequency',
     execute_once: 'Execution Now',
+    simple_cron: 'Simple repeat',
     cron_config: 'Expression setting',
     no_limit: 'No limit',
     set_end_time: 'Set the end time',
@@ -1213,7 +1214,10 @@ export default {
     week_start: 'From week',
     week_end: 'to week',
     every_year: 'Every year',
-    week_tips: 'Tips：1-7 mapping SUN-SAT'
+    week_tips: 'Tips：1-7 mapping SUN-SAT',
+    minute_limit: 'Minutes cannot be less than 1 and greater than 59',
+    hour_limit: 'Hours cannot be less than 1 and greater than 23',
+    day_limit: 'Days cannot be less than 1 and greater than 31'
   },
   dept: {
     can_not_move_change_sort: 'Cannot move to change sort',

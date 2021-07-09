@@ -10,6 +10,7 @@ import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
+import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
@@ -110,6 +111,7 @@ public class DataSetTableService {
             datasetTableTask.setType("all_scope");
             datasetTableTask.setName(datasetTable.getName() + " 更新设置");
             datasetTableTask.setEnd("0");
+            datasetTableTask.setStatus(TaskStatus.Underway.name());
             datasetTableTask.setStartTime(System.currentTimeMillis());
             dataSetTaskRequest.setDatasetTableTask(datasetTableTask);
             dataSetTableTaskService.save(dataSetTaskRequest);

@@ -61,7 +61,7 @@ public class DataSetTableTaskService {
             dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
         }
         // check
-        if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(),"CRON")){
+        if (!StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), ScheduleType.SIMPLE.toString())){
             if (StringUtils.isNotEmpty(datasetTableTask.getCron())) {
                 if (!CronExpression.isValidExpression(datasetTableTask.getCron())) {
                     throw new RuntimeException(Translator.get("i18n_cron_expression_error"));
@@ -96,6 +96,7 @@ public class DataSetTableTaskService {
             scheduleService.addSchedule(datasetTableTask);
         }else {
             if(datasetTableTask.getStatus().equalsIgnoreCase(JobStatus.Underway.name())){
+                System.out.println(new Gson().toJson(datasetTableTask));
                 scheduleService.addSchedule(datasetTableTask);
             }
         }

@@ -28,6 +28,19 @@
         </el-table-column>
       </complex-table>
     </el-row>
+    <el-dialog
+      v-dialogDrag
+      :title="$t('dataset.detail')"
+      :visible="show_error_massage"
+      :show-close="false"
+      width="50%"
+      class="dialog-css"
+    >
+      <span>{{ error_massage }}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
+      </span>
+    </el-dialog>
   </el-col>
 </template>
 
@@ -86,6 +99,8 @@ export default {
       formType: 'add',
       orderConditions: [],
       last_condition: null,
+      show_error_massage: false,
+      error_massage: ''
     }
   },
   created() {
@@ -120,7 +135,6 @@ export default {
     },
     search(condition) {
       this.last_condition = condition
-      console.log(condition)
       condition = formatQuickCondition(condition, 'dataset_table_task.name')
       const temp = formatCondition(condition)
       const param = temp || {}
@@ -130,22 +144,9 @@ export default {
         this.paginationConfig.total = response.data.itemCount
       })
     },
-    deleteTask(task) {
-      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
-        confirmButtonText: this.$t('dataset.confirm'),
-        cancelButtonText: this.$t('dataset.cancel'),
-        type: 'warning'
-      }).then(() => {
-        post('/dataset/task/delete/' + task.id, null).then(response => {
-          this.$message({
-            message: this.$t('dataset.delete_success'),
-            type: 'success',
-            showClose: true
-          })
-          this.search()
-        })
-      }).catch(() => {
-      })
+    showErrorMassage(massage) {
+      this.show_error_massage = true
+      this.error_massage = massage
     }
   }
 }

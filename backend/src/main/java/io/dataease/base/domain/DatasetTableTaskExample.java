@@ -973,6 +973,76 @@ public class DatasetTableTaskExample {
             addCriterion("last_exec_status not between", value1, value2, "lastExecStatus");
             return (Criteria) this;
         }
+
+        public Criteria andExtraDataIsNull() {
+            addCriterion("extra_data is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataIsNotNull() {
+            addCriterion("extra_data is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataEqualTo(String value) {
+            addCriterion("extra_data =", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataNotEqualTo(String value) {
+            addCriterion("extra_data <>", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataGreaterThan(String value) {
+            addCriterion("extra_data >", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataGreaterThanOrEqualTo(String value) {
+            addCriterion("extra_data >=", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataLessThan(String value) {
+            addCriterion("extra_data <", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataLessThanOrEqualTo(String value) {
+            addCriterion("extra_data <=", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataLike(String value) {
+            addCriterion("extra_data like", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataNotLike(String value) {
+            addCriterion("extra_data not like", value, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataIn(List<String> values) {
+            addCriterion("extra_data in", values, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataNotIn(List<String> values) {
+            addCriterion("extra_data not in", values, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataBetween(String value1, String value2) {
+            addCriterion("extra_data between", value1, value2, "extraData");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtraDataNotBetween(String value1, String value2) {
+            addCriterion("extra_data not between", value1, value2, "extraData");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

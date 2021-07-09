@@ -12,3 +12,4 @@ update dataset_table_task set rate='SIMPLE' where rate='SIMPLE_COMPLETE';
 ALTER TABLE `dataset_table_task_log` ADD COLUMN `trigger_type` VARCHAR(45) NULL AFTER `create_time`;
 update dataset_table_task_log set trigger_type='Cron';
 
+ALTER TABLE `dataset_table_task` ADD COLUMN `extra_data` LONGTEXT NULL AFTER `last_exec_status`;
