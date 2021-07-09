@@ -9,9 +9,12 @@ import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
+import io.dataease.commons.constants.ScheduleType;
+import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
@@ -94,6 +97,26 @@ public class DataSetTableService {
         }
     }
 
+    private void extractData(DataSetTableRequest datasetTable) throws Exception{
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+            commonThreadPool.addTask(() -> {
+                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
+            });
+            return;
+        }
+        if (StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
+            DataSetTaskRequest dataSetTaskRequest = new DataSetTaskRequest();
+            DatasetTableTask datasetTableTask = new DatasetTableTask();
+            datasetTableTask.setTableId(datasetTable.getId());
+            datasetTableTask.setRate(ScheduleType.SIMPLE.toString());
+            datasetTableTask.setType("all_scope");
+            datasetTableTask.setName(datasetTable.getName() + " 更新设置");
+            datasetTableTask.setEnd("0");
+            dataSetTaskRequest.setDatasetTableTask(datasetTableTask);
+            dataSetTableTaskService.save(dataSetTaskRequest);
+        }
+    }
+
     public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
@@ -110,11 +133,7 @@ public class DataSetTableService {
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
                 saveTableField(datasetTable);
-                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-                    commonThreadPool.addTask(() -> {
-                        extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
-                    });
-                }
+                extractData(datasetTable);
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
@@ -129,11 +148,11 @@ public class DataSetTableService {
                     if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
                         if (datasetTable.getEditType() == 0) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
+                                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
                             });
                         } else if (datasetTable.getEditType() == 1) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractData(datasetTable.getId(), null, "add_scope", null);
+                                extractDataService.extractExcelData(datasetTable.getId(),  "add_scope");
                             });
                         }
                     }
@@ -242,7 +261,7 @@ public class DataSetTableService {
         List<DatasetTableField> quota = new ArrayList<>();
 
         fields.forEach(field -> {
-            if (field.getDeType() == 2 || field.getDeType() == 3) {
+            if (StringUtils.equalsIgnoreCase("q", field.getGroupType())) {
                 quota.add(field);
             } else {
                 dimension.add(field);
@@ -259,6 +278,8 @@ public class DataSetTableService {
                 .checked(true)
                 .columnIndex(999)
                 .deType(2)
+                .extField(1)
+                .groupType("q")
                 .build();
         quota.add(count);
 
@@ -330,8 +351,8 @@ public class DataSetTableService {
                     e.printStackTrace();
                 }
                 try {
-                    datasourceRequest.setQuery(qp.createQueryCountSQL(table));
-                    dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -380,8 +401,8 @@ public class DataSetTableService {
                     e.printStackTrace();
                 }
                 try {
-                    datasourceRequest.setQuery(qp.createQueryCountSQL(table));
-                    dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -414,7 +435,7 @@ public class DataSetTableService {
                     e.printStackTrace();
                 }
                 try {
-                    datasourceRequest.setQuery(qp.createQueryCountSQL(table));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
                     dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -435,7 +456,7 @@ public class DataSetTableService {
             }
 
             try {
-                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
+                datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
                 dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -694,6 +715,8 @@ public class DataSetTableService {
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(syncTime);
+                datasetTableField.setExtField(0);
+                datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
                 dataSetTableFieldsService.save(datasetTableField);
             }
         }
@@ -1174,12 +1197,17 @@ public class DataSetTableService {
 
         DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
         datasetTableTaskLogExample.createCriteria().andStatusEqualTo(JobStatus.Underway.name()).andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
+        List<String> taskIds = datasetTableTaskLogMapper.selectByExample(datasetTableTaskLogExample).stream().map(DatasetTableTaskLog::getTaskId).collect(Collectors.toList());
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
+
+        DatasetTableTask datasetTableTask = new DatasetTableTask();
+        datasetTableTask.setLastExecStatus(JobStatus.Error.name());
+        dataSetTableTaskService.update(taskIds, datasetTableTask);
+
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());
             extractDataService.deleteFile("incremental_add", jobStoppeddDatasetTable.getId());
             extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
-
         }
     }
 

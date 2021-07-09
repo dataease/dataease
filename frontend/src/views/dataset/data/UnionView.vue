@@ -69,6 +69,9 @@
                 <span v-if="item.deType === 2 || item.deType === 3">
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
                 </span>
+                <span v-if="item.deType === 5">
+                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                </span>
               </span>
               <span>
                 {{ item.name }}
@@ -114,6 +117,9 @@
                 </span>
                 <span v-if="item.deType === 2 || item.deType === 3">
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                </span>
+                <span v-if="item.deType === 5">
+                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
                 </span>
               </span>
               <span>

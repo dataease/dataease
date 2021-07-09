@@ -129,6 +129,7 @@ export default {
     password_error: '密码不小于 8 位'
   },
   commons: {
+    success: '成功',
     switch_lang: '切换语言成功',
     close: '关闭',
     icon: '图标',
@@ -795,6 +796,14 @@ export default {
     filter_value_can_null: '过滤值不能为空',
     filter_like: '包含',
     filter_not_like: '不包含',
+    color_light: '明亮',
+    color_classical: '经典',
+    color_fresh: '清新',
+    color_energy: '活力',
+    color_red: '火红',
+    color_fast: '轻快',
+    color_spiritual: '灵动'
+    filter_not_like: '不包含',
     chart_details: '视图明细',
     export_details: '导出明细'
   },
@@ -858,6 +867,7 @@ export default {
     select_data_time: '选择日期时间',
     execute_rate: '执行频率',
     execute_once: '立即执行',
+    simple_cron: '简单重复',
     cron_config: '表达式设定',
     no_limit: '无限制',
     set_end_time: '设定结束时间',
@@ -921,7 +931,27 @@ export default {
     m2: ' 移动到',
     char_can_not_more_50: '数据集名称不能超过50个字符',
     task_add_title: '添加任务',
-    task_edit_title: '编辑任务'
+    task_edit_title: '编辑任务',
+    sync_latter: '稍后同步',
+    task: {
+      list: '任务列表',
+      record: '执行记录',
+      create: '新建任务',
+      name: '任务名称',
+      last_exec_time: '上次执行时间',
+      next_exec_time: '下次执行时间',
+      last_exec_status: '上次执行结果',
+      task_status: '任务状态',
+      dataset: '数据集',
+      search_by_name: '根据名称搜索',
+      underway: '运行中',
+      stopped: '停止',
+      exec: '执行',
+      confirm_exec: '手动触发执行？',
+      change_success: '状态切换成功'
+    },
+    field_group_type: '分类',
+    location: '地理位置'
   },
   datasource: {
     datasource: '数据源',
@@ -1196,7 +1226,10 @@ export default {
     week_start: '从星期',
     week_end: '至星期',
     every_year: '每年',
-    week_tips: '说明：1-7 分别对应 周日-周六'
+    week_tips: '说明：1-7 分别对应 周日-周六',
+    minute_limit: '分钟不能小于1，大于59',
+    hour_limit: '小时不能小于1，大于23',
+    day_limit: '天不能小于1，大于31'
   },
   dept: {
     can_not_move_change_sort: '不能移动以改变排序',

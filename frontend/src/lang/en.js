@@ -129,6 +129,7 @@ export default {
     password_error: 'The password can not be less than 8 digits'
   },
   commons: {
+    success: 'Success',
     switch_lang: 'Switch Language Success',
     close: 'Close',
     icon: 'Icon',
@@ -797,6 +798,14 @@ export default {
     filter_not_like: 'Not Contain',
     chart_details: 'Chart Details',
     export_details: 'Export Details'
+    filter_not_like: 'Not Contain',
+    color_light: 'Light',
+    color_classical: 'Classical',
+    color_fresh: 'Fresh',
+    color_energy: 'Energy',
+    color_red: 'Red',
+    color_fast: 'Fast',
+    color_spiritual: 'Spiritual'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -858,6 +867,7 @@ export default {
     select_data_time: 'Select date time',
     execute_rate: 'Execution frequency',
     execute_once: 'Execution Now',
+    simple_cron: 'Simple repeat',
     cron_config: 'Expression setting',
     no_limit: 'No limit',
     set_end_time: 'Set the end time',
@@ -921,7 +931,27 @@ export default {
     m2: ' To',
     char_can_not_more_50: 'Dataset name can not more 50',
     task_add_title: 'Add Task',
-    task_edit_title: 'Edit Task'
+    task_edit_title: 'Edit Task',
+    sync_latter: 'Sync latter',
+    task: {
+      list: 'Task list',
+      record: 'Execution record',
+      create: 'New task',
+      name: 'Task name',
+      last_exec_time: 'Last execution time',
+      next_exec_time: 'Next execution time',
+      last_exec_status: 'Last execution result',
+      task_status: 'Task status',
+      dataset: 'Data set',
+      search_by_name: 'Search by name',
+      underway: 'Running',
+      stopped: 'Stopped',
+      exec: 'Execute',
+      confirm_exec: 'Manual trigger execution？',
+      change_success: 'State switch successful'
+    },
+    field_group_type: 'Type',
+    location: 'Location'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1194,7 +1224,10 @@ export default {
     week_start: 'From week',
     week_end: 'to week',
     every_year: 'Every year',
-    week_tips: 'Tips：1-7 mapping SUN-SAT'
+    week_tips: 'Tips：1-7 mapping SUN-SAT',
+    minute_limit: 'Minutes cannot be less than 1 and greater than 59',
+    hour_limit: 'Hours cannot be less than 1 and greater than 23',
+    day_limit: 'Days cannot be less than 1 and greater than 31'
   },
   dept: {
     can_not_move_change_sort: 'Cannot move to change sort',

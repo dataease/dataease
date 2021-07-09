@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree @getTable="getTable" />
+      <dataset-group-selector-tree @getTable="getTable" :mode=mode :type=type :showMode=showMode />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />
@@ -14,7 +14,6 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 
-// import DatasetGroupSelector from '../../dataset/common/DatasetGroupSelector'
 import DatasetGroupSelectorTree from '../../dataset/common/DatasetGroupSelectorTree'
 import DatasetTableData from '../../dataset/common/DatasetTableData'
 import { getTable } from '@/api/dataset/dataset'
@@ -24,6 +23,23 @@ export default {
   components: {
     DatasetTableData,
     DeMainContainer, DeContainer, DeAsideContainer, DatasetGroupSelectorTree
+  },
+  props: {
+    mode: {
+      type: Number,
+      required: false,
+      default: -1
+    },
+    type: {
+      type: String,
+      required: false,
+      default: null
+    },
+    showMode: {
+      type: String,
+      required: false,
+      default: null
+    }
   },
   data() {
     return {

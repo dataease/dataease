@@ -173,6 +173,7 @@ public class ChartViewService {
             throw new RuntimeException(Translator.get("i18n_dataset_delete"));
         }
         // 判断连接方式，直连或者定时抽取 table.mode
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
         List<String[]> data = new ArrayList<>();
         if (table.getMode() == 0) {// 直连
             Datasource ds = datasourceService.get(table.getDataSourceId());
@@ -180,7 +181,6 @@ public class ChartViewService {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
@@ -201,20 +201,19 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
             /**
              * 直连不实用缓存
-            String key = "provider_sql_"+datasourceRequest.getDatasource().getId() + "_" + datasourceRequest.getTable() + "_" +datasourceRequest.getQuery();
-            Object cache;
-            if ((cache = CacheUtils.get(JdbcConstants.JDBC_PROVIDER_KEY, key)) == null) {
-                data = datasourceProvider.getData(datasourceRequest);
-                CacheUtils.put(JdbcConstants.JDBC_PROVIDER_KEY,key ,data, null, null);
-            }else {
-                data = (List<String[]>) cache;
-            }
+             String key = "provider_sql_"+datasourceRequest.getDatasource().getId() + "_" + datasourceRequest.getTable() + "_" +datasourceRequest.getQuery();
+             Object cache;
+             if ((cache = CacheUtils.get(JdbcConstants.JDBC_PROVIDER_KEY, key)) == null) {
+             data = datasourceProvider.getData(datasourceRequest);
+             CacheUtils.put(JdbcConstants.JDBC_PROVIDER_KEY,key ,data, null, null);
+             }else {
+             data = (List<String[]>) cache;
+             }
              */
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
             Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
@@ -243,12 +242,12 @@ public class ChartViewService {
             // 仪表板有参数不实用缓存
             if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
                 data = datasourceProvider.getData(datasourceRequest);
-            }else {
-                try{
+            } else {
+                try {
                     data = cacheViewData(datasourceProvider, datasourceRequest, id);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     LogUtil.error(e);
-                }finally {
+                } finally {
                     // 如果当前对象被锁 且 当前线程冲入次数 > 0 则释放锁
                     if (lock.isLocked() && lock.getHoldCount() > 0) {
                         lock.unlock();
@@ -320,40 +319,42 @@ public class ChartViewService {
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
         dto.setData(map);
+        dto.setSql(datasourceRequest.getQuery());
         return dto;
     }
 
     /**
      * 避免缓存击穿
      * 虽然流量不一定能够达到击穿的水平
+     *
      * @param datasourceProvider
      * @param datasourceRequest
      * @param viewId
      * @return
      * @throws Exception
      */
-    public List<String[]> cacheViewData(DatasourceProvider datasourceProvider, DatasourceRequest datasourceRequest, String viewId) throws Exception{
-        List<String[]> result ;
+    public List<String[]> cacheViewData(DatasourceProvider datasourceProvider, DatasourceRequest datasourceRequest, String viewId) throws Exception {
+        List<String[]> result;
         Object cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, viewId);
         if (cache == null) {
             if (lock.tryLock()) {// 获取锁成功
-                try{
+                try {
                     result = datasourceProvider.getData(datasourceRequest);
                     if (result != null) {
                         CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, viewId, result, null, null);
                     }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     LogUtil.error(e);
                     throw e;
-                }finally {
+                } finally {
                     lock.unlock();
                 }
-            }else {//获取锁失败
+            } else {//获取锁失败
                 Thread.sleep(100);//避免CAS自旋频率过大 占用cpu资源过高
                 result = cacheViewData(datasourceProvider, datasourceRequest, viewId);
             }
-        }else {
-            result = (List<String[]>)cache;
+        } else {
+            result = (List<String[]>) cache;
         }
         return result;
     }
@@ -402,11 +403,11 @@ public class ChartViewService {
 
     public String chartCopy(String id) {
         String newChartId = UUID.randomUUID().toString();
-       extChartViewMapper.chartCopy(newChartId,id);
+        extChartViewMapper.chartCopy(newChartId, id);
         return newChartId;
     }
 
-    public String searchAdviceSceneId(String panelId){
-       return extChartViewMapper.searchAdviceSceneId(AuthUtils.getUser().getUserId().toString(),panelId);
+    public String searchAdviceSceneId(String panelId) {
+        return extChartViewMapper.searchAdviceSceneId(AuthUtils.getUser().getUserId().toString(), panelId);
     }
 }

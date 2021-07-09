@@ -129,6 +129,7 @@ export default {
     password_error: '密碼不小於 8 位'
   },
   commons: {
+    success: '成功',
     switch_lang: '切換語言成功',
     close: '關閉',
     icon: '圖標',
@@ -795,6 +796,14 @@ export default {
     filter_value_can_null: '過濾值不能為空',
     filter_like: '包含',
     filter_not_like: '不包含',
+    color_light: '明亮',
+    color_classical: '經典',
+    color_fresh: '清新',
+    color_energy: '活力',
+    color_red: '火紅',
+    color_fast: '輕快',
+    color_spiritual: '靈動'
+    filter_not_like: '不包含',
     chart_details: '视图明细',
     export_details: '导出明细'
   },
@@ -857,6 +866,7 @@ export default {
     add_scope: '增量更新',
     select_data_time: '選擇日期時間',
     execute_rate: '執行頻率',
+    simple_cron: '簡單重複',
     execute_once: '立即執行',
     cron_config: '表達時設定',
     no_limit: '無限製',
@@ -921,7 +931,27 @@ export default {
     m2: ' 移動到',
     char_can_not_more_50: '數據集名稱不能超過50個字符',
     task_add_title: '添加任務',
-    task_edit_title: '編輯任務'
+    task_edit_title: '編輯任務',
+    sync_latter: '稍後同步',
+    task: {
+      list: '任務列表',
+      record: '執行紀錄',
+      create: '新建任務',
+      name: '任務名稱',
+      last_exec_time: '上次執行時間',
+      next_exec_time: '下次執行時間',
+      last_exec_status: '上次執行結果',
+      task_status: '任務狀態',
+      dataset: '數據集',
+      search_by_name: '根據名稱搜索',
+      underway: '運行中',
+      stopped: '停止',
+      exec: '執行',
+      confirm_exec: '手動觸發執行？',
+      change_success: '狀態切換成功'
+    },
+    field_group_type: '分類',
+    location: '地理位置'
   },
   datasource: {
     datasource: '數據源',
@@ -1194,7 +1224,10 @@ export default {
     week_start: '從星期',
     week_end: '至星期',
     every_year: '每年',
-    week_tips: '說明：1-7 分別對應 周日-周六'
+    week_tips: '说明：1-7 分别对应 周日-周六',
+    minute_limit: '分鐘不能小於1，大於59',
+    hour_limit: '小時不能小於1，大於523',
+    day_limit: '天不能小於1，大於531'
   },
   dept: {
     can_not_move_change_sort: '不能移動以改變排序',

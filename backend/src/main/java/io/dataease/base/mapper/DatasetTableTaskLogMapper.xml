@@ -9,6 +9,7 @@
     <result column="end_time" jdbcType="BIGINT" property="endTime" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="trigger_type" jdbcType="VARCHAR" property="triggerType" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.DatasetTableTaskLog">
     <result column="info" jdbcType="LONGVARCHAR" property="info" />
@@ -72,7 +73,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, task_id, start_time, end_time, `status`, create_time
+    id, table_id, task_id, start_time, end_time, `status`, create_time, trigger_type
   </sql>
   <sql id="Blob_Column_List">
     info
@@ -128,10 +129,12 @@
   <insert id="insert" parameterType="io.dataease.base.domain.DatasetTableTaskLog">
     insert into dataset_table_task_log (id, table_id, task_id, 
       start_time, end_time, `status`, 
-      create_time, info)
+      create_time, trigger_type, info
+      )
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR}, 
       #{startTime,jdbcType=BIGINT}, #{endTime,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{info,jdbcType=LONGVARCHAR})
+      #{createTime,jdbcType=BIGINT}, #{triggerType,jdbcType=VARCHAR}, #{info,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTableTaskLog">
     insert into dataset_table_task_log
@@ -156,6 +159,9 @@
       </if>
       <if test="createTime != null">
         create_time,
+      </if>
+      <if test="triggerType != null">
+        trigger_type,
       </if>
       <if test="info != null">
         info,
@@ -182,6 +188,9 @@
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="triggerType != null">
+        #{triggerType,jdbcType=VARCHAR},
       </if>
       <if test="info != null">
         #{info,jdbcType=LONGVARCHAR},
@@ -218,6 +227,9 @@
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
       </if>
+      <if test="record.triggerType != null">
+        trigger_type = #{record.triggerType,jdbcType=VARCHAR},
+      </if>
       <if test="record.info != null">
         info = #{record.info,jdbcType=LONGVARCHAR},
       </if>
@@ -235,6 +247,7 @@
       end_time = #{record.endTime,jdbcType=BIGINT},
       `status` = #{record.status,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
+      trigger_type = #{record.triggerType,jdbcType=VARCHAR},
       info = #{record.info,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -248,7 +261,8 @@
       start_time = #{record.startTime,jdbcType=BIGINT},
       end_time = #{record.endTime,jdbcType=BIGINT},
       `status` = #{record.status,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=BIGINT}
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      trigger_type = #{record.triggerType,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -274,6 +288,9 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
+      <if test="triggerType != null">
+        trigger_type = #{triggerType,jdbcType=VARCHAR},
+      </if>
       <if test="info != null">
         info = #{info,jdbcType=LONGVARCHAR},
       </if>
@@ -288,6 +305,7 @@
       end_time = #{endTime,jdbcType=BIGINT},
       `status` = #{status,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
+      trigger_type = #{triggerType,jdbcType=VARCHAR},
       info = #{info,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -298,7 +316,8 @@
       start_time = #{startTime,jdbcType=BIGINT},
       end_time = #{endTime,jdbcType=BIGINT},
       `status` = #{status,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=BIGINT}
+      create_time = #{createTime,jdbcType=BIGINT},
+      trigger_type = #{triggerType,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

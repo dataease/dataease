@@ -1,11 +1,26 @@
 <template>
   <span>
-    <el-dropdown trigger="click" size="mini" @command="clickItem">
+    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis">
+      <span style="float: left">
+        <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+        <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+        <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+        <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+      </span>
+      <span>{{ item.name }}</span>
+    </el-tag>
+    <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis">
+          <span style="float: left">
+            <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+            <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+            <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+            <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+          </span>
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
-        <el-dropdown-menu v-if="hasDataPermission('manage',param.privileges)" slot="dropdown">
+        <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">

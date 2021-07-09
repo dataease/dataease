@@ -74,7 +74,9 @@
 <!--        </table>-->
 <!--        <table tableName="v_dataset"/>-->
 <!--        <table tableName="sys_auth_detail"/>-->
-        <table tableName="panel_view"/>
+        <table tableName="dataset_table_task">
+            <columnOverride column="extra_data" javaType="java.lang.String" jdbcType="VARCHAR" />
+        </table>
 
 
     </context>

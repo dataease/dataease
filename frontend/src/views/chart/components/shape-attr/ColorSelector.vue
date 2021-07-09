@@ -122,6 +122,41 @@ export default {
           name: this.$t('chart.color_technology'),
           value: 'technology',
           colors: ['#05f8d6', '#0082fc', '#fdd845', '#22ed7c', '#09b0d3', '#1d27c9', '#f9e264', '#f47a75', '#009db2']
+        },
+        {
+          name: this.$t('chart.color_light'),
+          value: 'light',
+          colors: ['#884898', '#808080', '#82ae46', '#00a3af', '#ef8b07', '#007bbb', '#9d775f', '#fae800', '#5f9b3c']
+        },
+        {
+          name: this.$t('chart.color_classical'),
+          value: 'classical',
+          colors: ['#007bbb', '#ffdb4f', '#dd4b4b', '#2ca9e1', '#ef8b07', '#4a488e', '#82ae46', '#dd4b4b', '#bb9581']
+        },
+        {
+          name: this.$t('chart.color_fresh'),
+          value: 'fresh',
+          colors: ['#5f9b3c', '#75c24b', '#83d65f', '#aacf53', '#c7dc68', '#d8e698', '#e0ebaf', '#bbc8e6', '#e5e5e5']
+        },
+        {
+          name: this.$t('chart.color_energy'),
+          value: 'energy',
+          colors: ['#ef8b07', '#2a83a2', '#f07474', '#c55784', '#274a78', '#7058a3', '#0095d9', '#75c24b', '#808080']
+        },
+        {
+          name: this.$t('chart.color_red'),
+          value: 'red',
+          colors: ['#ff0000', '#ef8b07', '#4c6cb3', '#f8e944', '#69821b', '#9c5ec3', '#00ccdf', '#f07474', '#bb9581']
+        },
+        {
+          name: this.$t('chart.color_fast'),
+          value: 'fast',
+          colors: ['#fae800', '#00c039', '#0482dc', '#bb9581', '#ff7701', '#9c5ec3', '#00ccdf', '#00c039', '#ff7701']
+        },
+        {
+          name: this.$t('chart.color_spiritual'),
+          value: 'spiritual',
+          colors: ['#00a3af', '#4da798', '#57baaa', '#62d0bd', '#6ee4d0', '#86e7d6', '#aeede1', '#bde1e6', '#e5e5e5']
         }
       ],
       colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE))
