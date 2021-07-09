@@ -1236,9 +1236,10 @@ export default {
     content: 'Content',
     sned_time: 'Send Time',
     read_time: 'Read Time',
-    type: 'Type',
+    type: 'Message Type',
     mark_readed: 'Mark As Read',
     please_select: 'Please select at least one message',
-    mark_success: 'Mark read successfully'
+    mark_success: 'Mark read successfully',
+    receive_manage: 'Receive Manage'
   }
 }

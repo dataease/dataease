@@ -1,5 +1,8 @@
 package io.dataease.base.mapper.ext;
 
+import io.dataease.base.domain.SysMsgExample;
+import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.controller.message.dto.MsgGridDto;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -31,6 +34,9 @@ public interface ExtSysMsgMapper {
             "</script>"
     })
     int batchDelete(@Param("msgIds") List<Long> msgIds);
+
+
+    List<MsgGridDto> queryGrid(SysMsgExample example);
 
 
 }

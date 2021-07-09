@@ -95,4 +95,25 @@
     />
 
 
+    <!--消息渠道缓存-->
+    <cache
+        name="sys_msg_channel"
+        eternal="true"
+        maxElementsInMemory="100"
+        maxElementsOnDisk="1000"
+        overflowToDisk="true"
+        diskPersistent="true"
+    />
+
+    <!--消息类型缓存-->
+    <cache
+        name="sys_msg_type"
+        eternal="true"
+        maxElementsInMemory="100"
+        maxElementsOnDisk="1000"
+        overflowToDisk="true"
+        diskPersistent="true"
+    />
+
+
 </ehcache>

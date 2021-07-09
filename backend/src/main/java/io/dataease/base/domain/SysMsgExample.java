@@ -224,63 +224,63 @@ public class SysMsgExample {
             return (Criteria) this;
         }
 
-        public Criteria andTypeIsNull() {
-            addCriterion("`type` is null");
+        public Criteria andTypeIdIsNull() {
+            addCriterion("type_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andTypeIsNotNull() {
-            addCriterion("`type` is not null");
+        public Criteria andTypeIdIsNotNull() {
+            addCriterion("type_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andTypeEqualTo(Integer value) {
-            addCriterion("`type` =", value, "type");
+        public Criteria andTypeIdEqualTo(Long value) {
+            addCriterion("type_id =", value, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotEqualTo(Integer value) {
-            addCriterion("`type` <>", value, "type");
+        public Criteria andTypeIdNotEqualTo(Long value) {
+            addCriterion("type_id <>", value, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThan(Integer value) {
-            addCriterion("`type` >", value, "type");
+        public Criteria andTypeIdGreaterThan(Long value) {
+            addCriterion("type_id >", value, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThanOrEqualTo(Integer value) {
-            addCriterion("`type` >=", value, "type");
+        public Criteria andTypeIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("type_id >=", value, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThan(Integer value) {
-            addCriterion("`type` <", value, "type");
+        public Criteria andTypeIdLessThan(Long value) {
+            addCriterion("type_id <", value, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThanOrEqualTo(Integer value) {
-            addCriterion("`type` <=", value, "type");
+        public Criteria andTypeIdLessThanOrEqualTo(Long value) {
+            addCriterion("type_id <=", value, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeIn(List<Integer> values) {
-            addCriterion("`type` in", values, "type");
+        public Criteria andTypeIdIn(List<Long> values) {
+            addCriterion("type_id in", values, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotIn(List<Integer> values) {
-            addCriterion("`type` not in", values, "type");
+        public Criteria andTypeIdNotIn(List<Long> values) {
+            addCriterion("type_id not in", values, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeBetween(Integer value1, Integer value2) {
-            addCriterion("`type` between", value1, value2, "type");
+        public Criteria andTypeIdBetween(Long value1, Long value2) {
+            addCriterion("type_id between", value1, value2, "typeId");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotBetween(Integer value1, Integer value2) {
-            addCriterion("`type` not between", value1, value2, "type");
+        public Criteria andTypeIdNotBetween(Long value1, Long value2) {
+            addCriterion("type_id not between", value1, value2, "typeId");
             return (Criteria) this;
         }
 
@@ -341,76 +341,6 @@ public class SysMsgExample {
 
         public Criteria andStatusNotBetween(Boolean value1, Boolean value2) {
             addCriterion("`status` not between", value1, value2, "status");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterIsNull() {
-            addCriterion("router is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterIsNotNull() {
-            addCriterion("router is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterEqualTo(String value) {
-            addCriterion("router =", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterNotEqualTo(String value) {
-            addCriterion("router <>", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterGreaterThan(String value) {
-            addCriterion("router >", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterGreaterThanOrEqualTo(String value) {
-            addCriterion("router >=", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterLessThan(String value) {
-            addCriterion("router <", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterLessThanOrEqualTo(String value) {
-            addCriterion("router <=", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterLike(String value) {
-            addCriterion("router like", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterNotLike(String value) {
-            addCriterion("router not like", value, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterIn(List<String> values) {
-            addCriterion("router in", values, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterNotIn(List<String> values) {
-            addCriterion("router not in", values, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterBetween(String value1, String value2) {
-            addCriterion("router between", value1, value2, "router");
-            return (Criteria) this;
-        }
-
-        public Criteria andRouterNotBetween(String value1, String value2) {
-            addCriterion("router not between", value1, value2, "router");
             return (Criteria) this;
         }
 

@@ -2,7 +2,7 @@
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <el-radio-group v-model="selectType" style="margin-bottom: 15px;" @change="typeChange">
-      <el-radio-button v-for="(item,index) in msgTypes" :key="index" class="de-msg-radio-class" :label="item.value">{{ $t(item.label) }}</el-radio-button>
+      <el-radio-button v-for="(item,index) in $store.getters.msgTypes.filter(type => type.pid <= 0)" :key="index" class="de-msg-radio-class" :label="item.msgTypeId">{{ $t(item.typeName) }}</el-radio-button>
 
     </el-radio-group>
     <complex-table
@@ -47,7 +47,7 @@
 
       <el-table-column prop="type" sortable="custom" :label="$t('webmsg.type')" width="120">
         <template slot-scope="scope">
-          <span>{{ $t(getTypeName(scope.row.type)) }}</span>
+          <span>{{ getTypeName(scope.row.typeId) }}</span>
         </template>
       </el-table-column>
 
@@ -61,7 +61,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 import { query, updateStatus, batchRead } from '@/api/system/msg'
-import { msgTypes, getTypeName } from '@/utils/webMsg'
+import { msgTypes, getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import bus from '@/utils/bus'
 import { addOrder, formatOrders } from '@/utils/index'
 
@@ -99,6 +99,10 @@ export default {
   },
   mounted() {
     this.search()
+  },
+  created() {
+    // 先加载消息类型
+    loadMsgTypes()
   },
   methods: {
     select(selection) {

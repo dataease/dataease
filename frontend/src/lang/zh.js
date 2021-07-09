@@ -1238,9 +1238,10 @@ export default {
     content: '消息内容',
     sned_time: '提交时间',
     read_time: '查看时间',
-    type: '类型',
+    type: '消息类型',
     mark_readed: '标记已读',
     please_select: '请至少选择一条消息',
-    mark_success: '标记已读成功'
+    mark_success: '标记已读成功',
+    receive_manage: '接收管理'
   }
 }
