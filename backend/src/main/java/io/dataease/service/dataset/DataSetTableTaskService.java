@@ -1,10 +1,8 @@
 package io.dataease.service.dataset;
 
 import com.google.gson.Gson;
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.base.domain.DatasetTableTask;
-import io.dataease.base.domain.DatasetTableTaskExample;
-import io.dataease.base.domain.DatasetTableTaskLog;
+import io.dataease.base.domain.*;
+import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
@@ -53,6 +51,9 @@ public class DataSetTableTaskService {
     private ExtractDataService extractDataService;
     @Resource
     private ExtDataSetTaskMapper extDataSetTaskMapper;
+    @Resource
+    private DatasetTableMapper datasetTableMapper;
+
 
     public DatasetTableTask save(DataSetTaskRequest dataSetTaskRequest) throws Exception {
         checkName(dataSetTaskRequest);
@@ -86,19 +87,15 @@ public class DataSetTableTaskService {
         } else {
             datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);
         }
+
+        // simple
         if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString()) && datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Underway.name())) { // SIMPLE 类型，提前占位
             execNow(datasetTableTask);
-            datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
-            datasetTableTask.setLastExecTime(System.currentTimeMillis());
-            update(datasetTableTask);
+            scheduleService.addSchedule(datasetTableTask);
         }
+        //cron、simple_cron
         if(!datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())){
             scheduleService.addSchedule(datasetTableTask);
-        }else {
-            if(datasetTableTask.getStatus().equalsIgnoreCase(JobStatus.Underway.name())){
-                System.out.println(new Gson().toJson(datasetTableTask));
-                scheduleService.addSchedule(datasetTableTask);
-            }
         }
 
         return datasetTableTask;
@@ -111,17 +108,30 @@ public class DataSetTableTaskService {
                 DataEaseException.throwException(Translator.get("i18n_not_exec_add_sync"));
             }
         }
-        if (extractDataService.existSyncTask(dataSetTableService.get(datasetTableTask.getTableId()), null)) {
+        if (existSyncTask(dataSetTableService.get(datasetTableTask.getTableId()), datasetTableTask)) {
             DataEaseException.throwException(Translator.get("i18n_sync_job_exists"));
         }
-        //write log
-        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-        datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
-        datasetTableTaskLog.setTaskId(datasetTableTask.getId());
-        datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-        datasetTableTaskLog.setStartTime(System.currentTimeMillis());
-        datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
-        dataSetTableTaskLogService.save(datasetTableTaskLog);
+    }
+
+    private synchronized boolean existSyncTask(DatasetTable  datasetTable,  DatasetTableTask datasetTableTask) {
+        datasetTable.setSyncStatus(JobStatus.Underway.name());
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
+        example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
+        Boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+        if(!existSyncTask){
+            datasetTableTask.setLastExecTime(System.currentTimeMillis());
+            datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
+            update(datasetTableTask);
+            DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
+            datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
+            datasetTableTaskLog.setTaskId(datasetTableTask.getId());
+            datasetTableTaskLog.setStatus(JobStatus.Underway.name());
+            datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+            datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
+            dataSetTableTaskLogService.save(datasetTableTaskLog);
+        }
+        return existSyncTask;
     }
 
     public void delete(String id) {
@@ -207,11 +217,6 @@ public class DataSetTableTaskService {
 
     public void execTask(DatasetTableTask datasetTableTask) throws Exception{
         execNow(datasetTableTask);
-//        datasetTableTask.setStatus(TaskStatus.Underway.name());
-        datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
-        datasetTableTask.setLastExecTime(System.currentTimeMillis());
-        update(datasetTableTask);
-
         if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())){
             scheduleService.fireNow(datasetTableTask);
         }

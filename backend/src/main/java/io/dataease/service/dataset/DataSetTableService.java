@@ -100,8 +100,9 @@ public class DataSetTableService {
     private void extractData(DataSetTableRequest datasetTable) throws Exception{
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             commonThreadPool.addTask(() -> {
-                extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
+                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
             });
+            return;
         }
         if (StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
             DataSetTaskRequest dataSetTaskRequest = new DataSetTaskRequest();
@@ -111,8 +112,6 @@ public class DataSetTableService {
             datasetTableTask.setType("all_scope");
             datasetTableTask.setName(datasetTable.getName() + " 更新设置");
             datasetTableTask.setEnd("0");
-            datasetTableTask.setStatus(TaskStatus.Underway.name());
-            datasetTableTask.setStartTime(System.currentTimeMillis());
             dataSetTaskRequest.setDatasetTableTask(datasetTableTask);
             dataSetTableTaskService.save(dataSetTaskRequest);
         }
@@ -149,11 +148,11 @@ public class DataSetTableService {
                     if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
                         if (datasetTable.getEditType() == 0) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
+                                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
                             });
                         } else if (datasetTable.getEditType() == 1) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractData(datasetTable.getId(), null, "add_scope", null);
+                                extractDataService.extractExcelData(datasetTable.getId(),  "add_scope");
                             });
                         }
                     }
