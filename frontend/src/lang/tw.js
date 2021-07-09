@@ -802,8 +802,7 @@ export default {
     color_energy: '活力',
     color_red: '火紅',
     color_fast: '輕快',
-    color_spiritual: '靈動'
-    filter_not_like: '不包含',
+    color_spiritual: '靈動',
     chart_details: '视图明细',
     export_details: '导出明细'
   },
