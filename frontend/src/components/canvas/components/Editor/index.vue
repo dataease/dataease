@@ -90,6 +90,23 @@
       class="ref-line h-line"
       :style="{ top: item.position, left: item.origin, width: item.lineLength }"
     />
+
+    <!--视图详情-->
+    <el-dialog
+      :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+      :visible.sync="chartDetailsVisible"
+      width="70%"
+      class="dialog-css"
+      :destroy-on-close="true"
+    >
+      <span style="position: absolute;right: 70px;top:15px">
+        <el-button class="el-icon-download" size="mini" @click="exportExcel">
+          <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+          {{ $t('chart.export_details') }}
+        </el-button>
+      </span>
+      <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+    </el-dialog>
   </div>
 </template>
 
@@ -108,9 +125,10 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog },
   props: {
     isEdit: {
       type: Boolean,
@@ -168,7 +186,10 @@ export default {
       hLine: [],
       changeIndex: 0,
       timeMachine: null,
-      outStyleOld: null
+      outStyleOld: null,
+      chartDetailsVisible: false,
+      showChartInfo: {},
+      showChartTableInfo: {}
     }
   },
   computed: {
@@ -255,6 +276,7 @@ export default {
     // bus.$on('delete-condition', condition => {
     //   this.deleteCondition(condition)
     // })
+    eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
   },
   created() {
     // this.$store.dispatch('conditions/clear')
@@ -549,6 +571,15 @@ export default {
     destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
+    },
+    openChartDetailsDialog(chartInfo) {
+      debugger
+      this.showChartInfo = chartInfo.chart
+      this.showChartTableInfo = chartInfo.tableChart
+      this.chartDetailsVisible = true
+    },
+    exportExcel() {
+      this.$refs['userViewDialog'].exportExcel()
     }
   }
 }
@@ -595,6 +626,15 @@ export default {
 }
 .h-line {
   height: 1px;
+}
+.dialog-css>>>.el-dialog__title {
+  font-size: 14px;
+}
+.dialog-css >>> .el-dialog__header {
+  padding: 20px 20px 0;
+}
+.dialog-css >>> .el-dialog__body {
+  padding: 10px 20px 20px;
 }
 
 </style>

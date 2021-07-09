@@ -3,7 +3,6 @@
     <de-aside-container>
       <dataset-group-selector-tree @getTable="getTable" :mode=mode :type=type :showMode=showMode />
     </de-aside-container>
-
     <de-main-container>
       <dataset-table-data :table="table" />
     </de-main-container>

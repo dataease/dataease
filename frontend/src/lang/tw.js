@@ -803,6 +803,9 @@ export default {
     color_red: '火紅',
     color_fast: '輕快',
     color_spiritual: '靈動'
+    filter_not_like: '不包含',
+    chart_details: '视图明细',
+    export_details: '导出明细'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
