@@ -112,6 +112,8 @@ public class DataSetTableService {
             datasetTableTask.setType("all_scope");
             datasetTableTask.setName(datasetTable.getName() + " 更新设置");
             datasetTableTask.setEnd("0");
+            datasetTableTask.setStatus(TaskStatus.Underway.name());
+            datasetTableTask.setStartTime(System.currentTimeMillis());
             dataSetTaskRequest.setDatasetTableTask(datasetTableTask);
             dataSetTableTaskService.save(dataSetTaskRequest);
         }

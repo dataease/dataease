@@ -376,7 +376,11 @@ public class MysqlQueryProvider extends QueryProvider {
     public String createRawQuerySQL(String table, List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+            if(f.getDeExtractType() == 4){ // 处理 tinyint
+                stringBuilder.append("concat(`").append(f.getOriginName()).append("`,'') AS ").append(f.getDataeaseName());
+            }else {
+                stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+            }
             return stringBuilder.toString();
         }).toArray(String[]::new);
         return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
