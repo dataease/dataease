@@ -951,16 +951,11 @@ public class DataSetTableService {
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
-                    } else if (i == 1) {
-                        if (row == null) {
-                            break;
-                        }
-                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
                         if (row == null) {
                             break;
                         }
-                        r[j] = readCell(row.getCell(j), false, null);
+                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     }
                 }
                 if (i > 0) {
@@ -1005,16 +1000,11 @@ public class DataSetTableService {
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
-                    } else if (i == 1) {
-                        if (row == null) {
-                            break;
-                        }
-                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
                         if (row == null) {
                             break;
                         }
-                        r[j] = readCell(row.getCell(j), false, null);
+                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     }
                 }
                 if (i > 0) {
@@ -1083,7 +1073,9 @@ public class DataSetTableService {
                     double eps = 1e-10;
                     if (value - Math.floor(value) < eps) {
                         if (cellType) {
-                            tableFiled.setFieldType("LONG");
+                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")){
+                                tableFiled.setFieldType("LONG");
+                            }
                         }
                         return value.longValue() + "";
                     } else {
@@ -1132,7 +1124,9 @@ public class DataSetTableService {
                     double eps = 1e-10;
                     if (value - Math.floor(value) < eps) {
                         if (cellType) {
-                            tableFiled.setFieldType("LONG");
+                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")){
+                                tableFiled.setFieldType("LONG");
+                            }
                         }
                         return value.longValue() + "";
                     } else {
