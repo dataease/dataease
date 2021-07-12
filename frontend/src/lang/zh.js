@@ -1233,7 +1233,10 @@ export default {
   dept: {
     can_not_move_change_sort: '不能移动以改变排序',
     can_not_move_parent_to_children: '父组织不能移动到自己的子节点下',
-    move_success: '移动成功'
+    move_success: '移动成功',
+    name_exist_pre: '下已存在名称为【',
+    name_exist_suf: '】的组织',
+    root_org: '顶层组织'
   },
   webmsg: {
     web_msg: '站内消息通知',

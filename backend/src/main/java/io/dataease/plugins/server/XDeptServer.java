@@ -55,9 +55,9 @@ public class XDeptServer {
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody XpackCreateDept dept){
+    public int create(@RequestBody XpackCreateDept dept){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
-        deptService.add(dept);
+        return deptService.add(dept);
     }
 
     @PostMapping("/delete")
@@ -67,9 +67,9 @@ public class XDeptServer {
     }
 
     @PostMapping("/update")
-    public void update(@RequestBody XpackCreateDept dept){
+    public int update(@RequestBody XpackCreateDept dept){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
-        deptService.update(dept);
+        return deptService.update(dept);
     }
 
 
