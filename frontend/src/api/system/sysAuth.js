@@ -32,7 +32,7 @@ export function authDetailsModel(authType) {
 
 export function authModel(data) {
   return request({
-    url: '/api/sys_auth/authModels',
+    url: '/plugin/auth/authModels',
     data: data,
     method: 'post'
   })
