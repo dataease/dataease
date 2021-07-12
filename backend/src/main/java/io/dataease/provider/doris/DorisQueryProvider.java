@@ -90,7 +90,7 @@ public class DorisQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
-                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
                 // 处理横轴字段
@@ -177,7 +177,7 @@ public class DorisQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
-                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -199,7 +199,7 @@ public class DorisQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -278,7 +278,7 @@ public class DorisQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -348,7 +348,7 @@ public class DorisQueryProvider extends QueryProvider {
     public String createRawQuerySQL(String table, List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+            stringBuilder.append("`").append(f.getDataeaseName()).append("` AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
         return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
@@ -413,7 +413,7 @@ public class DorisQueryProvider extends QueryProvider {
             String whereName = "";
             String whereTerm = transMysqlFilterTerm(request.getTerm());
             String whereValue = "";
-            String originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            String originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
                 whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
@@ -451,7 +451,7 @@ public class DorisQueryProvider extends QueryProvider {
             String whereName = "";
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-            String originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            String originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
 
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -572,7 +572,7 @@ public class DorisQueryProvider extends QueryProvider {
 
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
-        if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
+        if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
             fieldName = DorisConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             fieldName = String.format(DorisConstants.AGG_FIELD, y.getSummary(), originField);
