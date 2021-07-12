@@ -7,6 +7,7 @@ import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
+import io.dataease.provider.mysql.MySQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -114,6 +115,8 @@ public class DorisQueryProvider extends QueryProvider {
                     if (f.getDeType() == 1) {
                         String cast = String.format(DorisConstants.CAST, originField, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
                         fieldName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
+                    } else if (f.getDeType() == 2) {
+                        fieldName = String.format(DorisConstants.CAST, originField, DorisConstants.DEFAULT_INT_FORMAT);
                     } else {
                         fieldName = originField;
                     }
