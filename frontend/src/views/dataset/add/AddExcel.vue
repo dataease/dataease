@@ -232,7 +232,11 @@ export default {
     cancel() {
       this.dataReset()
       // this.$router.push('/dataset/home')
-      this.$emit('switchComponent', { name: '' })
+      if (this.param.tableId) {
+        this.$emit('switchComponent', { name: 'ViewTable', param: { id: this.param.tableId }})
+      } else {
+        this.$emit('switchComponent', { name: '' })
+      }
     },
 
     dataReset() {
