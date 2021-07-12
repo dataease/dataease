@@ -209,7 +209,7 @@ public class ExtractDataService {
                     saveErrorLog(datasetTableId, taskId, e);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-                    deleteFile("all_scope", datasetTableId);
+//                    deleteFile("all_scope", datasetTableId);
                 }finally {
                     if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
                         datasetTableTask.setRate(ScheduleType.SIMPLE_COMPLETE.toString());
