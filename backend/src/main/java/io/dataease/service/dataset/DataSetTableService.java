@@ -878,10 +878,28 @@ public class DataSetTableService {
         return map;
     }
 
-    public Map<String, Object> excelSaveAndParse(MultipartFile file) throws Exception {
+    public Map<String, Object> excelSaveAndParse(MultipartFile file, String tableId) throws Exception {
         String filename = file.getOriginalFilename();
         // parse file
         Map<String, Object> fileMap = parseExcel(filename, file.getInputStream(), true);
+        if(StringUtils.isNotEmpty(tableId)){
+            List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId);
+            datasetTableFields.sort((o1, o2) -> {
+                if (o1.getColumnIndex() == null) {
+                    return -1;
+                }
+                if (o2.getColumnIndex() == null) {
+                    return 1;
+                }
+                return o1.getColumnIndex().compareTo(o2.getColumnIndex());
+            });
+            List<TableFiled> fields = (List<TableFiled>)fileMap.get("fields");
+            List<String> newFields = fields.stream().map(TableFiled::getRemarks).collect(Collectors.toList());
+            List<String> oldFields  = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
+            if (!oldFields.equals(newFields)) {
+                DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
+            }
+        }
         // save file
         String filePath = saveFile(file);
         Map<String, Object> map = new HashMap<>(fileMap);
