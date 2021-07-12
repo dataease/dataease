@@ -1231,7 +1231,10 @@ export default {
   dept: {
     can_not_move_change_sort: 'Cannot move to change sort',
     can_not_move_parent_to_children: 'Parent organization cannot move to its own child node',
-    move_success: 'Mobile success'
+    move_success: 'Mobile success',
+    name_exist_pre: 'already existed organization named [',
+    name_exist_suf: ']',
+    root_org: 'Top organization'
   },
   webmsg: {
     web_msg: 'On site message notification',
