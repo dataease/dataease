@@ -4,18 +4,24 @@ import io.dataease.base.domain.DatasetTableField;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
+import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static io.dataease.provider.SQLConstants.TABLE_ALIAS_PREFIX;
 
 /**
  * @Author gin
@@ -87,39 +93,54 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields) {
-        String[] array = fields.stream().map(f -> {
-            StringBuilder stringBuilder = new StringBuilder();
-            // 如果原始类型为时间
-            if (f.getDeExtractType() == TIME) {
-                if (f.getDeType() == INT || f.getDeType() == FLOAT) { //日期转数值
-                    if (f.getType().equalsIgnoreCase("DATE")) {
-                        stringBuilder.append("TO_NUMBER( ").append(f.getOriginName()).append(" - TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                .build();
+        List<SQLObj> xFields = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (int i = 0; i < fields.size(); i++) {
+                DatasetTableField f = fields.get(i);
+                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                String fieldAlias = String.format(String.format(OracleConstants.ALIAS_FIX, SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                String fieldName = "";
+                // 处理横轴字段
+                if (f.getDeExtractType() == 1) {
+                    if (f.getDeType() == 2 || f.getDeType() == 3) {
+                        fieldName = String.format(OracleConstants.UNIX_TIMESTAMP, originField) + "*1000";
                     } else {
-                        stringBuilder.append("TO_NUMBER(to_date(to_char( ").append(f.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') -  TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ").append(f.getDataeaseName());
+                        fieldName = originField;
+                    }
+                } else if (f.getDeExtractType() == 0) {
+                    if (f.getDeType() == 2) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == 3) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                    } else if (f.getDeType() == 1) {
+                        fieldName = String.format(OracleConstants.DATE_FORMAT, originField, OracleConstants.DEFAULT_DATE_FORMAT);
+                    } else {
+                        fieldName = originField;
                     }
                 } else {
-                    stringBuilder.append(" ").append(f.getOriginName()).append("  AS ").append(f.getDataeaseName());
+                    if (f.getDeType() == 1) {
+                        String cast = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                        fieldName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                    } else {
+                        fieldName = originField;
+                    }
                 }
-            } else if (f.getDeExtractType() == STRING) {
-                if (f.getDeType() == INT) { // 字符串转数值
-                    stringBuilder.append("CAST( ").append(f.getOriginName()).append("  AS DECIMAL(20,0)) AS ").append(f.getDataeaseName());
-                } else if (f.getDeType() == FLOAT) {// 字符串转数值
-                    stringBuilder.append("CAST( ").append(f.getOriginName()).append("  AS DECIMAL(20,2)) AS ").append(f.getDataeaseName());
-                } else if (f.getDeType() == TIME) {// 字符串转时间
-                    stringBuilder.append("TO_DATE( ").append(f.getOriginName()).append(" ,'yyyy-mm-dd,hh24:mi:ss') AS \"_").append(f.getDataeaseName()).append("\"");
-                } else {
-                    stringBuilder.append(" ").append(f.getOriginName()).append(" AS ").append(f.getDataeaseName());
-                }
-            } else {
-                if (f.getDeType() == TIME) { //数值转时间
-                    stringBuilder.append("TO_CHAR( ").append(f.getOriginName()).append(" / (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') AS ").append(f.getDataeaseName());
-                } else {
-                    stringBuilder.append(" ").append(f.getOriginName()).append(" AS ").append(f.getDataeaseName());
-                }
+                xFields.add(SQLObj.builder()
+                        .fieldName(fieldName)
+                        .fieldAlias(fieldAlias)
+                        .build());
             }
-            return stringBuilder.toString();
-        }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ", StringUtils.join(array, ","), table);
+        }
+
+        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        ST st_sql = stg.getInstanceOf("querySql");
+        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        return st_sql.render();
     }
 
     private String sqlColumn(List<DatasetTableField> fields) {
@@ -131,7 +152,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createQuerySQL(" (" + sqlFix(sql) + ") sqltmp ", fields);
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields);
     }
 
     @Override
@@ -158,154 +179,97 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
-        // 字段汇总 排序等
-        String[] field = yAxis.stream().map(y -> {
-            StringBuilder f = new StringBuilder();
-            if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
-            } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
-            } else {
-                if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                    f.append("CAST(")
-                            .append(y.getSummary()).append("(")
-                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                            .append(") AS DECIMAL(20,2)").append(")");
-                } else {
-                    f.append(y.getSummary()).append("(")
-                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                            .append(")");
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                .build();
+        List<SQLObj> xFields = new ArrayList<>();
+        List<SQLObj> xWheres = new ArrayList<>();
+        List<SQLObj> xOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            for (int i = 0; i < xAxis.size(); i++) {
+                ChartViewFieldDTO x = xAxis.get(i);
+                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                // 处理横轴字段
+                xFields.add(getXFields(x, originField, fieldAlias));
+                // 处理横轴过滤
+                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+                // 处理横轴排序
+                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(x.getSort())
+                            .build());
                 }
             }
-            f.append(" AS  \"_").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append("\" ");
-            return f.toString();
-        }).toArray(String[]::new);
-        String[] groupField = xAxis.stream().map(x -> {
-            StringBuilder stringBuilder = new StringBuilder();
-            // 如果原始类型为时间
-            if (x.getDeExtractType() == TIME) {
-                if (x.getDeType() == INT || x.getDeType() == FLOAT) { //时间转数值
-                    if (x.getType().equalsIgnoreCase("DATE")) {
-                        stringBuilder.append("TO_NUMBER( ").append(x.getOriginName()).append(" - TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS \"_").append(x.getDataeaseName()).append("\" ");
-                    } else {
-                        stringBuilder.append("TO_NUMBER(to_date(to_char( ").append(x.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') -  TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 AS ")
-                                .append(x.getDataeaseName()).append("\" ");
-                    }
-                } else if (x.getDeType() == TIME) { //格式化显示时间
-                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    if (x.getType().equalsIgnoreCase("DATE")) {
-                        stringBuilder.append("to_char( ").append(x.getOriginName()).append(" ,'").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
-                    } else {
-                        stringBuilder.append("to_char(to_date(to_char( ").append(x.getOriginName()).append(" ,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
-                    }
-                } else {
-                    stringBuilder.append(" ").append(x.getOriginName()).append("  AS  _").append(x.getOriginName()).append(" ");
-                }
-            } else {
-                if (x.getDeType() == TIME) {
-                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    if (x.getDeExtractType() == STRING) { //字符串转时间
-                        stringBuilder.append("to_char(to_date(").append(x.getOriginName()).append(" , 'yyyy-MM-dd hh24:mi:ss'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
-                    } else {                            //数值转时间
-                        stringBuilder.append("to_char(").append(x.getOriginName()).append("/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), '").append(format).append("') AS  \"_").append(x.getOriginName()).append("\" ");
-                    }
-                } else {
-                    stringBuilder.append(" ").append(x.getOriginName()).append("  AS  \"_").append(x.getOriginName()).append("\" ");
+        }
+        List<SQLObj> yFields = new ArrayList<>();
+        List<SQLObj> yWheres = new ArrayList<>();
+        List<SQLObj> yOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(yAxis)) {
+            for (int i = 0; i < yAxis.size(); i++) {
+                ChartViewFieldDTO y = yAxis.get(i);
+                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
+                // 处理纵轴字段
+                yFields.add(getYFields(y, originField, fieldAlias));
+                // 处理纵轴过滤
+                yWheres.addAll(getYWheres(y, originField, fieldAlias));
+                // 处理纵轴排序
+                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                    yOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(y.getSort())
+                            .build());
                 }
             }
-            return stringBuilder.toString();
-        }).toArray(String[]::new);
-        String[] group = xAxis.stream().map(x -> " " + x.getOriginName() + " ").toArray(String[]::new);
-        String[] xOrder = xAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> " _" + f.getOriginName() + "  " + f.getSort()).toArray(String[]::new);
-        String[] yOrder = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> " _" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + "  " + f.getSort()).toArray(String[]::new);
-        String[] order = Arrays.copyOf(xOrder, xOrder.length + yOrder.length);
-        System.arraycopy(yOrder, 0, order, xOrder.length, yOrder.length);
-
-        String[] xFilter = xAxis.stream().filter(x -> CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0)
-                .map(x -> {
-                    String[] s = x.getFilter().stream().map(f -> {
-                        StringBuilder filter = new StringBuilder();
-                        if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(cast( ")
-                                    .append(x.getOriginName())
-                                    .append("  AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
-                        } else {
-                            filter.append(" AND  ").append(x.getOriginName()).append(" ");
-                        }
-                        filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                            filter.append("(null,'')");
-                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                            filter.append(" AND ").append(x.getOriginName()).append(" <> ''");
-                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                            filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
-                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("'%").append(f.getValue()).append("%'");
-                        } else {
-                            filter.append("'").append(f.getValue()).append("'");
-                        }
-                        return filter.toString();
-                    }).toArray(String[]::new);
-                    return StringUtils.join(s, " ");
-                }).toArray(String[]::new);
-
-        String sql = MessageFormat.format("SELECT {0},{1} FROM {2} WHERE 1=1 {3} GROUP BY {4} ORDER BY null,{5}",
-                StringUtils.join(groupField, ","),
-                StringUtils.join(field, ","),
-                table,
-                (xFilter.length > 0 ? StringUtils.join(xFilter, " ") : "") + transCustomFilter(customFilter) + transExtFilter(extFilterRequestList),// origin field filter and panel field filter
-                StringUtils.join(group, ","),
-                StringUtils.join(order, ","));
-        if (sql.endsWith(",")) {
-            sql = sql.substring(0, sql.length() - 1);
         }
-        // 如果是对结果字段过滤，则再包裹一层sql
-        String[] resultFilter = yAxis.stream().filter(y -> CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0)
-                .map(y -> {
-                    String[] s = y.getFilter().stream().map(f -> {
-                        StringBuilder filter = new StringBuilder();
-                        // 原始类型不是时间，在de中被转成时间的字段做处理
-                        if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(CAST( _")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ")
-                                    .append(" AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
-                        } else {
-                            filter.append(" AND  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
-                        }
-                        filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                            filter.append("(null,'')");
-                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                            filter.append(" AND _")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName())
-                                    .append(" <> ''");
-                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                            filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
-                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("'%").append(f.getValue()).append("%'");
-                        } else {
-                            filter.append("'").append(f.getValue()).append("'");
-                        }
-                        return filter.toString();
-                    }).toArray(String[]::new);
-                    return StringUtils.join(s, " ");
-                }).toArray(String[]::new);
-        if (resultFilter.length == 0) {
-            return sql;
-        } else {
-            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
-                    "(" + sql + ") tmp",
-                    StringUtils.join(resultFilter, " "),
-                    StringUtils.join(yOrder, ","));
-            return filterSql;
-        }
+        // 处理视图中字段过滤
+        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        // 处理仪表板字段过滤
+        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // 构建sql所有参数
+        List<SQLObj> fields = new ArrayList<>();
+        fields.addAll(xFields);
+        fields.addAll(yFields);
+        List<SQLObj> wheres = new ArrayList<>();
+        wheres.addAll(xWheres);
+        if (customWheres != null) wheres.addAll(customWheres);
+        if (extWheres != null) wheres.addAll(extWheres);
+        List<SQLObj> groups = new ArrayList<>();
+        groups.addAll(xFields);
+        // 外层再次套sql
+        List<SQLObj> orders = new ArrayList<>();
+        orders.addAll(xOrders);
+        orders.addAll(yOrders);
+        List<SQLObj> aggWheres = new ArrayList<>();
+        aggWheres.addAll(yWheres);
+
+        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        ST st_sql = stg.getInstanceOf("querySql");
+        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        String sql = st_sql.render();
+
+        ST st = stg.getInstanceOf("querySql");
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
+        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+        return st.render();
     }
 
     @Override
     public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
-        return getSQL(" (" + sqlFix(sql) + ") tmp ", xAxis, yAxis, customFilter, extFilterRequestList);
+        return getSQL("(" + sqlFix(sql) + ")", xAxis, yAxis, customFilter, extFilterRequestList);
     }
 
     @Override
@@ -316,84 +280,69 @@ public class OracleQueryProvider extends QueryProvider {
     @Override
     public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
-        String[] field = yAxis.stream().map(y -> {
-            StringBuilder f = new StringBuilder();
-            if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
-            } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-                f.append(y.getSummary()).append("(").append(y.getOriginName()).append(")");
-            } else {
-                if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                    f.append("CAST(")
-                            .append(y.getSummary()).append("(")
-                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                            .append(") AS DECIMAL(20,2)").append(")");
-                } else {
-                    f.append(y.getSummary()).append("(")
-                            .append("CAST( ").append(y.getOriginName()).append("  AS ").append(y.getDeType() == 2 ? "DECIMAL(20,0)" : "DECIMAL(20,2)").append(")")
-                            .append(")");
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                .build();
+        List<SQLObj> yFields = new ArrayList<>();
+        List<SQLObj> yWheres = new ArrayList<>();
+        List<SQLObj> yOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(yAxis)) {
+            for (int i = 0; i < yAxis.size(); i++) {
+                ChartViewFieldDTO y = yAxis.get(i);
+                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
+                // 处理纵轴字段
+                yFields.add(getYFields(y, originField, fieldAlias));
+                // 处理纵轴过滤
+                yWheres.addAll(getYWheres(y, originField, fieldAlias));
+                // 处理纵轴排序
+                if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                    yOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(y.getSort())
+                            .build());
                 }
             }
-            f.append(" AS  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
-            return f.toString();
-        }).toArray(String[]::new);
-
-        String[] order = yAxis.stream().filter(f -> StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none"))
-                .map(f -> " _" + f.getSummary() + "_" + (StringUtils.equalsIgnoreCase(f.getOriginName(), "*") ? "" : f.getOriginName()) + "  " + f.getSort()).toArray(String[]::new);
-
-        String sql = MessageFormat.format("SELECT {0} FROM {1} WHERE 1=1 {2} ORDER BY null,{3}",
-                StringUtils.join(field, ","),
-                table,
-                transCustomFilter(customFilter) + transExtFilter(extFilterRequestList),// origin field filter and panel field filter
-                StringUtils.join(order, ","));
-        if (sql.endsWith(",")) {
-            sql = sql.substring(0, sql.length() - 1);
         }
-        // 如果是对结果字段过滤，则再包裹一层sql
-        String[] resultFilter = yAxis.stream().filter(y -> CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0)
-                .map(y -> {
-                    String[] s = y.getFilter().stream().map(f -> {
-                        StringBuilder filter = new StringBuilder();
-                        // 原始类型不是时间，在de中被转成时间的字段做处理
-                        if (y.getDeType() == 1 && y.getDeExtractType() != 1) {
-                            filter.append(" AND FROM_UNIXTIME(CAST( _")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ")
-                                    .append(" AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
-                        } else {
-                            filter.append(" AND  _").append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ");
-                        }
-                        filter.append(transMysqlFilterTerm(f.getTerm()));
-                        if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                            filter.append("(null,'')");
-                        } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                            filter.append(" AND _")
-                                    .append(y.getSummary()).append("_").append(StringUtils.equalsIgnoreCase(y.getOriginName(), "*") ? "" : y.getOriginName()).append(" ")
-                                    .append(" <> ''");
-                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                            filter.append("('").append(StringUtils.join(f.getValue(), "','")).append("')");
-                        } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                            filter.append("'%").append(f.getValue()).append("%'");
-                        } else {
-                            filter.append("'").append(f.getValue()).append("'");
-                        }
-                        return filter.toString();
-                    }).toArray(String[]::new);
-                    return StringUtils.join(s, " ");
-                }).toArray(String[]::new);
-        if (resultFilter.length == 0) {
-            return sql;
-        } else {
-            String filterSql = MessageFormat.format("SELECT * FROM {0} WHERE 1=1 {1} ORDER BY {2}",
-                    "(" + sql + ") tmp",
-                    StringUtils.join(resultFilter, " "),
-                    StringUtils.join(order, ","));
-            return filterSql;
-        }
+        // 处理视图中字段过滤
+        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        // 处理仪表板字段过滤
+        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // 构建sql所有参数
+        List<SQLObj> fields = new ArrayList<>();
+        fields.addAll(yFields);
+        List<SQLObj> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.addAll(customWheres);
+        if (extWheres != null) wheres.addAll(extWheres);
+        // 外层再次套sql
+        List<SQLObj> orders = new ArrayList<>();
+        orders.addAll(yOrders);
+        List<SQLObj> aggWheres = new ArrayList<>();
+        aggWheres.addAll(yWheres);
+
+        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        ST st_sql = stg.getInstanceOf("querySql");
+        if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        String sql = st_sql.render();
+
+        ST st = stg.getInstanceOf("querySql");
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
+        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+        return st.render();
     }
 
     @Override
     public String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
-        return getSQLSummary(" (" + sqlFix(sql) + ") tmp ", yAxis, customFilter, extFilterRequestList);
+        return getSQLSummary("(" + sqlFix(sql) + ")", yAxis, customFilter, extFilterRequestList);
     }
 
     @Override
@@ -446,7 +395,7 @@ public class OracleQueryProvider extends QueryProvider {
             case "null":
                 return " IN ";
             case "not_null":
-                return " IS NOT NULL ";
+                return " NOT IN ";
             case "between":
                 return " BETWEEN ";
             default:
@@ -454,77 +403,85 @@ public class OracleQueryProvider extends QueryProvider {
         }
     }
 
-    public String transCustomFilter(List<ChartCustomFilterDTO> requestList) {
+    public List<SQLObj> transCustomFilterList(SQLObj tableObj, List<ChartCustomFilterDTO> requestList) {
         if (CollectionUtils.isEmpty(requestList)) {
-            return "";
+            return null;
         }
-        StringBuilder filter = new StringBuilder();
+        List<SQLObj> list = new ArrayList<>();
         for (ChartCustomFilterDTO request : requestList) {
-            String value = request.getValue();
             DatasetTableField field = request.getField();
             if (ObjectUtils.isEmpty(field)) {
                 continue;
             }
+            String value = request.getValue();
+            String whereName = "";
+            String whereTerm = transMysqlFilterTerm(request.getTerm());
+            String whereValue = "";
+            String originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                filter.append(" AND FROM_UNIXTIME(CAST( ")
-                        .append(field.getOriginName())
-                        .append("  AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
             } else {
-                filter.append(" AND  ").append(field.getOriginName()).append(" ");
+                whereName = originName;
             }
-            filter.append(" ")
-                    .append(transMysqlFilterTerm(request.getTerm()))
-                    .append(" ");
-            if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                filter.append("(null,'')");
-            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-                filter.append(" AND `").append(field.getOriginName()).append("`").append(" <> ''");
+            if (StringUtils.containsIgnoreCase(request.getTerm(), "null")) {
+                whereValue = OracleConstants.WHERE_VALUE_NULL;
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
-                filter.append("('").append(StringUtils.join(value, "','")).append("')");
+                whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
-                filter.append("'%").append(value).append("%'");
+                whereValue = "'%" + value + "%'";
             } else {
-                filter.append("'").append(value).append("'");
+                whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
             }
+            list.add(SQLObj.builder()
+                    .whereField(whereName)
+                    .whereTermAndValue(whereTerm + whereValue)
+                    .build());
         }
-        return filter.toString();
+        return list;
     }
 
-    public String transExtFilter(List<ChartExtFilterRequest> requestList) {
+    public List<SQLObj> transExtFilterList(SQLObj tableObj, List<ChartExtFilterRequest> requestList) {
         if (CollectionUtils.isEmpty(requestList)) {
-            return "";
+            return null;
         }
-        StringBuilder filter = new StringBuilder();
+        List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
             List<String> value = request.getValue();
-            if (CollectionUtils.isEmpty(value)) {
+            DatasetTableField field = request.getDatasetTableField();
+            if (CollectionUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
                 continue;
             }
-            DatasetTableField field = request.getDatasetTableField();
+            String whereName = "";
+            String whereTerm = transMysqlFilterTerm(request.getOperator());
+            String whereValue = "";
+            String originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                filter.append(" AND FROM_UNIXTIME(CAST( ")
-                        .append(field.getOriginName())
-                        .append("  AS DECIMAL(20,0))/1000,'%Y-%m-%d %H:%i:%S') ");
+                String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
             } else {
-                filter.append(" AND  ").append(field.getOriginName()).append(" ");
+                whereName = originName;
             }
-            filter.append(" ")
-                    .append(transMysqlFilterTerm(request.getOperator()))
-                    .append(" ");
+
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                filter.append("('").append(StringUtils.join(value, "','")).append("')");
+                whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
-                filter.append("'%").append(value.get(0)).append("%'");
+                whereValue = "'%" + value.get(0) + "%'";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                 String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                filter.append("'").append(startTime).append("' AND '").append(endTime).append("'");
+                whereValue = String.format(OracleConstants.WHERE_BETWEEN, startTime, endTime);
             } else {
-                filter.append("'").append(value.get(0)).append("'");
+                whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value.get(0));
             }
+            list.add(SQLObj.builder()
+                    .whereField(whereName)
+                    .whereTermAndValue(whereTerm + whereValue)
+                    .build());
         }
-        return filter.toString();
+        return list;
     }
 
     private String sqlFix(String sql) {
@@ -556,7 +513,132 @@ public class OracleQueryProvider extends QueryProvider {
             case "y_M_d_H_m_s":
                 return "YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS";
             default:
-                return "%Y-%m-%d %H:%i:%S";
+                return OracleConstants.DEFAULT_DATE_FORMAT;
         }
+    }
+
+    private SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
+        String fieldName = "";
+        if (x.getDeExtractType() == TIME) {
+            if (x.getDeType() == INT || x.getDeType() == FLOAT) { //时间转数值
+                if (x.getType().equalsIgnoreCase("DATE")) {
+                    String date = String.format(OracleConstants.CALC_SUB, originField, String.format(OracleConstants.TO_DATE, OracleConstants.DEFAULT_START_DATE, OracleConstants.DEFAULT_DATE_FORMAT));
+                    fieldName = String.format(OracleConstants.TO_NUMBER, date) + OracleConstants.TO_MS;
+                } else {
+                    String toChar = String.format(OracleConstants.TO_CHAR, originField, OracleConstants.DEFAULT_DATE_FORMAT);
+                    String toDate = String.format(OracleConstants.TO_DATE, toChar, OracleConstants.DEFAULT_DATE_FORMAT);
+                    String toDate1 = String.format(OracleConstants.TO_DATE, OracleConstants.DEFAULT_START_DATE, OracleConstants.DEFAULT_DATE_FORMAT);
+                    fieldName = String.format(OracleConstants.TO_NUMBER, String.format(OracleConstants.CALC_SUB, toDate, toDate1)) + OracleConstants.TO_MS;
+                }
+            } else if (x.getDeType() == TIME) { //格式化显示时间
+                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                if (x.getType().equalsIgnoreCase("DATE")) {
+                    fieldName = String.format(OracleConstants.TO_CHAR, originField, format);
+                } else {
+                    String toChar = String.format(OracleConstants.TO_CHAR, originField, OracleConstants.DEFAULT_DATE_FORMAT);
+                    String toDate = String.format(OracleConstants.TO_DATE, toChar, OracleConstants.DEFAULT_DATE_FORMAT);
+                    fieldName = String.format(OracleConstants.TO_CHAR, toDate, format);
+                }
+            } else {
+                fieldName = originField;
+            }
+        } else {
+            if (x.getDeType() == TIME) {
+                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                if (x.getDeExtractType() == STRING) { //字符串转时间
+                    String toDate = String.format(OracleConstants.TO_DATE, originField, OracleConstants.DEFAULT_DATE_FORMAT);
+                    fieldName = String.format(OracleConstants.TO_CHAR, toDate, format);
+                } else {                            //数值转时间
+                    String date = originField + "/(1000 * 60 * 60 * 24)+" + String.format(OracleConstants.TO_DATE, OracleConstants.DEFAULT_START_DATE, OracleConstants.DEFAULT_DATE_FORMAT);
+                    fieldName = String.format(OracleConstants.TO_CHAR, date, format);
+                }
+            } else {
+                fieldName = originField;
+            }
+        }
+        return SQLObj.builder()
+                .fieldName(fieldName)
+                .fieldAlias(fieldAlias)
+                .build();
+    }
+
+    private List<SQLObj> getXWheres(ChartViewFieldDTO x, String originField, String fieldAlias) {
+        List<SQLObj> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0) {
+            x.getFilter().forEach(f -> {
+                String whereName = "";
+                String whereTerm = transMysqlFilterTerm(f.getTerm());
+                String whereValue = "";
+                if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
+                    String cast = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                } else {
+                    whereName = originField;
+                }
+                if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                    whereValue = OracleConstants.WHERE_VALUE_NULL;
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                    whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                    whereValue = "'%" + f.getValue() + "%'";
+                } else {
+                    whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, f.getValue());
+                }
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereAlias(fieldAlias)
+                        .whereTermAndValue(whereTerm + whereValue)
+                        .build());
+            });
+        }
+        return list;
+    }
+
+    private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
+        String fieldName = "";
+        if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
+            fieldName = OracleConstants.AGG_COUNT;
+        } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
+            fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), originField);
+        } else {
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
+                String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
+                String agg = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
+                fieldName = String.format(OracleConstants.CAST, agg, OracleConstants.DEFAULT_FLOAT_FORMAT);
+            } else {
+                String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
+            }
+        }
+        return SQLObj.builder()
+                .fieldName(fieldName)
+                .fieldAlias(fieldAlias)
+                .build();
+    }
+
+    private List<SQLObj> getYWheres(ChartViewFieldDTO y, String originField, String fieldAlias) {
+        List<SQLObj> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0) {
+            y.getFilter().forEach(f -> {
+                String whereTerm = transMysqlFilterTerm(f.getTerm());
+                String whereValue = "";
+                // 原始类型不是时间，在de中被转成时间的字段做处理
+                if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                    whereValue = OracleConstants.WHERE_VALUE_NULL;
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                    whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                    whereValue = "'%" + f.getValue() + "%'";
+                } else {
+                    whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, f.getValue());
+                }
+                list.add(SQLObj.builder()
+                        .whereField(fieldAlias)
+                        .whereAlias(fieldAlias)
+                        .whereTermAndValue(whereTerm + whereValue)
+                        .build());
+            });
+        }
+        return list;
     }
 }
