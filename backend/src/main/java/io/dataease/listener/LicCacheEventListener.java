@@ -44,10 +44,6 @@ public class LicCacheEventListener extends CacheEventListenerFactory implements 
      */
     @Override
     public void notifyElementExpired(Ehcache ehcache, Element element) {
-        // System.out.println("notifyElementExpired");
-        /*String token = ServletUtils.getToken();
-        Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
-        authUserService.clearCache(userId);*/
         CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);

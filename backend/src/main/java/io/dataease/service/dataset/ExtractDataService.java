@@ -315,7 +315,7 @@ public class ExtractDataService {
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-                    deleteFile("all_scope", datasetTableId);
+//                    deleteFile("all_scope", datasetTableId);
                 }finally {
                 }
                 break;
