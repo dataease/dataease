@@ -53,7 +53,7 @@
       </el-tooltip>
 
       <span style="float: right;margin-left: 10px">
-        <el-button size="mini" :disabled="changeTimes===0||snapshotIndex===lastSaveSnapshotIndex" @click="save">
+        <el-button size="mini" :disabled="changeTimes===0||snapshotIndex===lastSaveSnapshotIndex" @click="save(false)">
           {{ $t('commons.save') }}
         </el-button>
         <el-button size="mini" @click="closePanelEdit">
@@ -260,6 +260,7 @@ export default {
     },
 
     save(withClose) {
+      debugger
       // 保存到数据库
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
