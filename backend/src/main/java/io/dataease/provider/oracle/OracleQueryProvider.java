@@ -125,6 +125,8 @@ public class OracleQueryProvider extends QueryProvider {
                     if (f.getDeType() == 1) {
                         String cast = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                         fieldName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                    } else if (f.getDeType() == 2) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
                     } else {
                         fieldName = originField;
                     }

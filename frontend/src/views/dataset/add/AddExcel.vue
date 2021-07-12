@@ -81,7 +81,7 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
-import i18n from "@/lang";
+import i18n from '@/lang'
 
 const token = getToken()
 
@@ -106,7 +106,7 @@ export default {
       mode: '1',
       height: 600,
       fileList: [],
-      headers: { Authorization: token , 'Accept-Language': i18n.locale.replace('_', '-')},
+      headers: { Authorization: token, 'Accept-Language': i18n.locale.replace('_', '-') },
       baseUrl: process.env.VUE_APP_BASE_API,
       path: '',
       uploading: false
@@ -123,7 +123,7 @@ export default {
   },
   created() {
     if (!this.param.tableId) {
-      this.param.tableId = ""
+      this.param.tableId = ''
     }
   },
   methods: {
@@ -143,9 +143,9 @@ export default {
       this.uploading = true
     },
     uploadFail(response, file, fileList) {
-      let myError=response.toString();
-      myError=myError.replace("Error: ","")
-      const errorMessage = JSON.parse(myError).message + ", " + this.$t('dataset.parse_error');
+      let myError = response.toString()
+      myError = myError.replace('Error: ', '')
+      const errorMessage = JSON.parse(myError).message + ', ' + this.$t('dataset.parse_error')
 
       this.path = ''
       this.fields = []
