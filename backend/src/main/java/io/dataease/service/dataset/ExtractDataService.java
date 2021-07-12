@@ -410,7 +410,9 @@ public class ExtractDataService {
         userIds.forEach(userId -> {
             Map<String,Object> param = new HashMap<>();
             param.put("tableId", id);
-            param.put("taskId", taskId);
+           if(StringUtils.isNotEmpty(taskId)){
+               param.put("taskId", taskId);
+           }
             DeMsgutil.sendMsg(userId, 1, "数据集【"+datasetTable.getName()+"】同步"+msg, gson.toJson(param));
         });
     }
@@ -443,7 +445,7 @@ public class ExtractDataService {
         if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
             datasetTableTaskLog = datasetTableTaskLogs.get(0);
             datasetTableTaskLog.setStatus(JobStatus.Error.name());
-            datasetTableTaskLog.setInfo(ExceptionUtils.getStackTrace(e));
+            datasetTableTaskLog.setInfo(e.getMessage());
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         }
