@@ -1119,7 +1119,11 @@ export default {
     default_panel_name: '默認儀表板名稱',
     source_panel_name: '原儀表板名稱',
     content_style: '內容樣式',
-    canvas_self_adaption: '自適應畫布區域'
+    canvas_self_adaption: '自適應畫布區域',
+    panel_save_tips: '仪表板已变动，是否保存？',
+    panel_save_warn_tips: '如果未保存，你对仪表板做的变更将会丢失！',
+    do_not_save: '不保存',
+    save: '保存'
   },
   plugin: {
     local_install: '本地安裝',
