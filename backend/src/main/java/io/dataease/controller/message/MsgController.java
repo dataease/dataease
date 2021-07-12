@@ -8,7 +8,6 @@ import io.dataease.base.domain.SysMsgType;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
-import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.message.dto.MsgGridDto;
 import io.dataease.controller.message.dto.MsgRequest;
 import io.dataease.controller.message.dto.MsgSettingRequest;
@@ -53,14 +52,12 @@ public class MsgController {
         sysMsgService.batchDelete(msgIds);
     }
 
-    @I18n
     @PostMapping("/treeNodes")
     public List<SettingTreeNode> treeNodes() {
 
         return sysMsgService.treeNodes();
     }
 
-    @I18n
     @PostMapping("/channelList")
     public List<SysMsgChannel> channelList() {
         return sysMsgService.channelList();
@@ -73,10 +70,10 @@ public class MsgController {
 
     @PostMapping("/updateSetting")
     public void updateSetting(@RequestBody MsgSettingRequest request) {
-        sysMsgService.updateSetting(request);
+        Long userId = AuthUtils.getUser().getUserId();
+        sysMsgService.updateSetting(request, userId);
     }
 
-    @I18n
     @PostMapping("/types")
     public List<SysMsgType> allTypes() {
         List<SysMsgType> sysMsgTypes = sysMsgService.queryMsgTypes();

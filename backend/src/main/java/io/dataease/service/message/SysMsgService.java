@@ -7,16 +7,13 @@ import io.dataease.base.mapper.SysMsgMapper;
 import io.dataease.base.mapper.SysMsgSettingMapper;
 import io.dataease.base.mapper.SysMsgTypeMapper;
 import io.dataease.base.mapper.ext.ExtSysMsgMapper;
-import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.SysMsgConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.controller.message.dto.MsgGridDto;
-import io.dataease.controller.message.dto.MsgRequest;
-import io.dataease.controller.message.dto.MsgSettingRequest;
-import io.dataease.controller.message.dto.SettingTreeNode;
+import io.dataease.controller.message.dto.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -179,11 +176,17 @@ public class SysMsgService {
         return sysMsgSettings;
     }
 
+    /**
+     * 修改了订阅信息 需要清除缓存
+     * @param request
+     * @param userId
+     */
     @Transactional
-    public void updateSetting(MsgSettingRequest request) {
+    @CacheEvict(value = SysMsgConstants.SYS_MSG_USER_SUBSCRIBE, key = "#userId")
+    public void updateSetting(MsgSettingRequest request, Long userId) {
         Long typeId = request.getTypeId();
         Long channelId = request.getChannelId();
-        Long userId = AuthUtils.getUser().getUserId();
+        // Long userId = AuthUtils.getUser().getUserId();
         SysMsgSettingExample example = new SysMsgSettingExample();
         example.createCriteria().andUserIdEqualTo(userId).andTypeIdEqualTo(typeId).andChannelIdEqualTo(channelId);
         List<SysMsgSetting> sysMsgSettings = sysMsgSettingMapper.selectByExample(example);
@@ -202,5 +205,34 @@ public class SysMsgService {
         sysMsgSettingMapper.insert(sysMsgSetting);
     }
 
+    public void sendMsg(Long userId, Long typeId, Long channelId, String content, String param) {
+        SysMsg sysMsg = new SysMsg();
+        sysMsg.setUserId(userId);
+        sysMsg.setTypeId(typeId);
+        sysMsg.setContent(content);
+        sysMsg.setStatus(false);
+        sysMsg.setCreateTime(System.currentTimeMillis());
+        sysMsg.setParam(param);
+        save(sysMsg);
+    }
+
+    /**
+     * 查询用户订阅的消息 并缓存
+     * @param userId
+     * @return
+     */
+    @Cacheable(value = SysMsgConstants.SYS_MSG_USER_SUBSCRIBE, key = "#userId")
+    public List<SubscribeNode> subscribes(Long userId) {
+        SysMsgSettingExample example = new SysMsgSettingExample();
+        example.createCriteria().andUserIdEqualTo(userId).andEnableEqualTo(true);
+        List<SysMsgSetting> sysMsgSettings = sysMsgSettingMapper.selectByExample(example);
+        List<SubscribeNode> resultLists = sysMsgSettings.stream().map(item -> {
+            SubscribeNode subscribeNode = new SubscribeNode();
+            subscribeNode.setTypeId(item.getTypeId());
+            subscribeNode.setChannelId(item.getChannelId());
+            return subscribeNode;
+        }).collect(Collectors.toList());
+        return resultLists;
+    }
 
 }

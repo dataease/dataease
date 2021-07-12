@@ -1242,6 +1242,13 @@ export default {
     mark_readed: '标记已读',
     please_select: '请至少选择一条消息',
     mark_success: '标记已读成功',
-    receive_manage: '接收管理'
+    receive_manage: '接收管理',
+    i18n_msg_type_panel_share: '仪表板分享',
+    i18n_msg_type_panel_share_cacnel: '仪表板取消分享',
+    i18n_msg_type_dataset_sync: '数据集同步',
+    i18n_msg_type_dataset_sync_success: '数据集同步成功',
+    i18n_msg_type_dataset_sync_faild: '数据集同步失败',
+    i18n_msg_type_all: '全部类型',
+    channel_inner_msg: '站内消息'
   }
 }

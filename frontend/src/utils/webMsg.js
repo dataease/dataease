@@ -6,7 +6,7 @@ export const loadMsgTypes = value => {
   if (!msgTypes || Object.keys(msgTypes).length === 0) {
     allTypes().then(res => {
       msgTypes = res.data
-      const defaultType = { msgTypeId: -1, pid: 0, typeName: '全部类型' }
+      const defaultType = { msgTypeId: -1, pid: 0, typeName: 'i18n_msg_type_all' }
       msgTypes.splice(0, 0, defaultType)
       store.dispatch('msg/setMsgTypes', msgTypes)
     })

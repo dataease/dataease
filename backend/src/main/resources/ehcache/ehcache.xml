@@ -102,7 +102,7 @@
         maxElementsInMemory="100"
         maxElementsOnDisk="1000"
         overflowToDisk="true"
-        diskPersistent="true"
+        diskPersistent="false"
     />
 
     <!--消息类型缓存-->
@@ -112,7 +112,20 @@
         maxElementsInMemory="100"
         maxElementsOnDisk="1000"
         overflowToDisk="true"
-        diskPersistent="true"
+        diskPersistent="false"
+    />
+
+    <!--消息类型缓存-->
+    <cache
+        name="sys_msg_user_subscribe"
+        eternal="false"
+        maxElementsInMemory="100"
+        maxElementsOnDisk="10000"
+        overflowToDisk="true"
+        diskPersistent="false"
+        timeToIdleSeconds="28800"
+        timeToLiveSeconds="86400"
+        memoryStoreEvictionPolicy="LRU"
     />
 
 

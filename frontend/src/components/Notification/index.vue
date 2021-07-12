@@ -108,7 +108,7 @@ export default {
     //   console.log(lang)
     // },
     showDetail(row) {
-      const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
+      const param = { ...{ msgNotification: true, msgType: row.typeId, sourceParam: row.param }}
       this.visible = false
       //   if (this.$route && this.$route.name && this.$route.name.includes('panel') && row.type === 0) {
       //     bus.$emit('to-msg-share', param)
@@ -162,7 +162,7 @@ export default {
       })
     },
     getTypeName(value) {
-      return getTypeName(value)
+      return this.$t('webmsg.' + getTypeName(value))
     },
     open() {
       this.visible = true

@@ -1,20 +1,25 @@
 package io.dataease.service.message;
 
-import io.dataease.base.domain.SysMsgSettingExample;
-import io.dataease.base.mapper.SysMsgSettingMapper;
+
+import io.dataease.controller.message.dto.SubscribeNode;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
+import java.util.List;
 
 @Aspect
 @Component
 public class MsgAop {
 
+
+
+
     @Resource
-    private SysMsgSettingMapper sysMsgSettingMapper;
+    private SysMsgService sysMsgService;
 
 
 
@@ -24,7 +29,7 @@ public class MsgAop {
      * 对sendMsg 切面拦截
      * @param point
      */
-    @Around("(execution(* io.dataease.service.message.DeMsgutil.sendMsg(..)))")
+    @Around("(execution(* io.dataease.service.message.SysMsgService.sendMsg(..)))")
     public Object cutPoint(ProceedingJoinPoint point) {
 
         Object[] args = point.getArgs();
@@ -39,11 +44,11 @@ public class MsgAop {
         Long typeId = (Long) arg1;
         Long channelId = (Long) arg2;
 
-        SysMsgSettingExample example = new SysMsgSettingExample();
-        example.createCriteria().andChannelIdEqualTo(channelId).andUserIdEqualTo(userId).andTypeIdEqualTo(typeId).andEnableEqualTo(true);
+        List<SubscribeNode> subscribes = sysMsgService.subscribes(userId);
 
         try {
-            if (sysMsgSettingMapper.countByExample(example) > 0)
+            // 如果已经订阅了这种类型的消息 直接发送 否则直接返回
+            if (CollectionUtils.isNotEmpty(subscribes) && subscribes.stream().anyMatch(item -> item.match(typeId, channelId)))
                 return point.proceed(args);
             return null;
         } catch (Throwable throwable) {

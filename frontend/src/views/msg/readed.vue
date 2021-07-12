@@ -2,7 +2,7 @@
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <el-radio-group v-model="selectType" style="margin-bottom: 15px;" @change="typeChange">
-      <el-radio-button v-for="(item,index) in $store.getters.msgTypes.filter(type => type.pid <= 0)" :key="index" class="de-msg-radio-class" :label="item.msgTypeId">{{ $t(item.typeName) }}</el-radio-button>
+      <el-radio-button v-for="(item,index) in $store.getters.msgTypes.filter(type => type.pid <= 0)" :key="index" class="de-msg-radio-class" :label="item.msgTypeId">{{ $t('webmsg.' + item.typeName) }}</el-radio-button>
 
     </el-radio-group>
     <complex-table
@@ -42,7 +42,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="type" sortable="custom" :label="$t('webmsg.type')" width="120">
+      <el-table-column prop="type" sortable="custom" :label="$t('webmsg.type')" width="140">
         <template slot-scope="scope">
           <span>{{ getTypeName(scope.row.typeId) }}</span>
         </template>
@@ -118,13 +118,13 @@ export default {
       })
     },
     getTypeName(value) {
-      return getTypeName(value)
+      return this.$t('webmsg.' + getTypeName(value))
     },
     typeChange(value) {
       this.search()
     },
     toDetail(row) {
-      const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
+      const param = { ...{ msgNotification: true, msgType: row.typeId, sourceParam: row.param }}
       this.$router.push({ name: row.router, params: param })
     },
     sortChange({ column, prop, order }) {

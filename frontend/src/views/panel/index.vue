@@ -75,11 +75,12 @@ export default {
   methods: {
     toMsgShare(routerParam) {
       if (routerParam !== null && routerParam.msgNotification) {
-      // 说明是从消息通知跳转过来的
-        if (routerParam.msgType === 0) { // 是仪表板分享
+        const panelShareTypeIds = [1, 2, 3]
+        // 说明是从消息通知跳转过来的
+        if (panelShareTypeIds.includes(routerParam.msgType)) { // 是仪表板分享
           this.componentName = 'PanelMain'
           this.$nextTick(() => {
-            this.$refs.panel_main.msg2Current(routerParam.sourceParam)
+            this.$refs.panel_main && this.$refs.panel_main.msg2Current && this.$refs.panel_main.msg2Current(routerParam.sourceParam)
           })
         }
       }

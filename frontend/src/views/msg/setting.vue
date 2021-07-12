@@ -4,7 +4,7 @@
       <el-row class="tree-head">
         <span style="float: left;padding-left: 10px">{{ $t('webmsg.type') }}</span>
         <span v-for="channel in msg_channels" :key="channel.msgChannelId" class="auth-span">
-          {{ channel.channelName }}
+          {{ $t(channel.channelName) }}
         </span>
       </el-row>
       <el-row style="margin-top: 5px">
@@ -18,7 +18,7 @@
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
-              <span style="margin-left: 6px" v-html="data.name" />
+              <span style="margin-left: 6px">{{ $t('webmsg.' + data.name) }}</span>
             </span>
             <span @click.stop>
               <!-- <div v-if="setting_data[data.id]">
