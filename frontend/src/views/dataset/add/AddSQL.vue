@@ -37,7 +37,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item class="form-item" v-if="mode === '1'">
+          <el-form-item v-if="mode === '1'" class="form-item">
             <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
               <el-option :label="$t('dataset.sync_now')" value="sync_now" />
               <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
@@ -283,7 +283,7 @@ export default {
     cancel() {
       // this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.tableId })
+        this.$emit('switchComponent', { name: 'ViewTable', param: { id: this.param.tableId }})
       } else {
         this.$emit('switchComponent', { name: '' })
       }
