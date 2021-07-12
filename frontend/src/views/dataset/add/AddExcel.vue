@@ -28,6 +28,7 @@
                   :multiple="false"
                   :show-file-list="false"
                   :file-list="fileList"
+                  :data="param"
                   accept=".xls,.xlsx,"
                   :before-upload="beforeUpload"
                   :on-success="uploadSuccess"
@@ -80,6 +81,7 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
+import i18n from "@/lang";
 
 const token = getToken()
 
@@ -88,6 +90,10 @@ export default {
   props: {
     param: {
       type: Object,
+      default: null
+    },
+    tableId: {
+      type: String,
       default: null
     }
   },
@@ -100,7 +106,7 @@ export default {
       mode: '1',
       height: 600,
       fileList: [],
-      headers: { Authorization: token },
+      headers: { Authorization: token , 'Accept-Language': i18n.locale.replace('_', '-')},
       baseUrl: process.env.VUE_APP_BASE_API,
       path: '',
       uploading: false
@@ -114,6 +120,11 @@ export default {
       this.calHeight()
     }
     this.calHeight()
+  },
+  created() {
+    if (!this.param.tableId) {
+      this.param.tableId = ""
+    }
   },
   methods: {
     // initDataSource() {
@@ -132,6 +143,10 @@ export default {
       this.uploading = true
     },
     uploadFail(response, file, fileList) {
+      let myError=response.toString();
+      myError=myError.replace("Error: ","")
+      const errorMessage = JSON.parse(myError).message + ", " + this.$t('dataset.parse_error');
+
       this.path = ''
       this.fields = []
       this.sheets = []
@@ -143,7 +158,7 @@ export default {
       this.uploading = false
       this.$message({
         type: 'error',
-        message: this.$t('dataset.parse_error'),
+        message: errorMessage,
         showClose: true
       })
     },
@@ -166,8 +181,6 @@ export default {
     },
 
     save() {
-      // console.log(this.checkTableList);
-      // console.log(this.scene);
       if (!this.name || this.name === '') {
         this.$message({
           showClose: true,

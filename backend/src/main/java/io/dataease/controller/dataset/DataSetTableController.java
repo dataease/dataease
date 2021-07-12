@@ -100,8 +100,8 @@ public class DataSetTableController {
     }
 
     @PostMapping("excel/upload")
-    public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file) throws Exception {
-        return dataSetTableService.excelSaveAndParse(file);
+    public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId) throws Exception {
+        return dataSetTableService.excelSaveAndParse(file, tableId);
     }
 
     @PostMapping("checkDorisTableIsExists/{id}")
