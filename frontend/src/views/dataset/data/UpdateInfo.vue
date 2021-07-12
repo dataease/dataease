@@ -71,7 +71,8 @@
       width="50%"
       class="dialog-css"
     >
-      <span>{{ error_massage }}</span>
+      <span class="err-msg">{{ error_massage }}
+      </span>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
       </span>
@@ -635,7 +636,17 @@ export default {
     overflow-y: auto;
   }
 
-  span{
+  .err-msg{
+    font-size: 12px;
+    word-break:normal;
+    width:auto;
+    display:block;
+    white-space:pre-wrap;
+    word-wrap : break-word ;
+    overflow: hidden ;
+  }
+
+  .span{
     font-size: 12px;
   }
 </style>

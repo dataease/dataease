@@ -311,7 +311,7 @@ public class ExtractDataService {
         if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
             datasetTableTaskLog = datasetTableTaskLogs.get(0);
             datasetTableTaskLog.setStatus(JobStatus.Error.name());
-            datasetTableTaskLog.setInfo(ExceptionUtils.getStackTrace(e));
+            datasetTableTaskLog.setInfo(e.getMessage());
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         }
