@@ -102,7 +102,7 @@ public class OracleQueryProvider extends QueryProvider {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
                 String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
-                String fieldAlias = String.format(String.format(OracleConstants.ALIAS_FIX, SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
                 String fieldName = "";
                 // 处理横轴字段
                 if (f.getDeExtractType() == 1) {
