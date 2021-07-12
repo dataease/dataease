@@ -108,7 +108,6 @@ export default {
       })
     },
     initData() {
-      debugger
       const that = this
       let datas = []
       if (this.chart.data) {

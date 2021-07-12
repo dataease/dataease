@@ -395,7 +395,7 @@ public class OracleQueryProvider extends QueryProvider {
             case "null":
                 return " IN ";
             case "not_null":
-                return " NOT IN ";
+                return " IS NOT NULL AND %s <> ''";
             case "between":
                 return " BETWEEN ";
             default:
@@ -424,8 +424,10 @@ public class OracleQueryProvider extends QueryProvider {
             } else {
                 whereName = originName;
             }
-            if (StringUtils.containsIgnoreCase(request.getTerm(), "null")) {
+            if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
                 whereValue = OracleConstants.WHERE_VALUE_NULL;
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
+                whereTerm = String.format(whereTerm, originName);
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
@@ -575,8 +577,10 @@ public class OracleQueryProvider extends QueryProvider {
                 } else {
                     whereName = originField;
                 }
-                if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
                     whereValue = OracleConstants.WHERE_VALUE_NULL;
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+                    whereTerm = String.format(whereTerm, originField);
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
@@ -623,8 +627,10 @@ public class OracleQueryProvider extends QueryProvider {
                 String whereTerm = transMysqlFilterTerm(f.getTerm());
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
-                if (StringUtils.containsIgnoreCase(f.getTerm(), "null")) {
+                if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
                     whereValue = OracleConstants.WHERE_VALUE_NULL;
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
+                    whereTerm = String.format(whereTerm, originField);
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {

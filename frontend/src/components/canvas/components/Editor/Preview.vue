@@ -186,7 +186,6 @@ export default {
       }
     },
     openChartDetailsDialog(chartInfo) {
-      debugger
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
       this.chartDetailsVisible = true
