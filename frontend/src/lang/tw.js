@@ -1242,9 +1242,17 @@ export default {
     content: '消息內容',
     sned_time: '提交時間',
     read_time: '查看時間',
-    type: '類型',
+    type: '消息類型',
     mark_readed: '標記已讀',
     please_select: '請至少選擇一條消息',
-    mark_success: '標記已讀成功'
+    mark_success: '標記已讀成功',
+    receive_manage: '接收管理',
+    i18n_msg_type_panel_share: '儀表板分享',
+    i18n_msg_type_panel_share_cacnel: '儀表板取消分享',
+    i18n_msg_type_dataset_sync: '數據集同步',
+    i18n_msg_type_dataset_sync_success: '數據集同步成功',
+    i18n_msg_type_dataset_sync_faild: '數據集同步失敗',
+    i18n_msg_type_all: '全部類型',
+    channel_inner_msg: '站內消息'
   }
 }

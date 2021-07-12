@@ -31,7 +31,7 @@
           <div class="start-item">
             <div class="filter-db-row star-item-content" @click="showDetail(scope.row)">
               <!-- <svg-icon icon-class="panel" class="ds-icon-scene" /> -->
-              <div class="title-div"><span>【{{ $t(getTypeName(scope.row.type)) }}】&nbsp;&nbsp;{{ scope.row.content }}</span></div>
+              <div class="title-div"><span>【{{ getTypeName(scope.row.typeId) }}】&nbsp;&nbsp;{{ scope.row.content }}</span></div>
               <div class="title-div"><span>{{ scope.row.createTime | timestampFormatDate }}</span></div>
             </div>
             <!-- <div class="star-item-close">
@@ -61,13 +61,12 @@
 
 <script>
 import { query, updateStatus } from '@/api/system/msg'
-import { msgTypes, getTypeName } from '@/utils/webMsg'
+import { getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import { mapGetters } from 'vuex'
 import bus from '@/utils/bus'
 export default {
   data() {
     return {
-      msgTypes: msgTypes,
       showSetting: false,
       data: [],
       visible: false,
@@ -85,6 +84,8 @@ export default {
     ])
   },
   created() {
+    // 先加载消息类型
+    loadMsgTypes()
     this.search()
     // 每30s定时刷新拉取消息
     this.timer = setInterval(() => {
@@ -107,12 +108,18 @@ export default {
     //   console.log(lang)
     // },
     showDetail(row) {
-      const param = { ...{ msgNotification: true, msgType: row.type, sourceParam: row.param }}
+      const param = { ...{ msgNotification: true, msgType: row.typeId, sourceParam: row.param }}
       this.visible = false
-      if (this.$route && this.$route.name && this.$route.name.includes('panel') && row.type === 0) {
-        bus.$emit('to-msg-share', param)
-      } else if (this.$route && this.$route.name && this.$route.name.includes('dataset') && row.type === 1) {
-        bus.$emit('to-msg-dataset', param)
+      //   if (this.$route && this.$route.name && this.$route.name.includes('panel') && row.type === 0) {
+      //     bus.$emit('to-msg-share', param)
+      //   } else if (this.$route && this.$route.name && this.$route.name.includes('dataset') && row.type === 1) {
+      //     bus.$emit('to-msg-dataset', param)
+      //   } else {
+      //     this.$router.push({ name: row.router, params: param })
+      //   }
+      if (this.$route && this.$route.name && this.$route.name === row.router) {
+        // 如果当前路由就是目标路由 那么使用router.push页面不会刷新 这时候要使用事件方式
+        row.callback && bus.$emit(row.callback, param)
       } else {
         this.$router.push({ name: row.router, params: param })
       }
@@ -155,7 +162,7 @@ export default {
       })
     },
     getTypeName(value) {
-      return getTypeName(value)
+      return this.$t('webmsg.' + getTypeName(value))
     },
     open() {
       this.visible = true

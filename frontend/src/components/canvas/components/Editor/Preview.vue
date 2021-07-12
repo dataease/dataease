@@ -20,7 +20,7 @@
       <span style="position: absolute;right: 70px;top:15px">
         <el-button size="mini" @click="exportExcel">
           <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
-          {{$t('chart.export_details')}}
+          {{ $t('chart.export_details') }}
         </el-button>
       </span>
       <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />

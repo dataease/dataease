@@ -25,7 +25,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -60,11 +59,9 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.quartz.JobExecutionContext;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
@@ -403,6 +400,7 @@ public class ExtractDataService {
 
     private void sendWebMsg(DatasetTable datasetTable, String taskId, Boolean status) {
         String msg = status ? "成功" : "失败";
+        Long typeId = status ? 5L : 6L;
         String id = datasetTable.getId();
         AuthURD authURD = AuthUtils.authURDR(id);
         Set<Long> userIds = AuthUtils.userIdsByURD(authURD);
@@ -413,7 +411,7 @@ public class ExtractDataService {
            if(StringUtils.isNotEmpty(taskId)){
                param.put("taskId", taskId);
            }
-            DeMsgutil.sendMsg(userId, 1, "数据集【"+datasetTable.getName()+"】同步"+msg, gson.toJson(param));
+            DeMsgutil.sendMsg(userId, typeId, 1L, "数据集【"+datasetTable.getName()+"】同步"+msg, gson.toJson(param));
         });
     }
 
