@@ -102,10 +102,10 @@ export default {
       }
     },
     bindKey() {
-      document.addEventListener('keyup', this.entryKey)
+      document.addEventListener('keypress', this.entryKey)
     },
     unBindKey() {
-      document.removeEventListener('keyup', this.entryKey)
+      document.removeEventListener('keypress', this.entryKey)
     },
     showCurrentTemplateInfo(data) {
       this.editPanel.panelInfo.name = data.name

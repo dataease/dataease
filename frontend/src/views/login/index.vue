@@ -26,7 +26,7 @@
                   maxlength="30"
                   show-word-limit
                   autocomplete="new-password"
-                  @keyup.enter.native="handleLogin"
+                  @keypress.enter.native="handleLogin"
                 />
               </el-form-item>
             </div>
@@ -34,7 +34,7 @@
               <el-button type="primary" class="submit" size="default" @click.native.prevent="handleLogin">
                 {{ $t('commons.login') }}
               </el-button>
-              <div  v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue"  class="demo-tips">
+              <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
                 {{ uiInfo['ui.demo.tips'].paramValue }}
               </div>
             </div>
