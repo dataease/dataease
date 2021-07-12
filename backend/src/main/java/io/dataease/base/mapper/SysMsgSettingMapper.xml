@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.dataease.base.mapper.SysMsgMapper">
-  <resultMap id="BaseResultMap" type="io.dataease.base.domain.SysMsg">
-    <id column="msg_id" jdbcType="BIGINT" property="msgId" />
+<mapper namespace="io.dataease.base.mapper.SysMsgSettingMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.base.domain.SysMsgSetting">
+    <id column="msg_setting_id" jdbcType="BIGINT" property="msgSettingId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="type_id" jdbcType="BIGINT" property="typeId" />
-    <result column="status" jdbcType="BIT" property="status" />
-    <result column="param" jdbcType="VARCHAR" property="param" />
-    <result column="create_time" jdbcType="BIGINT" property="createTime" />
-    <result column="read_time" jdbcType="BIGINT" property="readTime" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="channel_id" jdbcType="BIGINT" property="channelId" />
+    <result column="enable" jdbcType="BIT" property="enable" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,15 +67,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    msg_id, user_id, type_id, `status`, param, create_time, read_time, content
+    msg_setting_id, user_id, type_id, channel_id, `enable`
   </sql>
-  <select id="selectByExample" parameterType="io.dataease.base.domain.SysMsgExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="io.dataease.base.domain.SysMsgSettingExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from sys_msg
+    from sys_msg_setting
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -89,32 +86,30 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from sys_msg
-    where msg_id = #{msgId,jdbcType=BIGINT}
+    from sys_msg_setting
+    where msg_setting_id = #{msgSettingId,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from sys_msg
-    where msg_id = #{msgId,jdbcType=BIGINT}
+    delete from sys_msg_setting
+    where msg_setting_id = #{msgSettingId,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="io.dataease.base.domain.SysMsgExample">
-    delete from sys_msg
+  <delete id="deleteByExample" parameterType="io.dataease.base.domain.SysMsgSettingExample">
+    delete from sys_msg_setting
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="io.dataease.base.domain.SysMsg">
-    insert into sys_msg (msg_id, user_id, type_id, 
-      `status`, param, create_time, 
-      read_time, content)
-    values (#{msgId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{typeId,jdbcType=BIGINT}, 
-      #{status,jdbcType=BIT}, #{param,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
-      #{readTime,jdbcType=BIGINT}, #{content,jdbcType=VARCHAR})
+  <insert id="insert" parameterType="io.dataease.base.domain.SysMsgSetting">
+    insert into sys_msg_setting (msg_setting_id, user_id, type_id, 
+      channel_id, `enable`)
+    values (#{msgSettingId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{typeId,jdbcType=BIGINT}, 
+      #{channelId,jdbcType=BIGINT}, #{enable,jdbcType=BIT})
   </insert>
-  <insert id="insertSelective" parameterType="io.dataease.base.domain.SysMsg">
-    insert into sys_msg
+  <insert id="insertSelective" parameterType="io.dataease.base.domain.SysMsgSetting">
+    insert into sys_msg_setting
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="msgId != null">
-        msg_id,
+      <if test="msgSettingId != null">
+        msg_setting_id,
       </if>
       <if test="userId != null">
         user_id,
@@ -122,25 +117,16 @@
       <if test="typeId != null">
         type_id,
       </if>
-      <if test="status != null">
-        `status`,
+      <if test="channelId != null">
+        channel_id,
       </if>
-      <if test="param != null">
-        param,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="readTime != null">
-        read_time,
-      </if>
-      <if test="content != null">
-        content,
+      <if test="enable != null">
+        `enable`,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="msgId != null">
-        #{msgId,jdbcType=BIGINT},
+      <if test="msgSettingId != null">
+        #{msgSettingId,jdbcType=BIGINT},
       </if>
       <if test="userId != null">
         #{userId,jdbcType=BIGINT},
@@ -148,34 +134,25 @@
       <if test="typeId != null">
         #{typeId,jdbcType=BIGINT},
       </if>
-      <if test="status != null">
-        #{status,jdbcType=BIT},
+      <if test="channelId != null">
+        #{channelId,jdbcType=BIGINT},
       </if>
-      <if test="param != null">
-        #{param,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
-      </if>
-      <if test="readTime != null">
-        #{readTime,jdbcType=BIGINT},
-      </if>
-      <if test="content != null">
-        #{content,jdbcType=VARCHAR},
+      <if test="enable != null">
+        #{enable,jdbcType=BIT},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="io.dataease.base.domain.SysMsgExample" resultType="java.lang.Long">
-    select count(*) from sys_msg
+  <select id="countByExample" parameterType="io.dataease.base.domain.SysMsgSettingExample" resultType="java.lang.Long">
+    select count(*) from sys_msg_setting
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update sys_msg
+    update sys_msg_setting
     <set>
-      <if test="record.msgId != null">
-        msg_id = #{record.msgId,jdbcType=BIGINT},
+      <if test="record.msgSettingId != null">
+        msg_setting_id = #{record.msgSettingId,jdbcType=BIGINT},
       </if>
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=BIGINT},
@@ -183,20 +160,11 @@
       <if test="record.typeId != null">
         type_id = #{record.typeId,jdbcType=BIGINT},
       </if>
-      <if test="record.status != null">
-        `status` = #{record.status,jdbcType=BIT},
+      <if test="record.channelId != null">
+        channel_id = #{record.channelId,jdbcType=BIGINT},
       </if>
-      <if test="record.param != null">
-        param = #{record.param,jdbcType=VARCHAR},
-      </if>
-      <if test="record.createTime != null">
-        create_time = #{record.createTime,jdbcType=BIGINT},
-      </if>
-      <if test="record.readTime != null">
-        read_time = #{record.readTime,jdbcType=BIGINT},
-      </if>
-      <if test="record.content != null">
-        content = #{record.content,jdbcType=VARCHAR},
+      <if test="record.enable != null">
+        `enable` = #{record.enable,jdbcType=BIT},
       </if>
     </set>
     <if test="_parameter != null">
@@ -204,21 +172,18 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update sys_msg
-    set msg_id = #{record.msgId,jdbcType=BIGINT},
+    update sys_msg_setting
+    set msg_setting_id = #{record.msgSettingId,jdbcType=BIGINT},
       user_id = #{record.userId,jdbcType=BIGINT},
       type_id = #{record.typeId,jdbcType=BIGINT},
-      `status` = #{record.status,jdbcType=BIT},
-      param = #{record.param,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=BIGINT},
-      read_time = #{record.readTime,jdbcType=BIGINT},
-      content = #{record.content,jdbcType=VARCHAR}
+      channel_id = #{record.channelId,jdbcType=BIGINT},
+      `enable` = #{record.enable,jdbcType=BIT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.SysMsg">
-    update sys_msg
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.SysMsgSetting">
+    update sys_msg_setting
     <set>
       <if test="userId != null">
         user_id = #{userId,jdbcType=BIGINT},
@@ -226,33 +191,21 @@
       <if test="typeId != null">
         type_id = #{typeId,jdbcType=BIGINT},
       </if>
-      <if test="status != null">
-        `status` = #{status,jdbcType=BIT},
+      <if test="channelId != null">
+        channel_id = #{channelId,jdbcType=BIGINT},
       </if>
-      <if test="param != null">
-        param = #{param,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=BIGINT},
-      </if>
-      <if test="readTime != null">
-        read_time = #{readTime,jdbcType=BIGINT},
-      </if>
-      <if test="content != null">
-        content = #{content,jdbcType=VARCHAR},
+      <if test="enable != null">
+        `enable` = #{enable,jdbcType=BIT},
       </if>
     </set>
-    where msg_id = #{msgId,jdbcType=BIGINT}
+    where msg_setting_id = #{msgSettingId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.SysMsg">
-    update sys_msg
+  <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.SysMsgSetting">
+    update sys_msg_setting
     set user_id = #{userId,jdbcType=BIGINT},
       type_id = #{typeId,jdbcType=BIGINT},
-      `status` = #{status,jdbcType=BIT},
-      param = #{param,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=BIGINT},
-      read_time = #{readTime,jdbcType=BIGINT},
-      content = #{content,jdbcType=VARCHAR}
-    where msg_id = #{msgId,jdbcType=BIGINT}
+      channel_id = #{channelId,jdbcType=BIGINT},
+      `enable` = #{enable,jdbcType=BIT}
+    where msg_setting_id = #{msgSettingId,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -99,15 +99,16 @@ export default {
 
     toMsgShare(routerParam) {
       if (routerParam !== null && routerParam.msgNotification) {
-      // 说明是从消息通知跳转过来的
-        if (routerParam.msgType === 1) { // 是数据集同步
+        const panelShareTypeIds = [4, 5, 6]
+        // 说明是从消息通知跳转过来的
+        if (panelShareTypeIds.includes(routerParam.msgType)) { // 是数据集同步
           if (routerParam.sourceParam) {
             try {
               const msgParam = JSON.parse(routerParam.sourceParam)
               this.param = msgParam.tableId
               this.component = ViewTable
               this.$nextTick(() => {
-                this.$refs.dynamic_component.msg2Current(routerParam.sourceParam)
+                this.$refs.dynamic_component && this.$refs.dynamic_component.msg2Current && this.$refs.dynamic_component.msg2Current(routerParam.sourceParam)
               })
             } catch (error) {
               console.error(error)

@@ -10,7 +10,7 @@ public class MsgRequest implements Serializable {
 
     private static final long serialVersionUID = 1920091635946508658L;
 
-    private Integer type;
+    private Long type;
 
     private Boolean status;
 

@@ -26,3 +26,44 @@ export function batchRead(data) {
   })
 }
 
+export function treeList() {
+  return request({
+    url: '/api/sys_msg/treeNodes',
+    method: 'post',
+    loading: true
+  })
+}
+
+export function channelList() {
+  return request({
+    url: '/api/sys_msg/channelList',
+    method: 'post',
+    loading: true
+  })
+}
+
+export function settingList() {
+  return request({
+    url: '/api/sys_msg/settingList',
+    method: 'post',
+    loading: true
+  })
+}
+
+export function updateSetting(data) {
+  return request({
+    url: '/api/sys_msg/updateSetting',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function allTypes(data) {
+  return request({
+    url: '/api/sys_msg/types',
+    method: 'post',
+    loading: true
+  })
+}
+

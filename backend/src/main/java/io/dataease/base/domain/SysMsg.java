@@ -9,11 +9,9 @@ public class SysMsg implements Serializable {
 
     private Long userId;
 
-    private Integer type;
+    private Long typeId;
 
     private Boolean status;
-
-    private String router;
 
     private String param;
 
