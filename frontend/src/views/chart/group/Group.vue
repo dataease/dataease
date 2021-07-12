@@ -6,8 +6,7 @@
         <span class="title-text">
           {{ $t('chart.datalist') }}
         </span>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')">
-        </el-button>
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')" />
       </el-row>
       <el-divider />
       <el-row>
@@ -127,7 +126,7 @@
 
       <!--group add/edit-->
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keyup.enter.native="saveGroup(groupForm)">
+        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keypress.enter.native="saveGroup(groupForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>
@@ -247,7 +246,7 @@
 
     <!--rename chart-->
     <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name" />
         </el-form-item>
@@ -275,7 +274,7 @@
               <el-input v-model="chartName" style="height: 34px" size="mini" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="optFrom==='panel'">
+          <el-col v-if="optFrom==='panel'" :span="12">
             <el-form-item :label="$t('chart.belong_group')">
               <treeselect
                 v-model="currGroup.id"

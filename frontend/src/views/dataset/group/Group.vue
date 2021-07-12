@@ -184,7 +184,7 @@
       </el-col>
 
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keyup.enter.native="saveGroup(groupForm)">
+        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keypress.enter.native="saveGroup(groupForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>
@@ -304,7 +304,7 @@
     <!--    </el-col>-->
 
     <el-dialog v-dialogDrag :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name" />
         </el-form-item>
