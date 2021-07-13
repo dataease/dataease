@@ -5,7 +5,6 @@
     class="editor"
     :class="{ edit: isEdit }"
     :style="customStyle"
-    @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
@@ -54,6 +53,7 @@
         :prop-value="item.propValue"
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
       />
       <component
         :is="item.component"
@@ -64,6 +64,7 @@
         :prop-value="item.propValue"
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
       />
     </de-drag>
     <!-- 右击菜单 -->
