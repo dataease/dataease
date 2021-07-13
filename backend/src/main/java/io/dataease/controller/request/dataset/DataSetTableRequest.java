@@ -1,6 +1,7 @@
 package io.dataease.controller.request.dataset;
 
 import io.dataease.base.domain.DatasetTable;
+import io.dataease.datasource.dto.TableFiled;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,4 +22,5 @@ public class DataSetTableRequest extends DatasetTable {
     private Integer editType;
     private Boolean isRename;
     private List<String> typeFilter;
+    private List<TableFiled> fields;
 }
