@@ -128,5 +128,15 @@
         memoryStoreEvictionPolicy="LRU"
     />
 
+    <!--消息类型缓存-->
+    <cache
+        name="sys_map_areas"
+        eternal="true"
+        maxElementsInMemory="100"
+        maxElementsOnDisk="3000"
+        overflowToDisk="true"
+        diskPersistent="false"
+    />
+
 
 </ehcache>
