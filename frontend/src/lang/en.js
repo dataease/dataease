@@ -950,7 +950,11 @@ export default {
       change_success: 'State switch successful'
     },
     field_group_type: 'Type',
-    location: 'Location'
+    location: 'Location',
+    left_join: 'LEFT JOIN',
+    right_join: 'RIGHT JOIN',
+    inner_join: 'INNER JOIN',
+    full_join: 'FULL JOIN'
   },
   datasource: {
     datasource: 'Data Source',
