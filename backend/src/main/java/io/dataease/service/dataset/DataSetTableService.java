@@ -641,6 +641,8 @@ public class DataSetTableService {
                 return " LEFT JOIN ";
             case "N:1":
                 return " RIGHT JOIN ";
+            case "N:N":
+                return " FULL JOIN ";
             default:
                 return " INNER JOIN ";
         }

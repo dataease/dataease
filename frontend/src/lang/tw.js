@@ -950,7 +950,11 @@ export default {
       change_success: '狀態切換成功'
     },
     field_group_type: '分類',
-    location: '地理位置'
+    location: '地理位置',
+    left_join: '左連接',
+    right_join: '右連接',
+    inner_join: '內連接',
+    full_join: '全連接'
   },
   datasource: {
     datasource: '數據源',
