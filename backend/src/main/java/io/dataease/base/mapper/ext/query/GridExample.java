@@ -103,6 +103,10 @@ public class GridExample {
             criteria.add(new Criterion(condition));
         }
 
+        protected void addNotNullCriterion(String condition) {
+            criteria.add(new Criterion(condition, null));
+        }
+
         protected void addCriterion(String condition, Object value, String property) {
             if (value == null) {
                 throw new RuntimeException("Value for " + property + " cannot be null");
@@ -163,6 +167,9 @@ public class GridExample {
                     break;
                 case "le":
                     addCriterion(field+" <= ", value, field);
+                    break;
+                case "not null":
+                    addNotNullCriterion(field + " is not null ");
                     break;
             }
             return (Criteria) this;
@@ -242,7 +249,9 @@ public class GridExample {
             this.condition = condition;
             this.value = value;
             this.typeHandler = typeHandler;
-            if (value instanceof List<?>) {
+            if(value == null){
+                this.noValue = true;
+            }else if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
                 this.singleValue = true;

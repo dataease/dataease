@@ -1,5 +1,6 @@
 package io.dataease.service.dataset;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.domain.DatasetTableTaskLogExample;
@@ -8,6 +9,7 @@ import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import org.apache.commons.collections4.CollectionUtils;
@@ -15,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +48,15 @@ public class DataSetTableTaskLogService {
     }
 
     public List<DataSetTaskLogDTO> list(BaseGridRequest request) {
+        ConditionEntity entity = new ConditionEntity();
+        entity.setField("task_id");
+        entity.setOperator("not null");
+        List<ConditionEntity> conditionEntities = request.getConditions();
+        if(CollectionUtils.isEmpty(conditionEntities)){
+            conditionEntities = new ArrayList<>();
+        }
+        conditionEntities.add(entity);
+        request.setConditions(conditionEntities);
         GridExample gridExample = request.convertExample();
         return extDataSetTaskMapper.list(gridExample);
     }
@@ -78,7 +90,7 @@ public class DataSetTableTaskLogService {
         if(StringUtils.isNotEmpty(dataSetTaskDTO.getId())){
             criteria.andTaskIdEqualTo(dataSetTaskDTO.getId());
         }
-        example.setOrderByClause("create_time desc limit 1");
+        example.setOrderByClause("create_time desc");
         List<DatasetTableTaskLog>  datasetTableTaskLogs = datasetTableTaskLogMapper.selectByExampleWithBLOBs(example);
         if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
             dataSetTaskDTO.setLastExecStatus(datasetTableTaskLogs.get(0).getStatus());
