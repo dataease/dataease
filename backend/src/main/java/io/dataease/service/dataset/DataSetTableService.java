@@ -97,7 +97,7 @@ public class DataSetTableService {
         }
     }
 
-    private void extractData(DataSetTableRequest datasetTable) throws Exception{
+    private void extractData(DataSetTableRequest datasetTable) throws Exception {
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             commonThreadPool.addTask(() -> {
                 extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
@@ -154,7 +154,7 @@ public class DataSetTableService {
                             });
                         } else if (datasetTable.getEditType() == 1) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractExcelData(datasetTable.getId(),  "add_scope");
+                                extractDataService.extractExcelData(datasetTable.getId(), "add_scope");
                             });
                         }
                     }
@@ -664,11 +664,12 @@ public class DataSetTableService {
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+            /*DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
             String path = dataTableInfoDTO.getData();
             File file = new File(path);
             Map<String, Object> map = parseExcel(path.substring(path.lastIndexOf("/") + 1), new FileInputStream(file), false);
-            fields = (List<TableFiled>) map.get("fields");
+            fields = (List<TableFiled>) map.get("fields");*/
+            fields = dataSetTableRequest.getFields();
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             // save field
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
@@ -882,7 +883,7 @@ public class DataSetTableService {
         String filename = file.getOriginalFilename();
         // parse file
         Map<String, Object> fileMap = parseExcel(filename, file.getInputStream(), true);
-        if(StringUtils.isNotEmpty(tableId)){
+        if (StringUtils.isNotEmpty(tableId)) {
             List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId);
             datasetTableFields.sort((o1, o2) -> {
                 if (o1.getColumnIndex() == null) {
@@ -893,9 +894,9 @@ public class DataSetTableService {
                 }
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
             });
-            List<TableFiled> fields = (List<TableFiled>)fileMap.get("fields");
+            List<TableFiled> fields = (List<TableFiled>) fileMap.get("fields");
             List<String> newFields = fields.stream().map(TableFiled::getRemarks).collect(Collectors.toList());
-            List<String> oldFields  = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
+            List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
             if (!oldFields.equals(newFields)) {
                 DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
             }
@@ -1073,7 +1074,7 @@ public class DataSetTableService {
                     double eps = 1e-10;
                     if (value - Math.floor(value) < eps) {
                         if (cellType) {
-                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")){
+                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")) {
                                 tableFiled.setFieldType("LONG");
                             }
                         }
@@ -1124,7 +1125,7 @@ public class DataSetTableService {
                     double eps = 1e-10;
                     if (value - Math.floor(value) < eps) {
                         if (cellType) {
-                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")){
+                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")) {
                                 tableFiled.setFieldType("LONG");
                             }
                         }

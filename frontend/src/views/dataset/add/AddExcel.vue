@@ -69,7 +69,52 @@
                 :field="field.fieldName"
                 :title="field.remarks"
                 :resizable="true"
-              />
+              >
+                <template slot="header" slot-scope="scope">
+                  <span v-if="!param.tableId" style="display: flex;align-items: center;">
+                    <span style="display: inline-block;font-size: 12px;">
+                      <div style="display: inline-block;">
+                        <el-select v-model="field.fieldType" size="mini" style="display: inline-block;width: 120px;">
+                          <el-option
+                            v-for="item in fieldOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          >
+                            <span style="float: left">
+                              <svg-icon v-if="item.value === 'TEXT'" icon-class="field_text" class="field-icon-text" />
+                              <svg-icon v-if="item.value === 'DATETIME'" icon-class="field_time" class="field-icon-time" />
+                              <svg-icon v-if="item.value === 'LONG' || item.value === 'DOUBLE'" icon-class="field_value" class="field-icon-value" />
+                            </span>
+                            <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
+                          </el-option>
+                        </el-select>
+                      </div>
+                      <!--                      <span style="margin-left: 8px;">-->
+                      <!--                        <span v-if="field.fieldType === 'TEXT'">-->
+                      <!--                          <svg-icon v-if="field.fieldType === 'TEXT'" icon-class="field_text" class="field-icon-text" />-->
+                      <!--                          <span class="field-class">{{ $t('dataset.text') }}</span>-->
+                      <!--                        </span>-->
+                      <!--                        <span v-if="field.fieldType === 'DATETIME'">-->
+                      <!--                          <svg-icon v-if="field.fieldType === 'DATETIME'" icon-class="field_time" class="field-icon-time" />-->
+                      <!--                          <span class="field-class">{{ $t('dataset.time') }}</span>-->
+                      <!--                        </span>-->
+                      <!--                        <span v-if="field.fieldType === 'LONG' || field.fieldType === 'DOUBLE'">-->
+                      <!--                          <svg-icon v-if="field.fieldType === 'LONG' || field.fieldType === 'DOUBLE'" icon-class="field_value" class="field-icon-value" />-->
+                      <!--                          <span v-if="field.fieldType === 'LONG'" class="field-class">{{ $t('dataset.value') }}</span>-->
+                      <!--                          <span v-if="field.fieldType === 'DOUBLE'" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>-->
+                      <!--                        </span>-->
+                      <!--                      </span>-->
+                    </span>
+                    <span style="font-size: 12px;margin-left: 10px;">
+                      {{ field.remarks }}
+                    </span>
+                  </span>
+                  <span v-else style="font-size: 12px;">
+                    {{ field.remarks }}
+                  </span>
+                </template>
+              </ux-table-column>
             </ux-grid>
           </div>
         </el-card>
@@ -109,7 +154,13 @@ export default {
       headers: { Authorization: token, 'Accept-Language': i18n.locale.replace('_', '-') },
       baseUrl: process.env.VUE_APP_BASE_API,
       path: '',
-      uploading: false
+      uploading: false,
+      fieldOptions: [
+        { label: this.$t('dataset.text'), value: 'TEXT' },
+        { label: this.$t('dataset.time'), value: 'DATETIME' },
+        { label: this.$t('dataset.value'), value: 'LONG' },
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' }
+      ]
     }
   },
   watch: {
@@ -207,7 +258,8 @@ export default {
           type: 'excel',
           mode: parseInt(this.mode),
           // info: '{"data":"' + this.path + '"}',
-          info: JSON.stringify({ data: this.path })
+          info: JSON.stringify({ data: this.path }),
+          fields: this.fields
         }
       } else {
         table = {
