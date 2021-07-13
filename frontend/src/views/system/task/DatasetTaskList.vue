@@ -99,12 +99,13 @@
 
               <el-form-item class="form-item">
                 <el-select v-model="taskForm.extraData.simple_cron_type"  filterable size="mini" @change="onSimpleCronChange()" >
-                  <el-option :label="$t('cron.minute')" value="minute" />
-                  <el-option :label="$t('cron.hour')" value="hour"  />
-                  <el-option :label="$t('cron.day')" value="day"  />
+                  <el-option :label="$t('cron.minute_default')" value="minute" />
+                  <el-option :label="$t('cron.hour_default')" value="hour"  />
+                  <el-option :label="$t('cron.day_default')" value="day"  />
                 </el-select>
               </el-form-item>
-              <el-form-item class="form-item" :label="$t('cron.every_exec')">
+
+              <el-form-item class="form-item"  :label="$t('cron.every_exec')">
               </el-form-item>
             </el-form>
           </el-form-item>
@@ -289,7 +290,7 @@ export default {
   created() {
     this.search()
     this.timer = setInterval(() => {
-      this.search()
+      this.search(this.last_condition, false)
     }, 5000)
   },
   beforeDestroy() {
@@ -314,14 +315,14 @@ export default {
     },
     select(selection) {
     },
-    search(condition) {
+    search(condition, showLoading = true) {
       this.last_condition = condition
       condition = formatQuickCondition(condition, 'dataset_table_task.name')
       const temp = formatCondition(condition)
       const param = temp || {}
       param['orders'] = formatOrders(this.orderConditions)
       const { currentPage, pageSize } = this.paginationConfig
-      datasetTaskList(currentPage, pageSize, param).then(response => {
+      datasetTaskList(currentPage, pageSize, param, showLoading).then(response => {
         this.data = response.data.listObject
         this.data.forEach(item => {
           this.taskStatus(item)
@@ -330,7 +331,7 @@ export default {
       })
     },
     taskStatus(item) {
-      post('/dataset/task/lastExecStatus', item).then(response => {
+      post('/dataset/task/lastExecStatus', item, false).then(response => {
         if(!item.lastExecStatus) {
           item.lastExecStatus = response.data.lastExecStatus
         }

@@ -136,12 +136,12 @@ export function taskList(spage, size, data) {
   })
 }
 
-export function datasetTaskList(page, size, data) {
+export function datasetTaskList(page, size, data, loading) {
   return request({
     url: '/dataset/task/pageList/' + page + '/' + size,
     method: 'post',
     data,
-    loading: true
+    loading: loading
   })
 }
 

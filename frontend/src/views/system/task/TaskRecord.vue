@@ -106,7 +106,7 @@ export default {
   created() {
     this.search()
     this.timer = setInterval(() => {
-      this.search()
+      this.search(this.last_condition, false)
     }, 5000)
   },
   computed: {
