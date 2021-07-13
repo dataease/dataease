@@ -1,22 +1,19 @@
 <template>
-  <div v-show="menuShow" class="contextmenu" :style="{ top: menuTop + 'px', left: menuLeft + 'px' }">
-    <ul @mouseup="handleMouseUp">
-      <template v-if="curComponent">
-        <template v-if="!curComponent.isLock">
-          <li v-if="editFilter.includes(curComponent.type)" @click="edit"> {{ $t('panel.edit') }}</li>
-          <li @click="copy"> {{ $t('panel.copy') }}</li>
-          <li @click="cut"> {{ $t('panel.cut') }}</li>
-          <li @click="deleteComponent"> {{ $t('panel.delete') }}</li>
-          <!--          <li @click="lock"> {{ $t('panel.lock') }}</li>-->
-          <li @click="topComponent"> {{ $t('panel.topComponent') }}</li>
-          <li @click="bottomComponent"> {{ $t('panel.bottomComponent') }}</li>
-          <li @click="upComponent"> {{ $t('panel.upComponent') }}</li>
-          <li @click="downComponent"> {{ $t('panel.downComponent') }}</li>
-        </template>
-        <li v-else @click="unlock">解锁</li>
-      </template>
-      <li v-else @click="paste">粘贴</li>
-    </ul>
+  <div>
+    <div style="width: 100%;">
+      <el-dropdown trigger="click" @mouseup="handleMouseUp">
+        <slot name="icon" />
+        <el-dropdown-menu v-if="curComponent" slot="dropdown">
+          <el-dropdown-item v-if="editFilter.includes(curComponent.type)" @click.native="edit">{{ $t('panel.edit') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="deleteComponent">{{ $t('panel.delete') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="topComponent">{{ $t('panel.topComponent') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="bottomComponent">{{ $t('panel.bottomComponent') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="upComponent">{{ $t('panel.upComponent') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="downComponent">{{ $t('panel.downComponent') }}</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
   </div>
 </template>
 
@@ -128,36 +125,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.contextmenu {
+  .contextmenu {
     position: absolute;
     z-index: 1000;
 
     ul {
-        border: 1px solid #e4e7ed;
-        border-radius: 4px;
-        background-color: #fff;
-        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      border: 1px solid #e4e7ed;
+      border-radius: 4px;
+      background-color: #fff;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      box-sizing: border-box;
+      margin: 5px 0;
+      padding: 6px 0;
+
+      li {
+        font-size: 14px;
+        padding: 0 20px;
+        position: relative;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #606266;
+        height: 34px;
+        line-height: 34px;
         box-sizing: border-box;
-        margin: 5px 0;
-        padding: 6px 0;
+        cursor: pointer;
 
-        li {
-            font-size: 14px;
-            padding: 0 20px;
-            position: relative;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #606266;
-            height: 34px;
-            line-height: 34px;
-            box-sizing: border-box;
-            cursor: pointer;
-
-            &:hover {
-                background-color: #f5f7fa;
-            }
+        &:hover {
+          background-color: #f5f7fa;
         }
+      }
     }
-}
+  }
 </style>

@@ -1,6 +1,14 @@
 <template>
-  <div v-loading="requestStatus==='waiting'" class="rect-shape">
-    <i v-if="requestStatus==='success'" style="right:5px;position: absolute;z-index: 2" class="icon iconfont icon-fangda" @click.stop="openChartDetailsDialog" />
+  <div
+    v-loading="requestStatus==='waiting'"
+    :class="[
+      {
+        ['active']: active
+      },
+      'rect-shape'
+    ]"
+  >
+    <i v-if="requestStatus==='success'" style="right:25px;position: absolute;z-index: 2" class="icon iconfont icon-fangda" @click.stop="openChartDetailsDialog" />
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -28,10 +36,11 @@ import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal, UserViewDialog },
+  components: { ChartComponent, TableNormal, LabelNormal, UserViewDialog, SettingMenu },
   props: {
     element: {
       type: Object,
@@ -53,6 +62,11 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    active: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {
@@ -212,6 +226,14 @@ export default {
   justify-content: center;
   background-color: #ece7e7;
 }
+.active {
+
+}
+
+.active >>> .icon-fangda{
+  z-index: 2;
+  display:block!important;
+}
 
 .rect-shape > i{
   right: 5px;
@@ -219,11 +241,11 @@ export default {
   position: absolute;
 }
 
-.rect-shape > i:hover {
+.rect-shape >>> i:hover {
   color: red;
 }
 
-.rect-shape:hover > .icon-fangda {
+.rect-shape:hover >>> .icon-fangda {
   z-index: 2;
   display:block;
 }
@@ -232,4 +254,12 @@ export default {
   display:none
 }
 
+.rect-shape:hover >>> .icon-shezhi {
+  z-index: 2;
+  display:block;
+}
+
+.rect-shape>>>.icon-shezhi {
+  display:none
+}
 </style>

@@ -19,6 +19,9 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
+    <setting-menu style="right:5px;position: absolute;z-index: 2">
+      <i slot="icon" class="icon iconfont icon-shezhi" />
+    </setting-menu>
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -42,10 +45,12 @@ let eventsFor = events.mouse
 // private
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
+import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 
 export default {
   replace: true,
   name: 'VueDragResizeRotate',
+  components: { SettingMenu },
   props: {
     className: {
       type: String,
@@ -1619,5 +1624,28 @@ export default {
 .mouseOn {
   outline: 1px dashed #70c0ff;
   user-select: none;
+}
+
+.mouseOn >>> .icon-shezhi{
+  z-index: 2;
+  display:block!important;
+}
+.vdr > i{
+  right: 5px;
+  color: gray;
+  position: absolute;
+}
+
+.vdr >>> i:hover {
+  color: red;
+}
+
+.vdr:hover >>> i {
+  z-index: 2;
+  display:block;
+}
+
+.vdr>>>.icon-shezhi {
+  display:none
 }
 </style>
