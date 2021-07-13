@@ -64,10 +64,14 @@
 
     <!--关闭弹框-->
     <el-dialog :visible.sync="closePanelVisible" :title="$t('panel.panel_save_tips')" :show-close="false" width="30%" class="dialog-css">
-      <div>
-        <svg-icon icon-class="warn-tre" style="width: 30px;height: 30px" />
-        <span style="font-size: 12px;margin-left: 10px">{{ $t('panel.panel_save_warn_tips') }}</span>
-      </div>
+      <el-row style="height: 20px">
+        <el-col :span="6">
+          <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
+        </el-col>
+        <el-col :span="16">
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_save_warn_tips') }}</span>
+        </el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button style="float: left" size="mini" @click="closeNotSave()">{{ $t('panel.do_not_save') }}</el-button>
         <el-button size="mini" @click="closePanelVisible=false">{{ $t('panel.cancel') }}</el-button>

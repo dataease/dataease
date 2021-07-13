@@ -1,3 +1,5 @@
+DROP FUNCTION IF EXISTS `GET_CHART_VIEW_COPY_NAME`;
+delimiter ;;
 CREATE FUNCTION `GET_CHART_VIEW_COPY_NAME`(chartId varchar(255)) RETURNS varchar(255) CHARSET utf8
     READS SQL DATA
 BEGIN
@@ -24,3 +26,5 @@ and REPLACE(name,chartName,'') REGEXP '-copy\\(([0-9])+\\)$' and name like CONCA
 RETURN concat(chartName,'-copy(',chartNameCount,')');
 
 END
+;;
+delimiter ;
