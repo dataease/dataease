@@ -293,21 +293,23 @@ export default {
   methods: {
     closeEditPanelDialog(panelInfo) {
       this.editPanel.visible = false
-      this.defaultTree()
-      // 默认展开 同时点击 新增的节点
-      if (panelInfo && panelInfo.panelType === 'self' && this.lastActiveNodeData.id) {
-        if (this.editPanel.optType === 'rename') {
-          this.lastActiveNodeData.name = panelInfo.name
-          return
+      if (panelInfo) {
+        this.defaultTree()
+        // 默认展开 同时点击 新增的节点
+        if (panelInfo && panelInfo.panelType === 'self' && this.lastActiveNodeData.id) {
+          if (this.editPanel.optType === 'rename') {
+            this.lastActiveNodeData.name = panelInfo.name
+            return
+          }
+          if (!this.lastActiveNodeData.children) {
+            this.$set(this.lastActiveNodeData, 'children', [])
+          }
+          this.lastActiveNodeData.children.push(panelInfo)
+          this.lastActiveNode.expanded = true
+          this.activeNodeAndClick(panelInfo)
+        } else {
+          this.tree(this.groupForm)
         }
-        if (!this.lastActiveNodeData.children) {
-          this.$set(this.lastActiveNodeData, 'children', [])
-        }
-        this.lastActiveNodeData.children.push(panelInfo)
-        this.lastActiveNode.expanded = true
-        this.activeNodeAndClick(panelInfo)
-      } else {
-        this.tree(this.groupForm)
       }
     },
     showEditPanel(param) {
