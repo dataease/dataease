@@ -9,6 +9,7 @@
     :multiple="options.attrs.multiple"
     :placeholder="options.attrs.placeholder"
     @change="changeValue"
+    :popper-append-to-body="false"
   >
     <el-option
       v-for="item in options.attrs.datas"
