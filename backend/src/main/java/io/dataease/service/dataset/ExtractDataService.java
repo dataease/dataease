@@ -277,9 +277,6 @@ public class ExtractDataService {
         switch (updateType) {
             case all_scope:  // 全量更新
                 try{
-                    if(datasource.getType().equalsIgnoreCase("excel")){
-                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, null);
-                    }
                     if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())) {
                         datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
                     }
@@ -315,67 +312,56 @@ public class ExtractDataService {
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-//                    deleteFile("all_scope", datasetTableId);
+                    deleteFile("all_scope", datasetTableId);
                 }finally {
                 }
                 break;
 
             case add_scope: // 增量更新
                 try {
-                    if(datasource.getType().equalsIgnoreCase("excel")){
-                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, null);
-                        generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
-                        generateJobFile("incremental_add", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
-                        Long execTime = System.currentTimeMillis();
-                        extractData(datasetTable, "incremental_add");
-                        saveSucessLog(datasetTableTaskLog);
-                        sendWebMsg(datasetTable, taskId,true);
-                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-                    }else {
-                        DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
-                        if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
-                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
-                            return;
-                        }
-
-                        if (datasetTable.getLastUpdateTime() == 0 || datasetTable.getLastUpdateTime() == null) {
-                            updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
-                            return;
-                        }
-
-                        if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())) {
-                            datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
-                        }
-                        if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                            datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
-                        }
-                        Long execTime = System.currentTimeMillis();
-                        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
-                            String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
-                                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-                            generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, sql);
-                            generateJobFile("incremental_add", datasetTable, fetchSqlField(sql, datasource));
-                            extractData(datasetTable, "incremental_add");
-                        }
-
-                        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
-                            String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
-                                    .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-                            generateTransFile("incremental_delete", datasetTable, datasource, datasetTableFields, sql);
-                            generateJobFile("incremental_delete", datasetTable, fetchSqlField(sql, datasource));
-                            extractData(datasetTable, "incremental_delete");
-                        }
-                        saveSucessLog(datasetTableTaskLog);
-
-                        sendWebMsg(datasetTable, taskId,true);
-
-                        deleteFile("incremental_add", datasetTableId);
-                        deleteFile("incremental_delete", datasetTableId);
-
-                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-                        datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
-                        dataSetTableTaskService.update(datasetTableTask);
+                    DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
+                    if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
+                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
+                        return;
                     }
+
+                    if (datasetTable.getLastUpdateTime() == 0 || datasetTable.getLastUpdateTime() == null) {
+                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
+                        return;
+                    }
+
+                    if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())) {
+                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    }
+                    if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
+                        datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    }
+                    Long execTime = System.currentTimeMillis();
+                    if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
+                        String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
+                                .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
+                        generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, sql);
+                        generateJobFile("incremental_add", datasetTable, fetchSqlField(sql, datasource));
+                        extractData(datasetTable, "incremental_add");
+                    }
+
+                    if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
+                        String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
+                                .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
+                        generateTransFile("incremental_delete", datasetTable, datasource, datasetTableFields, sql);
+                        generateJobFile("incremental_delete", datasetTable, fetchSqlField(sql, datasource));
+                        extractData(datasetTable, "incremental_delete");
+                    }
+                    saveSucessLog(datasetTableTaskLog);
+
+                    sendWebMsg(datasetTable, taskId,true);
+
+                    deleteFile("incremental_add", datasetTableId);
+                    deleteFile("incremental_delete", datasetTableId);
+
+                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
+                    datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
+                    dataSetTableTaskService.update(datasetTableTask);
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     sendWebMsg(datasetTable, taskId,false);
@@ -597,7 +583,7 @@ public class ExtractDataService {
         if (jobStatus.getStatusDescription().equals("Finished")) {
             return;
         } else {
-            DataEaseException.throwException((jobStatus.getLoggingString()));
+            DataEaseException.throwException((jobStatus.getErrorDescription()));
         }
     }
 
