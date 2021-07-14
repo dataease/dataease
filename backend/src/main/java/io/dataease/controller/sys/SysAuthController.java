@@ -2,10 +2,8 @@ package io.dataease.controller.sys;
 
 import io.dataease.base.domain.SysAuthDetail;
 import io.dataease.controller.handler.annotation.I18n;
-import io.dataease.controller.request.BaseTreeRequest;
 import io.dataease.controller.request.SysAuthRequest;
 import io.dataease.dto.SysAuthDetailDTO;
-import io.dataease.dto.VAuthModelDTO;
 import io.dataease.service.sys.SysAuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,13 +28,6 @@ public class SysAuthController {
     @Resource
     private SysAuthService sysAuthService;
 
-    @ApiOperation("查询视图")
-    @PostMapping("/authModels")
-    @I18n
-    public  List<VAuthModelDTO> authModels(@RequestBody BaseTreeRequest request){
-        return sysAuthService.searchAuthModelTree(request);
-    }
-
 
     @ApiOperation("查询授权")
     @PostMapping("/authDetails")
@@ -52,10 +43,4 @@ public class SysAuthController {
         return sysAuthService.searchAuthDetailsModel(authType);
     }
 
-
-    @ApiOperation("修改权限")
-    @PostMapping("/authChange")
-    public void authChange(@RequestBody SysAuthRequest request){
-        sysAuthService.authChange(request);
-    }
 }
