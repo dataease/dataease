@@ -44,6 +44,27 @@
         :active="item === curComponent"
         @input="handleInput"
       />
+      <!-- <out-widget
+        :is="item.component"
+        v-else-if="item.type==='custom'"
+        :id="'component' + item.id"
+        class="component"
+        :style="getComponentStyleDefault(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+      /> -->
+      <de-out-widget
+        v-else-if="item.type==='custom'"
+        :id="'component' + item.id"
+        class="component"
+        :style="getComponentStyleDefault(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+      />
       <component
         :is="item.component"
         v-else-if="item.type==='other'"
@@ -127,9 +148,9 @@ import Grid from './Grid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
-
+import DeOutWidget from '@/components/dataease/DeOutWidget'
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget },
   props: {
     isEdit: {
       type: Boolean,

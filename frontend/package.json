@@ -20,7 +20,7 @@
     "axios": "^0.21.1",
     "core-js": "^2.6.5",
     "echarts": "^5.0.1",
-    "element-resize-detector": "^1.2.2",
+    "element-resize-detector": "^1.2.3",
     "element-ui": "2.13.0",
     "file-save": "^0.2.0",
     "file-saver": "^2.0.5",

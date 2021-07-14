@@ -5,8 +5,7 @@
     class="component"
     @click="handleClick"
   >
-    <component
-      :is="config.component"
+    <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
       class="component-custom"
@@ -14,6 +13,7 @@
       :out-style="config.style"
       :element="config"
     />
+
     <component
       :is="config.component"
       v-else
@@ -31,8 +31,9 @@ import { getStyle } from '@/components/canvas/utils/style'
 import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
-
+import DeOutWidget from '@/components/dataease/DeOutWidget'
 export default {
+  components: { DeOutWidget },
   mixins: [mixins],
   props: {
     config: {
