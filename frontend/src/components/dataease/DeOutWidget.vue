@@ -21,6 +21,8 @@
                 class="component-custom"
                 :out-style="element.style"
                 :element="element"
+                :in-draw="inDraw"
+                :in-screen="inScreen"
               />
             </div>
           </div>
@@ -41,6 +43,11 @@ export default {
     },
     inDraw: {
       type: Boolean,
+      default: true
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
       default: true
     }
   },

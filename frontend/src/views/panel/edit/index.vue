@@ -154,7 +154,7 @@
     </el-dialog>
 
     <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
-      <Preview v-if="previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
+      <Preview v-if="previewVisible" :in-screen="!previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
     </fullscreen>
     <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
 

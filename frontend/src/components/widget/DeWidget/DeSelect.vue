@@ -8,6 +8,7 @@
     :clearable="!options.attrs.multiple"
     :multiple="options.attrs.multiple"
     :placeholder="options.attrs.placeholder"
+    :popper-append-to-body="inScreen"
     @change="changeValue"
   >
     <el-option
@@ -31,6 +32,11 @@ export default {
     },
     inDraw: {
       type: Boolean,
+      default: true
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
       default: true
     }
   },
