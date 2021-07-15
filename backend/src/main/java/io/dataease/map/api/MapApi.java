@@ -18,4 +18,13 @@ public interface MapApi {
 
     @GetMapping("/areaEntitys/{pcode}")
     List<AreaEntity>  areaEntitys(@PathVariable String pcode);
+
+
+    /**
+     * 由于api有限流机制
+     * 请求失败后 调用重试方法
+     * @param areaCode
+     */
+    @GetMapping("/retry/{areaCode}")
+    void retry(@PathVariable String areaCode);
 }

@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import io.dataease.base.domain.AreaMapping;
 import io.dataease.base.domain.AreaMappingExample;
 import io.dataease.base.mapper.AreaMappingMapper;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.map.dto.entity.*;
 import io.dataease.map.dto.entity.Properties;
 import io.dataease.map.dto.response.MapResponse;
@@ -68,7 +69,7 @@ public class MapUtils {
         AreaEntity china = root();
 
         maps.parallelStream().forEach(map -> {
-        // maps.stream().forEach(map -> {
+            // maps.stream().forEach(map -> {
             String province_code = map.get(Constants.PROVINCE_CODE).toString();
             String city_code = map.get(Constants.CITY_CODE).toString();
             String county_code = map.get(Constants.COUNTY_CODE).toString();
@@ -76,6 +77,10 @@ public class MapUtils {
             province_code = formatCode(province_code);
             city_code = formatCode(city_code);
             county_code = formatCode(county_code);
+
+            // 是否是跨级直辖
+            Boolean isCrossLevel = StrUtil.equals(province_code, city_code) && !StrUtil.equals(province_code, "710000");
+
 
             if (!provinceMap.containsKey(province_code)) {
                 String province_name = map.get(Constants.PROVINCE_NAME).toString();
@@ -86,20 +91,26 @@ public class MapUtils {
 
             //当前省
             AreaEntity currentProvince = provinceMap.get(province_code);
+
+            String city_name = map.get(Constants.CITY_NAME).toString();
+            if (isCrossLevel) {
+                city_code = county_code;
+                city_name = map.get(Constants.COUNTY_NAME).toString();
+            }
             if (!cityMap.containsKey(city_code)) {
-                String city_name = map.get(Constants.CITY_NAME).toString();
                 AreaEntity child = AreaEntity.builder().code(city_code).name(city_name).pcode(currentProvince.getCode()).build();
                 cityMap.put(city_code, child);
                 currentProvince.addChild(child);
             }
-
-            //当前市
-            AreaEntity currentCity = cityMap.get(city_code);
-            if (!countyMap.containsKey(county_code)) {
-                String county_name = map.get(Constants.COUNTY_NAME).toString();
-                AreaEntity child = AreaEntity.builder().code(county_code).name(county_name).pcode(currentCity.getCode()).build();
-                countyMap.put(county_code, child);
-                currentCity.addChild(child);
+            if (!isCrossLevel) {
+                //当前市
+                AreaEntity currentCity = cityMap.get(city_code);
+                if (!countyMap.containsKey(county_code)) {
+                    String county_name = map.get(Constants.COUNTY_NAME).toString();
+                    AreaEntity child = AreaEntity.builder().code(county_code).name(county_name).pcode(currentCity.getCode()).build();
+                    countyMap.put(county_code, child);
+                    currentCity.addChild(child);
+                }
             }
         });
         // List<AreaEntity> treeNodes = provinceMap.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
@@ -156,8 +167,11 @@ public class MapUtils {
                         List<Feature> kidFeatures = districts.stream().map(district -> buildFeature(district, child)).collect(Collectors.toList());
                         features.addAll(kidFeatures);
                     }
+                }else {
+                    LogUtil.error("请求节点错误 请手动补偿： " + areaEntity.getName() +" -> "+child.getName());
                 }
             });
+
             if (CollectionUtil.isNotEmpty(features)) {
                 MapResultDto mapResultDto = buildGeometry(features);
                 writeFeatureFileFull(mapResultDto, areaEntity.getCode() + "_full");
@@ -248,5 +262,21 @@ public class MapUtils {
         FileWriter fileWriter = new FileWriter(path);
         String content = JSONUtil.toJsonStr(mapResultDto);
         fileWriter.write(content);
+    }
+
+    public static AreaEntity nodeByCode(List<AreaEntity> areaEntities, String code) {
+        for (int i = 0; i < areaEntities.size(); i++) {
+            AreaEntity areaEntity = areaEntities.get(i);
+            if (StrUtil.equals(areaEntity.getCode(), code)) {
+                return areaEntity;
+            }
+            if (CollectionUtil.isNotEmpty(areaEntity.getChildren())) {
+                AreaEntity temp = nodeByCode(areaEntity.getChildren(), code);
+                if (null != temp){
+                    return temp;
+                }
+            }
+        }
+        return null;
     }
 }
