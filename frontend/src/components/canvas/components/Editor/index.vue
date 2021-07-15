@@ -200,7 +200,7 @@ export default {
       // 矩阵数量 默认 12 * 24
       matrixCount: {
         x: 24,
-        y: 48
+        y: 72
       },
       customStyleHistory: null,
       showDrag: true,

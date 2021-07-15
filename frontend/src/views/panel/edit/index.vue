@@ -161,7 +161,7 @@
     <!--矩形样式组件-->
     <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <TextAttr v-if="curComponent&&curComponent.type==='v-text'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
-
+    <FilterTextAttr v-if="curComponent&&curComponent.type==='custom'&&curComponent.options.attrs.title" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -213,6 +213,7 @@ import { commonStyle, commonAttr } from '@/components/canvas/custom-component/co
 import generateID from '@/components/canvas/utils/generateID'
 import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 import TextAttr from '@/views/Tinymce/TextAttr'
+import FilterTextAttr from '@/views/Tinymce/FilterTextAttr'
 
 export default {
   name: 'PanelEdit',
@@ -234,7 +235,8 @@ export default {
     PanelTextEditor,
     RectangleAttr,
     TextAttr,
-    ChartGroup
+    ChartGroup,
+    FilterTextAttr
   },
   data() {
     return {

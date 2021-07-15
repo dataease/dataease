@@ -112,7 +112,6 @@ export default {
   .first-title {
     width: 100%;
     overflow: hidden;
-    inset: 10px 0px 10px;
     position: absolute;
     color: inherit;
     display: flex;
