@@ -51,7 +51,7 @@
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMain" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
+            <Preview v-if="showMain" :in-screen="!fullscreen" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
           </fullscreen>
         </div>
       </el-row>
@@ -110,6 +110,14 @@ export default {
   },
   watch: {
     panelInfo(newVal, oldVla) {
+      // 刷新 进行重新渲染
+      this.showMain = false
+      this.$nextTick(() => {
+        this.showMain = true
+        this.initHasStar()
+      })
+    },
+    fullscreen(newVal, oldVla) {
       // 刷新 进行重新渲染
       this.showMain = false
       this.$nextTick(() => {

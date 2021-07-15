@@ -8,6 +8,7 @@
       :key="index"
       :config="item"
       :search-count="searchCount"
+      :in-screen="inScreen"
     />
     <!--视图详情-->
     <el-dialog
@@ -54,6 +55,11 @@ export default {
       type: String,
       required: false,
       default: 'full'
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {

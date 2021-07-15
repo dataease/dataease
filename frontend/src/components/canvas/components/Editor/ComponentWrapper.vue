@@ -12,6 +12,7 @@
       :style="getComponentStyleDefault(config.style)"
       :out-style="config.style"
       :element="config"
+      :in-screen="inScreen"
     />
 
     <component
@@ -50,6 +51,11 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   computed: {
