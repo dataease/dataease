@@ -81,16 +81,16 @@
       </el-table-column>
       <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">
         <template slot-scope="scope">
-          <span :title="scope.row.originName" class="field-class" style="display: inline-block;width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-            {{ scope.row.originName }}
+          <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+            <span style="font-size: 12px;">{{ scope.row.originName }}</span>
           </span>
         </template>
       </el-table-column>
       <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">
         <template slot-scope="scope">
-          <el-radio-group v-model="scope.row.groupType">
-            <el-radio label="d">{{ $t('chart.dimension') }}</el-radio>
-            <el-radio label="q">{{ $t('chart.quota') }}</el-radio>
+          <el-radio-group v-model="scope.row.groupType" size="mini">
+            <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>
+            <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>
           </el-radio-group>
         </template>
       </el-table-column>

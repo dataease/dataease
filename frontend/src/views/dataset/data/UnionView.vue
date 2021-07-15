@@ -94,7 +94,7 @@
             <el-radio class="union-relation-css" label="1:N">{{ $t('dataset.left_join') }}</el-radio>
             <el-radio class="union-relation-css" label="N:1">{{ $t('dataset.right_join') }}</el-radio>
             <el-radio class="union-relation-css" label="1:1">{{ $t('dataset.inner_join') }}</el-radio>
-            <el-radio class="union-relation-css" label="N:N">{{ $t('dataset.full_join') }}</el-radio>
+            <!--            <el-radio class="union-relation-css" label="N:N">{{ $t('dataset.full_join') }}</el-radio>-->
           </el-radio-group>
         </el-col>
 
@@ -105,7 +105,7 @@
             width="500"
             trigger="click"
           >
-            <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="1" @getTable="getTable" />
+            <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="table.mode" @getTable="getTable" />
             <el-button slot="reference" size="mini" style="width: 100%;">
               <p class="table-name-css" :title="targetTable.name || $t('dataset.pls_slc_union_table')">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</p>
             </el-button>
@@ -204,6 +204,9 @@ export default {
     },
     initUnion() {
       if (this.table.id) {
+        if (this.table.mode === 0) {
+          this.customType = ['db']
+        }
         post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
           // console.log(response)
           this.unionData = response.data
@@ -300,6 +303,16 @@ export default {
           showClose: true
         })
         return
+      }
+      if (this.table.mode === 0) {
+        if (param.dataSourceId !== this.table.dataSourceId) {
+          this.$message({
+            type: 'error',
+            message: this.$t('dataset.can_not_union_diff_datasource'),
+            showClose: true
+          })
+          return
+        }
       }
       this.targetTable = param
       this.union.targetTableId = param.id

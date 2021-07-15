@@ -20,12 +20,14 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.chart.*;
+import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
+import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,8 @@ public class ChartViewService {
     private DataSetTableFieldsService dataSetTableFieldsService;
     @Resource
     private ExtChartGroupMapper extChartGroupMapper;
+    @Resource
+    private DataSetTableUnionService dataSetTableUnionService;
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -196,6 +200,15 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, customFilter, extFilterList));
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList));
+                }
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), "custom")) {
+                DataTableInfoDTO dt = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
+                List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
+                String sql = dataSetTableService.getCustomSQLDatasource(dt, list, ds);
+                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, customFilter, extFilterList));
+                } else {
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, customFilter, extFilterList));
                 }
             }
             data = datasourceProvider.getData(datasourceRequest);
