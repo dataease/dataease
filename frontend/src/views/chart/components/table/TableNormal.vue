@@ -1,5 +1,5 @@
 <template>
-  <div ref="tableContainer" :style="bg_class">
+  <div ref="tableContainer" :style="bg_class" style="padding: 8px;">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <ux-grid
       ref="plxTable"
@@ -129,7 +129,7 @@ export default {
       this.$nextTick(() => {
         if (this.$refs.tableContainer) {
           const currentHeight = this.$refs.tableContainer.offsetHeight
-          const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight
+          const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight - 16
           let tableHeight
           if (this.chart.data) {
             tableHeight = (this.chart.data.tableRow.length + 2) * 36

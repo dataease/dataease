@@ -1,5 +1,5 @@
 <template>
-  <div ref="tableContainer" :style="bg_class">
+  <div ref="tableContainer" :style="bg_class" style="padding: 8px;">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <div
       v-if="chart.data && chart.data.x && chart.data.x.length > 0 && chart.data.series && chart.data.series.length > 0 && chart.data.series[0].data && chart.data.series[0].data.length > 0"
@@ -104,7 +104,7 @@ export default {
       this.$nextTick(function() {
         if (that.$refs.tableContainer) {
           const currentHeight = that.$refs.tableContainer.offsetHeight
-          const contentHeight = currentHeight - that.$refs.title.offsetHeight
+          const contentHeight = currentHeight - that.$refs.title.offsetHeight - 16
           that.height = contentHeight + 'px'
           that.content_class.height = that.height
         }
