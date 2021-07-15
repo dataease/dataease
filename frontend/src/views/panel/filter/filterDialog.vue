@@ -182,7 +182,7 @@
             </div>
           </el-col>
           <el-col :span="16"><div class="filter-options-right">
-            <el-col :span="8">
+            <span style="padding-right: 10px;">
               <el-checkbox v-model="componentInfo.options.attrs.showTitle" @change="showTitleChange">显示标题</el-checkbox>
               <el-popover
                 v-model="titlePopovervisible"
@@ -196,8 +196,8 @@
 
                 <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.showTitle, 'i-filter-inactive': !componentInfo.options.attrs.showTitle}" class="el-icon-setting i-filter" />
               </el-popover>
-            </el-col>
-            <el-col :span="8">
+            </span>
+            <span style="padding-left: 10px;">
               <el-checkbox v-model="componentInfo.options.attrs.enableRange" @change="enableRangeChange"><span>  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
 
               <el-popover
@@ -219,7 +219,7 @@
 
                 <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.enableRange, 'i-filter-inactive': !componentInfo.options.attrs.enableRange}" class="el-icon-setting i-filter" />
               </el-popover>
-            </el-col>
+            </span>
           </div>
 
           </el-col>

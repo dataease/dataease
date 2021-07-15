@@ -8,6 +8,7 @@ import io.dataease.map.utils.MapUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -41,10 +42,14 @@ public class MapServer implements MapApi {
         List<AreaEntity> areaEntities = mapService.areaEntities();
 
         return mapService.entitysByPid(areaEntities, pcode);
+    }
 
-        /*return areaEntities.stream().filter(item -> StringUtils.equals(item.getPcode(), pcode)).map(item -> {
-            item.setChildren(null);
-            return item;
-        }).collect(Collectors.toList());*/
+    @Override
+    public void retry(@PathVariable String areaCode) {
+        List<AreaEntity> areaEntities = mapService.areaEntities();
+        AreaEntity areaEntity = MapUtils.nodeByCode(areaEntities, areaCode);
+        List<AreaEntity> targets = new ArrayList<>();
+        targets.add(areaEntity);
+        MapUtils.recursionWriteFull(targets);
     }
 }
