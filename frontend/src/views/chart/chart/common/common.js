@@ -1,12 +1,27 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export function componentStyle(chart_option, chart) {
+  const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
     if (customStyle.text) {
       chart_option.title.show = customStyle.text.show
-      chart_option.title.left = customStyle.text.hPosition
-      chart_option.title.top = customStyle.text.vPosition
+      // 水平方向
+      if (customStyle.text.hPosition === 'left') {
+        chart_option.title.left = padding
+      } else if (customStyle.text.hPosition === 'right') {
+        chart_option.title.right = padding
+      } else {
+        chart_option.title.left = customStyle.text.hPosition
+      }
+      // 垂直方向
+      if (customStyle.text.vPosition === 'top') {
+        chart_option.title.top = padding
+      } else if (customStyle.text.vPosition === 'bottom') {
+        chart_option.title.bottom = padding
+      } else {
+        chart_option.title.top = customStyle.text.vPosition
+      }
       const style = chart_option.title.textStyle ? chart_option.title.textStyle : {}
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
@@ -16,8 +31,22 @@ export function componentStyle(chart_option, chart) {
     }
     if (customStyle.legend) {
       chart_option.legend.show = customStyle.legend.show
-      chart_option.legend.left = customStyle.legend.hPosition
-      chart_option.legend.top = customStyle.legend.vPosition
+      // 水平方向
+      if (customStyle.legend.hPosition === 'left') {
+        chart_option.legend.left = padding
+      } else if (customStyle.legend.hPosition === 'right') {
+        chart_option.legend.right = padding
+      } else {
+        chart_option.legend.left = customStyle.legend.hPosition
+      }
+      // 垂直方向
+      if (customStyle.legend.vPosition === 'top') {
+        chart_option.legend.top = padding
+      } else if (customStyle.legend.vPosition === 'bottom') {
+        chart_option.legend.bottom = padding
+      } else {
+        chart_option.legend.top = customStyle.legend.vPosition
+      }
       chart_option.legend.orient = customStyle.legend.orient
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
