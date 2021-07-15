@@ -79,7 +79,7 @@
           <el-input v-model="scope.row.name" size="mini" />
         </template>
       </el-table-column>
-      <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">
+      <el-table-column v-if="!(param.table.mode === 0 && param.table.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
         <template slot-scope="scope">
           <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
             <span style="font-size: 12px;">{{ scope.row.originName }}</span>
