@@ -83,16 +83,32 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sqlFix(sql) + ") AS tmp ");
+        return createQueryCountSQL(" (" + sqlFix(sql) + ") DE_TMP ");
     }
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") tmp " + " WHERE rownum <= 1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") DE_TMP " + " WHERE rownum <= 1000";
     }
 
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields) {
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                .build();
+        List<SQLObj> xFields = xFields(table, fields);
+
+        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        ST st_sql = stg.getInstanceOf("querySql");
+        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        return st_sql.render();
+    }
+
+
+
+    private List<SQLObj> xFields(String table, List<DatasetTableField> fields){
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
@@ -137,17 +153,11 @@ public class OracleQueryProvider extends QueryProvider {
                         .build());
             }
         }
-
-        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
-        ST st_sql = stg.getInstanceOf("querySql");
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
-        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
-        return st_sql.render();
+        return xFields;
     }
-
-    private String sqlColumn(List<DatasetTableField> fields) {
-        String[] array = fields.stream().map(f -> {
-            return f.getDataeaseName();
+    private String sqlColumn(List<SQLObj> xFields) {
+        String[] array = xFields.stream().map(f -> {
+            return f.getFieldAlias();
         }).toArray(String[]::new);
         return StringUtils.join(array, ",");
     }
@@ -159,24 +169,27 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return MessageFormat.format("SELECT {0} FROM ( SELECT tmp.*, rownum r FROM ( {1} ) tmp WHERE rownum <= {2} ) tmp2 WHERE r > {3} ",
-                sqlColumn(fields), createQuerySQL(table, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+        List<SQLObj> xFields = xFields(table, fields);
+
+        return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
+                sqlColumn(xFields), createQuerySQL(table, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit) {
-        return createQuerySQL(table, fields) + " WHERE rownum <= " + limit;
+        return String.format("SELECT %s.*  from %s  WHERE rownum <= %s ", table, table, limit.toString());
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit) {
-        return createQuerySQLAsTmp(sql, fields) + " WHERE rownum <= " + limit;
+        return String.format("SELECT * from %s  WHERE rownum <= %s ", "(" + sqlFix(sql) + ")", limit.toString());
     }
 
     @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return MessageFormat.format("SELECT {0} FROM ( SELECT tmp.*, rownum r FROM ( {1} ) tmp WHERE rownum <= {2} ) tmp2 WHERE r > {3} ",
-                sqlColumn(fields), createQuerySQLAsTmp(sql, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+        List<SQLObj> xFields = xFields("(" + sqlFix(sql) + ")", fields);
+        return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
+                sqlColumn(xFields), createQuerySQLAsTmp(sql, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
@@ -353,7 +366,7 @@ public class OracleQueryProvider extends QueryProvider {
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
         }
-        String tmpSql = "SELECT * FROM (" + sql + ") tmp " + " where rownum <= 0";
+        String tmpSql = "SELECT * FROM (" + sql + ") DE_TMP " + " where rownum <= 0";
         return tmpSql;
     }
 
@@ -361,7 +374,7 @@ public class OracleQueryProvider extends QueryProvider {
     public String createRawQuerySQL(String table, List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(" ").append(f.getOriginName()).append("  AS ").append(f.getDataeaseName());
+            stringBuilder.append(" ").append(f.getOriginName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
         return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
@@ -369,7 +382,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") tmp ", fields);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") DE_TMP ", fields);
     }
 
     public String transMysqlFilterTerm(String term) {

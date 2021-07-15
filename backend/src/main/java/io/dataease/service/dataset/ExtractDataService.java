@@ -720,7 +720,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
-                udjcStep = udjc(datasetTableFields, false);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql);
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfigration.class);
@@ -728,7 +728,7 @@ public class ExtractDataService {
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
-                udjcStep = udjc(datasetTableFields, false);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer);
                 break;
             case oracle:
                 OracleConfigration oracleConfigration = new Gson().fromJson(datasource.getConfiguration(), OracleConfigration.class);
@@ -742,12 +742,12 @@ public class ExtractDataService {
 
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
-                udjcStep = udjc(datasetTableFields, false);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
                 break;
             case excel:
                 String filePath = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData();
                 inputStep = excelInputStep(filePath, datasetTableFields);
-                udjcStep = udjc(datasetTableFields, true);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.excel);
             default:
                 break;
         }
@@ -878,13 +878,9 @@ public class ExtractDataService {
         return outputStep;
     }
 
-    private StepMeta udjc(List<DatasetTableField> datasetTableFields, boolean isExcel) {
+    private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
         String needToChangeColumnType = "";
-//        for (DatasetTableField datasetTableField : datasetTableFields) {
-//            if (datasetTableField.getDeExtractType() != null && datasetTableField.getDeExtractType() == 4) {
-//                needToChangeColumnType = needToChangeColumnType + alterColumnTypeCode.replace("FILED", datasetTableField.getDataeaseName());
-//            }
-//        }
+
 
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
@@ -895,10 +891,16 @@ public class ExtractDataService {
         String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType);
 
         tmp_code = tmp_code.replace("handleWraps", handleWraps);
-        if(isExcel){
-            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList())));;
+        String Column_Fields = "";
+        if(datasourceType.equals(DatasourceTypes.excel) || datasourceType.equals(DatasourceTypes.oracle)){
+            Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()));
         }else {
-            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));;
+            Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()));
+        }
+        if(datasourceType.equals(DatasourceTypes.excel)){
+            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields);
+        }else {
+            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields);
         }
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
