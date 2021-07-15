@@ -583,7 +583,7 @@ public class ExtractDataService {
         if (jobStatus.getStatusDescription().equals("Finished")) {
             return;
         } else {
-            DataEaseException.throwException((jobStatus.getErrorDescription()));
+            DataEaseException.throwException((jobStatus.getLoggingString()));
         }
     }
 

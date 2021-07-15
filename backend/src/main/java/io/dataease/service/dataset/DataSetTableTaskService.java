@@ -58,7 +58,7 @@ public class DataSetTableTaskService {
     public DatasetTableTask save(DataSetTaskRequest dataSetTaskRequest) throws Exception {
         checkName(dataSetTaskRequest);
         DatasetTableTask datasetTableTask = dataSetTaskRequest.getDatasetTableTask();
-        if(!datasetTableTask.getType().equalsIgnoreCase("add_scope")){
+        if(datasetTableTask.getType().equalsIgnoreCase("add_scope")){
             dataSetTableService.saveIncrementalConfig(dataSetTaskRequest.getDatasetTableIncrementalConfig());
         }
         // check
