@@ -954,7 +954,8 @@ export default {
     left_join: '左連接',
     right_join: '右連接',
     inner_join: '內連接',
-    full_join: '全連接'
+    full_join: '全連接',
+    can_not_union_diff_datasource: '被關聯數據集必須與當前數據集的數據源一致'
   },
   datasource: {
     datasource: '數據源',

@@ -954,7 +954,8 @@ export default {
     left_join: 'LEFT JOIN',
     right_join: 'RIGHT JOIN',
     inner_join: 'INNER JOIN',
-    full_join: 'FULL JOIN'
+    full_join: 'FULL JOIN',
+    can_not_union_diff_datasource: 'Union dataset must have same data source'
   },
   datasource: {
     datasource: 'Data Source',

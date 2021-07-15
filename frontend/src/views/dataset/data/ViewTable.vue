@@ -48,7 +48,7 @@
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview :param="param" :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
-      <el-tab-pane v-if="table.type !== 'custom' && table.mode === 1" :label="$t('dataset.join_view')" name="joinView">
+      <el-tab-pane v-if="table.type !== 'custom'" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
@@ -156,10 +156,10 @@ export default {
     },
 
     editSql() {
-      this.$emit('switchComponent', { name: 'AddSQL', param: { id: this.table.sceneId, tableId: this.table.id }})
+      this.$emit('switchComponent', { name: 'AddSQL', param: { id: this.table.sceneId, tableId: this.table.id, table: this.table }})
     },
     editCustom() {
-      this.$emit('switchComponent', { name: 'AddCustom', param: { id: this.table.sceneId, tableId: this.table.id }})
+      this.$emit('switchComponent', { name: 'AddCustom', param: { id: this.table.sceneId, tableId: this.table.id, table: this.table }})
     },
 
     reSearch(val) {
