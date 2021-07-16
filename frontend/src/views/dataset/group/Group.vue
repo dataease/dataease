@@ -48,8 +48,6 @@
             :props="treeProps"
             highlight-current
             @node-click="nodeClick"
-            @node-expand="nodeExpand"
-            @node-collapse="nodeCollapse"
           >
             <span v-if="data.type === 'group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
