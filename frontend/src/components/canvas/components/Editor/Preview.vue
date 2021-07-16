@@ -8,7 +8,24 @@
       :key="index"
       :config="item"
       :search-count="searchCount"
+      :in-screen="inScreen"
     />
+    <!--视图详情-->
+    <el-dialog
+      :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+      :visible.sync="chartDetailsVisible"
+      width="70%"
+      class="dialog-css"
+      :destroy-on-close="true"
+    >
+      <span style="position: absolute;right: 70px;top:15px">
+        <el-button size="mini" @click="exportExcel">
+          <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+          {{ $t('chart.export_details') }}
+        </el-button>
+      </span>
+      <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+    </el-dialog>
   </div>
 </template>
 
@@ -21,9 +38,10 @@ import { uuid } from 'vue-uuid'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 
 export default {
-  components: { ComponentWrapper },
+  components: { ComponentWrapper, UserViewDialog },
   model: {
     prop: 'show',
     event: 'change'
@@ -37,6 +55,11 @@ export default {
       type: String,
       required: false,
       default: 'full'
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -59,7 +82,10 @@ export default {
       componentDataShow: [],
       mainWidth: '100%',
       mainHeight: '100%',
-      searchCount: -1
+      searchCount: -1,
+      chartDetailsVisible: false,
+      showChartInfo: {},
+      showChartTableInfo: {}
     }
   },
   computed: {
@@ -118,6 +144,7 @@ export default {
     this.timer = setInterval(() => {
       this.searchCount++
     }, refreshTime)
+    eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
   },
   beforeDestroy() {
     clearInterval(this.timer)
@@ -163,6 +190,14 @@ export default {
         this.componentDataShow = componentData
         this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }
+    },
+    openChartDetailsDialog(chartInfo) {
+      this.showChartInfo = chartInfo.chart
+      this.showChartTableInfo = chartInfo.tableChart
+      this.chartDetailsVisible = true
+    },
+    exportExcel() {
+      this.$refs['userViewDialog'].exportExcel()
     }
   }
 }
@@ -197,4 +232,14 @@ export default {
 .gap_class{
   padding:3px;
 }
+.dialog-css>>>.el-dialog__title {
+  font-size: 14px;
+}
+.dialog-css >>> .el-dialog__header {
+  padding: 20px 20px 0;
+}
+.dialog-css >>> .el-dialog__body {
+  padding: 10px 20px 20px;
+}
+
 </style>

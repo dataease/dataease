@@ -7,7 +7,7 @@
 
     <de-main-container>
       <!--<router-view/>-->
-      <component :is="component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" />
+      <component :is="component" ref="dynamic_component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" />
     </de-main-container>
   </de-container>
 </template>
@@ -26,7 +26,7 @@ import AddExcel from './add/AddExcel'
 import AddCustom from './add/AddCustom'
 import FieldEdit from './data/FieldEdit'
 import { removeClass } from '@/utils'
-
+import bus from '@/utils/bus'
 export default {
   name: 'DataSet',
   components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL, AddExcel, AddCustom },
@@ -39,6 +39,31 @@ export default {
   },
   mounted() {
     removeClass(document.body, 'showRightPanel')
+    bus.$on('to-msg-dataset', params => {
+      this.toMsgShare(params)
+    })
+  },
+  created() {
+    this.$store.dispatch('app/toggleSideBarHide', true)
+    const routerParam = this.$router.currentRoute.params
+    this.toMsgShare(routerParam)
+    // if ((routerParam = this.$router.currentRoute.params) !== null && routerParam.msgNotification) {
+    //   // 说明是从消息通知跳转过来的
+    //   if (routerParam.msgType === 1) { // 是数据集同步
+    //     if (routerParam.sourceParam) {
+    //       try {
+    //         const msgParam = JSON.parse(routerParam.sourceParam)
+    //         this.param = msgParam.tableId
+    //         this.component = ViewTable
+    //         this.$nextTick(() => {
+    //           this.$refs.dynamic_component.msg2Current(routerParam.sourceParam)
+    //         })
+    //       } catch (error) {
+    //         console.error(error)
+    //       }
+    //     }
+    //   }
+    // }
   },
   methods: {
     switchComponent(c) {
@@ -70,6 +95,27 @@ export default {
 
     saveSuccess(val) {
       this.saveStatus = val
+    },
+
+    toMsgShare(routerParam) {
+      if (routerParam !== null && routerParam.msgNotification) {
+        const panelShareTypeIds = [4, 5, 6]
+        // 说明是从消息通知跳转过来的
+        if (panelShareTypeIds.includes(routerParam.msgType)) { // 是数据集同步
+          if (routerParam.sourceParam) {
+            try {
+              const msgParam = JSON.parse(routerParam.sourceParam)
+              this.param = msgParam.tableId
+              this.component = ViewTable
+              this.$nextTick(() => {
+                this.$refs.dynamic_component && this.$refs.dynamic_component.msg2Current && this.$refs.dynamic_component.msg2Current(routerParam.sourceParam)
+              })
+            } catch (error) {
+              console.error(error)
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -78,7 +124,7 @@ export default {
 <style scoped>
   .ms-aside-container {
     height: calc(100vh - 56px);
-    padding: 10px 15px;
+    padding: 0 0;
     min-width: 260px;
     max-width: 460px;
   }

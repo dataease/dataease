@@ -24,18 +24,19 @@ public class CacheUtils {
         return element.getObjectValue();
     }
 
-    private static void put(String cacheName, Object key, Object value, Integer ttl, Integer tti) {
+    public static void put(String cacheName, Object key, Object value, Integer ttl, Integer tti) {
         Element e = new Element(key, value);
         //不设置则使用xml配置
-        if (ttl != null)
+        if (ttl != null) {
             e.setEternal(false);
             e.setTimeToLive(ttl);
+        }
         if (tti != null)
             e.setTimeToIdle(tti);
         cache(cacheName).put(e);
     }
 
-    private static boolean remove(String cacheName, Object key) {
+    public static boolean remove(String cacheName, Object key) {
         return cache(cacheName).remove(key);
     }
 

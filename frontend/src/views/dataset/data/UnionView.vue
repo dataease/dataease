@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-button size="mini" @click="showUnionEdit">{{ $t('dataset.add_union') }}</el-button>
+    <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="showUnionEdit">{{ $t('dataset.add_union') }}</el-button>
     <el-row>
       <el-table
         size="mini"
@@ -20,7 +20,16 @@
         <el-table-column
           prop="sourceUnionRelation"
           :label="$t('dataset.union_relation')"
-        />
+        >
+          <template slot-scope="scope">
+            <span style="font-size: 12px;">
+              <span v-if="scope.row.sourceUnionRelation === '1:N'">{{ $t('dataset.left_join') }}</span>
+              <span v-if="scope.row.sourceUnionRelation === 'N:1'">{{ $t('dataset.right_join') }}</span>
+              <span v-if="scope.row.sourceUnionRelation === '1:1'">{{ $t('dataset.inner_join') }}</span>
+              <span v-if="scope.row.sourceUnionRelation === 'N:N'">{{ $t('dataset.full_join') }}</span>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="targetTableName"
           :label="$t('dataset.target_table')"
@@ -34,8 +43,8 @@
           :label="$t('dataset.operate')"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="edit(scope.row)">{{ $t('dataset.edit') }}</el-button>
-            <el-button type="text" size="mini" @click="deleteUnion(scope.row)">{{ $t('dataset.delete') }}</el-button>
+            <el-button v-if="hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="edit(scope.row)">{{ $t('dataset.edit') }}</el-button>
+            <el-button v-if="hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteUnion(scope.row)">{{ $t('dataset.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -69,6 +78,9 @@
                 <span v-if="item.deType === 2 || item.deType === 3">
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
                 </span>
+                <span v-if="item.deType === 5">
+                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                </span>
               </span>
               <span>
                 {{ item.name }}
@@ -79,9 +91,10 @@
 
         <el-col :span="6">
           <el-radio-group v-model="union.sourceUnionRelation" size="mini" style="display: block;width: 100%;text-align: center;">
-            <el-radio class="union-relation-css" label="1:1">1 : 1</el-radio>
-            <el-radio class="union-relation-css" label="N:1">N : 1</el-radio>
-            <el-radio class="union-relation-css" label="1:N">1 : N</el-radio>
+            <el-radio class="union-relation-css" label="1:N">{{ $t('dataset.left_join') }}</el-radio>
+            <el-radio class="union-relation-css" label="N:1">{{ $t('dataset.right_join') }}</el-radio>
+            <el-radio class="union-relation-css" label="1:1">{{ $t('dataset.inner_join') }}</el-radio>
+            <!--            <el-radio class="union-relation-css" label="N:N">{{ $t('dataset.full_join') }}</el-radio>-->
           </el-radio-group>
         </el-col>
 
@@ -92,7 +105,7 @@
             width="500"
             trigger="click"
           >
-            <dataset-group-selector :fix-height="true" show-mode="union" :custom-type="customType" :mode="1" @getTable="getTable" />
+            <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="table.mode" @getTable="getTable" />
             <el-button slot="reference" size="mini" style="width: 100%;">
               <p class="table-name-css" :title="targetTable.name || $t('dataset.pls_slc_union_table')">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</p>
             </el-button>
@@ -115,6 +128,9 @@
                 <span v-if="item.deType === 2 || item.deType === 3">
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
                 </span>
+                <span v-if="item.deType === 5">
+                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                </span>
               </span>
               <span>
                 {{ item.name }}
@@ -134,13 +150,17 @@
 
 <script>
 import { post, fieldList } from '../../../api/dataset/dataset'
-import DatasetGroupSelector from '../common/DatasetGroupSelector'
+import DatasetGroupSelectorTree from '../common/DatasetGroupSelectorTree'
 
 export default {
   name: 'UnionView',
-  components: { DatasetGroupSelector },
+  components: { DatasetGroupSelectorTree },
   props: {
     table: {
+      type: Object,
+      required: true
+    },
+    param: {
       type: Object,
       required: true
     }
@@ -184,6 +204,9 @@ export default {
     },
     initUnion() {
       if (this.table.id) {
+        if (this.table.mode === 0) {
+          this.customType = ['db']
+        }
         post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
           // console.log(response)
           this.unionData = response.data
@@ -280,6 +303,16 @@ export default {
           showClose: true
         })
         return
+      }
+      if (this.table.mode === 0) {
+        if (param.dataSourceId !== this.table.dataSourceId) {
+          this.$message({
+            type: 'error',
+            message: this.$t('dataset.can_not_union_diff_datasource'),
+            showClose: true
+          })
+          return
+        }
       }
       this.targetTable = param
       this.union.targetTableId = param.id

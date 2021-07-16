@@ -186,10 +186,10 @@ export default {
       }
     },
     bindKey() {
-      document.addEventListener('keyup', this.entryKey)
+      document.addEventListener('keypress', this.entryKey)
     },
     unBindKey() {
-      document.removeEventListener('keyup', this.entryKey)
+      document.removeEventListener('keypress', this.entryKey)
     },
     repeatValidator(rule, value, callback) {
       if (value !== this.form.password) {

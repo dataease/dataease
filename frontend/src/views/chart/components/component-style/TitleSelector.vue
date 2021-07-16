@@ -44,16 +44,18 @@
                 <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item :label="$t('chart.text_italic')" class="form-item">
+            <el-form-item :label="$t('chart.text_style')" class="form-item">
               <el-checkbox v-model="titleForm.isItalic" @change="changeTitleStyle">{{ $t('chart.italic') }}</el-checkbox>
+              <el-checkbox v-model="titleForm.isBolder" @change="changeTitleStyle">{{ $t('chart.bolder') }}</el-checkbox>
             </el-form-item>
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!titleForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!titleForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.title') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="titleForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeTitleStyle"
@@ -70,6 +72,10 @@ import { DEFAULT_TITLE_STYLE } from '../../chart/chart'
 export default {
   name: 'TitleSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

@@ -19,4 +19,5 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
 
     private Boolean isLeaf;
     private String pid;
+    private String sql;
 }

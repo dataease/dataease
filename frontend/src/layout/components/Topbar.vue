@@ -35,7 +35,7 @@
         <!-- <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip> -->
-
+        <notification class="right-menu-item hover-effect" />
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
           <a href="https://dataease.io/docs/" target="_blank" style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">
@@ -75,7 +75,7 @@ import { mapGetters } from 'vuex'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
-// import Doc from '@/components/Doc'
+import Notification from '@/components/Notification'
 // import Screenfull from '@/components/Screenfull'
 // import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
@@ -86,6 +86,7 @@ export default {
     AppLink,
     // Screenfull,
     // SizeSelect,
+    Notification,
     LangSelect
     // Doc
   },

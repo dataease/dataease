@@ -5,7 +5,6 @@
     class="editor"
     :class="{ edit: isEdit }"
     :style="customStyle"
-    @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
@@ -28,7 +27,7 @@
       class-name-active="de-drag-active"
       :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
-      :snap-tolerance="1"
+      :snap-tolerance="2"
       :change-style="customStyle"
       @refLineParams="getRefLineParams"
     >
@@ -45,6 +44,27 @@
         :active="item === curComponent"
         @input="handleInput"
       />
+      <!-- <out-widget
+        :is="item.component"
+        v-else-if="item.type==='custom'"
+        :id="'component' + item.id"
+        class="component"
+        :style="getComponentStyleDefault(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+      /> -->
+      <de-out-widget
+        v-else-if="item.type==='custom'"
+        :id="'component' + item.id"
+        class="component"
+        :style="getComponentStyleDefault(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+      />
       <component
         :is="item.component"
         v-else-if="item.type==='other'"
@@ -54,6 +74,7 @@
         :prop-value="item.propValue"
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
       />
       <component
         :is="item.component"
@@ -64,6 +85,7 @@
         :prop-value="item.propValue"
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
       />
     </de-drag>
     <!-- 右击菜单 -->
@@ -84,6 +106,29 @@
         height: item.lineLength,
       }"
     />
+    <span
+      v-for="(item, index) in hLine"
+      :key="'h_'+index"
+      class="ref-line h-line"
+      :style="{ top: item.position, left: item.origin, width: item.lineLength }"
+    />
+
+    <!--视图详情-->
+    <el-dialog
+      :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+      :visible.sync="chartDetailsVisible"
+      width="70%"
+      class="dialog-css"
+      :destroy-on-close="true"
+    >
+      <span style="position: absolute;right: 70px;top:15px">
+        <el-button size="mini" @click="exportExcel">
+          <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+          {{ $t('chart.export_details') }}
+        </el-button>
+      </span>
+      <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+    </el-dialog>
   </div>
 </template>
 
@@ -102,9 +147,10 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { deepCopy } from '@/components/canvas/utils/utils'
-
+import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
+import DeOutWidget from '@/components/dataease/DeOutWidget'
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget },
   props: {
     isEdit: {
       type: Boolean,
@@ -153,8 +199,8 @@ export default {
       },
       // 矩阵数量 默认 12 * 24
       matrixCount: {
-        x: 12,
-        y: 24
+        x: 24,
+        y: 72
       },
       customStyleHistory: null,
       showDrag: true,
@@ -162,7 +208,10 @@ export default {
       hLine: [],
       changeIndex: 0,
       timeMachine: null,
-      outStyleOld: null
+      outStyleOld: null,
+      chartDetailsVisible: false,
+      showChartInfo: {},
+      showChartTableInfo: {}
     }
   },
   computed: {
@@ -249,6 +298,7 @@ export default {
     // bus.$on('delete-condition', condition => {
     //   this.deleteCondition(condition)
     // })
+    eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
   },
   created() {
     // this.$store.dispatch('conditions/clear')
@@ -521,7 +571,7 @@ export default {
       }
     },
     getRefLineParams(params) {
-      // console.log(params)
+      // console.log(JSON.stringify(params))
       const { vLine, hLine } = params
       this.vLine = vLine
       this.hLine = hLine
@@ -543,6 +593,15 @@ export default {
     destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
+    },
+    openChartDetailsDialog(chartInfo) {
+      debugger
+      this.showChartInfo = chartInfo.chart
+      this.showChartTableInfo = chartInfo.tableChart
+      this.chartDetailsVisible = true
+    },
+    exportExcel() {
+      this.$refs['userViewDialog'].exportExcel()
     }
   }
 }
@@ -589,6 +648,15 @@ export default {
 }
 .h-line {
   height: 1px;
+}
+.dialog-css>>>.el-dialog__title {
+  font-size: 14px;
+}
+.dialog-css >>> .el-dialog__header {
+  padding: 20px 20px 0;
+}
+.dialog-css >>> .el-dialog__body {
+  padding: 10px 20px 20px;
 }
 
 </style>

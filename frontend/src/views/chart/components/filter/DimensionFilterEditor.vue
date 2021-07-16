@@ -23,7 +23,7 @@
           </el-select>
         </el-col>
         <el-col :span="6">
-          <el-input v-show="!f.term.includes('null')" v-model="f.value" class="value-item" :placeholder="$t('chart.no_limit')" size="mini" clearable />
+          <el-input v-show="!f.term.includes('null')" v-model="f.value" class="value-item" :placeholder="$t('chart.condition')" size="mini" clearable />
         </el-col>
         <el-col :span="6">
           <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeFilter(index)" />
@@ -53,7 +53,18 @@ export default {
           value: 'not_eq',
           label: this.$t('chart.filter_not_eq')
         }]
-      }, {
+      },
+      {
+        label: '',
+        options: [{
+          value: 'like',
+          label: this.$t('chart.filter_like')
+        }, {
+          value: 'not like',
+          label: this.$t('chart.filter_not_like')
+        }]
+      },
+      {
         label: '',
         options: [{
           value: 'lt',

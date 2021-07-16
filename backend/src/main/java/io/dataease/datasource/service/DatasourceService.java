@@ -56,20 +56,20 @@ public class DatasourceService {
         datasource.setCreateTime(currentTimeMillis);
         datasource.setCreateBy(String.valueOf(AuthUtils.getUser().getUsername()));
         datasourceMapper.insertSelective(datasource);
-        initConnectionPool(datasource, "add");
+        handleConnectionPool(datasource, "add");
         return datasource;
     }
 
-    private void initConnectionPool(Datasource datasource, String type) {
+    private void handleConnectionPool(Datasource datasource, String type) {
         commonThreadPool.addTask(() -> {
             try {
                 DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(datasource);
-                datasourceProvider.initDataSource(datasourceRequest, type);
-                LogUtil.info("Succsss to init datasource connection pool: " + datasource.getName());
+                datasourceProvider.handleDatasource(datasourceRequest, type);
+                LogUtil.info("Succsss to {} datasource connection pool: {}", type, datasource.getName());
             } catch (Exception e) {
-                LogUtil.error("Failed to init datasource connection pool: " + datasource.getName(), e);
+                LogUtil.error("Failed to handle datasource connection pool: " + datasource.getName(), e);
             }
         });
     }
@@ -100,7 +100,9 @@ public class DatasourceService {
         if(CollectionUtils.isNotEmpty(datasetTables)){
             DataEaseException.throwException(datasetTables.size() +  Translator.get("i18n_datasource_not_allow_delete_msg"));
         }
+        Datasource datasource = datasourceMapper.selectByPrimaryKey(datasourceId);
         datasourceMapper.deleteByPrimaryKey(datasourceId);
+        handleConnectionPool(datasource, "delete");
     }
 
     public void updateDatasource(Datasource datasource) {
@@ -108,14 +110,21 @@ public class DatasourceService {
         datasource.setCreateTime(null);
         datasource.setUpdateTime(System.currentTimeMillis());
         datasourceMapper.updateByPrimaryKeySelective(datasource);
-        initConnectionPool(datasource, "edit");
+        handleConnectionPool(datasource, "edit");
     }
 
     public void validate(Datasource datasource) throws Exception {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasource);
-        datasourceProvider.test(datasourceRequest);
+        datasourceProvider.checkStatus(datasourceRequest);
+    }
+
+    public List<String> getSchema(Datasource datasource) throws Exception {
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(datasource);
+        return datasourceProvider.getSchema(datasourceRequest);
     }
 
     public List<DBTableDTO> getTables(Datasource datasource) throws Exception {
@@ -165,7 +174,7 @@ public class DatasourceService {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
             try {
-                initConnectionPool(datasource, "add");
+                handleConnectionPool(datasource, "add");
             } catch (Exception e) {
                 e.printStackTrace();
             }

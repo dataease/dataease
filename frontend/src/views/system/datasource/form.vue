@@ -31,6 +31,12 @@
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase">
           <el-input v-model="form.configuration.dataBase" autocomplete="off" :disabled="formType=='modify'" />
         </el-form-item>
+
+        <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.oracle_connection_type')" prop="configuration.connectionType">
+          <el-radio v-model="form.configuration.connectionType" label="sid">{{ $t('datasource.oracle_sid') }}</el-radio>
+          <el-radio v-model="form.configuration.connectionType" label="serviceName">{{ $t('datasource.oracle_service_name') }}</el-radio>
+        </el-form-item>
+
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')" prop="configuration.username">
           <el-input v-model="form.configuration.username" autocomplete="off" :disabled="formType=='modify'" />
         </el-form-item>
@@ -40,16 +46,23 @@
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
           <el-input v-model="form.configuration.port" autocomplete="off" />
         </el-form-item>
+        <el-form-item v-if="form.type=='oracle'">
+          <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
+            {{ $t('datasource.get_schema') }}
+          </el-button>
+        </el-form-item>
 
-      <!-- <el-form-item v-if="canEdit">
-        <el-button @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
-        <el-button type="primary" @click="save">{{ $t('commons.save') }}</el-button>
-      </el-form-item>
+        <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.schema')">
+          <el-select v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width" :disabled="formType=='modify'">
+            <el-option
+              v-for="item in schemas"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
 
-      <el-form-item v-else>
-        <el-button @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
-        <el-button @click="changeEdit">{{ $t('commons.edit') }}</el-button>
-      </el-form-item> -->
       </el-form>
       <div v-if="canEdit" slot="footer" class="dialog-footer">
         <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
@@ -65,7 +78,7 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import { addDs, editDs, validateDs } from '@/api/system/datasource'
+import { addDs, editDs, getSchema, validateDs } from '@/api/system/datasource'
 export default {
   name: 'DsForm',
   components: { LayoutContent },
@@ -83,25 +96,20 @@ export default {
           { min: 2, max: 25, message: this.$t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
         desc: [{ min: 0, max: 50, message: this.$t('datasource.input_limit_0_50'), trigger: 'blur' }],
         type: [{ required: true, message: this.$t('datasource.please_choose_type'), trigger: 'change' }],
-
         'configuration.dataBase': [{ required: true, message: this.$t('datasource.please_input_data_base'), trigger: 'blur' }],
+        'configuration.connectionType': [{ required: true, message: this.$t('datasource.please_select_oracle_type'), trigger: 'blur' }],
         'configuration.username': [{ required: true, message: this.$t('datasource.please_input_user_name'), trigger: 'blur' }],
         'configuration.password': [{ required: true, message: this.$t('datasource.please_input_password'), trigger: 'change' }],
         'configuration.host': [{ required: true, message: this.$t('datasource.please_input_host'), trigger: 'change' }],
         'configuration.port': [{ required: true, message: this.$t('datasource.please_input_port'), trigger: 'change' }]
       },
-      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' }],
+      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' }, { name: 'oracle', label: 'Oracle', type: 'jdbc' }],
+      schemas: [],
       canEdit: false
     }
   },
 
   created() {
-    // if (this.$router.currentRoute.params && this.$router.currentRoute.params.id) {
-    //   const row = this.$router.currentRoute.params
-    //   this.edit(row)
-    // } else {
-    //   this.create()
-    // }
     if (this.params && this.params.id) {
       const row = this.params
       this.edit(row)
@@ -113,12 +121,6 @@ export default {
     }
   },
   mounted() {
-    // if (this.params && this.params.type) {
-    //   this.form.type = this.params.type
-    //   this.$nextTick(() => {
-    //     this.changeType()
-    //   })
-    // }
   },
   methods: {
     setType() {
@@ -145,10 +147,13 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
+      if (!this.form.configuration.schema && this.form.type === 'oracle') {
+        this.$message.error(this.$t('datasource.please_choose_schema'))
+        return
+      }
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const method = this.formType === 'add' ? addDs : editDs
-          // this.form.configuration = JSON.stringify(this.form.configuration)
           const form = JSON.parse(JSON.stringify(this.form))
           form.configuration = JSON.stringify(form.configuration)
           method(form).then(res => {
@@ -161,12 +166,29 @@ export default {
         }
       })
     },
-    validaDatasource() {
+    getSchema() {
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
           data.configuration = JSON.stringify(data.configuration)
-
+          getSchema(data).then(res => {
+            this.schemas = res.data
+            this.$success(this.$t('commons.success'))
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    validaDatasource() {
+      if (!this.form.configuration.schema && this.form.type === 'oracle') {
+        this.$message.error(this.$t('datasource.please_choose_schema'))
+        return
+      }
+      this.$refs.dsForm.validate(valid => {
+        if (valid) {
+          const data = JSON.parse(JSON.stringify(this.form))
+          data.configuration = JSON.stringify(data.configuration)
           validateDs(data).then(res => {
             this.$success(this.$t('datasource.validate_success'))
           })

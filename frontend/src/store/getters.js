@@ -25,6 +25,7 @@ const getters = {
   validate: state => state.lic.validate,
   licMsg: state => state.lic.licMsg,
   uiInfo: state => state.user.uiInfo,
-  conditions: state => state.conditions.conditions
+  conditions: state => state.conditions.conditions,
+  msgTypes: state => state.msg.msgTypes
 }
 export default getters

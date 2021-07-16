@@ -2,6 +2,7 @@ import store from '@/store/index'
 import toast from '@/components/canvas/utils/toast'
 import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import { chartCopy } from '@/api/chart/chart'
 
 export default {
   state: {
@@ -26,17 +27,30 @@ export default {
       }
 
       const data = state.copyData.data
+      data.style.top += 20
+      data.style.left += 20
 
-      if (isMouse) {
-        data.style.top = state.menuTop
-        data.style.left = state.menuLeft
-      } else {
-        data.style.top += 10
-        data.style.left += 10
-      }
+      // if (isMouse) {
+      //   data.style.top = state.menuTop
+      //   data.style.left = state.menuLeft
+      // } else {
+      //   data.style.top += 10
+      //   data.style.left += 10
+      // }
 
       data.id = generateID()
-      store.commit('addComponent', { component: deepCopy(data) })
+
+      // 如果是用户视图 测先进行底层复制
+      debugger
+      if (data.type === 'view') {
+        chartCopy(data.propValue.viewId).then(res => {
+          const newView = deepCopy(data)
+          newView.propValue.viewId = res.data
+          store.commit('addComponent', { component: newView })
+        })
+      } else {
+        store.commit('addComponent', { component: deepCopy(data) })
+      }
       if (state.isCut) {
         state.copyData = null
       }

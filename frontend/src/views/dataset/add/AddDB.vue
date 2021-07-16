@@ -32,6 +32,14 @@
             <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning" />
           </el-select>
         </el-form-item>
+
+        <el-form-item class="form-item" v-if="mode === '1'">
+          <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
+            <el-option :label="$t('dataset.sync_now')" value="sync_now" />
+            <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item class="form-item" style="float: right;">
           <el-input
             v-model="searchTable"
@@ -76,6 +84,7 @@ export default {
       tables: [],
       checkTableList: [],
       mode: '0',
+      syncType: 'sync_now',
       tableData: [],
       kettleRunning: false
     }
@@ -130,12 +139,14 @@ export default {
       const dataSourceId = this.dataSource
       const tables = []
       const mode = this.mode
+      const syncType = this.syncType
       this.checkTableList.forEach(function(name) {
         tables.push({
           name: ds.name + '_' + name,
           sceneId: sceneId,
           dataSourceId: dataSourceId,
           type: 'db',
+          syncType: syncType,
           mode: parseInt(mode),
           info: JSON.stringify({ table: name })
         })

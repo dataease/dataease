@@ -4,8 +4,7 @@
       <template v-if="curComponent">
         <template v-if="!curComponent.isLock">
           <li v-if="editFilter.includes(curComponent.type)" @click="edit"> {{ $t('panel.edit') }}</li>
-          <!--          <li @click="copy"> {{ $t('panel.copy') }}</li>-->
-          <li @click="paste"> {{ $t('panel.paste') }}</li>
+          <li @click="copy"> {{ $t('panel.copy') }}</li>
           <li @click="cut"> {{ $t('panel.cut') }}</li>
           <li @click="deleteComponent"> {{ $t('panel.delete') }}</li>
           <!--          <li @click="lock"> {{ $t('panel.lock') }}</li>-->
@@ -31,8 +30,6 @@ export default {
       copyData: null,
       editFilter: [
         'view',
-        'v-text',
-        'rect-shape',
         'custom'
       ]
     }
@@ -53,7 +50,7 @@ export default {
       if (this.curComponent.type === 'view') {
         this.$store.dispatch('chart/setViewId', null)
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId }})
+        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
       }
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
@@ -85,6 +82,7 @@ export default {
 
     copy() {
       this.$store.commit('copy')
+      this.paste()
     },
 
     paste() {
@@ -96,6 +94,7 @@ export default {
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
       this.$store.commit('recordSnapshot')
+      this.$store.commit('setCurComponent', { component: null, index: null })
     },
 
     deleteCurCondition() {

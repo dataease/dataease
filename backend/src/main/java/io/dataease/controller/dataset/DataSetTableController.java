@@ -54,6 +54,11 @@ public class DataSetTableController {
         return dataSetTableService.get(id);
     }
 
+    @PostMapping("getWithPermission/{id}")
+    public DataSetTableDTO getWithPermission(@PathVariable String id) {
+        return dataSetTableService.getWithPermission(id);
+    }
+
     @PostMapping("getFields")
     public List<TableFiled> getFields(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getFields(dataSetTableRequest);
@@ -95,8 +100,8 @@ public class DataSetTableController {
     }
 
     @PostMapping("excel/upload")
-    public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file) throws Exception {
-        return dataSetTableService.excelSaveAndParse(file);
+    public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId) throws Exception {
+        return dataSetTableService.excelSaveAndParse(file, tableId);
     }
 
     @PostMapping("checkDorisTableIsExists/{id}")

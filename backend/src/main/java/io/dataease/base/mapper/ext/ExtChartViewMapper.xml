@@ -27,4 +27,60 @@
 
 
     </select>
+
+    <insert id="chartCopy">
+        INSERT INTO chart_view (
+            `id`,
+            `name`,
+            `scene_id`,
+            `table_id`,
+            `type`,
+            `title`,
+            `x_axis`,
+            `y_axis`,
+            `custom_attr`,
+            `custom_style`,
+            `custom_filter`,
+            `create_by`,
+            `create_time`,
+            `update_time`,
+            `snapshot`,
+            `style_priority`
+        ) SELECT
+        #{newChartId},
+        GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
+        `scene_id`,
+        `table_id`,
+        `type`,
+        GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
+        `x_axis`,
+        `y_axis`,
+        `custom_attr`,
+        `custom_style`,
+        `custom_filter`,
+        `create_by`,
+        `create_time`,
+        `update_time`,
+        `snapshot`,
+        `style_priority`
+        FROM
+            chart_view
+        WHERE
+            id = #{oldChartId}
+    </insert>
+
+    <select id="searchAdviceSceneId" resultType="String">
+        SELECT DISTINCT
+            ( scene_id )
+        FROM
+            ( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{userId}, 'chart' ) cids ) t,
+            panel_view
+            LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
+            LEFT JOIN chart_group ON chart_view.scene_id = chart_group.id
+        WHERE
+            FIND_IN_SET( chart_view.scene_id, cids )  and panel_view.panel_id =#{panelId}
+        ORDER BY
+            chart_group.create_time DESC
+            LIMIT 1
+    </select>
 </mapper>

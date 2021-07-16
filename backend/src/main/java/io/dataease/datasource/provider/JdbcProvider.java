@@ -2,17 +2,20 @@ package io.dataease.datasource.provider;
 
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigration;
+import io.dataease.datasource.dto.OracleConfigration;
 import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
 import java.beans.PropertyVetoException;
 import java.sql.*;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service("jdbc")
@@ -22,14 +25,29 @@ public class JdbcProvider extends DatasourceProvider {
     private static int initPoolSize = 5;
     private static int maxConnections = 200;
 
+    /**
+     * 增加缓存机制 key 由 'provider_sql_' dsr.datasource.id dsr.table dsr.query共4部分组成，命中则使用缓存直接返回不再执行sql逻辑
+     * @param dsr
+     * @return
+     * @throws Exception
+     */
+    /**
+     * 这里使用声明式缓存不是很妥当
+     * 改为chartViewService中使用编程式缓存
+    @Cacheable(
+            value = JdbcConstants.JDBC_PROVIDER_KEY,
+            key = "'provider_sql_' + #dsr.datasource.id + '_' + #dsr.table + '_' + #dsr.query",
+            condition = "#dsr.pageSize == null || #dsr.pageSize == 0L"
+    )
+     */
     @Override
-    public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
+    public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
         Connection connection = null;
         try {
-            connection = getConnectionFromPool(datasourceRequest);
+            connection = getConnectionFromPool(dsr);
             Statement stat = connection.createStatement();
-            ResultSet rs = stat.executeQuery(datasourceRequest.getQuery());
+            ResultSet rs = stat.executeQuery(dsr.getQuery());
             list = fetchResult(rs);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -166,6 +184,7 @@ public class JdbcProvider extends DatasourceProvider {
             field.setRemarks(l);
             field.setFieldType(t);
             field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
+            if(t.equalsIgnoreCase("LONG")){field.setFieldSize(65533);} //oracle LONG
             fieldList.add(field);
         }
         return fieldList;
@@ -197,6 +216,31 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
+    public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
+        List<String> schemas = new ArrayList<>();
+        String queryStr = getSchemaSql(datasourceRequest);
+        Connection con = null;
+        try {
+            con = getConnection(datasourceRequest);
+            Statement statement = con.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryStr);
+            while (resultSet.next()) {
+                schemas.add(resultSet.getString(1));
+            }
+            resultSet.close();
+            statement.close();
+            return schemas;
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        } finally {
+            if(con != null){
+                con.close();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
         List<TableFiled> list = new LinkedList<>();
         Connection connection = null;
@@ -207,22 +251,16 @@ public class JdbcProvider extends DatasourceProvider {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database = resultSet.getString("TABLE_CAT");
-                if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                    TableFiled tableFiled = new TableFiled();
-                    String colName = resultSet.getString("COLUMN_NAME");
-                    tableFiled.setFieldName(colName);
-                    String remarks = resultSet.getString("REMARKS");
-                    if (remarks == null || remarks.equals("")) {
-                        remarks = colName;
+                if(database != null){
+                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                        TableFiled tableFiled = getTableFiled(resultSet);
+                        list.add(tableFiled);
                     }
-                    tableFiled.setRemarks(remarks);
-                    tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
-                    String dbType = resultSet.getString("TYPE_NAME");
-                    tableFiled.setFieldType(dbType);
-                    if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
-                        tableFiled.setFieldSize(50);
+                }else {
+                    if (tableName.equals(datasourceRequest.getTable())) {
+                        TableFiled tableFiled = getTableFiled(resultSet);
+                        list.add(tableFiled);
                     }
-                    list.add(tableFiled);
                 }
             }
             resultSet.close();
@@ -238,8 +276,27 @@ public class JdbcProvider extends DatasourceProvider {
         return list;
     }
 
+    private TableFiled getTableFiled(ResultSet resultSet) throws SQLException {
+        TableFiled tableFiled = new TableFiled();
+        String colName = resultSet.getString("COLUMN_NAME");
+        tableFiled.setFieldName(colName);
+        String remarks = resultSet.getString("REMARKS");
+        if (remarks == null || remarks.equals("")) {
+            remarks = colName;
+        }
+        tableFiled.setRemarks(remarks);
+        tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
+        String dbType = resultSet.getString("TYPE_NAME");
+        tableFiled.setFieldType(dbType);
+        if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
+        if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
+            tableFiled.setFieldSize(50);
+        }
+        return tableFiled;
+    }
+
     @Override
-    public void test(DatasourceRequest datasourceRequest) throws Exception {
+    public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
         Connection con = null;
         try {
@@ -276,7 +333,7 @@ public class JdbcProvider extends DatasourceProvider {
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
         ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
-            initDataSource(datasourceRequest, "add");
+            handleDatasource(datasourceRequest, "add");
         }
         dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         Connection co = dataSource.getConnection();
@@ -284,27 +341,36 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public void initDataSource(DatasourceRequest datasourceRequest, String type) throws Exception {
+    public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception {
+        ComboPooledDataSource dataSource = null;
         switch (type){
             case "add":
-                ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+                checkStatus(datasourceRequest);
+                dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
                 if (dataSource == null) {
-                    extracted(datasourceRequest);
+                    addToPool(datasourceRequest);
                 }
                 break;
             case "edit":
-                jdbcConnection.remove(datasourceRequest.getDatasource().getId());
-                extracted(datasourceRequest);
+                dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+                if (dataSource != null) {
+                    dataSource.close();
+                }
+                checkStatus(datasourceRequest);
+                addToPool(datasourceRequest);
                 break;
             case "delete":
-                jdbcConnection.remove(datasourceRequest.getDatasource().getId());
+                dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+                if (dataSource != null) {
+                    dataSource.close();
+                }
                 break;
             default:
                 break;
         }
     }
 
-    private void extracted(DatasourceRequest datasourceRequest) throws PropertyVetoException {
+    private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
         ComboPooledDataSource dataSource;
         dataSource = new ComboPooledDataSource();
         setCredential(datasourceRequest, dataSource);
@@ -320,7 +386,7 @@ public class JdbcProvider extends DatasourceProvider {
         dataSource.setTestConnectionOnCheckout(false); // 在每个connection 提交是校验有效性
         dataSource.setTestConnectionOnCheckin(true); // 取得连接的同时将校验连接的有效性
         dataSource.setCheckoutTimeout(60000); // 从连接池获取连接的超时时间，如设为0则无限期等待。单位毫秒，默认为0
-        dataSource.setPreferredTestQuery("SELECT 1");
+//        dataSource.setPreferredTestQuery("SELECT 1");
         dataSource.setDebugUnreturnedConnectionStackTraces(true);
         dataSource.setUnreturnedConnectionTimeout(3600);
         jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
@@ -353,6 +419,13 @@ public class JdbcProvider extends DatasourceProvider {
                 password = sqlServerConfigration.getPassword();
                 driver = sqlServerConfigration.getDriver();
                 jdbcurl = sqlServerConfigration.getJdbc();
+                break;
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                username = oracleConfigration.getUsername();
+                password = oracleConfigration.getPassword();
+                driver = oracleConfigration.getDriver();
+                jdbcurl = oracleConfigration.getJdbc();
                 break;
             default:
                 break;
@@ -392,6 +465,13 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setPassword(sqlServerConfigration.getPassword());
                 dataSource.setJdbcUrl(sqlServerConfigration.getJdbc());
                 break;
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                dataSource.setUser(oracleConfigration.getUsername());
+                dataSource.setDriverClass(oracleConfigration.getDriver());
+                dataSource.setPassword(oracleConfigration.getPassword());
+                dataSource.setJdbcUrl(oracleConfigration.getJdbc());
+                break;
             default:
                 break;
         }
@@ -414,7 +494,7 @@ public class JdbcProvider extends DatasourceProvider {
         }
     }
 
-    private String getTablesSql(DatasourceRequest datasourceRequest) {
+    private String getTablesSql(DatasourceRequest datasourceRequest) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
@@ -424,6 +504,22 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';".replace("DATABASE", sqlServerConfigration.getDataBase());
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                if(StringUtils.isEmpty(oracleConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "select table_name, owner from all_tables where owner='" + oracleConfigration.getSchema() + "'";
+            default:
+                return "show tables;";
+        }
+    }
+
+    private String getSchemaSql(DatasourceRequest datasourceRequest) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType) {
+            case oracle:
+                return "select * from all_users";
             default:
                 return "show tables;";
         }

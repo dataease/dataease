@@ -25,5 +25,13 @@ public class DatasetTableTask implements Serializable {
 
     private Long createTime;
 
+    private Long lastExecTime;
+
+    private String status;
+
+    private String lastExecStatus;
+
+    private String extraData;
+
     private static final long serialVersionUID = 1L;
 }

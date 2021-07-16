@@ -28,7 +28,7 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
         List<DatasetTableTask> list = dataSetTableTaskService.list(new DatasetTableTask());
         for (DatasetTableTask task : list) {
             try {
-                if (StringUtils.equalsIgnoreCase(task.getRate(), ScheduleType.CRON.toString())) {
+                if (!StringUtils.equalsIgnoreCase(task.getRate(), ScheduleType.SIMPLE.toString())) {
                     if (StringUtils.equalsIgnoreCase(task.getEnd(), "1")) {
                         if (task.getEndTime() != null && task.getEndTime() > 0) {
                             if (task.getEndTime() > System.currentTimeMillis()) {
@@ -40,8 +40,6 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
                     } else {
                         scheduleService.addSchedule(task);
                     }
-                } else {
-                    scheduleService.addSchedule(task);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

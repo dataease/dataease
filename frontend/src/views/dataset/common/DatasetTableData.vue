@@ -21,6 +21,7 @@
           <svg-icon v-if="field.deType === 0" icon-class="field_text" class="field-icon-text" />
           <svg-icon v-if="field.deType === 1" icon-class="field_time" class="field-icon-time" />
           <svg-icon v-if="field.deType === 2 || field.deType === 3" icon-class="field_value" class="field-icon-value" />
+          <svg-icon v-if="field.deType === 5" icon-class="field_location" class="field-icon-location" />
           <span>{{ field.name }}</span>
         </template>
       </ux-table-column>
@@ -60,8 +61,10 @@ export default {
     //   })()
     // }
     // this.height = window.innerHeight / 3
-    this.height = document.getElementById('dsData').parentNode.offsetHeight - 16 - 14 - 5
-    this.initData()
+    this.$nextTick(() => {
+      this.height = document.getElementById('dsData').parentNode.offsetHeight - 16 - 14 - 5
+      this.initData()
+    })
   },
   methods: {
     initData() {

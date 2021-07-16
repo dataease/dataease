@@ -23,7 +23,7 @@
     </el-row>
     <el-col style="display: flex;flex-direction: row">
       <el-col class="panel-height" style="width: 220px;border-right:solid 1px #dcdfe6;border-top:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;">
-        <dataset-group-selector :custom-type="customType" :table="table" :mode="1" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
+        <dataset-group-selector :custom-type="customType" :table="table" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
       </el-col>
       <el-col class="panel-height" style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
         <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
@@ -151,9 +151,9 @@ export default {
           id: this.param.tableId,
           name: this.name,
           sceneId: this.param.id,
-          dataSourceId: null,
+          dataSourceId: this.param.tableId ? this.param.table.dataSourceId : this.table.dataSourceId,
           type: 'custom',
-          mode: 1,
+          mode: this.param.tableId ? this.param.table.mode : this.table.mode,
           info: '{"list":' + JSON.stringify(this.checkedList) + '}'
         }
         post('/dataset/table/customPreview', table).then(response => {
@@ -202,9 +202,9 @@ export default {
         id: this.param.tableId,
         name: this.name,
         sceneId: this.param.id,
-        dataSourceId: null,
+        dataSourceId: this.table.dataSourceId,
         type: 'custom',
-        mode: 1,
+        mode: this.table.mode,
         info: '{"list":' + JSON.stringify(this.checkedList) + '}'
       }
       post('/dataset/table/update', table).then(response => {
@@ -233,7 +233,7 @@ export default {
     cancel() {
       // this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.tableId })
+        this.$emit('switchComponent', { name: 'ViewTable', param: { id: this.param.tableId }})
       } else {
         this.$emit('switchComponent', { name: '' })
       }

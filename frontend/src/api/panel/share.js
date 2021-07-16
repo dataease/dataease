@@ -27,3 +27,12 @@ export function loadTree(data) {
   })
 }
 
+export function fineSave(data) {
+  return request({
+    url: '/api/share/fineSave',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+

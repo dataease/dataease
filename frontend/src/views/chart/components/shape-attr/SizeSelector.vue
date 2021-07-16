@@ -97,6 +97,12 @@
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>
             </el-form-item>
+            <el-form-item :label="$t('chart.table_title_height')" class="form-item">
+              <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+            </el-form-item>
+            <el-form-item :label="$t('chart.table_item_height')" class="form-item">
+              <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+            </el-form-item>
           </el-form>
 
           <el-form v-show="chart.type && chart.type.includes('gauge')" ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
@@ -137,7 +143,7 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="shape-item">{{ $t('chart.size') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>
@@ -148,6 +154,10 @@ import { DEFAULT_SIZE } from '../../chart/chart'
 export default {
   name: 'SizeSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true

@@ -30,10 +30,17 @@
           <el-form-item class="form-item">
             <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
           </el-form-item>
-          <el-form-item class="form-item">
+          <el-form-item v-if="!param.tableId" class="form-item">
             <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
               <el-option :label="$t('dataset.direct_connect')" value="0" />
               <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item v-if="mode === '1'" class="form-item">
+            <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
+              <el-option :label="$t('dataset.sync_now')" value="sync_now" />
+              <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -143,6 +150,7 @@ export default {
       data: [],
       fields: [],
       mode: '0',
+      syncType: 'sync_now',
       height: 500,
       kettleRunning: false
     }
@@ -260,6 +268,7 @@ export default {
         sceneId: this.param.id,
         dataSourceId: this.dataSource,
         type: 'sql',
+        syncType: this.syncType,
         mode: parseInt(this.mode),
         // info: '{"sql":"' + this.sql + '"}',
         info: JSON.stringify({ sql: this.sql.trim() })
@@ -274,7 +283,7 @@ export default {
     cancel() {
       // this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.tableId })
+        this.$emit('switchComponent', { name: 'ViewTable', param: { id: this.param.tableId }})
       } else {
         this.$emit('switchComponent', { name: '' })
       }

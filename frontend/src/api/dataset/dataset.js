@@ -128,4 +128,21 @@ export function isKettleRunning(showLoading = true) {
   })
 }
 
+export function taskList(spage, size, data) {
+  return request({
+    url: '/dataset/group/isKettleRunning',
+    method: 'post',
+    loading: showLoading
+  })
+}
+
+export function datasetTaskList(page, size, data, loading) {
+  return request({
+    url: '/dataset/task/pageList/' + page + '/' + size,
+    method: 'post',
+    data,
+    loading: loading
+  })
+}
+
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree }

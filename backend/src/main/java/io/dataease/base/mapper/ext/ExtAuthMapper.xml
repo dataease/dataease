@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.base.mapper.ext.ExtAuthMapper">
+
+
+    <select id="queryUserIdWithRoleIds" resultType="java.lang.Long" >
+        select user_id
+        from sys_users_roles
+        where role_id in
+        <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+            #{roleId}
+        </foreach>
+    </select>
+
+
+    <select id="queryUserIdWithDeptIds" resultType="java.lang.Long" >
+        select user_id
+        from sys_user
+        where dept_id in
+        <foreach collection="deptIds" item="deptId" open='(' separator=',' close=')'>
+            #{deptId}
+        </foreach>
+    </select>
+
+
+
+</mapper>

@@ -1,5 +1,5 @@
 <template>
-  <div ref="tableContainer" :style="bg_class">
+  <div ref="tableContainer" :style="bg_class" style="padding: 8px;">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <ux-grid
       ref="plxTable"
@@ -60,7 +60,8 @@ export default {
         fontSize: '18px',
         color: '#303133',
         textAlign: 'left',
-        fontStyle: 'normal'
+        fontStyle: 'normal',
+        fontWeight: 'normal'
       },
       bg_class: {
         background: hexColorToRGBA('#ffffff', 0)
@@ -68,30 +69,31 @@ export default {
       table_header_class: {
         fontSize: '12px',
         color: '#606266',
-        background: '#e8eaec'
+        background: '#e8eaec',
+        height: '36px'
       },
       table_item_class: {
         fontSize: '12px',
         color: '#606266',
-        background: '#ffffff'
+        background: '#ffffff',
+        height: '36px'
       },
       table_item_class_stripe: {
         fontSize: '12px',
         color: '#606266',
-        background: '#ffffff'
+        background: '#ffffff',
+        height: '36px'
       },
       title_show: true
     }
   },
   watch: {
-    chart() {
+    chart: function() {
       this.init()
-      this.calcHeight()
     }
   },
   mounted() {
     this.init()
-    this.calcHeight()
     // 监听元素变动事件
     eventBus.$on('resizing', (componentId) => {
       this.chartResize()
@@ -99,6 +101,13 @@ export default {
   },
   methods: {
     init() {
+      this.resetHeight()
+      this.$nextTick(() => {
+        this.initData()
+        this.calcHeightDelay()
+      })
+    },
+    initData() {
       const that = this
       let datas = []
       if (this.chart.data) {
@@ -113,29 +122,32 @@ export default {
         this.initStyle()
       })
       window.onresize = function() {
-        that.calcHeight()
+        that.calcHeightDelay()
       }
     },
-    calcHeight() {
+    calcHeightRightNow() {
       this.$nextTick(() => {
-        setTimeout(() => {
-          if (this.$refs.tableContainer) {
-            const currentHeight = this.$refs.tableContainer.offsetHeight
-            const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight
-            let tableHeight
-            if (this.chart.data) {
-              tableHeight = (this.chart.data.tableRow.length + 2) * 36
-            } else {
-              tableHeight = 0
-            }
-            if (tableHeight > tableMaxHeight) {
-              this.height = tableMaxHeight + 'px'
-            } else {
-              this.height = 'auto'
-            }
+        if (this.$refs.tableContainer) {
+          const currentHeight = this.$refs.tableContainer.offsetHeight
+          const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight - 16
+          let tableHeight
+          if (this.chart.data) {
+            tableHeight = (this.chart.data.tableRow.length + 2) * 36
+          } else {
+            tableHeight = 0
           }
-        }, 100)
+          if (tableHeight > tableMaxHeight) {
+            this.height = tableMaxHeight + 'px'
+          } else {
+            this.height = 'auto'
+          }
+        }
       })
+    },
+    calcHeightDelay() {
+      setTimeout(() => {
+        this.calcHeightRightNow()
+      }, 100)
     },
     initStyle() {
       if (this.chart.customAttr) {
@@ -149,6 +161,8 @@ export default {
         if (customAttr.size) {
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
+          this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
+          this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         // 暂不支持斑马纹
@@ -170,6 +184,7 @@ export default {
           this.title_class.color = customStyle.text.color
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
+          this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
         }
         if (customStyle.background) {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
@@ -231,11 +246,15 @@ export default {
 
     chartResize() {
       // 指定图表的配置项和数据
-      this.calcHeight()
+      this.calcHeightDelay()
     },
 
     initClass() {
       return this.chart.id
+    },
+
+    resetHeight() {
+      this.height = 100
     }
   }
 }

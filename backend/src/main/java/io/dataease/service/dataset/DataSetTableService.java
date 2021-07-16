@@ -9,9 +9,13 @@ import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
+import io.dataease.commons.constants.ScheduleType;
+import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.dataset.DataSetTaskRequest;
+import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
@@ -94,6 +98,28 @@ public class DataSetTableService {
         }
     }
 
+    private void extractData(DataSetTableRequest datasetTable) throws Exception {
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
+            commonThreadPool.addTask(() -> {
+                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
+            });
+            return;
+        }
+        if (StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
+            DataSetTaskRequest dataSetTaskRequest = new DataSetTaskRequest();
+            DatasetTableTask datasetTableTask = new DatasetTableTask();
+            datasetTableTask.setTableId(datasetTable.getId());
+            datasetTableTask.setRate(ScheduleType.SIMPLE.toString());
+            datasetTableTask.setType("all_scope");
+            datasetTableTask.setName(datasetTable.getName() + " 更新设置");
+            datasetTableTask.setEnd("0");
+            datasetTableTask.setStatus(TaskStatus.Underway.name());
+            datasetTableTask.setStartTime(System.currentTimeMillis());
+            dataSetTaskRequest.setDatasetTableTask(datasetTableTask);
+            dataSetTableTaskService.save(dataSetTaskRequest);
+        }
+    }
+
     public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
@@ -110,11 +136,7 @@ public class DataSetTableService {
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
                 saveTableField(datasetTable);
-                if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-                    commonThreadPool.addTask(() -> {
-                        extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
-                    });
-                }
+                extractData(datasetTable);
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
@@ -129,11 +151,11 @@ public class DataSetTableService {
                     if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
                         if (datasetTable.getEditType() == 0) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractData(datasetTable.getId(), null, "all_scope", null);
+                                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
                             });
                         } else if (datasetTable.getEditType() == 1) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractData(datasetTable.getId(), null, "add_scope", null);
+                                extractDataService.extractExcelData(datasetTable.getId(), "add_scope");
                             });
                         }
                     }
@@ -215,6 +237,14 @@ public class DataSetTableService {
         return datasetTableMapper.selectByPrimaryKey(id);
     }
 
+    public DataSetTableDTO getWithPermission(String id) {
+        DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
+        dataSetTableRequest.setId(id);
+        dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        dataSetTableRequest.setTypeFilter(dataSetTableRequest.getTypeFilter());
+        return extDataSetTableMapper.searchOne(dataSetTableRequest);
+    }
+
     public List<TableFiled> getFields(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
@@ -234,7 +264,7 @@ public class DataSetTableService {
         List<DatasetTableField> quota = new ArrayList<>();
 
         fields.forEach(field -> {
-            if (field.getDeType() == 2 || field.getDeType() == 3) {
+            if (StringUtils.equalsIgnoreCase("q", field.getGroupType())) {
                 quota.add(field);
             } else {
                 dimension.add(field);
@@ -251,6 +281,8 @@ public class DataSetTableService {
                 .checked(true)
                 .columnIndex(999)
                 .deType(2)
+                .extField(1)
+                .groupType("q")
                 .build();
         quota.add(count);
 
@@ -282,50 +314,100 @@ public class DataSetTableService {
             realSize = Integer.parseInt(dataSetTableRequest.getRow()) % pageSize;
         }
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
-            Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
-            if (ObjectUtils.isEmpty(ds)) {
-                throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+            if (datasetTable.getMode() == 0) {
+                Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+                if (ObjectUtils.isEmpty(ds)) {
+                    throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+                }
+                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
+                String table = dataTableInfoDTO.getTable();
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
+                try {
+                    data.addAll(datasourceProvider.getData(datasourceRequest));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // check doris table
+                if (!checkDorisTableIsExists(dataSetTableRequest.getId())) {
+                    throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+                }
+                Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+                JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
+                String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
+                try {
+                    data.addAll(jdbcProvider.getData(datasourceRequest));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(ds);
 
-            String table = dataTableInfoDTO.getTable();
-            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
-            try {
-                data.addAll(datasourceProvider.getData(datasourceRequest));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                datasourceRequest.setQuery(qp.createQuerySQL(table, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
-                dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
-            Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
-            if (ObjectUtils.isEmpty(ds)) {
-                throw new RuntimeException(Translator.get("i18n_datasource_delete"));
-            }
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(ds);
+            if (datasetTable.getMode() == 0) {
+                Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+                if (ObjectUtils.isEmpty(ds)) {
+                    throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+                }
+                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
 
-            String sql = dataTableInfoDTO.getSql();
-            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize));
-            try {
-                data.addAll(datasourceProvider.getData(datasourceRequest));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + dataSetTableRequest.getRow());
-                dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
-            } catch (Exception e) {
-                e.printStackTrace();
+                String sql = dataTableInfoDTO.getSql();
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize));
+                try {
+                    data.addAll(datasourceProvider.getData(datasourceRequest));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // check doris table
+                if (!checkDorisTableIsExists(dataSetTableRequest.getId())) {
+                    throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+                }
+                Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+                JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
+                String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
+                try {
+                    data.addAll(jdbcProvider.getData(datasourceRequest));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             if (StringUtils.isEmpty(datasetTable.getSyncStatus()) || datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
@@ -355,32 +437,59 @@ public class DataSetTableService {
                     e.printStackTrace();
                 }
                 try {
-                    datasourceRequest.setQuery(qp.createQueryCountSQL(table));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
                     dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
-            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
-            JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(ds);
-            String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
-            try {
-                data.addAll(jdbcProvider.getData(datasourceRequest));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            if (datasetTable.getMode() == 0) {
+                Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+                if (ObjectUtils.isEmpty(ds)) {
+                    throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+                }
+                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
 
-            try {
-                datasourceRequest.setQuery(qp.createQueryCountSQL(table));
-                dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
-            } catch (Exception e) {
-                e.printStackTrace();
+                DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+                List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
+
+                String sql = getCustomSQLDatasource(dt, list, ds);
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize));
+                try {
+                    data.addAll(datasourceProvider.getData(datasourceRequest));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+                JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
+                String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
+                try {
+                    data.addAll(jdbcProvider.getData(datasourceRequest));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                    dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -417,9 +526,6 @@ public class DataSetTableService {
         }
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
-//        datasourceRequest.setQuery(sqlAsTable);
-//        List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
-        // 正式执行
         datasourceRequest.setQuery(sqlAsTable);
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
@@ -445,25 +551,34 @@ public class DataSetTableService {
     }
 
     public Map<String, Object> getCustomPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
-        Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
-        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(ds);
-//        String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
-        String sql = getCustomSQL(dataTableInfoDTO, list);
+        String sql;
+
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+//        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+        Datasource ds;
+        if (dataSetTableRequest.getMode() == 0) {
+            ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+            datasourceRequest.setDatasource(ds);
+            sql = getCustomSQLDatasource(dataTableInfoDTO, list, ds);
+        } else {
+            ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            datasourceRequest.setDatasource(ds);
+            sql = getCustomSQLDoris(dataTableInfoDTO, list);
+        }
+//        String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         // 使用输入的sql先预执行一次,并拿到所有字段
         datasourceRequest.setQuery(sql);
 
         Map<String, Object> res = new HashMap<>();
         try {
-            List<TableFiled> previewFields = jdbcProvider.fetchResultField(datasourceRequest);
+            List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
 
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
-            Map<String, List> result = jdbcProvider.fetchResultAndField(datasourceRequest);
+            Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
             List<String[]> data = result.get("dataList");
             List<TableFiled> fields = result.get("fieldList");
             String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
@@ -486,7 +601,8 @@ public class DataSetTableService {
             });
             for (DatasetTableField datasetTableField : checkedFieldList) {
                 for (TableFiled tableFiled : fields) {
-                    if (StringUtils.equalsIgnoreCase(tableFiled.getFieldName(), DorisTableUtils.dorisFieldName(datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))) {
+                    if (StringUtils.equalsIgnoreCase(tableFiled.getFieldName(), DorisTableUtils.dorisFieldName(datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))
+                            || StringUtils.equalsIgnoreCase(tableFiled.getFieldName(), DorisTableUtils.dorisFieldName(datasetTableField.getTableId() + "_" + datasetTableField.getOriginName()))) {
                         tableFiled.setRemarks(datasetTableField.getName());
                         break;
                     }
@@ -502,7 +618,7 @@ public class DataSetTableService {
     }
 
     // 自助数据集从doris里预览数据
-    private String getCustomSQL(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list) {
+    private String getCustomSQLDoris(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list) {
         Map<String, String[]> customInfo = new TreeMap<>();
         dataTableInfoDTO.getList().forEach(ele -> {
             String table = DorisTableUtils.dorisName(ele.getTableId());
@@ -555,6 +671,67 @@ public class DataSetTableService {
         }
     }
 
+    public String getCustomSQLDatasource(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list, Datasource ds) {
+        DatasourceTypes datasourceTypes = DatasourceTypes.valueOf(ds.getType());
+        String keyword = datasourceTypes.getKeywordPrefix() + "%s" + datasourceTypes.getKeywordSuffix();
+        Map<String, String[]> customInfo = new TreeMap<>();
+        for (DataTableInfoCustomUnion ele : dataTableInfoDTO.getList()) {
+            DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(ele.getTableId());
+            String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
+            if (ObjectUtils.isEmpty(datasetTable)) {
+                throw new RuntimeException(Translator.get("i18n_custom_ds_delete"));
+            }
+            List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
+            if (CollectionUtils.isEmpty(fields)) {
+                throw new RuntimeException(Translator.get("i18n_cst_ds_tb_or_field_deleted"));
+            }
+            String[] array = fields.stream().map(f -> String.format(keyword, table) + "." + String.format(keyword, f.getOriginName()) + " AS " + DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getOriginName())).toArray(String[]::new);
+            customInfo.put(table, array);
+        }
+        DataTableInfoCustomUnion first = dataTableInfoDTO.getList().get(0);
+        DatasetTable table = datasetTableMapper.selectByPrimaryKey(first.getTableId());
+        String tableName = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class).getTable();
+        if (CollectionUtils.isNotEmpty(list)) {
+            StringBuilder field = new StringBuilder();
+            Iterator<Map.Entry<String, String[]>> iterator = customInfo.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String[]> next = iterator.next();
+                field.append(StringUtils.join(next.getValue(), ",")).append(",");
+            }
+            String f = field.substring(0, field.length() - 1);
+
+            StringBuilder join = new StringBuilder();
+            for (DataTableInfoCustomUnion dataTableInfoCustomUnion : dataTableInfoDTO.getList()) {
+                for (DataSetTableUnionDTO dto : list) {
+                    // 被关联表和自助数据集的表相等
+                    if (StringUtils.equals(dto.getTargetTableId(), dataTableInfoCustomUnion.getTableId())) {
+                        DatasetTableField sourceField = dataSetTableFieldsService.get(dto.getSourceTableFieldId());
+                        DatasetTableField targetField = dataSetTableFieldsService.get(dto.getTargetTableFieldId());
+                        DatasetTable sourceTable = datasetTableMapper.selectByPrimaryKey(dto.getSourceTableId());
+                        String sourceTableName = new Gson().fromJson(sourceTable.getInfo(), DataTableInfoDTO.class).getTable();
+                        DatasetTable targetTable = datasetTableMapper.selectByPrimaryKey(dto.getTargetTableId());
+                        String targetTableName = new Gson().fromJson(targetTable.getInfo(), DataTableInfoDTO.class).getTable();
+                        join.append(convertUnionTypeToSQL(dto.getSourceUnionRelation()))
+                                .append(String.format(keyword, targetTableName))
+                                .append(" ON ")
+                                .append(String.format(keyword, sourceTableName)).append(".").append(String.format(keyword, sourceField.getOriginName()))
+                                .append(" = ")
+                                .append(String.format(keyword, targetTableName)).append(".").append(String.format(keyword, targetField.getOriginName()));
+                    }
+                }
+            }
+            if (StringUtils.isEmpty(f)) {
+                throw new RuntimeException(Translator.get("i18n_custom_ds_delete"));
+            }
+            return MessageFormat.format("SELECT {0} FROM {1}", f, String.format(keyword, tableName)) + join.toString();
+        } else {
+            if (StringUtils.isEmpty(StringUtils.join(customInfo.get(tableName), ","))) {
+                throw new RuntimeException(Translator.get("i18n_custom_ds_delete"));
+            }
+            return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(customInfo.get(tableName), ","), String.format(keyword, tableName));
+        }
+    }
+
     private String convertUnionTypeToSQL(String unionType) {
         switch (unionType) {
             case "1:1":
@@ -563,6 +740,8 @@ public class DataSetTableService {
                 return " LEFT JOIN ";
             case "N:1":
                 return " RIGHT JOIN ";
+            case "N:N":
+                return " FULL JOIN ";
             default:
                 return " INNER JOIN ";
         }
@@ -586,33 +765,63 @@ public class DataSetTableService {
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+            /*DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
             String path = dataTableInfoDTO.getData();
             File file = new File(path);
             Map<String, Object> map = parseExcel(path.substring(path.lastIndexOf("/") + 1), new FileInputStream(file), false);
-            fields = (List<TableFiled>) map.get("fields");
+            fields = (List<TableFiled>) map.get("fields");*/
+            fields = dataSetTableRequest.getFields();
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
-            // save field
-            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
-            List<DataTableInfoCustomUnion> list = dataTableInfoDTO.getList();
-            List<DatasetTableField> fieldList = new ArrayList<>();
-            list.forEach(ele -> {
-                List<DatasetTableField> listByIds = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
-                listByIds.forEach(f -> {
-                    f.setDataeaseName(DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName()));
+            if (datasetTable.getMode() == 1) {
+                // save field
+                DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+                List<DataTableInfoCustomUnion> list = dataTableInfoDTO.getList();
+                List<DatasetTableField> fieldList = new ArrayList<>();
+                list.forEach(ele -> {
+                    List<DatasetTableField> listByIds = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
+                    listByIds.forEach(f -> {
+                        f.setDataeaseName(DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName()));
+                    });
+                    fieldList.addAll(listByIds);
                 });
-                fieldList.addAll(listByIds);
-            });
-            for (int i = 0; i < fieldList.size(); i++) {
-                DatasetTableField datasetTableField = fieldList.get(i);
-                datasetTableField.setId(null);
-                datasetTableField.setTableId(datasetTable.getId());
-                datasetTableField.setColumnIndex(i);
+                for (int i = 0; i < fieldList.size(); i++) {
+                    DatasetTableField datasetTableField = fieldList.get(i);
+                    datasetTableField.setId(null);
+                    datasetTableField.setTableId(datasetTable.getId());
+                    datasetTableField.setColumnIndex(i);
+                }
+                dataSetTableFieldsService.batchEdit(fieldList);
+                // custom 创建doris视图
+                if (datasetTable.getMode() == 1) {
+                    createDorisView(DorisTableUtils.dorisName(datasetTable.getId()), getCustomSQLDoris(dataTableInfoDTO, dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
+                }
+                return;
+            } else {
+                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(ds);
+                DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+                List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
+                String sqlAsTable = getCustomSQLDatasource(dt, list, ds);
+                datasourceRequest.setQuery(sqlAsTable);
+                fields = datasourceProvider.fetchResultField(datasourceRequest);
+
+                DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+                List<DataTableInfoCustomUnion> listField = dataTableInfoDTO.getList();
+                List<DatasetTableField> fieldList = new ArrayList<>();
+                listField.forEach(ele -> {
+                    List<DatasetTableField> listByIds = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
+                    fieldList.addAll(listByIds);
+                });
+                for (DatasetTableField field : fieldList) {
+                    for (TableFiled tableFiled : fields) {
+                        if (StringUtils.equalsIgnoreCase(DorisTableUtils.dorisFieldName(field.getTableId() + "_" + field.getOriginName()), tableFiled.getFieldName())) {
+                            tableFiled.setRemarks(field.getName());
+                            break;
+                        }
+                    }
+                }
             }
-            dataSetTableFieldsService.batchEdit(fieldList);
-            // custom 创建doris视图
-            createDorisView(DorisTableUtils.dorisName(datasetTable.getId()), getCustomSQL(dataTableInfoDTO, dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
-            return;
         }
         QueryProvider qp = null;
         if (!ObjectUtils.isEmpty(ds)) {
@@ -639,6 +848,8 @@ public class DataSetTableService {
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(syncTime);
+                datasetTableField.setExtField(0);
+                datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
                 dataSetTableFieldsService.save(datasetTableField);
             }
         }
@@ -722,13 +933,14 @@ public class DataSetTableService {
         });
         List<String> originNameFileds = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
             String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
+            datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);
@@ -741,7 +953,7 @@ public class DataSetTableService {
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete().replace(" ", ""))) {// 增量删除
             String sql = datasetTableIncrementalConfig.getIncrementalDelete().replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
-            datasourceRequest.setQuery(extractDataService.sqlFix(sql));
+            datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);
@@ -797,10 +1009,28 @@ public class DataSetTableService {
         return map;
     }
 
-    public Map<String, Object> excelSaveAndParse(MultipartFile file) throws Exception {
+    public Map<String, Object> excelSaveAndParse(MultipartFile file, String tableId) throws Exception {
         String filename = file.getOriginalFilename();
         // parse file
         Map<String, Object> fileMap = parseExcel(filename, file.getInputStream(), true);
+        if (StringUtils.isNotEmpty(tableId)) {
+            List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId);
+            datasetTableFields.sort((o1, o2) -> {
+                if (o1.getColumnIndex() == null) {
+                    return -1;
+                }
+                if (o2.getColumnIndex() == null) {
+                    return 1;
+                }
+                return o1.getColumnIndex().compareTo(o2.getColumnIndex());
+            });
+            List<TableFiled> fields = (List<TableFiled>) fileMap.get("fields");
+            List<String> newFields = fields.stream().map(TableFiled::getRemarks).collect(Collectors.toList());
+            List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
+            if (!oldFields.equals(newFields)) {
+                DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
+            }
+        }
         // save file
         String filePath = saveFile(file);
         Map<String, Object> map = new HashMap<>(fileMap);
@@ -852,16 +1082,11 @@ public class DataSetTableService {
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
-                    } else if (i == 1) {
-                        if (row == null) {
-                            break;
-                        }
-                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
                         if (row == null) {
                             break;
                         }
-                        r[j] = readCell(row.getCell(j), false, null);
+                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     }
                 }
                 if (i > 0) {
@@ -890,7 +1115,7 @@ public class DataSetTableService {
                     if (row == null) {
                         throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
                     }
-                    columnNum = row.getPhysicalNumberOfCells();
+                    columnNum = row.getLastCellNum();
                 }
                 String[] r = new String[columnNum];
                 for (int j = 0; j < columnNum; j++) {
@@ -902,19 +1127,15 @@ public class DataSetTableService {
                         if (StringUtils.isEmpty(columnName)) {
                             columnName = "NONE_" + String.valueOf(j);
                         }
+
                         tableFiled.setFieldName(columnName);
                         tableFiled.setRemarks(columnName);
                         fields.add(tableFiled);
-                    } else if (i == 1) {
-                        if (row == null) {
-                            break;
-                        }
-                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     } else {
                         if (row == null) {
                             break;
                         }
-                        r[j] = readCell(row.getCell(j), false, null);
+                        r[j] = readCell(row.getCell(j), true, fields.get(j));
                     }
                 }
                 if (i > 0) {
@@ -975,6 +1196,40 @@ public class DataSetTableService {
             return "";
         }
         CellType cellTypeEnum = cell.getCellTypeEnum();
+        if (cellTypeEnum.equals(CellType.FORMULA)) {
+            try {
+                double d = cell.getNumericCellValue();
+                try {
+                    Double value = new Double(d);
+                    double eps = 1e-10;
+                    if (value - Math.floor(value) < eps) {
+                        if (cellType) {
+                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")) {
+                                tableFiled.setFieldType("LONG");
+                            }
+                        }
+                        return value.longValue() + "";
+                    } else {
+                        if (cellType) {
+                            tableFiled.setFieldType("DOUBLE");
+                        }
+                        NumberFormat nf = NumberFormat.getInstance();
+                        nf.setGroupingUsed(false);
+                        return nf.format(value);
+                    }
+                } catch (Exception e) {
+                    BigDecimal b = new BigDecimal(d);
+                    return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
+                }
+            } catch (IllegalStateException e) {
+                String s = String.valueOf(cell.getRichStringCellValue());
+                if (cellType) {
+                    tableFiled.setFieldType("TEXT");
+                    tableFiled.setFieldSize(65533);
+                }
+                return s;
+            }
+        }
         if (cellTypeEnum.equals(CellType.STRING)) {
             if (cellType) {
                 tableFiled.setFieldType("TEXT");
@@ -1000,7 +1255,9 @@ public class DataSetTableService {
                     double eps = 1e-10;
                     if (value - Math.floor(value) < eps) {
                         if (cellType) {
-                            tableFiled.setFieldType("LONG");
+                            if (StringUtils.isEmpty(tableFiled.getFieldType()) || tableFiled.getFieldType().equalsIgnoreCase("TEXT")) {
+                                tableFiled.setFieldType("LONG");
+                            }
                         }
                         return value.longValue() + "";
                     } else {
@@ -1085,12 +1342,17 @@ public class DataSetTableService {
 
         DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
         datasetTableTaskLogExample.createCriteria().andStatusEqualTo(JobStatus.Underway.name()).andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
+        List<String> taskIds = datasetTableTaskLogMapper.selectByExample(datasetTableTaskLogExample).stream().map(DatasetTableTaskLog::getTaskId).collect(Collectors.toList());
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
+
+        DatasetTableTask datasetTableTask = new DatasetTableTask();
+        datasetTableTask.setLastExecStatus(JobStatus.Error.name());
+        dataSetTableTaskService.update(taskIds, datasetTableTask);
+
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());
             extractDataService.deleteFile("incremental_add", jobStoppeddDatasetTable.getId());
             extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
-
         }
     }
 

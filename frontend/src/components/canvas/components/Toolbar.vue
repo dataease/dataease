@@ -53,7 +53,7 @@
       </el-tooltip>
 
       <span style="float: right;margin-left: 10px">
-        <el-button size="mini" @click="save">
+        <el-button size="mini" :disabled="changeTimes===0||snapshotIndex===lastSaveSnapshotIndex" @click="save(false)">
           {{ $t('commons.save') }}
         </el-button>
         <el-button size="mini" @click="closePanelEdit">
@@ -61,6 +61,24 @@
         </el-button>
       </span>
     </div>
+
+    <!--关闭弹框-->
+    <el-dialog :visible.sync="closePanelVisible" :title="$t('panel.panel_save_tips')" :show-close="false" width="30%" class="dialog-css">
+      <el-row style="height: 20px">
+        <el-col :span="6">
+          <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
+        </el-col>
+        <el-col :span="16">
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_save_warn_tips') }}</span>
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button style="float: left" size="mini" @click="closeNotSave()">{{ $t('panel.do_not_save') }}</el-button>
+        <el-button size="mini" @click="closePanelVisible=false">{{ $t('panel.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="save(true)">{{ $t('panel.save') }}
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -95,15 +113,21 @@ export default {
         'borderWidth'
       ],
       scale: '100%',
-      timer: null
+      timer: null,
+      changes: 0,
+      closePanelVisible: false
     }
   },
   computed: mapState([
     'componentData',
     'canvasStyleData',
     'areaData',
-    'curComponent'
+    'curComponent',
+    'changeTimes',
+    'snapshotIndex',
+    'lastSaveSnapshotIndex'
   ]),
+
   created() {
     eventBus.$on('preview', this.preview)
     eventBus.$on('save', this.save)
@@ -111,12 +135,20 @@ export default {
 
     this.scale = this.canvasStyleData.scale
   },
+
   methods: {
-    closePanelEdit() {
+    close() {
       this.$emit('close-left-panel')
       this.$nextTick(() => {
         bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
       })
+    },
+    closePanelEdit() {
+      if (this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex) { // 已保存
+        this.close()
+      } else {
+        this.closePanelVisible = true
+      }
     },
     goFile() {
       this.$refs.files.click()
@@ -231,7 +263,8 @@ export default {
       this.$store.commit('setEditMode', 'preview')
     },
 
-    save() {
+    save(withClose) {
+      debugger
       // 保存到数据库
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
@@ -239,11 +272,15 @@ export default {
         panelData: JSON.stringify(this.componentData)
       }
       panelSave(requestInfo).then(response => {
+        this.$store.commit('refreshSaveStatus')
         this.$message({
           message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })
+        if (withClose) {
+          this.close()
+        }
       })
     },
     clearCanvas() {
@@ -261,6 +298,9 @@ export default {
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')
+    },
+    closeNotSave() {
+      this.close()
     }
   }
 }

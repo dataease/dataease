@@ -20,13 +20,15 @@ export const DEFAULT_SIZE = {
   lineSmooth: false,
   lineArea: false,
   pieInnerRadius: 0,
-  pieOuterRadius: 60,
+  pieOuterRadius: 80,
   pieRoseType: 'radius',
   pieRoseRadius: 5,
   funnelWidth: 80,
   radarShape: 'polygon',
   tableTitleFontSize: 12,
   tableItemFontSize: 12,
+  tableTitleHeight: 36,
+  tableItemHeight: 36,
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
@@ -43,7 +45,10 @@ export const DEFAULT_LABEL = {
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',
-  gaugeFormatter: '{value}'
+  gaugeFormatter: '{value}',
+  labelLine: {
+    show: true
+  }
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
@@ -61,7 +66,8 @@ export const DEFAULT_TITLE_STYLE = {
   color: '#303133',
   hPosition: 'center',
   vPosition: 'top',
-  isItalic: false
+  isItalic: false,
+  isBolder: false
 }
 export const DEFAULT_LEGEND_STYLE = {
   show: true,
@@ -78,23 +84,97 @@ export const DEFAULT_XAXIS_STYLE = {
   show: true,
   position: 'bottom',
   name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
   axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
     rotate: 0,
     formatter: '{value}'
+  },
+  splitLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
   }
 }
 export const DEFAULT_YAXIS_STYLE = {
   show: true,
   position: 'left',
   name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
   axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
     rotate: 0,
     formatter: '{value}'
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {
   color: '#ffffff',
   alpha: 0
+}
+export const DEFAULT_SPLIT = {
+  name: {
+    show: true,
+    color: '#999999',
+    fontSize: '12'
+  },
+  splitNumber: 5,
+  axisLine: {
+    show: true,
+    lineStyle: {
+      color: '#999999',
+      width: 1,
+      type: 'solid'
+    }
+  },
+  axisTick: {
+    show: false,
+    length: 5,
+    lineStyle: {
+      color: '#999999',
+      width: 1,
+      type: 'solid'
+    }
+  },
+  axisLabel: {
+    show: false,
+    rotate: 0,
+    margin: 8,
+    color: '#999999',
+    fontSize: '12',
+    formatter: '{value}'
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#999999',
+      width: 1,
+      type: 'solid'
+    }
+  },
+  splitArea: {
+    show: true
+  }
 }
 // chart config
 export const BASE_BAR = {
@@ -313,12 +393,46 @@ export const BASE_RADAR = {
   radar: {
     shape: 'polygon',
     name: {
-      textStyle: {
-        color: '#000000'
-        // backgroundColor: '#999',
-        // borderRadius: 3,
-        // padding: [3, 5]
+      show: true,
+      color: '#999999',
+      fontSize: '12'
+    },
+    splitNumber: 5,
+    axisLine: {
+      show: true,
+      lineStyle: {
+        color: '#999999',
+        width: 1,
+        type: 'solid'
       }
+    },
+    axisTick: {
+      show: false,
+      length: 5,
+      lineStyle: {
+        color: '#999999',
+        width: 1,
+        type: 'solid'
+      }
+    },
+    axisLabel: {
+      show: false,
+      rotate: 0,
+      margin: 8,
+      color: '#999999',
+      fontSize: '12',
+      formatter: '{value}'
+    },
+    splitLine: {
+      show: true,
+      lineStyle: {
+        color: '#999999',
+        width: 1,
+        type: 'solid'
+      }
+    },
+    splitArea: {
+      show: true
     },
     indicator: []
   },

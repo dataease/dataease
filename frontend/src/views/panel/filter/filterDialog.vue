@@ -182,28 +182,44 @@
             </div>
           </el-col>
           <el-col :span="16"><div class="filter-options-right">
-            <el-checkbox v-model="componentInfo.options.attrs.enableRange" @change="enableRangeChange"><span>  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
+            <span style="padding-right: 10px;">
+              <el-checkbox v-model="componentInfo.options.attrs.showTitle" @change="showTitleChange">显示标题</el-checkbox>
+              <el-popover
+                v-model="titlePopovervisible"
+                placement="bottom-end"
+                :disabled="!componentInfo.options.attrs.showTitle"
+                width="200"
+              >
+                <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
+                  <el-input v-model="componentInfo.options.attrs.title" placeholder="请输入标题" type="textarea" maxlength="15" show-word-limit />
+                </div>
 
-            <el-popover
-              v-model="popovervisible"
-              placement="bottom-end"
-              :disabled="!componentInfo.options.attrs.enableRange"
-              width="200"
-            >
-              <div class="view-container-class">
-                <el-checkbox-group v-model="componentInfo.options.attrs.viewIds" @change="checkedViewsChange">
-                  <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id">
-                    <span>
-                      <svg-icon :icon-class="item.type" class="chart-icon" />
-                      <span style="margin-left: 6px">{{ item.name }}</span>
-                    </span>
-                  </el-checkbox>
-                </el-checkbox-group>
-              </div>
+                <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.showTitle, 'i-filter-inactive': !componentInfo.options.attrs.showTitle}" class="el-icon-setting i-filter" />
+              </el-popover>
+            </span>
+            <span style="padding-left: 10px;">
+              <el-checkbox v-model="componentInfo.options.attrs.enableRange" @change="enableRangeChange"><span>  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
 
-              <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.enableRange, 'i-filter-inactive': !componentInfo.options.attrs.enableRange}" class="el-icon-setting i-filter" />
-            </el-popover>
-            <!-- <el-checkbox disabled>备选项</el-checkbox> -->
+              <el-popover
+                v-model="popovervisible"
+                placement="bottom-end"
+                :disabled="!componentInfo.options.attrs.enableRange"
+                width="200"
+              >
+                <div class="view-container-class">
+                  <el-checkbox-group v-model="componentInfo.options.attrs.viewIds" @change="checkedViewsChange">
+                    <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id">
+                      <span>
+                        <svg-icon :icon-class="item.type" class="chart-icon" />
+                        <span style="margin-left: 6px">{{ item.name }}</span>
+                      </span>
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </div>
+
+                <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.enableRange, 'i-filter-inactive': !componentInfo.options.attrs.enableRange}" class="el-icon-setting i-filter" />
+              </el-popover>
+            </span>
           </div>
 
           </el-col>
@@ -301,7 +317,8 @@ export default {
       keyWord: '',
       timer: null,
       expandedArray: [],
-      viewKeyWord: ''
+      viewKeyWord: '',
+      titlePopovervisible: false
     }
   },
   computed: {
@@ -609,6 +626,12 @@ export default {
         this.componentInfo.options.attrs.viewIds = []
       }
       // this.componentInfo.options.attrs.enableRange = value
+      this.$emit('re-fresh-component', this.componentInfo)
+    },
+    showTitleChange(value) {
+      if (!value) {
+        this.componentInfo.options.attrs.title = ''
+      }
       this.$emit('re-fresh-component', this.componentInfo)
     }
   }

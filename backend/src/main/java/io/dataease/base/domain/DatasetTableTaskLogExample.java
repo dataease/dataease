@@ -563,6 +563,76 @@ public class DatasetTableTaskLogExample {
             addCriterion("create_time not between", value1, value2, "createTime");
             return (Criteria) this;
         }
+
+        public Criteria andTriggerTypeIsNull() {
+            addCriterion("trigger_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeIsNotNull() {
+            addCriterion("trigger_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeEqualTo(String value) {
+            addCriterion("trigger_type =", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeNotEqualTo(String value) {
+            addCriterion("trigger_type <>", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeGreaterThan(String value) {
+            addCriterion("trigger_type >", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeGreaterThanOrEqualTo(String value) {
+            addCriterion("trigger_type >=", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeLessThan(String value) {
+            addCriterion("trigger_type <", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeLessThanOrEqualTo(String value) {
+            addCriterion("trigger_type <=", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeLike(String value) {
+            addCriterion("trigger_type like", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeNotLike(String value) {
+            addCriterion("trigger_type not like", value, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeIn(List<String> values) {
+            addCriterion("trigger_type in", values, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeNotIn(List<String> values) {
+            addCriterion("trigger_type not in", values, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeBetween(String value1, String value2) {
+            addCriterion("trigger_type between", value1, value2, "triggerType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTriggerTypeNotBetween(String value1, String value2) {
+            addCriterion("trigger_type not between", value1, value2, "triggerType");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

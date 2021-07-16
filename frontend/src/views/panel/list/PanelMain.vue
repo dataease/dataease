@@ -8,16 +8,16 @@
         </el-tab-pane>
         <el-tab-pane name="panels_star" :lazy="true">
           <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.store') }}</span>
-          <enshrine v-if="showEnshrine" />
+          <enshrine v-if="activeName==='panels_star'" />
         </el-tab-pane>
         <el-tab-pane name="panels_share" :lazy="true">
           <span slot="label"><i class="el-icon-share" />{{ $t('panel.share') }}</span>
-          <share-tree v-if="showShare" />
+          <share-tree v-if="showShare" ref="share_tree" :msg-panel-ids="msgPanelIds" />
         </el-tab-pane>
       </el-tabs>
     </de-aside-container>
     <de-main-container>
-      <PanelViewShow v-if="mainActiveName==='PanelMain'" />
+      <PanelViewShow v-if="mainActiveName==='PanelMain'" :active-tab="activeName" />
     </de-main-container>
   </de-container>
 </template>
@@ -38,7 +38,8 @@ export default {
     return {
       activeName: 'PanelList',
       showShare: false,
-      showEnshrine: false
+      showEnshrine: false,
+      msgPanelIds: null
     }
   },
   computed: {
@@ -86,6 +87,20 @@ export default {
         preStyle: null
       })
       this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
+    },
+    msg2Current(panelIds) {
+      this.refreshShare()
+      this.$nextTick(() => {
+        if (panelIds) {
+          try {
+            panelIds = JSON.parse(panelIds)
+            this.msgPanelIds = panelIds
+            this.activeName = 'panels_share'
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      })
     }
 
   }

@@ -1,26 +1,14 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col>
+  <el-col class="tree-style">
     <!-- group -->
     <el-col v-if="!sceneMode">
       <el-row class="title-css">
         <span class="title-text">
           {{ $t('chart.datalist') }}
         </span>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')">
-          <!--          {{ $t('chart.add_group') }}-->
-        </el-button>
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')" />
       </el-row>
       <el-divider />
-
-      <!--      <el-row>-->
-      <!--        <el-button type="primary" size="mini" @click="add('group')">-->
-      <!--          {{ $t('chart.add_group') }}-->
-      <!--        </el-button>-->
-      <!--        <el-button type="primary" size="mini" @click="add('scene')">-->
-      <!--          {{ $t('chart.add_scene') }}-->
-      <!--        </el-button>-->
-      <!--      </el-row>-->
-
       <el-row>
         <el-form>
           <el-form-item class="form-item">
@@ -48,19 +36,9 @@
             :props="treeProps"
             highlight-current
             @node-click="nodeClick"
-            @node-expand="nodeExpand"
-            @node-collapse="nodeCollapse"
           >
             <span v-if="data.type ==='group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
-                <!--                <span v-if="data.type === 'scene'">-->
-                <!--                  &lt;!&ndash;                  <el-button&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                    icon="el-icon-folder-opened"&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                    type="text"&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                    size="mini"&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                  />&ndash;&gt;-->
-                <!--                  <svg-icon icon-class="scene" class="ds-icon-scene" />-->
-                <!--                </span>-->
                 <span>
                   <i class="el-icon-folder" />
                 </span>
@@ -80,9 +58,6 @@
                       <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('group',data,node)">
                         {{ $t('chart.group') }}
                       </el-dropdown-item>
-                      <!--                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('scene',data,node)">-->
-                      <!--                        {{ $t('chart.scene') }}-->
-                      <!--                      </el-dropdown-item>-->
                       <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('chart',data,node)">
                         {{ $t('chart.add_chart') }}
                       </el-dropdown-item>
@@ -129,9 +104,9 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <!--                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">-->
-                      <!--                    {{ $t('chart.rename') }}-->
-                      <!--                  </el-dropdown-item>-->
+                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">
+                        {{ $t('chart.rename') }}
+                      </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
@@ -149,7 +124,7 @@
 
       <!--group add/edit-->
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keyup.enter.native="saveGroup(groupForm)">
+        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keypress.enter.native="saveGroup(groupForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>
@@ -269,7 +244,7 @@
 
     <!--rename chart-->
     <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name" />
         </el-form-item>
@@ -290,17 +265,29 @@
       class="dialog-css"
       :destroy-on-close="true"
     >
-      <el-row style="width: 400px;">
+      <el-row style="width: 800px;">
         <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
-          <el-form-item :label="$t('chart.view_name')">
-            <el-input v-model="chartName" size="mini" />
-          </el-form-item>
+          <el-col :span="12">
+            <el-form-item :label="$t('chart.view_name')">
+              <el-input v-model="chartName" style="height: 34px" size="mini" />
+            </el-form-item>
+          </el-col>
+          <el-col v-if="optFrom==='panel'" :span="12">
+            <el-form-item :label="$t('chart.belong_group')">
+              <treeselect
+                v-model="currGroup.id"
+                :options="chartGroupTreeAvailable"
+                :normalizer="normalizer"
+                :placeholder="$t('chart.select_group')"
+              />
+            </el-form-item>
+          </el-col>
         </el-form>
       </el-row>
       <table-selector @getTable="getTable" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!table.id || !currGroup.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -327,7 +314,7 @@
 </template>
 
 <script>
-import { post } from '@/api/chart/chart'
+import { post, chartGroupTree } from '@/api/chart/chart'
 import { authModel } from '@/api/system/sysAuth'
 import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
@@ -341,7 +328,8 @@ import {
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
-  DEFAULT_BACKGROUND_COLOR
+  DEFAULT_BACKGROUND_COLOR,
+  DEFAULT_SPLIT
 } from '../chart/chart'
 
 export default {
@@ -350,6 +338,17 @@ export default {
   props: {
     saveStatus: {
       type: Object,
+      required: false,
+      default: null
+    },
+    // 操作来源 'panel' 为仪表板
+    optFrom: {
+      type: String,
+      required: false,
+      default: null
+    },
+    adviceGroupId: {
+      type: String,
       required: false,
       default: null
     }
@@ -415,7 +414,8 @@ export default {
       groupMoveConfirmDisabled: true,
       dsMoveConfirmDisabled: true,
       moveDialogTitle: '',
-      isTreeSearch: false
+      isTreeSearch: false,
+      chartGroupTreeAvailable: []
     }
   },
   computed: {
@@ -443,12 +443,19 @@ export default {
     },
     saveStatus() {
       this.refreshNodeBy(this.saveStatus.sceneId)
+    },
+    adviceGroupId() {
+      // 仪表板新建视图建议的存放路径
+      if (this.optFrom === 'panel') {
+        this.currGroup['id'] = this.adviceGroupId
+      }
     }
   },
   mounted() {
     this.treeNode(this.groupForm)
     this.refresh()
     // this.chartTree()
+    this.getChartGroupTree()
   },
   methods: {
     clickAdd(param) {
@@ -544,6 +551,7 @@ export default {
     saveTable(view) {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
+          view.title = view.name
           post('/chart/view/save', view).then(response => {
             this.closeTable()
             this.$message({
@@ -656,27 +664,12 @@ export default {
 
     nodeClick(data, node) {
       if (data.type !== 'group') {
-        this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
+        this.$emit('switchComponent', { name: 'ChartEdit', param: data })
       }
-      // if (data.type === 'scene') {
-      //   this.sceneMode = true
-      //   this.currGroup = data
-      //   this.$store.dispatch('chart/setSceneId', this.currGroup.id)
-      //   this.chartTree()
-      // }
-      // if (node.expanded) {
-      //   this.expandedArray.push(data.id)
-      // } else {
-      //   const index = this.expandedArray.indexOf(data.id)
-      //   if (index > -1) {
-      //     this.expandedArray.splice(index, 1)
-      //   }
-      // }
     },
 
     back() {
       this.sceneMode = false
-      // this.$router.push('/chart/home')
       this.$emit('switchComponent', { name: '' })
     },
 
@@ -685,13 +678,9 @@ export default {
         'type': type
       }
     },
-
     sceneClick(data, node) {
-      // this.$store.dispatch('chart/setViewId', null)
-      // this.$store.dispatch('chart/setViewId', data.id)
       this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
     },
-
     reviewChartList() {
       if (this.$store.state.chart.chartSceneData) {
         const that = this
@@ -749,7 +738,8 @@ export default {
         legend: DEFAULT_LEGEND_STYLE,
         xAxis: DEFAULT_XAXIS_STYLE,
         yAxis: DEFAULT_YAXIS_STYLE,
-        background: DEFAULT_BACKGROUND_COLOR
+        background: DEFAULT_BACKGROUND_COLOR,
+        split: DEFAULT_SPLIT
       })
       view.customFilter = JSON.stringify([])
       post('/chart/view/save', view).then(response => {
@@ -757,10 +747,14 @@ export default {
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
         // this.$router.push('/chart/chart-edit')
-        this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': response.data.id }})
-        // this.$store.dispatch('chart/setViewId', response.data.id)
-        // this.chartTree()
-        this.refreshNodeBy(view.sceneId)
+        if (this.optFrom === 'panel') {
+          this.$emit('newViewInfo', { 'id': response.data.id })
+        } else {
+          this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': response.data.id }})
+          // this.$store.dispatch('chart/setViewId', response.data.id)
+          // this.chartTree()
+          this.refreshNodeBy(view.sceneId)
+        }
       })
     },
 
@@ -807,7 +801,7 @@ export default {
           }
         }
       } else {
-        node.data.children && resolve(node.data.children)
+        node.data.children ? resolve(node.data.children) : resolve([])
       }
     },
 
@@ -950,6 +944,18 @@ export default {
         this.isTreeSearch = false
         this.treeNode(this.groupForm)
       }
+    },
+
+    getChartGroupTree() {
+      chartGroupTree({}).then(res => {
+        this.chartGroupTreeAvailable = res.data
+      })
+    },
+    normalizer(node) {
+      // 去掉children=null的属性
+      if (node.children === null || node.children === 'null') {
+        delete node.children
+      }
     }
   }
 }
@@ -1038,5 +1044,17 @@ export default {
   }
   .father:hover .child {
     display: inline;
+  }
+  .tree-style {
+    padding: 10px 15px;
+    height: 100%;
+    overflow-y: auto;
+  }
+  /deep/ .vue-treeselect__control{
+    height: 28px;
+  }
+  /deep/ .vue-treeselect__single-value{
+    color:#606266;
+    line-height: 28px!important;
   }
 </style>

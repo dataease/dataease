@@ -1,14 +1,23 @@
 package io.dataease.service.dataset;
 
+import com.google.gson.Gson;
+import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.domain.DatasetTableTaskLogExample;
 import io.dataease.base.mapper.DatasetTableTaskLogMapper;
+import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
+import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.controller.sys.base.ConditionEntity;
+import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,8 +47,18 @@ public class DataSetTableTaskLogService {
         datasetTableTaskLogMapper.deleteByPrimaryKey(id);
     }
 
-    public List<DataSetTaskLogDTO> list(DatasetTableTaskLog request) {
-        return extDataSetTaskMapper.list(request);
+    public List<DataSetTaskLogDTO> list(BaseGridRequest request) {
+        ConditionEntity entity = new ConditionEntity();
+        entity.setField("task_id");
+        entity.setOperator("not null");
+        List<ConditionEntity> conditionEntities = request.getConditions();
+        if(CollectionUtils.isEmpty(conditionEntities)){
+            conditionEntities = new ArrayList<>();
+        }
+        conditionEntities.add(entity);
+        request.setConditions(conditionEntities);
+        GridExample gridExample = request.convertExample();
+        return extDataSetTaskMapper.list(gridExample);
     }
 
     public void deleteByTaskId(String taskId){
@@ -57,6 +76,30 @@ public class DataSetTableTaskLogService {
     }
 
     public List<DatasetTableTaskLog> select(DatasetTableTaskLog datasetTableTaskLog){
+        DatasetTableTaskLogExample example = getDatasetTableTaskLogExample(datasetTableTaskLog);
+        example.setOrderByClause("create_time desc");
+        return datasetTableTaskLogMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public DataSetTaskDTO lastExecStatus(DataSetTaskDTO dataSetTaskDTO){
+        DatasetTableTaskLogExample example = new DatasetTableTaskLogExample();
+        DatasetTableTaskLogExample.Criteria criteria = example.createCriteria();
+        if(StringUtils.isNotEmpty(dataSetTaskDTO.getTableId())){
+            criteria.andTableIdEqualTo(dataSetTaskDTO.getTableId());
+        }
+        if(StringUtils.isNotEmpty(dataSetTaskDTO.getId())){
+            criteria.andTaskIdEqualTo(dataSetTaskDTO.getId());
+        }
+        example.setOrderByClause("create_time desc");
+        List<DatasetTableTaskLog>  datasetTableTaskLogs = datasetTableTaskLogMapper.selectByExampleWithBLOBs(example);
+        if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+            dataSetTaskDTO.setLastExecStatus(datasetTableTaskLogs.get(0).getStatus());
+            dataSetTaskDTO.setLastExecTime(datasetTableTaskLogs.get(0).getCreateTime());
+        }
+        return dataSetTaskDTO;
+    }
+
+    private DatasetTableTaskLogExample getDatasetTableTaskLogExample(DatasetTableTaskLog datasetTableTaskLog) {
         DatasetTableTaskLogExample example = new DatasetTableTaskLogExample();
         DatasetTableTaskLogExample.Criteria criteria = example.createCriteria();
         if(StringUtils.isNotEmpty(datasetTableTaskLog.getStatus())){
@@ -68,7 +111,8 @@ public class DataSetTableTaskLogService {
         if(StringUtils.isNotEmpty(datasetTableTaskLog.getTaskId())){
             criteria.andTaskIdEqualTo(datasetTableTaskLog.getTaskId());
         }
-        example.setOrderByClause("create_time desc");
-        return datasetTableTaskLogMapper.selectByExampleWithBLOBs(example);
+        return example;
     }
+
+
 }

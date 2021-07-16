@@ -6,6 +6,125 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "20921234",
+      "name": "放大",
+      "font_class": "fangda",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "18379488",
+      "name": "设 置",
+      "font_class": "shezhi",
+      "unicode": "e696",
+      "unicode_decimal": 59030
+    },
+    {
+      "icon_id": "18668726",
+      "name": "屏幕_全屏",
+      "font_class": "quanping1",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "4283405",
+      "name": "font-weight-bold",
+      "font_class": "font-weight-bold",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "9356145",
+      "name": "letter_spacing",
+      "font_class": "letter_spacing",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "13169265",
+      "name": "letter-spacing",
+      "font_class": "letter-spacing",
+      "unicode": "e679",
+      "unicode_decimal": 59001
+    },
+    {
+      "icon_id": "7620139",
+      "name": "字体颜色",
+      "font_class": "zimua",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "13016621",
+      "name": "format_letter_spacing_2",
+      "font_class": "format_letter_spacing_",
+      "unicode": "e6c3",
+      "unicode_decimal": 59075
+    },
+    {
+      "icon_id": "18354433",
+      "name": "font_size",
+      "font_class": "font_size",
+      "unicode": "e710",
+      "unicode_decimal": 59152
+    },
+    {
+      "icon_id": "3717684",
+      "name": "居中",
+      "font_class": "align-center",
+      "unicode": "e972",
+      "unicode_decimal": 59762
+    },
+    {
+      "icon_id": "14764786",
+      "name": "居右",
+      "font_class": "juyou",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "22405859",
+      "name": "居左",
+      "font_class": "juzuo",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
+      "icon_id": "20374711",
+      "name": "实线",
+      "font_class": "solid_line",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
+      "icon_id": "930673",
+      "name": "画笔",
+      "font_class": "huabi",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "15952264",
+      "name": "点线",
+      "font_class": "dianxian",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "15952269",
+      "name": "虚线",
+      "font_class": "xuxian",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "19990890",
+      "name": "背景色‘",
+      "font_class": "beijingse1",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
       "icon_id": "2404485",
       "name": "矩形",
       "font_class": "juxing",

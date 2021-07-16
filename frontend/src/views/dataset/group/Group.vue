@@ -1,5 +1,5 @@
 <template>
-  <el-col>
+  <el-col class="tree-style">
     <!-- group -->
     <el-col v-if="!sceneMode">
       <el-row class="title-css">
@@ -48,8 +48,6 @@
             :props="treeProps"
             highlight-current
             @node-click="nodeClick"
-            @node-expand="nodeExpand"
-            @node-collapse="nodeCollapse"
           >
             <span v-if="data.type === 'group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
@@ -184,7 +182,7 @@
       </el-col>
 
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keyup.enter.native="saveGroup(groupForm)">
+        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keypress.enter.native="saveGroup(groupForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>
@@ -304,7 +302,7 @@
     <!--    </el-col>-->
 
     <el-dialog v-dialogDrag :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name" />
         </el-form-item>
@@ -672,7 +670,7 @@ export default {
       // }
 
       if (data.type !== 'group') {
-        this.$emit('switchComponent', { name: 'ViewTable', param: data.id })
+        this.$emit('switchComponent', { name: 'ViewTable', param: data })
       }
       // if (node.expanded) {
       //   this.expandedArray.push(data.id)
@@ -828,7 +826,7 @@ export default {
           }
         }
       } else {
-        node.data.children && resolve(node.data.children)
+        node.data.children ? resolve(node.data.children) : resolve([])
       }
     },
 
@@ -995,5 +993,10 @@ export default {
     justify-content: space-between;
     align-items: center;
     width: 100%
+  }
+  .tree-style {
+    padding: 10px 15px;
+    height: 100%;
+    overflow-y: auto;
   }
 </style>

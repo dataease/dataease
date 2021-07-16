@@ -265,7 +265,9 @@ export default {
           mode: this.mode < 0 ? null : this.mode,
           typeFilter: this.customType ? this.customType : null
         }, false).then(response => {
-          this.tables = response.data
+          this.tables = response.data.filter(ele => {
+            return !(ele.mode === 0 && ele.type === 'sql')
+          })
           for (let i = 0; i < this.tables.length; i++) {
             if (this.tables[i].mode === 1 && this.kettleRunning === false) {
               this.$set(this.tables[i], 'disabled', true)

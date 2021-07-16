@@ -5,15 +5,16 @@
     class="component"
     @click="handleClick"
   >
-    <component
-      :is="config.component"
+    <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
       class="component-custom"
       :style="getComponentStyleDefault(config.style)"
       :out-style="config.style"
       :element="config"
+      :in-screen="inScreen"
     />
+
     <component
       :is="config.component"
       v-else
@@ -31,8 +32,9 @@ import { getStyle } from '@/components/canvas/utils/style'
 import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
-
+import DeOutWidget from '@/components/dataease/DeOutWidget'
 export default {
+  components: { DeOutWidget },
   mixins: [mixins],
   props: {
     config: {
@@ -49,6 +51,11 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   computed: {

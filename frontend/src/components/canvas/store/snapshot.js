@@ -5,7 +5,9 @@ export default {
   state: {
     snapshotData: [], // 编辑器快照数据
     snapshotStyleData: [], // 样式改变也记录快照
-    snapshotIndex: -1 // 快照索引
+    snapshotIndex: -1, // 快照索引
+    changeTimes: -1, // 修改次数
+    lastSaveSnapshotIndex: 0 // 最后保存是snapshotIndex的索引
   },
   mutations: {
     undo(state) {
@@ -27,6 +29,7 @@ export default {
     },
 
     recordSnapshot(state) {
+      state.changeTimes++
       // console.log('recordSnapshot')
       // 添加新的快照
       state.snapshotData[++state.snapshotIndex] = deepCopy(state.componentData)
@@ -42,6 +45,12 @@ export default {
       state.snapshotData = []
       state.snapshotStyleData = []
       state.snapshotIndex = -1
+      state.changeTimes = -1
+      state.lastSaveSnapshotIndex = 0
+    },
+    refreshSaveStatus(state) {
+      state.changeTimes = 0
+      state.lastSaveSnapshotIndex = deepCopy(state.snapshotIndex)
     }
   }
 }

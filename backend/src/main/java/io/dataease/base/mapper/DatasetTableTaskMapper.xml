@@ -12,6 +12,10 @@
     <result column="end" jdbcType="VARCHAR" property="end" />
     <result column="end_time" jdbcType="BIGINT" property="endTime" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="last_exec_time" jdbcType="BIGINT" property="lastExecTime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="last_exec_status" jdbcType="VARCHAR" property="lastExecStatus" />
+    <result column="extra_data" jdbcType="VARCHAR" property="extraData" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -72,7 +76,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, `name`, `type`, start_time, rate, cron, `end`, end_time, create_time
+    id, table_id, `name`, `type`, start_time, rate, cron, `end`, end_time, create_time, 
+    last_exec_time, `status`, last_exec_status, extra_data
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableTaskExample" resultMap="BaseResultMap">
     select
@@ -108,11 +113,13 @@
     insert into dataset_table_task (id, table_id, `name`, 
       `type`, start_time, rate, 
       cron, `end`, end_time, 
-      create_time)
+      create_time, last_exec_time, `status`, 
+      last_exec_status, extra_data)
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{startTime,jdbcType=BIGINT}, #{rate,jdbcType=VARCHAR}, 
       #{cron,jdbcType=VARCHAR}, #{end,jdbcType=VARCHAR}, #{endTime,jdbcType=BIGINT}, 
-      #{createTime,jdbcType=BIGINT})
+      #{createTime,jdbcType=BIGINT}, #{lastExecTime,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, 
+      #{lastExecStatus,jdbcType=VARCHAR}, #{extraData,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTableTask">
     insert into dataset_table_task
@@ -147,6 +154,18 @@
       <if test="createTime != null">
         create_time,
       </if>
+      <if test="lastExecTime != null">
+        last_exec_time,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="lastExecStatus != null">
+        last_exec_status,
+      </if>
+      <if test="extraData != null">
+        extra_data,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -178,6 +197,18 @@
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="lastExecTime != null">
+        #{lastExecTime,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastExecStatus != null">
+        #{lastExecStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="extraData != null">
+        #{extraData,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -220,6 +251,18 @@
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
       </if>
+      <if test="record.lastExecTime != null">
+        last_exec_time = #{record.lastExecTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lastExecStatus != null">
+        last_exec_status = #{record.lastExecStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.extraData != null">
+        extra_data = #{record.extraData,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -236,7 +279,11 @@
       cron = #{record.cron,jdbcType=VARCHAR},
       `end` = #{record.end,jdbcType=VARCHAR},
       end_time = #{record.endTime,jdbcType=BIGINT},
-      create_time = #{record.createTime,jdbcType=BIGINT}
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      last_exec_time = #{record.lastExecTime,jdbcType=BIGINT},
+      `status` = #{record.status,jdbcType=VARCHAR},
+      last_exec_status = #{record.lastExecStatus,jdbcType=VARCHAR},
+      extra_data = #{record.extraData,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -271,6 +318,18 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
+      <if test="lastExecTime != null">
+        last_exec_time = #{lastExecTime,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastExecStatus != null">
+        last_exec_status = #{lastExecStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="extraData != null">
+        extra_data = #{extraData,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -284,7 +343,11 @@
       cron = #{cron,jdbcType=VARCHAR},
       `end` = #{end,jdbcType=VARCHAR},
       end_time = #{endTime,jdbcType=BIGINT},
-      create_time = #{createTime,jdbcType=BIGINT}
+      create_time = #{createTime,jdbcType=BIGINT},
+      last_exec_time = #{lastExecTime,jdbcType=BIGINT},
+      `status` = #{status,jdbcType=VARCHAR},
+      last_exec_status = #{lastExecStatus,jdbcType=VARCHAR},
+      extra_data = #{extraData,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

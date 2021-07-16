@@ -12,6 +12,9 @@
             <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
             <!--              <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>-->
             <!--            </el-form-item>-->
+            <el-form-item :label="$t('chart.pie_label_line_show')" class="form-item">
+              <el-checkbox v-model="labelForm.labelLine.show" @change="changeLabelAttr">{{ $t('chart.pie_label_line_show') }}</el-checkbox>
+            </el-form-item>
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
               <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -21,13 +24,9 @@
               <colorPicker v-model="labelForm.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeLabelAttr" />
             </el-form-item>
             <el-form-item :label="$t('chart.label_position')" class="form-item">
-              <el-radio-group v-model="labelForm.position" size="mini" @change="changeLabelAttr">
-                <el-radio-button label="inside">{{ $t('chart.inside') }}</el-radio-button>
-                <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
-                <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
-                <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
-                <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
-              </el-radio-group>
+              <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
+                <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
             </el-form-item>
             <el-form-item class="form-item">
               <span slot="label">
@@ -35,7 +34,7 @@
                   <span>{{ $t('chart.content_formatter') }}</span>
                   <el-tooltip class="item" effect="dark" placement="bottom">
                     <div slot="content">
-                      字符串支持用 \n 换行<br>字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。
+                      字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。<br>{d}：百分比（用于饼图等）。
                     </div>
                     <i class="el-icon-info" style="cursor: pointer;" />
                   </el-tooltip>
@@ -68,10 +67,11 @@
           </el-form>
         </el-col>
 
-        <el-button slot="reference" size="mini" class="shape-item" :disabled="!labelForm.show">
+        <el-button slot="reference" size="mini" class="shape-item" :disabled="!labelForm.show || !hasDataPermission('manage',param.privileges)">
           {{ $t('chart.label') }}<i class="el-icon-setting el-icon--right" />
           <el-switch
             v-model="labelForm.show"
+            :disabled="!hasDataPermission('manage',param.privileges)"
             class="switch-style"
             @click.stop.native
             @change="changeLabelAttr"
@@ -88,6 +88,10 @@ import { DEFAULT_LABEL } from '../../chart/chart'
 export default {
   name: 'LabelSelector',
   props: {
+    param: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true
@@ -97,7 +101,16 @@ export default {
     return {
       labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
       fontSize: [],
-      isSetting: false
+      isSetting: false,
+      labelPosition: [
+        { name: this.$t('chart.inside'), value: 'inside' },
+        { name: this.$t('chart.outside'), value: 'outside' },
+        { name: this.$t('chart.center'), value: 'center' },
+        { name: this.$t('chart.text_pos_top'), value: 'top' },
+        { name: this.$t('chart.text_pos_bottom'), value: 'bottom' },
+        { name: this.$t('chart.text_pos_left'), value: 'left' },
+        { name: this.$t('chart.text_pos_right'), value: 'right' }
+      ]
     }
   },
   watch: {
@@ -113,6 +126,9 @@ export default {
           }
           if (customAttr.label) {
             this.labelForm = customAttr.label
+            if (!this.labelForm.labelLine) {
+              this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
+            }
           }
         }
       }

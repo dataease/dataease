@@ -12,7 +12,6 @@
     >
       <template #toolbar>
         <el-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('user.create') }}</el-button>
-        <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
       </template>
 
       <el-table-column prop="username" label="ID" />
@@ -143,7 +142,7 @@
         label-width="120px"
         :rules="rule"
         class="demo-ruleForm"
-        @keyup.enter.native="editUserPassword('editPasswordForm')"
+        @keypress.enter.native="editUserPassword('editPasswordForm')"
       >
         <el-form-item :label="$t('member.new_password')" prop="newPassword">
           <el-input v-model="ruleForm.newPassword" type="password" autocomplete="off" show-password />

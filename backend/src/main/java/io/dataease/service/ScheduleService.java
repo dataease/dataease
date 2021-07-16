@@ -28,16 +28,13 @@ public class ScheduleService {
                     ExtractDataJob.class,
                     new Date(datasetTableTask.getStartTime()),
                     scheduleManager.getDefaultJobDataMap(datasetTableTask.getTableId(), datasetTableTask.getCron(), datasetTableTask.getId(), datasetTableTask.getType()));
-        } else if (StringUtils.equalsIgnoreCase(datasetTableTask.getRate(), ScheduleType.CRON.toString())) {
+        } else {
             Date endTime;
             if (StringUtils.equalsIgnoreCase(datasetTableTask.getEnd(), "1")) {
                 if (datasetTableTask.getEndTime() == null || datasetTableTask.getEndTime() == 0) {
                     endTime = null;
                 } else {
                     endTime = new Date(datasetTableTask.getEndTime());
-//                if (endTime.before(new Date())) {
-//                    return;
-//                }
                     if (endTime.before(new Date())) {
                         deleteSchedule(datasetTableTask);
                         return;
@@ -57,5 +54,9 @@ public class ScheduleService {
 
     public void deleteSchedule(DatasetTableTask datasetTableTask) {
         scheduleManager.removeJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()), new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()));
+    }
+
+    public void fireNow(DatasetTableTask datasetTableTask) throws Exception{
+        scheduleManager.fireNow(datasetTableTask.getId(), datasetTableTask.getTableId());
     }
 }

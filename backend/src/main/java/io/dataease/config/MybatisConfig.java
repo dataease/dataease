@@ -5,7 +5,6 @@ import io.dataease.base.domain.*;
 import io.dataease.commons.utils.CompressUtils;
 import io.dataease.commons.utils.MybatisInterceptorConfig;
 import io.dataease.interceptor.MybatisInterceptor;
-import io.dataease.interceptor.UserDesensitizationInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -41,15 +40,9 @@ public class MybatisConfig {
         MybatisInterceptor interceptor = new MybatisInterceptor();
         List<MybatisInterceptorConfig> configList = new ArrayList<>();
         configList.add(new MybatisInterceptorConfig(FileContent.class, "file", CompressUtils.class, "zip", "unzip"));
-        configList.add(new MybatisInterceptorConfig(ApiTestReportDetail.class, "content", CompressUtils.class, "compress", "decompress"));
         configList.add(new MybatisInterceptorConfig(Datasource.class, "configuration"));
         configList.add(new MybatisInterceptorConfig(AuthSource.class, "configuration"));
         interceptor.setInterceptorConfigList(configList);
         return interceptor;
-    }
-
-    @Bean
-    public UserDesensitizationInterceptor userDesensitizationInterceptor() {
-        return new UserDesensitizationInterceptor();
     }
 }

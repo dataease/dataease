@@ -51,7 +51,7 @@
       <el-row class="panel-design-preview">
         <div ref="imageWrapper" style="width: 100%;height: 100%">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMain" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
+            <Preview v-if="showMain" :in-screen="!fullscreen" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
           </fullscreen>
         </div>
       </el-row>
@@ -83,6 +83,12 @@ import bus from '@/utils/bus'
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate },
+  props: {
+    activeTab: {
+      type: String,
+      required: false
+    }
+  },
   data() {
     return {
       showMain: true,
@@ -110,6 +116,14 @@ export default {
         this.showMain = true
         this.initHasStar()
       })
+    },
+    fullscreen(newVal, oldVla) {
+      // 刷新 进行重新渲染
+      this.showMain = false
+      this.$nextTick(() => {
+        this.showMain = true
+        this.initHasStar()
+      })
     }
   },
   mounted() {
@@ -125,7 +139,7 @@ export default {
     saveToTemplate() {
       this.templateSaveShow = true
       html2canvas(this.$refs.imageWrapper).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
             name: this.$store.state.panel.panelInfo.name,
@@ -143,7 +157,7 @@ export default {
     },
     downloadToTemplate() {
       html2canvas(this.$refs.imageWrapper).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
             name: this.$store.state.panel.panelInfo.name,
@@ -161,7 +175,7 @@ export default {
     refreshTemplateInfo() {
       this.templateInfo = {}
       html2canvas(this.$refs.imageWrapper).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.2) // 0.2是图片质量
+        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
             snapshot: snapshot,
@@ -194,7 +208,9 @@ export default {
       })
     },
     refreshStarList(isStar) {
-      bus.$emit('panle_start_list_refresh', isStar)
+      if (this.activeTab !== 'PanelList') {
+        bus.$emit('panle_start_list_refresh', isStar)
+      }
     }
 
   }

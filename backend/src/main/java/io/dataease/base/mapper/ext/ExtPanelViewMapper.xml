@@ -31,6 +31,16 @@
     </select>
 
 
+    <delete id="deleteWithPanelId">
+        delete from panel_view where panel_id =#{panelId}
+    </delete>
+
+    <insert id="savePanelView">
+        INSERT INTO `panel_view` (id,chart_view_id, panel_id) VALUES
+        <foreach collection="panelViews" item="panelView" index="index" separator=",">
+            (uuid(),#{panelView.chartViewId},#{panelView.panelId})
+        </foreach>
+    </insert>
 
 
 

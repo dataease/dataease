@@ -1,15 +1,27 @@
 package io.dataease.service.panel;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import io.dataease.base.domain.PanelGroup;
+import io.dataease.base.domain.PanelGroupWithBLOBs;
+import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.dto.panel.PanelViewDto;
+import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import io.dataease.dto.panel.po.PanelViewPo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +33,7 @@ public class PanelViewService {
 
     @Autowired(required = false)
     private ExtPanelViewMapper extPanelViewMapper;
+
 
     private final static String SCENE_TYPE = "scene";
 
@@ -62,5 +75,26 @@ public class PanelViewService {
         });
         // 最后 没有孩子的老东西淘汰
         return roots.stream().filter(item -> CollectionUtils.isNotEmpty(item.getChildren())).collect(Collectors.toList());
+    }
+
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    public void syncPanelViews(PanelGroupWithBLOBs panelGroup){
+        String panelId = panelGroup.getId();
+        Assert.notNull(panelId, "panelId cannot be null");
+        String panelData = panelGroup.getPanelData();
+        if(StringUtils.isNotEmpty(panelData)){
+            JSONArray dataArray = JSON.parseArray(panelData);
+            List<PanelViewInsertDTO> panelViewInsertDTOList = new ArrayList<>();
+            for(int i=0;i<dataArray.size();i++){
+                JSONObject jsonObject =  dataArray.getJSONObject(i);
+                if("view".equals(jsonObject.getString("type"))){
+                    panelViewInsertDTOList.add(new PanelViewInsertDTO(jsonObject.getJSONObject("propValue").getString("viewId"),panelId));
+                }
+            }
+            extPanelViewMapper.deleteWithPanelId(panelId);
+            if(CollectionUtils.isNotEmpty(panelViewInsertDTOList)){
+                extPanelViewMapper.savePanelView(panelViewInsertDTOList);
+            }
+        }
     }
 }

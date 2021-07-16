@@ -5,7 +5,7 @@
     v-model="values"
     resize="vertical"
     :placeholder="options.attrs.placeholder"
-    @keyup.enter.native="search"
+    @keypress.enter.native="search"
     @dblclick="setEdit"
   >
 
