@@ -76,7 +76,7 @@
 import Preview from '@/components/canvas/components/Editor/Preview'
 import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
 import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'

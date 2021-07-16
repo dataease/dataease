@@ -23,7 +23,7 @@
     "element-ui": "2.13.0",
     "file-saver": "^2.0.5",
     "fit2cloud-ui": "1.2.0",
-    "html2canvas": "^1.0.0-rc.7",
+    "html2canvasde": "^v1.1.4-de",
     "js-cookie": "2.2.0",
     "jsencrypt": "^3.0.0-rc.1",
     "lodash": "4.17.21",

@@ -367,7 +367,7 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvasde'
 
 export default {
   name: 'ChartEdit',
