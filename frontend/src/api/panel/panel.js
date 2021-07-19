@@ -22,6 +22,7 @@ export function querySubject(data) {
     url: '/panel/subject/query',
     method: 'post',
     loading: true,
+    timeout: 30000,
     data
   })
 }
@@ -30,6 +31,7 @@ export function querySubjectWithGroup(data) {
   return request({
     url: '/panel/subject/querySubjectWithGroup',
     method: 'post',
+    timeout: 30000,
     data
   })
 }
@@ -56,6 +58,7 @@ export function viewData(id, data) {
   return request({
     url: '/chart/view/getData/' + id,
     method: 'post',
+    timeout: 30000,
     hideMsg: true,
     data
   })
@@ -64,6 +67,7 @@ export function panelSave(data) {
   return request({
     url: 'panel/group/save',
     method: 'post',
+    timeout: 30000,
     loading: true,
     data
   })
@@ -72,7 +76,8 @@ export function findOne(id) {
   return request({
     url: 'panel/group/findOne/' + id,
     method: 'get',
-    loading: true
+    loading: true,
+    timeout: 30000
   })
 }
 
@@ -87,6 +92,7 @@ export function getPreviewData(data) {
   return request({
     url: '/panel/table/getPreviewData',
     method: 'post',
+    timeout: 30000,
     data
   })
 }
@@ -125,6 +131,7 @@ export function get(url) {
 export function delGroup(groupId) {
   return request({
     url: '/panel/group/deleteCircle/' + groupId,
-    method: 'post'
+    method: 'post',
+    timeout: 30000
   })
 }
