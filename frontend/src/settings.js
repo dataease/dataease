@@ -15,5 +15,9 @@ module.exports = {
    * @description Whether show the logo in sidebar
    */
   sidebarLogo: false,
-  showSettings: true
+  showSettings: true,
+  interruptTokenContineUrls: [
+    '/api/sys_msg/list/',
+    '/dataset/taskLog/list/'
+  ]
 }
