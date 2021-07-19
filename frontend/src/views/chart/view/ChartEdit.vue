@@ -213,7 +213,7 @@
                 </el-row>
               </div>
               <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style">
-                <el-row>
+                <el-row style="height: 100%;">
                   <el-row v-if="chart.type !=='text' && chart.type !== 'gauge'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">{{ $t('chart.dimension') }}</span>
                     <draggable
@@ -222,7 +222,7 @@
                       group="dimension"
                       animation="300"
                       :move="onMove"
-                      style="padding:2px 0 0 0;width:100%;height: 100%;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @end="end2"
                     >
                       <transition-group class="draggable-group">
@@ -230,7 +230,7 @@
                       </transition-group>
                     </draggable>
                   </el-row>
-                  <el-row class="padding-lr">
+                  <el-row class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">{{ $t('chart.quota') }}</span>
                     <draggable
                       v-model="view.yaxis"
@@ -238,7 +238,7 @@
                       group="quota"
                       animation="300"
                       :move="onMove"
-                      style="padding:2px 0 0 0;width:100%;height: 100%;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @end="end2"
                     >
                       <transition-group class="draggable-group">
@@ -246,7 +246,7 @@
                       </transition-group>
                     </draggable>
                   </el-row>
-                  <div class="padding-lr filter-class">
+                  <div class="padding-lr filter-class" style="margin-top: 6px;">
                     <span>{{ $t('chart.result_filter') }}</span>
                     <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">
                       {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon--right" />
@@ -1233,7 +1233,7 @@ export default {
   }
 
   .attr-style{
-    height: calc(100vh - 56px - 25vh - 40px - 60px);
+    height: calc(100vh - 56px - 25vh - 40px - 40px);
   }
 
   .attr-selector{
