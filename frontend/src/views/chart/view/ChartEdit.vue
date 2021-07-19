@@ -13,9 +13,9 @@
         <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
-        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">
-          {{ $t('chart.change_ds') }}
-        </el-button>
+        <!--        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">-->
+        <!--          {{ $t('chart.change_ds') }}-->
+        <!--        </el-button>-->
         <el-button size="mini" @click="closeEdit">
           {{ $t('commons.save') }}
         </el-button>
@@ -26,259 +26,274 @@
       </span>
     </el-row>
     <el-row class="view-panel">
-      <el-col
-        style="height: 100%;width: 20%;min-width: 180px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
-      >
-        <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
-          <el-input
-            v-model="searchField"
-            size="mini"
-            :placeholder="$t('chart.search')"
-            prefix-icon="el-icon-search"
-            clearable
-          />
-          <el-button :disabled="!table || !hasDataPermission('manage',table.privileges)" icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 6px;" @click="editField" />
-        </div>
-        <div style="border-bottom: 1px solid #E6E6E6;" class="padding-lr field-height">
-          <span>{{ $t('chart.dimension') }}</span>
-          <draggable
-            v-model="dimensionData"
-            :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
-            animation="300"
-            :move="onMove"
-            class="drag-list"
-            :disabled="!hasDataPermission('manage',param.privileges)"
-            @end="end1"
-            @start="start1"
-          >
-            <transition-group>
-              <span v-for="item in dimensionData" :key="item.id" class="item" :title="item.name">
-                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-                {{ item.name }}
-              </span>
-            </transition-group>
-          </draggable>
-        </div>
-        <div class="padding-lr field-height">
-          <span>{{ $t('chart.quota') }}</span>
-          <draggable
-            v-model="quotaData"
-            :options="{group:{name: 'quota',pull:'clone'},sort: true}"
-            animation="300"
-            :move="onMove"
-            class="drag-list"
-            :disabled="!hasDataPermission('manage',param.privileges)"
-            @end="end1"
-            @start="start1"
-          >
-            <transition-group>
-              <span v-for="item in quotaData" :key="item.id" class="item" :title="item.name">
-                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-                <span>{{ item.name }}</span>
-              </span>
-            </transition-group>
-          </draggable>
-        </div>
-      </el-col>
+      <el-tabs type="card" :stretch="true" class="tab-header">
+        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 360px">
+          <el-row class="view-panel">
+            <el-col
+              style="width: 180px;border-right: 1px solid #E6E6E6;"
+            >
+              <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
+                <el-input
+                  v-model="searchField"
+                  size="mini"
+                  :placeholder="$t('chart.search')"
+                  prefix-icon="el-icon-search"
+                  clearable
+                />
+                <el-button :title="$t('dataset.edit_field')" :disabled="!table || !hasDataPermission('manage',table.privileges)" icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 4px;" @click="editField" />
+                <el-button :title="$t('chart.change_ds')" :disabled="!hasDataPermission('manage',param.privileges)" icon="el-icon-refresh" type="text" size="mini" style="float: right;width: 20px;margin-left: 4px;" @click="changeDs" />
+              </div>
+              <div style="border-bottom: 1px solid #E6E6E6;" class="padding-lr field-height">
+                <span>{{ $t('chart.dimension') }}</span>
+                <draggable
+                  v-model="dimensionData"
+                  :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
+                  animation="300"
+                  :move="onMove"
+                  class="drag-list"
+                  :disabled="!hasDataPermission('manage',param.privileges)"
+                  @end="end1"
+                  @start="start1"
+                >
+                  <transition-group>
+                    <span v-for="item in dimensionData" :key="item.id" class="item" :title="item.name">
+                      <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                      <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                      <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                      <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                      {{ item.name }}
+                    </span>
+                  </transition-group>
+                </draggable>
+              </div>
+              <div class="padding-lr field-height">
+                <span>{{ $t('chart.quota') }}</span>
+                <draggable
+                  v-model="quotaData"
+                  :options="{group:{name: 'quota',pull:'clone'},sort: true}"
+                  animation="300"
+                  :move="onMove"
+                  class="drag-list"
+                  :disabled="!hasDataPermission('manage',param.privileges)"
+                  @end="end1"
+                  @start="start1"
+                >
+                  <transition-group>
+                    <span v-for="item in quotaData" :key="item.id" class="item" :title="item.name">
+                      <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                      <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                      <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                      <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                      <span>{{ item.name }}</span>
+                    </span>
+                  </transition-group>
+                </draggable>
+              </div>
+            </el-col>
 
-      <el-col
-        style="height: 100%;width: 30%;min-width: 200px;max-width:220px;border: 1px solid #E6E6E6;border-left: 0 solid;"
-      >
-        <!--        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">-->
-        <!--          <el-row>-->
-        <!--            <span>{{ $t('chart.title') }}</span>-->
-        <!--            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>-->
-        <!--          </el-row>-->
-        <!--          <el-form>-->
-        <!--            <el-form-item class="form-item">-->
-        <!--              <el-input-->
-        <!--                v-model="view.title"-->
-        <!--                size="mini"-->
-        <!--                :placeholder="$t('chart.title')"-->
-        <!--                prefix-icon="el-icon-search"-->
-        <!--                clearable-->
-        <!--              />-->
-        <!--            </el-form-item>-->
-        <!--          </el-form>-->
-        <!--        </div>-->
-        <div style="height: 25vh;overflow:auto" class="padding-lr">
-          <span>{{ $t('chart.chart_type') }}</span>
-          <el-row>
-            <div class="chart-type">
-              <!--这里要替换好看点的图标，UI标签可以重新定义-->
-              <el-radio-group
-                v-model="view.type"
-                style="width: 100%"
-                :disabled="!hasDataPermission('manage',param.privileges)"
-                @change="save(true,'chart',true)"
-              >
-                <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-radio value="table-normal" label="table-normal">
-                    <span :title="$t('chart.chart_table_normal')">
-                      <svg-icon icon-class="table-normal" class="chart-icon" />
+            <el-col
+              style="height: 100%;width: 180px;border-right: 1px solid #E6E6E6;"
+            >
+              <!--        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">-->
+              <!--          <el-row>-->
+              <!--            <span>{{ $t('chart.title') }}</span>-->
+              <!--            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>-->
+              <!--          </el-row>-->
+              <!--          <el-form>-->
+              <!--            <el-form-item class="form-item">-->
+              <!--              <el-input-->
+              <!--                v-model="view.title"-->
+              <!--                size="mini"-->
+              <!--                :placeholder="$t('chart.title')"-->
+              <!--                prefix-icon="el-icon-search"-->
+              <!--                clearable-->
+              <!--              />-->
+              <!--            </el-form-item>-->
+              <!--          </el-form>-->
+              <!--        </div>-->
+              <div style="height: 25vh;overflow:auto" class="padding-lr">
+                <span>{{ $t('chart.chart_type') }}</span>
+                <el-row>
+                  <div class="chart-type">
+                    <!--这里要替换好看点的图标，UI标签可以重新定义-->
+                    <el-radio-group
+                      v-model="view.type"
+                      style="width: 100%"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      @change="save(true,'chart',true)"
+                    >
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                        <el-radio value="table-normal" label="table-normal">
+                          <span :title="$t('chart.chart_table_normal')">
+                            <svg-icon icon-class="table-normal" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="text" label="text">
+                          <span :title="$t('chart.chart_card')">
+                            <svg-icon icon-class="text" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="bar" label="bar">
+                          <span :title="$t('chart.chart_bar')">
+                            <svg-icon icon-class="bar" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="bar-stack" label="bar-stack">
+                          <span :title="$t('chart.chart_bar_stack')">
+                            <svg-icon icon-class="bar-stack" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="bar-horizontal" label="bar-horizontal">
+                          <span :title="$t('chart.chart_bar_horizontal')">
+                            <svg-icon icon-class="bar-horizontal" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                        <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal">
+                          <span :title="$t('chart.chart_bar_stack_horizontal')">
+                            <svg-icon icon-class="bar-stack-horizontal" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="line" label="line">
+                          <span :title="$t('chart.chart_line')">
+                            <svg-icon icon-class="line" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="line-stack" label="line-stack">
+                          <span :title="$t('chart.chart_line_stack')">
+                            <svg-icon icon-class="line-stack" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="pie" label="pie">
+                          <span :title="$t('chart.chart_pie')">
+                            <svg-icon icon-class="pie" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="pie-rose" label="pie-rose">
+                          <span :title="$t('chart.chart_pie_rose')">
+                            <svg-icon icon-class="pie-rose" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                        <el-radio value="funnel" label="funnel">
+                          <span :title="$t('chart.chart_funnel')">
+                            <svg-icon icon-class="funnel" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="radar" label="radar">
+                          <span :title="$t('chart.chart_radar')">
+                            <svg-icon icon-class="radar" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="gauge" label="gauge">
+                          <span :title="$t('chart.chart_gauge')">
+                            <svg-icon icon-class="gauge" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                      </div>
+                    </el-radio-group>
+                  </div>
+                </el-row>
+                <el-row style="color: #909399;">
+                  <span>
+                    <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge'))">
+                      Tips: {{ $t('chart.only_one_quota') }}
                     </span>
-                  </el-radio>
-                  <el-radio value="text" label="text">
-                    <span :title="$t('chart.chart_card')">
-                      <svg-icon icon-class="text" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="bar" label="bar">
-                    <span :title="$t('chart.chart_bar')">
-                      <svg-icon icon-class="bar" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="bar-stack" label="bar-stack">
-                    <span :title="$t('chart.chart_bar_stack')">
-                      <svg-icon icon-class="bar-stack" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="bar-horizontal" label="bar-horizontal">
-                    <span :title="$t('chart.chart_bar_horizontal')">
-                      <svg-icon icon-class="bar-horizontal" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                </div>
-                <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal">
-                    <span :title="$t('chart.chart_bar_stack_horizontal')">
-                      <svg-icon icon-class="bar-stack-horizontal" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="line" label="line">
-                    <span :title="$t('chart.chart_line')">
-                      <svg-icon icon-class="line" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="line-stack" label="line-stack">
-                    <span :title="$t('chart.chart_line_stack')">
-                      <svg-icon icon-class="line-stack" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="pie" label="pie">
-                    <span :title="$t('chart.chart_pie')">
-                      <svg-icon icon-class="pie" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="pie-rose" label="pie-rose">
-                    <span :title="$t('chart.chart_pie_rose')">
-                      <svg-icon icon-class="pie-rose" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                </div>
-                <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                  <el-radio value="funnel" label="funnel">
-                    <span :title="$t('chart.chart_funnel')">
-                      <svg-icon icon-class="funnel" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="radar" label="radar">
-                    <span :title="$t('chart.chart_radar')">
-                      <svg-icon icon-class="radar" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="gauge" label="gauge">
-                    <span :title="$t('chart.chart_gauge')">
-                      <svg-icon icon-class="gauge" class="chart-icon" />
-                    </span>
-                  </el-radio>
-                  <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-                  <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-                </div>
-              </el-radio-group>
-            </div>
+                  <!--              <span v-show="chart.type && (chart.type.includes('text'))">-->
+                  <!--                Tips: {{ $t('chart.only_one_result') }}-->
+                  <!--              </span>-->
+                  <!--              <span v-show="chart.type && chart.type.includes('gauge')">-->
+                  <!--                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}-->
+                  <!--              </span>-->
+                  </span>
+                </el-row>
+              </div>
+              <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style">
+                <el-row>
+                  <el-row v-if="chart.type !=='text' && chart.type !== 'gauge'" class="padding-lr">
+                    <span style="width: 80px;text-align: right;">{{ $t('chart.dimension') }}</span>
+                    <draggable
+                      v-model="view.xaxis"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="dimension"
+                      animation="300"
+                      :move="onMove"
+                      style="padding:2px 0 0 0;width:100%;height: 100%;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      @end="end2"
+                    >
+                      <transition-group class="draggable-group">
+                        <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
+                      </transition-group>
+                    </draggable>
+                  </el-row>
+                  <el-row class="padding-lr">
+                    <span style="width: 80px;text-align: right;">{{ $t('chart.quota') }}</span>
+                    <draggable
+                      v-model="view.yaxis"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="quota"
+                      animation="300"
+                      :move="onMove"
+                      style="padding:2px 0 0 0;width:100%;height: 100%;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      @end="end2"
+                    >
+                      <transition-group class="draggable-group">
+                        <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
+                      </transition-group>
+                    </draggable>
+                  </el-row>
+                  <div class="padding-lr filter-class">
+                    <span>{{ $t('chart.result_filter') }}</span>
+                    <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">
+                      {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon--right" />
+                    </el-button>
+                  </div>
+                </el-row>
+              </div>
+            </el-col>
           </el-row>
-          <el-row style="color: #909399;">
-            <span>
-              <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge'))">
-                Tips: {{ $t('chart.only_one_quota') }}
-              </span>
-              <!--              <span v-show="chart.type && (chart.type.includes('text'))">-->
-              <!--                Tips: {{ $t('chart.only_one_result') }}-->
-              <!--              </span>-->
-              <!--              <span v-show="chart.type && chart.type.includes('gauge')">-->
-              <!--                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}-->
-              <!--              </span>-->
-            </span>
-          </el-row>
-        </div>
-        <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style">
-          <el-row class="padding-lr">
-            <span>{{ $t('chart.style_priority') }}</span>
-            <el-row>
-              <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
-                <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
-                <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
-              </el-radio-group>
+        </el-tab-pane>
+        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 360px;">
+          <div style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;" class="attr-style">
+            <el-row class="padding-lr">
+              <span>{{ $t('chart.style_priority') }}</span>
+              <el-row>
+                <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
+                  <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
+                  <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
+                </el-radio-group>
+              </el-row>
             </el-row>
-          </el-row>
-          <el-tabs type="card" :stretch="true" class="tab-header">
-            <el-tab-pane :label="$t('chart.shape_attr')" class="padding-lr">
-              <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-              <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-              <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-              <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
-            </el-tab-pane>
-            <el-tab-pane :label="$t('chart.module_style')" class="padding-lr">
-              <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
-              <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
-              <split-selector v-show="view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
-              <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-              <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
-              <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-        <div style="height:60px;overflow:auto;border-top: 1px solid #e6e6e6" class="padding-lr filter-class">
-          <span>{{ $t('chart.result_filter') }}</span>
-          <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">
-            {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon--right" />
-          </el-button>
-        </div>
-      </el-col>
+            <el-row class="padding-lr">
+              <span>{{ $t('chart.shape_attr') }}</span>
+              <el-row>
+                <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+                <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+                <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+                <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+              </el-row>
+            </el-row>
+            <el-row class="padding-lr">
+              <span>{{ $t('chart.module_style') }}</span>
+              <el-row>
+                <x-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+                <y-axis-selector v-show="view.type.includes('bar') || view.type.includes('line')" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+                <split-selector v-show="view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
+                <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+                <legend-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+                <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+              </el-row>
+            </el-row>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
 
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
-          <el-row style="margin-top: 10px;height: 74px;">
-            <el-row v-if="chart.type !=='text' && chart.type !== 'gauge'" style="display:flex;height: 32px;">
-              <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.dimension') }}</span>
-              <draggable
-                v-model="view.xaxis"
-                :disabled="!hasDataPermission('manage',param.privileges)"
-                group="dimension"
-                animation="300"
-                :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-                @end="end2"
-              >
-                <transition-group class="draggable-group">
-                  <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
-                </transition-group>
-              </draggable>
-            </el-row>
-            <el-row style="display:flex;height: 32px;margin-top: 10px;">
-              <span style="line-height: 32px;width: 80px;text-align: right;">{{ $t('chart.quota') }}</span>
-              <draggable
-                v-model="view.yaxis"
-                :disabled="!hasDataPermission('manage',param.privileges)"
-                group="quota"
-                animation="300"
-                :move="onMove"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-                @end="end2"
-              >
-                <transition-group class="draggable-group">
-                  <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
-                </transition-group>
-              </draggable>
-            </el-row>
-          </el-row>
           <div ref="imageWrapper" style="height: 100%">
             <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
             <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
@@ -420,7 +435,7 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvasde'
 import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
 
@@ -506,7 +521,7 @@ export default {
   watch: {
     'param': function() {
       if (this.param.optType === 'new') {
-
+        //
       } else {
         this.getData(this.param.id)
       }
@@ -762,8 +777,8 @@ export default {
     // 左边往右边拖动时的事件
     start1(e) {
       // console.log(e)
-      e.clone.className = 'item-on-move'
-      e.item.className = 'item-on-move'
+      e.clone.className = 'item'
+      e.item.className = 'item'
     },
     end1(e) {
       // console.log(e)
@@ -1046,7 +1061,8 @@ export default {
     },
 
     changeDs() {
-      this.changeDsTitle = this.$t('chart.change_ds') + '[' + this.table.name + ']'
+      const dialogTitle = (this.table && this.table.name) ? ('[' + this.table.name + ']') : ''
+      this.changeDsTitle = this.$t('chart.change_ds') + dialogTitle
       this.selectTableFlag = true
     },
 
@@ -1179,9 +1195,15 @@ export default {
   .tab-header>>>.el-tabs__nav-scroll{
     padding-left: 0!important;
   }
+  .tab-header>>>.el-tabs__header{
+    margin: 0!important;
+  }
+  .tab-header>>>.el-tabs__content{
+    height: 100%;
+  }
 
   .draggable-group {
-    display: inline-block;
+    display: block;
     width: 100%;
     height: calc(100% - 6px);
   }
@@ -1203,7 +1225,7 @@ export default {
   }
 
   .el-radio{
-    margin:6px;
+    margin:5px;
   }
 
   .el-radio>>>.el-radio__label{
@@ -1211,7 +1233,7 @@ export default {
   }
 
   .attr-style{
-    height: calc(100vh - 56px - 25vh - 40px - 62px - 60px - 20px);
+    height: calc(100vh - 56px - 25vh - 40px - 60px);
   }
 
   .attr-selector{
@@ -1238,11 +1260,11 @@ export default {
   }
 
   .chart-class{
-    height: calc(100% - 84px);
+    height: 100%;
     padding: 10px;
   }
   .table-class{
-    height: calc(100% - 104px);
+    height: calc(100% - 20px);
     margin: 10px;
   }
 
@@ -1274,5 +1296,14 @@ export default {
   }
   .field-height{
     height: calc(50% - 20px);
+  }
+  .padding-tab{
+    padding: 0;
+    height: 100%;
+  }
+  .collapse-style>>>.el-collapse-item__header{
+    height: 40px;
+    line-height: 40px;
+    padding: 0 0 0 10px;
   }
 </style>

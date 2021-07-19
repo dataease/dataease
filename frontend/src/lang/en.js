@@ -804,7 +804,9 @@ export default {
     color_energy: 'Energy',
     color_red: 'Red',
     color_fast: 'Fast',
-    color_spiritual: 'Spiritual'
+    color_spiritual: 'Spiritual',
+    chart_data: 'Data',
+    chart_style: 'Style'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
