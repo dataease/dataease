@@ -804,7 +804,9 @@ export default {
     color_fast: '轻快',
     color_spiritual: '灵动',
     chart_details: '视图明细',
-    export_details: '导出明细'
+    export_details: '导出明细',
+    chart_data: '数据',
+    chart_style: '样式'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

@@ -7,7 +7,7 @@
         <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
         <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
       </span>
-      <span>{{ item.name }}</span>
+      <span class="item-span-style" :title="item.name">{{ item.name }}</span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
@@ -18,7 +18,8 @@
             <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
           </span>
-          {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
+          <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+          <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>
@@ -192,10 +193,11 @@ export default {
     text-align: left;
     height: 24px;
     line-height: 22px;
-    display: inline-block;
+    display: flex;
     border-radius: 4px;
     box-sizing: border-box;
     white-space: nowrap;
+    width: 159px;
   }
 
   .item-axis:hover {
@@ -217,5 +219,13 @@ export default {
     justify-content: space-between;
     align-items: center;
     width: 100%
+  }
+
+  .item-span-style{
+    display: inline-block;
+    width: 100px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 </style>
