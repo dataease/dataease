@@ -43,7 +43,7 @@
                 <el-button :title="$t('dataset.edit_field')" :disabled="!table || !hasDataPermission('manage',table.privileges)" icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 4px;" @click="editField" />
                 <el-button :title="$t('chart.change_ds')" :disabled="!hasDataPermission('manage',param.privileges)" icon="el-icon-refresh" type="text" size="mini" style="float: right;width: 20px;margin-left: 4px;" @click="changeDs" />
               </div>
-              <div style="border-bottom: 1px solid #E6E6E6;" class="padding-lr field-height">
+              <div class="padding-lr field-height">
                 <span>{{ $t('chart.dimension') }}</span>
                 <draggable
                   v-model="dimensionData"
@@ -1296,6 +1296,7 @@ export default {
   }
   .field-height{
     height: calc(50% - 20px);
+    border-top: 1px solid #E6E6E6;
   }
   .padding-tab{
     padding: 0;
