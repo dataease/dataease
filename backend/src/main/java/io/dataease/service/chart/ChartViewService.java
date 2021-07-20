@@ -313,7 +313,7 @@ public class ChartViewService {
         // table组件
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(xAxis)) {
+        if (ObjectUtils.isNotEmpty(xAxis) && !StringUtils.equalsIgnoreCase("text", view.getType()) && !StringUtils.equalsIgnoreCase("gauge", view.getType())) {
             fields.addAll(xAxis);
         }
         fields.addAll(yAxis);
