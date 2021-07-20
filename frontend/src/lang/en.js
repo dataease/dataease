@@ -598,7 +598,7 @@ export default {
     chart_type: 'Chart Type',
     shape_attr: 'Attribute',
     module_style: 'Style',
-    result_filter: 'Results Filter',
+    result_filter: 'Filters',
     x_axis: 'Horizontal axis',
     y_axis: 'Longitudinal axis',
     chart: 'Chart',

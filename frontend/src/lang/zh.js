@@ -598,7 +598,7 @@ export default {
     chart_type: '图表类型',
     shape_attr: '图形属性',
     module_style: '组件样式',
-    result_filter: '结果过滤器',
+    result_filter: '过滤器',
     x_axis: '横轴',
     y_axis: '纵轴',
     chart: '视图',

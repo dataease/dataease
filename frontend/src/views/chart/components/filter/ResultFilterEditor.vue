@@ -2,26 +2,11 @@
   <el-col>
     <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
     <div style="max-height: 50vh;overflow-y: auto;">
-      <el-row v-for="(f,index) in chart.customFilter" :key="index" class="filter-item">
-        <el-col :span="6">
-          <el-select v-model="f.fieldId" size="mini" filterable>
-            <el-option
-              v-for="item in fields"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            >
-              <span style="float: left">
-                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-              </span>
-              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
-            </el-option>
-          </el-select>
+      <el-row v-for="(f,index) in item.filter" :key="index" class="filter-item">
+        <el-col :span="4">
+          <span>{{ item.name }}</span>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <el-select v-model="f.term" size="mini">
             <el-option-group
               v-for="(group,idx) in options"
@@ -49,7 +34,7 @@
 </template>
 
 <script>
-import { fieldList } from '../../../../api/dataset/dataset'
+// import { fieldList } from '../../../../api/dataset/dataset'
 
 export default {
   name: 'ResultFilterEditor',
@@ -57,78 +42,162 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    item: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
-      options: [{
-        label: '',
-        options: [{
-          value: 'eq',
-          label: this.$t('chart.filter_eq')
-        }, {
-          value: 'not_eq',
-          label: this.$t('chart.filter_not_eq')
-        }]
-      },
-      {
-        label: '',
-        options: [{
-          value: 'like',
-          label: this.$t('chart.filter_like')
-        }, {
-          value: 'not like',
-          label: this.$t('chart.filter_not_like')
-        }]
-      },
-      {
-        label: '',
-        options: [{
-          value: 'lt',
-          label: this.$t('chart.filter_lt')
-        }, {
-          value: 'gt',
-          label: this.$t('chart.filter_gt')
-        }]
-      },
-      {
-        label: '',
-        options: [{
-          value: 'le',
-          label: this.$t('chart.filter_le')
-        }, {
-          value: 'ge',
-          label: this.$t('chart.filter_ge')
-        }]
-      },
-      {
-        label: '',
-        options: [{
-          value: 'null',
-          label: this.$t('chart.filter_null')
-        }, {
-          value: 'not_null',
-          label: this.$t('chart.filter_not_null')
-        }]
-      }],
-      fields: []
+      textOptions: [
+        {
+          label: '',
+          options: [{
+            value: 'eq',
+            label: this.$t('chart.filter_eq')
+          }, {
+            value: 'not_eq',
+            label: this.$t('chart.filter_not_eq')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'like',
+            label: this.$t('chart.filter_like')
+          }, {
+            value: 'not like',
+            label: this.$t('chart.filter_not_like')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'null',
+            label: this.$t('chart.filter_null')
+          }, {
+            value: 'not_null',
+            label: this.$t('chart.filter_not_null')
+          }]
+        }
+      ],
+      dateOptions: [
+        {
+          label: '',
+          options: [{
+            value: 'eq',
+            label: this.$t('chart.filter_eq')
+          }, {
+            value: 'not_eq',
+            label: this.$t('chart.filter_not_eq')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'lt',
+            label: this.$t('chart.filter_lt')
+          }, {
+            value: 'gt',
+            label: this.$t('chart.filter_gt')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'le',
+            label: this.$t('chart.filter_le')
+          }, {
+            value: 'ge',
+            label: this.$t('chart.filter_ge')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'null',
+            label: this.$t('chart.filter_null')
+          }, {
+            value: 'not_null',
+            label: this.$t('chart.filter_not_null')
+          }]
+        }
+      ],
+      valueOptions: [
+        {
+          label: '',
+          options: [{
+            value: 'eq',
+            label: this.$t('chart.filter_eq')
+          }, {
+            value: 'not_eq',
+            label: this.$t('chart.filter_not_eq')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'lt',
+            label: this.$t('chart.filter_lt')
+          }, {
+            value: 'gt',
+            label: this.$t('chart.filter_gt')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'le',
+            label: this.$t('chart.filter_le')
+          }, {
+            value: 'ge',
+            label: this.$t('chart.filter_ge')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'null',
+            label: this.$t('chart.filter_null')
+          }, {
+            value: 'not_null',
+            label: this.$t('chart.filter_not_null')
+          }]
+        }
+      ],
+      options: []
+    }
+  },
+  watch: {
+    'item': function() {
+      this.initOptions()
     }
   },
   mounted() {
-    fieldList(this.chart.tableId).then(response => {
-      this.fields = response.data
-    })
+    this.initOptions()
   },
   methods: {
+    initOptions() {
+      if (this.item) {
+        if (this.item.deType === 0 || this.item.deType === 5) {
+          this.options = JSON.parse(JSON.stringify(this.textOptions))
+        } else if (this.item.deType === 1) {
+          this.options = JSON.parse(JSON.stringify(this.dateOptions))
+        } else {
+          this.options = JSON.parse(JSON.stringify(this.valueOptions))
+        }
+      }
+    },
     addFilter() {
-      this.chart.customFilter.push({
-        fieldId: '',
+      this.item.filter.push({
+        fieldId: this.item.id,
         term: 'eq',
         value: ''
       })
     },
     removeFilter(index) {
-      this.chart.customFilter.splice(index, 1)
+      this.item.filter.splice(index, 1)
     }
   }
 }
@@ -157,8 +226,4 @@ export default {
     display: inline-block;
     width: 80px!important;
   }
-.el-select-dropdown__item{
-  padding: 0 20px;
-  font-size: 12px;
-}
 </style>
