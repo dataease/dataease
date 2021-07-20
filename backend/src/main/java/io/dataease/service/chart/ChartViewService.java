@@ -159,6 +159,11 @@ public class ChartViewService {
 //                return dto;
 //            }
 //        }
+        if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
+            ChartViewDTO dto = new ChartViewDTO();
+            BeanUtils.copyBean(dto, view);
+            return dto;
+        }
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
