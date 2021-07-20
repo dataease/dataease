@@ -598,7 +598,7 @@ export default {
     chart_type: '图表类型',
     shape_attr: '图形属性',
     module_style: '组件样式',
-    result_filter: '结果过滤器',
+    result_filter: '过滤器',
     x_axis: '横轴',
     y_axis: '纵轴',
     chart: '视图',
@@ -806,7 +806,18 @@ export default {
     chart_details: '视图明细',
     export_details: '导出明细',
     chart_data: '数据',
-    chart_style: '样式'
+    chart_style: '样式',
+    drag_block_type_axis: '类别轴',
+    drag_block_value_axis: '值轴',
+    drag_block_table_data_column: '数据列',
+    drag_block_pie_angel: '扇区角度',
+    drag_block_pie_label: '扇区标签',
+    drag_block_gauge_angel: '指针角度',
+    drag_block_label_value: '值',
+    drag_block_funnel_width: '漏斗层宽',
+    drag_block_funnel_split: '漏斗分层',
+    drag_block_radar_length: '分支长度',
+    drag_block_radar_label: '分支标签'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
