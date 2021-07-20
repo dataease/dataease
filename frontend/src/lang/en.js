@@ -806,7 +806,18 @@ export default {
     color_fast: 'Fast',
     color_spiritual: 'Spiritual',
     chart_data: 'Data',
-    chart_style: 'Style'
+    chart_style: 'Style',
+    drag_block_type_axis: 'Type Axis',
+    drag_block_value_axis: 'Value Axis',
+    drag_block_table_data_column: 'Data Column',
+    drag_block_pie_angel: 'Sector Angle',
+    drag_block_pie_label: 'Sector Label',
+    drag_block_gauge_angel: 'Pointer Angle',
+    drag_block_label_value: 'Value',
+    drag_block_funnel_width: 'Funnel Width',
+    drag_block_funnel_split: 'Funnel Split',
+    drag_block_radar_length: 'Branch Length',
+    drag_block_radar_label: 'Branch Label'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
