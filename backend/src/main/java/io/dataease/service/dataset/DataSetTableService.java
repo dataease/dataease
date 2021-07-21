@@ -1012,7 +1012,7 @@ public class DataSetTableService {
     public Map<String, Object> excelSaveAndParse(MultipartFile file, String tableId) throws Exception {
         String filename = file.getOriginalFilename();
         // parse file
-        Map<String, Object> fileMap = parseExcel(filename, file.getInputStream(), true);
+        Map<String, Object> fileMap = parseExcel2(filename, file.getInputStream(), true);
         if (StringUtils.isNotEmpty(tableId)) {
             List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId);
             datasetTableFields.sort((o1, o2) -> {
@@ -1035,6 +1035,52 @@ public class DataSetTableService {
         String filePath = saveFile(file);
         Map<String, Object> map = new HashMap<>(fileMap);
         map.put("path", filePath);
+        return map;
+    }
+
+    private Map<String, Object> parseExcel2(String filename, InputStream inputStream, boolean isPreview) throws Exception {
+        String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+        List<TableFiled> fields = new ArrayList<>();
+        List<List<String>> data = new ArrayList<>();
+        List<Map<String, Object>> jsonArray = new ArrayList<>();
+        List<String> sheets = new ArrayList<>();
+        if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
+            ExcelXlsReader excelXlsReader = new ExcelXlsReader();
+            excelXlsReader.process(inputStream);
+            fields = excelXlsReader.totalSheets.get(0).getFields();
+            data = excelXlsReader.totalSheets.get(0).getData();
+            sheets = excelXlsReader.totalSheets.stream().map(ExcelSheetData::getSheetName).collect(Collectors.toList());
+        }
+        if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+            ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
+            excelXlsxReader.process(inputStream);
+            fields = excelXlsxReader.totalSheets.get(0).getFields();
+            data = excelXlsxReader.totalSheets.get(0).getData();
+            sheets = excelXlsxReader.totalSheets.stream().map(ExcelSheetData::getSheetName).collect(Collectors.toList());
+        }
+
+        String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
+
+        // 校验excel字段是否重名
+        if (checkIsRepeat(fieldArray)) {
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+        }
+
+        if (CollectionUtils.isNotEmpty(data)) {
+            jsonArray = data.stream().map(ele -> {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < ele.size(); i++) {
+                    map.put(fieldArray[i], ele.get(i));
+                }
+                return map;
+            }).collect(Collectors.toList());
+        }
+        inputStream.close();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("fields", fields);
+        map.put("data", jsonArray);
+        map.put("sheets", sheets);
         return map;
     }
 
@@ -1190,6 +1236,7 @@ public class DataSetTableService {
         map.put("sheets", sheets);
         return map;
     }
+
 
     private String readCell(Cell cell, boolean cellType, TableFiled tableFiled) {
         if (cell == null) {
