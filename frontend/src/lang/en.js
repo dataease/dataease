@@ -819,6 +819,7 @@ export default {
     drag_block_funnel_split: 'Funnel Split',
     drag_block_radar_length: 'Branch Length',
     drag_block_radar_label: 'Branch Label',
+    stack_item: 'Stack Item',
     map_range: 'Map range',
     select_map_range: 'Please select map range',
     area: 'Area'

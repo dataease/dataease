@@ -286,6 +286,26 @@
                       </transition-group>
                     </draggable>
                   </el-row>
+                  <el-row v-if="chart.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
+                    <span style="width: 80px;text-align: right;">
+                      <span v-if="chart.type.includes('stack')">{{ $t('chart.stack_item') }}</span>
+                      /
+                      <span>{{ $t('chart.dimension') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.extStack"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      @add="addStack"
+                    >
+                      <transition-group class="draggable-group">
+                        <chart-drag-item v-for="(item,index) in view.extStack" :key="item.id" :param="param" :index="index" :item="item" @onItemChange="stackItemChange" @onItemRemove="stackItemRemove" />
+                      </transition-group>
+                    </draggable>
+                  </el-row>
                   <div class="padding-lr filter-class" style="margin-top: 6px;">
                     <span>{{ $t('chart.result_filter') }}</span>
                     <!--                    <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">-->
@@ -458,6 +478,7 @@ import draggable from 'vuedraggable'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
+import ChartDragItem from '../components/drag-item/ChartDragItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
@@ -489,7 +510,7 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
-import html2canvas from 'html2canvasde'
+// import html2canvas from 'html2canvasde'
 import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
 import { areaMapping } from '@/api/map/map'
@@ -518,7 +539,8 @@ export default {
     ChartComponent,
     QuotaItem,
     DimensionItem,
-    draggable
+    draggable,
+    ChartDragItem
   },
   props: {
     param: {
@@ -693,6 +715,11 @@ export default {
           ele.filter = []
         }
       })
+      view.extStack.forEach(function(ele) {
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
+        }
+      })
       if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('text') || view.type.startsWith('gauge')) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
@@ -714,6 +741,7 @@ export default {
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
       view.customFilter = JSON.stringify(view.customFilter)
+      view.extStack = JSON.stringify(view.extStack)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         // this.getData(response.data.id)
@@ -733,67 +761,67 @@ export default {
       })
     },
 
-    saveSnapshot() {
-      if (this.view.title && this.view.title.length > 50) {
-        this.$warning(this.$t('chart.title_limit'))
-        return
-      }
-      if (this.loading) {
-        return
-      }
-      this.loading = true
-      html2canvas(this.$refs.imageWrapper).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
-        if (snapshot !== '') {
-          const view = JSON.parse(JSON.stringify(this.view))
-          view.id = this.view.id
-          view.sceneId = this.view.sceneId
-          view.name = this.view.name ? this.view.name : this.table.name
-          view.tableId = this.view.tableId
-          view.xaxis.forEach(function(ele) {
-            // if (!ele.summary || ele.summary === '') {
-            //   ele.summary = 'sum'
-            // }
-            if (!ele.sort || ele.sort === '') {
-              ele.sort = 'none'
-            }
-            if (!ele.filter) {
-              ele.filter = []
-            }
-          })
-          view.yaxis.forEach(function(ele) {
-            if (!ele.summary || ele.summary === '') {
-              if (ele.id === 'count') {
-                ele.summary = 'count'
-              } else {
-                ele.summary = 'sum'
-              }
-            }
-            if (!ele.sort || ele.sort === '') {
-              ele.sort = 'none'
-            }
-            if (!ele.filter) {
-              ele.filter = []
-            }
-          })
-          if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('gauge')) {
-            if (view.yaxis.length > 1) {
-              view.yaxis.splice(1, view.yaxis.length)
-            }
-          }
-          view.xaxis = JSON.stringify(view.xaxis)
-          view.yaxis = JSON.stringify(view.yaxis)
-          view.customAttr = JSON.stringify(view.customAttr)
-          view.customStyle = JSON.stringify(view.customStyle)
-          view.customFilter = JSON.stringify(view.customFilter)
-          view.snapshot = snapshot
-          post('/chart/view/save', view).then(response => {
-            this.loading = false
-            this.$success(this.$t('commons.save_success'))
-          })
-        }
-      })
-    },
+    // saveSnapshot() {
+    //   if (this.view.title && this.view.title.length > 50) {
+    //     this.$warning(this.$t('chart.title_limit'))
+    //     return
+    //   }
+    //   if (this.loading) {
+    //     return
+    //   }
+    //   this.loading = true
+    //   html2canvas(this.$refs.imageWrapper).then(canvas => {
+    //     const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+    //     if (snapshot !== '') {
+    //       const view = JSON.parse(JSON.stringify(this.view))
+    //       view.id = this.view.id
+    //       view.sceneId = this.view.sceneId
+    //       view.name = this.view.name ? this.view.name : this.table.name
+    //       view.tableId = this.view.tableId
+    //       view.xaxis.forEach(function(ele) {
+    //         // if (!ele.summary || ele.summary === '') {
+    //         //   ele.summary = 'sum'
+    //         // }
+    //         if (!ele.sort || ele.sort === '') {
+    //           ele.sort = 'none'
+    //         }
+    //         if (!ele.filter) {
+    //           ele.filter = []
+    //         }
+    //       })
+    //       view.yaxis.forEach(function(ele) {
+    //         if (!ele.summary || ele.summary === '') {
+    //           if (ele.id === 'count') {
+    //             ele.summary = 'count'
+    //           } else {
+    //             ele.summary = 'sum'
+    //           }
+    //         }
+    //         if (!ele.sort || ele.sort === '') {
+    //           ele.sort = 'none'
+    //         }
+    //         if (!ele.filter) {
+    //           ele.filter = []
+    //         }
+    //       })
+    //       if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('gauge')) {
+    //         if (view.yaxis.length > 1) {
+    //           view.yaxis.splice(1, view.yaxis.length)
+    //         }
+    //       }
+    //       view.xaxis = JSON.stringify(view.xaxis)
+    //       view.yaxis = JSON.stringify(view.yaxis)
+    //       view.customAttr = JSON.stringify(view.customAttr)
+    //       view.customStyle = JSON.stringify(view.customStyle)
+    //       view.customFilter = JSON.stringify(view.customFilter)
+    //       view.snapshot = snapshot
+    //       post('/chart/view/save', view).then(response => {
+    //         this.loading = false
+    //         this.$success(this.$t('commons.save_success'))
+    //       })
+    //     }
+    //   })
+    // },
     closeEdit() {
       if (this.view.title && this.view.title.length > 50) {
         this.$warning(this.$t('chart.title_limit'))
@@ -813,6 +841,7 @@ export default {
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
@@ -1254,6 +1283,20 @@ export default {
         delete resultNode.children
       }
       return resultNode
+    },
+    addStack(e) {
+      this.dragCheckType(this.dimensionData, 'd')
+      if (this.view.extStack && this.view.extStack.length > 1) {
+        this.view.extStack = [this.view.extStack[0]]
+      }
+      this.save(true)
+    },
+    stackItemChange(item) {
+      this.save(true)
+    },
+    stackItemRemove(item) {
+      this.view.extStack.splice(item.index, 1)
+      this.save(true)
     }
   }
 }
