@@ -6,6 +6,8 @@
         <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
         <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
         <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+        <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
+        <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
       <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
@@ -18,6 +20,8 @@
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
             <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+            <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
+            <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
@@ -226,7 +230,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 80px;
+    width: 70px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
