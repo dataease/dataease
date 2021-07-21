@@ -221,7 +221,7 @@ div:focus {
 
 %field-icon{
   font-size: 13px;
-  margin: 0 3px 0 0;
+  margin: 0 2px 0 0;
 }
 .field-icon-text{
   @extend %field-icon;
@@ -238,6 +238,11 @@ div:focus {
 .field-icon-location{
   @extend %field-icon;
   color: #F56C6C;
+}
+.field-icon-sort{
+  font-size: 10px;
+  @extend %field-icon;
+  color: #999999;
 }
 .ds-icon-scene{
   width: 13px;

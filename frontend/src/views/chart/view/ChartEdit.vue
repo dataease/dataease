@@ -286,9 +286,9 @@
                       </transition-group>
                     </draggable>
                   </el-row>
-                  <el-row v-if="chart.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
+                  <el-row v-if="chart.type && chart.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
-                      <span v-if="chart.type.includes('stack')">{{ $t('chart.stack_item') }}</span>
+                      <span>{{ $t('chart.stack_item') }}</span>
                       /
                       <span>{{ $t('chart.dimension') }}</span>
                     </span>
