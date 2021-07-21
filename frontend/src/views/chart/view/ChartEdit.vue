@@ -192,7 +192,7 @@
                         </el-radio>
                         <el-radio value="map" label="map">
                           <span :title="$t('chart.chart_map')">
-                            <svg-icon icon-class="chart-map" class="chart-map" />
+                            <svg-icon icon-class="map" class="chart-icon" />
                           </span>
                         </el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
