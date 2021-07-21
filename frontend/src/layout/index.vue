@@ -121,6 +121,8 @@ export default {
         width: 100% !important;
         position: initial !important;
         height: calc(100vh - 80px) !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
       }
   }
 </style>
