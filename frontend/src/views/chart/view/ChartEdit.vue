@@ -559,6 +559,7 @@ export default {
       view: {
         xaxis: [],
         yaxis: [],
+        extStack: [],
         show: true,
         type: 'bar',
         title: '',
@@ -870,6 +871,7 @@ export default {
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
