@@ -159,6 +159,11 @@ public class ChartViewService {
 //                return dto;
 //            }
 //        }
+        if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
+            ChartViewDTO dto = new ChartViewDTO();
+            BeanUtils.copyBean(dto, view);
+            return dto;
+        }
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
@@ -313,7 +318,7 @@ public class ChartViewService {
         // table组件
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(xAxis)) {
+        if (ObjectUtils.isNotEmpty(xAxis) && !StringUtils.equalsIgnoreCase("text", view.getType()) && !StringUtils.equalsIgnoreCase("gauge", view.getType())) {
             fields.addAll(xAxis);
         }
         fields.addAll(yAxis);
