@@ -64,26 +64,26 @@ export default {
           label: this.$t('chart.filter_not_like')
         }]
       },
-      {
-        label: '',
-        options: [{
-          value: 'lt',
-          label: this.$t('chart.filter_lt')
-        }, {
-          value: 'gt',
-          label: this.$t('chart.filter_gt')
-        }]
-      },
-      {
-        label: '',
-        options: [{
-          value: 'le',
-          label: this.$t('chart.filter_le')
-        }, {
-          value: 'ge',
-          label: this.$t('chart.filter_ge')
-        }]
-      },
+      // {
+      //   label: '',
+      //   options: [{
+      //     value: 'lt',
+      //     label: this.$t('chart.filter_lt')
+      //   }, {
+      //     value: 'gt',
+      //     label: this.$t('chart.filter_gt')
+      //   }]
+      // },
+      // {
+      //   label: '',
+      //   options: [{
+      //     value: 'le',
+      //     label: this.$t('chart.filter_le')
+      //   }, {
+      //     value: 'ge',
+      //     label: this.$t('chart.filter_ge')
+      //   }]
+      // },
       {
         label: '',
         options: [{

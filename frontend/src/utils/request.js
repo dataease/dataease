@@ -8,7 +8,7 @@ import i18n from '@/lang'
 import { tryShowLoading, tryHideLoading } from './loading'
 import { getLinkToken, setLinkToken } from '@/utils/auth'
 // import router from '@/router'
-
+const interruptTokenContineUrls = Config.interruptTokenContineUrls
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
 const LinkTokenKey = Config.LinkTokenKey
@@ -16,7 +16,7 @@ const LinkTokenKey = Config.LinkTokenKey
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 0 // request timeout
+  timeout: 10000 // request timeout
 })
 
 // request interceptor
@@ -74,7 +74,7 @@ const checkAuth = response => {
     })
   }
   // token到期后自动续命 刷新token
-  if (response.headers[RefreshTokenKey]) {
+  if (response.headers[RefreshTokenKey] && !interruptTokenContineUrls.some(item => response.config.url.indexOf(item) >= 0)) {
     const refreshToken = response.headers[RefreshTokenKey]
     store.dispatch('user/refreshToken', refreshToken)
   }

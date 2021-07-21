@@ -134,23 +134,35 @@ public class ChartViewService {
         }.getType());
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
-        List<ChartCustomFilterDTO> customFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartCustomFilterDTO>>() {
+        List<ChartFieldCustomFilterDTO> fieldCustomFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartFieldCustomFilterDTO>>() {
         }.getType());
-        customFilter.forEach(ele -> ele.setField(dataSetTableFieldsService.get(ele.getFieldId())));
+        List<ChartCustomFilterDTO> customFilter = fieldCustomFilter.stream().map(ele -> {
+            ChartCustomFilterDTO dto = new ChartCustomFilterDTO();
+            ele.getFilter().forEach(f -> {
+                BeanUtils.copyBean(dto, f);
+                dto.setField(dataSetTableFieldsService.get(f.getFieldId()));
+            });
+            return dto;
+        }).collect(Collectors.toList());
 
-        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
-            xAxis = new ArrayList<>();
-            if (CollectionUtils.isEmpty(yAxis)) {
-                ChartViewDTO dto = new ChartViewDTO();
-                BeanUtils.copyBean(dto, view);
-                return dto;
-            }
-        } else {
-            if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
-                ChartViewDTO dto = new ChartViewDTO();
-                BeanUtils.copyBean(dto, view);
-                return dto;
-            }
+//        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+//            xAxis = new ArrayList<>();
+//            if (CollectionUtils.isEmpty(yAxis)) {
+//                ChartViewDTO dto = new ChartViewDTO();
+//                BeanUtils.copyBean(dto, view);
+//                return dto;
+//            }
+//        } else {
+//            if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
+//                ChartViewDTO dto = new ChartViewDTO();
+//                BeanUtils.copyBean(dto, view);
+//                return dto;
+//            }
+//        }
+        if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
+            ChartViewDTO dto = new ChartViewDTO();
+            BeanUtils.copyBean(dto, view);
+            return dto;
         }
 
         // 过滤来自仪表板的条件
@@ -306,7 +318,7 @@ public class ChartViewService {
         // table组件
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(xAxis)) {
+        if (ObjectUtils.isNotEmpty(xAxis) && !StringUtils.equalsIgnoreCase("text", view.getType()) && !StringUtils.equalsIgnoreCase("gauge", view.getType())) {
             fields.addAll(xAxis);
         }
         fields.addAll(yAxis);
