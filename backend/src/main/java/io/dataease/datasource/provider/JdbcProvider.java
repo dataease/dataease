@@ -185,6 +185,9 @@ public class JdbcProvider extends DatasourceProvider {
             field.setFieldType(t);
             field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
             if(t.equalsIgnoreCase("LONG")){field.setFieldSize(65533);} //oracle LONG
+            if(StringUtils.isNotEmpty(t) && t.toLowerCase().contains("date") && field.getFieldSize() < 50 ){
+                field.setFieldSize(50);
+            }
             fieldList.add(field);
         }
         return fieldList;
