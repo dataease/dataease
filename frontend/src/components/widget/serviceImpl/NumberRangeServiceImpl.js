@@ -2,14 +2,15 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-zuoce-qujian',
-  label: '数值区间',
+  label: 'denumberrange.label',
   defaultClass: 'text-filter'
 }
 
 const dialogPanel = {
   options: {
     attrs: {
-      placeholder: '请输入整数',
+      placeholder_min: 'denumberrange.please_key_min',
+      placeholder_max: 'denumberrange.please_key_max',
       viewIds: []
     },
     value: ''

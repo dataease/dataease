@@ -7,7 +7,7 @@
     :collapse-tags="showNumber"
     :clearable="!options.attrs.multiple"
     :multiple="options.attrs.multiple"
-    :placeholder="options.attrs.placeholder"
+    :placeholder="$t(options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
     @change="changeValue"
   >

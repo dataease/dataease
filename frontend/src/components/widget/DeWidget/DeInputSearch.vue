@@ -4,7 +4,7 @@
     v-if="options!== null && options.attrs!==null"
     v-model="values"
     resize="vertical"
-    :placeholder="options.attrs.placeholder"
+    :placeholder="$t(options.attrs.placeholder)"
     @keypress.enter.native="search"
     @dblclick="setEdit"
   >

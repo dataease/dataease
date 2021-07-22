@@ -3,7 +3,7 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-xialakuang',
-  label: '数字下拉',
+  label: 'denumberselect.label',
   defaultClass: 'text-filter'
 }
 
@@ -11,7 +11,7 @@ const dialogPanel = {
   options: {
     attrs: {
       multiple: false,
-      placeholder: '请选择',
+      placeholder: 'denumberselect.placeholder',
       datas: [],
       key: 'id',
       label: 'text',

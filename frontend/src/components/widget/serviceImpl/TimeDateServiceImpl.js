@@ -2,7 +2,7 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-ri',
-  label: '日期',
+  label: 'dedate.label',
   defaultClass: 'time-filter'
 }
 
@@ -10,7 +10,7 @@ const dialogPanel = {
   options: {
     attrs: {
       type: 'date',
-      placeholder: '请选择日期',
+      placeholder: 'dedate.placeholder',
       viewIds: []
     },
     value: ''

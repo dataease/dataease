@@ -1291,6 +1291,8 @@ export default {
     channel_inner_msg: '站内消息'
   },
   denumberrange: {
+    label: '数值区间',
+    split_placeholder: '至',
     please_key_min: '请输入最小值',
     please_key_max: '请输入最大值',
     out_of_min: '最小值不能小于最小整数-2³²',
@@ -1298,5 +1300,35 @@ export default {
     must_int: '请输入整数',
     min_out_max: '最小值必须小于最大值',
     max_out_min: '最大值必须大于最小值'
+  },
+  denumberselect: {
+    label: '数字下拉',
+    placeholder: '请选择'
+  },
+  deinputsearch: {
+    label: '文本搜索',
+    placeholder: '请输入关键字'
+  },
+  detextselect: {
+    label: '文本下拉',
+    placeholder: '请选择'
+  },
+  dedaterange: {
+    label: '日期范围',
+    to_placeholder: '结束日期',
+    from_placeholder: '开始日期',
+    split_placeholder: '至'
+  },
+  dedate: {
+    label: '日期',
+    placeholder: '请选择日期'
+  },
+  deyearmonth: {
+    label: '年月',
+    placeholder: '请选择年月'
+  },
+  deyear: {
+    label: '年份',
+    placeholder: '请选择年份'
   }
 }

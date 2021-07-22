@@ -2,7 +2,7 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-riqi',
-  label: '日期范围',
+  label: 'dedaterange.label',
   defaultClass: 'time-filter'
 }
 
@@ -10,9 +10,9 @@ const dialogPanel = {
   options: {
     attrs: {
       type: 'daterange',
-      rangeSeparator: '至',
-      startPlaceholder: '开始日期',
-      endPlaceholder: '结束日期',
+      rangeSeparator: 'dedaterange.split_placeholder',
+      startPlaceholder: 'dedaterange.to_placeholder',
+      endPlaceholder: 'dedaterange.from_placeholder',
       viewIds: []
     },
     value: ''
