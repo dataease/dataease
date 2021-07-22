@@ -243,6 +243,7 @@ div:focus {
   font-size: 10px;
   @extend %field-icon;
   color: #999999;
+  margin: 0 2px 1px 0;
 }
 .ds-icon-scene{
   width: 13px;

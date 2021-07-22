@@ -34,7 +34,7 @@
                 <span>
                   <i class="el-icon-notebook-2" />
                   <span>{{ $t('chart.summary') }}</span>
-                  <span class="summary-span">({{ $t('chart.'+item.summary) }})</span>
+                  <span class="summary-span-item">({{ $t('chart.'+item.summary) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -56,7 +56,7 @@
           <!--                <span>-->
           <!--                  <i class="el-icon-s-grid" />-->
           <!--                  <span>{{ $t('chart.quick_calc') }}</span>-->
-          <!--                  <span class="summary-span">(无)</span>-->
+          <!--                  <span class="summary-span-item">(无)</span>-->
           <!--                </span>-->
           <!--                <i class="el-icon-arrow-right el-icon&#45;&#45;right" />-->
           <!--              </span>-->
@@ -71,7 +71,7 @@
                 <span>
                   <i class="el-icon-sort" />
                   <span>{{ $t('chart.sort') }}</span>
-                  <span class="summary-span">({{ $t('chart.'+item.sort) }})</span>
+                  <span class="summary-span-item">({{ $t('chart.'+item.sort) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -216,9 +216,16 @@ export default {
     font-size: 12px;
   }
 
+  .summary-span-item{
+    margin-left: 4px;
+    color: #878d9f;
+  }
+
   .summary-span{
     margin-left: 4px;
-    color: #878d9f;;
+    color: #878d9f;
+    position: absolute;
+    right: 30px;
   }
 
   .inner-dropdown-menu{
