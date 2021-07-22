@@ -1289,5 +1289,14 @@ export default {
     i18n_msg_type_dataset_sync_faild: '数据集同步失败',
     i18n_msg_type_all: '全部类型',
     channel_inner_msg: '站内消息'
+  },
+  denumberrange: {
+    please_key_min: '请输入最小值',
+    please_key_max: '请输入最大值',
+    out_of_min: '最小值不能小于最小整数-2³²',
+    out_of_max: '最大值不能大于最大整数2³²-1',
+    must_int: '请输入整数',
+    min_out_max: '最小值必须小于最大值',
+    max_out_min: '最大值必须大于最小值'
   }
 }
