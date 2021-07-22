@@ -218,7 +218,9 @@ export default {
 
   .summary-span{
     margin-left: 4px;
-    color: #878d9f;;
+    color: #878d9f;
+    position: absolute;
+    right: 30px;
   }
 
   .inner-dropdown-menu{
