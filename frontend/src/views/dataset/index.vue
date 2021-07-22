@@ -26,7 +26,7 @@ import AddExcel from './add/AddExcel'
 import AddCustom from './add/AddCustom'
 import FieldEdit from './data/FieldEdit'
 import { removeClass } from '@/utils'
-import bus from '@/utils/bus'
+// import bus from '@/utils/bus'
 export default {
   name: 'DataSet',
   components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL, AddExcel, AddCustom },
@@ -39,9 +39,9 @@ export default {
   },
   mounted() {
     removeClass(document.body, 'showRightPanel')
-    bus.$on('to-msg-dataset', params => {
-      this.toMsgShare(params)
-    })
+    // bus.$on('to-msg-dataset', params => {
+    //   this.toMsgShare(params)
+    // })
   },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)

@@ -52,7 +52,7 @@
             order by ${orderByClause}
         </if>
         <if test="orderByClause == null">
-            order by sm.status asc
+            order by sm.create_time desc
         </if>
     </select>
 

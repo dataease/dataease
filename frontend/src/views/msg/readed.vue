@@ -42,7 +42,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="type" sortable="custom" :label="$t('webmsg.type')" width="140">
+      <el-table-column prop="typeId" sortable="custom" :label="$t('webmsg.type')" width="140">
         <template slot-scope="scope">
           <span>{{ getTypeName(scope.row.typeId) }}</span>
         </template>
@@ -138,6 +138,9 @@ export default {
       }
       if (prop === 'readTime') {
         prop = 'read_time'
+      }
+      if (prop === 'typeId') {
+        prop = 'type_id'
       }
       addOrder({ field: prop, value: order }, this.orderConditions)
       this.search()
