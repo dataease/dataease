@@ -7,6 +7,8 @@ import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
+import io.dataease.provider.doris.DorisConstants;
+import io.dataease.provider.mysql.MySQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -584,10 +586,14 @@ public class OracleQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 whereValue = "'%" + value.get(0) + "%'";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
-                String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                whereValue = String.format(OracleConstants.WHERE_BETWEEN, startTime, endTime);
+                if (request.getDatasetTableField().getDeType() == 1) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
+                    String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
+                    whereValue = String.format(OracleConstants.WHERE_BETWEEN, startTime, endTime);
+                } else {
+                    whereValue = String.format(MySQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                }
             } else {
                 whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value.get(0));
             }
