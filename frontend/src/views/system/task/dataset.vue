@@ -25,12 +25,18 @@ import TaskRecord from '@/views/system/task/TaskRecord'
 import TabDataPreview from '@/views/dataset/data/TabDataPreview'
 import DatasetTableData from '@/views/dataset/common/DatasetTableData'
 import bus from '@/utils/bus'
+import { mapGetters } from 'vuex'
 export default {
   components: { DatasetTableData, LayoutContent, ComplexTable, UnionView, UpdateInfo, TabDataPreview, DatasetTaskList, TaskRecord },
   data() {
     return {
       tabActive: 'DatasetTaskList'
     }
+  },
+  computed: {
+    ...mapGetters([
+      'permission_routes'
+    ])
   },
   mounted() {
     bus.$on('to-msg-dataset', params => {
@@ -39,7 +45,9 @@ export default {
   },
   created() {
     const routerParam = this.$router.currentRoute.params
-    this.toMsgShare(routerParam)
+    routerParam && this.$nextTick(() => {
+      this.toMsgShare(routerParam)
+    })
   },
   methods: {
 
@@ -49,6 +57,7 @@ export default {
         // 说明是从消息通知跳转过来的
         if (panelShareTypeIds.includes(routerParam.msgType)) { // 是数据集同步
           if (routerParam.sourceParam) {
+            this.openSystem()
             try {
               const msgParam = JSON.parse(routerParam.sourceParam)
               // this.param = msgParam.tableId
@@ -62,6 +71,18 @@ export default {
           }
         }
       }
+    },
+    openSystem() {
+      const path = '/system'
+      let route = this.permission_routes.find(
+        item => item.path === '/' + path.split('/')[1]
+      )
+      // 如果找不到这个路由，说明是首页
+      if (!route) {
+        route = this.permission_routes.find(item => item.path === '/')
+      }
+      this.$store.commit('permission/SET_CURRENT_ROUTES', route)
+      // this.setSidebarHide(route)
     }
   }
 
