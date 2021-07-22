@@ -1126,7 +1126,7 @@ export default {
     lineHeight: '行高',
     letterSpacing: '字間距',
     textAlign: '左右對齊',
-    opacity: '透明度',
+    opacity: '不透明度',
     verticalAlign: '上下對齊',
     text_align_left: '左對齊',
     text_align_center: '左右居中',
