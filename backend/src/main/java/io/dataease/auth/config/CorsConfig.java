@@ -22,6 +22,11 @@ public class CorsConfig {
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
         //4,允许凭证
         corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
