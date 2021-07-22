@@ -32,6 +32,14 @@
         </el-tooltip>
       </div>
 
+      <el-tooltip :content="$t('panel.borderRadius')">
+        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-fangxing-" />
+      </el-tooltip>
+
+      <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-input v-model="styleInfo.borderRadius" type="number" size="mini" min="0" max="100" step="1" />
+      </div>
+
       <el-tooltip :content="$t('panel.opacity')">
         <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-touming" />
       </el-tooltip>
@@ -194,8 +202,8 @@ export default {
   }
   .el-card-main {
     height: 34px;
-    z-index: 1000000000;
-    width: 300px;
+    z-index: 10;
+    width: 400px;
     position: absolute;
 
   }
