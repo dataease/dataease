@@ -115,6 +115,7 @@ export default {
   },
   methods: {
     msg2Current(routerParam) {
+      if (!routerParam || !routerParam.taskId) return
       const taskId = routerParam.taskId
       // console.log(taskId)
       const current_condition = {

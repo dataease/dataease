@@ -51,10 +51,10 @@ export default {
           if (routerParam.sourceParam) {
             try {
               const msgParam = JSON.parse(routerParam.sourceParam)
-              this.param = msgParam.tableId
+              // this.param = msgParam.tableId
               this.tabActive = 'TaskRecord'
               this.$nextTick(() => {
-                this.$refs.task_record && this.$refs.task_record.msg2Current && this.$refs.task_record.msg2Current(routerParam.sourceParam)
+                this.$refs.task_record && this.$refs.task_record.msg2Current && this.$refs.task_record.msg2Current(msgParam)
               })
             } catch (error) {
               console.error(error)
