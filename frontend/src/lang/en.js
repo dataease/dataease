@@ -1289,6 +1289,8 @@ export default {
     channel_inner_msg: 'On site news'
   },
   denumberrange: {
+    label: 'Number range',
+    split_placeholder: 'To',
     please_key_min: 'Please key min value',
     please_key_max: 'Please key max value',
     out_of_min: 'The min value cannot be less than the min integer -2³²',
@@ -1296,5 +1298,35 @@ export default {
     must_int: 'Please key interger',
     min_out_max: 'The min value must be less than the max value',
     max_out_min: 'The max value must be more than the min value'
+  },
+  denumberselect: {
+    label: 'Number selector',
+    placeholder: 'Please select'
+  },
+  deinputsearch: {
+    label: 'Text search',
+    placeholder: 'Please key keyword'
+  },
+  detextselect: {
+    label: 'Text selector',
+    placeholder: 'Please select'
+  },
+  dedaterange: {
+    label: 'Date range',
+    to_placeholder: 'End date',
+    from_placeholder: 'Start date',
+    split_placeholder: 'To'
+  },
+  dedate: {
+    label: 'Date',
+    placeholder: 'Please select date'
+  },
+  deyearmonth: {
+    label: 'Month',
+    placeholder: 'Please select month'
+  },
+  deyear: {
+    label: 'Year',
+    placeholder: 'Please select year'
   }
 }

@@ -2,14 +2,14 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-shuru',
-  label: '文本搜索',
+  label: 'deinputsearch.label',
   defaultClass: 'text-filter'
 }
 
 const dialogPanel = {
   options: {
     attrs: {
-      placeholder: '请输入关键字',
+      placeholder: 'deinputsearch.placeholder',
       viewIds: []
 
     },
