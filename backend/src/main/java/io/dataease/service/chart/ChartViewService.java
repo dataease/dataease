@@ -181,7 +181,7 @@ public class ChartViewService {
         }
 
         // 获取数据集,需校验权限
-        DatasetTable table = dataSetTableService.getWithPermission(view.getTableId());
+        DatasetTable table = dataSetTableService.get(view.getTableId());
         if (ObjectUtils.isEmpty(table)) {
             throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
         }
