@@ -250,7 +250,7 @@
                       group="drag"
                       animation="300"
                       :move="onMove"
-                      style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      class="drag-block-style"
                       @add="addXaxis"
                     >
                       <transition-group class="draggable-group">
@@ -277,7 +277,7 @@
                       group="drag"
                       animation="300"
                       :move="onMove"
-                      style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      class="drag-block-style"
                       @add="addYaxis"
                     >
                       <transition-group class="draggable-group">
@@ -297,7 +297,7 @@
                       group="drag"
                       animation="300"
                       :move="onMove"
-                      style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      class="drag-block-style"
                       @add="addStack"
                     >
                       <transition-group class="draggable-group">
@@ -1526,5 +1526,16 @@ export default {
           height: 32px !important;
           font-weight: normal !important;
       }
+  }
+  .drag-block-style{
+    padding:2px 0 0 0;
+    width:100%;
+    min-height: 32px;
+    border-radius: 4px;
+    border: 1px solid #DCDFE6;
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    background-color: white;
   }
 </style>
