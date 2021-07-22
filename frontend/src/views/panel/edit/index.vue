@@ -97,6 +97,7 @@
         <div
           id="canvasInfo"
           class="content this_canvas"
+          :class="{'border-hidden':canvasStyleData.selfAdaption}"
           @drop="handleDrop"
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
@@ -802,6 +803,11 @@ export default {
   .el-dialog__body{
     padding: 1px 15px !important;
   }
+}
+
+.border-hidden {
+  overflow: hidden;
+
 }
 
 </style>
