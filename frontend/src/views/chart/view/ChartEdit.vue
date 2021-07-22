@@ -55,7 +55,7 @@
                   @add="moveToDimension"
                 >
                   <transition-group>
-                    <span v-for="item in dimensionData" :key="item.id" class="item" :title="item.name">
+                    <span v-for="item in dimensionData" :key="item.id" class="item-dimension" :title="item.name">
                       <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                       <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                       <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -77,7 +77,7 @@
                   @add="moveToQuota"
                 >
                   <transition-group>
-                    <span v-for="item in quotaData" :key="item.id" class="item" :title="item.name">
+                    <span v-for="item in quotaData" :key="item.id" class="item-quota" :title="item.name">
                       <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                       <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                       <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -1337,7 +1337,7 @@ export default {
     overflow:auto;
   }
 
-  .item {
+  .item-dimension {
     padding: 2px 10px;
     margin: 2px 2px 0 2px;
     border: solid 1px #eee;
@@ -1347,13 +1347,23 @@ export default {
     background-color: white;
     display: block;
     word-break: break-all;
-
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
-  .item-on-move {
+  .item-dimension + .item-dimension {
+    margin-top: 2px;
+  }
+
+  .item-dimension:hover {
+    color: #1890ff;
+    background: #e8f4ff;
+    border-color: #a3d3ff;
+    cursor: pointer;
+  }
+
+  .item-quota {
     padding: 2px 10px;
     margin: 2px 2px 0 2px;
     border: solid 1px #eee;
@@ -1361,20 +1371,21 @@ export default {
     color: #606266;
     /*background-color: rgba(35,46,64,.05);*/
     background-color: white;
-
+    display: block;
+    word-break: break-all;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
-  .item + .item {
+  .item-quota + .item-quota {
     margin-top: 2px;
   }
 
-  .item:hover {
-    color: #1890ff;
-    background: #e8f4ff;
-    border-color: #a3d3ff;
+  .item-quota:hover {
+    color: #67c23a;
+    background: #f0f9eb;
+    border-color: #b2d3a3;
     cursor: pointer;
   }
 

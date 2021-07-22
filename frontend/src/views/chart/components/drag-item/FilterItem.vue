@@ -1,6 +1,6 @@
 <template>
   <span>
-    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis">
+    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="item.groupType === 'd'?'':'success'">
       <span style="float: left">
         <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
         <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
@@ -11,7 +11,7 @@
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis">
+        <el-tag size="small" class="item-axis" :type="item.groupType === 'd'?'':'success'">
           <span style="float: left">
             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
