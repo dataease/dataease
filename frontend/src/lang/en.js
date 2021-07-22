@@ -750,6 +750,7 @@ export default {
     chart_funnel: 'Funnel',
     chart_radar: 'Radar',
     chart_gauge: 'Gauge',
+    chart_map: 'Map',
     dateStyle: 'Date Style',
     datePattern: 'Date Format',
     y: 'Year',
@@ -817,7 +818,11 @@ export default {
     drag_block_funnel_width: 'Funnel Width',
     drag_block_funnel_split: 'Funnel Split',
     drag_block_radar_length: 'Branch Length',
-    drag_block_radar_label: 'Branch Label'
+    drag_block_radar_label: 'Branch Label',
+    stack_item: 'Stack Item',
+    map_range: 'Map range',
+    select_map_range: 'Please select map range',
+    area: 'Area'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

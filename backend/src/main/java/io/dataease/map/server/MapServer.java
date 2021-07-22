@@ -5,6 +5,7 @@ import io.dataease.map.api.MapApi;
 import io.dataease.map.dto.entity.AreaEntity;
 import io.dataease.map.service.MapService;
 import io.dataease.map.utils.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
@@ -40,7 +41,9 @@ public class MapServer implements MapApi {
     @Override
     public List<AreaEntity> areaEntitys(@PathVariable String pcode) {
         List<AreaEntity> areaEntities = mapService.areaEntities();
-
+        if (StringUtils.equals(pcode, "0")) {
+            return areaEntities;
+        }
         return mapService.entitysByPid(areaEntities, pcode);
     }
 

@@ -13,6 +13,8 @@ public class ChartViewWithBLOBs extends ChartView implements Serializable {
 
     private String yAxis;
 
+    private String extStack;
+
     private String customAttr;
 
     private String customStyle;

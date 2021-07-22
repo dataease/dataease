@@ -750,6 +750,7 @@ export default {
     chart_funnel: '漏斗图',
     chart_radar: '雷达图',
     chart_gauge: '仪表盘',
+    chart_map: '地图',
     dateStyle: '日期显示',
     datePattern: '日期格式',
     y: '年',
@@ -817,7 +818,11 @@ export default {
     drag_block_funnel_width: '漏斗层宽',
     drag_block_funnel_split: '漏斗分层',
     drag_block_radar_length: '分支长度',
-    drag_block_radar_label: '分支标签'
+    drag_block_radar_label: '分支标签',
+    map_range: '地图范围',
+    select_map_range: '请选择地图范围',
+    area: '地区',
+    stack_item: '堆叠项'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

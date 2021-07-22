@@ -528,3 +528,37 @@ export const BASE_CHART = {
   },
   customFilter: []
 }
+
+export const BASE_MAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+
+  tooltip: {},
+  visualMap: {
+    min: 50,
+    max: 52,
+    text: ['High', 'Low'],
+    realtime: false,
+    calculable: true,
+    inRange: {
+      color: ['lightskyblue', 'yellow', 'orangered']
+    }
+  },
+  //   legend: {},
+  series: [
+    {
+      name: '',
+      type: 'map',
+      map: 'HK',
+      roam: true,
+      //   label: {
+      //     show: true
+      //   },
+      data: []
+    }
+  ]
+}

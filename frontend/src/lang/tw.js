@@ -750,6 +750,7 @@ export default {
     chart_funnel: '漏鬥圖',
     chart_radar: '雷達圖',
     chart_gauge: '儀表盤',
+    chart_map: '地圖',
     dateStyle: '日期顯示',
     datePattern: '日期格式',
     y: '年',
@@ -817,7 +818,11 @@ export default {
     drag_block_funnel_width: '漏鬥層寬',
     drag_block_funnel_split: '漏鬥分層',
     drag_block_radar_length: '分支長度',
-    drag_block_radar_label: '分支標簽'
+    drag_block_radar_label: '分支標簽',
+    map_range: '地圖範圍',
+    select_map_range: '請選擇地圖範圍',
+    area: '地區',
+    stack_item: '堆疊項'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

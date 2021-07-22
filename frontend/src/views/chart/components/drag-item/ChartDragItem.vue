@@ -10,7 +10,6 @@
         <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-      <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
@@ -24,48 +23,10 @@
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-          <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>
-            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="summary">
-              <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
-                  <i class="el-icon-notebook-2" />
-                  <span>{{ $t('chart.summary') }}</span>
-                  <span class="summary-span">({{ $t('chart.'+item.summary) }})</span>
-                </span>
-                <i class="el-icon-arrow-right el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="item.id === 'count' || item.deType === 0 || item.deType === 1" :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-dropdown-item>
-          <!-- 快速计算先隐藏-->
-          <!--          <el-dropdown-item v-if="item.id !== 'count'">-->
-          <!--            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">-->
-          <!--              <span class="el-dropdown-link inner-dropdown-menu">-->
-          <!--                <span>-->
-          <!--                  <i class="el-icon-s-grid" />-->
-          <!--                  <span>{{ $t('chart.quick_calc') }}</span>-->
-          <!--                  <span class="summary-span">(无)</span>-->
-          <!--                </span>-->
-          <!--                <i class="el-icon-arrow-right el-icon&#45;&#45;right" />-->
-          <!--              </span>-->
-          <!--              <el-dropdown-menu slot="dropdown">-->
-          <!--                <el-dropdown-item :command="beforeQuickCalc('none')">无</el-dropdown-item>-->
-          <!--              </el-dropdown-menu>-->
-          <!--            </el-dropdown>-->
-          <!--          </el-dropdown-item>-->
-          <el-dropdown-item divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
@@ -82,12 +43,6 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
-            <span>{{ $t('chart.filter') }}...</span>
-          </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
-            <span>{{ $t('chart.show_name_set') }}</span>
-          </el-dropdown-item>
           <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
@@ -99,7 +54,7 @@
 
 <script>
 export default {
-  name: 'QuotaItem',
+  name: 'ChartDragItem',
   props: {
     param: {
       type: Object,
@@ -119,7 +74,6 @@ export default {
     }
   },
   mounted() {
-
   },
   methods: {
     clickItem(param) {
@@ -127,14 +81,8 @@ export default {
         return
       }
       switch (param.type) {
-        case 'rename':
-          this.showRename()
-          break
         case 'remove':
           this.removeItem()
-          break
-        case 'filter':
-          this.editFilter()
           break
         default:
           break
@@ -145,49 +93,19 @@ export default {
         type: type
       }
     },
-
-    summary(param) {
-      // console.log(param)
-      this.item.summary = param.type
-      this.$emit('onQuotaItemChange', this.item)
-    },
-    beforeSummary(type) {
-      return {
-        type: type
-      }
-    },
-
-    quickCalc(param) {
-
-    },
-    beforeQuickCalc(type) {
-      return {
-        type: type
-      }
-    },
-
     sort(param) {
       // console.log(param)
       this.item.sort = param.type
-      this.$emit('onQuotaItemChange', this.item)
+      this.$emit('onItemChange', this.item)
     },
     beforeSort(type) {
       return {
         type: type
       }
     },
-    showRename() {
-      this.item.index = this.index
-      this.item.renameType = 'quota'
-      this.$emit('onNameEdit', this.item)
-    },
     removeItem() {
       this.item.index = this.index
-      this.$emit('onQuotaItemRemove', this.item)
-    },
-    editFilter() {
-      this.item.index = this.index
-      this.$emit('editItemFilter', this.item)
+      this.$emit('onItemRemove', this.item)
     }
   }
 }
@@ -230,7 +148,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 70px;
+    width: 100px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
