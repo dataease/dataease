@@ -1287,5 +1287,14 @@ export default {
     i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
     i18n_msg_type_all: 'All type',
     channel_inner_msg: 'On site news'
+  },
+  denumberrange: {
+    please_key_min: 'Please key min value',
+    please_key_max: 'Please key max value',
+    out_of_min: 'The min value cannot be less than the min integer -2³²',
+    out_of_max: 'The max value cannot be more than the max integer 2³²-1',
+    must_int: 'Please key interger',
+    min_out_max: 'The min value must be less than the max value',
+    max_out_min: 'The max value must be more than the min value'
   }
 }

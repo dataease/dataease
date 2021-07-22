@@ -54,7 +54,8 @@ export default {
           'textInputWidget'
         ],
         '数字过滤组件': [
-          'numberSelectWidget'
+          'numberSelectWidget',
+          'numberRangeWidget'
         ]
         // '按钮': [
         //   'buttonSureWidget'

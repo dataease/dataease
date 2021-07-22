@@ -211,11 +211,13 @@ div:focus {
 }
 .custom-component-class {
   width: 100%;
+  
+  div:not(.de-number-range-container ) {
+    width: 100% !important;
+  }
+
   div.el-input-group__append {
     width: 10% !important;
-  }
-  div {
-    width: 100% !important;
   }
 }
 
