@@ -205,7 +205,31 @@ export const BASE_BAR = {
   series: [],
   dataZoom: [
     {
-      type: 'inside'
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 1,
+      end: 100
     }
   ]
 }
@@ -237,7 +261,31 @@ export const HORIZONTAL_BAR = {
   series: [],
   dataZoom: [
     {
-      type: 'inside'
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 1,
+      end: 100
     }
   ]
 }
@@ -271,7 +319,31 @@ export const BASE_LINE = {
   series: [],
   dataZoom: [
     {
-      type: 'inside'
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 1,
+      end: 100
     }
   ]
 }
