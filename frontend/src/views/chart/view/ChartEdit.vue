@@ -330,37 +330,73 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 360px;">
-          <div style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;" class="attr-style">
-            <el-row class="padding-lr">
-              <span>{{ $t('chart.style_priority') }}</span>
-              <el-row>
-                <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
-                  <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
-                  <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
-                </el-radio-group>
+          <el-row class="view-panel">
+            <div style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;" class="attr-style">
+              <el-row class="padding-lr">
+                <span>{{ $t('chart.style_priority') }}</span>
+                <el-row>
+                  <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
+                    <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
+                    <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
+                  </el-radio-group>
+                </el-row>
               </el-row>
-            </el-row>
-            <el-row class="padding-lr">
-              <span>{{ $t('chart.shape_attr') }}</span>
               <el-row>
-                <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
-                <size-selector v-show="chart.type !== 'map'" :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
-                <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-                <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+                <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
+                <el-collapse v-model="attrActiveNames" class="style-collapse">
+                  <el-collapse-item name="color" :title="$t('chart.color')">
+                    <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="chart.type !== 'map'" name="size" :title="$t('chart.size')">
+                    <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text')" name="label" :title="$t('chart.label')">
+                    <label-selector :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text')" name="tooltip" :title="$t('chart.tooltip')">
+                    <tooltip-selector :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
+                  </el-collapse-item>
+                </el-collapse>
+                <!--              <el-row>-->
+                <!--                <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />-->
+                <!--                <size-selector v-show="chart.type !== 'map'" :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />-->
+                <!--                <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />-->
+                <!--                <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />-->
+                <!--              </el-row>-->
               </el-row>
-            </el-row>
-            <el-row class="padding-lr">
-              <span>{{ $t('chart.module_style') }}</span>
               <el-row>
-                <x-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
-                <y-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
-                <split-selector v-show="view.type && view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
-                <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-                <legend-selector v-show="view.type && !view.type.includes('map') && !view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
-                <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+                <span class="padding-lr">{{ $t('chart.module_style') }}</span>
+                <el-collapse v-model="styleActiveNames" class="style-collapse">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" name="xAxis" :title="$t('chart.xAxis')">
+                    <x-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" name="yAxis" :title="$t('chart.yAxis')">
+                    <y-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="view.type && view.type.includes('radar')" name="split" :title="$t('chart.split')">
+                    <split-selector :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
+                  </el-collapse-item>
+                  <el-collapse-item name="title" :title="$t('chart.title')">
+                    <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="view.type && !view.type.includes('map') && !view.type.includes('table') && !view.type.includes('text')" name="legend" :title="$t('chart.legend')">
+                    <legend-selector :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
+                  </el-collapse-item>
+                  <el-collapse-item name="background" :title="$t('chart.background')">
+                    <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+                  </el-collapse-item>
+                </el-collapse>
+                <!--              <el-row>-->
+                <!--                <x-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />-->
+                <!--                <y-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />-->
+                <!--                <split-selector v-show="view.type && view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />-->
+                <!--                <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
+                <!--                <legend-selector v-show="view.type && !view.type.includes('map') && !view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />-->
+                <!--                <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />-->
+                <!--              </el-row>-->
               </el-row>
-            </el-row>
-          </div>
+            </div>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
 
@@ -610,7 +646,9 @@ export default {
       editDsField: false,
       changeDsTitle: '',
       filterItem: {},
-      places: []
+      places: [],
+      attrActiveNames: [],
+      styleActiveNames: []
     }
   },
   computed: {
@@ -1452,12 +1490,23 @@ export default {
 
   .attr-selector{
     width:100%;
-    height: 32px;
-    margin:0 0 6px 0;
+    height: 100%;
+    margin:6px 0;
     padding:0 4px;
     display: flex;
     align-items: center;
     background-color: white
+  }
+
+  .style-collapse>>>.el-collapse-item__content {
+    padding-bottom: 0!important;
+  }
+  .style-collapse>>>.el-collapse-item__header {
+    height: 34px;
+    line-height: 34px;
+    padding: 0 0 0 6px;
+    font-size: 12px;
+    font-weight: 400;
   }
 
   .disabled-none-cursor{
