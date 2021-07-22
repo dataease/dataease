@@ -709,19 +709,6 @@ export default {
           this.httpRequest.msg = err.response.data.message
           return true
         })
-      } else {
-        post('/dataset/table/getFieldsFromDE', { id: id }).then(response => {
-          this.dimension = response.data.dimension
-          this.quota = response.data.quota
-          this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
-          this.quotaData = JSON.parse(JSON.stringify(this.quota))
-          this.fieldFilter(this.searchField)
-        }).catch(err => {
-          this.resetView()
-          this.httpRequest.status = err.response.data.success
-          this.httpRequest.msg = err.response.data.message
-          return true
-        })
       }
     },
     save(getData, trigger, needRefreshGroup = false) {
