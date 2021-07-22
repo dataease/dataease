@@ -44,6 +44,7 @@ export default {
     })
   },
   created() {
+    this.$store.dispatch('app/toggleSideBarHide', false)
     const routerParam = this.$router.currentRoute.params
     routerParam && this.$nextTick(() => {
       this.toMsgShare(routerParam)
