@@ -2,7 +2,7 @@
   <el-col>
     <el-row style="margin-top: 10px;">
       <complex-table :data="data" :columns="columns" local-key="datasetTaskRecord" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
-        <el-table-column prop="name" :label="$t('dataset.task_name')"/>
+        <el-table-column prop="name" :label="$t('dataset.task_name')" />
         <el-table-column prop="startTime" :label="$t('dataset.start_time')">
           <template slot-scope="scope">
             <span>{{ scope.row.startTime | timestampFormatDate }}</span>
@@ -49,14 +49,13 @@ import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { post} from '@/api/dataset/dataset'
+import { post } from '@/api/dataset/dataset'
 import cron from '@/components/cron/cron'
 import TableSelector from '@/views/chart/view/TableSelector'
 
-
 export default {
   name: 'TaskRecord',
-  components: { ComplexTable, LayoutContent, cron, TableSelector},
+  components: { ComplexTable, LayoutContent, cron, TableSelector },
   data() {
     return {
       header: '',
@@ -73,7 +72,7 @@ export default {
         quickPlaceholder: this.$t('dataset.task.search_by_name'),
         components: [
           { field: 'dataset_table_task.name', label: this.$t('dataset.task.name'), component: 'DeComplexInput' },
-          { field: 'dataset_table_task_log.status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false}
+          { field: 'dataset_table_task_log.status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
         ]
       },
       paginationConfig: {
@@ -103,18 +102,30 @@ export default {
       error_massage: ''
     }
   },
+  computed: {
+  },
   created() {
     this.search()
     this.timer = setInterval(() => {
       this.search(this.last_condition, false)
     }, 5000)
   },
-  computed: {
-  },
   beforeDestroy() {
     clearInterval(this.timer)
   },
   methods: {
+    msg2Current(routerParam) {
+      const taskId = routerParam.taskId
+      // console.log(taskId)
+      const current_condition = {
+        'dataset_table_task.id': {
+          field: 'dataset_table_task.id',
+          operator: 'eq',
+          value: taskId
+        }
+      }
+      this.search(current_condition)
+    },
     sortChange({ column, prop, order }) {
       this.orderConditions = []
       if (!order) {
