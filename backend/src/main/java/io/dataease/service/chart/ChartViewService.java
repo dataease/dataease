@@ -180,10 +180,10 @@ public class ChartViewService {
             }
         }
 
-        // 获取数据集
-        DatasetTable table = dataSetTableService.get(view.getTableId());
+        // 获取数据集,需校验权限
+        DatasetTable table = dataSetTableService.getWithPermission(view.getTableId());
         if (ObjectUtils.isEmpty(table)) {
-            throw new RuntimeException(Translator.get("i18n_dataset_delete"));
+            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
         }
         // 判断连接方式，直连或者定时抽取 table.mode
         DatasourceRequest datasourceRequest = new DatasourceRequest();
