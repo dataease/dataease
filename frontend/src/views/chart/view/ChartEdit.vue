@@ -253,13 +253,13 @@
                       class="drag-block-style"
                       @add="addXaxis"
                     >
-                      <span v-show="!view.xaxis || view.xaxis.length === 0" class="drag_placeholder-style">
-                        {{ $t('chart.placeholder_field') }}
-                      </span>
                       <transition-group class="draggable-group">
                         <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
                       </transition-group>
                     </draggable>
+                    <div v-if="!view.xaxis || view.xaxis.length === 0" class="drag-placeholder-style">
+                      <span>{{ $t('chart.placeholder_field') }}</span>
+                    </div>
                   </el-row>
                   <el-row class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
@@ -283,13 +283,13 @@
                       class="drag-block-style"
                       @add="addYaxis"
                     >
-                      <span v-show="!view.yaxis || view.yaxis.length === 0" class="drag_placeholder-style">
-                        {{ $t('chart.placeholder_field') }}
-                      </span>
                       <transition-group class="draggable-group">
                         <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
                       </transition-group>
                     </draggable>
+                    <div v-if="!view.yaxis || view.yaxis.length === 0" class="drag-placeholder-style">
+                      <span>{{ $t('chart.placeholder_field') }}</span>
+                    </div>
                   </el-row>
                   <el-row v-if="view.type && view.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
@@ -306,15 +306,15 @@
                       class="drag-block-style"
                       @add="addStack"
                     >
-                      <span v-show="!view.extStack || view.extStack.length === 0" class="drag_placeholder-style">
-                        {{ $t('chart.placeholder_field') }}
-                      </span>
                       <transition-group class="draggable-group">
                         <chart-drag-item v-for="(item,index) in view.extStack" :key="item.id" :param="param" :index="index" :item="item" @onItemChange="stackItemChange" @onItemRemove="stackItemRemove" />
                       </transition-group>
                     </draggable>
+                    <div v-if="!view.extStack || view.extStack.length === 0" class="drag-placeholder-style">
+                      <span>{{ $t('chart.placeholder_field') }}</span>
+                    </div>
                   </el-row>
-                  <div class="padding-lr filter-class" style="margin-top: 6px;">
+                  <el-row class="padding-lr" style="margin-top: 6px;">
                     <span>{{ $t('chart.result_filter') }}</span>
                     <!--                    <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">-->
                     <!--                      {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon&#45;&#45;right" />-->
@@ -328,14 +328,14 @@
                       style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @add="addCustomFilter"
                     >
-                      <span v-show="!view.customFilter || view.customFilter.length === 0" class="drag_placeholder-style">
-                        {{ $t('chart.placeholder_field') }}
-                      </span>
                       <transition-group class="draggable-group">
                         <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index" :item="item" @onFilterItemRemove="filterItemRemove" @editItemFilter="showEditFilter" />
                       </transition-group>
                     </draggable>
-                  </div>
+                    <div v-if="!view.customFilter || view.customFilter.length === 0" class="drag-placeholder-style">
+                      <span>{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
                 </el-row>
               </div>
             </el-col>
@@ -1531,14 +1531,6 @@ export default {
     pointer-events:none;
   }
 
-  .filter-class{
-    height: calc(35% - 102px);
-  }
-
-  .filter-class>>>.filter-inner-class{
-    height: calc(100% - 40px);
-  }
-
   .chart-class{
     height: 100%;
     padding: 10px;
@@ -1604,11 +1596,12 @@ export default {
     align-items: center;
     background-color: white;
   }
-  .drag_placeholder-style{
-    font-size: 12px;
-    color: #CCCCCC;
-    padding: 0 0 2px 10px;
-    display: inline-block;
+  .drag-placeholder-style{
+    position: absolute;
+    top: calc(50% - 2px);
+    left: 0;
     width: 100%;
+    color: #CCCCCC;
+    text-align: center;
   }
 </style>
