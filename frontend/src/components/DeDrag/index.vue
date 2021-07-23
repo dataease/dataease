@@ -1474,7 +1474,7 @@ export default {
       style.width = width
       style.height = height
       style.rotate = this.rotate
-      this.hasMove = true
+      // this.hasMove = true
       this.$store.commit('setShapeStyle', style)
     },
     mountedFunction() {
