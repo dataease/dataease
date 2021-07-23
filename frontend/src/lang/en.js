@@ -822,7 +822,8 @@ export default {
     stack_item: 'Stack Item',
     map_range: 'Map range',
     select_map_range: 'Please select map range',
-    area: 'Area'
+    area: 'Area',
+    placeholder_field: 'Drag Field'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

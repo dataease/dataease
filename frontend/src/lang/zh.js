@@ -822,7 +822,8 @@ export default {
     map_range: '地图范围',
     select_map_range: '请选择地图范围',
     area: '地区',
-    stack_item: '堆叠项'
+    stack_item: '堆叠项',
+    placeholder_field: '拖入字段'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
