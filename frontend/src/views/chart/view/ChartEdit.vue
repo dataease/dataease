@@ -253,6 +253,9 @@
                       class="drag-block-style"
                       @add="addXaxis"
                     >
+                      <span v-show="!view.xaxis || view.xaxis.length === 0" class="drag_placeholder-style">
+                        {{ $t('chart.placeholder_field') }}
+                      </span>
                       <transition-group class="draggable-group">
                         <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
                       </transition-group>
@@ -280,6 +283,9 @@
                       class="drag-block-style"
                       @add="addYaxis"
                     >
+                      <span v-show="!view.yaxis || view.yaxis.length === 0" class="drag_placeholder-style">
+                        {{ $t('chart.placeholder_field') }}
+                      </span>
                       <transition-group class="draggable-group">
                         <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
                       </transition-group>
@@ -300,6 +306,9 @@
                       class="drag-block-style"
                       @add="addStack"
                     >
+                      <span v-show="!view.extStack || view.extStack.length === 0" class="drag_placeholder-style">
+                        {{ $t('chart.placeholder_field') }}
+                      </span>
                       <transition-group class="draggable-group">
                         <chart-drag-item v-for="(item,index) in view.extStack" :key="item.id" :param="param" :index="index" :item="item" @onItemChange="stackItemChange" @onItemRemove="stackItemRemove" />
                       </transition-group>
@@ -319,6 +328,9 @@
                       style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @add="addCustomFilter"
                     >
+                      <span v-show="!view.customFilter || view.customFilter.length === 0" class="drag_placeholder-style">
+                        {{ $t('chart.placeholder_field') }}
+                      </span>
                       <transition-group class="draggable-group">
                         <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index" :item="item" @onFilterItemRemove="filterItemRemove" @editItemFilter="showEditFilter" />
                       </transition-group>
@@ -1591,5 +1603,12 @@ export default {
     display: flex;
     align-items: center;
     background-color: white;
+  }
+  .drag_placeholder-style{
+    font-size: 12px;
+    color: #CCCCCC;
+    padding: 0 0 2px 10px;
+    display: inline-block;
+    width: 100%;
   }
 </style>
