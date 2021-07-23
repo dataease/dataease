@@ -61,7 +61,7 @@ import TableSelector from '@/views/chart/view/TableSelector'
 
 export default {
   name: 'TaskRecord',
-  components: { ComplexTable, LayoutContent, cron, TableSelector},
+  components: { ComplexTable, LayoutContent, cron, TableSelector },
   props: {
     param: {
       type: Object,
@@ -85,7 +85,7 @@ export default {
         components: [
           { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput' },
           { field: 'dataset_table.name', label: this.$t('dataset.name'), component: 'DeComplexInput' },
-          { field: 'dataset_table_task_log.status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false}
+          { field: 'dataset_table_task_log.status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
         ]
       },
       paginationConfig: {
@@ -118,28 +118,43 @@ export default {
   computed: {
   },
   created() {
-    if(this.param == null){
+    if (this.param == null) {
       this.last_condition = {}
       this.search()
-    }else {
+    } else {
       this.last_condition = {
         'dataset_table_task.name': {
-            field: "dataset_table_task.name",
-            operator: "eq",
-            value: this.param.name
+          field: 'dataset_table_task.name',
+          operator: 'eq',
+          value: this.param.name
         }
       }
-     this.search(this.last_condition)
+      this.search(this.last_condition)
     }
 
-    this.timer = setInterval(() => {
-      this.search(this.last_condition, false)
-    }, 5000)
+    // this.timer = setInterval(() => {
+    //   this.search(this.last_condition, false)
+    // }, 5000)
+    this.createTimer()
   },
   beforeDestroy() {
-    clearInterval(this.timer)
+    // clearInterval(this.timer)
+    this.destroyTimer()
   },
   methods: {
+    createTimer() {
+      if (!this.timer) {
+        this.timer = setInterval(() => {
+          this.search(this.last_condition, false)
+        }, 5000)
+      }
+    },
+    destroyTimer() {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
     msg2Current(routerParam) {
       if (!routerParam || !routerParam.taskId) return
       const taskId = routerParam.taskId
@@ -151,7 +166,13 @@ export default {
           value: taskId
         }
       }
+      // 先把定时器干掉 否则会阻塞下面的search
+      this.destroyTimer()
+
       this.search(current_condition)
+
+      // 查询完再开启定时器
+      this.createTimer()
     },
     sortChange({ column, prop, order }) {
       this.orderConditions = []
@@ -186,7 +207,7 @@ export default {
       this.show_error_massage = true
       this.error_massage = massage
     },
-    jumpTask(item){
+    jumpTask(item) {
       this.$emit('jumpTask', item)
     }
   }
