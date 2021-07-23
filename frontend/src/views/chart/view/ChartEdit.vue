@@ -709,6 +709,8 @@ export default {
           this.httpRequest.msg = err.response.data.message
           return true
         })
+      } else {
+        this.resetView()
       }
     },
     save(getData, trigger, needRefreshGroup = false) {
