@@ -710,7 +710,7 @@ export default {
           return true
         })
       } else {
-        this.resetView()
+        this.resetDatasetField()
       }
     },
     save(getData, trigger, needRefreshGroup = false) {
@@ -1190,11 +1190,14 @@ export default {
     hideTab() {
       this.tabStatus = false
     },
-    resetView() {
+    resetDatasetField() {
       this.dimension = []
       this.dimensionData = []
       this.quota = []
       this.quotaData = []
+    },
+    resetView() {
+      this.resetDatasetField()
       this.view = {
         xAxis: [],
         yAxis: [],
