@@ -1,5 +1,5 @@
 package io.dataease.commons.constants;
 
 public enum TaskStatus {
-    Underway, Stopped
+    Underway, Stopped, Pending, Exec
 }

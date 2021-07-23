@@ -100,7 +100,7 @@
                               <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
                               {{ $t('dataset.sql_data') }}
                             </el-dropdown-item>
-                            <el-dropdown-item :command="beforeClickAddData('excel',data)">
+                            <el-dropdown-item :command="beforeClickAddData('excel',data)" :disabled="!kettleRunning">
                               <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
                               {{ $t('dataset.excel_data') }}
                             </el-dropdown-item>
@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post } from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post , isKettleRunning} from '@/api/dataset/dataset'
 import { authModel } from '@/api/system/sysAuth'
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
@@ -415,7 +415,8 @@ export default {
         id: 'id',
         parentId: 'pid'
       },
-      isTreeSearch: false
+      isTreeSearch: false,
+      kettleRunning: false
     }
   },
   computed: {
@@ -425,6 +426,9 @@ export default {
     //   this.refreshNodeBy(this.currGroup.id)
     //   return this.$store.state.dataset.sceneData
     // }
+  },
+  created() {
+    this.kettleState()
   },
   watch: {
     search(val) {
@@ -467,7 +471,11 @@ export default {
         'node': node
       }
     },
-
+    kettleState() {
+      isKettleRunning().then(res => {
+        this.kettleRunning = res.data
+      })
+    },
     clickMore(param) {
       // console.log(param)
       switch (param.type) {

@@ -95,6 +95,7 @@ public class DataSetTableTaskLogService {
         if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
             dataSetTaskDTO.setLastExecStatus(datasetTableTaskLogs.get(0).getStatus());
             dataSetTaskDTO.setLastExecTime(datasetTableTaskLogs.get(0).getCreateTime());
+            dataSetTaskDTO.setMsg(datasetTableTaskLogs.get(0).getInfo());
         }
         return dataSetTaskDTO;
     }

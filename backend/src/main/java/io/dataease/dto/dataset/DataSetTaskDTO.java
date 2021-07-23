@@ -15,4 +15,5 @@ public class DataSetTaskDTO extends DatasetTableTask {
     private String datasetName;
     private Long nextExecTime;
     private String taskStatus;
+    private String msg;
 }
