@@ -18,21 +18,39 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import UnionView from "@/views/dataset/data/UnionView";
-import UpdateInfo from "@/views/dataset/data/UpdateInfo";
-import DatasetTaskList from "@/views/system/task/DatasetTaskList";
-import TaskRecord from "@/views/system/task/TaskRecord";
-import TabDataPreview from "@/views/dataset/data/TabDataPreview";
-import DatasetTableData from "@/views/dataset/common/DatasetTableData";
+import UnionView from '@/views/dataset/data/UnionView'
+import UpdateInfo from '@/views/dataset/data/UpdateInfo'
+import DatasetTaskList from '@/views/system/task/DatasetTaskList'
+import TaskRecord from '@/views/system/task/TaskRecord'
+import TabDataPreview from '@/views/dataset/data/TabDataPreview'
+import DatasetTableData from '@/views/dataset/common/DatasetTableData'
+import bus from '@/utils/bus'
+import { mapGetters } from 'vuex'
 export default {
-  components: {DatasetTableData, LayoutContent, ComplexTable,UnionView, UpdateInfo, TabDataPreview, DatasetTaskList, TaskRecord},
+  components: { DatasetTableData, LayoutContent, ComplexTable, UnionView, UpdateInfo, TabDataPreview, DatasetTaskList, TaskRecord },
   data() {
     return {
       task: null,
       tabActive: 'DatasetTaskList'
     }
   },
-
+  computed: {
+    ...mapGetters([
+      'permission_routes'
+    ])
+  },
+  mounted() {
+    bus.$on('to-msg-dataset', params => {
+      this.toMsgShare(params)
+    })
+  },
+  created() {
+    this.$store.dispatch('app/toggleSideBarHide', false)
+    const routerParam = this.$router.currentRoute.params
+    routerParam && this.$nextTick(() => {
+      this.toMsgShare(routerParam)
+    })
+  },
   methods: {
     changeTab(){
       this.task = null
@@ -42,9 +60,42 @@ export default {
       this.task = task
       this.tabActive = 'TaskRecord'
     },
-    jumpTask(task){
+    jumpTask(task) {
       this.task = task
       this.tabActive = 'DatasetTaskList'
+    },
+    toMsgShare(routerParam) {
+      if (routerParam !== null && routerParam.msgNotification) {
+        const panelShareTypeIds = [4, 5, 6]
+        // 说明是从消息通知跳转过来的
+        if (panelShareTypeIds.includes(routerParam.msgType)) { // 是数据集同步
+          if (routerParam.sourceParam) {
+            this.openSystem()
+            try {
+              const msgParam = JSON.parse(routerParam.sourceParam)
+              // this.param = msgParam.tableId
+              this.tabActive = 'TaskRecord'
+              this.$nextTick(() => {
+                this.$refs.task_record && this.$refs.task_record.msg2Current && this.$refs.task_record.msg2Current(msgParam)
+              })
+            } catch (error) {
+              console.error(error)
+            }
+          }
+        }
+      }
+    },
+    openSystem() {
+      const path = '/system'
+      let route = this.permission_routes.find(
+        item => item.path === '/' + path.split('/')[1]
+      )
+      // 如果找不到这个路由，说明是首页
+      if (!route) {
+        route = this.permission_routes.find(item => item.path === '/')
+      }
+      this.$store.commit('permission/SET_CURRENT_ROUTES', route)
+      // this.setSidebarHide(route)
     }
   }
 
