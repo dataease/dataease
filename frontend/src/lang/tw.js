@@ -827,6 +827,7 @@ export default {
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
     datalist: '數據集',
+    name: '數據集名稱',
     add_group: '添加分組',
     add_scene: '添加場景',
     group: '分組',
@@ -961,9 +962,10 @@ export default {
       task_status: '任務狀態',
       dataset: '數據集',
       search_by_name: '根據名稱搜索',
-      underway: '運行中',
-      stopped: '停止',
-      exec: '執行',
+      underway: '等待執行',
+      stopped: '執行结束',
+      pending: '暫停',
+      exec: '執行一次',
       confirm_exec: '手動觸發執行？',
       change_success: '狀態切換成功'
     },
@@ -1289,6 +1291,8 @@ export default {
     channel_inner_msg: '站內消息'
   },
   denumberrange: {
+    label: '數值區間',
+    split_placeholder: '至',
     please_key_min: '請輸入最小值',
     please_key_max: '請輸入最大值',
     out_of_min: '最小值不能小于最小整數-2³²',
@@ -1296,5 +1300,35 @@ export default {
     must_int: '請輸入整數',
     min_out_max: '最小值必須小于最大值',
     max_out_min: '最大值必須大于最小值'
+  },
+  denumberselect: {
+    label: '數字下拉',
+    placeholder: '請選擇'
+  },
+  deinputsearch: {
+    label: '文本搜索',
+    placeholder: '請輸入關鍵字'
+  },
+  detextselect: {
+    label: '文本下拉',
+    placeholder: '請選擇'
+  },
+  dedaterange: {
+    label: '日期範圍',
+    to_placeholder: '結束日期',
+    from_placeholder: '開始日期',
+    split_placeholder: '至'
+  },
+  dedate: {
+    label: '日期',
+    placeholder: '請選擇日期'
+  },
+  deyearmonth: {
+    label: '年月',
+    placeholder: '請選擇年月'
+  },
+  deyear: {
+    label: '年份',
+    placeholder: '請選擇年份'
   }
 }

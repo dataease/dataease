@@ -1448,6 +1448,7 @@ export default {
     },
     // 记录当前样式
     recordCurStyle() {
+      debugger
       const style = {
         ...this.defaultStyle
       }
@@ -1462,6 +1463,7 @@ export default {
 
     // 记录当前样式 矩阵处理
     recordMatrixCurStyle() {
+      debugger
       const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
       const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
       const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
