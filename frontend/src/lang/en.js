@@ -827,6 +827,7 @@ export default {
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
     datalist: 'Data Set',
+    name: 'DataSet Name',
     add_group: 'Add Group',
     add_scene: 'Add Scene',
     group: 'Group',
@@ -961,9 +962,10 @@ export default {
       task_status: 'Task status',
       dataset: 'Data set',
       search_by_name: 'Search by name',
-      underway: 'Running',
-      stopped: 'Stopped',
-      exec: 'Execute',
+      underway: 'Waiting for execution',
+      stopped: 'End',
+      pending: 'Pause',
+      exec: 'Execute Once',
       confirm_exec: 'Manual trigger execution？',
       change_success: 'State switch successful'
     },

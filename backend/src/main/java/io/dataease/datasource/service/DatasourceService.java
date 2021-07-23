@@ -120,6 +120,13 @@ public class DatasourceService {
         datasourceProvider.checkStatus(datasourceRequest);
     }
 
+    public void validate(String datasourceId) throws Exception {
+        if(StringUtils.isEmpty(datasourceId)){
+            return;
+        }
+        Datasource datasource = datasourceMapper.selectByPrimaryKey(datasourceId);
+        validate(datasource);
+    }
     public List<String> getSchema(Datasource datasource) throws Exception {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -132,6 +139,7 @@ public class DatasourceService {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
+        datasourceProvider.checkStatus(datasourceRequest);
         List<String> tables = datasourceProvider.getTables(datasourceRequest);
 
         // 获取当前数据源下的db类型数据集

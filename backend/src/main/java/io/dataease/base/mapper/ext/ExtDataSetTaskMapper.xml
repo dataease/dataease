@@ -16,6 +16,7 @@
         SELECT dataset_table_task_log.*, dataset_table_task.name
         FROM dataset_table_task_log
         LEFT JOIN dataset_table_task ON dataset_table_task_log.task_id = dataset_table_task.id
+        LEFT JOIN dataset_table ON dataset_table_task_log.table_id = dataset_table.id
         <if test="_parameter != null">
             <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
         </if>

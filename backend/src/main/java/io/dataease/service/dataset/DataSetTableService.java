@@ -1392,9 +1392,8 @@ public class DataSetTableService {
         List<String> taskIds = datasetTableTaskLogMapper.selectByExample(datasetTableTaskLogExample).stream().map(DatasetTableTaskLog::getTaskId).collect(Collectors.toList());
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
 
-        DatasetTableTask datasetTableTask = new DatasetTableTask();
-        datasetTableTask.setLastExecStatus(JobStatus.Error.name());
-        dataSetTableTaskService.update(taskIds, datasetTableTask);
+        dataSetTableTaskService.updateTaskStatus(taskIds, JobStatus.Error);
+        //TODO check task status
 
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());

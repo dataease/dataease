@@ -401,6 +401,7 @@ public class JdbcProvider extends DatasourceProvider {
         String driver = null;
         String jdbcurl = null;
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        Properties props = new Properties();
         switch (datasourceType) {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
@@ -429,13 +430,14 @@ public class JdbcProvider extends DatasourceProvider {
                 password = oracleConfigration.getPassword();
                 driver = oracleConfigration.getDriver();
                 jdbcurl = oracleConfigration.getJdbc();
+                props.put( "oracle.net.CONNECT_TIMEOUT" , "5000") ;
+                props.put( "oracle.jdbc.ReadTimeout" , "5000" ) ;
                 break;
             default:
                 break;
         }
 
         Class.forName(driver);
-        Properties props = new Properties();
         props.setProperty("user", username);
         if (StringUtils.isNotBlank(password)) {
             props.setProperty("password", password);
