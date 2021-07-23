@@ -822,6 +822,7 @@ export default {
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
     datalist: '數據集',
+    name: '數據集名稱',
     add_group: '添加分組',
     add_scene: '添加場景',
     group: '分組',
@@ -956,9 +957,10 @@ export default {
       task_status: '任務狀態',
       dataset: '數據集',
       search_by_name: '根據名稱搜索',
-      underway: '運行中',
-      stopped: '停止',
-      exec: '執行',
+      underway: '等待執行',
+      stopped: '執行结束',
+      pending: '暫停',
+      exec: '執行一次',
       confirm_exec: '手動觸發執行？',
       change_success: '狀態切換成功'
     },

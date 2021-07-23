@@ -6,6 +6,7 @@ import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
@@ -15,6 +16,7 @@ import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.listener.util.CacheUtils;
@@ -90,9 +92,12 @@ public class ExtractDataService {
     private DatasetTableMapper datasetTableMapper;
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
-
+    @Resource
+    private DatasourceService datasourceService;
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+    @Resource
+    private UtilMapper utilMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -147,6 +152,7 @@ public class ExtractDataService {
         }else {
             datasetTableTask.setLastExecTime(System.currentTimeMillis());
             datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
+            datasetTableTask.setStatus(TaskStatus.Exec.name());
             dataSetTableTaskService.update(datasetTableTask);
             return false;
         }
@@ -241,7 +247,7 @@ public class ExtractDataService {
         if(datasetTableTask == null){
             return;
         }
-        if(datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name())){
+        if(datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name())|| datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Pending.name())){
             LogUtil.info("Skip synchronization task, task ID : " + datasetTableTask.getId());
             return;
         }
@@ -301,13 +307,13 @@ public class ExtractDataService {
                     deleteFile("all_scope", datasetTableId);
 
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-                    datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
-                    dataSetTableTaskService.update(datasetTableTask);
+
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Completed);
 
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
-                    datasetTableTask.setLastExecStatus(JobStatus.Error.name());
-                    dataSetTableTaskService.update(datasetTableTask);
+
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
 
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
@@ -360,17 +366,22 @@ public class ExtractDataService {
                     deleteFile("incremental_delete", datasetTableId);
 
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-                    datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
-                    dataSetTableTaskService.update(datasetTableTask);
+
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Completed);
                 }catch (Exception e){
                     saveErrorLog(datasetTableId, taskId, e);
                     sendWebMsg(datasetTable, taskId,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
-                    datasetTableTask.setLastExecStatus(JobStatus.Error.name());
-                    dataSetTableTaskService.update(datasetTableTask);
+
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
+
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
                 }finally {
+                    if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
+                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
+                        dataSetTableTaskService.update(datasetTableTask);
+                    }
                 }
                 break;
         }
@@ -549,6 +560,7 @@ public class ExtractDataService {
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
+        datasourceService.validate(datasetTable.getDataSourceId());
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
         JobMeta jobMeta = null;
