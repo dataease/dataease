@@ -156,7 +156,7 @@
     <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
       <Preview v-if="previewVisible" :in-screen="!previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
     </fullscreen>
-    <input id="input" ref="files" type="file" accept="image/*" hidden @change="handleFileChange">
+    <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';} " @change="handleFileChange">
 
     <!--矩形样式组件-->
     <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
