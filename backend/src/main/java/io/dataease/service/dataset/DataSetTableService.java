@@ -299,6 +299,12 @@ public class DataSetTableService {
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        if (CollectionUtils.isEmpty(fields)) {
+            map.put("fields", fields);
+            map.put("data", new ArrayList<>());
+            map.put("page", new DataSetPreviewPage());
+            return map;
+        }
         String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
