@@ -33,10 +33,10 @@ public class DataSetTableTaskLogController {
         dataSetTableTaskLogService.delete(id);
     }
 
-    @PostMapping("list/{goPage}/{pageSize}")
-    public Pager<List<DataSetTaskLogDTO>> list(@RequestBody BaseGridRequest request, @PathVariable int goPage, @PathVariable int pageSize) {
+    @PostMapping("list/{type}/{goPage}/{pageSize}")
+    public Pager<List<DataSetTaskLogDTO>> list(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        return PageUtils.setPageInfo(page, dataSetTableTaskLogService.list(request));
+        return PageUtils.setPageInfo(page, dataSetTableTaskLogService.list(request, type));
     }
 
 }
