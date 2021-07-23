@@ -226,7 +226,7 @@ export default {
 
     handleMouseDownOnShape(e) {
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search') {
+      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-number-range') {
         e.preventDefault()
       }
 

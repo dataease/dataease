@@ -750,6 +750,7 @@ export default {
     chart_funnel: '漏鬥圖',
     chart_radar: '雷達圖',
     chart_gauge: '儀表盤',
+    chart_map: '地圖',
     dateStyle: '日期顯示',
     datePattern: '日期格式',
     y: '年',
@@ -817,7 +818,11 @@ export default {
     drag_block_funnel_width: '漏鬥層寬',
     drag_block_funnel_split: '漏鬥分層',
     drag_block_radar_length: '分支長度',
-    drag_block_radar_label: '分支標簽'
+    drag_block_radar_label: '分支標簽',
+    map_range: '地圖範圍',
+    select_map_range: '請選擇地圖範圍',
+    area: '地區',
+    stack_item: '堆疊項'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -1121,7 +1126,7 @@ export default {
     lineHeight: '行高',
     letterSpacing: '字間距',
     textAlign: '左右對齊',
-    opacity: '透明度',
+    opacity: '不透明度',
     verticalAlign: '上下對齊',
     text_align_left: '左對齊',
     text_align_center: '左右居中',
@@ -1282,5 +1287,14 @@ export default {
     i18n_msg_type_dataset_sync_faild: '數據集同步失敗',
     i18n_msg_type_all: '全部類型',
     channel_inner_msg: '站內消息'
+  },
+  denumberrange: {
+    please_key_min: '請輸入最小值',
+    please_key_max: '請輸入最大值',
+    out_of_min: '最小值不能小于最小整數-2³²',
+    out_of_max: '最大值不能大于最大整數2³²-1',
+    must_int: '請輸入整數',
+    min_out_max: '最小值必須小于最大值',
+    max_out_min: '最大值必須大于最小值'
   }
 }

@@ -741,6 +741,9 @@ export default {
         background: DEFAULT_BACKGROUND_COLOR,
         split: DEFAULT_SPLIT
       })
+      view.xaxis = JSON.stringify([])
+      view.yaxis = JSON.stringify([])
+      view.extStack = JSON.stringify([])
       view.customFilter = JSON.stringify([])
       post('/chart/view/save', view).then(response => {
         this.closeCreateChart()

@@ -750,6 +750,7 @@ export default {
     chart_funnel: '漏斗图',
     chart_radar: '雷达图',
     chart_gauge: '仪表盘',
+    chart_map: '地图',
     dateStyle: '日期显示',
     datePattern: '日期格式',
     y: '年',
@@ -817,7 +818,11 @@ export default {
     drag_block_funnel_width: '漏斗层宽',
     drag_block_funnel_split: '漏斗分层',
     drag_block_radar_length: '分支长度',
-    drag_block_radar_label: '分支标签'
+    drag_block_radar_label: '分支标签',
+    map_range: '地图范围',
+    select_map_range: '请选择地图范围',
+    area: '地区',
+    stack_item: '堆叠项'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1122,7 +1127,7 @@ export default {
     lineHeight: '行高',
     letterSpacing: '字间距',
     textAlign: '左右对齐',
-    opacity: '透明度',
+    opacity: '不透明度',
     verticalAlign: '上下对齐',
     text_align_left: '左对齐',
     text_align_center: '左右居中',
@@ -1284,5 +1289,14 @@ export default {
     i18n_msg_type_dataset_sync_faild: '数据集同步失败',
     i18n_msg_type_all: '全部类型',
     channel_inner_msg: '站内消息'
+  },
+  denumberrange: {
+    please_key_min: '请输入最小值',
+    please_key_max: '请输入最大值',
+    out_of_min: '最小值不能小于最小整数-2³²',
+    out_of_max: '最大值不能大于最大整数2³²-1',
+    must_int: '请输入整数',
+    min_out_max: '最小值必须小于最大值',
+    max_out_min: '最大值必须大于最小值'
   }
 }
