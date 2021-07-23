@@ -195,12 +195,12 @@ public class ExtractDataService {
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
-                    sendWebMsg(datasetTable, null, true);
+//                    sendWebMsg(datasetTable, null, true);
                     deleteFile("all_scope", datasetTableId);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
-                    sendWebMsg(datasetTable, null, false);
+//                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                     deleteFile("all_scope", datasetTableId);

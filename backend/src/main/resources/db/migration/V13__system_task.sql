@@ -11,6 +11,12 @@ update dataset_table_task set status='Stopped' where rate='SIMPLE';
 update dataset_table_task set status='Underway' where rate='CRON';
 
 
+UPDATE dataset_table_task
+SET dataset_table_task.last_exec_time = (SELECT dataset_table_task_log.start_time FROM dataset_table_task_log WHERE dataset_table_task_log.task_id = dataset_table_task.id limit 1);
+
+UPDATE dataset_table_task
+SET dataset_table_task.last_exec_status = (SELECT dataset_table_task_log.status FROM dataset_table_task_log WHERE dataset_table_task_log.task_id = dataset_table_task.id limit 1);
+
 
 ALTER TABLE `dataset_table_task_log` ADD COLUMN `trigger_type` VARCHAR(45) NULL AFTER `create_time`;
 ALTER TABLE `dataset_table_task` ADD COLUMN `extra_data` LONGTEXT NULL AFTER `last_exec_status`;

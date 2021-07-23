@@ -67,7 +67,7 @@ public class SysMsgService {
         return sysMsgs;
     }
 
-    public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest) {
+    public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest, List<Long> typeIds) {
         String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
@@ -79,12 +79,15 @@ public class SysMsgService {
             orderClause = String.join(", ", orders);
         }
 
-        if (ObjectUtils.isNotEmpty(msgRequest.getType())) {
+        /*if (ObjectUtils.isNotEmpty(msgRequest.getType())) {
             SysMsgTypeExample sysMsgTypeExample = new SysMsgTypeExample();
             sysMsgTypeExample.createCriteria().andPidEqualTo(msgRequest.getType());
 
             List<SysMsgType> sysMsgTypes = sysMsgTypeMapper.selectByExample(sysMsgTypeExample);
             List<Long> typeIds = sysMsgTypes.stream().map(SysMsgType::getMsgTypeId).collect(Collectors.toList());
+            criteria.andTypeIdIn(typeIds);
+        }*/
+        if (CollectionUtils.isNotEmpty(typeIds)){
             criteria.andTypeIdIn(typeIds);
         }
 

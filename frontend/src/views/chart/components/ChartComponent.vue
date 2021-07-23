@@ -5,15 +5,17 @@
 </template>
 
 <script>
-import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR, BASE_GAUGE } from '../chart/chart'
+import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR, BASE_GAUGE, BASE_MAP } from '../chart/chart'
 import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
 import { baseLineOption, stackLineOption } from '../chart/line/line'
 import { basePieOption, rosePieOption } from '../chart/pie/pie'
+import { baseMapOption } from '../chart/map/map'
 import { baseFunnelOption } from '../chart/funnel/funnel'
 import { baseRadarOption } from '../chart/radar/radar'
 import { baseGaugeOption } from '../chart/gauge/gauge'
-import eventBus from '@/components/canvas/utils/eventBus'
+// import eventBus from '@/components/canvas/utils/eventBus'
 import { uuid } from 'vue-uuid'
+import { geoJson } from '@/api/map/map'
 
 export default {
   name: 'ChartComponent',
@@ -93,6 +95,29 @@ export default {
       } else if (chart.type === 'gauge') {
         chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
       }
+
+      if (chart.type === 'map') {
+        const customAttr = JSON.parse(chart.customAttr)
+        if (!customAttr.areaCode) return
+
+        let areaJson
+        if ((areaJson = localStorage.getItem('areaJson' + customAttr.areaCode)) !== null) {
+          this.initMapChart(areaJson, chart)
+          return
+        }
+        geoJson(customAttr.areaCode).then(res => {
+          this.initMapChart(res.data, chart)
+          // localStorage最大容量只有5M，先取消缓存
+          // localStorage.setItem('areaJson' + customAttr.areaCode, res.data)
+        })
+        return
+      }
+      this.myEcharts(chart_option)
+    },
+    initMapChart(geoJson, chart) {
+      this.$echarts.registerMap('HK', geoJson)
+      const base_json = JSON.parse(JSON.stringify(BASE_MAP))
+      const chart_option = baseMapOption(base_json, chart)
       this.myEcharts(chart_option)
     },
     myEcharts(option) {

@@ -55,10 +55,9 @@ import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { post} from '@/api/dataset/dataset'
+import { post } from '@/api/dataset/dataset'
 import cron from '@/components/cron/cron'
 import TableSelector from '@/views/chart/view/TableSelector'
-
 
 export default {
   name: 'TaskRecord',
@@ -116,6 +115,8 @@ export default {
       error_massage: ''
     }
   },
+  computed: {
+  },
   created() {
     if(this.param == null){
       this.last_condition = {}
@@ -135,12 +136,23 @@ export default {
       this.search(this.last_condition, false)
     }, 5000)
   },
-  computed: {
-  },
   beforeDestroy() {
     clearInterval(this.timer)
   },
   methods: {
+    msg2Current(routerParam) {
+      if (!routerParam || !routerParam.taskId) return
+      const taskId = routerParam.taskId
+      // console.log(taskId)
+      const current_condition = {
+        'dataset_table_task.id': {
+          field: 'dataset_table_task.id',
+          operator: 'eq',
+          value: taskId
+        }
+      }
+      this.search(current_condition)
+    },
     sortChange({ column, prop, order }) {
       this.orderConditions = []
       if (!order) {

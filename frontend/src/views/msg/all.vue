@@ -36,7 +36,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="type" sortable="custom" :label="$t('webmsg.type')" width="140">
+      <el-table-column prop="typeId" sortable="custom" :label="$t('webmsg.type')" width="140">
         <template slot-scope="scope">
           <span>{{ getTypeName(scope.row.typeId) }}</span>
         </template>
@@ -101,7 +101,7 @@ export default {
       }
 
       if (this.orderConditions.length === 0) {
-        param.orders = [' status asc ', 'create_time desc ']
+        param.orders = ['create_time desc ']
       } else {
         param.orders = formatOrders(this.orderConditions)
       }
@@ -138,6 +138,9 @@ export default {
       }
       if (prop === 'createTime') {
         prop = 'create_time'
+      }
+      if (prop === 'typeId') {
+        prop = 'type_id'
       }
       addOrder({ field: prop, value: order }, this.orderConditions)
       this.search()

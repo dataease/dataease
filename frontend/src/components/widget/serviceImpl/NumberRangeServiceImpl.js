@@ -1,30 +1,28 @@
 import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
-  icon: 'iconfont icon-riqi',
-  label: 'dedaterange.label',
-  defaultClass: 'time-filter'
+  icon: 'iconfont icon-zuoce-qujian',
+  label: 'denumberrange.label',
+  defaultClass: 'text-filter'
 }
 
 const dialogPanel = {
   options: {
     attrs: {
-      type: 'daterange',
-      rangeSeparator: 'dedaterange.split_placeholder',
-      startPlaceholder: 'dedaterange.to_placeholder',
-      endPlaceholder: 'dedaterange.from_placeholder',
+      placeholder_min: 'denumberrange.please_key_min',
+      placeholder_max: 'denumberrange.please_key_max',
       viewIds: []
     },
     value: ''
   },
-  defaultClass: 'time-filter',
-  component: 'de-date'
+  defaultClass: 'text-filter',
+  component: 'de-number-range'
 }
 const drawPanel = {
   type: 'custom',
   style: {
-    width: 300,
-    // height: 47,
+    width: 500,
+    // height: 45.5,
     height: 90,
     fontSize: 14,
     fontWeight: 500,
@@ -33,12 +31,12 @@ const drawPanel = {
     textAlign: '',
     color: ''
   },
-  component: 'de-date'
+  component: 'de-number-range'
 }
 
-class TimeDateRangeServiceImpl extends WidgetService {
+class NumberRangeServiceImpl extends WidgetService {
   constructor(options = {}) {
-    Object.assign(options, { name: 'timeDateRangeWidget' })
+    Object.assign(options, { name: 'numberRangeWidget' })
     super(options)
     this.filterDialog = true
     this.showSwitch = false
@@ -47,7 +45,6 @@ class TimeDateRangeServiceImpl extends WidgetService {
   initLeftPanel() {
     const value = JSON.parse(JSON.stringify(leftPanel))
     return value
-    // console.log('this is first initWidget')
   }
 
   initFilterDialog() {
@@ -59,11 +56,12 @@ class TimeDateRangeServiceImpl extends WidgetService {
     const value = JSON.parse(JSON.stringify(drawPanel))
     return value
   }
+
   filterFieldMethod(fields) {
     return fields.filter(field => {
-      return field['deType'] === 1
+      return field['deType'] === 2
     })
   }
 }
-const timeDateRangeServiceImpl = new TimeDateRangeServiceImpl()
-export default timeDateRangeServiceImpl
+const numberRangeServiceImpl = new NumberRangeServiceImpl()
+export default numberRangeServiceImpl

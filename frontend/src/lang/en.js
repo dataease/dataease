@@ -750,6 +750,7 @@ export default {
     chart_funnel: 'Funnel',
     chart_radar: 'Radar',
     chart_gauge: 'Gauge',
+    chart_map: 'Map',
     dateStyle: 'Date Style',
     datePattern: 'Date Format',
     y: 'Year',
@@ -817,7 +818,11 @@ export default {
     drag_block_funnel_width: 'Funnel Width',
     drag_block_funnel_split: 'Funnel Split',
     drag_block_radar_length: 'Branch Length',
-    drag_block_radar_label: 'Branch Label'
+    drag_block_radar_label: 'Branch Label',
+    stack_item: 'Stack Item',
+    map_range: 'Map range',
+    select_map_range: 'Please select map range',
+    area: 'Area'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1284,5 +1289,46 @@ export default {
     i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
     i18n_msg_type_all: 'All type',
     channel_inner_msg: 'On site news'
+  },
+  denumberrange: {
+    label: 'Number range',
+    split_placeholder: 'To',
+    please_key_min: 'Please key min value',
+    please_key_max: 'Please key max value',
+    out_of_min: 'The min value cannot be less than the min integer -2³²',
+    out_of_max: 'The max value cannot be more than the max integer 2³²-1',
+    must_int: 'Please key interger',
+    min_out_max: 'The min value must be less than the max value',
+    max_out_min: 'The max value must be more than the min value'
+  },
+  denumberselect: {
+    label: 'Number selector',
+    placeholder: 'Please select'
+  },
+  deinputsearch: {
+    label: 'Text search',
+    placeholder: 'Please key keyword'
+  },
+  detextselect: {
+    label: 'Text selector',
+    placeholder: 'Please select'
+  },
+  dedaterange: {
+    label: 'Date range',
+    to_placeholder: 'End date',
+    from_placeholder: 'Start date',
+    split_placeholder: 'To'
+  },
+  dedate: {
+    label: 'Date',
+    placeholder: 'Please select date'
+  },
+  deyearmonth: {
+    label: 'Month',
+    placeholder: 'Please select month'
+  },
+  deyear: {
+    label: 'Year',
+    placeholder: 'Please select year'
   }
 }

@@ -16,6 +16,7 @@
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.ChartViewWithBLOBs">
     <result column="x_axis" jdbcType="LONGVARCHAR" property="xAxis" />
     <result column="y_axis" jdbcType="LONGVARCHAR" property="yAxis" />
+    <result column="ext_stack" jdbcType="LONGVARCHAR" property="extStack" />
     <result column="custom_attr" jdbcType="LONGVARCHAR" property="customAttr" />
     <result column="custom_style" jdbcType="LONGVARCHAR" property="customStyle" />
     <result column="custom_filter" jdbcType="LONGVARCHAR" property="customFilter" />
@@ -84,7 +85,7 @@
     style_priority
   </sql>
   <sql id="Blob_Column_List">
-    x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot
+    x_axis, y_axis, ext_stack, custom_attr, custom_style, custom_filter, snapshot
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.ChartViewExample" resultMap="ResultMapWithBLOBs">
     select
@@ -139,14 +140,14 @@
       table_id, `type`, title, 
       create_by, create_time, update_time, 
       style_priority, x_axis, y_axis, 
-      custom_attr, custom_style, custom_filter, 
-      snapshot)
+      ext_stack, custom_attr, custom_style, 
+      custom_filter, snapshot)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
       #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
       #{stylePriority,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, 
-      #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR}, 
-      #{snapshot,jdbcType=LONGVARCHAR})
+      #{extStack,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, 
+      #{customFilter,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
     insert into chart_view
@@ -186,6 +187,9 @@
       </if>
       <if test="yAxis != null">
         y_axis,
+      </if>
+      <if test="extStack != null">
+        ext_stack,
       </if>
       <if test="customAttr != null">
         custom_attr,
@@ -236,6 +240,9 @@
       </if>
       <if test="yAxis != null">
         #{yAxis,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="extStack != null">
+        #{extStack,jdbcType=LONGVARCHAR},
       </if>
       <if test="customAttr != null">
         #{customAttr,jdbcType=LONGVARCHAR},
@@ -296,6 +303,9 @@
       <if test="record.yAxis != null">
         y_axis = #{record.yAxis,jdbcType=LONGVARCHAR},
       </if>
+      <if test="record.extStack != null">
+        ext_stack = #{record.extStack,jdbcType=LONGVARCHAR},
+      </if>
       <if test="record.customAttr != null">
         custom_attr = #{record.customAttr,jdbcType=LONGVARCHAR},
       </if>
@@ -327,6 +337,7 @@
       style_priority = #{record.stylePriority,jdbcType=VARCHAR},
       x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       y_axis = #{record.yAxis,jdbcType=LONGVARCHAR},
+      ext_stack = #{record.extStack,jdbcType=LONGVARCHAR},
       custom_attr = #{record.customAttr,jdbcType=LONGVARCHAR},
       custom_style = #{record.customStyle,jdbcType=LONGVARCHAR},
       custom_filter = #{record.customFilter,jdbcType=LONGVARCHAR},
@@ -387,6 +398,9 @@
       <if test="yAxis != null">
         y_axis = #{yAxis,jdbcType=LONGVARCHAR},
       </if>
+      <if test="extStack != null">
+        ext_stack = #{extStack,jdbcType=LONGVARCHAR},
+      </if>
       <if test="customAttr != null">
         custom_attr = #{customAttr,jdbcType=LONGVARCHAR},
       </if>
@@ -415,6 +429,7 @@
       style_priority = #{stylePriority,jdbcType=VARCHAR},
       x_axis = #{xAxis,jdbcType=LONGVARCHAR},
       y_axis = #{yAxis,jdbcType=LONGVARCHAR},
+      ext_stack = #{extStack,jdbcType=LONGVARCHAR},
       custom_attr = #{customAttr,jdbcType=LONGVARCHAR},
       custom_style = #{customStyle,jdbcType=LONGVARCHAR},
       custom_filter = #{customFilter,jdbcType=LONGVARCHAR},

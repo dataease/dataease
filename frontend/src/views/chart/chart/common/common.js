@@ -29,7 +29,7 @@ export function componentStyle(chart_option, chart) {
       customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.textStyle = style
     }
-    if (customStyle.legend) {
+    if (customStyle.legend && chart_option.legend) {
       chart_option.legend.show = customStyle.legend.show
       // 水平方向
       if (customStyle.legend.hPosition === 'left') {
