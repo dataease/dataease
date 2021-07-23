@@ -198,7 +198,7 @@ export default {
       const temp = formatCondition(condition)
       const param = temp || {}
       param['orders'] = formatOrders(this.orderConditions)
-      post('/dataset/taskLog/list/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
+      post('/dataset/taskLog/list/notexcel/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
       })
