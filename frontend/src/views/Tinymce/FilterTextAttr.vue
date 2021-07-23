@@ -150,7 +150,7 @@ export default {
   }
   .el-card-main {
     height: 34px;
-    z-index: 1000000000;
+    z-index: 10;
     width: 350px;
     position: absolute;
 
