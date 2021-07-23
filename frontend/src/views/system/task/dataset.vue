@@ -3,11 +3,11 @@
 
     <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
       <el-tabs v-model="tabActive" @tab-click="changeTab">
-        <el-tab-pane :label="$t('dataset.task.list')" name="DatasetTaskList" >
-          <dataset-task-list :param="task" @jumpTaskRecord="jumpTaskRecord" v-if="tabActive=='DatasetTaskList'" />
+        <el-tab-pane :label="$t('dataset.task.list')" name="DatasetTaskList">
+          <dataset-task-list v-if="tabActive=='DatasetTaskList'" :param="task" @jumpTaskRecord="jumpTaskRecord" />
         </el-tab-pane>
-        <el-tab-pane  :label="$t('dataset.task.record')" name="TaskRecord">
-          <task-record :param="task"  @jumpTask="jumpTask" v-if="tabActive=='TaskRecord'" />
+        <el-tab-pane :label="$t('dataset.task.record')" name="TaskRecord">
+          <task-record v-if="tabActive=='TaskRecord'" ref="task_record" :param="task" @jumpTask="jumpTask" />
         </el-tab-pane>
       </el-tabs>
     </el-row>
@@ -52,11 +52,11 @@ export default {
     })
   },
   methods: {
-    changeTab(){
+    changeTab() {
       this.task = null
       console.log(this.tabActive)
     },
-    jumpTaskRecord(task){
+    jumpTaskRecord(task) {
       this.task = task
       this.tabActive = 'TaskRecord'
     },
