@@ -823,7 +823,7 @@ export default {
     select_map_range: '请选择地图范围',
     area: '地区',
     stack_item: '堆叠项',
-    placeholder_field: '拖入字段'
+    placeholder_field: '拖动字段至此处'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
