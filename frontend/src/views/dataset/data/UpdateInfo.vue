@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row>
-      <el-button v-if="hasDataPermission('manage',param.privileges)" icon="el-icon-setting" size="mini" @click="showConfig">
+      <el-button v-if="hasDataPermission('manage',param.privileges) || table.type !== 'excel'" icon="el-icon-setting" size="mini" @click="showConfig">
         {{ $t('dataset.update_setting') }}
       </el-button>
       <el-button icon="el-icon-refresh" size="mini" @click="refreshLog">
@@ -615,8 +615,8 @@ export default {
       }
     },
     listTaskLog(loading = true) {
-      const params = {"conditions":[{"field":"dataset_table_task.table_id","operator":"eq","value": this.table.id}],"orders":[]}
-      post('/dataset/taskLog/list/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
+      const params = {"conditions":[{"field":"dataset_table_task_log.table_id","operator":"eq","value": this.table.id}],"orders":[]}
+      post('/dataset/taskLog/list/' +  this.table.type + '/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
         this.taskLogData = response.data.listObject
         this.page.total = response.data.itemCount
       })

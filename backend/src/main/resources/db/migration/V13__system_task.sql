@@ -23,4 +23,4 @@ ALTER TABLE `dataset_table_task` ADD COLUMN `extra_data` LONGTEXT NULL AFTER `la
 
 update dataset_table_task_log set trigger_type='Cron';
 
-
+update dataset_table_task_log set dataset_table_task_log.task_id='初始导入' where dataset_table_task_log.task_id is null;

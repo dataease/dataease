@@ -47,18 +47,27 @@ public class DataSetTableTaskLogService {
         datasetTableTaskLogMapper.deleteByPrimaryKey(id);
     }
 
-    public List<DataSetTaskLogDTO> list(BaseGridRequest request) {
-        ConditionEntity entity = new ConditionEntity();
-        entity.setField("task_id");
-        entity.setOperator("not null");
-        List<ConditionEntity> conditionEntities = request.getConditions();
-        if(CollectionUtils.isEmpty(conditionEntities)){
-            conditionEntities = new ArrayList<>();
+    public List<DataSetTaskLogDTO> list(BaseGridRequest request, String type) {
+        if(!type.equalsIgnoreCase("excel")){
+            ConditionEntity entity = new ConditionEntity();
+            entity.setField("task_id");
+            entity.setOperator("not null");
+            List<ConditionEntity> conditionEntities = request.getConditions();
+            if(CollectionUtils.isEmpty(conditionEntities)){
+                conditionEntities = new ArrayList<>();
+            }
+            conditionEntities.add(entity);
+            request.setConditions(conditionEntities);
         }
-        conditionEntities.add(entity);
-        request.setConditions(conditionEntities);
+
         GridExample gridExample = request.convertExample();
-        return extDataSetTaskMapper.list(gridExample);
+        List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.list(gridExample);
+        dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
+            if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){
+                dataSetTaskLogDTO.setName(dataSetTaskLogDTO.getTaskId());
+            }
+        });
+        return dataSetTaskLogDTOS;
     }
 
     public void deleteByTaskId(String taskId){

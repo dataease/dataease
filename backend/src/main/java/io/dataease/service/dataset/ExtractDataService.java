@@ -158,7 +158,7 @@ public class ExtractDataService {
         }
     }
 
-    public void extractExcelData(String datasetTableId, String type) {
+    public void extractExcelData(String datasetTableId, String type, String ops) {
         Datasource datasource = new Datasource();
         datasource.setType("excel");
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
@@ -182,15 +182,11 @@ public class ExtractDataService {
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
-                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, null);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
                     generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
-                    if (datasetTable.getType().equalsIgnoreCase("sql")) {
-                        generateJobFile("all_scope", datasetTable, fetchSqlField(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql(), datasource));
-                    } else {
-                        generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
-                    }
+                    generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     Long execTime = System.currentTimeMillis();
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
@@ -210,17 +206,17 @@ public class ExtractDataService {
 
             case add_scope: // 增量更新
                 try {
-                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, null);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
                     generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
                     generateJobFile("incremental_add", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     Long execTime = System.currentTimeMillis();
                     extractData(datasetTable, "incremental_add");
                     saveSucessLog(datasetTableTaskLog);
-                    sendWebMsg(datasetTable, null, true);
+//                    sendWebMsg(datasetTable, null, true);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
-                    sendWebMsg(datasetTable, null, false);
+//                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
@@ -256,7 +252,7 @@ public class ExtractDataService {
             return;
         }
 
-        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
+        DatasetTableTaskLog datasetTableTaskLog = getDatasetTableTaskLog(datasetTableId, taskId);
         UpdateType updateType = UpdateType.valueOf(type);
         if (context != null) {
             datasetTable.setQrtzInstance(context.getFireInstanceId());
@@ -283,11 +279,8 @@ public class ExtractDataService {
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
-                    if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())) {
-                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
-                    }
-                    if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                        datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    if (datasetTableTask == null ) {
+                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, taskId);
                     }
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
@@ -336,11 +329,8 @@ public class ExtractDataService {
                         return;
                     }
 
-                    if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())) {
-                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
-                    }
-                    if (datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                        datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    if (datasetTableTask == null ) {
+                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, taskId);
                     }
                     Long execTime = System.currentTimeMillis();
                     if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
@@ -533,7 +523,8 @@ public class ExtractDataService {
         return null;
     }
 
-    private DatasetTableTaskLog writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
+    private DatasetTableTaskLog writeDatasetTableTaskLog(String datasetTableId, String taskId) {
+        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
@@ -548,7 +539,8 @@ public class ExtractDataService {
         }
     }
 
-    private DatasetTableTaskLog getDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
+    private DatasetTableTaskLog getDatasetTableTaskLog(String datasetTableId, String taskId) {
+        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
@@ -765,8 +757,7 @@ public class ExtractDataService {
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
                 break;
             case excel:
-                String filePath = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData();
-                inputStep = excelInputStep(filePath, datasetTableFields);
+                inputStep = excelInputStep(datasetTable.getInfo(), datasetTableFields);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.excel);
             default:
                 break;
@@ -837,33 +828,20 @@ public class ExtractDataService {
         return fromStep;
     }
 
-    private StepMeta excelInputStep(String filePath, List<DatasetTableField> datasetTableFields) {
-        String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
+    private StepMeta excelInputStep(String Info, List<DatasetTableField> datasetTableFields){
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(Info, DataTableInfoDTO.class);
+        String suffix = dataTableInfoDTO.getData().substring(dataTableInfoDTO.getData().lastIndexOf(".") + 1);
         ExcelInputMeta excelInputMeta = new ExcelInputMeta();
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
-            try {
-                InputStream inputStream = new FileInputStream(filePath);
-                XSSFWorkbook xssfWorkbook = new XSSFWorkbook(inputStream);
-                XSSFSheet sheet0 = xssfWorkbook.getSheetAt(0);
-                excelInputMeta.setSheetName(new String[]{sheet0.getSheetName()});
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            excelInputMeta.setSheetName(new String[]{dataTableInfoDTO.getSheets().get(0)});
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.JXL);
-            try {
-                InputStream inputStream = new FileInputStream(filePath);
-                HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
-                HSSFSheet sheet0 = workbook.getSheetAt(0);
-                excelInputMeta.setSheetName(new String[]{sheet0.getSheetName()});
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            excelInputMeta.setSheetName(new String[]{dataTableInfoDTO.getSheets().get(0)});
         }
         excelInputMeta.setPassword("Encrypted");
-        excelInputMeta.setFileName(new String[]{filePath});
+        excelInputMeta.setFileName(new String[]{dataTableInfoDTO.getData()});
         excelInputMeta.setStartsWithHeader(true);
         excelInputMeta.setIgnoreEmptyRows(true);
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];

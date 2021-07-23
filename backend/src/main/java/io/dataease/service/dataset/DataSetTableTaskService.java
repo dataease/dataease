@@ -13,6 +13,7 @@ import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.constants.TriggerType;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.dto.dataset.DataSetTaskDTO;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -177,8 +179,20 @@ public class DataSetTableTaskService {
             datasetTableTask.setStatus(TaskStatus.Stopped.name());
         }else {
             if(StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")){
-                if(utilMapper.currentTimestamp() > datasetTableTask.getEndTime()){
+                BaseGridRequest request = new BaseGridRequest();
+                ConditionEntity conditionEntity = new ConditionEntity();
+                conditionEntity.setField("dataset_table_task.id");
+                conditionEntity.setOperator("eq");
+                conditionEntity.setValue(datasetTableTask.getId());
+                request.setConditions(Arrays.asList(conditionEntity));
+                List<DataSetTaskDTO> dataSetTaskDTOS = taskList(request);
+                if(CollectionUtils.isEmpty(dataSetTaskDTOS)){
+                    return;
+                }
+                if(dataSetTaskDTOS.get(0).getNextExecTime() == null || dataSetTaskDTOS.get(0).getNextExecTime() <= 0){
                     datasetTableTask.setStatus(TaskStatus.Stopped.name());
+                }else {
+                    datasetTableTask.setStatus(TaskStatus.Underway.name());
                 }
             }else {
                 datasetTableTask.setStatus(TaskStatus.Underway.name());
