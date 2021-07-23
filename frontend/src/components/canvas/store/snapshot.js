@@ -7,7 +7,8 @@ export default {
     snapshotStyleData: [], // 样式改变也记录快照
     snapshotIndex: -1, // 快照索引
     changeTimes: -1, // 修改次数
-    lastSaveSnapshotIndex: 0 // 最后保存是snapshotIndex的索引
+    lastSaveSnapshotIndex: 0, // 最后保存是snapshotIndex的索引
+    styleChangeTimes: 0 // 组件样式修改次数
   },
   mutations: {
     undo(state) {

@@ -275,7 +275,8 @@ export default {
       currentDropElement: null,
       adviceGroupId: null,
       scrollLeft: 0,
-      scrollTop: 0
+      scrollTop: 0,
+      timeMachine: null
     }
   },
 
@@ -306,6 +307,12 @@ export default {
     },
     panelInfo(newVal, oldVal) {
       this.init(newVal.id)
+    },
+    '$store.state.styleChangeTimes'() {
+      if (this.$store.state.styleChangeTimes > 0) {
+        this.destroyTimeMachine()
+        this.recordStyleChange(this.$store.state.styleChangeTimes)
+      }
     }
   },
   created() {
@@ -675,6 +682,21 @@ export default {
       debugger
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
+    },
+    destroyTimeMachine() {
+      this.timeMachine && clearTimeout(this.timeMachine)
+      this.timeMachine = null
+    },
+
+    // 如果内部样式有变化 1秒钟后保存一个镜像
+    recordStyleChange(index) {
+      this.timeMachine = setTimeout(() => {
+        if (index === this.$store.state.styleChangeTimes) {
+          this.$store.commit('recordSnapshot')
+          this.$store.state.styleChangeTimes = 0
+        }
+        this.destroyTimeMachine()
+      }, 1000)
     }
   }
 }
