@@ -56,9 +56,9 @@ BEGIN;
 INSERT INTO `sys_msg_type` VALUES (1, 0, 'i18n_msg_type_panel_share', 'panel', 'to-msg-share');
 INSERT INTO `sys_msg_type` VALUES (2, 1, 'i18n_msg_type_panel_share', 'panel', 'to-msg-share');
 INSERT INTO `sys_msg_type` VALUES (3, 1, 'i18n_msg_type_panel_share_cacnel', 'panel', 'to-msg-share');
-INSERT INTO `sys_msg_type` VALUES (4, 0, 'i18n_msg_type_dataset_sync', 'dataset', 'to-msg-dataset');
-INSERT INTO `sys_msg_type` VALUES (5, 4, 'i18n_msg_type_dataset_sync_success', 'dataset', 'to-msg-dataset');
-INSERT INTO `sys_msg_type` VALUES (6, 4, 'i18n_msg_type_dataset_sync_faild', 'dataset', 'to-msg-dataset');
+INSERT INTO `sys_msg_type` VALUES (4, 0, 'i18n_msg_type_dataset_sync', 'sys-task-dataset', 'to-msg-dataset');
+INSERT INTO `sys_msg_type` VALUES (5, 4, 'i18n_msg_type_dataset_sync_success', 'sys-task-dataset', 'to-msg-dataset');
+INSERT INTO `sys_msg_type` VALUES (6, 4, 'i18n_msg_type_dataset_sync_faild', 'sys-task-dataset', 'to-msg-dataset');
 COMMIT;
 
 -- ----------------------------
