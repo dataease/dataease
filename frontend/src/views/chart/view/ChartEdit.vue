@@ -258,7 +258,7 @@
                       </transition-group>
                     </draggable>
                     <div v-if="!view.xaxis || view.xaxis.length === 0" class="drag-placeholder-style">
-                      <span>{{ $t('chart.placeholder_field') }}</span>
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
                   <el-row class="padding-lr" style="margin-top: 6px;">
@@ -288,7 +288,7 @@
                       </transition-group>
                     </draggable>
                     <div v-if="!view.yaxis || view.yaxis.length === 0" class="drag-placeholder-style">
-                      <span>{{ $t('chart.placeholder_field') }}</span>
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
                   <el-row v-if="view.type && view.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
@@ -311,7 +311,7 @@
                       </transition-group>
                     </draggable>
                     <div v-if="!view.extStack || view.extStack.length === 0" class="drag-placeholder-style">
-                      <span>{{ $t('chart.placeholder_field') }}</span>
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
                   <el-row class="padding-lr" style="margin-top: 6px;">
@@ -333,7 +333,7 @@
                       </transition-group>
                     </draggable>
                     <div v-if="!view.customFilter || view.customFilter.length === 0" class="drag-placeholder-style">
-                      <span>{{ $t('chart.placeholder_field') }}</span>
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
                 </el-row>
@@ -1602,6 +1602,8 @@ export default {
     left: 0;
     width: 100%;
     color: #CCCCCC;
-    text-align: center;
+  }
+  .drag-placeholder-style-span{
+    padding-left: 16px;
   }
 </style>
