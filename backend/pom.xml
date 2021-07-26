@@ -508,6 +508,11 @@
             <updatePolicy>always</updatePolicy>
         </snapshots>
     </repository>
+    <repository>
+        <id>oss-sonatype</id>
+        <name>s01.oss.sonatype.org</name>
+        <url>https://s01.oss.sonatype.org/content/groups/public/</url>
+    </repository>
     </repositories>
 
 </project>
