@@ -14,7 +14,7 @@
 
     <el-collapse v-model="fieldActiveNames" class="style-collapse">
       <el-collapse-item name="d" :title="$t('chart.dimension')">
-        <el-table :data="tableFields.dimensionList" size="mini" :max-height="maxHeight">
+        <el-table :data="tableFields.dimensionList" size="mini">
           <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
             <template slot-scope="scope">
               <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;">
@@ -106,8 +106,9 @@
           <el-table-column property="" />
         </el-table>
       </el-collapse-item>
+
       <el-collapse-item name="q" :title="$t('chart.quota')">
-        <el-table :data="tableFields.quotaList" size="mini" :max-height="maxHeight">
+        <el-table :data="tableFields.quotaList" size="mini">
           <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
             <template slot-scope="scope">
               <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;">
