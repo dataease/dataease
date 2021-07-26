@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -46,6 +47,9 @@ public class DataSetTableFieldsService {
         }
         if (ObjectUtils.isNotEmpty(datasetTableField.getChecked())) {
             criteria.andCheckedEqualTo(datasetTableField.getChecked());
+        }
+        if (ObjectUtils.isNotEmpty(datasetTableField.getGroupType())) {
+            criteria.andGroupTypeEqualTo(datasetTableField.getGroupType());
         }
         datasetTableFieldExample.setOrderByClause("column_index asc");
         return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
