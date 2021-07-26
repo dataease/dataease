@@ -16,4 +16,8 @@ public class SysMsgSetting implements Serializable {
     private Boolean enable;
 
     private static final long serialVersionUID = 1L;
+
+    public Boolean match(SysMsgSetting setting) {
+        return setting.getTypeId() == typeId && setting.getChannelId() == channelId;
+    }
 }
