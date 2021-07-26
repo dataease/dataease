@@ -134,6 +134,8 @@ public class ChartViewService {
         }.getType());
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        List<ChartViewFieldDTO> extStack = new Gson().fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType());
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartFieldCustomFilterDTO>>() {
         }.getType());
         List<ChartCustomFilterDTO> customFilter = fieldCustomFilter.stream().map(ele -> {
@@ -145,24 +147,19 @@ public class ChartViewService {
             return dto;
         }).collect(Collectors.toList());
 
-//        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
-//            xAxis = new ArrayList<>();
-//            if (CollectionUtils.isEmpty(yAxis)) {
-//                ChartViewDTO dto = new ChartViewDTO();
-//                BeanUtils.copyBean(dto, view);
-//                return dto;
-//            }
-//        } else {
-//            if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
-//                ChartViewDTO dto = new ChartViewDTO();
-//                BeanUtils.copyBean(dto, view);
-//                return dto;
-//            }
-//        }
-        if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
-            ChartViewDTO dto = new ChartViewDTO();
-            BeanUtils.copyBean(dto, view);
-            return dto;
+        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+            xAxis = new ArrayList<>();
+            if (CollectionUtils.isEmpty(yAxis)) {
+                ChartViewDTO dto = new ChartViewDTO();
+                BeanUtils.copyBean(dto, view);
+                return dto;
+            }
+        } else {
+            if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
+                ChartViewDTO dto = new ChartViewDTO();
+                BeanUtils.copyBean(dto, view);
+                return dto;
+            }
         }
 
         // 过滤来自仪表板的条件
@@ -183,10 +180,10 @@ public class ChartViewService {
             }
         }
 
-        // 获取数据集
+        // 获取数据集,需校验权限
         DatasetTable table = dataSetTableService.get(view.getTableId());
         if (ObjectUtils.isEmpty(table)) {
-            throw new RuntimeException(Translator.get("i18n_dataset_delete"));
+            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
         }
         // 判断连接方式，直连或者定时抽取 table.mode
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -204,12 +201,16 @@ public class ChartViewService {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, customFilter, extFilterList));
+                } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    datasourceRequest.setQuery(qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extStack));
                 } else {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, customFilter, extFilterList));
+                } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList, extStack));
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList));
                 }
@@ -219,6 +220,8 @@ public class ChartViewService {
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, list, ds);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, customFilter, extFilterList));
+                } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, customFilter, extFilterList, extStack));
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, customFilter, extFilterList));
                 }
@@ -245,6 +248,8 @@ public class ChartViewService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
                 datasourceRequest.setQuery(qp.getSQLSummary(tableName, yAxis, customFilter, extFilterList));
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, customFilter, extFilterList, extStack));
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList));
             }
@@ -279,67 +284,24 @@ public class ChartViewService {
                     }
                 }
             }
-
-
         }
         if (StringUtils.containsIgnoreCase(view.getType(), "pie") && data.size() > 1000) {
             data = data.subList(0, 1000);
         }
 
+        Map<String, Object> map = new TreeMap<>();
         // 图表组件可再扩展
-        List<String> x = new ArrayList<>();
-        List<Series> series = new ArrayList<>();
-        for (ChartViewFieldDTO y : yAxis) {
-            Series series1 = new Series();
-            series1.setName(y.getName());
-            series1.setType(view.getType());
-            series1.setData(new ArrayList<>());
-            series.add(series1);
+        Map<String, Object> mapChart;
+        if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+            mapChart = transStackChartData(xAxis, yAxis, view, data, extStack);
+        } else {
+            mapChart = transChartData(xAxis, yAxis, view, data);
         }
-        for (String[] d : data) {
-            StringBuilder a = new StringBuilder();
-            for (int i = 0; i < xAxis.size(); i++) {
-                if (i == xAxis.size() - 1) {
-                    a.append(d[i]);
-                } else {
-                    a.append(d[i]).append("\n");
-                }
-            }
-            x.add(a.toString());
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
-                int j = i - xAxis.size();
-                try {
-                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
-                } catch (Exception e) {
-                    series.get(j).getData().add(new BigDecimal(0));
-                }
-            }
-        }
-        // table组件
-        List<ChartViewFieldDTO> fields = new ArrayList<>();
-        List<Map<String, Object>> tableRow = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(xAxis) && !StringUtils.equalsIgnoreCase("text", view.getType()) && !StringUtils.equalsIgnoreCase("gauge", view.getType())) {
-            fields.addAll(xAxis);
-        }
-        fields.addAll(yAxis);
-        data.forEach(ele -> {
-            Map<String, Object> d = new HashMap<>();
-            for (int i = 0; i < fields.size(); i++) {
-                ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
-                if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
-                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
-                } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
-                    d.put(fields.get(i).getDataeaseName(), new BigDecimal(StringUtils.isEmpty(ele[i]) ? "0" : ele[i]).setScale(2, RoundingMode.HALF_UP));
-                }
-            }
-            tableRow.add(d);
-        });
+        // table组件，明细表，也用于导出数据
+        Map<String, Object> mapTableNormal = transTableNormal(xAxis, yAxis, view, data, extStack);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("x", x);
-        map.put("series", series);
-        map.put("fields", fields);
-        map.put("tableRow", tableRow);
+        map.putAll(mapChart);
+        map.putAll(mapTableNormal);
 
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
@@ -382,6 +344,166 @@ public class ChartViewService {
             result = (List<String[]>) cache;
         }
         return result;
+    }
+
+    private Map<String, Object> transChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<String> x = new ArrayList<>();
+        List<Series> series = new ArrayList<>();
+        for (ChartViewFieldDTO y : yAxis) {
+            Series series1 = new Series();
+            series1.setName(y.getName());
+            series1.setType(view.getType());
+            series1.setData(new ArrayList<>());
+            series.add(series1);
+        }
+        for (String[] d : data) {
+            StringBuilder a = new StringBuilder();
+            for (int i = 0; i < xAxis.size(); i++) {
+                if (i == xAxis.size() - 1) {
+                    a.append(d[i]);
+                } else {
+                    a.append(d[i]).append("\n");
+                }
+            }
+            x.add(a.toString());
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                int j = i - xAxis.size();
+                try {
+                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                } catch (Exception e) {
+                    series.get(j).getData().add(new BigDecimal(0));
+                }
+            }
+        }
+
+        map.put("x", x);
+        map.put("series", series);
+        return map;
+    }
+
+    private Map<String, Object> transStackChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<String> x = new ArrayList<>();
+        List<String> stack = new ArrayList<>();
+        List<Series> series = new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(extStack)) {
+            BigDecimal defaultValue = StringUtils.containsIgnoreCase(view.getType(), "line") ? new BigDecimal(0) : null;
+            // 构建横轴
+            for (String[] d : data) {
+                StringBuilder a = new StringBuilder();
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(d[i]);
+                    } else {
+                        a.append(d[i]).append("\n");
+                    }
+                }
+                x.add(a.toString());
+            }
+            x = x.stream().distinct().collect(Collectors.toList());
+            // 构建堆叠
+            for (String[] d : data) {
+                stack.add(d[xAxis.size()]);
+            }
+            stack = stack.stream().distinct().collect(Collectors.toList());
+            for (String s : stack) {
+                Series series1 = new Series();
+                series1.setName(s);
+                series1.setType(view.getType());
+                List<BigDecimal> list = new ArrayList<>();
+                for (int i = 0; i < x.size(); i++) {
+                    list.add(defaultValue);
+                }
+                series1.setData(list);
+                series.add(series1);
+            }
+            for (Series ss : series) {
+                for (int i = 0; i < x.size(); i++) {
+                    for (String[] row : data) {
+                        String stackColumn = row[xAxis.size()];
+                        if (StringUtils.equals(ss.getName(), stackColumn)) {
+                            StringBuilder a = new StringBuilder();
+                            for (int j = 0; j < xAxis.size(); j++) {
+                                if (j == xAxis.size() - 1) {
+                                    a.append(row[j]);
+                                } else {
+                                    a.append(row[j]).append("\n");
+                                }
+                            }
+                            if (StringUtils.equals(a.toString(), x.get(i))) {
+                                ss.getData().set(i, new BigDecimal(row[xAxis.size() + extStack.size()]));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            for (ChartViewFieldDTO y : yAxis) {
+                Series series1 = new Series();
+                series1.setName(y.getName());
+                series1.setType(view.getType());
+                series1.setData(new ArrayList<>());
+                series.add(series1);
+            }
+            for (String[] d : data) {
+                StringBuilder a = new StringBuilder();
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(d[i]);
+                    } else {
+                        a.append(d[i]).append("\n");
+                    }
+                }
+                x.add(a.toString());
+                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                    int j = i - xAxis.size();
+                    try {
+                        series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    } catch (Exception e) {
+                        series.get(j).getData().add(new BigDecimal(0));
+                    }
+                }
+            }
+        }
+
+        map.put("x", x);
+        map.put("series", series);
+        return map;
+    }
+
+    private Map<String, Object> transTableNormal(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack) {
+        Map<String, Object> map = new TreeMap<>();
+        List<ChartViewFieldDTO> fields = new ArrayList<>();
+        List<Map<String, Object>> tableRow = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(xAxis)) {
+            fields.addAll(xAxis);
+        }
+        if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+            if (ObjectUtils.isNotEmpty(extStack)) {
+                fields.addAll(extStack);
+            }
+        }
+        fields.addAll(yAxis);
+        data.forEach(ele -> {
+            Map<String, Object> d = new HashMap<>();
+            for (int i = 0; i < fields.size(); i++) {
+                ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
+                if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
+                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
+                } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
+                    d.put(fields.get(i).getDataeaseName(), new BigDecimal(StringUtils.isEmpty(ele[i]) ? "0" : ele[i]).setScale(2, RoundingMode.HALF_UP));
+                }
+            }
+            tableRow.add(d);
+        });
+        map.put("fields", fields);
+        map.put("tableRow", tableRow);
+        return map;
     }
 
     private void checkName(ChartViewWithBLOBs chartView) {

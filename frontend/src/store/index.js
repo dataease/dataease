@@ -72,6 +72,7 @@ const data = {
     },
 
     setCurComponent(state, { component, index }) {
+      state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
     },

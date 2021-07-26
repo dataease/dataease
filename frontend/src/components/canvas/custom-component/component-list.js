@@ -122,7 +122,8 @@ const list = [
       borderStyle: 'solid',
       borderWidth: 1,
       borderColor: '#000000',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      borderRadius: 0
     }
   },
   {

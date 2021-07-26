@@ -1,5 +1,6 @@
 package io.dataease.map.dto.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AreaEntity implements Serializable {
 
     private static final long serialVersionUID = -1326667005437020282L;

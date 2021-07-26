@@ -7,7 +7,7 @@
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.fontSize" type="number" size="mini" min="12" max="128" />
+        <el-input v-model="styleInfo.fontSize" type="number" size="mini" min="12" max="128" @change="styleChange"/>
       </div>
 
       <el-tooltip :content="$t('panel.fontWeight')">
@@ -15,7 +15,7 @@
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.fontWeight" type="number" size="mini" min="100" step="100" max="900" />
+        <el-input v-model="styleInfo.fontWeight" type="number" size="mini" min="100" step="100" max="900" @change="styleChange"/>
       </div>
 
       <el-tooltip :content="$t('panel.letterSpacing')">
@@ -23,7 +23,7 @@
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.letterSpacing" type="number" size="mini" min="0" max="99" />
+        <el-input v-model="styleInfo.letterSpacing" type="number" size="mini" min="0" max="99" @change="styleChange"/>
       </div>
 
       <div style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
@@ -32,7 +32,7 @@
             <i class="icon iconfont icon-zimua" @click="goColor" />
           </el-tooltip>
           <div :style="letterDivColor" />
-          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" />
+          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange"/>
         </div>
       </div>
 
@@ -42,7 +42,7 @@
             <i class="iconfont icon-beijingse1" @click="goBackgroundColor" />
           </el-tooltip>
           <div :style="backgroundDivColor" />
-          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" />
+          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange"/>
         </div>
       </div>
     </div>
@@ -136,6 +136,10 @@ export default {
       } else {
         return y
       }
+    },
+    styleChange() {
+      debugger
+      this.$store.state.styleChangeTimes++
     }
   }
 }
@@ -150,7 +154,7 @@ export default {
   }
   .el-card-main {
     height: 34px;
-    z-index: 1000000000;
+    z-index: 10;
     width: 350px;
     position: absolute;
 

@@ -205,7 +205,31 @@ export const BASE_BAR = {
   series: [],
   dataZoom: [
     {
-      type: 'inside'
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 1,
+      end: 100
     }
   ]
 }
@@ -237,7 +261,31 @@ export const HORIZONTAL_BAR = {
   series: [],
   dataZoom: [
     {
-      type: 'inside'
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 1,
+      end: 100
     }
   ]
 }
@@ -271,7 +319,31 @@ export const BASE_LINE = {
   series: [],
   dataZoom: [
     {
-      type: 'inside'
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 1,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 1,
+      end: 100
     }
   ]
 }
@@ -527,4 +599,38 @@ export const BASE_CHART = {
     background: DEFAULT_BACKGROUND_COLOR
   },
   customFilter: []
+}
+
+export const BASE_MAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+
+  tooltip: {},
+  visualMap: {
+    min: 50,
+    max: 52,
+    text: ['High', 'Low'],
+    realtime: false,
+    calculable: true,
+    inRange: {
+      color: ['lightskyblue', 'yellow', 'orangered']
+    }
+  },
+  //   legend: {},
+  series: [
+    {
+      name: '',
+      type: 'map',
+      map: 'HK',
+      roam: true,
+      //   label: {
+      //     show: true
+      //   },
+      data: []
+    }
+  ]
 }

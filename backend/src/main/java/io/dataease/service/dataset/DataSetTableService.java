@@ -101,7 +101,7 @@ public class DataSetTableService {
     private void extractData(DataSetTableRequest datasetTable) throws Exception {
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
             commonThreadPool.addTask(() -> {
-                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
+                extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "初始导入");
             });
             return;
         }
@@ -131,7 +131,6 @@ public class DataSetTableService {
             datasetTable.setId(UUID.randomUUID().toString());
             datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
             datasetTable.setCreateTime(System.currentTimeMillis());
-            DataTableInfoDTO dataTableInfoDTO = new DataTableInfoDTO();
             int insert = datasetTableMapper.insert(datasetTable);
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
@@ -151,11 +150,11 @@ public class DataSetTableService {
                     if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
                         if (datasetTable.getEditType() == 0) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractExcelData(datasetTable.getId(), "all_scope");
+                                extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换");
                             });
                         } else if (datasetTable.getEditType() == 1) {
                             commonThreadPool.addTask(() -> {
-                                extractDataService.extractExcelData(datasetTable.getId(), "add_scope");
+                                extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加");
                             });
                         }
                     }
@@ -299,6 +298,12 @@ public class DataSetTableService {
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        if (CollectionUtils.isEmpty(fields)) {
+            map.put("fields", fields);
+            map.put("data", new ArrayList<>());
+            map.put("page", new DataSetPreviewPage());
+            return map;
+        }
         String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
@@ -410,38 +415,27 @@ public class DataSetTableService {
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            if (StringUtils.isEmpty(datasetTable.getSyncStatus()) || datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
-                map.put("status", "warnning");
-                map.put("msg", Translator.get("i18n_processing_data"));
-                dataSetPreviewPage.setTotal(0);
-            } else if (datasetTable.getSyncStatus().equalsIgnoreCase(JobStatus.Error.name())) {
-                List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.getByTableId(datasetTable.getId());
-                map.put("status", "error");
-                if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
-                    map.put("msg", "Failed to extract data: " + datasetTableTaskLogs.get(0).getInfo());
-                } else {
-                    map.put("msg", "Failed to extract data.");
-                }
-                dataSetPreviewPage.setTotal(0);
-            } else {
-                Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
-                JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-                DatasourceRequest datasourceRequest = new DatasourceRequest();
-                datasourceRequest.setDatasource(ds);
-                String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
-                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
-                try {
-                    data.addAll(jdbcProvider.getData(datasourceRequest));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
-                    dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (!checkDorisTableIsExists(dataSetTableRequest.getId())) {
+                throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+            }
+
+            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
+            QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize));
+            try {
+                data.addAll(jdbcProvider.getData(datasourceRequest));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
+                dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             if (datasetTable.getMode() == 0) {
@@ -1392,9 +1386,8 @@ public class DataSetTableService {
         List<String> taskIds = datasetTableTaskLogMapper.selectByExample(datasetTableTaskLogExample).stream().map(DatasetTableTaskLog::getTaskId).collect(Collectors.toList());
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
 
-        DatasetTableTask datasetTableTask = new DatasetTableTask();
-        datasetTableTask.setLastExecStatus(JobStatus.Error.name());
-        dataSetTableTaskService.update(taskIds, datasetTableTask);
+        dataSetTableTaskService.updateTaskStatus(taskIds, JobStatus.Error);
+        //TODO check task status
 
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());

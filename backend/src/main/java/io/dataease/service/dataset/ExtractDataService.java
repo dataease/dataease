@@ -6,6 +6,7 @@ import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
@@ -15,6 +16,7 @@ import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.JdbcProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.listener.util.CacheUtils;
@@ -22,8 +24,8 @@ import io.dataease.provider.QueryProvider;
 import io.dataease.service.message.DeMsgutil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -90,9 +92,12 @@ public class ExtractDataService {
     private DatasetTableMapper datasetTableMapper;
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
-
+    @Resource
+    private DatasourceService datasourceService;
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+    @Resource
+    private UtilMapper utilMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -128,31 +133,32 @@ public class ExtractDataService {
             "fi\n" +
             "rm -rf %s\n";
 
-    public synchronized boolean existSyncTask(DatasetTable  datasetTable,  DatasetTableTask datasetTableTask){
+    public synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask) {
         datasetTable.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
         example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
         Boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
-        if(existSyncTask){
+        if (existSyncTask) {
             DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
             datasetTableTaskLog.setTaskId(datasetTableTask.getId());
             datasetTableTaskLog.setTableId(datasetTable.getId());
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
-            if(CollectionUtils.isNotEmpty(datasetTableTaskLogs) && datasetTableTaskLogs.get(0).getTriggerType().equalsIgnoreCase(TriggerType.Custom.name())){
+            if (CollectionUtils.isNotEmpty(datasetTableTaskLogs) && datasetTableTaskLogs.get(0).getTriggerType().equalsIgnoreCase(TriggerType.Custom.name())) {
                 return false;
             }
             return true;
-        }else {
+        } else {
             datasetTableTask.setLastExecTime(System.currentTimeMillis());
             datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
+            datasetTableTask.setStatus(TaskStatus.Exec.name());
             dataSetTableTaskService.update(datasetTableTask);
             return false;
         }
     }
 
-    public void extractExcelData(String datasetTableId, String type) {
+    public void extractExcelData(String datasetTableId, String type, String ops) {
         Datasource datasource = new Datasource();
         datasource.setType("excel");
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
@@ -176,25 +182,21 @@ public class ExtractDataService {
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
-                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, null);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
                     generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
-                    if (datasetTable.getType().equalsIgnoreCase("sql")) {
-                        generateJobFile("all_scope", datasetTable, fetchSqlField(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql(), datasource));
-                    } else {
-                        generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
-                    }
+                    generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     Long execTime = System.currentTimeMillis();
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
-                    sendWebMsg(datasetTable, null, true);
+//                    sendWebMsg(datasetTable, null, true);
                     deleteFile("all_scope", datasetTableId);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
-                    sendWebMsg(datasetTable, null, false);
+//                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                     deleteFile("all_scope", datasetTableId);
@@ -204,17 +206,17 @@ public class ExtractDataService {
 
             case add_scope: // 增量更新
                 try {
-                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, null);
+                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
                     generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
                     generateJobFile("incremental_add", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     Long execTime = System.currentTimeMillis();
                     extractData(datasetTable, "incremental_add");
                     saveSucessLog(datasetTableTaskLog);
-                    sendWebMsg(datasetTable, null, true);
+//                    sendWebMsg(datasetTable, null, true);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
-                    sendWebMsg(datasetTable, null, false);
+//                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
@@ -224,7 +226,7 @@ public class ExtractDataService {
         }
         //侵入式清除下属视图缓存
         List<String> viewIds = extChartViewMapper.allViewIds(datasetTableId);
-        if (CollectionUtils.isNotEmpty(viewIds)){
+        if (CollectionUtils.isNotEmpty(viewIds)) {
             viewIds.forEach(viewId -> {
                 CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, viewId);
             });
@@ -233,26 +235,26 @@ public class ExtractDataService {
 
     public void extractData(String datasetTableId, String taskId, String type, JobExecutionContext context) {
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
-        if(datasetTable == null){
+        if (datasetTable == null) {
             LogUtil.error("Can not find DatasetTable: " + datasetTableId);
             return;
         }
         DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
-        if(datasetTableTask == null){
+        if (datasetTableTask == null) {
             return;
         }
-        if(datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name())){
+        if (datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name()) || datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Pending.name())) {
             LogUtil.info("Skip synchronization task, task ID : " + datasetTableTask.getId());
             return;
         }
-        if(existSyncTask(datasetTable, datasetTableTask)){
+        if (existSyncTask(datasetTable, datasetTableTask)) {
             LogUtil.info("Skip synchronization task for dataset, dataset ID : " + datasetTableId);
             return;
         }
 
-        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
+        DatasetTableTaskLog datasetTableTaskLog = getDatasetTableTaskLog(datasetTableId, taskId);
         UpdateType updateType = UpdateType.valueOf(type);
-        if(context != null){
+        if (context != null) {
             datasetTable.setQrtzInstance(context.getFireInstanceId());
             datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
         }
@@ -276,19 +278,16 @@ public class ExtractDataService {
 
         switch (updateType) {
             case all_scope:  // 全量更新
-                try{
-                    if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())) {
-                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
-                    }
-                    if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                        datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                try {
+                    if (datasetTableTask == null ) {
+                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, taskId);
                     }
                     createDorisTable(DorisTableUtils.dorisName(datasetTableId), dorisTablColumnSql);
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
                     generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
-                    if(datasetTable.getType().equalsIgnoreCase("sql")){
+                    if (datasetTable.getType().equalsIgnoreCase("sql")) {
                         generateJobFile("all_scope", datasetTable, fetchSqlField(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql(), datasource));
-                    }else {
+                    } else {
                         generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     }
                     Long execTime = System.currentTimeMillis();
@@ -296,24 +295,24 @@ public class ExtractDataService {
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
 
-                    sendWebMsg(datasetTable, taskId,true);
+                    sendWebMsg(datasetTable, datasetTableTask, true);
 
                     deleteFile("all_scope", datasetTableId);
 
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-                    datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
-                    dataSetTableTaskService.update(datasetTableTask);
 
-                }catch (Exception e){
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Completed);
+
+                } catch (Exception e) {
                     saveErrorLog(datasetTableId, taskId, e);
-                    datasetTableTask.setLastExecStatus(JobStatus.Error.name());
-                    dataSetTableTaskService.update(datasetTableTask);
 
-                    sendWebMsg(datasetTable, taskId,false);
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
+
+                    sendWebMsg(datasetTable, datasetTableTask, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                     deleteFile("all_scope", datasetTableId);
-                }finally {
+                } finally {
                 }
                 break;
 
@@ -330,11 +329,8 @@ public class ExtractDataService {
                         return;
                     }
 
-                    if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.CRON.toString())) {
-                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
-                    }
-                    if(datasetTableTask != null && datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                        datasetTableTaskLog = getDatasetTableTaskLog(datasetTableTaskLog, datasetTableId, taskId);
+                    if (datasetTableTask == null ) {
+                        datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, taskId);
                     }
                     Long execTime = System.currentTimeMillis();
                     if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
@@ -354,29 +350,34 @@ public class ExtractDataService {
                     }
                     saveSucessLog(datasetTableTaskLog);
 
-                    sendWebMsg(datasetTable, taskId,true);
+                    sendWebMsg(datasetTable, datasetTableTask, true);
 
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
 
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-                    datasetTableTask.setLastExecStatus(JobStatus.Completed.name());
-                    dataSetTableTaskService.update(datasetTableTask);
-                }catch (Exception e){
+
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Completed);
+                } catch (Exception e) {
                     saveErrorLog(datasetTableId, taskId, e);
-                    sendWebMsg(datasetTable, taskId,false);
+                    sendWebMsg(datasetTable, datasetTableTask, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
-                    datasetTableTask.setLastExecStatus(JobStatus.Error.name());
-                    dataSetTableTaskService.update(datasetTableTask);
+
+                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
+
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
-                }finally {
+                } finally {
+                    if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
+                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
+                        dataSetTableTaskService.update(datasetTableTask);
+                    }
                 }
                 break;
         }
         //侵入式清除下属视图缓存
         List<String> viewIds = extChartViewMapper.allViewIds(datasetTableId);
-        if (CollectionUtils.isNotEmpty(viewIds)){
+        if (CollectionUtils.isNotEmpty(viewIds)) {
             viewIds.forEach(viewId -> {
                 CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, viewId);
             });
@@ -384,7 +385,8 @@ public class ExtractDataService {
 
     }
 
-    private void sendWebMsg(DatasetTable datasetTable, String taskId, Boolean status) {
+    private void sendWebMsg(DatasetTable datasetTable, DatasetTableTask datasetTableTask, Boolean status) {
+        String taskId = datasetTableTask.getId();
         String msg = status ? "成功" : "失败";
         Long typeId = status ? 5L : 6L;
         String id = datasetTable.getId();
@@ -392,18 +394,22 @@ public class ExtractDataService {
         Set<Long> userIds = AuthUtils.userIdsByURD(authURD);
         Gson gson = new Gson();
         userIds.forEach(userId -> {
-            Map<String,Object> param = new HashMap<>();
+            Map<String, Object> param = new HashMap<>();
             param.put("tableId", id);
-           if(StringUtils.isNotEmpty(taskId)){
-               param.put("taskId", taskId);
-           }
-            DeMsgutil.sendMsg(userId, typeId, 1L, "数据集【"+datasetTable.getName()+"】同步"+msg, gson.toJson(param));
+            if (StringUtils.isNotEmpty(taskId)) {
+                param.put("taskId", taskId);
+            }
+            String content = "数据集【" + datasetTable.getName() + "】同步" + msg;
+            if (ObjectUtils.isNotEmpty(datasetTableTask) && ObjectUtils.isNotEmpty(datasetTableTask.getName())) {
+                content += " 任务名称【" + datasetTableTask.getName() + "】";
+            }
+            DeMsgutil.sendMsg(userId, typeId, 1L, content, gson.toJson(param));
         });
     }
 
     private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed, Long execTime) {
         datasetTable.setSyncStatus(completed.name());
-        if(execTime != null){
+        if (execTime != null) {
             datasetTable.setLastUpdateTime(execTime);
         }
         DatasetTableExample example = new DatasetTableExample();
@@ -417,16 +423,16 @@ public class ExtractDataService {
         dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
-    private void saveErrorLog(String datasetTableId, String taskId, Exception e){
+    private void saveErrorLog(String datasetTableId, String taskId, Exception e) {
         LogUtil.error("Extract data error: " + datasetTableId, e);
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-        if(StringUtils.isNotEmpty(taskId)){
+        if (StringUtils.isNotEmpty(taskId)) {
             datasetTableTaskLog.setTaskId(taskId);
         }
-        List<DatasetTableTaskLog>  datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
-        if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+        List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
+        if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
             datasetTableTaskLog = datasetTableTaskLogs.get(0);
             datasetTableTaskLog.setStatus(JobStatus.Error.name());
             datasetTableTaskLog.setInfo(e.getMessage());
@@ -445,7 +451,7 @@ public class ExtractDataService {
                     if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
                         Column_Fields = Column_Fields + "varchar(65533)" + ",`";
                     } else {
-                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize()*3)) + ",`";
+                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize() * 3)) + ",`";
                     }
                     break;
                 case 1:
@@ -488,7 +494,8 @@ public class ExtractDataService {
             datasourceRequest.setDatasource(dorisDatasource);
             datasourceRequest.setQuery(dropTableSql.replace("TABLE_NAME", dorisTableName));
             jdbcProvider.exec(datasourceRequest);
-        }catch (Exception ignore){}
+        } catch (Exception ignore) {
+        }
     }
 
     private void replaceTable(String dorisTableName) throws Exception {
@@ -501,47 +508,51 @@ public class ExtractDataService {
         jdbcProvider.exec(datasourceRequest);
     }
 
-    private DatasetTable getDatasetTable(String datasetTableId){
-        for (int i=0;i<5;i++){
-            DatasetTable  datasetTable = dataSetTableService.get(datasetTableId);
-            if(datasetTable == null){
+    private DatasetTable getDatasetTable(String datasetTableId) {
+        for (int i = 0; i < 5; i++) {
+            DatasetTable datasetTable = dataSetTableService.get(datasetTableId);
+            if (datasetTable == null) {
                 try {
                     Thread.sleep(1000);
-                }catch (Exception ignore){}
-            }else {
+                } catch (Exception ignore) {
+                }
+            } else {
                 return datasetTable;
             }
         }
         return null;
     }
 
-    private DatasetTableTaskLog writeDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
+    private DatasetTableTaskLog writeDatasetTableTaskLog(String datasetTableId, String taskId) {
+        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
         datasetTableTaskLog.setTriggerType(TriggerType.Cron.name());
         List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
-        if(CollectionUtils.isEmpty(datasetTableTaskLogs)){
+        if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
             datasetTableTaskLog.setStartTime(System.currentTimeMillis());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
             return datasetTableTaskLog;
-        }else {
+        } else {
             return datasetTableTaskLogs.get(0);
         }
     }
 
-    private DatasetTableTaskLog getDatasetTableTaskLog(DatasetTableTaskLog datasetTableTaskLog, String datasetTableId, String taskId) {
+    private DatasetTableTaskLog getDatasetTableTaskLog(String datasetTableId, String taskId) {
+        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-        for (int i=0;i<5;i++){
+        for (int i = 0; i < 5; i++) {
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
-            if(CollectionUtils.isNotEmpty(datasetTableTaskLogs)){
+            if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
                 return datasetTableTaskLogs.get(0);
             }
             try {
                 Thread.sleep(1000);
-            }catch (Exception ignore){}
+            } catch (Exception ignore) {
+            }
         }
         datasetTableTaskLog.setStartTime(System.currentTimeMillis());
         dataSetTableTaskLogService.save(datasetTableTaskLog);
@@ -549,6 +560,7 @@ public class ExtractDataService {
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
+        datasourceService.validate(datasetTable.getDataSourceId());
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
         JobMeta jobMeta = null;
@@ -694,7 +706,7 @@ public class ExtractDataService {
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setQuery(qp.wrapSql(sql));
         List<String> dorisFileds = new ArrayList<>();
-        datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed ->{
+        datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
             dorisFileds.add(DorisTableUtils.columnName(filed));
         });
         return String.join(",", dorisFileds);
@@ -716,7 +728,7 @@ public class ExtractDataService {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost(), mysqlConfigration.getDataBase(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
-                dataMeta.addExtraOption("MYSQL","characterEncoding", "UTF-8");
+                dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
@@ -732,21 +744,20 @@ public class ExtractDataService {
                 break;
             case oracle:
                 OracleConfigration oracleConfigration = new Gson().fromJson(datasource.getConfiguration(), OracleConfigration.class);
-                if(oracleConfigration.getConnectionType().equalsIgnoreCase("serviceName")){
+                if (oracleConfigration.getConnectionType().equalsIgnoreCase("serviceName")) {
                     String database = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ORACLE_HOSTNAME)(PORT = ORACLE_PORT))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = ORACLE_SERVICE_NAME )))".replace("ORACLE_HOSTNAME", oracleConfigration.getHost()).replace("ORACLE_PORT", oracleConfigration.getPort().toString()).replace("ORACLE_SERVICE_NAME", oracleConfigration.getDataBase());
                     dataMeta = new DatabaseMeta("db", "ORACLE", "Native", "", database, "-1", oracleConfigration.getUsername(), oracleConfigration.getPassword());
-                }else {
+                } else {
                     dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfigration.getHost(), oracleConfigration.getDataBase(), oracleConfigration.getPort().toString(), oracleConfigration.getUsername(), oracleConfigration.getPassword());
                 }
-               transMeta.addDatabase(dataMeta);
+                transMeta.addDatabase(dataMeta);
 
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
                 break;
             case excel:
-                String filePath = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData();
-                inputStep = excelInputStep(filePath, datasetTableFields);
+                inputStep = excelInputStep(datasetTable.getInfo(), datasetTableFields);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.excel);
             default:
                 break;
@@ -794,12 +805,12 @@ public class ExtractDataService {
             selectSQL = qp.createRawQuerySQL(tableName, datasetTableFields);
         }
 
-        if(extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("sql")){
+        if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("sql")) {
             selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
             selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
         }
-        if(!extractType.equalsIgnoreCase("all_scope")){
+        if (!extractType.equalsIgnoreCase("all_scope")) {
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
             selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
         }
@@ -817,41 +828,30 @@ public class ExtractDataService {
         return fromStep;
     }
 
-    private StepMeta excelInputStep(String filePath, List<DatasetTableField> datasetTableFields) {
-        String suffix = filePath.substring(filePath.lastIndexOf(".") + 1);
+    private StepMeta excelInputStep(String Info, List<DatasetTableField> datasetTableFields){
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(Info, DataTableInfoDTO.class);
+        String suffix = dataTableInfoDTO.getData().substring(dataTableInfoDTO.getData().lastIndexOf(".") + 1);
         ExcelInputMeta excelInputMeta = new ExcelInputMeta();
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
-            try{
-                InputStream inputStream = new FileInputStream(filePath);
-                XSSFWorkbook xssfWorkbook = new XSSFWorkbook(inputStream);
-                XSSFSheet sheet0 = xssfWorkbook.getSheetAt(0);
-                excelInputMeta.setSheetName(new String[]{sheet0.getSheetName()});
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            excelInputMeta.setSheetName(new String[]{dataTableInfoDTO.getSheets().get(0)});
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.JXL);
-            try{
-                InputStream inputStream = new FileInputStream(filePath);
-                HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
-                HSSFSheet sheet0 = workbook.getSheetAt(0);
-                excelInputMeta.setSheetName(new String[]{sheet0.getSheetName()});
-            }catch (Exception e){e.printStackTrace();}
+            excelInputMeta.setSheetName(new String[]{dataTableInfoDTO.getSheets().get(0)});
         }
         excelInputMeta.setPassword("Encrypted");
-        excelInputMeta.setFileName(new String[]{filePath});
+        excelInputMeta.setFileName(new String[]{dataTableInfoDTO.getData()});
         excelInputMeta.setStartsWithHeader(true);
         excelInputMeta.setIgnoreEmptyRows(true);
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
         for (int i = 0; i < datasetTableFields.size(); i++) {
             ExcelInputField field = new ExcelInputField();
             field.setName(datasetTableFields.get(i).getOriginName());
-            if(datasetTableFields.get(i).getDeExtractType() == 1){
+            if (datasetTableFields.get(i).getDeExtractType() == 1) {
                 field.setType("String");
                 field.setFormat("yyyy-MM-dd HH:mm:ss");
-            }else {
+            } else {
                 field.setType("String");
             }
             fields[i] = field;
@@ -892,14 +892,14 @@ public class ExtractDataService {
 
         tmp_code = tmp_code.replace("handleWraps", handleWraps);
         String Column_Fields = "";
-        if(datasourceType.equals(DatasourceTypes.excel) || datasourceType.equals(DatasourceTypes.oracle)){
+        if (datasourceType.equals(DatasourceTypes.excel) || datasourceType.equals(DatasourceTypes.oracle)) {
             Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()));
-        }else {
+        } else {
             Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()));
         }
-        if(datasourceType.equals(DatasourceTypes.excel)){
+        if (datasourceType.equals(DatasourceTypes.excel)) {
             tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields);
-        }else {
+        } else {
             tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields);
         }
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
@@ -914,7 +914,7 @@ public class ExtractDataService {
         return userDefinedJavaClassStep;
     }
 
-    public void deleteFile(String type, String dataSetTableId){
+    public void deleteFile(String type, String dataSetTableId) {
         String transName = null;
         String jobName = null;
         String fileName = null;
@@ -929,7 +929,7 @@ public class ExtractDataService {
                 transName = "trans_add_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_add_" + DorisTableUtils.dorisName(dataSetTableId);
                 fileName = DorisTableUtils.dorisAddName(dataSetTableId);
-                 break;
+                break;
             case "incremental_delete":
                 transName = "trans_delete_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_delete_" + DorisTableUtils.dorisName(dataSetTableId);
@@ -938,28 +938,31 @@ public class ExtractDataService {
             default:
                 break;
         }
-        try{
+        try {
             File file = new File(root_path + fileName + "." + extention);
             FileUtils.forceDelete(file);
-        }catch (Exception e){}
-        try{
+        } catch (Exception e) {
+        }
+        try {
             File file = new File(root_path + jobName + ".kjb");
             FileUtils.forceDelete(file);
-        }catch (Exception e){}
-        try{
+        } catch (Exception e) {
+        }
+        try {
             File file = new File(root_path + transName + ".ktr");
             FileUtils.forceDelete(file);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     public boolean isKettleRunning() {
-       try {
-           if (!InetAddress.getByName(carte).isReachable(1000)) {
-               return false;
-           }
-       }catch (Exception e){
-           return false;
-       }
+        try {
+            if (!InetAddress.getByName(carte).isReachable(1000)) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
 
         HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
         HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();

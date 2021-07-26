@@ -2,7 +2,13 @@
   <el-col>
     <el-row style="margin-top: 10px;">
       <complex-table :data="data" :columns="columns" local-key="datasetTaskRecord" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
-        <el-table-column prop="name" :label="$t('dataset.task_name')"/>
+        <el-table-column prop="name" :label="$t('dataset.task_name')">
+          <template slot-scope="scope">
+            <span>
+              <el-link style="font-size: 12px" @click="jumpTask(scope.row)">{{ scope.row.name }}</el-link>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="startTime" :label="$t('dataset.start_time')">
           <template slot-scope="scope">
             <span>{{ scope.row.startTime | timestampFormatDate }}</span>
@@ -49,14 +55,19 @@ import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { post} from '@/api/dataset/dataset'
+import { post } from '@/api/dataset/dataset'
 import cron from '@/components/cron/cron'
 import TableSelector from '@/views/chart/view/TableSelector'
 
-
 export default {
   name: 'TaskRecord',
-  components: { ComplexTable, LayoutContent, cron, TableSelector},
+  components: { ComplexTable, LayoutContent, cron, TableSelector },
+  props: {
+    param: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       header: '',
@@ -72,8 +83,9 @@ export default {
         useComplexSearch: true,
         quickPlaceholder: this.$t('dataset.task.search_by_name'),
         components: [
-          { field: 'dataset_table_task.name', label: this.$t('dataset.task.name'), component: 'DeComplexInput' },
-          { field: 'dataset_table_task_log.status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false}
+          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput' },
+          { field: 'dataset_table.name', label: this.$t('dataset.name'), component: 'DeComplexInput' },
+          { field: 'dataset_table_task_log.status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
         ]
       },
       paginationConfig: {
@@ -103,18 +115,65 @@ export default {
       error_massage: ''
     }
   },
-  created() {
-    this.search()
-    this.timer = setInterval(() => {
-      this.search(this.last_condition, false)
-    }, 5000)
-  },
   computed: {
   },
+  created() {
+    if (this.param == null) {
+      this.last_condition = {}
+      this.search()
+    } else {
+      this.last_condition = {
+        'dataset_table_task.name': {
+          field: 'dataset_table_task.name',
+          operator: 'eq',
+          value: this.param.name
+        }
+      }
+      this.search(this.last_condition)
+    }
+
+    // this.timer = setInterval(() => {
+    //   this.search(this.last_condition, false)
+    // }, 5000)
+    this.createTimer()
+  },
   beforeDestroy() {
-    clearInterval(this.timer)
+    // clearInterval(this.timer)
+    this.destroyTimer()
   },
   methods: {
+    createTimer() {
+      if (!this.timer) {
+        this.timer = setInterval(() => {
+          this.search(this.last_condition, false)
+        }, 5000)
+      }
+    },
+    destroyTimer() {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
+    msg2Current(routerParam) {
+      if (!routerParam || !routerParam.taskId) return
+      const taskId = routerParam.taskId
+      // console.log(taskId)
+      const current_condition = {
+        'dataset_table_task.id': {
+          field: 'dataset_table_task.id',
+          operator: 'eq',
+          value: taskId
+        }
+      }
+      // 先把定时器干掉 否则会阻塞下面的search
+      this.destroyTimer()
+
+      this.search(current_condition)
+
+      // 查询完再开启定时器
+      this.createTimer()
+    },
     sortChange({ column, prop, order }) {
       this.orderConditions = []
       if (!order) {
@@ -133,13 +192,13 @@ export default {
     },
     select(selection) {
     },
-    search(condition) {
+    search(condition, showLoading = true) {
       this.last_condition = condition
       condition = formatQuickCondition(condition, 'dataset_table_task.name')
       const temp = formatCondition(condition)
       const param = temp || {}
       param['orders'] = formatOrders(this.orderConditions)
-      post('/dataset/taskLog/list/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param).then(response => {
+      post('/dataset/taskLog/list/notexcel/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
       })
@@ -147,6 +206,9 @@ export default {
     showErrorMassage(massage) {
       this.show_error_massage = true
       this.error_massage = massage
+    },
+    jumpTask(item) {
+      this.$emit('jumpTask', item)
     }
   }
 }

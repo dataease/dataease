@@ -1,23 +1,27 @@
 <template>
   <span>
-    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis">
+    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
       <span style="float: left">
         <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
         <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
         <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
         <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+        <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
+        <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
       <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis">
+        <el-tag size="small" class="item-axis" :type="item.groupType === 'd'?'':'success'">
           <span style="float: left">
             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
             <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+            <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
+            <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
@@ -30,7 +34,7 @@
                 <span>
                   <i class="el-icon-notebook-2" />
                   <span>{{ $t('chart.summary') }}</span>
-                  <span class="summary-span">({{ $t('chart.'+item.summary) }})</span>
+                  <span class="summary-span-item">({{ $t('chart.'+item.summary) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -52,7 +56,7 @@
           <!--                <span>-->
           <!--                  <i class="el-icon-s-grid" />-->
           <!--                  <span>{{ $t('chart.quick_calc') }}</span>-->
-          <!--                  <span class="summary-span">(无)</span>-->
+          <!--                  <span class="summary-span-item">(无)</span>-->
           <!--                </span>-->
           <!--                <i class="el-icon-arrow-right el-icon&#45;&#45;right" />-->
           <!--              </span>-->
@@ -67,7 +71,7 @@
                 <span>
                   <i class="el-icon-sort" />
                   <span>{{ $t('chart.sort') }}</span>
-                  <span class="summary-span">({{ $t('chart.'+item.sort) }})</span>
+                  <span class="summary-span-item">({{ $t('chart.'+item.sort) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -212,9 +216,16 @@ export default {
     font-size: 12px;
   }
 
+  .summary-span-item{
+    margin-left: 4px;
+    color: #878d9f;
+  }
+
   .summary-span{
     margin-left: 4px;
-    color: #878d9f;;
+    color: #878d9f;
+    position: absolute;
+    right: 30px;
   }
 
   .inner-dropdown-menu{
@@ -226,7 +237,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 80px;
+    width: 70px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;

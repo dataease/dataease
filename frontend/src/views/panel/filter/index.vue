@@ -19,7 +19,7 @@
           <div class="filter-widget-icon">
             <i :class="(widget.icon || 'el-icon-setting') + ' widget-icon-i'" />
           </div>
-          <div class="filter-widget-text">{{ widget.label }}</div>
+          <div class="filter-widget-text">{{ $t(widget.label) || widget.label }}</div>
         </div>
       </div>
     </div>
@@ -54,7 +54,8 @@ export default {
           'textInputWidget'
         ],
         '数字过滤组件': [
-          'numberSelectWidget'
+          'numberSelectWidget',
+          'numberRangeWidget'
         ]
         // '按钮': [
         //   'buttonSureWidget'

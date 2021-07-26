@@ -2,7 +2,7 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-yue',
-  label: '年月',
+  label: 'deyearmonth.label',
   defaultClass: 'time-filter'
 }
 
@@ -10,7 +10,7 @@ const dialogPanel = {
   options: {
     attrs: {
       type: 'month',
-      placeholder: '请选择年月',
+      placeholder: 'deyearmonth.placeholder',
       viewIds: []
     },
     value: ''

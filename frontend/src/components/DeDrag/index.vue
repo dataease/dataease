@@ -623,7 +623,7 @@ export default {
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search') {
+      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-number-range') {
         e.preventDefault()
       }
       // 阻止冒泡事件
@@ -1448,6 +1448,7 @@ export default {
     },
     // 记录当前样式
     recordCurStyle() {
+      debugger
       const style = {
         ...this.defaultStyle
       }
@@ -1462,6 +1463,7 @@ export default {
 
     // 记录当前样式 矩阵处理
     recordMatrixCurStyle() {
+      debugger
       const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
       const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
       const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
@@ -1474,7 +1476,7 @@ export default {
       style.width = width
       style.height = height
       style.rotate = this.rotate
-      this.hasMove = true
+      // this.hasMove = true
       this.$store.commit('setShapeStyle', style)
     },
     mountedFunction() {

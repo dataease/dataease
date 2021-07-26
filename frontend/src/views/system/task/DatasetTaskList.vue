@@ -6,7 +6,13 @@
           <el-button  icon="el-icon-circle-plus-outline" @click="selectDataset">{{ $t('dataset.task.create') }}</el-button>
         </template>
 
-        <el-table-column prop="name" :label="$t('dataset.task_name')" />
+        <el-table-column prop="name" :label="$t('dataset.task_name')" >
+          <template slot-scope="scope">
+            <span>
+              <el-link style="font-size: 12px" @click="jumpTaskRecord(scope.row)">{{ scope.row.name }}</el-link>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="datasetName" :label="$t('dataset.task.dataset')" />
         <el-table-column prop="rate" :label="$t('dataset.execute_rate')">
           <template slot-scope="scope">
@@ -21,7 +27,7 @@
             <span v-if="scope.row.lastExecTime && scope.row.lastExecTime != -1">
             {{ scope.row.lastExecTime | timestampFormatDate }}
           </span>
-            <span v-if="scope.row.lastExecTime === -1">--</span>
+            <span v-if="scope.row.lastExecTime === -1"></span>
           </template>
         </el-table-column>
 
@@ -31,19 +37,20 @@
             <span v-if="scope.row.lastExecStatus === 'Underway'" style="color: blue">
                 <i class="el-icon-loading" />
                 {{ $t('dataset.underway') }}
-              </span>
-            <span v-if="scope.row.lastExecStatus === 'Error'" style="color: #ff0000">
-            {{ $t('dataset.error') }}
-          </span>
+            </span>
+            <span v-if="scope.row.lastExecStatus === 'Error'" style="color: red">
+              <el-link type="danger" style="font-size: 12px" @click="showErrorMassage(scope.row.msg)">{{ $t('dataset.error') }}</el-link>
+            </span>
+
           </template>
         </el-table-column>
 
         <el-table-column prop="nextExecTime" :label="$t('dataset.task.next_exec_time')">
           <template slot-scope="scope" >
-            <span v-if="scope.row.nextExecTime">
+            <span v-if="scope.row.nextExecTime && scope.row.nextExecTime !== -1 && scope.row.rate !== 'SIMPLE'">
               {{ scope.row.nextExecTime | timestampFormatDate }}
             </span>
-            <span v-if="!scope.row.nextExecTime">--</span>
+            <span v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'"></span>
           </template>
 
         </el-table-column>
@@ -53,8 +60,15 @@
             <span v-if="scope.row.status === 'Underway'" style="color: green">
               <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
             </span>
-            <span v-if="scope.row.status === 'Stopped'">
-              <el-link type="danger" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.stopped') }}</el-link>
+            <span v-if="scope.row.status === 'Stopped'" style="color: red">
+              <div type="danger" style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
+            </span>
+            <span v-if="scope.row.status === 'Pending'" style="color: blue">
+              <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
+            </span>
+            <span v-if="scope.row.status === 'Exec'" style="color: blue">
+                <i class="el-icon-loading" />
+                {{ $t('dataset.underway') }}
             </span>
           </template>
         </el-table-column>
@@ -110,10 +124,10 @@
             </el-form>
           </el-form-item>
 
-          <el-form-item v-if="taskForm.rate === 'CRON'" :label="$t('dataset.start_time')" prop="startTime">
+          <el-form-item v-if="taskForm.rate !== 'SIMPLE'" :label="$t('dataset.start_time')" prop="startTime">
             <el-date-picker v-model="taskForm.startTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="mini"/>
           </el-form-item>
-          <el-form-item v-if="taskForm.rate === 'CRON'" :label="$t('dataset.end_time')" prop="end">
+          <el-form-item v-if="taskForm.rate !== 'SIMPLE'" :label="$t('dataset.end_time')" prop="end">
             <el-select v-model="taskForm.end" size="mini">
               <el-option :label="$t('dataset.no_limit')" value="0"/>
               <el-option :label="$t('dataset.set_end_time')" value="1"/>
@@ -154,7 +168,7 @@
     </el-dialog>
 
     <!--添加任务-选择数据集-->
-    <el-dialog v-dialogDrag :title="$t('chart.add_chart')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
+    <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
       <table-selector @getTable="getTable" :mode="1" type="db"  showMode="datasetTask"/>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
@@ -162,6 +176,19 @@
       </div>
     </el-dialog>
 
+    <el-dialog
+      v-dialogDrag
+      :title="$t('dataset.detail')"
+      :visible="show_error_massage"
+      :show-close="false"
+      width="50%"
+      class="dialog-css"
+    >
+      <span class="err-msg">{{ error_massage }}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
+      </span>
+    </el-dialog>
   </el-col>
 </template>
 
@@ -194,6 +221,12 @@ import TableSelector from '@/views/chart/view/TableSelector'
 export default {
   name: 'DatasetTaskList',
   components: { ComplexTable, cron, codemirror, TableSelector },
+  props: {
+    param: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       taskForm: {
@@ -228,8 +261,11 @@ export default {
         useComplexSearch: true,
         quickPlaceholder: this.$t('dataset.task.search_by_name'),
         components: [
-          { field: 'dataset_table_task.name', label: this.$t('dataset.task.name'), component: 'DeComplexInput' },
-          { field: 'dataset_table_task.last_exec_status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
+          { field: 'dataset_table.name', label: this.$t('dataset.name'), component: 'DeComplexInput' },
+          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput' },
+          { field: 'dataset_table_task.status', label: this.$t('dataset.task.task_status'), component: 'FuComplexSelect',
+            options: [{ label: this.$t('dataset.task.stopped'), value: 'Stopped' }, { label: this.$t('dataset.task.underway'), value: 'Underway' }, { label: this.$t('dataset.task.pending'), value: 'Pending' }, { label: this.$t('dataset.underway'), value: 'Exec' }], multiple: false },
+          { field: 'dataset_table_task.last_exec_status', label: this.$t('dataset.task.last_exec_status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
         ]
       },
       paginationConfig: {
@@ -279,7 +315,9 @@ export default {
       cronEdit: false,
       lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn',
       selectDatasetFlag: false,
-      table: {}
+      table: {},
+      show_error_massage: false,
+      error_massage: ''
     }
   },
   computed: {
@@ -288,7 +326,19 @@ export default {
     }
   },
   created() {
-    this.search()
+    if(this.param == null){
+      this.last_condition = {}
+      this.search()
+    }else {
+      this.last_condition = {
+        'dataset_table_task.name': {
+          field: "dataset_table_task.name",
+          operator: "eq",
+          value: this.param.name
+        }
+      }
+      this.search(this.last_condition)
+    }
     this.timer = setInterval(() => {
       this.search(this.last_condition, false)
     }, 5000)
@@ -338,6 +388,7 @@ export default {
         if(!item.lastExecTime) {
           item.lastExecTime = response.data.lastExecTime
         }
+        item.msg = response.data.msg
       })
     },
     create(task) {
@@ -356,7 +407,7 @@ export default {
     },
     changeTaskStatus(task){
       const param = task;
-      param.status = task.status === 'Underway' ? 'Stopped' : 'Underway'
+      param.status = task.status === 'Underway' ? 'Pending' : 'Underway'
       post('/dataset/task/updateStatus', task).then(response => {
         task.status = param.status;
         this.$message({
@@ -373,7 +424,7 @@ export default {
         type: 'warning'
       }).then(() => {
         post('/dataset/task/execTask', task).then(response => {
-          this.search()
+          this.search(this.last_condition, true)
         })
       }).catch(() => {
       })
@@ -491,10 +542,10 @@ export default {
       this.taskForm.cron = val
     },
     disableEdit(task) {
-      return task.rate === 'SIMPLE'
+      return task.rate === 'SIMPLE' || task.status === 'Stopped'
     },
     disableExec(task) {
-      return task.status === 'Stopped'
+      return task.status === 'Stopped' || task.status === 'Pending'
     },
     deleteTask(task) {
       this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
@@ -508,7 +559,7 @@ export default {
             type: 'success',
             showClose: true
           })
-          this.search()
+          this.search(this.last_condition, true)
         })
       }).catch(() => {
       })
@@ -542,6 +593,13 @@ export default {
       this.update_task = false
       this.resetTaskForm()
     },
+    showErrorMassage(massage) {
+      this.show_error_massage = true
+      this.error_massage = massage
+    },
+    jumpTaskRecord(item){
+      this.$emit('jumpTaskRecord', item)
+    },
     saveTask(task) {
       if (task.rate !== 'SIMPLE') {
         if (this.incrementalUpdateType === 'incrementalAdd') {
@@ -567,7 +625,7 @@ export default {
         })
         this.update_task = false
         this.resetTaskForm()
-        this.search()
+        this.search(this.last_condition, true)
       })
     },
     handleClose() {
@@ -615,6 +673,16 @@ export default {
 .codemirror >>> .CodeMirror-scroll {
   height: 100px;
   overflow-y: auto;
+}
+
+.err-msg{
+  font-size: 12px;
+  word-break:normal;
+  width:auto;
+  display:block;
+  white-space:pre-wrap;
+  word-wrap : break-word ;
+  overflow: hidden ;
 }
 
 span{
