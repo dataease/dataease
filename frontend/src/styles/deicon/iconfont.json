@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3684252",
+      "name": "edit-2",
+      "font_class": "edit",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "7897795",
+      "name": "详情",
+      "font_class": "xiangqing1",
+      "unicode": "e706",
+      "unicode_decimal": 59142
+    },
+    {
       "icon_id": "12617190",
       "name": "弧形框",
       "font_class": "weibiaoti-1",
