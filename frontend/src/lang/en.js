@@ -1314,6 +1314,14 @@ export default {
     label: 'Text selector',
     placeholder: 'Please select'
   },
+  detextgridselect: {
+    label: 'Text list',
+    placeholder: 'Please select'
+  },
+  denumbergridselect: {
+    label: 'Number list',
+    placeholder: 'Please select'
+  },
   dedaterange: {
     label: 'Date range',
     to_placeholder: 'End date',

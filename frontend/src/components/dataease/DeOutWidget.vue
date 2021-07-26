@@ -13,7 +13,7 @@
       <div ref="deContentContainer" class="condition-content" :class="element.options.attrs.title ? '' : 'condition-content-default'">
         <div class="condition-content-container">
           <div class="first-element">
-            <div class="first-element-contaner">
+            <div :class="element.component === 'de-select-grid' ? 'first-element-grid-contaner': ''" class="first-element-contaner">
               <component
                 :is="element.component"
                 v-if="element.type==='custom'"
@@ -151,12 +151,17 @@ export default {
   }
   .first-element-contaner {
       width: calc(100% - 10px);
+      background: #fff;
+      border: 1px solid #d7dae2;
       position:absolute;
       bottom: 5px;
       margin: 0 4px;
       div {
           width: 100%;
       }
+  }
+  .first-element-grid-contaner {
+      top: 5px;
   }
   .condition-main-line {
       height: 40px !important;
