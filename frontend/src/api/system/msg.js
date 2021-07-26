@@ -59,6 +59,15 @@ export function updateSetting(data) {
   })
 }
 
+export function batchUpdate(data) {
+  return request({
+    url: '/api/sys_msg/batchUpdate',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function allTypes(data) {
   return request({
     url: '/api/sys_msg/types',

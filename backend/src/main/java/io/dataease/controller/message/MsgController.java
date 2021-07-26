@@ -8,10 +8,7 @@ import io.dataease.base.domain.SysMsgType;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
-import io.dataease.controller.message.dto.MsgGridDto;
-import io.dataease.controller.message.dto.MsgRequest;
-import io.dataease.controller.message.dto.MsgSettingRequest;
-import io.dataease.controller.message.dto.SettingTreeNode;
+import io.dataease.controller.message.dto.*;
 import io.dataease.service.message.SysMsgService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,5 +86,11 @@ public class MsgController {
     public List<SysMsgType> allTypes() {
         List<SysMsgType> sysMsgTypes = sysMsgService.queryMsgTypes();
         return sysMsgTypes;
+    }
+
+    @PostMapping("/batchUpdate")
+    public void batchUpdate(@RequestBody BatchSettingRequest request) {
+        Long userId = AuthUtils.getUser().getUserId();
+        sysMsgService.batchUpdate(request, userId);
     }
 }
