@@ -1315,6 +1315,14 @@ export default {
     label: '文本下拉',
     placeholder: '请选择'
   },
+  detextgridselect: {
+    label: '文本列表',
+    placeholder: '请选择'
+  },
+  denumbergridselect: {
+    label: '数字列表',
+    placeholder: '请选择'
+  },
   dedaterange: {
     label: '日期范围',
     to_placeholder: '结束日期',

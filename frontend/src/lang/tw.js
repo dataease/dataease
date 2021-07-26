@@ -1313,6 +1313,14 @@ export default {
     label: '文本下拉',
     placeholder: '請選擇'
   },
+  detextgridselect: {
+    label: '文本列表',
+    placeholder: '請選擇'
+  },
+  denumbergridselect: {
+    label: '數字列表',
+    placeholder: '請選擇'
+  },
   dedaterange: {
     label: '日期範圍',
     to_placeholder: '結束日期',

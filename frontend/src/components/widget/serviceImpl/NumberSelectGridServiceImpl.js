@@ -3,7 +3,7 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-xialakuang',
-  label: 'denumberselect.label',
+  label: 'denumbergridselect.label',
   defaultClass: 'tree-filter'
 }
 
@@ -11,7 +11,8 @@ const dialogPanel = {
   options: {
     attrs: {
       multiple: false,
-      placeholder: 'denumberselect.placeholder',
+      placeholder: 'denumbergridselect.placeholder',
+      viewIds: [],
       datas: [],
       key: 'id',
       label: 'text',
@@ -20,14 +21,13 @@ const dialogPanel = {
     value: ''
   },
   defaultClass: 'tree-filter',
-  component: 'de-select'
+  component: 'de-select-grid'
 }
 const drawPanel = {
   type: 'custom',
   style: {
     width: 300,
-    // height: 47,
-    height: 90,
+    height: 300,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
@@ -35,12 +35,12 @@ const drawPanel = {
     textAlign: '',
     color: ''
   },
-  component: 'de-select'
+  component: 'de-select-grid'
 }
 
-class NumberSelectServiceImpl extends WidgetService {
+class NumberSelectGridServiceImpl extends WidgetService {
   constructor(options = {}) {
-    Object.assign(options, { name: 'numberSelectWidget' })
+    Object.assign(options, { name: 'numberSelectGridWidget' })
     super(options)
     this.filterDialog = true
     this.showSwitch = true
@@ -77,5 +77,5 @@ class NumberSelectServiceImpl extends WidgetService {
     })
   }
 }
-const numberSelectServiceImpl = new NumberSelectServiceImpl()
-export default numberSelectServiceImpl
+const numberSelectGridServiceImpl = new NumberSelectGridServiceImpl()
+export default numberSelectGridServiceImpl

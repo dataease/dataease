@@ -1448,7 +1448,7 @@ export default {
     },
     // 记录当前样式
     recordCurStyle() {
-      debugger
+      // debugger
       const style = {
         ...this.defaultStyle
       }
