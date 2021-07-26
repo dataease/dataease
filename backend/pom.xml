@@ -356,7 +356,7 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
 
         <dependency>
@@ -531,6 +531,11 @@
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
         </snapshots>
+    </repository>
+    <repository>
+        <id>oss-sonatype</id>
+        <name>s01.oss.sonatype.org</name>
+        <url>https://s01.oss.sonatype.org/content/groups/public/</url>
     </repository>
     </repositories>
 
