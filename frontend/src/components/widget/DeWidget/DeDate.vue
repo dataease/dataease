@@ -8,6 +8,7 @@
     :start-placeholder="options.attrs.startPlaceholder"
     :end-placeholder="options.attrs.endPlaceholder"
     :placeholder="options.attrs.placeholder"
+    :append-to-body="inScreen"
     style="min-height: 36px;"
     @change="dateChange"
   />
@@ -24,6 +25,11 @@ export default {
     },
     inDraw: {
       type: Boolean,
+      default: true
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
       default: true
     }
   },
