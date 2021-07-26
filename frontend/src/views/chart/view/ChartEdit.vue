@@ -1574,11 +1574,6 @@ export default {
     padding: 0;
     height: 100%;
   }
-  .collapse-style>>>.el-collapse-item__header{
-    height: 40px;
-    line-height: 40px;
-    padding: 0 0 0 10px;
-  }
   .tree-select-span {
       >>>div.vue-treeselect__control {
           height: 32px !important;
