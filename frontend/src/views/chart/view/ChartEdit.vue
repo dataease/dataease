@@ -514,7 +514,7 @@
       :destroy-on-close="true"
       :fullscreen="true"
     >
-      <field-edit :param="{table:table}" @switchComponent="closeEditDsField" />
+      <field-edit :param="table" @switchComponent="closeEditDsField" />
     </el-dialog>
   </el-row>
 </template>

@@ -34,9 +34,9 @@
         <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
           {{ $t('dataset.edit_sql') }}
         </el-button>
-        <el-button size="mini" @click="edit">
-          {{ $t('dataset.edit_field') }}
-        </el-button>
+        <!--        <el-button size="mini" @click="edit">-->
+        <!--          {{ $t('dataset.edit_field') }}-->
+        <!--        </el-button>-->
         <!--        <el-button size="mini" type="primary" @click="createChart">-->
         <!--          {{$t('dataset.create_view')}}-->
         <!--        </el-button>-->
@@ -44,9 +44,12 @@
     </el-row>
     <el-divider />
 
-    <el-tabs v-model="tabActive">
+    <el-tabs v-model="tabActive" @tab-click="initTable(param.id)">
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview :param="param" :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
+      </el-tab-pane>
+      <el-tab-pane :label="$t('dataset.field_manage')" name="fieldEdit">
+        <field-edit :param="param" />
       </el-tab-pane>
       <el-tab-pane v-if="table.type !== 'custom'" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />
@@ -64,10 +67,11 @@ import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
 import DatasetChartDetail from '../common/DatasetChartDetail'
 import UnionView from './UnionView'
+import FieldEdit from './FieldEdit'
 
 export default {
   name: 'ViewTable',
-  components: { UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
+  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
   props: {
     param: {
       type: Object,
@@ -101,6 +105,7 @@ export default {
   },
   watch: {
     'param': function() {
+      this.tabActive = 'dataPreview'
       this.initTable(this.param.id)
     }
   },
@@ -112,7 +117,6 @@ export default {
   },
   methods: {
     initTable(id) {
-      this.tabActive = 'dataPreview'
       this.tableViewRowForm.row = 1000
       if (id !== null) {
         this.fields = []
