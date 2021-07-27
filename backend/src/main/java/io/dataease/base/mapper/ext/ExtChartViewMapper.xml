@@ -45,8 +45,7 @@
             `create_time`,
             `update_time`,
             `snapshot`,
-            `style_priority`,
-            `ext_stack`
+            `style_priority`
         ) SELECT
         #{newChartId},
         GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
@@ -63,8 +62,7 @@
         `create_time`,
         `update_time`,
         `snapshot`,
-        `style_priority`,
-        `ext_stack`
+        `style_priority`
         FROM
             chart_view
         WHERE
