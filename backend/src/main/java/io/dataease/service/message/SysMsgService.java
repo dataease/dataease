@@ -181,7 +181,7 @@ public class SysMsgService {
     }
 
     public List<SysMsgSetting> defaultSettings() {
-        Long userId = AuthUtils.getUser().getUserId();
+        // Long userId = AuthUtils.getUser().getUserId();
         SysMsgSetting sysMsgSetting1 = new SysMsgSetting();
         sysMsgSetting1.setTypeId(2L);
         sysMsgSetting1.setChannelId(1L);
