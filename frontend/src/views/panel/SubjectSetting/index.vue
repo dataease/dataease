@@ -17,17 +17,17 @@
         <el-collapse-item :title="$t('chart.module_style')" name="component">
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
-            <background-color-selector v-if="chart" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+            <panel-background-color-selector v-if="chart" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <color-selector :source-type="'panelEchart'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+            <panel-color-selector :source-type="'panelEchart'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('panel.table')" name="table">
           <el-row style="background-color: #f7f8fa; margin: 5px">
-            <color-selector index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
+            <panel-color-selector index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
           </el-row>
         </el-collapse-item>
       </el-collapse>
@@ -38,10 +38,10 @@
 <script>
 import slider from './PreSubject/Slider'
 import BackgroundSelector from './PanelStyle/BackgroundSelector'
+import PanelBackgroundColorSelector from './PanelStyle/PanelBackgroundColorSelector'
+import PanelColorSelector from './PanelStyle/PanelColorSelector'
 import ComponentGap from './PanelStyle/ComponentGap'
 
-import ColorSelector from '@/views/chart/components/shape-attr/ColorSelector'
-import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import bus from '@/utils/bus'
@@ -51,8 +51,8 @@ export default {
     slider,
     BackgroundSelector,
     ComponentGap,
-    ColorSelector,
-    BackgroundColorSelector
+    PanelColorSelector,
+    PanelBackgroundColorSelector
   },
   data() {
     return {
