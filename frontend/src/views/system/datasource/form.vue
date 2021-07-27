@@ -53,7 +53,7 @@
         </el-form-item>
 
         <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.schema')">
-          <el-select v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width" :disabled="formType=='modify'">
+          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width" :disabled="formType=='modify'">
             <el-option
               v-for="item in schemas"
               :key="item"
