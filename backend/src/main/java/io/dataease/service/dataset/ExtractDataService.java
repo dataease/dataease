@@ -782,8 +782,8 @@ public class ExtractDataService {
                 break;
         }
 
+        outputStep = outputStep(outFile, datasetTableFields, datasource);
 
-        outputStep = outputStep(outFile);
         hi1 = new TransHopMeta(inputStep, udjcStep);
         hi2 = new TransHopMeta(udjcStep, outputStep);
         transMeta.addTransHop(hi1);
@@ -863,14 +863,27 @@ public class ExtractDataService {
         return fromStep;
     }
 
-    private StepMeta outputStep(String dorisOutputTable) {
+    private StepMeta outputStep(String dorisOutputTable, List<DatasetTableField> datasetTableFields, Datasource datasource) {
         TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
         textFileOutputMeta.setEncoding("UTF-8");
         textFileOutputMeta.setHeaderEnabled(false);
         textFileOutputMeta.setFilename(root_path + dorisOutputTable);
         textFileOutputMeta.setSeparator(separator);
         textFileOutputMeta.setExtension(extention);
-        textFileOutputMeta.setOutputFields(new TextFileField[0]);
+
+        if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
+            TextFileField[] outputFields = new TextFileField[datasetTableFields.size()];
+            for(int i=0;i< datasetTableFields.size();i++){
+                TextFileField textFileField = new TextFileField();
+                textFileField.setName(datasetTableFields.get(i).getOriginName());
+                textFileField.setType("String");
+                outputFields[i] = textFileField;
+            }
+            textFileOutputMeta.setOutputFields(outputFields);
+        }else {
+            textFileOutputMeta.setOutputFields(new TextFileField[0]);
+        }
+
         StepMeta outputStep = new StepMeta("TextFileOutput", "TextFileOutput", textFileOutputMeta);
         outputStep.setLocation(600, 100);
         outputStep.setDraw(true);
@@ -879,8 +892,6 @@ public class ExtractDataService {
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
         String needToChangeColumnType = "";
-
-
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
         UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
