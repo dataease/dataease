@@ -1,23 +1,56 @@
 <template>
-  <el-row>
-    <el-row style="height: 26px;">
-      <span style="line-height: 26px;">
-        {{ $t('dataset.field_edit') }}
-        <span>{{ param.table.name }}</span>
-      </span>
-      <el-row style="float: right">
-        <el-button size="mini" @click="closeEdit">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="saveEdit">{{ $t('dataset.confirm') }}</el-button>
-      </el-row>
+  <el-row :style="{height: maxHeight,overflow:'auto'}">
+    <!--    <el-row style="height: 26px;">-->
+    <!--      <span style="line-height: 26px;">-->
+    <!--        {{ $t('dataset.field_edit') }}-->
+    <!--        <span>{{ param.name }}</span>-->
+    <!--      </span>-->
+    <!--      <el-row style="float: right">-->
+    <!--        <el-button size="mini" @click="closeEdit">{{ $t('dataset.cancel') }}</el-button>-->
+    <!--        <el-button type="primary" size="mini" @click="saveEdit">{{ $t('dataset.confirm') }}</el-button>-->
+    <!--      </el-row>-->
+    <!--    </el-row>-->
+    <!--    <el-divider />-->
+    <el-row>
+      <el-form :inline="true">
+        <el-form-item class="form-item">
+          <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
+        </el-form-item>
+        <el-form-item class="form-item" style="float: right;">
+          <el-input
+            v-model="searchField"
+            size="mini"
+            :placeholder="$t('dataset.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+        </el-form-item>
+      </el-form>
     </el-row>
-    <el-divider />
 
     <el-collapse v-model="fieldActiveNames" class="style-collapse">
       <el-collapse-item name="d" :title="$t('chart.dimension')">
-        <el-table :data="tableFields.dimensionList" size="mini">
+        <el-table :data="tableFields.dimensionListData" size="mini">
+          <el-table-column property="checked" :label="$t('dataset.field_check')" width="60">
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit" />
+            </template>
+          </el-table-column>
+          <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit" @keyup.enter.native="saveEdit" />
+            </template>
+          </el-table-column>
+          <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+            <template slot-scope="scope">
+              <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                <span style="font-size: 12px;">{{ scope.row.originName }}</span>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;">
+              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit">
                 <el-option
                   v-for="item in fields"
                   :key="item.value"
@@ -77,41 +110,49 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
+          <!--          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">-->
+          <!--            <template slot-scope="scope">-->
+          <!--              <el-radio-group v-model="scope.row.groupType" size="mini">-->
+          <!--                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>-->
+          <!--                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>-->
+          <!--              </el-radio-group>-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
+          <el-table-column property="groupType" :label="$t('dataset.d_q_trans')" width="120">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.name" size="mini" />
+              <el-button icon="el-icon-sort" size="mini" circle :disabled="!hasDataPermission('manage',param.privileges)" @click="dqTrans(scope.row,'d')" />
             </template>
           </el-table-column>
-          <el-table-column v-if="!(param.table.mode === 0 && param.table.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+          <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
-              <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-                <span style="font-size: 12px;">{{ scope.row.originName }}</span>
-              </span>
+              <el-button type="text" size="small">编辑</el-button>
             </template>
           </el-table-column>
-          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">
-            <template slot-scope="scope">
-              <el-radio-group v-model="scope.row.groupType" size="mini">
-                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>
-                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>
-              </el-radio-group>
-            </template>
-          </el-table-column>
-          <el-table-column property="checked" :label="$t('dataset.field_check')" width="80">
-            <template slot-scope="scope">
-              <el-checkbox v-model="scope.row.checked" />
-            </template>
-          </el-table-column>
-          <!--下面这一列占位-->
-          <el-table-column property="" />
         </el-table>
       </el-collapse-item>
 
       <el-collapse-item name="q" :title="$t('chart.quota')">
-        <el-table :data="tableFields.quotaList" size="mini">
+        <el-table :data="tableFields.quotaListData" size="mini">
+          <el-table-column property="checked" :label="$t('dataset.field_check')" width="60">
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit" />
+            </template>
+          </el-table-column>
+          <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit" @keyup.enter.native="saveEdit" />
+            </template>
+          </el-table-column>
+          <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+            <template slot-scope="scope">
+              <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                <span style="font-size: 12px;">{{ scope.row.originName }}</span>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;">
+              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit">
                 <el-option
                   v-for="item in fields"
                   :key="item.value"
@@ -171,43 +212,51 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
+          <!--          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">-->
+          <!--            <template slot-scope="scope">-->
+          <!--              <el-radio-group v-model="scope.row.groupType" size="mini">-->
+          <!--                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>-->
+          <!--                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>-->
+          <!--              </el-radio-group>-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
+          <el-table-column property="groupType" :label="$t('dataset.d_q_trans')" width="120">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.name" size="mini" />
+              <el-button icon="el-icon-sort" size="mini" circle :disabled="!hasDataPermission('manage',param.privileges)" @click="dqTrans(scope.row,'q')" />
             </template>
           </el-table-column>
-          <el-table-column v-if="!(param.table.mode === 0 && param.table.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+          <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
-              <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-                <span style="font-size: 12px;">{{ scope.row.originName }}</span>
-              </span>
+              <el-button type="text" size="small">编辑</el-button>
             </template>
           </el-table-column>
-          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">
-            <template slot-scope="scope">
-              <el-radio-group v-model="scope.row.groupType" size="mini">
-                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>
-                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>
-              </el-radio-group>
-            </template>
-          </el-table-column>
-          <el-table-column property="checked" :label="$t('dataset.field_check')" width="80">
-            <template slot-scope="scope">
-              <el-checkbox v-model="scope.row.checked" />
-            </template>
-          </el-table-column>
-          <!--下面这一列占位-->
-          <el-table-column property="" />
         </el-table>
       </el-collapse-item>
     </el-collapse>
+
+    <el-dialog
+      v-dialogDrag
+      :visible="editCalcField"
+      :show-close="false"
+      class="dialog-css"
+      :destroy-on-close="true"
+      :title="$t('dataset.add_calc_field')"
+    >
+      <calc-field-edit :param="param" :table-fields="tableFields" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeCalcField">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
 <script>
 import { batchEdit, fieldListDQ } from '@/api/dataset/dataset'
+import CalcFieldEdit from './CalcFieldEdit'
 export default {
   name: 'FieldEdit',
+  components: { CalcFieldEdit },
   props: {
     param: {
       type: Object,
@@ -219,7 +268,9 @@ export default {
       maxHeight: 'auto',
       tableFields: {
         dimensionList: [],
-        quotaList: []
+        quotaList: [],
+        dimensionListData: [],
+        quotaListData: []
       },
       fields: [
         { label: this.$t('dataset.text'), value: 0 },
@@ -228,11 +279,18 @@ export default {
         { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
         { label: this.$t('dataset.location'), value: 5 }
       ],
-      fieldActiveNames: ['d', 'q']
+      fieldActiveNames: ['d', 'q'],
+      searchField: '',
+      editCalcField: false
     }
   },
   watch: {
-
+    'param': function() {
+      this.initField()
+    },
+    searchField(val) {
+      this.filterField(val)
+    }
   },
   mounted() {
     window.onresize = () => {
@@ -250,20 +308,51 @@ export default {
       }, 10)
     },
     initField() {
-      fieldListDQ(this.param.table.id).then(response => {
+      fieldListDQ(this.param.id).then(response => {
         this.tableFields = response.data
+        this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
+        this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
+        this.filterField(this.searchField)
       })
     },
     saveEdit() {
       // console.log(this.tableFields)
-      const list = this.tableFields.dimensionList.concat(this.tableFields.quotaList)
+      const list = this.tableFields.dimensionListData.concat(this.tableFields.quotaListData)
       batchEdit(list).then(response => {
-        this.closeEdit()
+        // this.closeEdit()
+        this.initField()
       })
     },
 
     closeEdit() {
-      this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
+      this.$emit('switchComponent', { name: 'ViewTable', param: this.param })
+    },
+
+    dqTrans(item, val) {
+      if (val === 'd') {
+        item.groupType = 'q'
+      } else if (val === 'q') {
+        item.groupType = 'd'
+      }
+      this.saveEdit()
+    },
+
+    addCalcField() {
+      this.editCalcField = true
+    },
+
+    closeCalcField() {
+      this.editCalcField = false
+    },
+
+    filterField(val) {
+      if (val && val !== '') {
+        this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionListData.filter(ele => { return ele.name.includes(val) })))
+        this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList.filter(ele => { return ele.name.includes(val) })))
+      } else {
+        this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
+        this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
+      }
     }
   }
 }
@@ -298,5 +387,24 @@ export default {
   }
   .style-collapse{
     border-top: 0 solid #e6ebf5!important;
+  }
+  .form-item {
+    margin-bottom: 6px;
+  }
+
+  .dialog-css>>>.el-dialog__title {
+    font-size: 14px;
+  }
+  .dialog-css >>> .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px 20px;
+  }
+  .dialog-css>>>.el-dialog{
+    width: 800px!important;
+  }
+  .dialog-css>>>.el-dialog__footer{
+    border-top: 1px solid #eee;
   }
 </style>

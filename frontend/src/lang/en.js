@@ -976,7 +976,16 @@ export default {
     right_join: 'RIGHT JOIN',
     inner_join: 'INNER JOIN',
     full_join: 'FULL JOIN',
-    can_not_union_diff_datasource: 'Union dataset must have same data source'
+    can_not_union_diff_datasource: 'Union dataset must have same data source',
+    operator: 'Operator',
+    d_q_trans: 'Dimension/Quota Transform',
+    add_calc_field: 'Create calc field',
+    input_name: 'Please input name',
+    field_exp: 'Field Expression',
+    data_type: 'Data Type',
+    click_ref_field: 'Click Quote Field',
+    click_ref_function: 'Click Quote Function',
+    field_manage: 'Field Manage'
   },
   datasource: {
     datasource: 'Data Source',

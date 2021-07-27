@@ -976,7 +976,16 @@ export default {
     right_join: '右连接',
     inner_join: '内连接',
     full_join: '全连接',
-    can_not_union_diff_datasource: '被关联数据集必须与当前数据集的数据源一致'
+    can_not_union_diff_datasource: '被关联数据集必须与当前数据集的数据源一致',
+    operator: '操作',
+    d_q_trans: '维度/指标转换',
+    add_calc_field: '新建计算字段',
+    input_name: '请输入名称',
+    field_exp: '字段表达式',
+    data_type: '数据类型',
+    click_ref_field: '点击引用字段',
+    click_ref_function: '点击引用函数',
+    field_manage: '字段管理'
   },
   datasource: {
     datasource: '数据源',

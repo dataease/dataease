@@ -3,7 +3,7 @@
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="de-dialog-container">
     <de-aside-container :show-drag-bar="false" class="ms-aside-container">
       <el-tabs v-model="activeName" class="filter-dialog-tabs">
-        <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_table')" name="dataset">
+        <el-tab-pane class="de-tab" :label="$t('panel.select_by_table')" name="dataset">
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item v-for="bread in dataSetBreads" :key="bread.label">
@@ -56,7 +56,7 @@
                     @start="start1"
                   >
                     <transition-group>
-                      <div v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))" :key="item.id" class="filter-db-row">
+                      <div v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))" :key="item.id" :class="componentInfo && componentInfo.options.attrs.fieldId === item.id ? 'filter-db-row-checked' : 'filter-db-row'" class="filter-db-row">
                         <i class="el-icon-s-data" />
                         <span> {{ item.name }}</span>
                       </div>
@@ -67,7 +67,7 @@
             </el-col>
           </div>
         </el-tab-pane>
-        <el-tab-pane :lazy="true" class="de-tab" :label="$t('panel.select_by_module')" name="assembly">
+        <el-tab-pane class="de-tab" :label="$t('panel.select_by_module')" name="assembly">
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item v-for="bread in componentSetBreads" :key="bread.label">
@@ -125,7 +125,7 @@
                     @start="start1"
                   >
                     <transition-group>
-                      <div v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))" :key="item.id" class="filter-db-row">
+                      <div v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))" :key="item.id" :class="componentInfo && componentInfo.options.attrs.fieldId === item.id ? 'filter-db-row-checked' : 'filter-db-row'" class="filter-db-row">
                         <i class="el-icon-s-data" />
                         <span> {{ item.name }}</span>
                       </div>
@@ -318,7 +318,8 @@ export default {
       timer: null,
       expandedArray: [],
       viewKeyWord: '',
-      titlePopovervisible: false
+      titlePopovervisible: false,
+      fieldsParent: null
     }
   },
   computed: {
@@ -344,15 +345,20 @@ export default {
             this.componentInfo.options.attrs.datas = this.widget.optionDatas(res.data)
             this.componentInfo.options.attrs.fieldId = fieldId
             this.componentInfo.options.attrs.dragItems = values
+            this.componentInfo.options.attrs.activeName = this.activeName
+            this.componentInfo.options.attrs.fieldsParent = this.fieldsParent
             this.$emit('re-fresh-component', this.componentInfo)
           })
         } else {
           this.componentInfo.options.attrs.fieldId = fieldId
           this.componentInfo.options.attrs.dragItems = values
+          this.componentInfo.options.attrs.activeName = this.activeName
+          this.componentInfo.options.attrs.fieldsParent = this.fieldsParent
           this.$emit('re-fresh-component', this.componentInfo)
         }
       } else if (this.componentInfo && this.componentInfo.options.attrs.fieldId) {
         this.componentInfo.options.attrs.fieldId = null
+        this.componentInfo.options.attrs.activeName = null
         this.$emit('re-fresh-component', this.componentInfo)
       }
     },
@@ -377,10 +383,23 @@ export default {
     if (this.componentInfo && this.componentInfo.options.attrs.dragItems) {
       this.selectField = this.componentInfo.options.attrs.dragItems
     }
+    this.initWithField()
     this.loadViews()
   },
 
   methods: {
+    initWithField() {
+      if (this.componentInfo && this.componentInfo.options.attrs.activeName) {
+        this.activeName = this.componentInfo.options.attrs.activeName
+        if (this.componentInfo.options.attrs.fieldsParent) {
+          this.fieldsParent = this.componentInfo.options.attrs.fieldsParent
+          this.$nextTick(() => {
+            this.activeName === 'dataset' && this.showFieldDatas(this.fieldsParent)
+            this.activeName !== 'dataset' && this.comShowFieldDatas(this.fieldsParent)
+          })
+        }
+      }
+    },
     getTreeData(val) {
       if (val) {
         this.isTreeSearch = true
@@ -559,6 +578,7 @@ export default {
       this.showDomType = 'field'
       this.setTailLink(row)
       this.addTail(row)
+      this.fieldsParent = row
       this.loadField(row.id)
     },
     comShowFieldDatas(row) {
@@ -566,6 +586,7 @@ export default {
       this.comShowDomType = 'field'
       this.comSetTailLink(row)
       this.comAddTail(row)
+      this.fieldsParent = row
       this.comLoadField(row.tableId)
     },
     onMove(e, originalEvent) {
@@ -760,14 +781,32 @@ export default {
       color: #409EFF;
   }
   .filter-db-row {
-      :hover {
-          cursor: pointer;
-      }
       i {
-          color: #409EFF;
+          color: #3685f2;
       }
     // background-color: #3685f2;
     // color: #fff;
+  }
+  .filter-db-row:hover {
+      background-color: #f5f7fa !important;
+      cursor: pointer;
+  }
+  .filter-db-row-checked:hover {
+      background-color: #f5f7fa !important;
+      color: inherit;
+      cursor: pointer;
+      i {
+        background-color: inherit;
+        color: #3685f2;
+      }
+  }
+  .filter-db-row-checked {
+    background-color: #3685f2 !important;
+    color: #fff;
+    i {
+        background-color: #3685f2;
+        color: #fff;
+    }
   }
   .draggable-group {
     display: inline-block;
