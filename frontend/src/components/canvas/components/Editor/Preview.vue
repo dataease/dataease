@@ -108,6 +108,12 @@ export default {
           }
         }
       }
+      if (this.canvasStyleData.selfAdaption) {
+        style = {
+          overflow: 'hidden',
+          ...style
+        }
+      }
       return style
     },
     // 此处单独计算componentData的值 不放入全局mapState中
