@@ -1,4 +1,4 @@
-INSERT INTO `sys_menu` VALUES (58, 1, 0, 1, 'i18n_timed_task', 'sys-task-dataset', 'system/task/dataset', 1001,  'task', 'dataset', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (58, 1, 0, 1, 'i18n_timed_task', 'sys-task-dataset', 'system/task/dataset', 1001,  'task', 'dataset', b'0', b'0', b'0', 'task:read', NULL, NULL, NULL, NULL);
 
 ALTER TABLE `dataset_table_task`
     ADD COLUMN `last_exec_time` BIGINT(13) NULL DEFAULT NULL COMMENT '上次执行时间' AFTER `create_time`,
