@@ -535,8 +535,10 @@ export default {
       this.$forceUpdate()
     },
     editDialog() {
-      const serviceName = this.curComponent.serviceName
-      this.currentWidget = ApplicationContext.getService(serviceName)
+      if (this.curComponent && this.curComponent.serviceName) {
+        const serviceName = this.curComponent.serviceName
+        this.currentWidget = ApplicationContext.getService(serviceName)
+      }
       this.currentFilterCom = this.curComponent
       this.openFilterDialog()
     },
