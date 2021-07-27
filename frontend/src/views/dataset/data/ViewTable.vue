@@ -122,7 +122,7 @@ export default {
       if (id !== null) {
         this.fields = []
         this.data = []
-        getTable(id, true).then(response => {
+        post('/dataset/table/getWithPermission/' + id, null).then(response => {
           this.table = response.data
           this.initPreviewData(this.page)
         }).catch(res => {
