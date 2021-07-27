@@ -17,17 +17,14 @@
 <script>
 
 import LayoutContent from '@/components/business/LayoutContent'
-import ComplexTable from '@/components/business/complex-table'
-import UnionView from '@/views/dataset/data/UnionView'
-import UpdateInfo from '@/views/dataset/data/UpdateInfo'
+
 import DatasetTaskList from '@/views/system/task/DatasetTaskList'
 import TaskRecord from '@/views/system/task/TaskRecord'
-import TabDataPreview from '@/views/dataset/data/TabDataPreview'
-import DatasetTableData from '@/views/dataset/common/DatasetTableData'
+
 import bus from '@/utils/bus'
 import { mapGetters } from 'vuex'
 export default {
-  components: { DatasetTableData, LayoutContent, ComplexTable, UnionView, UpdateInfo, TabDataPreview, DatasetTaskList, TaskRecord },
+  components: { LayoutContent, DatasetTaskList, TaskRecord },
   data() {
     return {
       task: null,
@@ -74,9 +71,12 @@ export default {
             try {
               const msgParam = JSON.parse(routerParam.sourceParam)
               // this.param = msgParam.tableId
-              this.tabActive = 'TaskRecord'
+
               this.$nextTick(() => {
-                this.$refs.task_record && this.$refs.task_record.msg2Current && this.$refs.task_record.msg2Current(msgParam)
+                // 目标组件存在定时器 这种方式会被定时器阻塞
+                // this.$refs.task_record && this.$refs.task_record.msg2Current && this.$refs.task_record.msg2Current(msgParam)
+                this.task = msgParam
+                this.tabActive = 'TaskRecord'
               })
             } catch (error) {
               console.error(error)

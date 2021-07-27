@@ -5,7 +5,7 @@
         <el-table-column prop="name" :label="$t('dataset.task_name')">
           <template slot-scope="scope">
             <span>
-              <el-link style="font-size: 12px" @click="jumpTask(scope.row)">{{ scope.row.name }}</el-link>
+              <el-link :type="matchLogId && scope.row.id === matchLogId ? 'danger': ''" style="font-size: 12px" @click="jumpTask(scope.row)">{{ scope.row.name }}</el-link>
             </span>
           </template>
         </el-table-column>
@@ -52,17 +52,14 @@
 </template>
 
 <script>
-import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { post } from '@/api/dataset/dataset'
-import cron from '@/components/cron/cron'
-import TableSelector from '@/views/chart/view/TableSelector'
 
 export default {
   name: 'TaskRecord',
-  components: { ComplexTable, LayoutContent, cron, TableSelector },
+  components: { ComplexTable },
   props: {
     param: {
       type: Object,
@@ -113,7 +110,8 @@ export default {
       orderConditions: [],
       last_condition: null,
       show_error_massage: false,
-      error_massage: ''
+      error_massage: '',
+      matchLogId: null
     }
   },
   computed: {
@@ -122,12 +120,22 @@ export default {
     if (this.param == null) {
       this.last_condition = {}
       this.search()
-    } else {
+    } else if (this.param.name) {
       this.last_condition = {
         'dataset_table_task.name': {
           field: 'dataset_table_task.name',
           operator: 'eq',
           value: this.param.name
+        }
+      }
+      this.search(this.last_condition)
+    } else if (this.param.taskId) {
+      this.matchLogId = this.param.logId || this.matchLogId
+      this.last_condition = {
+        'dataset_table_task.id': {
+          field: 'dataset_table_task.id',
+          operator: 'eq',
+          value: this.param.taskId
         }
       }
       this.search(this.last_condition)
@@ -156,25 +164,25 @@ export default {
         this.timer = null
       }
     },
-    msg2Current(routerParam) {
-      if (!routerParam || !routerParam.taskId) return
-      const taskId = routerParam.taskId
-      // console.log(taskId)
-      const current_condition = {
-        'dataset_table_task.id': {
-          field: 'dataset_table_task.id',
-          operator: 'eq',
-          value: taskId
-        }
-      }
-      // 先把定时器干掉 否则会阻塞下面的search
-      this.destroyTimer()
+    // msg2Current(routerParam) {
+    //   if (!routerParam || !routerParam.taskId) return
+    //   const taskId = routerParam.taskId
+    //   // console.log(taskId)
+    //   const current_condition = {
+    //     'dataset_table_task.id': {
+    //       field: 'dataset_table_task.id',
+    //       operator: 'eq',
+    //       value: taskId
+    //     }
+    //   }
+    //   // 先把定时器干掉 否则会阻塞下面的search
+    //   this.destroyTimer()
 
-      this.search(current_condition)
+    //   this.search(current_condition)
 
-      // 查询完再开启定时器
-      this.createTimer()
-    },
+    //   // 查询完再开启定时器
+    //   this.createTimer()
+    // },
     sortChange({ column, prop, order }) {
       this.orderConditions = []
       if (!order) {
@@ -210,6 +218,12 @@ export default {
     },
     jumpTask(item) {
       this.$emit('jumpTask', item)
+    },
+    rowClassMethod({ row, rowIndex }) {
+      if (this.matchLogId && this.matchLogId === row.id) {
+        return 'row-match-class'
+      }
+      return ''
     }
   }
 }
