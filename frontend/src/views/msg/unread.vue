@@ -8,6 +8,7 @@
     <complex-table
       :data="data"
       :columns="columns"
+      :hide-columns="true"
       :pagination-config="paginationConfig"
       :search-config="searchConfig"
       @select="select"
