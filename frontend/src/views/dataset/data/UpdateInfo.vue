@@ -96,7 +96,7 @@
         append-to-body
       >
         <el-col>
-          <el-form :form="taskForm" label-width="100px" size="mini">
+          <el-form :form="taskForm" :model="taskForm" label-width="100px" size="mini" ref="taskForm" :rules="taskFormRules">
             <el-form-item :label="$t('dataset.task_name')" prop="name">
               <el-input
                 v-model="taskForm.name"
@@ -362,7 +362,8 @@ export default {
       taskData: [],
       taskFormRules: {
         name: [
-          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
+          { required: true, message: this.$t('dataset.required'), trigger: 'change' },
+          { min: 2, max: 50, message: this.$t('datasource.input_limit_0_50', [2, 50]), trigger: 'blur' }
         ],
         type: [
           { required: true, message: this.$t('dataset.required'), trigger: 'change' }
@@ -525,31 +526,43 @@ export default {
       })
     },
     saveTask(task) {
-      if (this.incrementalUpdateType === 'incrementalAdd') {
-        this.incrementalConfig.incrementalAdd = this.sql
-      } else {
-        this.incrementalConfig.incrementalDelete = this.sql
-      }
-      this.incrementalConfig.tableId = this.table.id
-      task.startTime = new Date(task.startTime).getTime()
-      task.endTime = new Date(task.endTime).getTime()
-      task.tableId = this.table.id
-      const form = JSON.parse(JSON.stringify(task))
-      form.extraData = JSON.stringify(form.extraData)
-      const dataSetTaskRequest = {
-        datasetTableTask: form,
-        datasetTableIncrementalConfig: this.incrementalConfig
-      }
-      post('/dataset/task/save', dataSetTaskRequest).then(response => {
-        this.$message({
-          message: this.$t('dataset.save_success'),
-          type: 'success',
-          showClose: true
-        })
-        this.update_task = false
-        this.resetTaskForm()
-        this.listTask()
-        this.listTaskLog()
+      this.$refs.taskForm.validate(valid => {
+        if (valid) {
+          if (this.incrementalUpdateType === 'incrementalAdd') {
+            this.incrementalConfig.incrementalAdd = this.sql
+          } else {
+            this.incrementalConfig.incrementalDelete = this.sql
+          }
+          this.incrementalConfig.tableId = this.table.id
+          let startTime = new Date(task.startTime).getTime()
+          if(startTime < new Date().getTime()){
+            startTime = new Date().getTime()
+          }
+          task.startTime = startTime
+
+          task.endTime = new Date(task.endTime).getTime()
+          task.tableId = this.table.id
+          const form = JSON.parse(JSON.stringify(task))
+          form.extraData = JSON.stringify(form.extraData)
+          const dataSetTaskRequest = {
+            datasetTableTask: form,
+            datasetTableIncrementalConfig: this.incrementalConfig
+          }
+          post('/dataset/task/save', dataSetTaskRequest).then(response => {
+            this.$message({
+              message: this.$t('dataset.save_success'),
+              type: 'success',
+              showClose: true
+            })
+            this.update_task = false
+            this.resetTaskForm()
+            this.listTask()
+            this.listTaskLog()
+          })
+        }else {
+          return false
+        }
+
       })
     },
     deleteTask(task) {

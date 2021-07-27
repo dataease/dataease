@@ -9,6 +9,7 @@
             </span>
           </template>
         </el-table-column>
+        <el-table-column prop="datasetName" :label="$t('dataset.task.dataset')" />
         <el-table-column prop="startTime" :label="$t('dataset.start_time')">
           <template slot-scope="scope">
             <span>{{ scope.row.startTime | timestampFormatDate }}</span>
