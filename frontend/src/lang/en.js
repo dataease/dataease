@@ -592,7 +592,7 @@ export default {
     create_view: 'Create Chart',
     data_preview: 'Data preview',
     dimension: 'Dimension',
-    quota: 'Index',
+    quota: 'Quota',
     title: 'Title',
     show: 'Show',
     chart_type: 'Chart Type',
