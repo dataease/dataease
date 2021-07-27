@@ -51,7 +51,9 @@ public class DataSetTableTaskLogService {
         if(!type.equalsIgnoreCase("excel")){
             ConditionEntity entity = new ConditionEntity();
             entity.setField("task_id");
-            entity.setOperator("not null");
+            entity.setOperator("not in");
+            List<String>status = new ArrayList<>();status.add("初始导入");status.add("替换");status.add("追加");
+            entity.setValue(status);
             List<ConditionEntity> conditionEntities = request.getConditions();
             if(CollectionUtils.isEmpty(conditionEntities)){
                 conditionEntities = new ArrayList<>();

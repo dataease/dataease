@@ -79,7 +79,7 @@
 
     <el-dialog v-dialogDrag :title="update_task_dialog_title" :visible="update_task" :show-close="false" width="50%" class="dialog-css" append-to-body>
       <el-col>
-        <el-form :form="taskForm" label-width="100px" size="mini">
+        <el-form :form="taskForm"  ref="taskForm" :model="taskForm" label-width="100px" size="mini" :rules="taskFormRules">
           <el-form-item :label="$t('dataset.task_name')" prop="name">
             <el-input v-model="taskForm.name" size="mini" style="width: 50%" :placeholder="$t('dataset.task_name')" />
           </el-form-item>
@@ -168,7 +168,7 @@
 
     <!--添加任务-选择数据集-->
     <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
-      <table-selector :mode="1" type="db" show-mode="datasetTask" @getTable="getTable" />
+      <table-selector @getTable="getTable" :mode="1" :customType=customType  showMode="datasetTask"/>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>
@@ -315,7 +315,26 @@ export default {
       selectDatasetFlag: false,
       table: {},
       show_error_massage: false,
-      error_massage: ''
+      error_massage: '',
+      taskFormRules: {
+        name: [
+          { required: true, message: this.$t('dataset.required'), trigger: 'change' },
+          { min: 2, max: 50, message: this.$t('datasource.input_limit_0_50', [2, 50]), trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
+        ],
+        startTime: [
+          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
+        ],
+        rate: [
+          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
+        ],
+        end: [
+          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
+        ]
+      },
+      customType: ['db', 'sql']
     }
   },
   computed: {
@@ -543,7 +562,7 @@ export default {
       return task.rate === 'SIMPLE' || task.status === 'Stopped'
     },
     disableExec(task) {
-      return task.status === 'Stopped' || task.status === 'Pending'
+      return task.status === 'Stopped' || task.status === 'Pending' || task.rate === 'SIMPLE'
     },
     deleteTask(task) {
       this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
@@ -599,31 +618,42 @@ export default {
       this.$emit('jumpTaskRecord', item)
     },
     saveTask(task) {
-      if (task.rate !== 'SIMPLE') {
-        if (this.incrementalUpdateType === 'incrementalAdd') {
-          this.incrementalConfig.incrementalAdd = this.sql
-        } else {
-          this.incrementalConfig.incrementalDelete = this.sql
+      this.$refs.taskForm.validate(valid => {
+        if (valid) {
+          if (task.rate !== 'SIMPLE') {
+            if (this.incrementalUpdateType === 'incrementalAdd') {
+              this.incrementalConfig.incrementalAdd = this.sql
+            } else {
+              this.incrementalConfig.incrementalDelete = this.sql
+            }
+            this.incrementalConfig.tableId = task.tableId
+          }
+
+          let startTime = new Date(task.startTime).getTime()
+          if(startTime < new Date().getTime()){
+            startTime = new Date().getTime()
+          }
+          task.startTime = startTime
+          task.endTime = new Date(task.endTime).getTime()
+          const form = JSON.parse(JSON.stringify(task))
+          form.extraData = JSON.stringify(form.extraData)
+          const dataSetTaskRequest = {
+            datasetTableTask: form,
+            datasetTableIncrementalConfig: task.type === 'add_scope' ? this.incrementalConfig : undefined
+          }
+          post('/dataset/task/save', dataSetTaskRequest).then(response => {
+            this.$message({
+              message: this.$t('dataset.save_success'),
+              type: 'success',
+              showClose: true
+            })
+            this.update_task = false
+            this.resetTaskForm()
+            this.search(this.last_condition, true)
+          })
+        }else {
+          return false
         }
-        this.incrementalConfig.tableId = task.tableId
-      }
-      task.startTime = new Date(task.startTime).getTime()
-      task.endTime = new Date(task.endTime).getTime()
-      const form = JSON.parse(JSON.stringify(task))
-      form.extraData = JSON.stringify(form.extraData)
-      const dataSetTaskRequest = {
-        datasetTableTask: form,
-        datasetTableIncrementalConfig: task.type === 'add_scope' ? this.incrementalConfig : undefined
-      }
-      post('/dataset/task/save', dataSetTaskRequest).then(response => {
-        this.$message({
-          message: this.$t('dataset.save_success'),
-          type: 'success',
-          showClose: true
-        })
-        this.update_task = false
-        this.resetTaskForm()
-        this.search(this.last_condition, true)
       })
     },
     handleClose() {
