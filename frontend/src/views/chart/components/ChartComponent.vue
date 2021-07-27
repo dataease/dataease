@@ -35,7 +35,8 @@ export default {
   data() {
     return {
       myChart: {},
-      chartId: uuid.v1()
+      chartId: uuid.v1(),
+      currentGeoJson: null
     }
   },
   watch: {
@@ -100,22 +101,33 @@ export default {
         const customAttr = JSON.parse(chart.customAttr)
         if (!customAttr.areaCode) return
 
-        let areaJson
-        if ((areaJson = localStorage.getItem('areaJson' + customAttr.areaCode)) !== null) {
-          this.initMapChart(areaJson, chart)
+        if (this.currentGeoJson) {
+          this.initMapChart(this.currentGeoJson, chart)
           return
         }
+
+        if (this.$store.getters.geoMap[customAttr.areaCode]) {
+          this.currentGeoJson = this.$store.getters.geoMap[customAttr.areaCode]
+          this.initMapChart(this.currentGeoJson, chart)
+          return
+        }
+
         geoJson(customAttr.areaCode).then(res => {
           this.initMapChart(res.data, chart)
-          // localStorage最大容量只有5M，先取消缓存
-          // localStorage.setItem('areaJson' + customAttr.areaCode, res.data)
+
+          this.$store.dispatch('map/setGeo', {
+            key: customAttr.areaCode,
+            value: res.data
+          })
+          this.currentGeoJson = res.data
         })
         return
       }
       this.myEcharts(chart_option)
     },
     initMapChart(geoJson, chart) {
-      this.$echarts.registerMap('HK', geoJson)
+      // this.$echarts.registerMap('HK', geoJson)
+      this.$echarts.getMap('HK') || this.$echarts.registerMap('HK', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       const chart_option = baseMapOption(base_json, chart)
       this.myEcharts(chart_option)
