@@ -26,6 +26,7 @@ const getters = {
   licMsg: state => state.lic.licMsg,
   uiInfo: state => state.user.uiInfo,
   conditions: state => state.conditions.conditions,
-  msgTypes: state => state.msg.msgTypes
+  msgTypes: state => state.msg.msgTypes,
+  geoMap: state => state.map.geoMap
 }
 export default getters
