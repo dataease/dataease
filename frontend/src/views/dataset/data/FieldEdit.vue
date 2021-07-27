@@ -402,8 +402,7 @@ export default {
     padding: 10px 20px 20px;
   }
   .dialog-css>>>.el-dialog{
-    width: 70%!important;
-    min-width: 600px;
+    width: 800px!important;
   }
   .dialog-css>>>.el-dialog__footer{
     border-top: 1px solid #eee;
