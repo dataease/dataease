@@ -12,7 +12,7 @@
               <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">{{ $t('chart.color') }}</el-radio>
             </el-col>
             <el-col :span="18">
-              <el-color-picker v-model="panel.color" style="cursor: pointer;z-index: 1004;" />
+              <el-color-picker v-model="panel.color" size="mini" style="cursor: pointer;z-index: 1004;" />
             </el-col>
           </el-row>
           <el-row style="height: 60px;margin-top:10px;overflow: hidden">
