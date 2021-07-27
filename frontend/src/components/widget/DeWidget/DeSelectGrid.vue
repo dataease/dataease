@@ -8,7 +8,7 @@
       <el-tree
         v-if="options!== null && options.attrs!==null"
         ref="deSelectGrid"
-        :data="options.attrs.datas"
+        :data="options.attrs.multiple ? [allNode, ...options.attrs.datas] : options.attrs.datas"
         :props="defaultProp"
         :indent="0"
         :filter-node-method="filterNode"
@@ -18,7 +18,8 @@
         <span slot-scope="{ node, data }" class="custom-tree-node-list father">
           <span style="display: flex;flex: 1;width: 0;">
             <el-radio v-if="!options.attrs.multiple" v-model="options.value" :label="data.id" @change="changeRadioBox"><span> {{ node.label }} </span></el-radio>
-            <el-checkbox v-if="options.attrs.multiple" v-model="data.checked" :label="data.id" @change="changeCheckBox(data)"><span> {{ node.label }} </span></el-checkbox>
+            <el-checkbox v-if="options.attrs.multiple && data.id !== allNode.id" v-model="data.checked" :label="data.id" @change="changeCheckBox(data)"><span> {{ node.label }} </span></el-checkbox>
+            <el-checkbox v-if="inDraw && options.attrs.multiple && data.id === allNode.id" v-model="data.checked" :indeterminate="data.indeterminate" :label="data.id" @change="allCheckChange(data)"><span> {{ node.label }} </span></el-checkbox>
           </span>
           <span v-if="!options.attrs.multiple && options.value && options.value === data.id" class="child">
             <span style="margin-left: 12px;" @click.stop>
@@ -70,7 +71,13 @@ export default {
         label: 'text',
         children: 'children'
       },
-      keyWord: null
+      keyWord: null,
+      allNode: {
+        id: (-2 << 16) + '',
+        text: this.$t('commons.all'),
+        checked: false,
+        indeterminate: false
+      }
     }
   },
   computed: {
@@ -89,6 +96,11 @@ export default {
         !sourceValid && (this.options.value = [])
         sourceValid && !Array.isArray(sourceValue) && (this.options.value = sourceValue.split(','))
         !this.inDraw && (this.options.value = [])
+        if (!this.inDraw) {
+          this.options.value = []
+          this.allNode.indeterminate = false
+          this.allNode.checked = false
+        }
         this.setMutiBox()
       } else {
         !sourceValid && (this.options.value = null)
@@ -122,6 +134,7 @@ export default {
         this.options.attrs.datas.forEach(data => {
           data.checked = (this.options.value && this.options.value.includes(data.id))
         })
+        this.setAllNodeStatus()
       }
     },
     setRadioBox() {
@@ -149,6 +162,36 @@ export default {
       if (index >= 0 && !data.checked) {
         values.splice(index, 1)
       }
+
+      this.setAllNodeStatus()
+
+      this.options.value = values
+      this.setCondition()
+    },
+    // 勾选数据项 会影响全选节点的状态
+    setAllNodeStatus() {
+      const nodeSize = this.options.attrs.datas.length
+      const checkedSize = this.options.attrs.datas.filter(item => item.checked).length
+      if (nodeSize === checkedSize) {
+        this.allNode.checked = true
+        this.allNode.indeterminate = false
+      } else if (checkedSize === 0) {
+        this.allNode.checked = false
+        this.allNode.indeterminate = false
+      } else {
+        this.allNode.checked = false
+        this.allNode.indeterminate = true
+      }
+    },
+    allCheckChange(data) {
+      data.indeterminate = false
+      const values = []
+      // this.options.value = []
+      this.options.attrs.datas.forEach(item => {
+        item.checked = data.checked
+        // data.checked && this.options.value.push(item.id)
+        data.checked && values.push(item.id)
+      })
 
       this.options.value = values
       this.setCondition()
