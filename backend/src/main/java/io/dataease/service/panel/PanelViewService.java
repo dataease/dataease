@@ -3,9 +3,7 @@ package io.dataease.service.panel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import io.dataease.base.domain.PanelGroup;
 import io.dataease.base.domain.PanelGroupWithBLOBs;
-import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -21,7 +19,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

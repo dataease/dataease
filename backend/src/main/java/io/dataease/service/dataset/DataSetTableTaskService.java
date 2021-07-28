@@ -1,6 +1,5 @@
 package io.dataease.service.dataset;
 
-import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
@@ -14,8 +13,6 @@ import io.dataease.commons.constants.TriggerType;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
-import io.dataease.controller.sys.response.SysUserGridResponse;
-import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
@@ -32,7 +29,6 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @Author gin

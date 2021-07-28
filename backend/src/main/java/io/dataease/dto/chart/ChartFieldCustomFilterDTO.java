@@ -1,6 +1,5 @@
 package io.dataease.dto.chart;
 
-import io.dataease.base.domain.DatasetTableField;
 import lombok.Getter;
 import lombok.Setter;
 
