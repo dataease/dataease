@@ -1,11 +1,8 @@
 package io.dataease.service.dataset;
 
-import com.google.gson.Gson;
-import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.domain.DatasetTableTaskLogExample;
 import io.dataease.base.mapper.DatasetTableTaskLogMapper;
-import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.controller.sys.base.BaseGridRequest;
