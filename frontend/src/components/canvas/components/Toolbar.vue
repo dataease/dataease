@@ -138,6 +138,7 @@ export default {
 
   methods: {
     close() {
+      this.clearCanvas()
       this.$emit('close-left-panel')
       this.$nextTick(() => {
         bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
