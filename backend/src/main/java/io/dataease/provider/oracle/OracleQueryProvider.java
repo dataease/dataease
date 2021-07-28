@@ -101,7 +101,7 @@ public class OracleQueryProvider extends QueryProvider {
         List<SQLObj> xFields = xFields(table, fields);
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
-        ST st_sql = stg.getInstanceOf("querySql");
+        ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
