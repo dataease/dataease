@@ -249,10 +249,8 @@ export default {
       this.table = {}
       this.checkedList = []
       this.unionData = []
-      this.height = 500
       this.data = []
       this.fields = []
-      this.customType = ['db', 'sql', 'excel']
     }
   }
 
