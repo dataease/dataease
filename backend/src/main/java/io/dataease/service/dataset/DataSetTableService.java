@@ -1402,6 +1402,9 @@ public class DataSetTableService {
     public static boolean checkIsRepeat(String[] array) {
         HashSet<String> hashSet = new HashSet<String>();
         for (int i = 0; i < array.length; i++) {
+            if(StringUtils.isEmpty(array[i])){
+                throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
+            }
             hashSet.add(array[i]);
         }
         if (hashSet.size() == array.length) {
