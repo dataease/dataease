@@ -17,34 +17,40 @@
     font-size: 24px;
     font-weight: bold;
     // color: rgb(191, 203, 217);
-    color: rgba(255,255,255,0.87);
+    color: rgba(255, 255, 255, 0.87);
     float: left;
-    img{
+
+    img {
       width: auto;
       max-height: 45px;
     }
   }
+
   .el-menu {
     float: left;
-    border: none!important;
+    border: none !important;
     // background-color: #304156;
     //   background-color: $--color-primary;
 
     .nav-item {
       display: inline-block;
+
       .el-menu-item:not(.is-active) {
         // color: rgb(191, 203, 217);
         color: $menuText;
+
         &:hover {
           background-color: $menuHover !important;
           // color: $subMenuActiveText !important;
         }
+
         &:focus {
           background-color: $subMenuHover !important;
           color: $subMenuActiveText !important;
         }
 
       }
+
       .is-active {
         background-color: $subMenuHover !important;
         color: $subMenuActiveText !important;
@@ -85,19 +91,23 @@
 
     .avatar-container {
       margin-right: 30px;
+
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
+
         .user-avatar {
           cursor: pointer;
           width: 40px;
           height: 40px;
           border-radius: 10px;
         }
+
         .de-user-avatar {
           cursor: pointer;
           height: 40px;
           border-radius: 10px;
+
           span {
             color: #ffffff;
           }

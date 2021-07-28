@@ -26,20 +26,20 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 @import "~fit2cloud-ui/src/styles/common/variables";
 
 // sidebar
-$menuText:#1e212a;
-$menuActiveText:#0a7be0;
-$topMenuActiveText:#f4f4f5;
-$subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
+$menuText: #1e212a;
+$menuActiveText: #0a7be0;
+$topMenuActiveText: #f4f4f5;
+$subMenuActiveText: #f4f4f5; //https://github.com/ElemeFE/element/issues/12951
 
 // $menuBg:#304156;
-$menuBg:#ffffff;
+$menuBg: #ffffff;
 // $menuHover:#263445;
 $menuHover: rgba(158, 158, 158, 0.2);
 
-$subMenuBg:#ffffff;
+$subMenuBg: #ffffff;
 // $subMenuHover:#001528;
-$subMenuHover:#0a7be0;
-$colorBg:rgba(10,123,224,.1);
+$subMenuHover: #0a7be0;
+$colorBg: rgba(10, 123, 224, .1);
 
 $sideBarWidth: 210px;
 $topBarHeight: 56px;

@@ -21,26 +21,32 @@ address,
 aside,
 pre,
 canvas {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
 body {
-    overflow: hidden;
+  overflow: hidden;
 }
+
 li {
-    list-style: none;
+  list-style: none;
 }
+
 #app {
-    /*overflow: hidden;*/
+  /*overflow: hidden;*/
 }
+
 .el-tabs {
-    height: 100%;
+  height: 100%;
 }
+
 .el-tabs__content {
-    height: calc(100% - 55px);
-    overflow: auto;
+  height: calc(100% - 55px);
+  overflow: auto;
 }
+
 .el-tabs__nav-scroll {
-    padding-left: 20px;
+  padding-left: 20px;
 }
