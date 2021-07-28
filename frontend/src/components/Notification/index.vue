@@ -184,7 +184,7 @@ export default {
     line-height: 14px;
     display: inline-block;
     position: fixed;
-    right: 155px;
+    right: 178px;
     top: 8px;
     background: red;
     color: #fff;
