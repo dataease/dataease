@@ -270,7 +270,7 @@ export default {
           type: 'excel',
           mode: parseInt(this.mode),
           // info: '{"data":"' + this.path + '"}',
-          info: JSON.stringify({ data: this.path }),
+          info: JSON.stringify({ data: this.path, sheets: [this.sheets[0]] }),
           editType: this.param.editType ? this.param.editType : 0
         }
       }
