@@ -307,16 +307,12 @@ export default {
 
     resetComponent() {
       this.dataSource = ''
-      this.options = []
       this.name = ''
       this.sql = ''
       this.data = []
       this.fields = []
       this.mode = '0'
       this.syncType = 'sync_now'
-      this.height = 500
-      this.kettleRunning = false
-      this.$refs.plxTable.reloadData(this.data)
     }
   }
 }
