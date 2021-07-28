@@ -13,7 +13,7 @@
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis" :type="item.groupType === 'd'?'':'success'">
+        <el-tag size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
           <span style="float: left">
             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
