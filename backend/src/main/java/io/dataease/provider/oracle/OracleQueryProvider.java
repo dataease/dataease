@@ -210,7 +210,7 @@ public class OracleQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴过滤
-                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -308,7 +308,7 @@ public class OracleQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴过滤
-                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
