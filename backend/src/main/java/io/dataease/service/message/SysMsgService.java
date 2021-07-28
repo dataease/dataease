@@ -273,10 +273,12 @@ public class SysMsgService {
     @Cacheable(value = SysMsgConstants.SYS_MSG_USER_SUBSCRIBE, key = "#userId")
     public List<SubscribeNode> subscribes(Long userId) {
         SysMsgSettingExample example = new SysMsgSettingExample();
-        example.createCriteria().andUserIdEqualTo(userId).andEnableEqualTo(true);
+        /*example.createCriteria().andUserIdEqualTo(userId).andEnableEqualTo(true);*/
+        example.createCriteria().andUserIdEqualTo(userId);
         List<SysMsgSetting> sysMsgSettings = sysMsgSettingMapper.selectByExample(example);
         // 添加默认订阅
         sysMsgSettings = addDefault(sysMsgSettings);
+        sysMsgSettings = sysMsgSettings.stream().filter(SysMsgSetting::getEnable).collect(Collectors.toList());
         // sysMsgSettings.addAll(defaultSettings());
         List<SubscribeNode> resultLists = sysMsgSettings.stream().map(item -> {
             SubscribeNode subscribeNode = new SubscribeNode();
