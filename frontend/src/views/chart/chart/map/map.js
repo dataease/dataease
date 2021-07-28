@@ -1,4 +1,4 @@
-import { hexColorToRGBA } from '@/views/chart/chart/util'
+// import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
 export function baseMapOption(chart_option, chart) {
@@ -44,10 +44,10 @@ export function baseMapOption(chart_option, chart) {
           value: valueArr[i]
         }
         // color
-        y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha),
-          borderRadius: 0
-        }
+        // y.itemStyle = {
+        //   color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha),
+        //   borderRadius: 0
+        // }
         chart_option.series[0].data.push(y)
       }
     }
