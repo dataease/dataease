@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row style="margin-top: 10px;">
-      <complex-table :data="data" :columns="columns" local-key="datasetTaskRecord" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
+      <complex-table :data="data" :columns="columns" local-key="datasetTaskRecord" :search-config="searchConfig" :transCondition="transCondition" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
         <el-table-column prop="name" :label="$t('dataset.task_name')">
           <template slot-scope="scope">
             <span>
@@ -64,6 +64,10 @@ export default {
     param: {
       type: Object,
       default: null
+    },
+    transCondition: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -81,7 +85,8 @@ export default {
         useComplexSearch: true,
         quickPlaceholder: this.$t('dataset.task.search_by_name'),
         components: [
-          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput' },
+          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'FuComplexInput' },
+          { field: 'dataset_table_task.id', label: this.$t('dataset.task_id'), component: 'FuComplexInput' },
           { field: 'dataset_table.name', label: this.$t('dataset.name'), component: 'DeComplexInput' },
           { field: 'dataset_table_task_log.status', label: this.$t('commons.status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
         ]
@@ -117,37 +122,16 @@ export default {
   computed: {
   },
   created() {
-    if (this.param == null) {
-      this.last_condition = {}
-      this.search()
-    } else if (this.param.name) {
-      this.last_condition = {
-        'dataset_table_task.name': {
-          field: 'dataset_table_task.name',
-          operator: 'eq',
-          value: this.param.name
-        }
-      }
-      this.search(this.last_condition)
-    } else if (this.param.taskId) {
+    if (this.param !== null && this.param.taskId) {
       this.matchLogId = this.param.logId || this.matchLogId
-      this.last_condition = {
-        'dataset_table_task.id': {
-          field: 'dataset_table_task.id',
-          operator: 'eq',
-          value: this.param.taskId
+      this.transCondition['dataset_table_task.id'] = {
+            operator: 'eq',
+            value: this.param.taskId
         }
-      }
-      this.search(this.last_condition)
     }
-
-    // this.timer = setInterval(() => {
-    //   this.search(this.last_condition, false)
-    // }, 5000)
     this.createTimer()
   },
   beforeDestroy() {
-    // clearInterval(this.timer)
     this.destroyTimer()
   },
   methods: {
@@ -164,25 +148,6 @@ export default {
         this.timer = null
       }
     },
-    // msg2Current(routerParam) {
-    //   if (!routerParam || !routerParam.taskId) return
-    //   const taskId = routerParam.taskId
-    //   // console.log(taskId)
-    //   const current_condition = {
-    //     'dataset_table_task.id': {
-    //       field: 'dataset_table_task.id',
-    //       operator: 'eq',
-    //       value: taskId
-    //     }
-    //   }
-    //   // 先把定时器干掉 否则会阻塞下面的search
-    //   this.destroyTimer()
-
-    //   this.search(current_condition)
-
-    //   // 查询完再开启定时器
-    //   this.createTimer()
-    // },
     sortChange({ column, prop, order }) {
       this.orderConditions = []
       if (!order) {

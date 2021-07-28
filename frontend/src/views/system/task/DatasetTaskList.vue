@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row style="margin-top: 10px;">
-      <complex-table :data="data" :columns="columns" local-key="datasetTask" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
+      <complex-table :data="data" :columns="columns" local-key="datasetTask" :transCondition="transCondition" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
         <template #toolbar>
           <el-button icon="el-icon-circle-plus-outline" @click="selectDataset">{{ $t('dataset.task.create') }}</el-button>
         </template>
@@ -223,6 +223,10 @@ export default {
     param: {
       type: Object,
       default: null
+    },
+    transCondition: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -259,8 +263,9 @@ export default {
         useComplexSearch: true,
         quickPlaceholder: this.$t('dataset.task.search_by_name'),
         components: [
+          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput'},
+          { field: 'dataset_table_task.id', label: this.$t('dataset.task_id'), component: 'FuComplexInput' },
           { field: 'dataset_table.name', label: this.$t('dataset.name'), component: 'DeComplexInput' },
-          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput' },
           { field: 'dataset_table_task.status', label: this.$t('dataset.task.task_status'), component: 'FuComplexSelect',
             options: [{ label: this.$t('dataset.task.stopped'), value: 'Stopped' }, { label: this.$t('dataset.task.underway'), value: 'Underway' }, { label: this.$t('dataset.task.pending'), value: 'Pending' }, { label: this.$t('dataset.underway'), value: 'Exec' }], multiple: false },
           { field: 'dataset_table_task.last_exec_status', label: this.$t('dataset.task.last_exec_status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
@@ -343,19 +348,6 @@ export default {
     }
   },
   created() {
-    if (this.param == null) {
-      this.last_condition = {}
-      this.search()
-    } else {
-      this.last_condition = {
-        'dataset_table_task.name': {
-          field: 'dataset_table_task.name',
-          operator: 'eq',
-          value: this.param.name
-        }
-      }
-      this.search(this.last_condition)
-    }
     this.timer = setInterval(() => {
       this.search(this.last_condition, false)
     }, 5000)
