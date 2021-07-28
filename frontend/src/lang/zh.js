@@ -873,6 +873,7 @@ export default {
     sync_now: '立即更新',
     add_task: '添加任务',
     task_name: '任务名称',
+    task_id: '任务ID',
     start_time: '开始时间',
     end_time: '结束时间',
     status: '状态',
