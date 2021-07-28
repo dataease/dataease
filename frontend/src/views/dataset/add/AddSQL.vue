@@ -284,7 +284,7 @@ export default {
     cancel() {
       // this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table})
+        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
       } else {
         this.$emit('switchComponent', { name: '' })
       }
