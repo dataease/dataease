@@ -9,11 +9,13 @@ import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
+import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
+import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,17 +30,14 @@ import java.util.stream.Collectors;
 
 @Service("directDataSetFieldService")
 public class DirectFieldService implements DataSetFieldService {
-
-
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
-
     @Resource
     private DataSetTableService dataSetTableService;
-
-
     @Resource
     private DatasourceService datasourceService;
+    @Resource
+    private DataSetTableUnionService dataSetTableUnionService;
 
     @Override
     public List<Object> fieldValues(String fieldId) {
@@ -71,6 +70,11 @@ public class DirectFieldService implements DataSetFieldService {
                 datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), Collections.singletonList(field), true));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmp(dataTableInfoDTO.getSql(), Collections.singletonList(field), true));
+            } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
+                DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+                List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
+                String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, Collections.singletonList(field), true));
             }
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询

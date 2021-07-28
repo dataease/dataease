@@ -1,4 +1,4 @@
-querySql(groups, aggregators, filters, orders, table)
+querySql(groups, aggregators, filters, orders, table, isGroup)
 ::=<<
 SELECT
 <if(!groups && !aggregators)>
@@ -17,7 +17,7 @@ FROM
 WHERE
     <filters:{filter|<if(filter)><filter.whereField> <filter.whereTermAndValue><endif>}; separator="\nAND ">
 <endif>
-<if(groups)>
+<if(isGroup && groups)>
 GROUP BY
     <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
 <endif>
