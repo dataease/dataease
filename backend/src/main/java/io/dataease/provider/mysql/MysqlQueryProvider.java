@@ -80,7 +80,7 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -128,34 +128,34 @@ public class MysqlQueryProvider extends QueryProvider {
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (isGroup && CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         return st_sql.render();
     }
 
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup);
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return createQuerySQL(table, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+        return createQuerySQL(table, fields, isGroup) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit) {
-        return createQuerySQL(table, fields) + " LIMIT 0," + limit;
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
+        return createQuerySQL(table, fields, isGroup) + " LIMIT 0," + limit;
     }
 
     @Override
-    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit) {
-        return createQuerySQLAsTmp(sql, fields) + " LIMIT 0," + limit;
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT 0," + limit;
     }
 
     @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
-        return createQuerySQLAsTmp(sql, fields) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
 
     @Override

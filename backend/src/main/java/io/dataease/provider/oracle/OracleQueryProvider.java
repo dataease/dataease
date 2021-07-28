@@ -93,7 +93,7 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
@@ -102,7 +102,7 @@ public class OracleQueryProvider extends QueryProvider {
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (isGroup && CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         return st_sql.render();
     }
@@ -164,33 +164,33 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup);
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
+    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
         List<SQLObj> xFields = xFields(table, fields);
 
         return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
-                sqlColumn(xFields), createQuerySQL(table, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+                sqlColumn(xFields), createQuerySQL(table, fields, isGroup), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit) {
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
         return String.format("SELECT %s.*  from %s  WHERE rownum <= %s ", table, table, limit.toString());
     }
 
     @Override
-    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit) {
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
         return String.format("SELECT * from %s  WHERE rownum <= %s ", "(" + sqlFix(sql) + ")", limit.toString());
     }
 
     @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize) {
+    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
         List<SQLObj> xFields = xFields("(" + sqlFix(sql) + ")", fields);
         return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
-                sqlColumn(xFields), createQuerySQLAsTmp(sql, fields), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+                sqlColumn(xFields), createQuerySQLAsTmp(sql, fields, isGroup), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
