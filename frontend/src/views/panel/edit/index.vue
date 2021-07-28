@@ -646,7 +646,6 @@ export default {
       })
     },
     newViewInfo(newViewInfo) {
-      debugger
       let component
       const newComponentId = uuid.v1()
       // 用户视图设置 复制一个模板
@@ -681,7 +680,6 @@ export default {
       }
     },
     canvasScroll(event) {
-      debugger
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
     },

@@ -264,7 +264,6 @@ export default {
     },
 
     save(withClose) {
-      debugger
       // 保存到数据库
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
