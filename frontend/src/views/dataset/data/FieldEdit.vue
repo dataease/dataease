@@ -129,7 +129,9 @@ export default {
     }
   },
   watch: {
-
+    'param': function() {
+      this.initField()
+    }
   },
   mounted() {
     window.onresize = () => {
