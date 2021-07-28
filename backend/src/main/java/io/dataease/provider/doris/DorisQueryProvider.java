@@ -130,7 +130,8 @@ public class DorisQueryProvider extends QueryProvider {
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
-        if (isGroup && CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        st_sql.add("isGroup", isGroup);
+        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         if ((fields.size() > 0)) {
             xOrders.add(SQLObj.builder()
