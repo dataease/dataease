@@ -112,12 +112,13 @@ export default {
   },
   methods: {
     initTable(id) {
+      this.resetPage()
       this.tabActive = 'dataPreview'
       this.tableViewRowForm.row = 1000
       if (id !== null) {
         this.fields = []
         this.data = []
-        getTable(id, true).then(response => {
+        post('/dataset/table/getWithPermission/' + id, null).then(response => {
           this.table = response.data
           this.initPreviewData(this.page)
         }).catch(res => {
@@ -194,6 +195,14 @@ export default {
     msg2Current(sourceParam) {
       this.tabActive = 'updateInfo'
       this.table.msgTaskId = sourceParam.taskId
+    },
+
+    resetPage() {
+      this.page = {
+        page: 1,
+        pageSize: 100,
+        show: 1000
+      }
     }
   }
 }
