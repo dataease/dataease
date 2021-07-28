@@ -6,7 +6,6 @@ import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
-import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
@@ -90,8 +89,6 @@ public class ExtractDataService {
     private DatasourceService datasourceService;
     @Resource
     private ExtChartViewMapper extChartViewMapper;
-    @Resource
-    private UtilMapper utilMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -868,13 +865,18 @@ public class ExtractDataService {
         textFileOutputMeta.setExtension(extention);
 
         if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
-            TextFileField[] outputFields = new TextFileField[datasetTableFields.size()];
+            TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for(int i=0;i< datasetTableFields.size();i++){
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getOriginName());
                 textFileField.setType("String");
                 outputFields[i] = textFileField;
             }
+            TextFileField textFileField = new TextFileField();
+            textFileField.setName("dataease_uuid");
+            textFileField.setType("String");
+            outputFields[datasetTableFields.size()] = textFileField;
+
             textFileOutputMeta.setOutputFields(outputFields);
         }else {
             textFileOutputMeta.setOutputFields(new TextFileField[0]);
