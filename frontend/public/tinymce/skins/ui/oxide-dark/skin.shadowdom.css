@@ -7,6 +7,7 @@
 body.tox-dialog__disable-scroll {
   overflow: hidden;
 }
+
 .tox-fullscreen {
   border: 0;
   height: 100%;
@@ -14,23 +15,27 @@ body.tox-dialog__disable-scroll {
   margin: 0;
   overflow: hidden;
   -ms-scroll-chaining: none;
-      overscroll-behavior: none;
+  overscroll-behavior: none;
   padding: 0;
   position: fixed;
   top: 0;
   touch-action: pinch-zoom;
   width: 100%;
 }
+
 .tox.tox-tinymce.tox-fullscreen .tox-statusbar__resize-handle {
   display: none;
 }
+
 .tox.tox-tinymce.tox-fullscreen {
   background-color: transparent;
   z-index: 1200;
 }
+
 .tox-shadowhost.tox-fullscreen {
   z-index: 1200;
 }
+
 .tox-fullscreen .tox.tox-tinymce-aux,
 .tox-fullscreen ~ .tox.tox-tinymce-aux {
   z-index: 1201;

@@ -4,6 +4,7 @@ import io.dataease.datasource.dto.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
 import io.dataease.service.message.MsgAop;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
@@ -410,6 +411,9 @@ public class ExcelXlsxReader extends DefaultHandler {
             tableFiled.setRemarks(thisStr);
             this.fields.add(tableFiled);
         }else {
+            if(CollectionUtils.isEmpty(this.getFields())){
+                throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
+            }
             this.getFields().get(curCol).setFieldType(type);
         }
         return thisStr;

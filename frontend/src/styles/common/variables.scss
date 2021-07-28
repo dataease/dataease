@@ -1,28 +1,28 @@
 /* Element 变量 */
-$--color-primary: #447DF7;
-$--color-success: #87CB16;
-$--color-warning: #FFA534;
-$--color-danger: #FB404B;
+$--color-primary: #447df7;
+$--color-success: #87cb16;
+$--color-warning: #ffa534;
+$--color-danger: #fb404b;
 
 $--box-shadow-light: 0 1px 4px 0 rgb(0 0 0 / 14%);
 
 $--color-text-primary: #3c4858;
 
 /* layout */
-$layout-bg-color: #F2F2F2;
+$layout-bg-color: #f2f2f2;
 
 /* sidebar */
 $sidebar-open-width: 260px;
 $sidebar-close-width: 60px;
 $sidebar-bg-color: #30373d;
-$sidebar-bg-gradient: linear-gradient(to bottom right, #30373D, #3E3E3D);
+$sidebar-bg-gradient: linear-gradient(to bottom right, #30373d, #3e3e3d);
 
 /* menu */
 $menu-height: 50px; // 菜单项高度
 $menu-bg-color: transparent; // 菜单项背景
 $menu-bg-color-hover: mix($sidebar-bg-color, #000, 90%); // 菜单项hover背景
-$menu-color: #B6C0CD; // 菜单项字体颜色
-$menu-open-bg-color: #252B2F; // 菜单项展开背景
+$menu-color: #b6c0cd; // 菜单项字体颜色
+$menu-open-bg-color: #252b2f; // 菜单项展开背景
 $menu-active-color: #FFF; // 菜单项激活时颜色
 $menu-active-bg-color: transparent; // 菜单项激活时背景
 
@@ -36,7 +36,7 @@ $menu-active-prefix-width: 4px; // 菜单激活前缀宽度
 
 /* logo */
 $logo-height: 40px;
-$logo-bg-color: #4E5051;
+$logo-bg-color: #4e5051;
 
 /* header */
 $header-height: 60px;

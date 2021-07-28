@@ -5,6 +5,7 @@
     <resultMap id="BaseResult" type="io.dataease.dto.dataset.DataSetTaskLogDTO"
                extends="io.dataease.base.mapper.DatasetTableTaskLogMapper.BaseResultMap">
         <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="dataset_name" jdbcType="VARCHAR" property="datasetName"/>
     </resultMap>
 
     <resultMap id="TaskResult" type="io.dataease.dto.dataset.DataSetTaskDTO" extends="io.dataease.base.mapper.DatasetTableTaskMapper.BaseResultMap">
@@ -13,7 +14,7 @@
     </resultMap>
 
     <select id="list" resultMap="BaseResult" parameterType="io.dataease.base.domain.DatasetTableTaskLog">
-        SELECT dataset_table_task_log.*, dataset_table_task.name
+        SELECT dataset_table_task_log.*, dataset_table_task.name, dataset_table.name as dataset_name
         FROM dataset_table_task_log
         LEFT JOIN dataset_table_task ON dataset_table_task_log.task_id = dataset_table_task.id
         LEFT JOIN dataset_table ON dataset_table_task_log.table_id = dataset_table.id

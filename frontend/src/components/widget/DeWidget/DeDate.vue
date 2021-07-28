@@ -8,6 +8,7 @@
     :start-placeholder="$t(options.attrs.startPlaceholder)"
     :end-placeholder="$t(options.attrs.endPlaceholder)"
     :placeholder="$t(options.attrs.placeholder)"
+    :append-to-body="inScreen"
     style="min-height: 36px;"
     @change="dateChange"
   />
@@ -24,6 +25,11 @@ export default {
     },
     inDraw: {
       type: Boolean,
+      default: true
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
       default: true
     }
   },
@@ -58,6 +64,7 @@ export default {
     },
     dateChange(value) {
       this.setCondition()
+      this.styleChange()
     },
     formatValues(values) {
       if (!values || values.length === 0) {
@@ -77,6 +84,9 @@ export default {
         const value = values[0]
         return timeSection(value, this.options.attrs.type)
       }
+    },
+    styleChange() {
+      this.$store.state.styleChangeTimes++
     }
   }
 }

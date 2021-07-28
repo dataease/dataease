@@ -3,15 +3,16 @@ import { WidgetService } from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-xialakuang',
-  label: 'denumberselect.label',
-  defaultClass: 'tree-filter'
+  label: 'detextgridselect.label',
+  defaultClass: 'text-filter'
 }
 
 const dialogPanel = {
   options: {
     attrs: {
       multiple: false,
-      placeholder: 'denumberselect.placeholder',
+      placeholder: 'detextgridselect.placeholder',
+      viewIds: [],
       datas: [],
       key: 'id',
       label: 'text',
@@ -19,15 +20,14 @@ const dialogPanel = {
     },
     value: ''
   },
-  defaultClass: 'tree-filter',
-  component: 'de-select'
+  defaultClass: 'text-filter',
+  component: 'de-select-grid'
 }
 const drawPanel = {
   type: 'custom',
   style: {
     width: 300,
-    // height: 47,
-    height: 90,
+    height: 300,
     fontSize: 14,
     fontWeight: 500,
     lineHeight: '',
@@ -35,12 +35,12 @@ const drawPanel = {
     textAlign: '',
     color: ''
   },
-  component: 'de-select'
+  component: 'de-select-grid'
 }
 
-class NumberSelectServiceImpl extends WidgetService {
+class TextSelectGridServiceImpl extends WidgetService {
   constructor(options = {}) {
-    Object.assign(options, { name: 'numberSelectWidget' })
+    Object.assign(options, { name: 'textSelectGridWidget' })
     super(options)
     this.filterDialog = true
     this.showSwitch = true
@@ -63,7 +63,7 @@ class NumberSelectServiceImpl extends WidgetService {
 
   filterFieldMethod(fields) {
     return fields.filter(field => {
-      return field['deType'] === 2
+      return field['deType'] === 0
     })
   }
 
@@ -77,5 +77,5 @@ class NumberSelectServiceImpl extends WidgetService {
     })
   }
 }
-const numberSelectServiceImpl = new NumberSelectServiceImpl()
-export default numberSelectServiceImpl
+const textSelectGridServiceImpl = new TextSelectGridServiceImpl()
+export default textSelectGridServiceImpl

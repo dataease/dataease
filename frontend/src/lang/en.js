@@ -592,7 +592,7 @@ export default {
     create_view: 'Create Chart',
     data_preview: 'Data preview',
     dimension: 'Dimension',
-    quota: 'Index',
+    quota: 'Quota',
     title: 'Title',
     show: 'Show',
     chart_type: 'Chart Type',
@@ -976,7 +976,16 @@ export default {
     right_join: 'RIGHT JOIN',
     inner_join: 'INNER JOIN',
     full_join: 'FULL JOIN',
-    can_not_union_diff_datasource: 'Union dataset must have same data source'
+    can_not_union_diff_datasource: 'Union dataset must have same data source',
+    operator: 'Operator',
+    d_q_trans: 'Dimension/Quota Transform',
+    add_calc_field: 'Create calc field',
+    input_name: 'Please input name',
+    field_exp: 'Field Expression',
+    data_type: 'Data Type',
+    click_ref_field: 'Click Quote Field',
+    click_ref_function: 'Click Quote Function',
+    field_manage: 'Field Manage'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1312,6 +1321,14 @@ export default {
   },
   detextselect: {
     label: 'Text selector',
+    placeholder: 'Please select'
+  },
+  detextgridselect: {
+    label: 'Text list',
+    placeholder: 'Please select'
+  },
+  denumbergridselect: {
+    label: 'Number list',
     placeholder: 'Please select'
   },
   dedaterange: {

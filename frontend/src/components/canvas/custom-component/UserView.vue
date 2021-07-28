@@ -28,7 +28,6 @@ import { viewData } from '@/api/panel/panel'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
-import UserViewDialog from './UserViewDialog'
 import { uuid } from 'vue-uuid'
 
 import { mapState } from 'vuex'
@@ -36,11 +35,10 @@ import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal, UserViewDialog, SettingMenu },
+  components: { ChartComponent, TableNormal, LabelNormal },
   props: {
     element: {
       type: Object,

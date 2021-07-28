@@ -543,8 +543,10 @@ export default {
       this.$forceUpdate()
     },
     editDialog() {
-      const serviceName = this.curComponent.serviceName
-      this.currentWidget = ApplicationContext.getService(serviceName)
+      if (this.curComponent && this.curComponent.serviceName) {
+        const serviceName = this.curComponent.serviceName
+        this.currentWidget = ApplicationContext.getService(serviceName)
+      }
       this.currentFilterCom = this.curComponent
       this.openFilterDialog()
     },
@@ -644,7 +646,6 @@ export default {
       })
     },
     newViewInfo(newViewInfo) {
-      debugger
       let component
       const newComponentId = uuid.v1()
       // 用户视图设置 复制一个模板
@@ -679,7 +680,6 @@ export default {
       }
     },
     canvasScroll(event) {
-      debugger
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
     },

@@ -976,7 +976,16 @@ export default {
     right_join: '右連接',
     inner_join: '內連接',
     full_join: '全連接',
-    can_not_union_diff_datasource: '被關聯數據集必須與當前數據集的數據源一致'
+    can_not_union_diff_datasource: '被關聯數據集必須與當前數據集的數據源一致',
+    operator: '操作',
+    d_q_trans: '維度/指標轉換',
+    add_calc_field: '新建计算字段',
+    input_name: '請輸入名稱',
+    field_exp: '字段表達式',
+    data_type: '數據類型',
+    click_ref_field: '點擊引用字段',
+    click_ref_function: '點擊引用函數',
+    field_manage: '字段管理'
   },
   datasource: {
     datasource: '數據源',
@@ -1312,6 +1321,14 @@ export default {
   },
   detextselect: {
     label: '文本下拉',
+    placeholder: '請選擇'
+  },
+  detextgridselect: {
+    label: '文本列表',
+    placeholder: '請選擇'
+  },
+  denumbergridselect: {
+    label: '數字列表',
     placeholder: '請選擇'
   },
   dedaterange: {

@@ -138,6 +138,8 @@ export default {
 
   methods: {
     close() {
+      // 关闭页面清理缓存
+      this.clearCanvas()
       this.$emit('close-left-panel')
       this.$nextTick(() => {
         bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
@@ -264,7 +266,6 @@ export default {
     },
 
     save(withClose) {
-      debugger
       // 保存到数据库
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,

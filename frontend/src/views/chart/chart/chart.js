@@ -208,7 +208,7 @@ export const BASE_BAR = {
       type: 'slider',
       show: false,
       xAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     },
     {
@@ -216,19 +216,19 @@ export const BASE_BAR = {
       show: false,
       yAxisIndex: [0],
       left: '93%',
-      start: 1,
+      start: 0,
       end: 100
     },
     {
       type: 'inside',
       xAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     },
     {
       type: 'inside',
       yAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     }
   ]
@@ -264,7 +264,7 @@ export const HORIZONTAL_BAR = {
       type: 'slider',
       show: false,
       xAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     },
     {
@@ -272,19 +272,19 @@ export const HORIZONTAL_BAR = {
       show: false,
       yAxisIndex: [0],
       left: '93%',
-      start: 1,
+      start: 0,
       end: 100
     },
     {
       type: 'inside',
       xAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     },
     {
       type: 'inside',
       yAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     }
   ]
@@ -322,7 +322,7 @@ export const BASE_LINE = {
       type: 'slider',
       show: false,
       xAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     },
     {
@@ -330,19 +330,19 @@ export const BASE_LINE = {
       show: false,
       yAxisIndex: [0],
       left: '93%',
-      start: 1,
+      start: 0,
       end: 100
     },
     {
       type: 'inside',
       xAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     },
     {
       type: 'inside',
       yAxisIndex: [0],
-      start: 1,
+      start: 0,
       end: 100
     }
   ]

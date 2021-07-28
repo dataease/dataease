@@ -71,9 +71,9 @@ export default {
       ],
       searchConfig: {
         useQuickSearch: false,
-        quickPlaceholder: '按名称搜索',
+        quickPlaceholder: this.$t('role.search_by_name'),
         components: [
-          { field: 'name', label: '名称', component: 'FuComplexInput' }
+          { field: 'name', label: this.$t('plugin.name'), component: 'FuComplexInput' }
 
         //   {
         //     field: 'u.enabled',

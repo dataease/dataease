@@ -8,22 +8,15 @@ import io.dataease.base.domain.SysMsgType;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
-import io.dataease.controller.message.dto.MsgGridDto;
-import io.dataease.controller.message.dto.MsgRequest;
-import io.dataease.controller.message.dto.MsgSettingRequest;
-import io.dataease.controller.message.dto.SettingTreeNode;
+import io.dataease.controller.message.dto.*;
 import io.dataease.service.message.SysMsgService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Api(tags = "系统：消息管理")
 @RequestMapping("/api/sys_msg")
@@ -89,5 +82,11 @@ public class MsgController {
     public List<SysMsgType> allTypes() {
         List<SysMsgType> sysMsgTypes = sysMsgService.queryMsgTypes();
         return sysMsgTypes;
+    }
+
+    @PostMapping("/batchUpdate")
+    public void batchUpdate(@RequestBody BatchSettingRequest request) {
+        Long userId = AuthUtils.getUser().getUserId();
+        sysMsgService.batchUpdate(request, userId);
     }
 }

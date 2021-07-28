@@ -514,7 +514,7 @@
       :destroy-on-close="true"
       :fullscreen="true"
     >
-      <field-edit :param="{table:table}" @switchComponent="closeEditDsField" />
+      <field-edit :param="table" @switchComponent="closeEditDsField" />
     </el-dialog>
   </el-row>
 </template>
@@ -1573,11 +1573,6 @@ export default {
   .padding-tab{
     padding: 0;
     height: 100%;
-  }
-  .collapse-style>>>.el-collapse-item__header{
-    height: 40px;
-    line-height: 40px;
-    padding: 0 0 0 10px;
   }
   .tree-select-span {
       >>>div.vue-treeselect__control {

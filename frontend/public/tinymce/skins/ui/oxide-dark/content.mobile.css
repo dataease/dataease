@@ -11,19 +11,24 @@
   opacity: 0.5;
   position: absolute;
 }
+
 body {
   -webkit-text-size-adjust: none;
 }
+
 body img {
   /* this is related to the content margin */
   max-width: 96vw;
 }
+
 body table img {
   max-width: 95%;
 }
+
 body {
   font-family: sans-serif;
 }
+
 table {
   border-collapse: collapse;
 }

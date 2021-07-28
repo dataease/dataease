@@ -1,6 +1,5 @@
 package io.dataease.base.mapper.ext;
 
-import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;

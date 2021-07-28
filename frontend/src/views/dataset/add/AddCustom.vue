@@ -88,6 +88,11 @@ export default {
     }
   },
   watch: {
+    'param.tableId': {
+      handler: function() {
+        this.resetComponent()
+      }
+    },
     'checkedList': function() {
       // console.log(this.checkedList)
       this.getUnionData()
@@ -233,14 +238,19 @@ export default {
     cancel() {
       // this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: { id: this.param.tableId }})
+        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
       } else {
         this.$emit('switchComponent', { name: '' })
       }
     },
 
-    dataReset() {
-
+    resetComponent() {
+      this.name = '自定义数据集'
+      this.table = {}
+      this.checkedList = []
+      this.unionData = []
+      this.data = []
+      this.fields = []
     }
   }
 

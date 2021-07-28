@@ -206,17 +206,6 @@ public class ExcelXlsReader implements HSSFListener {
                 thisRow = frec.getRow();
                 thisColumn = frec.getColumn();
                 thisStr = String.valueOf(frec.getValue());
-//                if (outputFormulaValues) {
-//                    if (Double.isNaN(frec.getValue())) {
-//                        outputNextStringRecord = true;
-//                        nextRow = frec.getRow();
-//                        nextColumn = frec.getColumn();
-//                    } else {
-//                        thisStr = '"' + HSSFFormulaParser.toFormulaString(stubWorkbook, frec.getParsedExpression()) + '"';
-//                    }
-//                } else {
-//                    thisStr = '"' + HSSFFormulaParser.toFormulaString(stubWorkbook, frec.getParsedExpression()) + '"';
-//                }
                 String feildType = checkType(thisStr, thisColumn);
                 if(feildType.equalsIgnoreCase("LONG") && thisStr.endsWith(".0")){
                     thisStr = thisStr.substring(0, thisStr.length() -2);

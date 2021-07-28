@@ -6,7 +6,6 @@ import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
-import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
@@ -29,10 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -66,8 +61,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,8 +89,6 @@ public class ExtractDataService {
     private DatasourceService datasourceService;
     @Resource
     private ExtChartViewMapper extChartViewMapper;
-    @Resource
-    private UtilMapper utilMapper;
 
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
@@ -295,7 +286,7 @@ public class ExtractDataService {
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
 
-                    sendWebMsg(datasetTable, datasetTableTask, true);
+                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, true);
 
                     deleteFile("all_scope", datasetTableId);
 
@@ -308,7 +299,7 @@ public class ExtractDataService {
 
                     dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
 
-                    sendWebMsg(datasetTable, datasetTableTask, false);
+                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                     deleteFile("all_scope", datasetTableId);
@@ -350,7 +341,7 @@ public class ExtractDataService {
                     }
                     saveSucessLog(datasetTableTaskLog);
 
-                    sendWebMsg(datasetTable, datasetTableTask, true);
+                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog,true);
 
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
@@ -360,7 +351,7 @@ public class ExtractDataService {
                     dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Completed);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, taskId, e);
-                    sendWebMsg(datasetTable, datasetTableTask, false);
+                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog,false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
 
                     dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
@@ -385,19 +376,24 @@ public class ExtractDataService {
 
     }
 
-    private void sendWebMsg(DatasetTable datasetTable, DatasetTableTask datasetTableTask, Boolean status) {
+    private void sendWebMsg(DatasetTable datasetTable, DatasetTableTask datasetTableTask, DatasetTableTaskLog datasetTableTaskLog, Boolean status) {
         String taskId = datasetTableTask.getId();
         String msg = status ? "成功" : "失败";
         Long typeId = status ? 5L : 6L;
         String id = datasetTable.getId();
         AuthURD authURD = AuthUtils.authURDR(id);
         Set<Long> userIds = AuthUtils.userIdsByURD(authURD);
+
         Gson gson = new Gson();
         userIds.forEach(userId -> {
             Map<String, Object> param = new HashMap<>();
             param.put("tableId", id);
             if (StringUtils.isNotEmpty(taskId)) {
                 param.put("taskId", taskId);
+            }
+
+            if (ObjectUtils.isNotEmpty(datasetTableTaskLog) && StringUtils.isNotEmpty(datasetTableTaskLog.getId())) {
+                param.put("logId", datasetTableTaskLog.getId());
             }
             String content = "数据集【" + datasetTable.getName() + "】同步" + msg;
             if (ObjectUtils.isNotEmpty(datasetTableTask) && ObjectUtils.isNotEmpty(datasetTableTask.getName())) {
@@ -783,8 +779,8 @@ public class ExtractDataService {
                 break;
         }
 
+        outputStep = outputStep(outFile, datasetTableFields, datasource);
 
-        outputStep = outputStep(outFile);
         hi1 = new TransHopMeta(inputStep, udjcStep);
         hi2 = new TransHopMeta(udjcStep, outputStep);
         transMeta.addTransHop(hi1);
@@ -864,14 +860,32 @@ public class ExtractDataService {
         return fromStep;
     }
 
-    private StepMeta outputStep(String dorisOutputTable) {
+    private StepMeta outputStep(String dorisOutputTable, List<DatasetTableField> datasetTableFields, Datasource datasource) {
         TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
         textFileOutputMeta.setEncoding("UTF-8");
         textFileOutputMeta.setHeaderEnabled(false);
         textFileOutputMeta.setFilename(root_path + dorisOutputTable);
         textFileOutputMeta.setSeparator(separator);
         textFileOutputMeta.setExtension(extention);
-        textFileOutputMeta.setOutputFields(new TextFileField[0]);
+
+        if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
+            TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
+            for(int i=0;i< datasetTableFields.size();i++){
+                TextFileField textFileField = new TextFileField();
+                textFileField.setName(datasetTableFields.get(i).getOriginName());
+                textFileField.setType("String");
+                outputFields[i] = textFileField;
+            }
+            TextFileField textFileField = new TextFileField();
+            textFileField.setName("dataease_uuid");
+            textFileField.setType("String");
+            outputFields[datasetTableFields.size()] = textFileField;
+
+            textFileOutputMeta.setOutputFields(outputFields);
+        }else {
+            textFileOutputMeta.setOutputFields(new TextFileField[0]);
+        }
+
         StepMeta outputStep = new StepMeta("TextFileOutput", "TextFileOutput", textFileOutputMeta);
         outputStep.setLocation(600, 100);
         outputStep.setDraw(true);
@@ -880,8 +894,6 @@ public class ExtractDataService {
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
         String needToChangeColumnType = "";
-
-
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
         UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);

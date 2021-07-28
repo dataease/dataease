@@ -12,4 +12,5 @@ import lombok.Setter;
 @Setter
 public class DataSetTaskLogDTO extends DatasetTableTaskLog {
     private String name;
+    private String datasetName;
 }

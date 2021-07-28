@@ -57,4 +57,13 @@
     </select>
 
 
+    <insert id="batchInsert" parameterType="io.dataease.base.domain.SysMsgSetting">
+        INSERT INTO sys_msg_setting (user_id,type_id,channel_id,enable)
+        VALUES
+        <foreach collection="settings" item="setting" separator=",">
+            (#{setting.userId}, #{setting.typeId}, #{setting.channelId}, #{setting.enable})
+        </foreach>
+    </insert>
+
+
 </mapper>

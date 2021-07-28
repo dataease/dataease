@@ -12,6 +12,7 @@ import panel from './modules/panel'
 import application from './modules/application'
 import lic from './modules/lic'
 import msg from './modules/msg'
+import map from './modules/map'
 import animation from '@/components/canvas/store/animation'
 import compose from '@/components/canvas/store/compose'
 import contextmenu from '@/components/canvas/store/contextmenu'
@@ -185,7 +186,8 @@ const data = {
     panel,
     application,
     lic,
-    msg
+    msg,
+    map
   },
   getters
 }

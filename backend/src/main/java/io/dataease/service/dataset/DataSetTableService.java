@@ -433,7 +433,7 @@ public class DataSetTableService {
             }
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
-                dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+                dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -480,7 +480,7 @@ public class DataSetTableService {
 
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow())));
-                    dataSetPreviewPage.setTotal(Integer.valueOf(jdbcProvider.getData(datasourceRequest).get(0)[0]));
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1402,6 +1402,9 @@ public class DataSetTableService {
     public static boolean checkIsRepeat(String[] array) {
         HashSet<String> hashSet = new HashSet<String>();
         for (int i = 0; i < array.length; i++) {
+            if(StringUtils.isEmpty(array[i])){
+                throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
+            }
             hashSet.add(array[i]);
         }
         if (hashSet.size() == array.length) {

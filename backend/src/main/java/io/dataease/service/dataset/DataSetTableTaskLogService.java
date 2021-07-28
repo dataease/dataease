@@ -1,11 +1,8 @@
 package io.dataease.service.dataset;
 
-import com.google.gson.Gson;
-import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.base.domain.DatasetTableTaskLog;
 import io.dataease.base.domain.DatasetTableTaskLogExample;
 import io.dataease.base.mapper.DatasetTableTaskLogMapper;
-import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -51,7 +48,9 @@ public class DataSetTableTaskLogService {
         if(!type.equalsIgnoreCase("excel")){
             ConditionEntity entity = new ConditionEntity();
             entity.setField("task_id");
-            entity.setOperator("not null");
+            entity.setOperator("not in");
+            List<String>status = new ArrayList<>();status.add("初始导入");status.add("替换");status.add("追加");
+            entity.setValue(status);
             List<ConditionEntity> conditionEntities = request.getConditions();
             if(CollectionUtils.isEmpty(conditionEntities)){
                 conditionEntities = new ArrayList<>();

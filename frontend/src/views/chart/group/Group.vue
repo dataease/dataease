@@ -679,7 +679,7 @@ export default {
       }
     },
     sceneClick(data, node) {
-      this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': data.id }})
+      this.$emit('switchComponent', { name: 'ChartEdit', param: data })
     },
     reviewChartList() {
       if (this.$store.state.chart.chartSceneData) {
@@ -753,7 +753,7 @@ export default {
         if (this.optFrom === 'panel') {
           this.$emit('newViewInfo', { 'id': response.data.id })
         } else {
-          this.$emit('switchComponent', { name: 'ChartEdit', param: { 'id': response.data.id }})
+          this.$emit('switchComponent', { name: 'ChartEdit', param: response.data })
           // this.$store.dispatch('chart/setViewId', response.data.id)
           // this.chartTree()
           this.refreshNodeBy(view.sceneId)

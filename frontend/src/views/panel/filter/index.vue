@@ -51,10 +51,12 @@ export default {
         ],
         '文本过滤组件': [
           'textSelectWidget',
+          'textSelectGridWidget',
           'textInputWidget'
         ],
         '数字过滤组件': [
           'numberSelectWidget',
+          'numberSelectGridWidget',
           'numberRangeWidget'
         ]
         // '按钮': [
@@ -202,7 +204,8 @@ export default {
   .tree-filter:hover {
     background-color: #37b4aa;
     .filter-widget-icon {
-        color: #37b4aa;
+        background-color: #37b4aa;
+        color: #fff;
     }
     .filter-widget-text {
         color: #fff;

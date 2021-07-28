@@ -14,7 +14,7 @@
           <slot name="complex" />
         </template>
         <slot name="buttons" />
-        <fu-table-column-select :columns="columns" />
+        <fu-table-column-select v-if="!hideColumns" :columns="columns" />
       </fu-search-bar>
     </div>
 
@@ -45,6 +45,10 @@ export default {
     columns: {
       type: Array,
       default: () => []
+    },
+    hideColumns: {
+      type: Boolean,
+      default: false
     },
     // eslint-disable-next-line vue/require-default-prop
     localKey: String, // 如果需要记住选择的列，则这里添加一个唯一的Key

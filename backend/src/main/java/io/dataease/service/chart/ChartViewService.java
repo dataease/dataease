@@ -79,8 +79,7 @@ public class ChartViewService {
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
-
-        return chartView;
+        return getOneWithPermission(chartView.getId());
     }
 
     public List<ChartViewDTO> list(ChartViewRequest chartViewRequest) {
@@ -115,6 +114,13 @@ public class ChartViewService {
         return chartViewMapper.selectByPrimaryKey(id);
     }
 
+    public ChartViewDTO getOneWithPermission(String id) {
+        ChartViewRequest chartViewRequest = new ChartViewRequest();
+        chartViewRequest.setId(id);
+        chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        return extChartViewMapper.searchOne(chartViewRequest);
+    }
+
     public void delete(String id) {
         chartViewMapper.deleteByPrimaryKey(id);
     }
@@ -138,14 +144,16 @@ public class ChartViewService {
         }.getType());
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartFieldCustomFilterDTO>>() {
         }.getType());
-        List<ChartCustomFilterDTO> customFilter = fieldCustomFilter.stream().map(ele -> {
-            ChartCustomFilterDTO dto = new ChartCustomFilterDTO();
-            ele.getFilter().forEach(f -> {
+        List<ChartCustomFilterDTO> customFilter = new ArrayList<>();
+        for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
+            List<ChartCustomFilterDTO> collect = ele.getFilter().stream().map(f -> {
+                ChartCustomFilterDTO dto = new ChartCustomFilterDTO();
                 BeanUtils.copyBean(dto, f);
                 dto.setField(dataSetTableFieldsService.get(f.getFieldId()));
-            });
-            return dto;
-        }).collect(Collectors.toList());
+                return dto;
+            }).collect(Collectors.toList());
+            customFilter.addAll(collect);
+        }
 
         if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
             xAxis = new ArrayList<>();

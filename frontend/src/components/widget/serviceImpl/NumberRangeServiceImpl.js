@@ -3,7 +3,7 @@ import { WidgetService } from '../service/WidgetService'
 const leftPanel = {
   icon: 'iconfont icon-zuoce-qujian',
   label: 'denumberrange.label',
-  defaultClass: 'text-filter'
+  defaultClass: 'tree-filter'
 }
 
 const dialogPanel = {
@@ -15,7 +15,7 @@ const dialogPanel = {
     },
     value: ''
   },
-  defaultClass: 'text-filter',
+  defaultClass: 'tree-filter',
   component: 'de-number-range'
 }
 const drawPanel = {
