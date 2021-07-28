@@ -73,7 +73,6 @@ export default {
   },
   watch: {
     inputType(newVal) {
-      debugger
       if (newVal === 'self') {
         this.editPanel = deepCopy(this.editPanelOut)
       } else {
