@@ -7,7 +7,6 @@ import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.service.dataset.DataSetTableTaskLogService;
 import io.dataease.service.dataset.DataSetTableTaskService;
