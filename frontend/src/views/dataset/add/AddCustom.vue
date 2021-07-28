@@ -88,6 +88,11 @@ export default {
     }
   },
   watch: {
+    'param.tableId': {
+      handler: function() {
+        this.resetComponent()
+      }
+    },
     'checkedList': function() {
       // console.log(this.checkedList)
       this.getUnionData()
@@ -239,8 +244,15 @@ export default {
       }
     },
 
-    dataReset() {
-
+    resetComponent() {
+      this.name = '自定义数据集'
+      this.table = {}
+      this.checkedList = []
+      this.unionData = []
+      this.height = 500
+      this.data = []
+      this.fields = []
+      this.customType = ['db', 'sql', 'excel']
     }
   }
 
