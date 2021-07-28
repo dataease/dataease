@@ -16,7 +16,7 @@
         <el-form-item class="form-item">
           <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
         </el-form-item>
-        <el-form-item class="form-item" style="float: right;">
+        <el-form-item class="form-item" style="float: right;margin-right: 0;">
           <el-input
             v-model="searchField"
             size="mini"
@@ -241,6 +241,7 @@
       class="dialog-css"
       :destroy-on-close="true"
       :title="$t('dataset.add_calc_field')"
+      append-to-body
     >
       <calc-field-edit :param="param" :table-fields="tableFields" />
       <div slot="footer" class="dialog-footer">
@@ -322,10 +323,6 @@ export default {
         // this.closeEdit()
         this.initField()
       })
-    },
-
-    closeEdit() {
-      this.$emit('switchComponent', { name: 'ViewTable', param: this.param })
     },
 
     dqTrans(item, val) {

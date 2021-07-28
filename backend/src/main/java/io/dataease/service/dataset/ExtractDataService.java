@@ -267,6 +267,9 @@ public class ExtractDataService {
         });
         String dorisTablColumnSql = createDorisTablColumnSql(datasetTableFields);
 
+        boolean msg = false;
+        JobStatus jobStatus = JobStatus.Completed;
+        Long execTime = null;
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
@@ -281,29 +284,22 @@ public class ExtractDataService {
                     } else {
                         generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     }
-                    Long execTime = System.currentTimeMillis();
+                    execTime = System.currentTimeMillis();
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
-
-                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, true);
-
-                    deleteFile("all_scope", datasetTableId);
-
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-
-                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Completed);
-
+                    msg = true;
+                    jobStatus = JobStatus.Completed;
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, taskId, e);
-
-                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
-
-                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog,false);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
-                    dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-                    deleteFile("all_scope", datasetTableId);
+                    msg = false;
+                    jobStatus = JobStatus.Error;
                 } finally {
+                    try { deleteFile("all_scope", datasetTableId); }catch (Exception ignore){}
+                    try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){}
+                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, jobStatus); }catch (Exception ignore){}
+                    try { updateTableStatus(datasetTableId, datasetTable, jobStatus, execTime); }catch (Exception ignore){}
+                    try { dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId))); }catch (Exception ignore){}
                 }
                 break;
 
@@ -323,7 +319,7 @@ public class ExtractDataService {
                     if (datasetTableTask == null ) {
                         datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, taskId);
                     }
-                    Long execTime = System.currentTimeMillis();
+                    execTime = System.currentTimeMillis();
                     if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
                         String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
                                 .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
@@ -341,28 +337,17 @@ public class ExtractDataService {
                     }
                     saveSucessLog(datasetTableTaskLog);
 
-                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog,true);
-
-                    deleteFile("incremental_add", datasetTableId);
-                    deleteFile("incremental_delete", datasetTableId);
-
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-
-                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Completed);
+                    msg = true;
+                    jobStatus = JobStatus.Completed;
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, taskId, e);
-                    sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog,false);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
-
-                    dataSetTableTaskService.updateTaskStatus(datasetTableTask, JobStatus.Error);
-
-                    deleteFile("incremental_add", datasetTableId);
-                    deleteFile("incremental_delete", datasetTableId);
+                    msg = false;
+                    jobStatus = JobStatus.Error;
                 } finally {
-                    if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
-                        datasetTableTask.setStatus(TaskStatus.Stopped.name());
-                        dataSetTableTaskService.update(datasetTableTask);
-                    }
+                    try { deleteFile("incremental_add", datasetTableId); deleteFile("incremental_delete", datasetTableId); }catch (Exception ignore){}
+                    try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){}
+                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, jobStatus); }catch (Exception ignore){}
+                    try { updateTableStatus(datasetTableId, datasetTable, jobStatus, execTime); }catch (Exception ignore){}
                 }
                 break;
         }

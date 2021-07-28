@@ -1,0 +1,1 @@
+UPDATE `chart_view` SET `custom_filter` = '[]';

@@ -507,14 +507,20 @@
 
     <!--编辑视图使用的数据集的字段-->
     <el-dialog
-      v-dialogDrag
       :visible="editDsField"
       :show-close="false"
       class="dialog-css"
       :destroy-on-close="true"
       :fullscreen="true"
     >
-      <field-edit :param="table" @switchComponent="closeEditDsField" />
+      <field-edit :param="table" />
+      <div slot="title" class="dialog-footer">
+        <span style="font-size: 14px;">
+          {{ $t('dataset.field_manage') }}
+          <span v-if="table">[{{ table.name }}]</span>
+        </span>
+        <el-button size="mini" style="float: right;" @click="closeEditDsField">{{ $t('chart.close') }}</el-button>
+      </div>
     </el-dialog>
   </el-row>
 </template>
