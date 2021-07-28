@@ -80,6 +80,7 @@ export default {
   methods: {
     changeValue(value) {
       this.setCondition()
+      this.styleChange()
       this.showNumber = false
       this.$nextTick(() => {
         if (!this.$refs.deSelect.$refs.tags || !this.options.attrs.multiple) {
@@ -101,7 +102,11 @@ export default {
         operator: this.operator
       }
       this.inDraw && this.$store.commit('addViewFilter', param)
+    },
+    styleChange() {
+      this.$store.state.styleChangeTimes++
     }
+
   }
 }
 </script>
