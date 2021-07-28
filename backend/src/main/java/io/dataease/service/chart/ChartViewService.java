@@ -315,6 +315,12 @@ public class ChartViewService {
         BeanUtils.copyBean(dto, view);
         dto.setData(map);
         dto.setSql(datasourceRequest.getQuery());
+
+        //如果能获取用户 则添加对应的权限
+        if(AuthUtils.getUser()!=null){
+            ChartViewDTO permissionDto =  getOneWithPermission(dto.getId());
+            dto.setPrivileges(permissionDto.getPrivileges());
+        }
         return dto;
     }
 
