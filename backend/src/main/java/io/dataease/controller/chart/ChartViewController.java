@@ -65,4 +65,9 @@ public class ChartViewController {
     public String searchAdviceSceneId(@PathVariable String panelId){
         return chartViewService.searchAdviceSceneId(panelId);
     }
+
+    @PostMapping("/getOneWithPermission/{id}")
+    public ChartViewDTO getOneWithPermission(@PathVariable String id, @RequestBody ChartExtRequest requestList) throws Exception {
+        return chartViewService.getData(id, requestList);
+    }
 }
