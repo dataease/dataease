@@ -163,6 +163,7 @@ export default {
   watch: {
     'param.tableId': {
       handler: function() {
+        this.resetComponent()
         this.initTableInfo()
       }
     }
@@ -283,7 +284,7 @@ export default {
     cancel() {
       // this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: { id: this.param.tableId }})
+        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
       } else {
         this.$emit('switchComponent', { name: '' })
       }
@@ -302,6 +303,20 @@ export default {
       // console.log(newCode)
       this.sql = newCode
       this.$emit('codeChange', this.sql)
+    },
+
+    resetComponent() {
+      this.dataSource = ''
+      this.options = []
+      this.name = ''
+      this.sql = ''
+      this.data = []
+      this.fields = []
+      this.mode = '0'
+      this.syncType = 'sync_now'
+      this.height = 500
+      this.kettleRunning = false
+      this.$refs.plxTable.reloadData(this.data)
     }
   }
 }

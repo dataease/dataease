@@ -64,6 +64,7 @@ export default {
     },
     dateChange(value) {
       this.setCondition()
+      this.styleChange()
     },
     formatValues(values) {
       if (!values || values.length === 0) {
@@ -83,6 +84,9 @@ export default {
         const value = values[0]
         return timeSection(value, this.options.attrs.type)
       }
+    },
+    styleChange() {
+      this.$store.state.styleChangeTimes++
     }
   }
 }

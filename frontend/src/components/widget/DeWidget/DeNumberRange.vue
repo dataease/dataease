@@ -135,6 +135,7 @@ export default {
           return false
         }
         this.setCondition()
+        this.styleChange()
       })
     },
     setCondition() {
@@ -165,6 +166,9 @@ export default {
         this.inDraw && this.$store.commit('addViewFilter', param)
         return
       }
+    },
+    styleChange() {
+      this.$store.state.styleChangeTimes++
     }
   }
 }

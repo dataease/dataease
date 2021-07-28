@@ -167,6 +167,7 @@ export default {
 
       this.options.value = values
       this.setCondition()
+      this.styleChange()
     },
     // 勾选数据项 会影响全选节点的状态
     setAllNodeStatus() {
@@ -208,7 +209,11 @@ export default {
     filterNode(value, data) {
       if (!value) return true
       return data[this.defaultProp.label].indexOf(value) !== -1
+    },
+    styleChange() {
+      this.$store.state.styleChangeTimes++
     }
+
   }
 }
 </script>

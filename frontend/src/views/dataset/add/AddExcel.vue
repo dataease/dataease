@@ -258,7 +258,7 @@ export default {
           type: 'excel',
           mode: parseInt(this.mode),
           // info: '{"data":"' + this.path + '"}',
-          info: JSON.stringify({ data: this.path, sheets: [this.sheets[0]]}),
+          info: JSON.stringify({ data: this.path, sheets: [this.sheets[0]] }),
           fields: this.fields
         }
       } else {
@@ -285,7 +285,7 @@ export default {
       this.dataReset()
       // this.$router.push('/dataset/home')
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: { id: this.param.tableId }})
+        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
       } else {
         this.$emit('switchComponent', { name: '' })
       }
