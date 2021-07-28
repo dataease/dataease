@@ -867,6 +867,7 @@ export default {
     sync_now: 'Update Now',
     add_task: 'Add Task',
     task_name: 'Task Name',
+    task_id: 'Task ID',
     start_time: 'Start Time',
     end_time: 'End Time',
     status: 'State',

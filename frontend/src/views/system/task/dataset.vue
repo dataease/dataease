@@ -1,13 +1,13 @@
 <template>
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
-    <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
+    <el-row style="height: 100%;width: 100%;">
       <el-tabs v-model="tabActive" @tab-click="changeTab">
         <el-tab-pane :label="$t('dataset.task.list')" name="DatasetTaskList">
-          <dataset-task-list v-if="tabActive=='DatasetTaskList'" :param="task" @jumpTaskRecord="jumpTaskRecord" />
+          <dataset-task-list v-if="tabActive=='DatasetTaskList'" :transCondition="transCondition" @jumpTaskRecord="jumpTaskRecord" />
         </el-tab-pane>
         <el-tab-pane :label="$t('dataset.task.record')" name="TaskRecord">
-          <task-record v-if="tabActive=='TaskRecord'" ref="task_record" :param="task" @jumpTask="jumpTask" />
+          <task-record v-if="tabActive=='TaskRecord'" ref="task_record" :trans-condition="transCondition" @jumpTask="jumpTask" />
         </el-tab-pane>
       </el-tabs>
     </el-row>
@@ -27,8 +27,8 @@ export default {
   components: { LayoutContent, DatasetTaskList, TaskRecord },
   data() {
     return {
-      task: null,
-      tabActive: 'DatasetTaskList'
+      tabActive: 'DatasetTaskList',
+      transCondition: {}
     }
   },
   computed: {
@@ -50,15 +50,20 @@ export default {
   },
   methods: {
     changeTab() {
-      this.task = null
-      console.log(this.tabActive)
+      this.transCondition = {}
     },
     jumpTaskRecord(task) {
-      this.task = task
+      this.transCondition['dataset_table_task.id'] = {
+        operator: 'eq',
+        value: task.id
+      }
       this.tabActive = 'TaskRecord'
     },
-    jumpTask(task) {
-      this.task = task
+    jumpTask(taskRecord) {
+      this.transCondition['dataset_table_task.id'] = {
+        operator: 'eq',
+        value: taskRecord.taskId
+      }
       this.tabActive = 'DatasetTaskList'
     },
     toMsgShare(routerParam) {

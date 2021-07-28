@@ -153,7 +153,7 @@ export default {
       }
       const param = this.multipleSelection.map(item => item.msgId)
       batchRead(param).then(res => {
-        this.$success('webmsg.mark_success')
+        this.$success(this.$t('webmsg.mark_success'))
         this.search()
       })
     },

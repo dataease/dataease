@@ -867,6 +867,7 @@ export default {
     sync_now: '立即更新',
     add_task: '添加任務',
     task_name: '任務名稱',
+    task_id: '任務ID',
     start_time: '開始時間',
     end_time: '結束時間',
     status: '狀態',
