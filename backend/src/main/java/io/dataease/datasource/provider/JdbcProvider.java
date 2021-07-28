@@ -2,7 +2,6 @@ package io.dataease.datasource.provider;
 
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.MysqlConfigration;
 import io.dataease.datasource.dto.OracleConfigration;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.beans.PropertyVetoException;
 import java.sql.*;
-import java.text.MessageFormat;
 import java.util.*;
 
 @Service("jdbc")
