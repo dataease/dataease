@@ -20,17 +20,17 @@ public abstract class QueryProvider {
 
     public abstract String createSQLPreview(String sql, String orderBy);
 
-    public abstract String createQuerySQL(String table, List<DatasetTableField> fields);
+    public abstract String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup);
 
-    public abstract String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields);
+    public abstract String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup);
 
-    public abstract String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize);
+    public abstract String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup);
 
-    public abstract String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit);
+    public abstract String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup);
 
-    public abstract String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit);
+    public abstract String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup);
 
-    public abstract String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize);
+    public abstract String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup);
 
     public abstract String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList);
 
