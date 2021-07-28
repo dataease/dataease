@@ -79,8 +79,7 @@ public class ChartViewService {
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
-
-        return chartView;
+        return getOneWithPermission(chartView.getId());
     }
 
     public List<ChartViewDTO> list(ChartViewRequest chartViewRequest) {
@@ -113,6 +112,13 @@ public class ChartViewService {
 
     public ChartViewWithBLOBs get(String id) {
         return chartViewMapper.selectByPrimaryKey(id);
+    }
+
+    public ChartViewDTO getOneWithPermission(String id) {
+        ChartViewRequest chartViewRequest = new ChartViewRequest();
+        chartViewRequest.setId(id);
+        chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        return extChartViewMapper.searchOne(chartViewRequest);
     }
 
     public void delete(String id) {
