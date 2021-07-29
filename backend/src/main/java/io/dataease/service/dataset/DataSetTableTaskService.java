@@ -121,7 +121,8 @@ public class DataSetTableTaskService {
         example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
         Boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
         if(!existSyncTask){
-            datasetTableTask.setLastExecTime(System.currentTimeMillis());
+            Long startTime = System.currentTimeMillis();
+            datasetTableTask.setLastExecTime(startTime);
             datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
             datasetTableTask.setStatus(TaskStatus.Exec.name());
             update(datasetTableTask);
@@ -129,7 +130,7 @@ public class DataSetTableTaskService {
             datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
             datasetTableTaskLog.setTaskId(datasetTableTask.getId());
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-            datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+            datasetTableTaskLog.setStartTime(startTime);
             datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         }

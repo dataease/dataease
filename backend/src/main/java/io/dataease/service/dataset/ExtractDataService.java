@@ -124,7 +124,7 @@ public class ExtractDataService {
             "fi\n" +
             "rm -rf %s\n";
 
-    public synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask) {
+    public synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask, Long startTime) {
         datasetTable.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
@@ -141,7 +141,7 @@ public class ExtractDataService {
             }
             return true;
         } else {
-            datasetTableTask.setLastExecTime(System.currentTimeMillis());
+            datasetTableTask.setLastExecTime(startTime);
             datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
             datasetTableTask.setStatus(TaskStatus.Exec.name());
             dataSetTableTaskService.update(datasetTableTask);
@@ -238,12 +238,13 @@ public class ExtractDataService {
             LogUtil.info("Skip synchronization task, task ID : " + datasetTableTask.getId());
             return;
         }
-        if (existSyncTask(datasetTable, datasetTableTask)) {
+
+        Long startTime = System.currentTimeMillis();
+        if (existSyncTask(datasetTable, datasetTableTask, startTime)) {
             LogUtil.info("Skip synchronization task for dataset, dataset ID : " + datasetTableId);
             return;
         }
-
-        DatasetTableTaskLog datasetTableTaskLog = getDatasetTableTaskLog(datasetTableId, taskId);
+        DatasetTableTaskLog datasetTableTaskLog = getDatasetTableTaskLog(datasetTableId, taskId, startTime);
         UpdateType updateType = UpdateType.valueOf(type);
         if (context != null) {
             datasetTable.setQrtzInstance(context.getFireInstanceId());
@@ -520,11 +521,12 @@ public class ExtractDataService {
         }
     }
 
-    private DatasetTableTaskLog getDatasetTableTaskLog(String datasetTableId, String taskId) {
+    private DatasetTableTaskLog getDatasetTableTaskLog(String datasetTableId, String taskId, Long startTime) {
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
+        datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
         for (int i = 0; i < 5; i++) {
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
             if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
@@ -535,7 +537,8 @@ public class ExtractDataService {
             } catch (Exception ignore) {
             }
         }
-        datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+        datasetTableTaskLog.setTriggerType(TriggerType.Cron.name());
+        datasetTableTaskLog.setStartTime(startTime);
         dataSetTableTaskLogService.save(datasetTableTaskLog);
         return datasetTableTaskLog;
     }
