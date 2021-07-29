@@ -47,7 +47,7 @@
 
         <el-table-column prop="nextExecTime" :label="$t('dataset.task.next_exec_time')">
           <template slot-scope="scope">
-            <span v-if="scope.row.nextExecTime && scope.row.nextExecTime !== -1 && scope.row.rate !== 'SIMPLE'">
+            <span v-if="scope.row.nextExecTime && scope.row.nextExecTime !== -1 && scope.row.rate !== 'SIMPLE'&& scope.row.status !== 'Pending'">
               {{ scope.row.nextExecTime | timestampFormatDate }}
             </span>
             <span v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'" />
