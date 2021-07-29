@@ -4,7 +4,6 @@
       <el-dropdown trigger="click" @mouseup="handleMouseUp">
         <slot name="icon" />
         <el-dropdown-menu>
-          this is test
           <el-dropdown-item v-if="curComponent&&editFilter.includes(curComponent.type)" icon="el-icon-edit-outline" @click.native="edit">{{ $t('panel.edit') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-delete" @click.native="deleteComponent">{{ $t('panel.delete') }}</el-dropdown-item>
