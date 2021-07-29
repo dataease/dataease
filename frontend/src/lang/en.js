@@ -823,7 +823,8 @@ export default {
     map_range: 'Map range',
     select_map_range: 'Please select map range',
     area: 'Area',
-    placeholder_field: 'Drag Field To Here'
+    placeholder_field: 'Drag Field To Here',
+    axis_label_rotate: 'Label Rotate'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
