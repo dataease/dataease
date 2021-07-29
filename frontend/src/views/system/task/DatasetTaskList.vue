@@ -168,7 +168,7 @@
 
     <!--添加任务-选择数据集-->
     <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
-      <table-selector @getTable="getTable" :mode="1" :customType=customType  showMode="datasetTask"/>
+      <table-selector @getTable="getTable" privileges="manage" :mode="1" :customType=customType  showMode="datasetTask"/>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>
@@ -215,6 +215,7 @@ import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 import cron from '@/components/cron/cron'
 import TableSelector from '@/views/chart/view/TableSelector'
+import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'DatasetTaskList',
@@ -255,7 +256,7 @@ export default {
           label: this.$t('dataset.task.exec'), icon: 'el-icon-video-play', type: 'success', click: this.execTask, disabled: this.disableExec
         },
         {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.deleteTask
+          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.deleteTask, disabled: this.disableDelete
         }
       ],
       searchConfig: {
@@ -551,10 +552,14 @@ export default {
       this.taskForm.cron = val
     },
     disableEdit(task) {
-      return task.rate === 'SIMPLE' || task.status === 'Stopped'
+      return task.rate === 'SIMPLE' || task.status === 'Stopped' || !hasDataPermission('manage',task.privileges)
     },
     disableExec(task) {
-      return task.status === 'Stopped' || task.status === 'Pending' || task.rate === 'SIMPLE'
+      return task.status === 'Stopped' || task.status === 'Pending' || task.rate === 'SIMPLE' || !hasDataPermission('manage',task.privileges)
+    },
+    disableDelete(task) {
+      return false;
+      // !hasDataPermission('manage',task.privileges)
     },
     deleteTask(task) {
       this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
@@ -620,12 +625,7 @@ export default {
             }
             this.incrementalConfig.tableId = task.tableId
           }
-
-          let startTime = new Date(task.startTime).getTime()
-          if(startTime < new Date().getTime()){
-            startTime = new Date().getTime()
-          }
-          task.startTime = startTime
+          task.startTime = new Date(task.startTime).getTime()
           task.endTime = new Date(task.endTime).getTime()
           const form = JSON.parse(JSON.stringify(task))
           form.extraData = JSON.stringify(form.extraData)

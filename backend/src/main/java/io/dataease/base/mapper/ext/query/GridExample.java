@@ -171,6 +171,9 @@ public class GridExample {
                 case "not null":
                     addNotNullCriterion(field + " is not null ");
                     break;
+                case "extra":
+                    addCriterion(field);
+                    break;
             }
             return (Criteria) this;
         }
