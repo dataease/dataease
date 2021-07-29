@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree @getTable="getTable" :mode=mode :type=type :customType=customType :showMode=showMode />
+      <dataset-group-selector-tree @getTable="getTable" :privileges=privileges :mode=mode :type=type :customType=customType :showMode=showMode />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />
@@ -45,6 +45,11 @@ export default {
       required: false,
       default: null
     },
+    privileges: {
+      type: String,
+      required: false,
+      default: 'use'
+    }
   },
   data() {
     return {

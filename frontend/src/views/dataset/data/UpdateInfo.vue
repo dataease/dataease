@@ -533,12 +533,7 @@ export default {
             this.incrementalConfig.incrementalDelete = this.sql
           }
           this.incrementalConfig.tableId = this.table.id
-          let startTime = new Date(task.startTime).getTime()
-          if(startTime < new Date().getTime()){
-            startTime = new Date().getTime()
-          }
-          task.startTime = startTime
-
+          task.startTime = new Date(task.startTime).getTime()
           task.endTime = new Date(task.endTime).getTime()
           task.tableId = this.table.id
           const form = JSON.parse(JSON.stringify(task))
