@@ -41,8 +41,7 @@ public class ShiroServiceImpl implements ShiroService {
 
         //验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
-        filterChainDefinitionMap.put("/panel/group/findOne/**", ANON);
-        filterChainDefinitionMap.put("/chart/view/getData/**", ANON);
+
 
 
         filterChainDefinitionMap.put("/system/ui/**", ANON);
@@ -59,9 +58,16 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/tokenExpired", ANON);
         filterChainDefinitionMap.put("/downline", ANON);
         filterChainDefinitionMap.put("/common-files/**", ANON);
+
         filterChainDefinitionMap.put("/api/auth/logout", "logout");
+
+        filterChainDefinitionMap.put("/api/link/resourceDetail/**", "link");
+        filterChainDefinitionMap.put("/api/link/viewDetail/**", "link");
+
         filterChainDefinitionMap.put("/**", "authc");
+
         filterChainDefinitionMap.put("/**", "jwt");
+
         return filterChainDefinitionMap;
     }
     

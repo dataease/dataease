@@ -129,6 +129,7 @@ export default {
     password_error: '密碼不小於 8 位'
   },
   commons: {
+    no_target_permission: '沒有權限',
     success: '成功',
     switch_lang: '切換語言成功',
     close: '關閉',
@@ -823,7 +824,8 @@ export default {
     select_map_range: '請選擇地圖範圍',
     area: '地區',
     stack_item: '堆疊項',
-    placeholder_field: '拖動字段至此處'
+    placeholder_field: '拖動字段至此處',
+    axis_label_rotate: '標簽角度'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -873,6 +875,7 @@ export default {
     sync_now: '立即更新',
     add_task: '添加任務',
     task_name: '任務名稱',
+    task_id: '任務ID',
     start_time: '開始時間',
     end_time: '結束時間',
     status: '狀態',
@@ -985,7 +988,9 @@ export default {
     data_type: '數據類型',
     click_ref_field: '點擊引用字段',
     click_ref_function: '點擊引用函數',
-    field_manage: '字段管理'
+    field_manage: '字段管理',
+    edit_calc_field: '編輯計算字段',
+    calc_field: '計算字段'
   },
   datasource: {
     datasource: '數據源',

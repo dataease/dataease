@@ -5,6 +5,7 @@ import io.dataease.base.domain.DatasetTableTaskLogExample;
 import io.dataease.base.mapper.DatasetTableTaskLogMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.dataset.DataSetTaskDTO;
@@ -56,10 +57,17 @@ public class DataSetTableTaskLogService {
                 conditionEntities = new ArrayList<>();
             }
             conditionEntities.add(entity);
+
+            ConditionEntity entity2 = new ConditionEntity();
+            entity2.setOperator("extra");
+            entity2.setField(" FIND_IN_SET(dataset_table_task_log.table_id,cids) ");
+            conditionEntities.add(entity2);
+
             request.setConditions(conditionEntities);
         }
 
         GridExample gridExample = request.convertExample();
+        gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
         List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.list(gridExample);
         dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
             if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){

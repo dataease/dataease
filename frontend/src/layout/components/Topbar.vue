@@ -44,9 +44,10 @@
         </div>
       </template>
 
-      <el-dropdown class="top-dropdown" style="display: flex;align-items: center;">
-        <span class="el-dropdown-link" style="font-size: 14px;">
-          {{ name }}<i class="el-icon-arrow-down el-icon--right" />
+      <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;">
+        <span class="el-dropdown-link" style="font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+          {{ name }}
+          <i class="el-icon-arrow-down el-icon--right" />
         </span>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/person-info/index">

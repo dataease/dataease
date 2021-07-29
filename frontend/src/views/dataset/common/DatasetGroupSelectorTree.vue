@@ -69,6 +69,7 @@
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
 import { authModel } from '@/api/system/sysAuth'
+import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'DatasetGroupSelectorTree',
@@ -112,6 +113,11 @@ export default {
       type: String,
       required: false,
       default: null
+    },
+    privileges: {
+      type: String,
+      required: false,
+      default: 'use'
     }
   },
   data() {
@@ -236,10 +242,12 @@ export default {
           mode: this.mode < 0 ? null : this.mode,
           typeFilter: this.customType ? this.customType : null
         }, false).then(response => {
-          this.tables = response.data
-          for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].mode === 1 && this.kettleRunning === false) {
-              this.$set(this.tables[i], 'disabled', true)
+          for (let i = 0; i < response.data.length; i++) {
+            if (response.data[i].mode === 1 && this.kettleRunning === false) {
+              this.$set(response.data[i], 'disabled', true)
+            }
+            if(hasDataPermission(this.privileges, response.data[i].privileges)){
+              this.tables.push(response.data[i])
             }
           }
           this.tableData = JSON.parse(JSON.stringify(this.tables))
@@ -350,14 +358,16 @@ export default {
             type: this.type,
             typeFilter: this.customType ? this.customType : null
           }, false).then(response => {
-            this.tables = response.data
-            for (let i = 0; i < this.tables.length; i++) {
-              if (this.tables[i].mode === 1 && this.kettleRunning === false) {
-                this.$set(this.tables[i], 'disabled', true)
+            for (let i = 0; i < response.data.length; i++) {
+              if (response.data[i].mode === 1 && this.kettleRunning === false) {
+                this.$set(response.data[i], 'disabled', true)
+              }
+              if(hasDataPermission(this.privileges, response.data[i].privileges)){
+                this.tables.push(response.data[i])
               }
             }
-            this.tableData = JSON.parse(JSON.stringify(this.tables))
 
+            this.tableData = JSON.parse(JSON.stringify(this.tables))
             this.$nextTick(function() {
               this.unionDataChange()
             })

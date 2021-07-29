@@ -1,6 +1,5 @@
 package io.dataease.service.dataset;
 
-import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
@@ -11,11 +10,10 @@ import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.constants.TriggerType;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
-import io.dataease.controller.sys.response.SysUserGridResponse;
-import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
@@ -29,10 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @Author gin
@@ -121,7 +119,8 @@ public class DataSetTableTaskService {
         example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
         Boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
         if(!existSyncTask){
-            datasetTableTask.setLastExecTime(System.currentTimeMillis());
+            Long startTime = System.currentTimeMillis();
+            datasetTableTask.setLastExecTime(startTime);
             datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
             datasetTableTask.setStatus(TaskStatus.Exec.name());
             update(datasetTableTask);
@@ -129,7 +128,7 @@ public class DataSetTableTaskService {
             datasetTableTaskLog.setTableId(datasetTableTask.getTableId());
             datasetTableTaskLog.setTaskId(datasetTableTask.getId());
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-            datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+            datasetTableTaskLog.setStartTime(startTime);
             datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
             dataSetTableTaskLogService.save(datasetTableTaskLog);
         }
@@ -216,7 +215,14 @@ public class DataSetTableTaskService {
     }
 
     public List<DataSetTaskDTO> taskList(BaseGridRequest request) {
+        List<ConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : request.getConditions();
+        ConditionEntity entity = new ConditionEntity();
+        entity.setOperator("extra");
+        entity.setField(" FIND_IN_SET(dataset_table_task.table_id,cids) ");
+        conditionEntities.add(entity);
+        request.setConditions(conditionEntities);
         GridExample gridExample = request.convertExample();
+        gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
         List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskList(gridExample);
         return dataSetTaskDTOS;
     }

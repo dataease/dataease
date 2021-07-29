@@ -1,7 +1,6 @@
 package io.dataease.dto.dataset;
 
 import io.dataease.base.domain.DatasetTableTask;
-import io.dataease.base.domain.DatasetTableTaskLog;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +15,5 @@ public class DataSetTaskDTO extends DatasetTableTask {
     private Long nextExecTime;
     private String taskStatus;
     private String msg;
+    private String privileges;
 }

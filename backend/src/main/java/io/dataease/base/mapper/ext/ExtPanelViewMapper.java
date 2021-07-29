@@ -1,6 +1,5 @@
 package io.dataease.base.mapper.ext;
 
-import io.dataease.base.domain.PanelView;
 import io.dataease.dto.panel.PanelViewDto;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import org.apache.ibatis.annotations.Param;

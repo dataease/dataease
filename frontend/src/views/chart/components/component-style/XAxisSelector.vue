@@ -15,13 +15,10 @@
           <el-form-item :label="$t('chart.name')" class="form-item">
             <el-input v-model="axisForm.name" size="mini" @blur="changeXAxisStyle" />
           </el-form-item>
-          <el-form-item :label="$t('chart.rotate')" class="form-item form-item-slider">
-            <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle" />
-          </el-form-item>
           <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
             <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" @change="changeXAxisStyle" />
           </el-form-item>
-          <el-form-item :label="$t('chart.axis_name_fontsize')" class="form-item form-item-slider">
+          <el-form-item :label="$t('chart.axis_name_fontsize')" class="form-item">
             <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.axis_name_fontsize')" @change="changeXAxisStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
@@ -53,7 +50,10 @@
             <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
               <el-color-picker v-model="axisForm.axisLabel.color" class="el-color-picker" @change="changeXAxisStyle" />
             </el-form-item>
-            <el-form-item :label="$t('chart.axis_label_fontsize')" class="form-item form-item-slider">
+            <el-form-item :label="$t('chart.axis_label_rotate')" class="form-item form-item-slider">
+              <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle" />
+            </el-form-item>
+            <el-form-item :label="$t('chart.axis_label_fontsize')" class="form-item">
               <el-select v-model="axisForm.axisLabel.fontSize" :placeholder="$t('chart.axis_label_fontsize')" @change="changeXAxisStyle">
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>

@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row>
-      <el-button v-if="hasDataPermission('manage',param.privileges) || table.type !== 'excel'" icon="el-icon-setting" size="mini" @click="showConfig">
+      <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel'" icon="el-icon-setting" size="mini" @click="showConfig">
         {{ $t('dataset.update_setting') }}
       </el-button>
       <el-button icon="el-icon-refresh" size="mini" @click="refreshLog">
@@ -149,13 +149,12 @@
 
                 <el-form-item class="form-item">
                   <el-select v-model="taskForm.extraData.simple_cron_type"  filterable size="mini" @change="onSimpleCronChange()" >
-                    <el-option :label="$t('cron.minute')" value="minute" />
-                    <el-option :label="$t('cron.hour')" value="hour"  />
-                    <el-option :label="$t('cron.day')" value="day"  />
+                    <el-option :label="$t('cron.minute_default')" value="minute" />
+                    <el-option :label="$t('cron.hour_default')" value="hour" />
+                    <el-option :label="$t('cron.day_default')" value="day" />
                   </el-select>
                 </el-form-item>
-                <el-form-item class="form-item" :label="$t('cron.every_exec')">
-                </el-form-item>
+                <el-form-item class="form-item" :label="$t('cron.every_exec')" />
               </el-form>
             </el-form-item>
 
@@ -534,12 +533,7 @@ export default {
             this.incrementalConfig.incrementalDelete = this.sql
           }
           this.incrementalConfig.tableId = this.table.id
-          let startTime = new Date(task.startTime).getTime()
-          if(startTime < new Date().getTime()){
-            startTime = new Date().getTime()
-          }
-          task.startTime = startTime
-
+          task.startTime = new Date(task.startTime).getTime()
           task.endTime = new Date(task.endTime).getTime()
           task.tableId = this.table.id
           const form = JSON.parse(JSON.stringify(task))

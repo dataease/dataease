@@ -48,7 +48,9 @@ const data = {
     // 点击画布时是否点中组件，主要用于取消选中组件用。
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
-    canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING
+    canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
+    // 联动设置状态
+    linkageSettingStatus: false
   },
   mutations: {
     ...animation.mutations,
@@ -173,6 +175,10 @@ const data = {
         index = state.curComponentIndex
       }
       state.componentData.splice(index, 1)
+    },
+    setLinkageSettingStatus(state, status) {
+      state.linkageSettingStatus = status
+      console.log('linkageSettingStatus:', state.linkageSettingStatus)
     }
   },
   modules: {

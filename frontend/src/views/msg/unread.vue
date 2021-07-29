@@ -65,7 +65,7 @@ import { query, updateStatus, batchRead } from '@/api/system/msg'
 import { msgTypes, getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import bus from '@/utils/bus'
 import { addOrder, formatOrders } from '@/utils/index'
-
+import { mapGetters } from 'vuex'
 export default {
   components: {
     LayoutContent,
@@ -97,6 +97,11 @@ export default {
       multipleSelection: [],
       orderConditions: []
     }
+  },
+  computed: {
+    ...mapGetters([
+      'permission_routes'
+    ])
   },
   mounted() {
     this.search()
@@ -136,8 +141,23 @@ export default {
     },
     toDetail(row) {
       const param = { ...{ msgNotification: true, msgType: row.typeId, sourceParam: row.param }}
-      this.$router.push({ name: row.router, params: param })
-      this.setReaded(row)
+      //   this.$router.push({ name: row.router, params: param })
+      //   this.setReaded(row)
+      if (this.hasPermissionRoute(row.router)) {
+        this.$router.push({ name: row.router, params: param })
+        this.setReaded(row)
+        return
+      }
+      this.$warning(this.$t('commons.no_target_permission'))
+    },
+    hasPermissionRoute(name, permission_routes) {
+      permission_routes = permission_routes || this.permission_routes
+      for (let index = 0; index < permission_routes.length; index++) {
+        const route = permission_routes[index]
+        if (route.name && route.name === name) return true
+        if (route.children && this.hasPermissionRoute(name, route.children)) return true
+      }
+      return false
     },
     // 设置已读
     setReaded(row) {
@@ -153,7 +173,7 @@ export default {
       }
       const param = this.multipleSelection.map(item => item.msgId)
       batchRead(param).then(res => {
-        this.$success('webmsg.mark_success')
+        this.$success(this.$t('webmsg.mark_success'))
         this.search()
       })
     },

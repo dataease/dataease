@@ -1,6 +1,7 @@
 package io.dataease.controller.chart;
 
 import io.dataease.base.domain.ChartViewWithBLOBs;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.dto.chart.ChartViewDTO;
@@ -64,5 +65,16 @@ public class ChartViewController {
     @GetMapping("searchAdviceSceneId/{panelId}")
     public String searchAdviceSceneId(@PathVariable String panelId){
         return chartViewService.searchAdviceSceneId(panelId);
+    }
+
+    @PostMapping("/getOneWithPermission/{id}")
+    public ChartViewDTO getOneWithPermission(@PathVariable String id, @RequestBody ChartExtRequest requestList) throws Exception {
+        //如果能获取用户 则添加对应的权限
+        ChartViewDTO dto = chartViewService.getData(id, requestList);
+        if(dto!=null && AuthUtils.getUser()!=null){
+            ChartViewDTO permissionDto =  chartViewService.getOneWithPermission(dto.getId());
+            dto.setPrivileges(permissionDto.getPrivileges());
+        }
+        return dto;
     }
 }

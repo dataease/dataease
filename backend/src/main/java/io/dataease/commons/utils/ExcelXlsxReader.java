@@ -1,13 +1,9 @@
 package io.dataease.commons.utils;
-import com.google.gson.Gson;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
-import io.dataease.service.message.MsgAop;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
@@ -254,13 +250,16 @@ public class ExcelXlsxReader extends DefaultHandler {
                 preRef = ref;
             }
             //补全单元格之间的空单元格
-            if (!ref.equals(preRef)) {
+            if (!"A".equals(preRef.substring(0, 1)) && curRow==1 && preRef.equalsIgnoreCase(ref)) {
+                throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
+            }else if (!ref.equals(preRef)) {
                 int len = countNullCell(ref, preRef);
                 for (int i = 0; i < len; i++) {
                     cellList.add(curCol, "");
                     curCol++;
                 }
             }
+
             cellList.add(curCol, value);
             curCol++;
             //如果里面某个单元格含有值，则标识该行不为空行

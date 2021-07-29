@@ -1,3 +1,6 @@
+ALTER TABLE `chart_view` ADD COLUMN `ext_stack` LONGTEXT COMMENT '堆叠项' AFTER `y_axis`;
+UPDATE `chart_view` SET `ext_stack` = '[]';
+
 /*
  Navicat Premium Data Transfer
 
@@ -2933,6 +2936,65 @@ INSERT INTO `area_mapping` VALUES (2894, '香港特别行政区', '156810000', '
 INSERT INTO `area_mapping` VALUES (2895, '香港特别行政区', '156810000', '香港特别行政区', '156810000', '荃湾区', '156810117');
 INSERT INTO `area_mapping` VALUES (2896, '香港特别行政区', '156810000', '香港特别行政区', '156810000', '元朗区', '156810118');
 INSERT INTO `area_mapping` VALUES (2897, '澳门特别行政区', '156820000', '澳门特别行政区', '156820000', '澳门特别行政区', '156820000');
+COMMIT;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+ALTER TABLE `dataset_table_field` MODIFY COLUMN `origin_name` LONGTEXT;
+
+
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : local
+ Source Server Type    : MySQL
+ Source Server Version : 50730
+ Source Host           : 127.0.0.1:3306
+ Source Schema         : dataease
+
+ Target Server Type    : MySQL
+ Target Server Version : 50730
+ File Encoding         : 65001
+
+ Date: 29/07/2021 11:55:10
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for dataset_table_function
+-- ----------------------------
+DROP TABLE IF EXISTS `dataset_table_function`;
+CREATE TABLE `dataset_table_function` (
+  `id` bigint(20) NOT NULL COMMENT 'ID',
+  `name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '函数名称',
+  `func` varchar(500) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '函数表达式',
+  `db_type` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '所属数据库',
+  `func_type` int(10) DEFAULT NULL COMMENT '函数类型：0-聚合函数；1-快速计算函数；2-数学和三角函数；3-日期函数；4-文本函数；5-逻辑函数；6-其它函数',
+  `desc` longtext COLLATE utf8mb4_bin COMMENT '描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
+-- Records of dataset_table_function
+-- ----------------------------
+BEGIN;
+INSERT INTO `dataset_table_function` VALUES (1, 'ABS', 'ABS(x)', 'mysql', 2, '返回x的绝对值');
+INSERT INTO `dataset_table_function` VALUES (2, 'PI', 'PI()', 'mysql', 2, '返回圆周率π，默认显示6位小数');
+INSERT INTO `dataset_table_function` VALUES (3, 'CHAR_LENGTH', 'CHAR_LENGTH(str)', 'mysql', 4, '计算字符串字符个数');
+INSERT INTO `dataset_table_function` VALUES (4, 'TRIM', 'TRIM(s)', 'mysql', 4, '返回字符串s删除了两边空格之后的字符串');
+INSERT INTO `dataset_table_function` VALUES (5, 'REPLACE', 'REPLACE(s,s1,s2)', 'mysql', 4, '返回一个字符串，用字符串s2替代字符串s中所有的字符串s1');
+INSERT INTO `dataset_table_function` VALUES (6, 'SUBSTRING', 'SUBSTRING(s,n,len)', 'mysql', 4, '获取从字符串s中的第n个位置开始长度为len的字符串');
+INSERT INTO `dataset_table_function` VALUES (7, 'IF', 'IF(expr,v1,v2)', 'mysql', 5, '如果expr是TRUE则返回v1，否则返回v2');
+INSERT INTO `dataset_table_function` VALUES (8, 'IFNULL', 'IFNULL(v1,v2)', 'mysql', 5, '如果v1不为NULL，则返回v1，否则返回v2');
+INSERT INTO `dataset_table_function` VALUES (9, 'FLOOR', 'FLOOR(x)', 'mysql', 2, '返回不大于x的最大整数');
+INSERT INTO `dataset_table_function` VALUES (10, 'ROUND', 'ROUND(x)', 'mysql', 2, '返回离x最近的整数');
+INSERT INTO `dataset_table_function` VALUES (11, 'ROUND', 'ROUND(x,y)', 'mysql', 2, '保留x小数点后y位的值，但截断时要进行四舍五入');
+INSERT INTO `dataset_table_function` VALUES (12, 'ABS', 'ABS(x)', 'doris', 2, '返回x的绝对值');
+INSERT INTO `dataset_table_function` VALUES (13, 'SUBSTR', 'SUBSTR(char, position, substring_length)', 'oracle', 4, '获取从字符串char中的第position个位置开始长度为substring_lenght的字符串');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

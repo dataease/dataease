@@ -129,6 +129,7 @@ export default {
     password_error: 'The password can not be less than 8 digits'
   },
   commons: {
+    no_target_permission: 'No permission',
     success: 'Success',
     switch_lang: 'Switch Language Success',
     close: 'Close',
@@ -823,7 +824,8 @@ export default {
     map_range: 'Map range',
     select_map_range: 'Please select map range',
     area: 'Area',
-    placeholder_field: 'Drag Field To Here'
+    placeholder_field: 'Drag Field To Here',
+    axis_label_rotate: 'Label Rotate'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -873,6 +875,7 @@ export default {
     sync_now: 'Update Now',
     add_task: 'Add Task',
     task_name: 'Task Name',
+    task_id: 'Task ID',
     start_time: 'Start Time',
     end_time: 'End Time',
     status: 'State',
@@ -985,7 +988,9 @@ export default {
     data_type: 'Data Type',
     click_ref_field: 'Click Quote Field',
     click_ref_function: 'Click Quote Function',
-    field_manage: 'Field Manage'
+    field_manage: 'Field Manage',
+    edit_calc_field: 'Edit calc field',
+    calc_field: 'Calc Field'
   },
   datasource: {
     datasource: 'Data Source',
