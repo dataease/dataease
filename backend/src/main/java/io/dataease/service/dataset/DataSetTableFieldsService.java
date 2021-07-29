@@ -37,6 +37,9 @@ public class DataSetTableFieldsService {
             if (StringUtils.isEmpty(datasetTableField.getDataeaseName())) {
                 datasetTableField.setDataeaseName(DorisTableUtils.dorisFieldName(datasetTableField.getId()));
             }
+            if (ObjectUtils.isEmpty(datasetTableField.getLastSyncTime())) {
+                datasetTableField.setLastSyncTime(System.currentTimeMillis());
+            }
             datasetTableFieldMapper.insert(datasetTableField);
         } else {
             datasetTableFieldMapper.updateByPrimaryKeySelective(datasetTableField);
