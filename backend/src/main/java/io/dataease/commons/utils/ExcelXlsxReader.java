@@ -254,7 +254,7 @@ public class ExcelXlsxReader extends DefaultHandler {
                 preRef = ref;
             }
             //补全单元格之间的空单元格
-            if (!"A".equals(preRef.substring(0, 1)) && curRow==1) {
+            if (!"A".equals(preRef.substring(0, 1)) && curRow==1 && preRef.equalsIgnoreCase(ref)) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
             }else if (!ref.equals(preRef)) {
                 int len = countNullCell(ref, preRef);
