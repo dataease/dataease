@@ -1,6 +1,7 @@
 package io.dataease.controller.panel.api;
 
 
+import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
@@ -40,4 +41,12 @@ public interface LinkApi {
     @ApiOperation("验证密码")
     @PostMapping("/validatePwd")
     boolean validatePwd(PasswordRequest request) throws Exception;
+
+    @ApiOperation("资源详息")
+    @PostMapping("/resourceDetail/{resourceId}")
+    Object resourceDetail(@PathVariable String resourceId);
+
+    @ApiOperation("视图详息")
+    @PostMapping("/viewDetail/{viewId}")
+    Object viewDetail(@PathVariable String viewId, @RequestBody ChartExtRequest requestList) throws Exception;
 }
