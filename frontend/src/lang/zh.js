@@ -987,7 +987,8 @@ export default {
     click_ref_field: '点击引用字段',
     click_ref_function: '点击引用函数',
     field_manage: '字段管理',
-    edit_calc_field: '编辑计算字段'
+    edit_calc_field: '编辑计算字段',
+    calc_field: '计算字段'
   },
   datasource: {
     datasource: '数据源',

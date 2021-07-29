@@ -43,8 +43,11 @@
           </el-table-column>
           <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
             <template slot-scope="scope">
-              <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+              <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                 <span style="font-size: 12px;">{{ scope.row.originName }}</span>
+              </span>
+              <span v-else-if="scope.row.extField === 2" :title="$t('dataset.calc_field')" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                <span style="font-size: 12px;color: #c0c0c0">{{ $t('dataset.calc_field') }}</span>
               </span>
             </template>
           </el-table-column>
@@ -146,8 +149,11 @@
           </el-table-column>
           <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
             <template slot-scope="scope">
-              <span :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+              <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                 <span style="font-size: 12px;">{{ scope.row.originName }}</span>
+              </span>
+              <span v-else-if="scope.row.extField === 2" :title="$t('dataset.calc_field')" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                <span style="font-size: 12px;color: #c0c0c0">{{ $t('dataset.calc_field') }}</span>
               </span>
             </template>
           </el-table-column>
