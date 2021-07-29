@@ -51,6 +51,16 @@ public class DataSetTableFieldController {
         dataSetTableFieldsService.batchEdit(list);
     }
 
+    @PostMapping("save")
+    public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {
+        return dataSetTableFieldsService.save(datasetTableField);
+    }
+
+    @PostMapping("delete/{id}")
+    public void delete(@PathVariable String id) {
+        dataSetTableFieldsService.delete(id);
+    }
+
     @PostMapping("fieldValues/{fieldId}")
     public List<Object> fieldValues(@PathVariable String fieldId) {
         return dataSetFieldService.fieldValues(fieldId);

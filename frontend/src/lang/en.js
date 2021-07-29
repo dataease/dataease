@@ -986,7 +986,9 @@ export default {
     data_type: 'Data Type',
     click_ref_field: 'Click Quote Field',
     click_ref_function: 'Click Quote Function',
-    field_manage: 'Field Manage'
+    field_manage: 'Field Manage',
+    edit_calc_field: 'Edit calc field',
+    calc_field: 'Calc Field'
   },
   datasource: {
     datasource: 'Data Source',

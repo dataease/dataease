@@ -44,7 +44,7 @@
     </el-row>
     <el-divider />
 
-    <el-tabs v-model="tabActive" @tab-click="initTable(param.id)">
+    <el-tabs v-model="tabActive" @tab-click="tabClick">
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview :param="param" :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { getTable, post } from '@/api/dataset/dataset'
+import { post } from '@/api/dataset/dataset'
 import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
 import DatasetChartDetail from '../common/DatasetChartDetail'
@@ -206,6 +206,12 @@ export default {
         page: 1,
         pageSize: 100,
         show: 1000
+      }
+    },
+
+    tabClick() {
+      if (this.tabActive === 'dataPreview') {
+        this.initTable(this.param.id)
       }
     }
   }

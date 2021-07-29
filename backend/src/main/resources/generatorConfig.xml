@@ -64,7 +64,7 @@
 
         <!--要生成的数据库表 -->
 
-                <table tableName="chart_view"/>
+                <table tableName="dataset_table_function"/>
 <!--        <table tableName="sys_dict"/>-->
 <!--        <table tableName="sys_dict_item"/>-->
 <!--        <table tableName="dataset_table_field"/>-->

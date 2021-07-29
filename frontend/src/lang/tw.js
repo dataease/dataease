@@ -986,7 +986,9 @@ export default {
     data_type: '數據類型',
     click_ref_field: '點擊引用字段',
     click_ref_function: '點擊引用函數',
-    field_manage: '字段管理'
+    field_manage: '字段管理',
+    edit_calc_field: '編輯計算字段',
+    calc_field: '計算字段'
   },
   datasource: {
     datasource: '數據源',

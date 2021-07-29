@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.DatasetTableFunctionMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.base.domain.DatasetTableFunction">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="func" jdbcType="VARCHAR" property="func" />
+    <result column="db_type" jdbcType="VARCHAR" property="dbType" />
+    <result column="func_type" jdbcType="INTEGER" property="funcType" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.DatasetTableFunction">
+    <result column="desc" jdbcType="LONGVARCHAR" property="desc" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `name`, func, db_type, func_type
+  </sql>
+  <sql id="Blob_Column_List">
+    `desc`
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.DatasetTableFunctionExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from dataset_table_function
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="io.dataease.base.domain.DatasetTableFunctionExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dataset_table_function
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from dataset_table_function
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from dataset_table_function
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.base.domain.DatasetTableFunctionExample">
+    delete from dataset_table_function
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.base.domain.DatasetTableFunction">
+    insert into dataset_table_function (id, `name`, func, 
+      db_type, func_type, `desc`
+      )
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{func,jdbcType=VARCHAR}, 
+      #{dbType,jdbcType=VARCHAR}, #{funcType,jdbcType=INTEGER}, #{desc,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.base.domain.DatasetTableFunction">
+    insert into dataset_table_function
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="func != null">
+        func,
+      </if>
+      <if test="dbType != null">
+        db_type,
+      </if>
+      <if test="funcType != null">
+        func_type,
+      </if>
+      <if test="desc != null">
+        `desc`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="func != null">
+        #{func,jdbcType=VARCHAR},
+      </if>
+      <if test="dbType != null">
+        #{dbType,jdbcType=VARCHAR},
+      </if>
+      <if test="funcType != null">
+        #{funcType,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null">
+        #{desc,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.base.domain.DatasetTableFunctionExample" resultType="java.lang.Long">
+    select count(*) from dataset_table_function
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update dataset_table_function
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.func != null">
+        func = #{record.func,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dbType != null">
+        db_type = #{record.dbType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcType != null">
+        func_type = #{record.funcType,jdbcType=INTEGER},
+      </if>
+      <if test="record.desc != null">
+        `desc` = #{record.desc,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update dataset_table_function
+    set id = #{record.id,jdbcType=BIGINT},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      func = #{record.func,jdbcType=VARCHAR},
+      db_type = #{record.dbType,jdbcType=VARCHAR},
+      func_type = #{record.funcType,jdbcType=INTEGER},
+      `desc` = #{record.desc,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update dataset_table_function
+    set id = #{record.id,jdbcType=BIGINT},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      func = #{record.func,jdbcType=VARCHAR},
+      db_type = #{record.dbType,jdbcType=VARCHAR},
+      func_type = #{record.funcType,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.DatasetTableFunction">
+    update dataset_table_function
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="func != null">
+        func = #{func,jdbcType=VARCHAR},
+      </if>
+      <if test="dbType != null">
+        db_type = #{dbType,jdbcType=VARCHAR},
+      </if>
+      <if test="funcType != null">
+        func_type = #{funcType,jdbcType=INTEGER},
+      </if>
+      <if test="desc != null">
+        `desc` = #{desc,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.base.domain.DatasetTableFunction">
+    update dataset_table_function
+    set `name` = #{name,jdbcType=VARCHAR},
+      func = #{func,jdbcType=VARCHAR},
+      db_type = #{dbType,jdbcType=VARCHAR},
+      func_type = #{funcType,jdbcType=INTEGER},
+      `desc` = #{desc,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.DatasetTableFunction">
+    update dataset_table_function
+    set `name` = #{name,jdbcType=VARCHAR},
+      func = #{func,jdbcType=VARCHAR},
+      db_type = #{dbType,jdbcType=VARCHAR},
+      func_type = #{funcType,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
