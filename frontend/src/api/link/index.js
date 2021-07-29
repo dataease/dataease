@@ -51,7 +51,17 @@ export function loadGenerate(resourceId) {
 
 export function loadResource(resourceId) {
   return request({
-    url: 'panel/group/findOne/' + resourceId,
-    method: 'get'
+    url: 'api/link/resourceDetail/' + resourceId,
+    method: 'post'
+  })
+}
+
+export function viewInfo(id, data) {
+  return request({
+    url: 'api/link/viewDetail/' + id,
+    method: 'post',
+    timeout: 30000,
+    hideMsg: true,
+    data
   })
 }

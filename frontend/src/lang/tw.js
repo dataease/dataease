@@ -129,6 +129,7 @@ export default {
     password_error: '密碼不小於 8 位'
   },
   commons: {
+    no_target_permission: '沒有權限',
     success: '成功',
     switch_lang: '切換語言成功',
     close: '關閉',
@@ -817,7 +818,8 @@ export default {
     drag_block_funnel_width: '漏鬥層寬',
     drag_block_funnel_split: '漏鬥分層',
     drag_block_radar_length: '分支長度',
-    drag_block_radar_label: '分支標簽'
+    drag_block_radar_label: '分支標簽',
+    axis_label_rotate: '標簽角度'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

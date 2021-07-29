@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import io.dataease.auth.config.RsaProperties;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
+import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.domain.PanelLink;
+import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelLinkMapper;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
@@ -31,6 +33,9 @@ public class PanelLinkService {
 
     @Resource
     private PanelLinkMapper mapper;
+
+    @Resource
+    private PanelGroupMapper panelGroupMapper;
 
     public void changeValid(LinkRequest request){
         PanelLink po = new PanelLink();
@@ -117,7 +122,16 @@ public class PanelLinkService {
     public Boolean validateHeads(PanelLink panelLink) throws Exception{
         HttpServletRequest request = ServletUtils.request();
         String token = request.getHeader("LINK-PWD-TOKEN");
-        if (StringUtils.isEmpty(token) || StringUtils.equals("undefined", token) || StringUtils.equals("null", token)) return false;
+        if (!panelLink.getEnablePwd() || StringUtils.isEmpty(token) || StringUtils.equals("undefined", token) || StringUtils.equals("null", token)) {
+            String resourceId = panelLink.getResourceId();
+            String pwd = "dataease";
+            String tk = JWTUtils.signLink(resourceId, pwd);
+            HttpServletResponse httpServletResponse = ServletUtils.response();
+            httpServletResponse.addHeader("Access-Control-Expose-Headers", "LINK-PWD-TOKEN");
+            httpServletResponse.setHeader("LINK-PWD-TOKEN", tk);
+            return false;
+        }
+        if (StringUtils.isEmpty(panelLink.getPwd())) return false;
         boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd()));
         return verify;
     }
@@ -136,5 +150,10 @@ public class PanelLinkService {
         }
         return pass;
     }
+
+    public PanelGroupWithBLOBs resourceInfo(String resourceId) {
+        return panelGroupMapper.selectByPrimaryKey(resourceId);
+    }
+
 
 }

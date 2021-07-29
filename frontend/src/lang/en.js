@@ -129,6 +129,7 @@ export default {
     password_error: 'The password can not be less than 8 digits'
   },
   commons: {
+    no_target_permission: 'No permission',
     success: 'Success',
     switch_lang: 'Switch Language Success',
     close: 'Close',
@@ -817,7 +818,8 @@ export default {
     drag_block_funnel_width: 'Funnel Width',
     drag_block_funnel_split: 'Funnel Split',
     drag_block_radar_length: 'Branch Length',
-    drag_block_radar_label: 'Branch Label'
+    drag_block_radar_label: 'Branch Label',
+    axis_label_rotate: 'Label Rotate'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

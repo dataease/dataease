@@ -120,17 +120,30 @@ export default {
       if (this.$route && this.$route.name && this.$route.name === row.router) {
         // 如果当前路由就是目标路由 那么使用router.push页面不会刷新 这时候要使用事件方式
         row.callback && bus.$emit(row.callback, param)
+        row.status || this.setReaded(row.msgId)
       } else {
-        this.$router.push({ name: row.router, params: param })
+        if (this.hasPermissionRoute(row.router)) {
+          this.$router.push({ name: row.router, params: param })
+          row.status || this.setReaded(row.msgId)
+          return
+        }
+        this.$warning(this.$t('commons.no_target_permission'))
       }
-
-      row.status || this.setReaded(row.msgId)
     },
     remove(row) {
 
     },
     msgSetting() {
 
+    },
+    hasPermissionRoute(name, permission_routes) {
+      permission_routes = permission_routes || this.permission_routes
+      for (let index = 0; index < permission_routes.length; index++) {
+        const route = permission_routes[index]
+        if (route.name && route.name === name) return true
+        if (route.children && this.hasPermissionRoute(name, route.children)) return true
+      }
+      return false
     },
     showMore() {
       const routerName = 'sys-msg-web-all'

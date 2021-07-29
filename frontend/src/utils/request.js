@@ -79,8 +79,8 @@ const checkAuth = response => {
     store.dispatch('user/refreshToken', refreshToken)
   }
 
-  if (response.headers[LinkTokenKey.toLocaleLowerCase()]) {
-    const linkToken = response.headers[LinkTokenKey.toLocaleLowerCase()]
+  if (response.headers[LinkTokenKey.toLocaleLowerCase()] || (response.config.headers && response.config.headers[LinkTokenKey.toLocaleLowerCase()])) {
+    const linkToken = response.headers[LinkTokenKey.toLocaleLowerCase()] || response.config.headers[LinkTokenKey.toLocaleLowerCase()]
     setLinkToken(linkToken)
   }
   // 许可状态改变 刷新页面
