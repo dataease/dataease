@@ -93,7 +93,7 @@ export default {
       rule: {
         username: [
           { required: true, message: this.$t('user.input_id'), trigger: 'blur' },
-          { min: 2, max: 10, message: this.$t('commons.input_limit', [2, 10]), trigger: 'blur' },
+          { min: 1, max: 50, message: this.$t('commons.input_limit', [1, 50]), trigger: 'blur' },
           {
             required: true,
             pattern: '^[^\u4e00-\u9fa5]+$',
@@ -103,7 +103,7 @@ export default {
         ],
         nickName: [
           { required: true, message: this.$t('user.input_name'), trigger: 'blur' },
-          { min: 2, max: 10, message: this.$t('commons.input_limit', [2, 10]), trigger: 'blur' },
+          { min: 2, max: 50, message: this.$t('commons.input_limit', [2, 50]), trigger: 'blur' },
           {
             required: true,
             message: this.$t('user.special_characters_are_not_supported'),
