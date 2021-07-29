@@ -33,12 +33,12 @@
         <el-table :data="tableFields.dimensionListData" size="mini">
           <el-table-column property="checked" :label="$t('dataset.field_check')" width="60">
             <template slot-scope="scope">
-              <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit" />
+              <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit(scope.row)" />
             </template>
           </el-table-column>
           <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit" @keyup.enter.native="saveEdit" />
+              <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
             </template>
           </el-table-column>
           <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
@@ -50,7 +50,7 @@
           </el-table-column>
           <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit">
+              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit(scope.row)">
                 <el-option
                   v-for="item in fields"
                   :key="item.value"
@@ -125,7 +125,8 @@
           </el-table-column>
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
-              <el-button type="text" size="small">编辑</el-button>
+              <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="editField(scope.row)">{{ $t('dataset.edit') }}</el-button>
+              <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteField(scope.row)">{{ $t('dataset.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -135,12 +136,12 @@
         <el-table :data="tableFields.quotaListData" size="mini">
           <el-table-column property="checked" :label="$t('dataset.field_check')" width="60">
             <template slot-scope="scope">
-              <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit" />
+              <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit(scope.row)" />
             </template>
           </el-table-column>
           <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit" @keyup.enter.native="saveEdit" />
+              <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
             </template>
           </el-table-column>
           <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
@@ -152,7 +153,7 @@
           </el-table-column>
           <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit">
+              <el-select v-model="scope.row.deType" size="mini" style="display: inline-block;width: 26px;" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit(scope.row)">
                 <el-option
                   v-for="item in fields"
                   :key="item.value"
@@ -227,7 +228,8 @@
           </el-table-column>
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
-              <el-button type="text" size="small">编辑</el-button>
+              <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="editField(scope.row)">{{ $t('dataset.edit') }}</el-button>
+              <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteField(scope.row)">{{ $t('dataset.delete') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -240,20 +242,16 @@
       :show-close="false"
       class="dialog-css"
       :destroy-on-close="true"
-      :title="$t('dataset.add_calc_field')"
+      :title="currEditField.id?$t('dataset.edit_calc_field'):$t('dataset.add_calc_field')"
       append-to-body
     >
-      <calc-field-edit :param="param" :table-fields="tableFields" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeCalcField">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini">{{ $t('chart.confirm') }}</el-button>
-      </div>
+      <calc-field-edit :param="param" :table-fields="tableFields" :field="currEditField" @onEditClose="closeCalcField" />
     </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { batchEdit, fieldListDQ } from '@/api/dataset/dataset'
+import { post, fieldListDQ } from '@/api/dataset/dataset'
 import CalcFieldEdit from './CalcFieldEdit'
 export default {
   name: 'FieldEdit',
@@ -282,7 +280,8 @@ export default {
       ],
       fieldActiveNames: ['d', 'q'],
       searchField: '',
-      editCalcField: false
+      editCalcField: false,
+      currEditField: {}
     }
   },
   watch: {
@@ -316,11 +315,15 @@ export default {
         this.filterField(this.searchField)
       })
     },
-    saveEdit() {
+    saveEdit(item) {
       // console.log(this.tableFields)
-      const list = this.tableFields.dimensionListData.concat(this.tableFields.quotaListData)
-      batchEdit(list).then(response => {
-        // this.closeEdit()
+      // const list = this.tableFields.dimensionListData.concat(this.tableFields.quotaListData)
+      // batchEdit(list).then(response => {
+      //   // this.closeEdit()
+      //   this.initField()
+      // })
+
+      post('/dataset/field/save', item).then(response => {
         this.initField()
       })
     },
@@ -331,15 +334,17 @@ export default {
       } else if (val === 'q') {
         item.groupType = 'd'
       }
-      this.saveEdit()
+      this.saveEdit(item)
     },
 
     addCalcField() {
+      this.currEditField = {}
       this.editCalcField = true
     },
 
     closeCalcField() {
       this.editCalcField = false
+      this.initField()
     },
 
     filterField(val) {
@@ -350,6 +355,29 @@ export default {
         this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
         this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
       }
+    },
+
+    editField(item) {
+      this.currEditField = item
+      this.editCalcField = true
+    },
+
+    deleteField(item) {
+      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('chart.tips'), {
+        confirmButtonText: this.$t('dataset.confirm'),
+        cancelButtonText: this.$t('dataset.cancel'),
+        type: 'warning'
+      }).then(() => {
+        post('/dataset/field/delete/' + item.id, null).then(response => {
+          this.$message({
+            type: 'success',
+            message: this.$t('chart.delete_success'),
+            showClose: true
+          })
+          this.initField()
+        })
+      }).catch(() => {
+      })
     }
   }
 }
@@ -400,8 +428,5 @@ export default {
   }
   .dialog-css>>>.el-dialog{
     width: 800px!important;
-  }
-  .dialog-css>>>.el-dialog__footer{
-    border-top: 1px solid #eee;
   }
 </style>
