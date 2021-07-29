@@ -824,7 +824,8 @@ export default {
     select_map_range: '請選擇地圖範圍',
     area: '地區',
     stack_item: '堆疊項',
-    placeholder_field: '拖動字段至此處'
+    placeholder_field: '拖動字段至此處',
+    axis_label_rotate: '標簽角度'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
