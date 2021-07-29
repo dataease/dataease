@@ -795,7 +795,9 @@ export default {
           this.data = response.data.data
           // console.log(JSON.stringify(this.chart))
           this.httpRequest.status = true
-          this.param.privileges = this.chart.privileges
+          if (this.chart.privileges) {
+            this.param.privileges = this.chart.privileges
+          }
         }).catch(err => {
           this.resetView()
           this.httpRequest.status = err.response.data.success
