@@ -217,12 +217,11 @@ export default {
     'param': function() {
       this.initFunctions()
     },
-    'field': function() {
-      if (this.field.id) {
-        this.fieldForm = JSON.parse(JSON.stringify(this.field))
-      } else {
-        this.fieldForm = JSON.parse(JSON.stringify(this.fieldForm))
-      }
+    'field': {
+      handler: function() {
+        this.initField()
+      },
+      deep: true
     }
   },
   mounted() {
@@ -230,6 +229,7 @@ export default {
       this.$refs.myCm.codemirror.showHint()
     })
     this.initFunctions()
+    this.initField()
   },
   methods: {
     onCmReady(cm) {
@@ -256,7 +256,16 @@ export default {
       })
     },
 
+    initField() {
+      if (this.field.id) {
+        this.fieldForm = JSON.parse(JSON.stringify(this.field))
+      } else {
+        this.fieldForm = JSON.parse(JSON.stringify(this.fieldForm))
+      }
+    },
+
     closeCalcField() {
+      this.resetField()
       this.$emit('onEditClose', {})
     },
 
@@ -268,6 +277,21 @@ export default {
       post('/dataset/field/save', this.fieldForm).then(response => {
         this.closeCalcField()
       })
+    },
+
+    resetField() {
+      this.fieldForm = {
+        id: null,
+        name: '',
+        groupType: 'd',
+        deType: 0,
+        originName: '',
+        tableId: this.param.id,
+        checked: 1,
+        columnIndex: this.tableFields.dimensionList.length + this.tableFields.quotaList.length,
+        size: 0,
+        extField: 2
+      }
     }
   }
 }

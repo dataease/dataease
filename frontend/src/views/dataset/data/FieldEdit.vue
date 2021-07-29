@@ -247,7 +247,6 @@
       :visible="editCalcField"
       :show-close="false"
       class="dialog-css"
-      :destroy-on-close="true"
       :title="currEditField.id?$t('dataset.edit_calc_field'):$t('dataset.add_calc_field')"
       append-to-body
     >
