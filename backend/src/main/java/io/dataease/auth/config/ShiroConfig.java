@@ -50,6 +50,7 @@ public class ShiroConfig {
         filterMap.put("f2cPerms", new F2CPermissionsFilter());
         filterMap.put("jwt", new JWTFilter());
         filterMap.put("logout", new F2CLogoutFilter());
+        filterMap.put("link", new F2CLinkFilter());
         factoryBean.setSecurityManager(securityManager);
         factoryBean.setLoginUrl("/login");
         factoryBean.setUnauthorizedUrl("/login");

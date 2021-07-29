@@ -25,6 +25,7 @@
 <script>
 
 import { viewData } from '@/api/panel/panel'
+import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
@@ -35,7 +36,7 @@ import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
-
+import { getToken, getLinkToken } from '@/utils/auth'
 export default {
   name: 'UserView',
   components: { ChartComponent, TableNormal, LabelNormal },
@@ -161,7 +162,14 @@ export default {
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
-        viewData(id, this.filter).then(response => {
+
+        // 增加判断 仪表板公共连接中使用viewInfo 正常使用viewData
+        let method = viewData
+        if (!getToken() && getLinkToken()) {
+          method = viewInfo
+        }
+
+        method(id, this.filter).then(response => {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data

@@ -13,7 +13,7 @@
         <div class="input-layout">
           <div class="input-main">
             <div class="div-input">
-              <el-form ref="pwdForm" :model="form" :rules="rule" size="small">
+              <el-form ref="pwdForm" :model="form" :rules="rule" size="small" @submit.native.prevent>
                 <el-form-item prop="password">
                   <el-input v-model="form.password" maxlength="4" show-password class="real-input" :placeholder="$t('pblink.input_placeholder')" />
                 </el-form-item>
@@ -65,8 +65,25 @@ export default {
       }
     }
   },
-
+  mounted() {
+    this.bindKey()
+  },
+  destroyed() {
+    this.unBindKey()
+  },
   methods: {
+    entryKey(event) {
+      const keyCode = event.keyCode
+      if (keyCode === 13) {
+        this.refresh()
+      }
+    },
+    bindKey() {
+      document.addEventListener('keypress', this.entryKey)
+    },
+    unBindKey() {
+      document.removeEventListener('keypress', this.entryKey)
+    },
     // 验证密码是否正确 如果正确 设置请求头部带LINK-PWD-TOKEN=entrypt(pwd)再刷新页面
     refresh() {
       this.$refs.pwdForm.validate(valid => {
