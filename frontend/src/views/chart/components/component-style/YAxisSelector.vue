@@ -21,9 +21,6 @@
             <el-form-item :label="$t('chart.name')" class="form-item">
               <el-input v-model="axisForm.name" size="mini" @blur="changeYAxisStyle" />
             </el-form-item>
-            <el-form-item :label="$t('chart.rotate')" class="form-item form-item-slider">
-              <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeYAxisStyle" />
-            </el-form-item>
             <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
               <colorPicker v-model="axisForm.nameTextStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeYAxisStyle" />
             </el-form-item>
@@ -59,7 +56,10 @@
               <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
                 <colorPicker v-model="axisForm.axisLabel.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeYAxisStyle" />
               </el-form-item>
-              <el-form-item :label="$t('chart.axis_label_fontsize')" class="form-item form-item-slider">
+              <el-form-item :label="$t('chart.axis_label_rotate')" class="form-item form-item-slider">
+                <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeYAxisStyle" />
+              </el-form-item>
+              <el-form-item :label="$t('chart.axis_label_fontsize')" class="form-item">
                 <el-select v-model="axisForm.axisLabel.fontSize" :placeholder="$t('chart.axis_label_fontsize')" @change="changeYAxisStyle">
                   <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
                 </el-select>

@@ -817,7 +817,8 @@ export default {
     drag_block_funnel_width: '漏鬥層寬',
     drag_block_funnel_split: '漏鬥分層',
     drag_block_radar_length: '分支長度',
-    drag_block_radar_label: '分支標簽'
+    drag_block_radar_label: '分支標簽',
+    axis_label_rotate: '標簽角度'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
