@@ -817,7 +817,8 @@ export default {
     drag_block_funnel_width: '漏斗层宽',
     drag_block_funnel_split: '漏斗分层',
     drag_block_radar_length: '分支长度',
-    drag_block_radar_label: '分支标签'
+    drag_block_radar_label: '分支标签',
+    axis_label_rotate: '标签角度'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
