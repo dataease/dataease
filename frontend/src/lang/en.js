@@ -129,6 +129,7 @@ export default {
     password_error: 'The password can not be less than 8 digits'
   },
   commons: {
+    no_target_permission: 'No permission',
     success: 'Success',
     switch_lang: 'Switch Language Success',
     close: 'Close',

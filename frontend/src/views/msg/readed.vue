@@ -60,6 +60,7 @@ import ComplexTable from '@/components/business/complex-table'
 import { query } from '@/api/system/msg'
 import { msgTypes, getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import { addOrder, formatOrders } from '@/utils/index'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     LayoutContent,
@@ -86,6 +87,11 @@ export default {
         total: 0
       }
     }
+  },
+  computed: {
+    ...mapGetters([
+      'permission_routes'
+    ])
   },
   mounted() {
     this.search()
@@ -125,7 +131,21 @@ export default {
     },
     toDetail(row) {
       const param = { ...{ msgNotification: true, msgType: row.typeId, sourceParam: row.param }}
-      this.$router.push({ name: row.router, params: param })
+      // this.$router.push({ name: row.router, params: param })
+      if (this.hasPermissionRoute(row.router)) {
+        this.$router.push({ name: row.router, params: param })
+        return
+      }
+      this.$warning(this.$t('commons.no_target_permission'))
+    },
+    hasPermissionRoute(name, permission_routes) {
+      permission_routes = permission_routes || this.permission_routes
+      for (let index = 0; index < permission_routes.length; index++) {
+        const route = permission_routes[index]
+        if (route.name && route.name === name) return true
+        if (route.children && this.hasPermissionRoute(name, route.children)) return true
+      }
+      return false
     },
     sortChange({ column, prop, order }) {
       this.orderConditions = []
