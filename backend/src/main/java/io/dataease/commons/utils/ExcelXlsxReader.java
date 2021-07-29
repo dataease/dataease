@@ -250,13 +250,16 @@ public class ExcelXlsxReader extends DefaultHandler {
                 preRef = ref;
             }
             //补全单元格之间的空单元格
-            if (!ref.equals(preRef)) {
+            if (!"A".equals(preRef.substring(0, 1)) && curRow==1) {
+                throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
+            }else if (!ref.equals(preRef)) {
                 int len = countNullCell(ref, preRef);
                 for (int i = 0; i < len; i++) {
                     cellList.add(curCol, "");
                     curCol++;
                 }
             }
+
             cellList.add(curCol, value);
             curCol++;
             //如果里面某个单元格含有值，则标识该行不为空行
