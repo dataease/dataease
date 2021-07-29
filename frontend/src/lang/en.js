@@ -129,6 +129,7 @@ export default {
     password_error: 'The password can not be less than 8 digits'
   },
   commons: {
+    no_target_permission: 'No permission',
     success: 'Success',
     switch_lang: 'Switch Language Success',
     close: 'Close',
@@ -823,7 +824,8 @@ export default {
     map_range: 'Map range',
     select_map_range: 'Please select map range',
     area: 'Area',
-    placeholder_field: 'Drag Field To Here'
+    placeholder_field: 'Drag Field To Here',
+    axis_label_rotate: 'Label Rotate'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

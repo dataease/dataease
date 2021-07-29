@@ -129,6 +129,7 @@ export default {
     password_error: '密码不小于 8 位'
   },
   commons: {
+    no_target_permission: '没有权限',
     success: '成功',
     switch_lang: '切换语言成功',
     close: '关闭',
@@ -823,7 +824,8 @@ export default {
     select_map_range: '请选择地图范围',
     area: '地区',
     stack_item: '堆叠项',
-    placeholder_field: '拖动字段至此处'
+    placeholder_field: '拖动字段至此处',
+    axis_label_rotate: '标签角度'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
