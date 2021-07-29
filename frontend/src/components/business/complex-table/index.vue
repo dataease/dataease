@@ -75,7 +75,6 @@ export default {
   },
   methods: {
     search(condition, e) {
-      console.log(condition)
       if (condition) {
         this.condition = condition
       }

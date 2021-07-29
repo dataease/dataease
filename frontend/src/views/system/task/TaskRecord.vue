@@ -1,6 +1,6 @@
 <template>
   <el-col>
-    <el-row style="margin-top: 10px;">
+    <el-row style="margin-top: 10px;" v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
       <complex-table :data="data" :columns="columns" local-key="datasetTaskRecord" :search-config="searchConfig" :transCondition="transCondition" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
         <el-table-column prop="name" :label="$t('dataset.task_name')">
           <template slot-scope="scope">
@@ -122,7 +122,6 @@ export default {
   computed: {
   },
   created() {
-    console.log(this.param)
     if (this.param !== null && this.param.taskId) {
       this.matchLogId = this.param.logId || this.matchLogId
       this.transCondition['dataset_table_task.id'] = {

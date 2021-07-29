@@ -1,6 +1,6 @@
 <template>
   <el-col>
-    <el-row style="margin-top: 10px;">
+    <el-row style="margin-top: 10px;" v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
       <complex-table :data="data" :columns="columns" local-key="datasetTask" :transCondition="transCondition" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
         <template #toolbar>
           <el-button icon="el-icon-circle-plus-outline" @click="selectDataset">{{ $t('dataset.task.create') }}</el-button>

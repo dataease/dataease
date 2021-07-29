@@ -1,5 +1,5 @@
 <template>
-  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <layout-content>
 
     <el-row style="height: 100%;width: 100%;">
       <el-tabs v-model="tabActive" @tab-click="changeTab">
