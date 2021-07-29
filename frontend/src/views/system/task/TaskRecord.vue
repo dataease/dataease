@@ -122,6 +122,7 @@ export default {
   computed: {
   },
   created() {
+    console.log(this.param)
     if (this.param !== null && this.param.taskId) {
       this.matchLogId = this.param.logId || this.matchLogId
       this.transCondition['dataset_table_task.id'] = {

@@ -4,10 +4,10 @@
     <el-row style="height: 100%;width: 100%;">
       <el-tabs v-model="tabActive" @tab-click="changeTab">
         <el-tab-pane :label="$t('dataset.task.list')" name="DatasetTaskList">
-          <dataset-task-list v-if="tabActive=='DatasetTaskList'" :transCondition="transCondition" @jumpTaskRecord="jumpTaskRecord" />
+          <dataset-task-list v-if="tabActive=='DatasetTaskList'" :param="task" :transCondition="transCondition" @jumpTaskRecord="jumpTaskRecord" />
         </el-tab-pane>
         <el-tab-pane :label="$t('dataset.task.record')" name="TaskRecord">
-          <task-record v-if="tabActive=='TaskRecord'" ref="task_record" :trans-condition="transCondition" @jumpTask="jumpTask" />
+          <task-record v-if="tabActive=='TaskRecord'" ref="task_record" :param="task" :trans-condition="transCondition" @jumpTask="jumpTask" />
         </el-tab-pane>
       </el-tabs>
     </el-row>
@@ -28,7 +28,8 @@ export default {
   data() {
     return {
       tabActive: 'DatasetTaskList',
-      transCondition: {}
+      transCondition: {},
+      task: null
     }
   },
   computed: {
@@ -50,6 +51,7 @@ export default {
   },
   methods: {
     changeTab() {
+      this.task = null
       this.transCondition = {}
     },
     jumpTaskRecord(task) {
