@@ -109,7 +109,7 @@ public class SysMsgService {
     }
 
     public void setBatchReaded(List<Long> msgIds) {
-        extSysMsgMapper.batchStatus(msgIds);
+        extSysMsgMapper.batchStatus(msgIds, System.currentTimeMillis());
     }
 
     public void batchDelete(List<Long> msgIds) {

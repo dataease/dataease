@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree @getTable="getTable" :privileges=privileges :mode=mode :type=type :customType=customType :showMode=showMode />
+      <dataset-group-selector-tree :privileges="privileges" :mode="mode" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />

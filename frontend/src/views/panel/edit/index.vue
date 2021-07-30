@@ -96,8 +96,8 @@
 
         <div
           id="canvasInfo"
+          :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
-          :class="{'border-hidden':canvasStyleData.selfAdaption}"
           @drop="handleDrop"
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
@@ -826,10 +826,8 @@ export default {
     padding: 1px 15px !important;
   }
 }
-
-.border-hidden {
-  overflow: hidden;
-
-}
+  .style-hidden{
+    overflow: hidden;
+  }
 
 </style>
