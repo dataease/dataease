@@ -589,7 +589,8 @@ export default {
             message: this.$t('chart.delete_success'),
             showClose: true
           })
-          this.treeNode(this.groupForm)
+          // this.treeNode(this.groupForm)
+          this.refreshNodeBy(data.pid)
         })
       }).catch(() => {
       })
