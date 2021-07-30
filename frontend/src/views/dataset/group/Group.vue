@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post , isKettleRunning} from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning } from '@/api/dataset/dataset'
 import { authModel } from '@/api/system/sysAuth'
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
@@ -427,9 +427,6 @@ export default {
     //   return this.$store.state.dataset.sceneData
     // }
   },
-  created() {
-    this.kettleState()
-  },
   watch: {
     search(val) {
       // if (val && val !== '') {
@@ -450,6 +447,9 @@ export default {
     saveStatus() {
       this.refreshNodeBy(this.saveStatus.sceneId)
     }
+  },
+  created() {
+    this.kettleState()
   },
   mounted() {
     this.treeNode(this.groupForm)

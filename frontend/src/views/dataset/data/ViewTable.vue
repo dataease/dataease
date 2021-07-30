@@ -130,7 +130,7 @@ export default {
     initPreviewData(page) {
       if (this.table.id) {
         this.table.row = this.tableViewRowForm.row
-        post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table).then(response => {
+        post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
           this.fields = response.data.fields
           this.data = response.data.data
           this.page = response.data.page

@@ -535,7 +535,8 @@ export default {
               type: 'success',
               showClose: true
             })
-            this.treeNode(this.groupForm)
+            // this.treeNode(this.groupForm)
+            this.refreshNodeBy(group.pid)
           })
         } else {
           // this.$message({
