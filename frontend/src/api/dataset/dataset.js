@@ -103,11 +103,12 @@ export function batchEdit(data) {
   })
 }
 
-export function post(url, data, showLoading = true) {
+export function post(url, data, showLoading = true, timeout = 10000) {
   return request({
     url: url,
     method: 'post',
     loading: showLoading,
+    timeout: timeout,
     data
   })
 }
