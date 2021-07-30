@@ -1128,10 +1128,12 @@ export default {
     },
 
     changeChart() {
-      this.view.tableId = this.changeTable.id
-      this.view.xaxis = []
-      this.view.yaxis = []
-      this.view.customFilter = []
+      if (this.view.tableId !== this.changeTable.id) {
+        this.view.tableId = this.changeTable.id
+        this.view.xaxis = []
+        this.view.yaxis = []
+        this.view.customFilter = []
+      }
       this.save(true, 'chart', false)
     },
 

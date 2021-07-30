@@ -12,7 +12,7 @@
             <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
             <!--              <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>-->
             <!--            </el-form-item>-->
-            <el-form-item :label="$t('chart.pie_label_line_show')" class="form-item">
+            <el-form-item v-show="chart.type && !chart.type.includes('pie')" :label="$t('chart.pie_label_line_show')" class="form-item">
               <el-checkbox v-model="labelForm.labelLine.show" @change="changeLabelAttr">{{ $t('chart.pie_label_line_show') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
@@ -116,28 +116,32 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        if (chart.customAttr) {
-          let customAttr = null
-          if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
-            customAttr = JSON.parse(JSON.stringify(chart.customAttr))
-          } else {
-            customAttr = JSON.parse(chart.customAttr)
-          }
-          if (customAttr.label) {
-            this.labelForm = customAttr.label
-            if (!this.labelForm.labelLine) {
-              this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
-            }
-          }
-        }
+        this.initData()
       }
     }
   },
   mounted() {
     this.init()
+    this.initData()
   },
   methods: {
+    initData() {
+      const chart = JSON.parse(JSON.stringify(this.chart))
+      if (chart.customAttr) {
+        let customAttr = null
+        if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+          customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+        } else {
+          customAttr = JSON.parse(chart.customAttr)
+        }
+        if (customAttr.label) {
+          this.labelForm = customAttr.label
+          if (!this.labelForm.labelLine) {
+            this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
+          }
+        }
+      }
+    },
     init() {
       const arr = []
       for (let i = 10; i <= 20; i = i + 2) {
