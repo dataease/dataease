@@ -331,7 +331,7 @@ public class ExcelXlsxReader extends DefaultHandler {
             formatString = style.getDataFormatString();
             short format = this.formatIndex;
             if (format == 14 || format == 31 || format == 57 ||format == 59||
-                    format == 58 || (176 <= format && format <= 178)
+                    format == 58 || (176 < format && format < 178)
                     || (182 <= format && format <= 196) ||
                     (210 <= format && format <= 213) || (208 == format))
             { // 日期
@@ -384,7 +384,7 @@ public class ExcelXlsxReader extends DefaultHandler {
 
                 break;
             case NUMBER: //数字
-                if (formatString != null) {
+                if (formatString != null && isDateFormat) {
                     thisStr = formatter.formatRawCellContents(Double.parseDouble(value), formatIndex, formatString).trim();
                 } else {
                     thisStr = value;
@@ -408,7 +408,7 @@ public class ExcelXlsxReader extends DefaultHandler {
         }
         if(curRow==1){
             TableFiled tableFiled = new TableFiled();
-            tableFiled.setFieldType(type);
+            tableFiled.setFieldType("TEXT");
             tableFiled.setFieldSize(65533);
             tableFiled.setFieldName(thisStr);
             tableFiled.setRemarks(thisStr);
@@ -417,7 +417,15 @@ public class ExcelXlsxReader extends DefaultHandler {
             if(CollectionUtils.isEmpty(this.getFields())){
                 throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
             }
-            this.getFields().get(curCol).setFieldType(type);
+            if(type.equalsIgnoreCase("LONG") && this.getFields().get(curCol).getFieldType().equalsIgnoreCase("TEXT")){
+                this.getFields().get(curCol).setFieldType(type);
+            }
+            if(type.equalsIgnoreCase("DOUBLE") && !this.getFields().get(curCol).getFieldType().equalsIgnoreCase("DATETIME")){
+                this.getFields().get(curCol).setFieldType(type);
+            }
+            if(type.equalsIgnoreCase("DATETIME")){
+                this.getFields().get(curCol).setFieldType(type);
+            }
         }
         return thisStr;
     }
@@ -432,9 +440,7 @@ public class ExcelXlsxReader extends DefaultHandler {
                 thisStr = String.valueOf(Double.valueOf(thisStr)/100);
             }
             Long.valueOf(thisStr);
-            if(this.getFields().get(curCol).getFieldType().equalsIgnoreCase("TEXT")){
-                return "LONG";
-            }
+            return "LONG";
         }catch (Exception e){
             try {
                 Double.valueOf(thisStr);
