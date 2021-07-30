@@ -11,9 +11,16 @@
       :pagination-config="paginationConfig"
       @select="select"
       @search="search"
+      @selection-change="handleSelectionChange"
       @sort-change="sortChange"
     >
-
+      <template #toolbar>
+        <el-button :disabled="multipleSelection.length === 0" @click="deleteBatch">{{ $t('commons.delete') }}</el-button>
+      </template>
+      <el-table-column
+        type="selection"
+        width="55"
+      />
       <el-table-column prop="content" :label="$t('webmsg.content')">
         <template slot-scope="scope">
 
@@ -57,7 +64,7 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import { query } from '@/api/system/msg'
+import { query, batchDelete } from '@/api/system/msg'
 import { msgTypes, getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import { addOrder, formatOrders } from '@/utils/index'
 import { mapGetters } from 'vuex'
@@ -85,7 +92,8 @@ export default {
         currentPage: 1,
         pageSize: 10,
         total: 0
-      }
+      },
+      multipleSelection: []
     }
   },
   computed: {
@@ -164,6 +172,20 @@ export default {
       }
       addOrder({ field: prop, value: order }, this.orderConditions)
       this.search()
+    },
+    deleteBatch() {
+      if (this.multipleSelection.length === 0) {
+        this.$warning(this.$t('webmsg.please_select'))
+        return
+      }
+      const param = this.multipleSelection.map(item => item.msgId)
+      batchDelete(param).then(res => {
+        this.$success(this.$t('commons.delete_success'))
+        this.search()
+      })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
     }
 
   }
