@@ -41,4 +41,6 @@ public class DorisConstants extends SQLConstants {
     public static final String BRACKETS = "(%s)";
 
     public static final String ROUND = "ROUND(%s,%s)";
+
+    public static final String VARCHAR = "VARCHAR";
 }
