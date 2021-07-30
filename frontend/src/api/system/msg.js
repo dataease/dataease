@@ -26,6 +26,15 @@ export function batchRead(data) {
   })
 }
 
+export function batchDelete(data) {
+  return request({
+    url: '/api/sys_msg/batchDelete',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function treeList() {
   return request({
     url: '/api/sys_msg/treeNodes',
