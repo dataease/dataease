@@ -269,4 +269,8 @@ export default {
   .table-class>>>.body--wrapper{
     background: rgba(1,1,1,0);
   }
+  .table-class>>>.elx-cell{
+    max-height: none!important;
+    line-height: normal!important;
+  }
 </style>
