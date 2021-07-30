@@ -519,6 +519,8 @@ public class DorisQueryProvider extends QueryProvider {
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
                 whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
+            } else if (field.getDeType() == 0) {
+                whereName = String.format(DorisConstants.CAST, originName, DorisConstants.VARCHAR);
             } else {
                 whereName = originName;
             }
@@ -560,6 +562,8 @@ public class DorisQueryProvider extends QueryProvider {
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
                 whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
+            } else if (field.getDeType() == 0) {
+                whereName = String.format(DorisConstants.CAST, originName, DorisConstants.VARCHAR);
             } else {
                 whereName = originName;
             }
@@ -636,6 +640,8 @@ public class DorisQueryProvider extends QueryProvider {
                     String from_unixtime = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
                     fieldName = String.format(DorisConstants.DATE_FORMAT, from_unixtime, format);
                 }
+            } else if (x.getDeType() == 0) {
+                fieldName = String.format(DorisConstants.CAST, originField, DorisConstants.VARCHAR);
             } else {
                 fieldName = originField;
             }
