@@ -236,6 +236,7 @@ export default {
       this.tableData = []
       if (this.currGroup) {
         this.dsLoading = true
+        this.tables = [];
         post('/dataset/table/list', {
           sort: 'type asc,name asc,create_time desc',
           sceneId: this.currGroup.id,
@@ -351,6 +352,7 @@ export default {
       if (!this.isTreeSearch) {
         if (node.data.id) {
           this.dsLoading = true
+          this.tables = [];
           post('/dataset/table/listAndGroup', {
             sort: 'type asc,name asc,create_time desc',
             sceneId: node.data.id,

@@ -136,26 +136,30 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        if (chart.customStyle) {
-          let customStyle = null
-          if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
-            customStyle = JSON.parse(JSON.stringify(chart.customStyle))
-          } else {
-            customStyle = JSON.parse(chart.customStyle)
-          }
-          if (customStyle.text) {
-            this.titleForm = customStyle.text
-          }
-          this.titleForm.title = this.chart.title
-        }
+        this.initData()
       }
     }
   },
   mounted() {
     this.init()
+    this.initData()
   },
   methods: {
+    initData() {
+      const chart = JSON.parse(JSON.stringify(this.chart))
+      if (chart.customStyle) {
+        let customStyle = null
+        if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
+          customStyle = JSON.parse(JSON.stringify(chart.customStyle))
+        } else {
+          customStyle = JSON.parse(chart.customStyle)
+        }
+        if (customStyle.text) {
+          this.titleForm = customStyle.text
+        }
+        this.titleForm.title = this.chart.title
+      }
+    },
     init() {
       const arr = []
       for (let i = 10; i <= 60; i = i + 2) {

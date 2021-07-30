@@ -220,6 +220,23 @@
               <span v-if="scope.row.rate === 'CRON'">{{ $t('dataset.cron_config') }}</span>
             </template>
           </el-table-column>
+          <el-table-column prop="status" :label="$t('dataset.task.task_status')">
+            <template slot-scope="scope">
+            <span v-if="scope.row.status === 'Underway'" style="color: green">
+              <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
+            </span>
+              <span v-if="scope.row.status === 'Stopped'" style="color: red">
+              <div type="danger" style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
+            </span>
+              <span v-if="scope.row.status === 'Pending'" style="color: blue">
+              <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
+            </span>
+              <span v-if="scope.row.status === 'Exec'" style="color: blue">
+              <i class="el-icon-loading" />
+              {{ $t('dataset.underway') }}
+            </span>
+            </template>
+          </el-table-column>
           <el-table-column
             :label="$t('dataset.operate')"
           >
@@ -229,7 +246,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 circle
-                :disabled="scope.row.rate === 'SIMPLE'"
+                :disabled="scope.row.rate === 'SIMPLE' || scope.row.status === 'Stopped'"
                 @click="addTask(scope.row)"
               />
               <el-button
