@@ -177,28 +177,32 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        if (chart.customAttr) {
-          let customAttr = null
-          if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
-            customAttr = JSON.parse(JSON.stringify(chart.customAttr))
-          } else {
-            customAttr = JSON.parse(chart.customAttr)
-          }
-          if (customAttr.label) {
-            this.labelForm = customAttr.label
-            if (!this.labelForm.labelLine) {
-              this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
-            }
-          }
-        }
+        this.initData()
       }
     }
   },
   mounted() {
     this.init()
+    this.initData()
   },
   methods: {
+    initData() {
+      const chart = JSON.parse(JSON.stringify(this.chart))
+      if (chart.customAttr) {
+        let customAttr = null
+        if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+          customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+        } else {
+          customAttr = JSON.parse(chart.customAttr)
+        }
+        if (customAttr.label) {
+          this.labelForm = customAttr.label
+          if (!this.labelForm.labelLine) {
+            this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
+          }
+        }
+      }
+    },
     init() {
       const arr = []
       for (let i = 10; i <= 20; i = i + 2) {

@@ -178,31 +178,35 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        if (chart.customStyle) {
-          let customStyle = null
-          if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
-            customStyle = JSON.parse(JSON.stringify(chart.customStyle))
-          } else {
-            customStyle = JSON.parse(chart.customStyle)
-          }
-          if (customStyle.xAxis) {
-            this.axisForm = customStyle.xAxis
-            if (!this.axisForm.splitLine) {
-              this.axisForm.splitLine = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.splitLine))
-            }
-            if (!this.axisForm.nameTextStyle) {
-              this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.nameTextStyle))
-            }
-          }
-        }
+        this.initData()
       }
     }
   },
   mounted() {
     this.init()
+    this.initData()
   },
   methods: {
+    initData() {
+      const chart = JSON.parse(JSON.stringify(this.chart))
+      if (chart.customStyle) {
+        let customStyle = null
+        if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
+          customStyle = JSON.parse(JSON.stringify(chart.customStyle))
+        } else {
+          customStyle = JSON.parse(chart.customStyle)
+        }
+        if (customStyle.xAxis) {
+          this.axisForm = customStyle.xAxis
+          if (!this.axisForm.splitLine) {
+            this.axisForm.splitLine = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.splitLine))
+          }
+          if (!this.axisForm.nameTextStyle) {
+            this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.nameTextStyle))
+          }
+        }
+      }
+    },
     init() {
       const arr = []
       for (let i = 6; i <= 40; i = i + 2) {

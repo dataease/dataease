@@ -122,27 +122,31 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        const chart = JSON.parse(JSON.stringify(this.chart))
-        if (chart.customStyle) {
-          let customStyle = null
-          if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
-            customStyle = JSON.parse(JSON.stringify(chart.customStyle))
-          } else {
-            customStyle = JSON.parse(chart.customStyle)
-          }
-          if (customStyle.split) {
-            this.splitForm = customStyle.split
-          } else {
-            this.splitForm = JSON.parse(JSON.stringify(DEFAULT_SPLIT))
-          }
-        }
+        this.initData()
       }
     }
   },
   mounted() {
     this.init()
+    this.initData()
   },
   methods: {
+    initData() {
+      const chart = JSON.parse(JSON.stringify(this.chart))
+      if (chart.customStyle) {
+        let customStyle = null
+        if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
+          customStyle = JSON.parse(JSON.stringify(chart.customStyle))
+        } else {
+          customStyle = JSON.parse(chart.customStyle)
+        }
+        if (customStyle.split) {
+          this.splitForm = customStyle.split
+        } else {
+          this.splitForm = JSON.parse(JSON.stringify(DEFAULT_SPLIT))
+        }
+      }
+    },
     init() {
       const arr = []
       for (let i = 6; i <= 40; i = i + 2) {
