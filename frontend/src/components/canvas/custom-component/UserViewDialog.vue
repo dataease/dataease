@@ -5,7 +5,7 @@
       <label-normal v-if="chart.type.includes('text')" :chart="chart" class="table-class" />
     </de-aside-container>
     <de-main-container>
-      <table-normal :chart="chartTable" class="table-class" />
+      <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
     </de-main-container>
   </de-container>
 </template>
