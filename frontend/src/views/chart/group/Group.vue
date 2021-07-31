@@ -891,14 +891,18 @@ export default {
 
     searchTree(val) {
       const queryCondition = {
-        withExtend: 'parent',
-        modelType: 'chart',
+        // withExtend: 'parent',
+        // modelType: 'chart',
         name: val
       }
-      authModel(queryCondition).then(res => {
-        // this.highlights(res.data)
+      // authModel(queryCondition).then(res => {
+      //   // this.highlights(res.data)
+      //   this.tData = this.buildTree(res.data)
+      //   // console.log(this.tData)
+      // })
+
+      post('/chart/view/search', queryCondition).then(res => {
         this.tData = this.buildTree(res.data)
-        // console.log(this.tData)
       })
     },
 
@@ -910,8 +914,8 @@ export default {
       const roots = []
       arrs.forEach(el => {
         // 判断根节点 ###
-        el.type = el.modelInnerType
-        el.isLeaf = el.leaf
+        // el.type = el.modelInnerType
+        // el.isLeaf = el.leaf
         if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
           roots.push(el)
           return
