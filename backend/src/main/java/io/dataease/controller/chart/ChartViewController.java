@@ -4,7 +4,9 @@ import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
+import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.service.chart.ChartViewService;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +65,7 @@ public class ChartViewController {
     }
 
     @GetMapping("searchAdviceSceneId/{panelId}")
-    public String searchAdviceSceneId(@PathVariable String panelId){
+    public String searchAdviceSceneId(@PathVariable String panelId) {
         return chartViewService.searchAdviceSceneId(panelId);
     }
 
@@ -71,10 +73,16 @@ public class ChartViewController {
     public ChartViewDTO getOneWithPermission(@PathVariable String id, @RequestBody ChartExtRequest requestList) throws Exception {
         //如果能获取用户 则添加对应的权限
         ChartViewDTO dto = chartViewService.getData(id, requestList);
-        if(dto!=null && AuthUtils.getUser()!=null){
-            ChartViewDTO permissionDto =  chartViewService.getOneWithPermission(dto.getId());
+        if (dto != null && AuthUtils.getUser() != null) {
+            ChartViewDTO permissionDto = chartViewService.getOneWithPermission(dto.getId());
             dto.setPrivileges(permissionDto.getPrivileges());
         }
         return dto;
+    }
+
+
+    @PostMapping("search")
+    public List<ChartViewDTO> search(@RequestBody ChartViewRequest chartViewRequest) {
+        return chartViewService.search(chartViewRequest);
     }
 }
