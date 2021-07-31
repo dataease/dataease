@@ -117,6 +117,7 @@ public class ChartViewService {
     public List<ChartViewDTO> search(ChartViewRequest chartViewRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         chartViewRequest.setUserId(userId);
+        chartViewRequest.setSort("name asc");
         List<ChartViewDTO> ds = extChartViewMapper.search(chartViewRequest);
         if (CollectionUtils.isEmpty(ds)) {
             return ds;
@@ -129,6 +130,7 @@ public class ChartViewService {
             ids.add(ele.getPid());
         });
 
+        List<ChartViewDTO> group = new ArrayList<>();
         ChartGroupRequest chartGroupRequest = new ChartGroupRequest();
         chartGroupRequest.setUserId(userId);
         chartGroupRequest.setIds(ids);
@@ -140,13 +142,23 @@ public class ChartViewService {
                 BeanUtils.copyBean(dto, ele);
                 dto.setIsLeaf(false);
                 dto.setType("group");
-                ds.add(dto);
+                group.add(dto);
                 ids.add(ele.getPid());
             });
             chartGroupRequest.setIds(ids);
             search = extChartGroupMapper.search(chartGroupRequest);
         }
-        return ds;
+
+        List<ChartViewDTO> res = new ArrayList<>();
+        Map<String, ChartViewDTO> map = new TreeMap<>();
+        group.forEach(ele -> map.put(ele.getId(), ele));
+        Iterator<Map.Entry<String, ChartViewDTO>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            res.add(iterator.next().getValue());
+        }
+        res.sort(Comparator.comparing(ChartViewDTO::getName));
+        res.addAll(ds);
+        return res;
     }
 
     public ChartViewWithBLOBs get(String id) {
