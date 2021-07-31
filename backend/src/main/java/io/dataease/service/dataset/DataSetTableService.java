@@ -236,6 +236,7 @@ public class DataSetTableService {
     public List<DataSetTableDTO> search(DataSetTableRequest dataSetTableRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         dataSetTableRequest.setUserId(userId);
+        dataSetTableRequest.setSort("name asc");
         List<DataSetTableDTO> ds = extDataSetTableMapper.search(dataSetTableRequest);
         if (CollectionUtils.isEmpty(ds)) {
             return ds;
@@ -248,6 +249,7 @@ public class DataSetTableService {
             ids.add(ele.getPid());
         });
 
+        List<DataSetTableDTO> group = new ArrayList<>();
         DataSetGroupRequest dataSetGroupRequest = new DataSetGroupRequest();
         dataSetGroupRequest.setUserId(userId);
         dataSetGroupRequest.setIds(ids);
@@ -259,13 +261,23 @@ public class DataSetTableService {
                 BeanUtils.copyBean(dto, ele);
                 dto.setIsLeaf(false);
                 dto.setType("group");
-                ds.add(dto);
+                group.add(dto);
                 ids.add(ele.getPid());
             });
             dataSetGroupRequest.setIds(ids);
             search = extDataSetGroupMapper.search(dataSetGroupRequest);
         }
-        return ds;
+
+        List<DataSetTableDTO> res = new ArrayList<>();
+        Map<String, DataSetTableDTO> map = new TreeMap<>();
+        group.forEach(ele -> map.put(ele.getId(), ele));
+        Iterator<Map.Entry<String, DataSetTableDTO>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            res.add(iterator.next().getValue());
+        }
+        res.sort(Comparator.comparing(DatasetTable::getName));
+        res.addAll(ds);
+        return res;
     }
 
     public DatasetTable get(String id) {
