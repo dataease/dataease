@@ -15,11 +15,15 @@ import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
+import io.dataease.controller.request.dataset.DataSetGroupRequest;
+import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.chart.*;
+import io.dataease.dto.dataset.DataSetGroupDTO;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
@@ -108,6 +112,53 @@ public class ChartViewService {
         }).collect(Collectors.toList());
         group.addAll(charts);
         return group;
+    }
+
+    public List<ChartViewDTO> search(ChartViewRequest chartViewRequest) {
+        String userId = String.valueOf(AuthUtils.getUser().getUserId());
+        chartViewRequest.setUserId(userId);
+        chartViewRequest.setSort("name asc");
+        List<ChartViewDTO> ds = extChartViewMapper.search(chartViewRequest);
+        if (CollectionUtils.isEmpty(ds)) {
+            return ds;
+        }
+
+        TreeSet<String> ids = new TreeSet<>();
+        ds.forEach(ele -> {
+            ele.setIsLeaf(true);
+            ele.setPid(ele.getSceneId());
+            ids.add(ele.getPid());
+        });
+
+        List<ChartViewDTO> group = new ArrayList<>();
+        ChartGroupRequest chartGroupRequest = new ChartGroupRequest();
+        chartGroupRequest.setUserId(userId);
+        chartGroupRequest.setIds(ids);
+        List<ChartGroupDTO> search = extChartGroupMapper.search(chartGroupRequest);
+        while (CollectionUtils.isNotEmpty(search)) {
+            ids.clear();
+            search.forEach(ele -> {
+                ChartViewDTO dto = new ChartViewDTO();
+                BeanUtils.copyBean(dto, ele);
+                dto.setIsLeaf(false);
+                dto.setType("group");
+                group.add(dto);
+                ids.add(ele.getPid());
+            });
+            chartGroupRequest.setIds(ids);
+            search = extChartGroupMapper.search(chartGroupRequest);
+        }
+
+        List<ChartViewDTO> res = new ArrayList<>();
+        Map<String, ChartViewDTO> map = new TreeMap<>();
+        group.forEach(ele -> map.put(ele.getId(), ele));
+        Iterator<Map.Entry<String, ChartViewDTO>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            res.add(iterator.next().getValue());
+        }
+        res.sort(Comparator.comparing(ChartViewDTO::getName));
+        res.addAll(ds);
+        return res;
     }
 
     public ChartViewWithBLOBs get(String id) {

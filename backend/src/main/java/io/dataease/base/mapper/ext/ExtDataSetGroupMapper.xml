@@ -37,6 +37,12 @@
             <if test="createTime != null">
                 and dataset_group.create_time = #{createTime,jdbcType=BIGINT}
             </if>
+            <if test="ids != null and ids.size() > 0">
+                and id in
+                <foreach collection="ids" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
         <if test="sort != null">
             order by ${sort}

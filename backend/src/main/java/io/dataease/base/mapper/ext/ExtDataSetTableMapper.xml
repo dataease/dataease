@@ -45,6 +45,9 @@
             <if test="sceneId != null">
                 and scene_id = #{sceneId,jdbcType=VARCHAR}
             </if>
+            <if test="name != null">
+                and name like CONCAT('%', #{name},'%')
+            </if>
             <if test="mode != null">
                 and mode = #{mode,jdbcType=INTEGER}
             </if>

@@ -108,4 +108,9 @@ public class DataSetTableController {
     public Boolean checkDorisTableIsExists(@PathVariable String id) throws Exception {
         return dataSetTableService.checkDorisTableIsExists(id);
     }
+
+    @PostMapping("search")
+    public List<DataSetTableDTO> search(@RequestBody DataSetTableRequest dataSetTableRequest) {
+        return dataSetTableService.search(dataSetTableRequest);
+    }
 }

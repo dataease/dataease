@@ -39,6 +39,9 @@
             <if test="sceneId != null">
                and scene_id = #{sceneId,jdbcType=VARCHAR}
             </if>
+            <if test="name != null">
+                and name like CONCAT('%', #{name},'%')
+            </if>
         </where>
         <if test="sort != null">
             order by ${sort}
