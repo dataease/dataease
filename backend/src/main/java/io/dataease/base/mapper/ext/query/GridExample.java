@@ -174,6 +174,9 @@ public class GridExample {
                 case "extra":
                     addCriterion(field);
                     break;
+                case "sql in":
+                    addCriterion(field);
+                    break;
             }
             return (Criteria) this;
         }

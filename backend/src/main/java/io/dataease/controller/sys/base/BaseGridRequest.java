@@ -8,10 +8,25 @@ import java.io.Serializable;
 import java.util.List;
 
 
-@Data
 public class BaseGridRequest implements Serializable {
 
     private List<ConditionEntity> conditions;
+
+    public List<ConditionEntity> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(List<ConditionEntity> conditions) {
+        this.conditions = conditions;
+    }
+
+    public List<String> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<String> orders) {
+        this.orders = orders;
+    }
 
     private List<String> orders;
 

@@ -351,7 +351,7 @@ export default {
   created() {
     this.timer = setInterval(() => {
       this.search(this.last_condition, false)
-    }, 5000)
+    }, 10000)
   },
   beforeDestroy() {
     clearInterval(this.timer)

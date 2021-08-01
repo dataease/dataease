@@ -991,6 +991,13 @@ public class DataSetTableService {
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
             datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
+            try{
+                datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
+                    sqlFileds.add(filed);
+                });
+            }catch (Exception e){
+                DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
+            }
             datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
                 sqlFileds.add(filed);
             });

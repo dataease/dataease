@@ -1,5 +1,6 @@
 package io.dataease.service.dataset;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
@@ -97,6 +98,7 @@ public class DataSetTableTaskService {
             execNow(datasetTableTask);
         }
         scheduleService.addSchedule(datasetTableTask);
+        checkTaskIsStopped(datasetTableTask);
         return datasetTableTask;
     }
 
@@ -172,6 +174,24 @@ public class DataSetTableTaskService {
         }
     }
 
+    public void checkTaskIsStopped(DatasetTableTask datasetTableTask){
+        if(StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")){
+            BaseGridRequest request = new BaseGridRequest();
+            ConditionEntity conditionEntity = new ConditionEntity();
+            conditionEntity.setField("dataset_table_task.id");
+            conditionEntity.setOperator("eq");
+            conditionEntity.setValue(datasetTableTask.getId());
+            request.setConditions(Arrays.asList(conditionEntity));
+            List<DataSetTaskDTO> dataSetTaskDTOS = taskWithTriggers(request);
+            if(CollectionUtils.isEmpty(dataSetTaskDTOS)){
+                return;
+            }
+            if(dataSetTaskDTOS.get(0).getNextExecTime() == null || dataSetTaskDTOS.get(0).getNextExecTime() <= 0){
+                datasetTableTask.setStatus(TaskStatus.Stopped.name());
+                update(datasetTableTask);
+            }
+        }
+    }
     public void updateTaskStatus(DatasetTableTask datasetTableTask, JobStatus lastExecStatus){
         datasetTableTask.setLastExecStatus(lastExecStatus.name());
         if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())){
@@ -184,7 +204,7 @@ public class DataSetTableTaskService {
                 conditionEntity.setOperator("eq");
                 conditionEntity.setValue(datasetTableTask.getId());
                 request.setConditions(Arrays.asList(conditionEntity));
-                List<DataSetTaskDTO> dataSetTaskDTOS = taskList(request);
+                List<DataSetTaskDTO> dataSetTaskDTOS = taskWithTriggers(request);
                 if(CollectionUtils.isEmpty(dataSetTaskDTOS)){
                     return;
                 }
@@ -214,16 +234,30 @@ public class DataSetTableTaskService {
         return datasetTableTaskMapper.selectByExample(datasetTableTaskExample);
     }
 
-    public List<DataSetTaskDTO> taskList(BaseGridRequest request) {
-        List<ConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : request.getConditions();
+    public List<DataSetTaskDTO> taskList4User(BaseGridRequest request) {
+        List<ConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : new ArrayList(request.getConditions());;
         ConditionEntity entity = new ConditionEntity();
-        entity.setOperator("extra");
-        entity.setField(" FIND_IN_SET(dataset_table_task.table_id,cids) ");
+        entity.setField("dataset_table.id");
+        entity.setOperator("sql in");
+        entity.setValue(" SELECT\tsys_auth.auth_source FROM sys_auth\n" +
+                "LEFT JOIN sys_auth_detail ON sys_auth.id = sys_auth_detail.auth_id\n" +
+                "LEFT JOIN dataset_table ON dataset_table.id = sys_auth.auth_source\n" +
+                "WHERE\tsys_auth_detail.privilege_type = '1'and sys_auth.auth_source_type = 'dataset'\n" +
+                "AND ((sys_auth.auth_target_type = 'dept'AND sys_auth.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = userId ))\n" +
+                "\tOR (sys_auth.auth_target_type = 'user'AND sys_auth.auth_target = '1')OR (sys_auth.auth_target_type = 'role'AND sys_auth.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = userId ))\n" +
+                "\tOR (1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))\n" +
+                "\t) ".replace("userId", AuthUtils.getUser().getUserId().toString()));
         conditionEntities.add(entity);
         request.setConditions(conditionEntities);
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
         List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskList(gridExample);
+        return dataSetTaskDTOS;
+    }
+
+    public List<DataSetTaskDTO> taskWithTriggers(BaseGridRequest request) {
+        GridExample gridExample = request.convertExample();
+        List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskWithTriggers(gridExample);
         return dataSetTaskDTOS;
     }
 

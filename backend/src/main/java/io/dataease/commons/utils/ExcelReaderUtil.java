@@ -68,6 +68,6 @@ public class ExcelReaderUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        ExcelReaderUtil.readExcel("跑步数据汇总——万马奔腾版0729.xlsx", new FileInputStream("/Users/taojinlong/Desktop/跑步数据汇总——万马奔腾版0729.xlsx"));
+        ExcelReaderUtil.readExcel("根据前100行判断数据类型.xls", new FileInputStream("/Users/taojinlong/Desktop/根据前100行判断数据类型.xls"));
     }
 }

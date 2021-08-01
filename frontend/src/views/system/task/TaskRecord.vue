@@ -139,7 +139,7 @@ export default {
       if (!this.timer) {
         this.timer = setInterval(() => {
           this.search(this.last_condition, false)
-        }, 5000)
+        }, 10000)
       }
     },
     destroyTimer() {
