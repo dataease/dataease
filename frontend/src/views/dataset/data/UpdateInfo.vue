@@ -576,6 +576,18 @@ export default {
 
       })
     },
+    changeTaskStatus(task) {
+      const param = task
+      param.status = task.status === 'Underway' ? 'Pending' : 'Underway'
+      post('/dataset/task/updateStatus', task).then(response => {
+        task.status = param.status
+        this.$message({
+          message: this.$t('dataset.task.change_success'),
+          type: 'success',
+          showClose: true
+        })
+      })
+    },
     deleteTask(task) {
       this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
         confirmButtonText: this.$t('dataset.confirm'),
