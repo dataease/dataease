@@ -12,6 +12,7 @@ import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.*;
+import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
@@ -230,6 +231,53 @@ public class DataSetTableService {
         }).collect(Collectors.toList());
         group.addAll(ds);
         return group;
+    }
+
+    public List<DataSetTableDTO> search(DataSetTableRequest dataSetTableRequest) {
+        String userId = String.valueOf(AuthUtils.getUser().getUserId());
+        dataSetTableRequest.setUserId(userId);
+        dataSetTableRequest.setSort("name asc");
+        List<DataSetTableDTO> ds = extDataSetTableMapper.search(dataSetTableRequest);
+        if (CollectionUtils.isEmpty(ds)) {
+            return ds;
+        }
+
+        TreeSet<String> ids = new TreeSet<>();
+        ds.forEach(ele -> {
+            ele.setIsLeaf(true);
+            ele.setPid(ele.getSceneId());
+            ids.add(ele.getPid());
+        });
+
+        List<DataSetTableDTO> group = new ArrayList<>();
+        DataSetGroupRequest dataSetGroupRequest = new DataSetGroupRequest();
+        dataSetGroupRequest.setUserId(userId);
+        dataSetGroupRequest.setIds(ids);
+        List<DataSetGroupDTO> search = extDataSetGroupMapper.search(dataSetGroupRequest);
+        while (CollectionUtils.isNotEmpty(search)) {
+            ids.clear();
+            search.forEach(ele -> {
+                DataSetTableDTO dto = new DataSetTableDTO();
+                BeanUtils.copyBean(dto, ele);
+                dto.setIsLeaf(false);
+                dto.setType("group");
+                group.add(dto);
+                ids.add(ele.getPid());
+            });
+            dataSetGroupRequest.setIds(ids);
+            search = extDataSetGroupMapper.search(dataSetGroupRequest);
+        }
+
+        List<DataSetTableDTO> res = new ArrayList<>();
+        Map<String, DataSetTableDTO> map = new TreeMap<>();
+        group.forEach(ele -> map.put(ele.getId(), ele));
+        Iterator<Map.Entry<String, DataSetTableDTO>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            res.add(iterator.next().getValue());
+        }
+        res.sort(Comparator.comparing(DatasetTable::getName));
+        res.addAll(ds);
+        return res;
     }
 
     public DatasetTable get(String id) {
@@ -1416,7 +1464,7 @@ public class DataSetTableService {
     public static boolean checkIsRepeat(String[] array) {
         HashSet<String> hashSet = new HashSet<String>();
         for (int i = 0; i < array.length; i++) {
-            if(StringUtils.isEmpty(array[i])){
+            if (StringUtils.isEmpty(array[i])) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
             }
             hashSet.add(array[i]);
