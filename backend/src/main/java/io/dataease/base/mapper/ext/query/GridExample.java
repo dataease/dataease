@@ -114,6 +114,15 @@ public class GridExample {
             criteria.add(new Criterion(condition, value));
         }
 
+        protected void addSqlCriterion(String condition, Object value, String property) {
+            if (value == null) {
+                throw new RuntimeException("Value for " + property + " cannot be null");
+            }
+            Criterion criterion = new Criterion(condition, value);
+            criterion.sqlValue = true;
+            criteria.add(criterion);
+        }
+
         protected void addCriterion(String condition, Object value1, Object value2, String property) {
             if (value1 == null || value2 == null) {
                 throw new RuntimeException("Between values for " + property + " cannot be null");
@@ -208,6 +217,16 @@ public class GridExample {
         private boolean betweenValue;
 
         private boolean listValue;
+
+        public boolean isSqlValue() {
+            return sqlValue;
+        }
+
+        public void setSqlValue(boolean sqlValue) {
+            this.sqlValue = sqlValue;
+        }
+
+        private boolean sqlValue;
 
         private String typeHandler;
 

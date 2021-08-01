@@ -32,4 +32,36 @@
         </where>
     </sql>
 
+
+    <sql id="taskListGridCondition">
+        <where>
+            dataset_table.id in (SELECT `sys_auth`.`auth_source` FROM `sys_auth` LEFT JOIN `sys_auth_detail` ON `sys_auth`.`id` = `sys_auth_detail`.`auth_id` LEFT JOIN `dataset_table` ON `dataset_table`.`id` = `sys_auth`.`auth_source` WHERE `sys_auth_detail`.`privilege_type` = '1' and `sys_auth_detail`.`privilege_value` = '1'and `sys_auth`.`auth_source_type` = 'dataset' AND ((`sys_auth`.`auth_target_type` = 'dept' AND `sys_auth`.`auth_target` in ( SELECT dept_id FROM `sys_user` WHERE `sys_user`.`user_id` = #{extendCondition} )) OR (sys_auth.auth_target_type = 'user'AND sys_auth.auth_target = #{extendCondition} ) OR (sys_auth.auth_target_type = 'role' AND `sys_auth`.`auth_target` in ( SELECT role_id FROM `sys_users_roles` WHERE `sys_users_roles`.`user_id` = #{extendCondition} )) OR (1 = ( SELECT is_admin FROM `sys_user` WHERE `sys_user`.`user_id` = #{extendCondition} )))) and
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+
 </mapper>

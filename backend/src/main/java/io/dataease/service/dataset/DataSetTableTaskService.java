@@ -237,22 +237,20 @@ public class DataSetTableTaskService {
     public List<DataSetTaskDTO> taskList4User(BaseGridRequest request) {
         List<ConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : new ArrayList(request.getConditions());;
         ConditionEntity entity = new ConditionEntity();
-        entity.setField("dataset_table.id");
-        entity.setOperator("sql in");
-        entity.setValue(" SELECT\tsys_auth.auth_source FROM sys_auth\n" +
-                "LEFT JOIN sys_auth_detail ON sys_auth.id = sys_auth_detail.auth_id\n" +
-                "LEFT JOIN dataset_table ON dataset_table.id = sys_auth.auth_source\n" +
-                "WHERE\tsys_auth_detail.privilege_type = '1'and sys_auth.auth_source_type = 'dataset'\n" +
-                "AND ((sys_auth.auth_target_type = 'dept'AND sys_auth.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = userId ))\n" +
-                "\tOR (sys_auth.auth_target_type = 'user'AND sys_auth.auth_target = '1')OR (sys_auth.auth_target_type = 'role'AND sys_auth.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = userId ))\n" +
-                "\tOR (1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))\n" +
-                "\t) ".replace("userId", AuthUtils.getUser().getUserId().toString()));
+        entity.setField("1");
+        entity.setOperator("eq");
+        entity.setValue("1");
         conditionEntities.add(entity);
         request.setConditions(conditionEntities);
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
-        List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskList(gridExample);
-        return dataSetTaskDTOS;
+        if(AuthUtils.getUser().getIsAdmin()){
+            List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskList(gridExample);
+            return dataSetTaskDTOS;
+        }else {
+            List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.userTaskList(gridExample);
+            return dataSetTaskDTOS;
+        }
     }
 
     public List<DataSetTaskDTO> taskWithTriggers(BaseGridRequest request) {
