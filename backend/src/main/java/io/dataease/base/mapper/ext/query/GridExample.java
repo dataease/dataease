@@ -175,7 +175,7 @@ public class GridExample {
                     addCriterion(field);
                     break;
                 case "sql in":
-                    addCriterion(field);
+                    addCriterion(field+" in ", value, field);
                     break;
             }
             return (Criteria) this;
