@@ -134,7 +134,7 @@ public class JdbcProvider extends DatasourceProvider {
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
         } finally {
             if(connection != null){
                 connection.close();
@@ -309,7 +309,7 @@ public class JdbcProvider extends DatasourceProvider {
             resultSet.close();
             ps.close();
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
         } finally {
             if(con != null){con.close();}
         }
@@ -431,7 +431,7 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = oracleConfigration.getDriver();
                 jdbcurl = oracleConfigration.getJdbc();
                 props.put( "oracle.net.CONNECT_TIMEOUT" , "5000") ;
-                props.put( "oracle.jdbc.ReadTimeout" , "5000" ) ;
+//                props.put( "oracle.jdbc.ReadTimeout" , "5000" ) ;
                 break;
             default:
                 break;

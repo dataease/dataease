@@ -62,16 +62,21 @@ public class DataSetTableTaskLogService {
             conditionEntities.add(entity);
 
             ConditionEntity entity2 = new ConditionEntity();
-            entity2.setOperator("extra");
-            entity2.setField(" FIND_IN_SET(dataset_table_task_log.table_id,cids) ");
+            entity2.setField("dataset_table.id");
+            entity2.setOperator("sql in");
+            entity2.setValue(" SELECT\tsys_auth.auth_source FROM sys_auth\n" +
+                    "LEFT JOIN sys_auth_detail ON sys_auth.id = sys_auth_detail.auth_id\n" +
+                    "LEFT JOIN dataset_table ON dataset_table.id = sys_auth.auth_source\n" +
+                    "WHERE\tsys_auth_detail.privilege_type = '1'and sys_auth.auth_source_type = 'dataset'\n" +
+                    "AND ((sys_auth.auth_target_type = 'dept'AND sys_auth.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = userId ))\n" +
+                    "\tOR (sys_auth.auth_target_type = 'user'AND sys_auth.auth_target = '1')OR (sys_auth.auth_target_type = 'role'AND sys_auth.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = userId ))\n" +
+                    "\tOR (1 = ( SELECT is_admin FROM sys_user WHERE user_id = userId ))\n" +
+                    "\t) ".replace("userId", AuthUtils.getUser().getUserId().toString()));
             conditionEntities.add(entity2);
-
             request.setConditions(conditionEntities);
         }
-
         GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
-        List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.list(gridExample);
+        List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.listTaskLog(gridExample);
         dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
             if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){
                 dataSetTaskLogDTO.setName(dataSetTaskLogDTO.getTaskId());

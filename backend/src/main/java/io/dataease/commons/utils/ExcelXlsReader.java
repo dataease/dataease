@@ -241,6 +241,7 @@ public class ExcelXlsReader implements HSSFListener {
                     value = sstRecord.getString(lsrec.getSSTIndex()).toString().trim();
                     value = value.equals("") ? "" : value;
                     cellList.add(thisColumn, value);
+                    checkType(value, thisColumn);
                     checkRowIsNull(value);  //如果里面某个单元格含有值，则标识该行不为空行
                 }
                 break;
@@ -262,7 +263,7 @@ public class ExcelXlsReader implements HSSFListener {
                 value = value.equals("") ? "" : value;
                 //向容器加入列值
                 cellList.add(thisColumn, value);
-                if(formatIndex == 59){
+                if(formatIndex == 59 || formatIndex== 14){
                     totalSheets.get(totalSheets.size() -1).getFields().get(thisColumn).setFieldType("DATETIME");
                 }else {
                     checkType(value, thisColumn);
@@ -377,12 +378,17 @@ public class ExcelXlsReader implements HSSFListener {
             type = "TEXT";
         }
 
-        String oldType = totalSheets.get(totalSheets.size() -1).getFields().get(thisColumn).getFieldType();
-        if(type.equalsIgnoreCase("LONG") && oldType.equalsIgnoreCase("TEXT")){
+        if(curRow==1){
             totalSheets.get(totalSheets.size() -1).getFields().get(thisColumn).setFieldType(type);
         }
-        if(type.equalsIgnoreCase("DOUBLE")){
-            totalSheets.get(totalSheets.size() -1).getFields().get(thisColumn).setFieldType(type);
+        if(curRow > 1) {
+            String oldType = totalSheets.get(totalSheets.size() -1).getFields().get(thisColumn).getFieldType();
+            if(type.equalsIgnoreCase("TEXT")){
+                totalSheets.get(totalSheets.size() -1).getFields().get(thisColumn).setFieldType(type);
+            }
+            if(type.equalsIgnoreCase("DOUBLE") && oldType.equalsIgnoreCase("LONG")){
+                totalSheets.get(totalSheets.size() -1).getFields().get(thisColumn).setFieldType(type);
+            }
         }
         return type;
     }

@@ -1,7 +1,7 @@
 <template>
   <layout-content>
 
-    <el-row style="height: 100%;width: 100%;">
+    <el-row>
       <el-tabs v-model="tabActive" @tab-click="changeTab">
         <el-tab-pane :label="$t('dataset.task.list')" name="DatasetTaskList">
           <dataset-task-list v-if="tabActive=='DatasetTaskList'" :param="task" :transCondition="transCondition" @jumpTaskRecord="jumpTaskRecord" />

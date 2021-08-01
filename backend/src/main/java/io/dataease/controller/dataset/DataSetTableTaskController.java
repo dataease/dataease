@@ -48,7 +48,7 @@ public class DataSetTableTaskController {
     public Pager<List<DataSetTaskDTO>> taskList(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
 
-        return PageUtils.setPageInfo(page, dataSetTableTaskService.taskList(request));
+        return PageUtils.setPageInfo(page, dataSetTableTaskService.taskList4User(request));
     }
 
     @PostMapping("/lastExecStatus")

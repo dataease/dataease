@@ -221,6 +221,15 @@ public class ExcelXlsxReader extends DefaultHandler {
             return;
         }
         lastIndex += new String(ch, start, length);
+        if(curRow==5){
+            System.out.println("---------");
+            System.out.println(ch);
+            System.out.println("start: " + start);
+            System.out.println("length: " + length);
+            System.out.println(lastIndex);
+            System.out.println("---------");
+
+        }
     }
 
     /**
@@ -250,6 +259,7 @@ public class ExcelXlsxReader extends DefaultHandler {
         } else if ("v".equals(name)) {
             //v => 单元格的值，如果单元格是字符串，则v标签的值为该字符串在SST中的索引
             String value = this.getDataValue(lastIndex.trim(), "");//根据索引值获取对应的单元格值
+
             if (preRef == null) {
                 preRef = ref;
             }
@@ -417,14 +427,18 @@ public class ExcelXlsxReader extends DefaultHandler {
             if(CollectionUtils.isEmpty(this.getFields())){
                 throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
             }
-            if(type.equalsIgnoreCase("LONG") && this.getFields().get(curCol).getFieldType().equalsIgnoreCase("TEXT")){
+            if(curRow==2){
                 this.getFields().get(curCol).setFieldType(type);
-            }
-            if(type.equalsIgnoreCase("DOUBLE") && !this.getFields().get(curCol).getFieldType().equalsIgnoreCase("DATETIME")){
-                this.getFields().get(curCol).setFieldType(type);
-            }
-            if(type.equalsIgnoreCase("DATETIME")){
-                this.getFields().get(curCol).setFieldType(type);
+            }else {
+                if(type.equalsIgnoreCase("TEXT")){
+                    this.getFields().get(curCol).setFieldType(type);
+                }
+                if(type.equalsIgnoreCase("DOUBLE") && this.getFields().get(curCol).getFieldType().equalsIgnoreCase("LONG")){
+                    this.getFields().get(curCol).setFieldType(type);
+                }
+                if(type.equalsIgnoreCase("DATETIME")){
+                    this.getFields().get(curCol).setFieldType(type);
+                }
             }
         }
         return thisStr;
