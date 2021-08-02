@@ -11,8 +11,8 @@ import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
-import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
@@ -383,12 +383,14 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             } else {
                 // check doris table
@@ -407,12 +409,14 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             }
 
@@ -434,12 +438,14 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             } else {
                 // check doris table
@@ -458,12 +464,14 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
@@ -483,12 +491,14 @@ public class DataSetTableService {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 e.printStackTrace();
+                DEException.throwException(e.getMessage());
             }
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                 dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
+                DEException.throwException(e.getMessage());
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             if (datasetTable.getMode() == 0) {
@@ -511,12 +521,14 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             } else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -531,6 +543,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
 
                 try {
@@ -538,6 +551,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             }
         }
