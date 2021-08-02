@@ -13,7 +13,6 @@ import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.i18n.Translator;
-import io.dataease.notice.domain.MailInfo;
 import io.dataease.service.FileService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -23,7 +22,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
@@ -139,31 +137,7 @@ public class SystemParameterService {
         return System.getenv("MS_VERSION");
     }
 
-    public MailInfo mailInfo(String type) {
-        List<SystemParameter> paramList = this.getParamList(type);
-        MailInfo mailInfo=new MailInfo ();
-        if (!CollectionUtils.isEmpty(paramList)) {
-            for (SystemParameter param : paramList) {
-                if (StringUtils.equals(param.getParamKey(),ParamConstants.MAIL.SERVER.getValue() )) {
-                    mailInfo.setHost(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PORT.getValue())) {
-                    mailInfo.setPort(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.ACCOUNT.getValue())) {
-                    mailInfo.setAccount(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PASSWORD.getValue())) {
-                    String password = EncryptUtils.aesDecrypt(param.getParamValue()).toString();
-                    mailInfo.setPassword(password);
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.SSL.getValue())) {
-                    mailInfo.setSsl(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.TLS.getValue())) {
-                    mailInfo.setTls(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.RECIPIENTS.getValue())) {
-                    mailInfo.setRecipient(param.getParamValue());
-                }
-            }
-        }
-        return mailInfo;
-    }
+
 
     public void saveLdap(List<SystemParameter> parameters) {
         SystemParameterExample example = new SystemParameterExample();

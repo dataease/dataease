@@ -98,10 +98,10 @@ public class AuthServer implements AuthApi {
         return true;
     }
 
-    @Override
+    /*@Override
     public Boolean isLogin() {
         return null;
-    }
+    }*/
 
 
 }
