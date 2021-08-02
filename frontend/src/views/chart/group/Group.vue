@@ -562,7 +562,7 @@ export default {
             // this.chartTree()
             this.refreshNodeBy(view.sceneId)
             // this.$router.push('/chart/home')
-            this.$emit('switchComponent', { name: '' })
+            // this.$emit('switchComponent', { name: '' })
             this.$store.dispatch('chart/setTable', null)
           })
         } else {
@@ -610,7 +610,7 @@ export default {
           // this.chartTree()
           this.refreshNodeBy(data.sceneId)
           // this.$router.push('/chart/home')
-          // this.$emit('switchComponent', { name: '' })
+          this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('chart/setTable', null)
         })
       }).catch(() => {
