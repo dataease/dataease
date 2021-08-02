@@ -315,7 +315,6 @@
 
 <script>
 import { post, chartGroupTree } from '@/api/chart/chart'
-import { authModel } from '@/api/system/sysAuth'
 import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
 import ChartMoveSelector from '../components/TreeSelector/ChartMoveSelector'
@@ -611,7 +610,7 @@ export default {
           // this.chartTree()
           this.refreshNodeBy(data.sceneId)
           // this.$router.push('/chart/home')
-          this.$emit('switchComponent', { name: '' })
+          // this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('chart/setTable', null)
         })
       }).catch(() => {

@@ -212,13 +212,13 @@
               </div>
               <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style">
                 <el-row style="height: 100%;">
-                  <el-row v-if="chart.type !=='text' && chart.type !== 'gauge'" class="padding-lr">
+                  <el-row v-if="chart.type && chart.type !=='text' && chart.type !== 'gauge'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
-                      <span v-if="chart.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="chart.type.includes('bar') || chart.type.includes('line')">{{ $t('chart.drag_block_type_axis') }}</span>
-                      <span v-else-if="chart.type.includes('pie')">{{ $t('chart.drag_block_pie_label') }}</span>
-                      <span v-else-if="chart.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
-                      <span v-else-if="chart.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
+                      <span v-if="chart.type && chart.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                      <span v-else-if="chart.type && (chart.type.includes('bar') || chart.type.includes('line'))">{{ $t('chart.drag_block_type_axis') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('pie')">{{ $t('chart.drag_block_pie_label') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
                       /
                       <span>{{ $t('chart.dimension') }}</span>
                     </span>
@@ -238,13 +238,13 @@
                   </el-row>
                   <el-row class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
-                      <span v-if="chart.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="chart.type.includes('bar') || chart.type.includes('line')">{{ $t('chart.drag_block_value_axis') }}</span>
-                      <span v-else-if="chart.type.includes('pie')">{{ $t('chart.drag_block_pie_angel') }}</span>
-                      <span v-else-if="chart.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
-                      <span v-else-if="chart.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
-                      <span v-else-if="chart.type.includes('gauge')">{{ $t('chart.drag_block_gauge_angel') }}</span>
-                      <span v-else-if="chart.type.includes('text')">{{ $t('chart.drag_block_label_value') }}</span>
+                      <span v-if="chart.type && chart.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                      <span v-else-if="chart.type && (chart.type.includes('bar') || chart.type.includes('line'))">{{ $t('chart.drag_block_value_axis') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('pie')">{{ $t('chart.drag_block_pie_angel') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('gauge')">{{ $t('chart.drag_block_gauge_angel') }}</span>
+                      <span v-else-if="chart.type && chart.type.includes('text')">{{ $t('chart.drag_block_label_value') }}</span>
                       /
                       <span>{{ $t('chart.quota') }}</span>
                     </span>
