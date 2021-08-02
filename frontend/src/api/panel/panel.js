@@ -39,6 +39,7 @@ export function querySubjectWithGroup(data) {
 export function defaultTree(data) {
   return request({
     url: '/panel/group/defaultTree',
+    timeout: 30000,
     method: 'post',
     loading: true,
     data
@@ -48,6 +49,7 @@ export function defaultTree(data) {
 export function groupTree(data) {
   return request({
     url: '/panel/group/tree',
+    timeout: 30000,
     method: 'post',
     loading: true,
     data
