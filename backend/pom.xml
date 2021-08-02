@@ -384,7 +384,7 @@
                 <includes>
                     <include>**/*</include>
                 </includes>
-                <filtering>false</filtering>
+                <filtering>true</filtering>
             </resource>
         </resources>
         <plugins>
