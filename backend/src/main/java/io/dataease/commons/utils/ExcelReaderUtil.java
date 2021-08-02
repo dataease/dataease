@@ -70,6 +70,7 @@ public class ExcelReaderUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        ExcelReaderUtil.readExcel("根据前100行判断数据类型.xls", new FileInputStream("/Users/taojinlong/Desktop/根据前100行判断数据类型.xls"));
+        String file ="全国现有确诊趋势.xlsx";
+        ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
     }
 }

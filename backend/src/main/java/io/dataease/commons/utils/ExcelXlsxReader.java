@@ -221,15 +221,6 @@ public class ExcelXlsxReader extends DefaultHandler {
             return;
         }
         lastIndex += new String(ch, start, length);
-        if(curRow==5){
-            System.out.println("---------");
-            System.out.println(ch);
-            System.out.println("start: " + start);
-            System.out.println("length: " + length);
-            System.out.println(lastIndex);
-            System.out.println("---------");
-
-        }
     }
 
     /**
@@ -330,7 +321,7 @@ public class ExcelXlsxReader extends DefaultHandler {
         } else if ("s".equals(cellType)) { //处理字符串
             nextDataType = CellDataType.SSTINDEX;
         } else if ("str".equals(cellType)) {
-            nextDataType = CellDataType.FORMULA;
+            nextDataType = CellDataType.SSTINDEX;
         }
 
         String cellStyleStr = attributes.getValue("s"); //
