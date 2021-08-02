@@ -828,7 +828,7 @@ public class DorisQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getDataeaseName()));
         }
         return originField;
     }
