@@ -1,4 +1,4 @@
-package io.dataease.controller;
+package io.dataease.controller.sys;
 
 import io.dataease.service.BaseDisplayService;
 import org.springframework.http.ResponseEntity;

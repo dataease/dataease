@@ -1,9 +1,8 @@
-package io.dataease.controller;
+package io.dataease.controller.sys;
 
 import io.dataease.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.dto.SystemParameterDTO;
-import io.dataease.notice.domain.MailInfo;
 import io.dataease.service.FileService;
 import io.dataease.service.system.SystemParameterService;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,10 +41,7 @@ public class SystemParameterController {
         return systemParameterService.getVersion();
     }
 
-    @GetMapping("/mail/info")
-    public MailInfo mailInfo() {
-        return systemParameterService.mailInfo(ParamConstants.Classify.MAIL.getValue());
-    }
+
 
 
     @GetMapping("/base/info")
