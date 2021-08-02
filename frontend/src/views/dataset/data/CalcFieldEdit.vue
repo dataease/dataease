@@ -55,19 +55,26 @@
         </el-row>
       </el-col>
       <el-col :span="10" style="height: 100%;border-left: 1px solid #E6E6E6;">
-        <el-col :span="12" style="height: 100%">
+        <el-col :span="12" style="height: 100%" class="padding-lr">
           <span>{{ $t('dataset.click_ref_field') }}</span>
-          <div class="padding-lr field-height">
+          <el-input
+            v-model="searchField"
+            size="mini"
+            :placeholder="$t('dataset.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+          <div class="field-height">
             <span>{{ $t('chart.dimension') }}</span>
             <draggable
-              v-model="tableFields.dimensionList"
+              v-model="dimensionData"
               :options="{group:{name: 'drag',pull:'clone'},sort: true}"
               animation="300"
               class="drag-list"
               :disabled="true"
             >
               <transition-group>
-                <span v-for="item in tableFields.dimensionList.filter(ele => ele.extField === 0)" :key="item.id" class="item-dimension" :title="item.name" @click="insertParamToCodeMirror('['+item.id+']')">
+                <span v-for="item in dimensionData" :key="item.id" class="item-dimension" :title="item.name" @click="insertParamToCodeMirror('['+item.id+']')">
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -77,17 +84,17 @@
               </transition-group>
             </draggable>
           </div>
-          <div class="padding-lr field-height">
+          <div class="field-height">
             <span>{{ $t('chart.quota') }}</span>
             <draggable
-              v-model="tableFields.quotaList"
+              v-model="quotaData"
               :options="{group:{name: 'drag',pull:'clone'},sort: true}"
               animation="300"
               class="drag-list"
               :disabled="true"
             >
               <transition-group>
-                <span v-for="item in tableFields.quotaList.filter(ele => ele.extField === 0)" :key="item.id" class="item-quota" :title="item.name" @click="insertParamToCodeMirror('['+item.id+']')">
+                <span v-for="item in quotaData" :key="item.id" class="item-quota" :title="item.name" @click="insertParamToCodeMirror('['+item.id+']')">
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -98,11 +105,18 @@
             </draggable>
           </div>
         </el-col>
-        <el-col :span="12" style="height: 100%">
+        <el-col :span="12" style="height: 100%" class="padding-lr">
           <span>{{ $t('dataset.click_ref_function') }}</span>
-          <el-row class="padding-lr function-height">
+          <el-input
+            v-model="searchFunction"
+            size="mini"
+            :placeholder="$t('dataset.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+          <el-row class="function-height">
             <el-popover
-              v-for="(item,index) in functions"
+              v-for="(item,index) in functionData"
               :key="index"
               class="function-pop"
               placement="right"
@@ -205,7 +219,12 @@ export default {
         { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
         { label: this.$t('dataset.location'), value: 5 }
       ],
-      functions: []
+      functions: [],
+      searchField: '',
+      searchFunction: '',
+      dimensionData: [],
+      quotaData: [],
+      functionData: []
     }
   },
   computed: {
@@ -222,6 +241,26 @@ export default {
         this.initField()
       },
       deep: true
+    },
+    'tableFields': function() {
+      this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList)).filter(ele => ele.extField === 0)
+      this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList)).filter(ele => ele.extField === 0)
+    },
+    'searchField': function(val) {
+      if (val && val !== '') {
+        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList.filter(ele => ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0)))
+        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList.filter(ele => ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0)))
+      } else {
+        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList)).filter(ele => ele.extField === 0)
+        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList)).filter(ele => ele.extField === 0)
+      }
+    },
+    'searchFunction': function(val) {
+      if (val && val !== '') {
+        this.functionData = JSON.parse(JSON.stringify(this.functions.filter(ele => { return ele.func.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
+      } else {
+        this.functionData = JSON.parse(JSON.stringify(this.functions))
+      }
     }
   },
   mounted() {
@@ -230,6 +269,8 @@ export default {
     })
     this.initFunctions()
     this.initField()
+    this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList)).filter(ele => ele.extField === 0)
+    this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList)).filter(ele => ele.extField === 0)
   },
   methods: {
     onCmReady(cm) {
@@ -253,6 +294,7 @@ export default {
     initFunctions() {
       post('/dataset/function/listByTableId/' + this.param.id, null).then(response => {
         this.functions = response.data
+        this.functionData = JSON.parse(JSON.stringify(this.functions))
       })
     },
 
@@ -292,6 +334,10 @@ export default {
         size: 0,
         extField: 2
       }
+      this.dimensionData = []
+      this.quotaData = []
+      this.searchField = ''
+      this.searchFunction = ''
     }
   }
 }
@@ -322,7 +368,7 @@ export default {
   }
 
   .padding-lr {
-    padding: 0 6px;
+    padding: 0 4px;
   }
   .field-height{
     height: calc(50% - 20px);
