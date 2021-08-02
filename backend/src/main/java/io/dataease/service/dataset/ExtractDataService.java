@@ -184,15 +184,15 @@ public class ExtractDataService {
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
 //                    sendWebMsg(datasetTable, null, true);
-                    deleteFile("all_scope", datasetTableId);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
 //                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-                    deleteFile("all_scope", datasetTableId);
                 } finally {
+                    deleteFile("all_scope", datasetTableId);
+                    deleteFile(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData());
                 }
                 break;
 
@@ -210,9 +210,9 @@ public class ExtractDataService {
                     saveErrorLog(datasetTableId, null, e);
 //                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
+                } finally {
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
-                } finally {
                 }
                 break;
         }
@@ -930,38 +930,36 @@ public class ExtractDataService {
             case "all_scope":
                 transName = "trans_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_" + DorisTableUtils.dorisName(dataSetTableId);
-                fileName = DorisTableUtils.dorisTmpName(dataSetTableId);
+                fileName = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(dataSetTableId));
                 break;
             case "incremental_add":
                 transName = "trans_add_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_add_" + DorisTableUtils.dorisName(dataSetTableId);
-                fileName = DorisTableUtils.dorisAddName(dataSetTableId);
+                fileName = DorisTableUtils.dorisAddName(DorisTableUtils.dorisName(dataSetTableId));
                 break;
             case "incremental_delete":
                 transName = "trans_delete_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_delete_" + DorisTableUtils.dorisName(dataSetTableId);
-                fileName = DorisTableUtils.dorisDeleteName(dataSetTableId);
+                fileName = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(dataSetTableId));
                 break;
             default:
                 break;
         }
-        try {
-            File file = new File(root_path + fileName + "." + extention);
-            FileUtils.forceDelete(file);
-        } catch (Exception e) {
+        deleteFile(root_path + fileName + "." + extention);
+        deleteFile(root_path + jobName + ".kjb");
+        deleteFile(root_path + transName + ".ktr");
+    }
+
+    private void deleteFile(String filePath){
+        if(StringUtils.isEmpty(filePath)){
+            return;
         }
         try {
-            File file = new File(root_path + jobName + ".kjb");
-            FileUtils.forceDelete(file);
-        } catch (Exception e) {
-        }
-        try {
-            File file = new File(root_path + transName + ".ktr");
+            File file = new File(filePath);
             FileUtils.forceDelete(file);
         } catch (Exception e) {
         }
     }
-
     public boolean isKettleRunning() {
         try {
             if (!InetAddress.getByName(carte).isReachable(1000)) {
