@@ -990,7 +990,8 @@ export default {
     click_ref_function: 'Click Quote Function',
     field_manage: 'Field Manage',
     edit_calc_field: 'Edit calc field',
-    calc_field: 'Calc Field'
+    calc_field: 'Calc Field',
+    show_sql: 'Show SQL'
   },
   datasource: {
     datasource: 'Data Source',
