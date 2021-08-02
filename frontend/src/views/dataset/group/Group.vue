@@ -342,7 +342,6 @@
 
 <script>
 import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning } from '@/api/dataset/dataset'
-import { authModel } from '@/api/system/sysAuth'
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
 
