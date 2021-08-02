@@ -1,10 +1,11 @@
-package io.dataease.controller;
+package io.dataease.controller.sys;
 
 
 
 import com.google.gson.Gson;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
+import io.dataease.controller.ResultHolder;
 import io.dataease.exception.DataEaseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;

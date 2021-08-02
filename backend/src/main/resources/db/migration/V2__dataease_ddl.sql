@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `system_parameter` (
 )ENGINE = InnoDB
 DEFAULT CHARSET = utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `user_role` (
+/*CREATE TABLE IF NOT EXISTS `user_role` (
     `id`          varchar(50) NOT NULL COMMENT 'ID of user''s role info',
     `user_id`     varchar(50) NOT NULL COMMENT 'User ID of this user-role info',
     `role_id`     varchar(50) NOT NULL COMMENT 'Role ID of this user-role info',
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `user_role` (
     `update_time` bigint(13)  NOT NULL COMMENT 'Update timestamp',
     PRIMARY KEY (`id`)
 )ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;
+DEFAULT CHARSET = utf8mb4;*/
 
 DROP TABLE IF EXISTS `datasource`;
 CREATE TABLE `datasource` (

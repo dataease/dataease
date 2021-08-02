@@ -20,6 +20,7 @@ public class ShiroServiceImpl implements ShiroService {
         // 配置过滤:不会被拦截的链接 -> 放行 start ----------------------------------------------------------
         // 放行Swagger2页面，需要放行这些
 
+        filterChainDefinitionMap.put("/doc.html",ANON);
         filterChainDefinitionMap.put("/swagger-ui.html",ANON);
         filterChainDefinitionMap.put("/swagger-ui/**",ANON);
         filterChainDefinitionMap.put("/swagger/**",ANON);
@@ -27,6 +28,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/swagger-resources/**",ANON);
         filterChainDefinitionMap.put("/v2/**",ANON);
         filterChainDefinitionMap.put("/v3/**",ANON);
+
         filterChainDefinitionMap.put("/static/**", ANON);
         filterChainDefinitionMap.put("/css/**", ANON);
         filterChainDefinitionMap.put("/js/**", ANON);
