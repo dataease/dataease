@@ -123,8 +123,7 @@ public class ExtractDataService {
             "else\n" +
             "  echo $result\n" +
             "  exit 1\n" +
-            "fi\n" +
-            "rm -rf %s\n";
+            "fi\n";
 
     public synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask, Long startTime) {
         datasetTable.setSyncStatus(JobStatus.Underway.name());
