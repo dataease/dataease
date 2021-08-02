@@ -49,6 +49,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String authorization = httpServletRequest.getHeader("Authorization");
+        if (StringUtils.startsWith(authorization, "Basic")) {
+            return false;
+        }
         // 当没有出现登录超时 且需要刷新token 则执行刷新token
         if (JWTUtils.loginExpire(authorization)){
             throw new AuthenticationException(expireMessage);

@@ -64,6 +64,7 @@ import { query, updateStatus } from '@/api/system/msg'
 import { getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import { mapGetters } from 'vuex'
 import bus from '@/utils/bus'
+import { getToken } from '@/utils/auth'
 export default {
   data() {
     return {
@@ -172,6 +173,11 @@ export default {
       query(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
+      }).catch(() => {
+        const token = getToken()
+        if (!token || token === 'null' || token === 'undefined') {
+          this.timer && clearInterval(this.timer)
+        }
       })
     },
     getTypeName(value) {
