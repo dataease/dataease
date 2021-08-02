@@ -202,7 +202,7 @@ export default {
     },
     search(val) {
       if (val && val !== '') {
-        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
+        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
       } else {
         this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
