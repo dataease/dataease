@@ -23,6 +23,7 @@ export function ajaxGetData(id, data) {
 export function getChartTree(data) {
   return request({
     url: 'api',
+    timeout: 30000,
     method: 'post',
     loading: true,
     data
