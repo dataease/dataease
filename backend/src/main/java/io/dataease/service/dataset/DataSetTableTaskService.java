@@ -200,6 +200,7 @@ public class DataSetTableTaskService {
             datasetTableTask.setStatus(TaskStatus.Stopped.name());
         }else {
             datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(datasetTableTask.getId());
+            datasetTableTask.setLastExecStatus(lastExecStatus.name());
             if(StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")){
                 BaseGridRequest request = new BaseGridRequest();
                 ConditionEntity conditionEntity = new ConditionEntity();

@@ -1449,7 +1449,6 @@ public class DataSetTableService {
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
 
         dataSetTableTaskService.updateTaskStatus(taskIds, JobStatus.Error);
-        //TODO check task status
 
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());
