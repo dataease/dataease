@@ -1,5 +1,6 @@
 package io.dataease.auth.api;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.api.dto.LoginDto;
 import io.swagger.annotations.Api;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 
 @Api(tags = "权限：权限管理")
+@ApiSupport(order = 10)
 @RequestMapping("/api/auth")
 public interface AuthApi {
 
