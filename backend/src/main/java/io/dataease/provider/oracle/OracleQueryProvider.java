@@ -1,13 +1,14 @@
 package io.dataease.provider.oracle;
 
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.DatasetTableFieldExample;
+import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
-import io.dataease.provider.mysql.MySQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,11 +17,12 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
+import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static io.dataease.provider.SQLConstants.TABLE_ALIAS_PREFIX;
 
@@ -36,6 +38,9 @@ public class OracleQueryProvider extends QueryProvider {
     private static Integer INT = 2;
     private static Integer FLOAT = 3;
     private static Integer BOOLEAN = 4;
+
+    @Resource
+    private DatasetTableFieldMapper datasetTableFieldMapper;
 
     @Override
     public Integer transFieldType(String field) {
@@ -118,7 +123,15 @@ public class OracleQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
-                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(f.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                }
                 String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
                 String fieldName = "";
                 // 处理横轴字段
@@ -206,7 +219,15 @@ public class OracleQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
-                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                }
                 String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -228,7 +249,15 @@ public class OracleQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(y.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                }
                 String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -304,7 +333,15 @@ public class OracleQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(xList)) {
             for (int i = 0; i < xList.size(); i++) {
                 ChartViewFieldDTO x = xList.get(i);
-                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                }
                 String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -326,7 +363,15 @@ public class OracleQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(y.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                }
                 String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -405,7 +450,15 @@ public class OracleQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(y.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -532,7 +585,17 @@ public class OracleQueryProvider extends QueryProvider {
             String whereName = "";
             String whereTerm = transMysqlFilterTerm(request.getTerm());
             String whereValue = "";
-            String originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+
+            String originName;
+            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                // 解析origin name中有关联的字段生成sql表达式
+                originName = calcFieldRegex(field.getOriginName(), tableObj);
+            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            }
+
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                 whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
@@ -572,7 +635,16 @@ public class OracleQueryProvider extends QueryProvider {
             String whereName = "";
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-            String originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+
+            String originName;
+            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                // 解析origin name中有关联的字段生成sql表达式
+                originName = calcFieldRegex(field.getOriginName(), tableObj);
+            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            }
 
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
                 String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -592,7 +664,7 @@ public class OracleQueryProvider extends QueryProvider {
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
                     whereValue = String.format(OracleConstants.WHERE_BETWEEN, startTime, endTime);
                 } else {
-                    whereValue = String.format(MySQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    whereValue = String.format(OracleConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
                 whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value.get(0));
@@ -765,5 +837,29 @@ public class OracleQueryProvider extends QueryProvider {
             });
         }
         return list;
+    }
+
+    private String calcFieldRegex(String originField, SQLObj tableObj) {
+        originField = originField.replaceAll("[\\t\\n\\r]]", "");
+        // 正则提取[xxx]
+        String regex = "\\[(.*?)]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(originField);
+        Set<String> ids = new HashSet<>();
+        while (matcher.find()) {
+            String id = matcher.group(1);
+            ids.add(id);
+        }
+        if (CollectionUtils.isEmpty(ids)) {
+            return originField;
+        }
+        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+        datasetTableFieldExample.createCriteria().andIdIn(new ArrayList<>(ids));
+        List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+        for (DatasetTableField ele : calcFields) {
+            originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                    String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+        }
+        return originField;
     }
 }

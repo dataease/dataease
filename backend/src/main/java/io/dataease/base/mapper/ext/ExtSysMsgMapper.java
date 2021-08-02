@@ -2,7 +2,7 @@ package io.dataease.base.mapper.ext;
 
 import io.dataease.base.domain.SysMsgExample;
 import io.dataease.base.domain.SysMsgSetting;
-import io.dataease.controller.message.dto.MsgGridDto;
+import io.dataease.controller.sys.response.MsgGridDto;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

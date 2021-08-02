@@ -1,7 +1,7 @@
 package io.dataease.service.message;
 
 
-import io.dataease.controller.message.dto.SubscribeNode;
+import io.dataease.controller.sys.response.SubscribeNode;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.aspectj.lang.ProceedingJoinPoint;

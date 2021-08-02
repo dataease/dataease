@@ -1,4 +1,4 @@
-package io.dataease.controller.message.dto;
+package io.dataease.controller.sys.request;
 
 import lombok.Data;
 

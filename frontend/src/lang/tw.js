@@ -990,7 +990,8 @@ export default {
     click_ref_function: '點擊引用函數',
     field_manage: '字段管理',
     edit_calc_field: '編輯計算字段',
-    calc_field: '計算字段'
+    calc_field: '計算字段',
+    show_sql: '顯示SQL'
   },
   datasource: {
     datasource: '數據源',
