@@ -1,7 +1,6 @@
 package io.dataease.controller.sys.base;
 
 import io.dataease.base.mapper.ext.query.GridExample;
-import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.io.Serializable;
