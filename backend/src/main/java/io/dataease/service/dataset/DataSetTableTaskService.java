@@ -90,6 +90,9 @@ public class DataSetTableTaskService {
             }
             datasetTableTaskMapper.insert(datasetTableTask);
         } else {
+            datasetTableTask.setStatus(null);
+            datasetTableTask.setLastExecTime(null);
+            datasetTableTask.setLastExecStatus(null);
             datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);
         }
 
@@ -197,6 +200,7 @@ public class DataSetTableTaskService {
         if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())){
             datasetTableTask.setStatus(TaskStatus.Stopped.name());
         }else {
+            datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(datasetTableTask.getId());
             if(StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")){
                 BaseGridRequest request = new BaseGridRequest();
                 ConditionEntity conditionEntity = new ConditionEntity();
