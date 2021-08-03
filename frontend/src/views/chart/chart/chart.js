@@ -436,11 +436,7 @@ export const BASE_RADAR = {
     },
     indicator: []
   },
-  series: [{
-    type: 'radar',
-    // areaStyle: {normal: {}},
-    data: []
-  }]
+  series: []
 }
 
 export const BASE_GAUGE = {
