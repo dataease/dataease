@@ -315,6 +315,8 @@ export default {
       if (!this.fieldForm.id) {
         this.fieldForm.type = this.fieldForm.deType
         this.fieldForm.deExtractType = this.fieldForm.deType
+        this.fieldForm.tableId = this.param.id
+        this.fieldForm.columnIndex = this.tableFields.dimensionList.length + this.tableFields.quotaList.length
       }
       post('/dataset/field/save', this.fieldForm).then(response => {
         this.closeCalcField()
