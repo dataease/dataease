@@ -43,7 +43,7 @@ export default {
   ]),
   methods: {
     showViewDetails() {
-      eventBus.$emit('showViewDetails')
+      this.$emit('showViewDetails')
     }
   }
 }
