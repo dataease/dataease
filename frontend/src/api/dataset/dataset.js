@@ -103,7 +103,7 @@ export function batchEdit(data) {
   })
 }
 
-export function post(url, data, showLoading = true, timeout = 10000) {
+export function post(url, data, showLoading = true, timeout = 20000) {
   return request({
     url: url,
     method: 'post',
