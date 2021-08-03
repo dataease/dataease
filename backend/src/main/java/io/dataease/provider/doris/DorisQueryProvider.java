@@ -71,16 +71,6 @@ public class DorisQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQueryCountSQL(String table) {
-        return MessageFormat.format("SELECT count(*) FROM {0}", table);
-    }
-
-    @Override
-    public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sql + ") AS tmp ");
-    }
-
-    @Override
     public String createSQLPreview(String sql, String orderBy) {
         return "SELECT * FROM (" + sql + ") AS tmp ORDER BY " + orderBy + " LIMIT 0,1000";
     }

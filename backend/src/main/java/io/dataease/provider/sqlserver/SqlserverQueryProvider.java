@@ -29,28 +29,35 @@ public class SqlserverQueryProvider extends QueryProvider {
     public Integer transFieldType(String field) {
         switch (field) {
             case "CHAR":
+            case "NCHAR":
+            case "NTEXT":
             case "VARCHAR":
             case "TEXT":
             case "TINYTEXT":
             case "MEDIUMTEXT":
             case "LONGTEXT":
             case "ENUM":
+            case "XML":
                 return 0;// 文本
             case "DATE":
             case "TIME":
             case "YEAR":
             case "DATETIME":
+            case "DATETIME2":
+            case "DATETIMEOFFSET":
             case "TIMESTAMP":
                 return 1;// 时间
             case "INT":
-            case "SMALLINT":
             case "MEDIUMINT":
             case "INTEGER":
             case "BIGINT":
+            case "SMALLINT":
                 return 2;// 整型
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
+            case "MONEY":
+            case "NUMERIC":
                 return 3;// 浮点
             case "BIT":
             case "TINYINT":
@@ -60,19 +67,14 @@ public class SqlserverQueryProvider extends QueryProvider {
         }
     }
 
-    @Override
-    public String createQueryCountSQL(String table) {
-        return MessageFormat.format("SELECT COUNT(*) FROM {0}", table);
-    }
-
-    @Override
-    public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sqlFix(sql) + ") AS tmp ");
-    }
-
+    private static Integer DE_STRING = 0;
+    private static Integer DE_TIME = 1;
+    private static Integer DE_INT = 2;
+    private static Integer DE_FLOAT = 3;
+    private static Integer DE_BOOL = 4;
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY null " + " LIMIT 0,1000";
+        return "SELECT top 1000 * FROM (" + sqlFix(sql) + ") AS tmp";
     }
 
     @Override
@@ -89,8 +91,8 @@ public class SqlserverQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
                 // 处理横轴字段
-                if (f.getDeExtractType() == 1) {
-                    if (f.getDeType() == 2 || f.getDeType() == 3) {
+                if (f.getDeExtractType() == DE_TIME) { // 时间 转为 数值
+                    if (f.getDeType() == DE_INT || f.getDeType() == DE_FLOAT) {
                         fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
                     } else {
                         fieldName = originField;

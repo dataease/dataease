@@ -83,16 +83,6 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQueryCountSQL(String table) {
-        return MessageFormat.format("SELECT COUNT(*) FROM {0}", table);
-    }
-
-    @Override
-    public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sqlFix(sql) + ") DE_TMP ");
-    }
-
-    @Override
     public String createSQLPreview(String sql, String orderBy) {
         return "SELECT * FROM (" + sqlFix(sql) + ") DE_TMP " + " WHERE rownum <= 1000";
     }

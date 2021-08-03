@@ -14,10 +14,6 @@ import java.util.List;
 public abstract class QueryProvider {
     public abstract Integer transFieldType(String field);
 
-    public abstract String createQueryCountSQL(String table);
-
-    public abstract String createQueryCountSQLAsTmp(String sql);
-
     public abstract String createSQLPreview(String sql, String orderBy);
 
     public abstract String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup);

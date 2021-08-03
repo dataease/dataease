@@ -71,16 +71,6 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQueryCountSQL(String table) {
-        return MessageFormat.format("SELECT COUNT(*) FROM {0}", table);
-    }
-
-    @Override
-    public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sqlFix(sql) + ") AS tmp ");
-    }
-
-    @Override
     public String createSQLPreview(String sql, String orderBy) {
         return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY null " + " LIMIT 0,1000";
     }

@@ -2,16 +2,16 @@ package io.dataease.provider.sqlserver;
 
 import io.dataease.provider.SQLConstants;
 
-import static io.dataease.datasource.constants.DatasourceTypes.mysql;
+import static io.dataease.datasource.constants.DatasourceTypes.sqlServer;
 
 /**
  * @Author gin
  * @Date 2021/7/8 7:22 下午
  */
 public class SqlServerSQLConstants extends SQLConstants {
-    public static final String KEYWORD_TABLE = mysql.getKeywordPrefix() + "%s" + mysql.getKeywordSuffix();
+    public static final String KEYWORD_TABLE = sqlServer.getKeywordPrefix() + "%s" + sqlServer.getKeywordSuffix();
 
-    public static final String KEYWORD_FIX = "%s." + mysql.getKeywordPrefix() + "%s" + mysql.getKeywordSuffix();
+    public static final String KEYWORD_FIX = "%s." + sqlServer.getKeywordPrefix() + "%s" + sqlServer.getKeywordSuffix();
 
     public static final String UNIX_TIMESTAMP = "UNIX_TIMESTAMP(%s)";
 
