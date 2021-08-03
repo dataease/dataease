@@ -6,7 +6,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="config === curComponent" />
+    <edit-bar v-if="config === curComponent" @showViewDetails="showViewDetails" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -18,6 +18,7 @@
     />
 
     <component
+      ref="wrapperChild"
       :is="config.component"
       v-else
       :out-style="config.style"
@@ -110,6 +111,9 @@ export default {
       // 阻止冒泡事件
       e.stopPropagation()
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
+    },
+    showViewDetails(){
+      this.$refs.wrapperChild.openChartDetailsDialog();
     }
   }
 }

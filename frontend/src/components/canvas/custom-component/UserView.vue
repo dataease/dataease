@@ -66,6 +66,10 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    componentIndex: {
+      type: Number,
+      required: false
     }
   },
   data() {
@@ -128,7 +132,6 @@ export default {
     this.getData(this.element.propValue.viewId)
   },
   mounted() {
-    eventBus.$on('showViewDetails', this.openChartDetailsDialog)
   },
   methods: {
     mergeStyle() {
