@@ -19,7 +19,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="active" :active-model="'edit'" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="active||linkageSettingStatus" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -463,7 +463,8 @@ export default {
       'curComponent',
       'editor',
       'curCanvasScale',
-      'canvasStyleData'
+      'canvasStyleData',
+      'linkageSettingStatus'
     ])
   },
   watch: {

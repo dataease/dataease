@@ -8,7 +8,7 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid v-if="canvasStyleData.auxiliaryMatrix" :matrix-style="matrixStyle" />
+    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
@@ -29,6 +29,7 @@
       :snap="true"
       :snap-tolerance="2"
       :change-style="customStyle"
+      :draggable="!linkageSettingStatus"
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
     >
@@ -249,7 +250,8 @@ export default {
       'componentData',
       'curComponent',
       'canvasStyleData',
-      'editor'
+      'editor',
+      'linkageSettingStatus'
     ])
   },
   watch: {
