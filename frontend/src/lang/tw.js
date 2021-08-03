@@ -334,7 +334,9 @@ export default {
     input_pwd: '請輸入密碼',
     message_box: {
       alert: '警告',
-      confirm: '確認'
+      confirm: '確認',
+      ok: '確認',
+      cancel: '取消'
     }
   },
   documentation: {
