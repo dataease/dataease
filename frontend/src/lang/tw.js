@@ -109,25 +109,29 @@ export default {
   navbar: {
     dashboard: '首頁',
     github: '項目地址',
-    logOut: '退出登陸',
+    logOut: '退出登錄',
     profile: '個人中心',
     theme: '換膚',
     size: '佈局大小'
   },
   login: {
-    title: '系統登陸',
+    title: '系統登錄',
     welcome: '歡迎使用',
-    logIn: '登陸',
+    logIn: '登錄',
     username: '帳號',
     password: '密碼',
     any: '任意字符',
-    thirdparty: '第三方登陸',
+    thirdparty: '第三方登錄',
     thirdpartyTips: '本地不能模擬，請結合自己業務進行模擬！！！',
-    expires: '登陸信息過期，請重新登陸',
-    tokenError: '信息錯誤，請重新登陸',
+    expires: '登錄信息過期，請重新登錄',
+    tokenError: '信息錯誤，請重新登錄',
     username_error: '請輸入正確的 ID',
     password_error: '密碼不小於 8 位',
+
+    login_again: '重新登錄',
+
     re_login: '重新登陸'
+
   },
   commons: {
     no_target_permission: '沒有權限',
@@ -184,7 +188,7 @@ export default {
     prompt: '提示',
     operating: '操作',
     input_limit: '長度在 {0} 到 {1} 個字符',
-    login: '登陸',
+    login: '登錄',
     welcome: '一站式開源數據分析平臺',
     username: '姓名',
     password: '密碼',
@@ -256,7 +260,7 @@ export default {
     remove: '移除',
     remove_cancel: '移除取消',
     remove_success: '移除成功',
-    tips: '認證信息已過期，請重新登陸',
+    tips: '認證信息已過期，請重新登錄',
     not_performed_yet: '尚未執行',
     incorrect_input: '輸入內容不正確',
     delete_confirm: '請輸入以下內容，確認刪除：',
@@ -1166,9 +1170,9 @@ export default {
   },
   display: {
     logo: '頭部系統 Logo',
-    loginLogo: '登陸頁面頭部 Logo',
-    loginImage: '登陸頁面右側圖片',
-    loginTitle: '登陸頁面標題',
+    loginLogo: '登錄頁面頭部 Logo',
+    loginImage: '登錄頁面右側圖片',
+    loginTitle: '登錄頁面標題',
     title: '系統名稱',
     advice_size: '建議圖片大小'
   },

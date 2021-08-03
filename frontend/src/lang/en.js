@@ -127,7 +127,11 @@ export default {
     tokenError: 'Token error, please login again',
     username_error: 'Please enter the correct ID',
     password_error: 'The password can not be less than 8 digits',
+
+    login_again: 'Login again',
+
     re_login: 'Login again'
+
   },
   commons: {
     no_target_permission: 'No permission',
