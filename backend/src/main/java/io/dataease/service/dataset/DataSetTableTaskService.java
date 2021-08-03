@@ -4,7 +4,6 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
-import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
@@ -93,13 +92,15 @@ public class DataSetTableTaskService {
             datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);
         }
 
+        scheduleService.addSchedule(datasetTableTask);
+
         // simple
         if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) { // SIMPLE 类型，提前占位
             execNow(datasetTableTask);
         }else {
             checkTaskIsStopped(datasetTableTask);
         }
-        scheduleService.addSchedule(datasetTableTask);
+
         return datasetTableTask;
     }
 
