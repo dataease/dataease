@@ -52,9 +52,9 @@ service.interceptors.request.use(
   }
 )
 
-const defaultOptions = {
-  confirmButtonText: i18n.t('login.re_login')
-}
+// const defaultOptions = {
+//   confirmButtonText: i18n.t('login.re_login')
+// }
 
 const checkAuth = response => {
   // 请根据实际需求修改
@@ -66,7 +66,10 @@ const checkAuth = response => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
-    }, defaultOptions)
+    }, {
+      confirmButtonText: i18n.t('login.login_again'),
+      showClose: false
+    })
   }
 
   if (response.headers['authentication-status'] === 'invalid') {
@@ -75,6 +78,9 @@ const checkAuth = response => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
+    }, {
+      confirmButtonText: i18n.t('login.login_again'),
+      showClose: false
     })
   }
   // token到期后自动续命 刷新token
