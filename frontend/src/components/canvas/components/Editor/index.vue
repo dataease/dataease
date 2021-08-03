@@ -30,11 +30,13 @@
       :snap-tolerance="2"
       :change-style="customStyle"
       @refLineParams="getRefLineParams"
+      @showViewDetails="showViewDetails(index)"
     >
       <component
         :is="item.component"
         v-if="item.type==='v-text'"
         :id="'component' + item.id"
+        ref="wrapperChild"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -69,6 +71,7 @@
         :is="item.component"
         v-else-if="item.type==='other'"
         :id="'component' + item.id"
+        ref="wrapperChild"
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
@@ -80,6 +83,7 @@
         :is="item.component"
         v-else
         :id="'component' + item.id"
+        ref="wrapperChild"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -603,6 +607,9 @@ export default {
     },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
+    },
+    showViewDetails(index) {
+      this.$refs.wrapperChild[index].openChartDetailsDialog()
     }
   }
 }

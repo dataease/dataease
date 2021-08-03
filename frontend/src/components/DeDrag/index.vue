@@ -19,9 +19,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <setting-menu style="right:5px;position: absolute;z-index: 2">
-      <i slot="icon" class="icon iconfont icon-shezhi" />
-    </setting-menu>
+    <edit-bar v-if="active" :active-model="'edit'" @showViewDetails="showViewDetails" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -46,11 +44,12 @@ let eventsFor = events.mouse
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
+import EditBar from '@/components/canvas/components/Editor/EditBar'
 
 export default {
   replace: true,
   name: 'VueDragResizeRotate',
-  components: { SettingMenu },
+  components: { EditBar },
   props: {
     className: {
       type: String,
@@ -1540,6 +1539,9 @@ export default {
       removeEvent(document.documentElement, 'mouseup', this.handleUp)
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       removeEvent(window, 'resize', this.checkParentSize)
+    },
+    showViewDetails() {
+      this.$emit('showViewDetails')
     }
   }
 

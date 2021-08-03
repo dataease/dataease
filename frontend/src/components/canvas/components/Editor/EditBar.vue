@@ -1,15 +1,20 @@
 <template>
   <div class="bar-main">
+    <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;">
+      <i slot="icon" class="icon iconfont icon-shezhi" />
+    </setting-menu>
     <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
-    <i v-if="activeModel==='edit'" class="icon iconfont icon-shezhi" @click.stop="showViewDetails" />
+    <!--    <el-checkbox />-->
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import eventBus from '@/components/canvas/utils/eventBus'
+import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 
 export default {
+  components: { SettingMenu },
 
   props: {
     active: {
