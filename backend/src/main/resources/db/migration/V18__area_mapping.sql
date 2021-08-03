@@ -3012,7 +3012,7 @@ INSERT INTO `dataset_table_function` VALUES (43, 'CURRENT_TIMESTAMP', 'CURRENT_T
 INSERT INTO `dataset_table_function` VALUES (44, 'UNIX_TIMESTAMP', 'UNIX_TIMESTAMP()', 'mysql', 3, '返回一个格林尼治标准时间1970-01-01 00:00:00到现在的秒数');
 INSERT INTO `dataset_table_function` VALUES (45, 'UNIX_TIMESTAMP', 'UNIX_TIMESTAMP(date)', 'mysql', 3, '返回一个格林尼治标准时间1970-01-01 00:00:00到指定时间的秒数');
 INSERT INTO `dataset_table_function` VALUES (46, 'FROM_UNIXTIME', 'FROM_UNIXTIME(date)', 'mysql', 3, '把UNIX时间戳转换为普通格式的时间');
-INSERT INTO `dataset_table_function` VALUES (47, 'CASE', 'CASE expr WHEN v1 THEN r1 [WHEN v2 THEN v2] [ELSE rn] END', 'mysql', 3, '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不想等，则返回ELSE后面的rn');
+INSERT INTO `dataset_table_function` VALUES (47, 'CASE', 'CASE expr WHEN v1 THEN r1 [WHEN v2 THEN v2] [ELSE rn] END', 'mysql', 5, '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不想等，则返回ELSE后面的rn');
 INSERT INTO `dataset_table_function` VALUES (48, 'IF', 'IF(expr,v1,v2)', 'mysql', 5, '如果expr是TRUE则返回v1，否则返回v2');
 INSERT INTO `dataset_table_function` VALUES (49, 'IFNULL', 'IFNULL(v1,v2)', 'mysql', 5, '如果v1不为NULL，则返回v1，否则返回v2');
 INSERT INTO `dataset_table_function` VALUES (50, 'ABS', 'ABS(x)', 'doris', 2, '返回x的绝对值');
@@ -3074,6 +3074,16 @@ INSERT INTO `dataset_table_function` VALUES (105, 'ABS', 'ABS(value)', 'oracle',
 INSERT INTO `dataset_table_function` VALUES (106, 'CEIL', 'CEIL(value)', 'oracle', 2, '返回大于等于value的最小整数');
 INSERT INTO `dataset_table_function` VALUES (107, 'FLOOR', 'FLOOR(value)', 'oracle', 2, '返回小于等于value的最大整数');
 INSERT INTO `dataset_table_function` VALUES (108, 'ROUND', 'ROUND(value,n)', 'oracle', 2, '对value进行四舍五入，保存小数点右侧的n位。如果n省略的话，相当于n=0的情况');
+INSERT INTO `dataset_table_function` VALUES (109, 'SIN', 'SIN(x)', 'oracle', 2, '返回x的正弦，其中x为给定的弧度值');
+INSERT INTO `dataset_table_function` VALUES (110, 'ASIN', 'ASIN(x)', 'oracle', 2, '返回x的反正弦值');
+INSERT INTO `dataset_table_function` VALUES (111, 'COS', 'COS(x)', 'oracle', 2, '返回x的余弦，其中x为给定的弧度值');
+INSERT INTO `dataset_table_function` VALUES (112, 'ACOS', 'ACOS(x)', 'oracle', 2, '返回x的反余弦值');
+INSERT INTO `dataset_table_function` VALUES (113, 'TAN', 'TAN(x)', 'oracle', 2, '返回x的正切，其中x为给定的弧度值');
+INSERT INTO `dataset_table_function` VALUES (114, 'ATAN', 'ATAN(x)', 'oracle', 2, '返回x的反正切值');
+INSERT INTO `dataset_table_function` VALUES (115, 'COT', 'COT(x)', 'oracle', 2, '返回给定弧度值x的余切');
+INSERT INTO `dataset_table_function` VALUES (116, 'CASE', 'CASE expr WHEN v1 THEN r1 [WHEN v2 THEN v2] [ELSE rn] END', 'oracle', 5, '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不想等，则返回ELSE后面的rn');
+INSERT INTO `dataset_table_function` VALUES (117, 'IF', 'IF(expr,v1,v2)', 'oracle', 5, '如果expr是TRUE则返回v1，否则返回v2');
+INSERT INTO `dataset_table_function` VALUES (118, 'IFNULL', 'IFNULL(v1,v2)', 'oracle', 5, '如果v1不为NULL，则返回v1，否则返回v2');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
