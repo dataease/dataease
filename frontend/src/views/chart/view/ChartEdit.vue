@@ -489,13 +489,13 @@
 
     <!--视图更换数据集-->
     <el-dialog
+      v-if="selectTableFlag"
       v-dialogDrag
       :title="changeDsTitle"
       :visible="selectTableFlag"
       :show-close="false"
       width="70%"
       class="dialog-css"
-      :destroy-on-close="true"
     >
       <table-selector @getTable="getTable" />
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
@@ -507,10 +507,10 @@
 
     <!--编辑视图使用的数据集的字段-->
     <el-dialog
+      v-if="editDsField"
       :visible="editDsField"
       :show-close="false"
       class="dialog-css"
-      :destroy-on-close="true"
       :fullscreen="true"
     >
       <field-edit :param="table" />
