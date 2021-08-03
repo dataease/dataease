@@ -8,7 +8,7 @@
       'rect-shape'
     ]"
   >
-    <i v-if="requestStatus==='success'" style="right:25px;position: absolute;z-index: 2" class="icon iconfont icon-fangda" @click.stop="openChartDetailsDialog" />
+    <!--    <i v-if="requestStatus==='success'" style="right:25px;position: absolute;z-index: 2" class="icon iconfont icon-fangda" @click.stop="openChartDetailsDialog" />-->
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -128,7 +128,7 @@ export default {
     this.getData(this.element.propValue.viewId)
   },
   mounted() {
-
+    eventBus.$on('showViewDetails', this.openChartDetailsDialog)
   },
   methods: {
     mergeStyle() {

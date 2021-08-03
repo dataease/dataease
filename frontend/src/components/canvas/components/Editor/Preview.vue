@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasInfoTemp" :style="customStyle" class="bg">
+  <div id="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
     <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
       {{ $t('panel.panelNull') }}
     </el-row>
@@ -121,6 +121,8 @@ export default {
       return this.componentDataShow
     },
     ...mapState([
+      'isClickComponent',
+      'curComponent',
       'componentData',
       'canvasStyleData'
     ])
@@ -204,6 +206,17 @@ export default {
     },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
+    },
+    deselectCurComponent(e) {
+      debugger
+      if (!this.isClickComponent) {
+        this.$store.commit('setCurComponent', { component: null, index: null })
+      }
+    },
+    handleMouseDown() {
+      // console.log('handleMouseDown123')
+
+      this.$store.commit('setClickComponentStatus', false)
     }
   }
 }
