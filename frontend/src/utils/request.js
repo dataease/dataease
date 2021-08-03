@@ -62,6 +62,9 @@ const checkAuth = response => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
+    }, {
+      confirmButtonText: i18n.t('login.login_again'),
+      showClose: false
     })
   }
 
@@ -71,6 +74,9 @@ const checkAuth = response => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
+    }, {
+      confirmButtonText: i18n.t('login.login_again'),
+      showClose: false
     })
   }
   // token到期后自动续命 刷新token
