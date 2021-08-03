@@ -1631,26 +1631,26 @@ export default {
   user-select: none;
 }
 
-.mouseOn >>> .icon-shezhi{
-  z-index: 2;
-  display:block!important;
-}
-.vdr > i{
-  right: 5px;
-  color: gray;
-  position: absolute;
-}
+/*.mouseOn >>> .icon-shezhi{*/
+/*  z-index: 2;*/
+/*  display:block!important;*/
+/*}*/
+/*.vdr > i{*/
+/*  right: 5px;*/
+/*  color: gray;*/
+/*  position: absolute;*/
+/*}*/
 
-.vdr >>> i:hover {
-  color: red;
-}
+/*.vdr >>> i:hover {*/
+/*  color: red;*/
+/*}*/
 
-.vdr:hover >>> i {
-  z-index: 2;
-  display:block;
-}
+/*.vdr:hover >>> i {*/
+/*  z-index: 2;*/
+/*  display:block;*/
+/*}*/
 
-.vdr>>>.icon-shezhi {
-  display:none
-}
+/*.vdr>>>.icon-shezhi {*/
+/*  display:none*/
+/*}*/
 </style>
