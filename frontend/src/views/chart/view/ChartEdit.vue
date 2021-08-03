@@ -1352,7 +1352,7 @@ export default {
       return resultNode
     },
     addStack(e) {
-      this.dragCheckType(this.dimensionData, 'd')
+      this.dragCheckType(this.view.extStack, 'd')
       if (this.view.extStack && this.view.extStack.length > 1) {
         this.view.extStack = [this.view.extStack[0]]
       }
