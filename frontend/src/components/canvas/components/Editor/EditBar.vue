@@ -1,6 +1,6 @@
 <template>
   <div class="bar-main">
-    <div v-if="linkageSettingStatus" style="margin-right: 0px;width: 18px">
+    <div v-if="linkageSettingStatus" style="margin-right: -1px;width: 18px">
       <el-checkbox v-model="linkageActiveStatus" />
       <i v-if="linkageActiveStatus" class="icon iconfont icon-edit" @click.stop="linkageEdit" />
     </div>
