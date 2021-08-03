@@ -127,7 +127,11 @@ export default {
     tokenError: '信息錯誤，請重新登錄',
     username_error: '請輸入正確的 ID',
     password_error: '密碼不小於 8 位',
-    login_again: '重新登錄'
+
+    login_again: '重新登錄',
+
+    re_login: '重新登陸'
+
   },
   commons: {
     no_target_permission: '沒有權限',

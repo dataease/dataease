@@ -127,7 +127,11 @@ export default {
     tokenError: '登陆信息错误，请重新登录',
     username_error: '请输入正确的 ID',
     password_error: '密码不小于 8 位',
-    login_again: '重新登录'
+
+    login_again: '重新登录',
+
+    re_login: '重新登录'
+
   },
   commons: {
     no_target_permission: '没有权限',
