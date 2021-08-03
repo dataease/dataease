@@ -12,7 +12,7 @@
             <!--            <el-form-item :label="$t('chart.show')" class="form-item">-->
             <!--              <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>-->
             <!--            </el-form-item>-->
-            <el-form-item v-show="chart.type && !chart.type.includes('pie')" :label="$t('chart.pie_label_line_show')" class="form-item">
+            <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_show')" class="form-item">
               <el-checkbox v-model="labelForm.labelLine.show" @change="changeLabelAttr">{{ $t('chart.pie_label_line_show') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
