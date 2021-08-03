@@ -113,13 +113,16 @@ export default {
         }
 
         geoJson(customAttr.areaCode).then(res => {
-          this.initMapChart(res.data, chart)
+          // this.initMapChart(res.data, chart)
+          this.initMapChart(res, chart)
 
           this.$store.dispatch('map/setGeo', {
             key: customAttr.areaCode,
-            value: res.data
+            value: res
+            // value: res.data
           })
-          this.currentGeoJson = res.data
+          // this.currentGeoJson = res.data
+          this.currentGeoJson = res
         })
         return
       }
