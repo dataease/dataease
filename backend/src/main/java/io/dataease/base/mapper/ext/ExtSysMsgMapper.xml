@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.dataease.base.mapper.ext.ExtSysMsgMapper">
 
-    <resultMap id="msgGridDto" type="io.dataease.controller.message.dto.MsgGridDto" extends="io.dataease.base.mapper.SysMsgMapper.BaseResultMap">
+    <resultMap id="msgGridDto" type="io.dataease.controller.sys.response.MsgGridDto" extends="io.dataease.base.mapper.SysMsgMapper.BaseResultMap">
         <result column="router" property="router"></result>
         <result column="callback" property="callback"></result>
     </resultMap>

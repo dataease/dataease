@@ -354,8 +354,8 @@ export default {
 
     filterField(val) {
       if (val && val !== '') {
-        this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionListData.filter(ele => { return ele.name.includes(val) })))
-        this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList.filter(ele => { return ele.name.includes(val) })))
+        this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionListData.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
+        this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
       } else {
         this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
         this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList))

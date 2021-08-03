@@ -1,5 +1,6 @@
 package io.dataease.controller.panel.api;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelStoreDto;
 import io.swagger.annotations.Api;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 
 @Api(tags = "仪表板：收藏管理")
+@ApiSupport(order = 190)
 @RequestMapping("/api/store")
 public interface StoreApi {
 

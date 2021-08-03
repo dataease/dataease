@@ -1,6 +1,9 @@
 package io.dataease.controller.panel;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.service.panel.PanelGroupService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -10,6 +13,8 @@ import javax.annotation.Resource;
  * Date: 2021-03-05
  * Description:
  */
+@Api(tags = "仪表板：设计")
+@ApiSupport(order = 140)
 @RestController
 @RequestMapping("panel/design")
 public class PanelDesignController {
@@ -17,6 +22,7 @@ public class PanelDesignController {
     @Resource
     private PanelGroupService panelGroupService;
 
+    @ApiOperation("保存")
     @PostMapping("/saveDesign/{id}")
     public void deleteCircle(@PathVariable String id) {
         panelGroupService.deleteCircle(id);

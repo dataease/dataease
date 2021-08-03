@@ -96,6 +96,8 @@ public class ExtractDataService {
     private static String extention = "txt";
     private static String root_path = "/opt/dataease/data/kettle/";
 
+    @Value("${kettle.files.keep:false}")
+    private boolean kettleFilesKeep;
     @Value("${carte.host:127.0.0.1}")
     private String carte;
     @Value("${carte.port:8080}")
@@ -121,8 +123,7 @@ public class ExtractDataService {
             "else\n" +
             "  echo $result\n" +
             "  exit 1\n" +
-            "fi\n" +
-            "rm -rf %s\n";
+            "fi\n";
 
     public synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask, Long startTime) {
         datasetTable.setSyncStatus(JobStatus.Underway.name());
@@ -183,15 +184,15 @@ public class ExtractDataService {
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
 //                    sendWebMsg(datasetTable, null, true);
-                    deleteFile("all_scope", datasetTableId);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
 //                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
-                    deleteFile("all_scope", datasetTableId);
                 } finally {
+                    deleteFile("all_scope", datasetTableId);
+                    deleteFile(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData());
                 }
                 break;
 
@@ -209,9 +210,9 @@ public class ExtractDataService {
                     saveErrorLog(datasetTableId, null, e);
 //                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
+                } finally {
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
-                } finally {
                 }
                 break;
         }
@@ -235,13 +236,14 @@ public class ExtractDataService {
             return;
         }
         if (datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name()) || datasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Pending.name())) {
-            LogUtil.info("Skip synchronization task, task ID : " + datasetTableTask.getId());
+            LogUtil.info("Skip synchronization task: {} ,due to task status is {}", datasetTableTask.getId(), datasetTableTask.getStatus());
+            dataSetTableTaskService.checkTaskIsStopped(datasetTableTask);
             return;
         }
 
         Long startTime = System.currentTimeMillis();
         if (existSyncTask(datasetTable, datasetTableTask, startTime)) {
-            LogUtil.info("Skip synchronization task for dataset, dataset ID : " + datasetTableId);
+            LogUtil.info("Skip synchronization task for dataset due to exist other synctask, dataset ID : " + datasetTableId);
             return;
         }
         DatasetTableTaskLog datasetTableTaskLog = getDatasetTableTaskLog(datasetTableId, taskId, startTime);
@@ -269,7 +271,7 @@ public class ExtractDataService {
         String dorisTablColumnSql = createDorisTablColumnSql(datasetTableFields);
 
         boolean msg = false;
-        JobStatus jobStatus = JobStatus.Completed;
+        JobStatus lastExecStatus = JobStatus.Completed;
         Long execTime = null;
         switch (updateType) {
             case all_scope:  // 全量更新
@@ -290,17 +292,19 @@ public class ExtractDataService {
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
                     msg = true;
-                    jobStatus = JobStatus.Completed;
+                    lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, taskId, e);
                     msg = false;
-                    jobStatus = JobStatus.Error;
+                    lastExecStatus = JobStatus.Error;
                 } finally {
-                    try { deleteFile("all_scope", datasetTableId); }catch (Exception ignore){}
-                    try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){}
-                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, jobStatus); }catch (Exception ignore){}
-                    try { updateTableStatus(datasetTableId, datasetTable, jobStatus, execTime); }catch (Exception ignore){}
-                    try { dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId))); }catch (Exception ignore){}
+                    try { deleteFile("all_scope", datasetTableId); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
+                    try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
+                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus); }catch (Exception ignore){
+                        System.out.println(ignore.getMessage());
+                    }
+                    try { updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
+                    try { dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId))); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
                 }
                 break;
 
@@ -339,16 +343,16 @@ public class ExtractDataService {
                     saveSucessLog(datasetTableTaskLog);
 
                     msg = true;
-                    jobStatus = JobStatus.Completed;
+                    lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, taskId, e);
                     msg = false;
-                    jobStatus = JobStatus.Error;
+                    lastExecStatus = JobStatus.Error;
                 } finally {
                     try { deleteFile("incremental_add", datasetTableId); deleteFile("incremental_delete", datasetTableId); }catch (Exception ignore){}
                     try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){}
-                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, jobStatus); }catch (Exception ignore){}
-                    try { updateTableStatus(datasetTableId, datasetTable, jobStatus, execTime); }catch (Exception ignore){}
+                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus); }catch (Exception ignore){}
+                    try { updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime); }catch (Exception ignore){}
                 }
                 break;
         }
@@ -424,7 +428,7 @@ public class ExtractDataService {
 
     }
 
-    private String createDorisTablColumnSql(List<DatasetTableField> datasetTableFields) {
+    private String createDorisTablColumnSql(final List<DatasetTableField> datasetTableFields) {
         String Column_Fields = "dataease_uuid  varchar(50), `";
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
@@ -915,6 +919,9 @@ public class ExtractDataService {
     }
 
     public void deleteFile(String type, String dataSetTableId) {
+        if(kettleFilesKeep){
+            return;
+        }
         String transName = null;
         String jobName = null;
         String fileName = null;
@@ -923,38 +930,36 @@ public class ExtractDataService {
             case "all_scope":
                 transName = "trans_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_" + DorisTableUtils.dorisName(dataSetTableId);
-                fileName = DorisTableUtils.dorisTmpName(dataSetTableId);
+                fileName = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(dataSetTableId));
                 break;
             case "incremental_add":
                 transName = "trans_add_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_add_" + DorisTableUtils.dorisName(dataSetTableId);
-                fileName = DorisTableUtils.dorisAddName(dataSetTableId);
+                fileName = DorisTableUtils.dorisAddName(DorisTableUtils.dorisName(dataSetTableId));
                 break;
             case "incremental_delete":
                 transName = "trans_delete_" + DorisTableUtils.dorisName(dataSetTableId);
                 jobName = "job_delete_" + DorisTableUtils.dorisName(dataSetTableId);
-                fileName = DorisTableUtils.dorisDeleteName(dataSetTableId);
+                fileName = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(dataSetTableId));
                 break;
             default:
                 break;
         }
-        try {
-            File file = new File(root_path + fileName + "." + extention);
-            FileUtils.forceDelete(file);
-        } catch (Exception e) {
+        deleteFile(root_path + fileName + "." + extention);
+        deleteFile(root_path + jobName + ".kjb");
+        deleteFile(root_path + transName + ".ktr");
+    }
+
+    private void deleteFile(String filePath){
+        if(StringUtils.isEmpty(filePath)){
+            return;
         }
         try {
-            File file = new File(root_path + jobName + ".kjb");
-            FileUtils.forceDelete(file);
-        } catch (Exception e) {
-        }
-        try {
-            File file = new File(root_path + transName + ".ktr");
+            File file = new File(filePath);
             FileUtils.forceDelete(file);
         } catch (Exception e) {
         }
     }
-
     public boolean isKettleRunning() {
         try {
             if (!InetAddress.getByName(carte).isReachable(1000)) {

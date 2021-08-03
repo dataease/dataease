@@ -105,7 +105,7 @@
             width="500"
             trigger="click"
           >
-            <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="table.mode" @getTable="getTable" />
+            <dataset-group-selector-tree :fix-height="true" show-mode="union" :table="table" :custom-type="customType" :mode="table.mode" @getTable="getTable" />
             <el-button slot="reference" size="mini" style="width: 100%;">
               <p class="table-name-css" :title="targetTable.name || $t('dataset.pls_slc_union_table')">{{ targetTable.name || $t('dataset.pls_slc_union_table') }}</p>
             </el-button>
@@ -206,6 +206,8 @@ export default {
       if (this.table.id) {
         if (this.table.mode === 0) {
           this.customType = ['db']
+        } else {
+          this.customType = ['db', 'sql', 'excel']
         }
         post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
           // console.log(response)

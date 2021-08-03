@@ -126,7 +126,8 @@ export default {
     expires: '登陸信息過期，請重新登陸',
     tokenError: '信息錯誤，請重新登陸',
     username_error: '請輸入正確的 ID',
-    password_error: '密碼不小於 8 位'
+    password_error: '密碼不小於 8 位',
+    re_login: '重新登陸'
   },
   commons: {
     no_target_permission: '沒有權限',
@@ -990,7 +991,8 @@ export default {
     click_ref_function: '點擊引用函數',
     field_manage: '字段管理',
     edit_calc_field: '編輯計算字段',
-    calc_field: '計算字段'
+    calc_field: '計算字段',
+    show_sql: '顯示SQL'
   },
   datasource: {
     datasource: '數據源',

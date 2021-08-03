@@ -12,6 +12,7 @@ import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 
 import io.dataease.exception.DataEaseException;
@@ -84,8 +85,17 @@ public class AuthServer implements AuthApi {
     @Override
     public String logout() {
         String token = ServletUtils.getToken();
-        Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
-        authUserService.clearCache(userId);
+        if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
+            return "success";
+        }
+        try{
+            Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+            authUserService.clearCache(userId);
+        }catch (Exception e) {
+            LogUtil.error(e);
+            return "fail";
+        }
+
         return "success";
     }
 
@@ -98,10 +108,10 @@ public class AuthServer implements AuthApi {
         return true;
     }
 
-    @Override
+    /*@Override
     public Boolean isLogin() {
         return null;
-    }
+    }*/
 
 
 }

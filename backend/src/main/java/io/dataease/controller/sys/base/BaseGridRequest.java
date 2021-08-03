@@ -1,17 +1,31 @@
 package io.dataease.controller.sys.base;
 
 import io.dataease.base.mapper.ext.query.GridExample;
-import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
 
 
-@Data
 public class BaseGridRequest implements Serializable {
 
     private List<ConditionEntity> conditions;
+
+    public List<ConditionEntity> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(List<ConditionEntity> conditions) {
+        this.conditions = conditions;
+    }
+
+    public List<String> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<String> orders) {
+        this.orders = orders;
+    }
 
     private List<String> orders;
 

@@ -52,11 +52,11 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         }
 
         if (!CollectionUtils.isEmpty(authMap.get("role"))) {
-            authURD.setUserIds(authMap.get("role").stream().map(item -> Long.parseLong(item.getAuthTarget())).collect(Collectors.toList()));
+            authURD.setRoleIds(authMap.get("role").stream().map(item -> Long.parseLong(item.getAuthTarget())).collect(Collectors.toList()));
         }
 
         if (!CollectionUtils.isEmpty(authMap.get("dept"))) {
-            authURD.setUserIds(authMap.get("dept").stream().map(item -> Long.parseLong(item.getAuthTarget())).collect(Collectors.toList()));
+            authURD.setDeptIds(authMap.get("dept").stream().map(item -> Long.parseLong(item.getAuthTarget())).collect(Collectors.toList()));
         }
         return authURD;
     }

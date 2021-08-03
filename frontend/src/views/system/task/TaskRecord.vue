@@ -56,6 +56,7 @@ import ComplexTable from '@/components/business/complex-table'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { post } from '@/api/dataset/dataset'
+import {loadMenus} from "@/permission";
 
 export default {
   name: 'TaskRecord',
@@ -116,7 +117,8 @@ export default {
       last_condition: null,
       show_error_massage: false,
       error_massage: '',
-      matchLogId: null
+      matchLogId: null,
+      lastRequestComplete: true
     }
   },
   computed: {
@@ -139,7 +141,7 @@ export default {
       if (!this.timer) {
         this.timer = setInterval(() => {
           this.search(this.last_condition, false)
-        }, 5000)
+        }, 1000)
       }
     },
     destroyTimer() {
@@ -167,6 +169,12 @@ export default {
     select(selection) {
     },
     search(condition, showLoading = true) {
+      if(!this.lastRequestComplete){
+        return;
+      }else {
+        this.lastRequestComplete = false;
+      }
+
       this.last_condition = condition
       condition = formatQuickCondition(condition, 'dataset_table_task.name')
       const temp = formatCondition(condition)
@@ -175,6 +183,9 @@ export default {
       post('/dataset/taskLog/list/notexcel/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
+        this.lastRequestComplete = true;
+      }).catch(() => {
+        this.lastRequestComplete = true;
       })
     },
     showErrorMassage(massage) {

@@ -13,7 +13,13 @@ import java.util.List;
  */
 @Mapper
 public interface ExtDataSetTaskMapper {
-    List<DataSetTaskLogDTO> list(GridExample example);
+    List<DataSetTaskLogDTO> listTaskLog(GridExample example);
+
+    List<DataSetTaskLogDTO> listUserTaskLog(GridExample example);
 
     List<DataSetTaskDTO> taskList(GridExample example);
+
+    List<DataSetTaskDTO> userTaskList(GridExample example);
+
+    List<DataSetTaskDTO> taskWithTriggers(GridExample example);
 }

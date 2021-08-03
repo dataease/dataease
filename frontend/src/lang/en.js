@@ -126,7 +126,8 @@ export default {
     expires: 'Login token expired, please login again',
     tokenError: 'Token error, please login again',
     username_error: 'Please enter the correct ID',
-    password_error: 'The password can not be less than 8 digits'
+    password_error: 'The password can not be less than 8 digits',
+    re_login: 'Login again'
   },
   commons: {
     no_target_permission: 'No permission',
@@ -990,7 +991,8 @@ export default {
     click_ref_function: 'Click Quote Function',
     field_manage: 'Field Manage',
     edit_calc_field: 'Edit calc field',
-    calc_field: 'Calc Field'
+    calc_field: 'Calc Field',
+    show_sql: 'Show SQL'
   },
   datasource: {
     datasource: 'Data Source',

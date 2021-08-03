@@ -11,8 +11,8 @@ import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
-import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
@@ -383,12 +383,14 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             } else {
                 // check doris table
@@ -407,12 +409,14 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             }
 
@@ -434,12 +438,14 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             } else {
                 // check doris table
@@ -458,12 +464,14 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
@@ -483,12 +491,14 @@ public class DataSetTableService {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 e.printStackTrace();
+                DEException.throwException(e.getMessage());
             }
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                 dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
+                DEException.throwException(e.getMessage());
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             if (datasetTable.getMode() == 0) {
@@ -511,12 +521,14 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             } else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -531,6 +543,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
 
                 try {
@@ -538,6 +551,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    DEException.throwException(e.getMessage());
                 }
             }
         }
@@ -972,14 +986,15 @@ public class DataSetTableService {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(datasetTableIncrementalConfig.getTableId());
         List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(datasetTable.getId());
         datasetTableFields.sort((o1, o2) -> {
-            if (o1.getOriginName() == null) {
+            if (o1.getColumnIndex() == null) {
                 return -1;
             }
-            if (o2.getOriginName() == null) {
+            if (o2.getColumnIndex() == null) {
                 return 1;
             }
-            return o1.getOriginName().compareTo(o2.getOriginName());
+            return o1.getColumnIndex().compareTo(o2.getColumnIndex());
         });
+
         List<String> originNameFileds = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
@@ -991,10 +1006,14 @@ public class DataSetTableService {
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
             datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
-            datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
-                sqlFileds.add(filed);
-            });
-            sort(sqlFileds);
+            try{
+                datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
+                    sqlFileds.add(filed);
+                });
+            }catch (Exception e){
+                DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
+            }
+
             if (!originNameFileds.equals(sqlFileds)) {
                 DataEaseException.throwException(Translator.get("i18n_sql_add_not_matching") + sqlFileds.toString());
             }
@@ -1004,26 +1023,18 @@ public class DataSetTableService {
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
             datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
-            datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
-                sqlFileds.add(filed);
-            });
-            sort(sqlFileds);
+            try{
+                datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
+                    sqlFileds.add(filed);
+                });
+            }catch (Exception e){
+                DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
+            }
+
             if (!originNameFileds.equals(sqlFileds)) {
                 DataEaseException.throwException(Translator.get("i18n_sql_delete_not_matching") + sqlFileds.toString());
             }
         }
-    }
-
-    private void sort(List<String> sqlFileds) {
-        sqlFileds.sort((o1, o2) -> {
-            if (o1 == null) {
-                return -1;
-            }
-            if (o2 == null) {
-                return 1;
-            }
-            return o1.compareTo(o2);
-        });
     }
 
     private void checkName(DatasetTable datasetTable) {
@@ -1442,7 +1453,6 @@ public class DataSetTableService {
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
 
         dataSetTableTaskService.updateTaskStatus(taskIds, JobStatus.Error);
-        //TODO check task status
 
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());

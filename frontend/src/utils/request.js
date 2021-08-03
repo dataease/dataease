@@ -52,6 +52,10 @@ service.interceptors.request.use(
   }
 )
 
+const defaultOptions = {
+  confirmButtonText: i18n.t('login.re_login')
+}
+
 const checkAuth = response => {
   // 请根据实际需求修改
 
@@ -62,7 +66,7 @@ const checkAuth = response => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
-    })
+    }, defaultOptions)
   }
 
   if (response.headers['authentication-status'] === 'invalid') {

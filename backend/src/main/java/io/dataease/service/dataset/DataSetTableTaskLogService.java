@@ -45,36 +45,48 @@ public class DataSetTableTaskLogService {
         datasetTableTaskLogMapper.deleteByPrimaryKey(id);
     }
 
-    public List<DataSetTaskLogDTO> list(BaseGridRequest request, String type) {
+    public List<DataSetTaskLogDTO> listTaskLog(BaseGridRequest request, String type) {
+        List<ConditionEntity> conditionEntities = request.getConditions();
         if(!type.equalsIgnoreCase("excel")){
             ConditionEntity entity = new ConditionEntity();
             entity.setField("task_id");
             entity.setOperator("not in");
             List<String>status = new ArrayList<>();status.add("初始导入");status.add("替换");status.add("追加");
             entity.setValue(status);
-            List<ConditionEntity> conditionEntities = request.getConditions();
             if(CollectionUtils.isEmpty(conditionEntities)){
                 conditionEntities = new ArrayList<>();
             }
             conditionEntities.add(entity);
-
-            ConditionEntity entity2 = new ConditionEntity();
-            entity2.setOperator("extra");
-            entity2.setField(" FIND_IN_SET(dataset_table_task_log.table_id,cids) ");
-            conditionEntities.add(entity2);
-
-            request.setConditions(conditionEntities);
         }
+
+        ConditionEntity entity2 = new ConditionEntity();
+        entity2.setField("1");
+        entity2.setOperator("eq");
+        entity2.setValue("1");
+        conditionEntities.add(entity2);
+        request.setConditions(conditionEntities);
 
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
-        List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.list(gridExample);
-        dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
-            if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){
-                dataSetTaskLogDTO.setName(dataSetTaskLogDTO.getTaskId());
-            }
-        });
-        return dataSetTaskLogDTOS;
+
+        if(AuthUtils.getUser().getIsAdmin()){
+            List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.listTaskLog(gridExample);
+            dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
+                if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){
+                    dataSetTaskLogDTO.setName(dataSetTaskLogDTO.getTaskId());
+                }
+            });
+            return dataSetTaskLogDTOS;
+        }else {
+            List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.listUserTaskLog(gridExample);
+            dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
+                if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){
+                    dataSetTaskLogDTO.setName(dataSetTaskLogDTO.getTaskId());
+                }
+            });
+            return dataSetTaskLogDTOS;
+        }
+
     }
 
     public void deleteByTaskId(String taskId){
