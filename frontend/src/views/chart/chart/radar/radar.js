@@ -43,7 +43,8 @@ export function baseRadarOption(chart_option, chart) {
         data: [
           {
             value: y.data,
-            name: y.name
+            name: y.name,
+            label: y.label
           }
         ]
       }
