@@ -9,8 +9,8 @@ export const $alert = (message, callback, options) => {
 
 export const $confirm = (message, callback, options = {}) => {
   const defaultOptions = {
-    confirmButtonText: i18n.t('common.button.ok'),
-    cancelButtonText: i18n.t('common.button.cancel'),
+    confirmButtonText: i18n.t('commons.message_box.ok'),
+    cancelButtonText: i18n.t('commons.message_box.cancel'),
     type: 'warning',
     ...options
   }
