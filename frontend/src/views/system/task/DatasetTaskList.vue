@@ -416,15 +416,20 @@ export default {
       this.update_task = true
     },
     changeTaskStatus(task) {
-      const param = task
-      param.status = task.status === 'Underway' ? 'Pending' : 'Underway'
+      let param = JSON.parse(JSON.stringify(task));
       post('/dataset/task/updateStatus', task).then(response => {
-        task.status = param.status
-        this.$message({
-          message: this.$t('dataset.task.change_success'),
-          type: 'success',
-          showClose: true
-        })
+        if(response.success){
+          task.status = param.status
+          this.$message({
+            message: this.$t('dataset.task.change_success'),
+            type: 'success',
+            showClose: true
+          })
+        }else {
+          this.search(this.last_condition, false)
+        }
+      }).catch(() => {
+        this.search(this.last_condition, false)
       })
     },
     execTask(task) {
