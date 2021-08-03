@@ -4,7 +4,9 @@
     :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     class="component"
     @click="handleClick"
+    @mousedown="elementMouseDown"
   >
+    <edit-bar v-if="config === curComponent" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -33,8 +35,10 @@ import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
+import EditBar from '@/components/canvas/components/Editor/EditBar'
+
 export default {
-  components: { DeOutWidget },
+  components: { DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     config: {
@@ -60,7 +64,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'canvasStyleData'
+      'canvasStyleData',
+      'curComponent'
     ])
   },
   mounted() {
@@ -94,6 +99,17 @@ export default {
       Object.keys(events).forEach(event => {
         this[event](events[event])
       })
+    },
+    elementMouseDown(e) {
+      debugger
+      // private 设置当前组件数据及状态
+      this.$store.commit('setClickComponentStatus', true)
+      if (this.config.component !== 'v-text' && this.config.component !== 'rect-shape' && this.config.component !== 'de-input-search' && this.config.component !== 'de-number-range') {
+        e.preventDefault()
+      }
+      // 阻止冒泡事件
+      e.stopPropagation()
+      this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     }
   }
 }
