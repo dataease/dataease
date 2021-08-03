@@ -275,6 +275,7 @@ export default {
         // 第一次变化 不需要 重置边界 待改进
         if (this.changeIndex++ > 0) {
           this.resizeParentBounds()
+          this.$store.state.styleChangeTimes++
         }
         // this.changeScale()
       },
