@@ -36,8 +36,20 @@ export function baseRadarOption(chart_option, chart) {
         y.label = customAttr.label
       }
       chart_option.legend.data.push(y.name)
+
+      const d = {
+        name: y.name,
+        type: 'radar',
+        data: [
+          {
+            value: y.data,
+            name: y.name,
+            label: y.label
+          }
+        ]
+      }
       y.value = JSON.parse(JSON.stringify(y.data))
-      chart_option.series[0].data.push(y)
+      chart_option.series.push(d)
 
       maxValues.push(Math.max.apply(null, y.value))
     }

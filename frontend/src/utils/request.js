@@ -16,7 +16,7 @@ const LinkTokenKey = Config.LinkTokenKey
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 10000 // request timeout
+  timeout: 20000 // request timeout
 })
 
 // request interceptor
@@ -62,6 +62,9 @@ const checkAuth = response => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
+    }, {
+      confirmButtonText: i18n.t('login.login_again'),
+      showClose: false
     })
   }
 
@@ -71,6 +74,9 @@ const checkAuth = response => {
       store.dispatch('user/logout').then(() => {
         location.reload()
       })
+    }, {
+      confirmButtonText: i18n.t('login.login_again'),
+      showClose: false
     })
   }
   // token到期后自动续命 刷新token

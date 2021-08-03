@@ -8,7 +8,9 @@
     <complex-table
       :data="data"
       :columns="columns"
+      :hide-columns="true"
       :pagination-config="paginationConfig"
+      :search-config="searchConfig"
       @select="select"
       @search="search"
       @selection-change="handleSelectionChange"
@@ -93,7 +95,11 @@ export default {
         pageSize: 10,
         total: 0
       },
-      multipleSelection: []
+      multipleSelection: [],
+      searchConfig: {
+        useQuickSearch: false,
+        useComplexSearch: false
+      }
     }
   },
   computed: {

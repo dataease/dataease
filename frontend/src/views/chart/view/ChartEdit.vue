@@ -1256,8 +1256,8 @@ export default {
 
     fieldFilter(val) {
       if (val && val !== '') {
-        this.dimensionData = JSON.parse(JSON.stringify(this.dimension.filter(ele => { return ele.name.includes(val) })))
-        this.quotaData = JSON.parse(JSON.stringify(this.quota.filter(ele => { return ele.name.includes(val) })))
+        this.dimensionData = JSON.parse(JSON.stringify(this.dimension.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
+        this.quotaData = JSON.parse(JSON.stringify(this.quota.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
       } else {
         this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
         this.quotaData = JSON.parse(JSON.stringify(this.quota))

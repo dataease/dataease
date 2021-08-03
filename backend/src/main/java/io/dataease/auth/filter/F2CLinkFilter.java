@@ -34,10 +34,14 @@ public class F2CLinkFilter extends AnonymousFilter {
             String id = resourceId.asString();
             PanelLink panelLink = LinkUtil.queryLink(id);
             if (ObjectUtil.isEmpty(panelLink)) return false;
+            String pwd;
             if (!panelLink.getEnablePwd()) {
                 panelLink.setPwd("dataease");
+                pwd = panelLink.getPwd();
+            }else {
+                pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, panelLink.getPwd());
             }
-            return JWTUtils.verifyLink(link_token, id, RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, panelLink.getPwd()));
+            return JWTUtils.verifyLink(link_token, id, pwd);
         }catch (Exception e) {
             LogUtil.error(e);
         }

@@ -3,6 +3,7 @@ package io.dataease.config;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,6 +24,9 @@ import java.util.List;
 public class Knife4jConfiguration {
 
     private final OpenApiExtensionResolver openApiExtensionResolver;
+
+    @Value("${app.version}")
+    private String version;
 
 
     @Autowired
@@ -63,24 +67,20 @@ public class Knife4jConfiguration {
 
     private ApiInfo apiInfo(){
         return new ApiInfoBuilder()
-                .title("DataEase很棒~~~！！！")
-                .license("杭州飞致云信息科技有限公司 1.0-b9")
-                .description("人人可用的可视化工具")
-                .termsOfServiceUrl("http://fit2cloud.com/")
+                .title("DataEase")
+                .description("人人可用的开源数据可视化分析工具")
+                .termsOfServiceUrl("https://dataease.io")
                 .contact(new Contact("fit2cloud","https://www.fit2cloud.com/dataease/index.html","dataease@fit2cloud.com"))
-                .version("1.0")
+                .version(version)
                 .build();
     }
 
     private Docket defaultApi(String groupName, String packageName) {
         List<SecurityScheme> securitySchemes=new ArrayList<>();
+        securitySchemes.add(apiKey());
         List<SecurityContext> securityContexts = new ArrayList<>();
         securityContexts.add(securityContext());
-        HttpAuthenticationScheme httpAuthenticationScheme = HttpAuthenticationScheme.JWT_BEARER_BUILDER
-                .name(HttpHeaders.AUTHORIZATION)
-                .description("Bearer Token")
-                .build();
-        securitySchemes.add(httpAuthenticationScheme);
+
         Docket docket=new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
                 .groupName(groupName)
@@ -100,12 +100,16 @@ public class Knife4jConfiguration {
                 .build();
     }
 
+    private ApiKey apiKey() {
+        return new ApiKey("Authorization", "Authorization", "header");
+    }
+
 
     List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return CollectionUtil.newArrayList(new SecurityReference("BearerToken", authorizationScopes));
+        return CollectionUtil.newArrayList(new SecurityReference("Authorization", authorizationScopes));
     }
 
 }

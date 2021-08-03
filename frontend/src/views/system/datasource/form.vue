@@ -26,10 +26,10 @@
         </el-form-item>
 
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host">
-          <el-input v-model="form.configuration.host" autocomplete="off" :disabled="formType=='modify'" />
+          <el-input v-model="form.configuration.host" autocomplete="off"  />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase">
-          <el-input v-model="form.configuration.dataBase" autocomplete="off" :disabled="formType=='modify'" />
+          <el-input v-model="form.configuration.dataBase" autocomplete="off"  />
         </el-form-item>
 
         <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.oracle_connection_type')" prop="configuration.connectionType">
@@ -38,7 +38,7 @@
         </el-form-item>
 
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')" prop="configuration.username">
-          <el-input v-model="form.configuration.username" autocomplete="off" :disabled="formType=='modify'" />
+          <el-input v-model="form.configuration.username" autocomplete="off"  />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')" prop="configuration.password">
           <el-input v-model="form.configuration.password" autocomplete="off" show-password />
@@ -53,7 +53,7 @@
         </el-form-item>
 
         <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.schema')">
-          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width" :disabled="formType=='modify'">
+          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width">
             <el-option
               v-for="item in schemas"
               :key="item"
@@ -79,6 +79,8 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import { addDs, editDs, getSchema, validateDs } from '@/api/system/datasource'
+import { $confirm } from '@/utils/message'
+
 export default {
   name: 'DsForm',
   components: { LayoutContent },
@@ -105,7 +107,8 @@ export default {
       },
       allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' }, { name: 'oracle', label: 'Oracle', type: 'jdbc' }],
       schemas: [],
-      canEdit: false
+      canEdit: false,
+      originConfiguration: {}
     }
   },
 
@@ -140,6 +143,7 @@ export default {
     edit(row) {
       this.formType = 'modify'
       this.form = Object.assign({}, row)
+      this.originConfiguration = this.form.configuration
       this.form.configuration = JSON.parse(this.form.configuration)
     },
 
@@ -156,11 +160,21 @@ export default {
           const method = this.formType === 'add' ? addDs : editDs
           const form = JSON.parse(JSON.stringify(this.form))
           form.configuration = JSON.stringify(form.configuration)
-          method(form).then(res => {
-            this.$success(this.$t('commons.save_success'))
-            this.refreshTree()
-            this.backToList()
-          })
+          if(this.formType !== 'add' && this.originConfiguration !== form.configuration) {
+            $confirm(this.$t('datasource.edit_datasource_msg'), () => {
+              method(form).then(res => {
+                this.$success(this.$t('commons.save_success'))
+                this.refreshTree()
+                this.backToList()
+              })
+            })
+          }else {
+            method(form).then(res => {
+              this.$success(this.$t('commons.save_success'))
+              this.refreshTree()
+              this.backToList()
+            })
+          }
         } else {
           return false
         }

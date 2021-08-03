@@ -3,6 +3,7 @@ package io.dataease.controller.sys;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
@@ -16,12 +17,15 @@ import io.dataease.service.sys.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @Api(tags = "系统：用户管理")
+@ApiSupport(order = 220)
 @RequestMapping("/api/user")
 public class SysUserController {
 

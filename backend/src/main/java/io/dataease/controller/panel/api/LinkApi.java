@@ -1,6 +1,7 @@
 package io.dataease.controller.panel.api;
 
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @Api(tags = "仪表板：链接管理")
+@ApiSupport(order = 200)
 @RequestMapping("/api/link")
 public interface LinkApi {
 
