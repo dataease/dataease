@@ -334,7 +334,9 @@ export default {
     input_pwd: '请输入密码',
     message_box: {
       alert: '警告',
-      confirm: '确认'
+      confirm: '确认',
+      ok: '确认',
+      cancel: '取消'
     }
   },
   documentation: {
@@ -1025,7 +1027,8 @@ export default {
     oracle_service_name: '服务名',
     get_schema: '获取 Schema',
     schema: '数据库 Schema',
-    please_choose_schema: '请选择数据库 Schema'
+    please_choose_schema: '请选择数据库 Schema',
+    edit_datasource_msg: '修改数据源信息，可能会导致改数据源下的数据集不可用，确认修改？'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

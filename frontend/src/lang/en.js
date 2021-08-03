@@ -334,7 +334,9 @@ export default {
     input_pwd: 'Please input password',
     message_box: {
       alert: 'Alert',
-      confirm: 'Confirm'
+      confirm: 'Confirm',
+      ok: 'Confirm',
+      cancel: 'Cancel'
     }
   },
   documentation: {
