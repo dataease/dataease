@@ -417,7 +417,8 @@ export default {
     },
     changeTaskStatus(task) {
       let param = JSON.parse(JSON.stringify(task));
-      post('/dataset/task/updateStatus', task).then(response => {
+      param.status = task.status === 'Underway' ? 'Pending' : 'Underway'
+      post('/dataset/task/updateStatus', param).then(response => {
         if(response.success){
           task.status = param.status
           this.$message({
