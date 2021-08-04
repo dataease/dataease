@@ -246,10 +246,10 @@
                       animation="300"
                       :move="onMove"
                       class="drag-block-style"
-                      @add="addXaxis"
+                      @add="addDrill"
                     >
                       <transition-group class="draggable-group">
-                        <dimension-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
+                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dillItemChange" @onDimensionItemRemove="drillItemRemove" />
                       </transition-group>
                     </draggable>
                     <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
@@ -555,6 +555,7 @@ import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
 import ChartDragItem from '../components/drag-item/ChartDragItem'
+import DrillItem from '../components/drag-item/DrillItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
@@ -616,7 +617,8 @@ export default {
     QuotaItem,
     DimensionItem,
     draggable,
-    ChartDragItem
+    ChartDragItem,
+    DrillItem
   },
   props: {
     param: {
@@ -1390,6 +1392,18 @@ export default {
     },
     stackItemRemove(item) {
       this.view.extStack.splice(item.index, 1)
+      this.save(true)
+    },
+    dillItemChange(item) {
+      this.save(true)
+    },
+    drillItemRemove(item) {
+      this.view.drillFields.splice(item.index, 1)
+      this.save(true)
+    },
+    addDrill(e) {
+      this.dragCheckType(this.view.drillFields, 'd')
+      this.dragMoveDuplicate(this.view.drillFields, e)
       this.save(true)
     }
   }
