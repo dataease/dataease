@@ -12,6 +12,9 @@ import java.util.List;
  */
 public class PanelViewLinkageDTO extends PanelViewLinkage {
 
+    //目标视图名称
+    private String targetViewName;
+
     //关联状态
     private boolean linkageActive = true;
 
@@ -19,6 +22,14 @@ public class PanelViewLinkageDTO extends PanelViewLinkage {
 
     public PanelViewLinkageDTO() {
 
+    }
+
+    public String getTargetViewName() {
+        return targetViewName;
+    }
+
+    public void setTargetViewName(String targetViewName) {
+        this.targetViewName = targetViewName;
     }
 
     public PanelViewLinkageDTO(boolean linkageActive) {
