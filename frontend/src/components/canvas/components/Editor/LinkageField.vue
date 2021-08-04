@@ -1,29 +1,30 @@
 <template>
-  <div class="bar-main">
-    <div v-if="linkageSettingStatus&&element!==curLinkageView&&element.type==='view'" style="margin-right: -1px;width: 18px">
-      <el-checkbox v-model="linkageInfo.linkageActive" />
-      <linkage-field v-if="linkageInfo.linkageActive" />
-      <!--      <i v-if="linkageInfo.linkageActive" class="icon iconfont icon-edit" @click.stop="linkageEdit" />-->
-    </div>
-    <div v-else-if="!linkageSettingStatus">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;">
-        <i slot="icon" class="icon iconfont icon-shezhi" />
-      </setting-menu>
-      <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
-      <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
-    </div>
 
-  </div>
+  <el-popover
+    v-model="isSetting"
+    width="300"
+    trigger="click"
+  >
+    <el-row>
+      <el-col :span="10" />
+      <el-col :span="10" />
+    </el-row>
+
+    this is test
+
+    <el-row class="bottom">
+      <el-button size="mini" type="success" icon="el-icon-plus" round>追加联动依赖字段</el-button>
+    </el-row>
+
+    <!--    <el-button slot="reference">T</el-button>-->
+    <i slot="reference" class="icon iconfont icon-edit slot-class" />
+
+  </el-popover>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import bus from '@/utils/bus'
-import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
-import LinkageField from '@/components/canvas/components/Editor/LinkageField'
-
 export default {
-  components: { SettingMenu, LinkageField },
 
   props: {
     element: {
@@ -99,21 +100,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bar-main{
-    position: absolute;
-    right: 0px;
-    float:right;
-    z-index: 2;
-    border-radius:2px;
-    padding-left: 5px;
-    padding-right: 2px;
-    cursor:pointer!important;
-    background-color: #0a7be0;
-  }
-  .bar-main i{
+  .slot-class{
     color: white;
-    float: right;
-    margin-right: 3px;
+  }
+
+  .bottom {
+    text-align: center;
+
   }
 
 </style>
