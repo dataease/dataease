@@ -647,10 +647,12 @@ export default {
   }
 
   .father .child {
-    display: none;
+    /*display: none;*/
+    visibility: hidden;
   }
   .father:hover .child {
-    display: inline;
+    /*display: inline;*/
+    visibility: visible;
   }
 
 </style>
