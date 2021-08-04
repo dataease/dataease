@@ -1,10 +1,10 @@
 <template>
   <div class="bar-main">
-    <div v-if="linkageSettingStatus" style="margin-right: -1px;width: 18px">
-      <el-checkbox v-model="linkageActiveStatus" />
-      <i v-if="linkageActiveStatus" class="icon iconfont icon-edit" @click.stop="linkageEdit" />
+    <div v-if="linkageSettingStatus&&element!==curLinkageView&&element.type==='view'" style="margin-right: -1px;width: 18px">
+      <el-checkbox v-model="linkageInfo.linkageActive" />
+      <i v-if="linkageInfo.linkageActive" class="icon iconfont icon-edit" @click.stop="linkageEdit" />
     </div>
-    <div v-else>
+    <div v-else-if="!linkageSettingStatus">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;">
         <i slot="icon" class="icon iconfont icon-shezhi" />
       </setting-menu>
@@ -17,7 +17,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import eventBus from '@/components/canvas/utils/eventBus'
 import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 
@@ -51,15 +50,22 @@ export default {
       ]
     }
   },
-  computed: mapState([
-    'menuTop',
-    'menuLeft',
-    'menuShow',
-    'curComponent',
-    'componentData',
-    'canvasStyleData',
-    'linkageSettingStatus'
-  ]),
+  computed: {
+    linkageInfo() {
+      return this.targetLinkageInfo[this.element.propValue.viewId]
+    },
+    ...mapState([
+      'menuTop',
+      'menuLeft',
+      'menuShow',
+      'curComponent',
+      'componentData',
+      'canvasStyleData',
+      'linkageSettingStatus',
+      'targetLinkageInfo',
+      'curLinkageView'
+    ])
+  },
   methods: {
     showViewDetails() {
       this.$emit('showViewDetails')
