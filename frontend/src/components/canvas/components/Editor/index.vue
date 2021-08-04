@@ -30,6 +30,8 @@
       :snap-tolerance="2"
       :change-style="customStyle"
       :draggable="!linkageSettingStatus"
+      :resizable="!linkageSettingStatus"
+      :linkage-active="linkageSettingStatus&&item===curLinkageView"
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
     >
@@ -251,7 +253,8 @@ export default {
       'curComponent',
       'canvasStyleData',
       'editor',
-      'linkageSettingStatus'
+      'linkageSettingStatus',
+      'curLinkageView'
     ])
   },
   watch: {

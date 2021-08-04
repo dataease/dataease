@@ -21,6 +21,7 @@
 <script>
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
+import { getViewLinkageGather } from '@/api/panel/linkage'
 
 export default {
   data() {
@@ -122,7 +123,19 @@ export default {
       this.$store.commit('recordSnapshot')
     },
     linkageSetting() {
-      this.$store.commit('setLinkageSettingStatus', true)
+      debugger
+      const targetViewIds = this.componentData.filter(item => item.type === 'view' && item.propValue && item.propValue.viewId && item !== this.curComponent)
+        .map(item => item.propValue.viewId)
+
+      // 获取当前仪表板当前视图联动信息
+      const requestInfo = {
+        'panelId': this.$store.state.panel.panelInfo.id,
+        'sourceViewId': this.curComponent.propValue.viewId,
+        'targetViewIds': targetViewIds
+      }
+      getViewLinkageGather(requestInfo).then(rsp => {
+        this.$store.commit('setLinkageInfo', rsp.data)
+      })
     }
   }
 }

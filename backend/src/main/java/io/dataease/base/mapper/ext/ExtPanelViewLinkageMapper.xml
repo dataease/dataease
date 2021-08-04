@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper">
+
+  <resultMap id="LinkageGatherMap" type="io.dataease.dto.PanelViewLinkageDTO">
+    <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId" />
+    <collection property="linkageFields">
+      <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled"  />
+      <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"  />
+    </collection>
+  </resultMap>
+
+  <select id ="getViewLinkageGather" resultMap="LinkageGatherMap">
+    SELECT
+        panel_view_linkage.target_view_id,
+         panel_view_linkage_field.source_filed,
+         panel_view_linkage_field.target_filed
+    FROM
+        panel_view_linkage
+	LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
+	where panel_view_linkage.panel_id = #{panelId} and panel_view_linkage.source_view_id =#{sourceViewId}
+  </select>
+</mapper>
