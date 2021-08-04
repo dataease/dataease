@@ -109,25 +109,25 @@ export default {
   navbar: {
     dashboard: '首頁',
     github: '項目地址',
-    logOut: '退出登錄',
+    logOut: '退出登陸',
     profile: '個人中心',
     theme: '換膚',
     size: '佈局大小'
   },
   login: {
-    title: '系統登錄',
+    title: '系統登陸',
     welcome: '歡迎使用',
-    logIn: '登錄',
+    logIn: '登陸',
     username: '帳號',
     password: '密碼',
     any: '任意字符',
-    thirdparty: '第三方登錄',
+    thirdparty: '第三方登陸',
     thirdpartyTips: '本地不能模擬，請結合自己業務進行模擬！！！',
-    expires: '登錄信息過期，請重新登錄',
-    tokenError: '信息錯誤，請重新登錄',
+    expires: '登陸信息過期，請重新登陸',
+    tokenError: '信息錯誤，請重新登陸',
     username_error: '請輸入正確的 ID',
     password_error: '密碼不小於 8 位',
-    login_again: '重新登錄'
+    re_login: '重新登陸'
   },
   commons: {
     no_target_permission: '沒有權限',
@@ -184,7 +184,7 @@ export default {
     prompt: '提示',
     operating: '操作',
     input_limit: '長度在 {0} 到 {1} 個字符',
-    login: '登錄',
+    login: '登陸',
     welcome: '一站式開源數據分析平臺',
     username: '姓名',
     password: '密碼',
@@ -256,7 +256,7 @@ export default {
     remove: '移除',
     remove_cancel: '移除取消',
     remove_success: '移除成功',
-    tips: '認證信息已過期，請重新登錄',
+    tips: '認證信息已過期，請重新登陸',
     not_performed_yet: '尚未執行',
     incorrect_input: '輸入內容不正確',
     delete_confirm: '請輸入以下內容，確認刪除：',
@@ -754,6 +754,7 @@ export default {
     chart_funnel: '漏鬥圖',
     chart_radar: '雷達圖',
     chart_gauge: '儀表盤',
+    chart_map: '地圖',
     dateStyle: '日期顯示',
     datePattern: '日期格式',
     y: '年',
@@ -822,6 +823,11 @@ export default {
     drag_block_funnel_split: '漏鬥分層',
     drag_block_radar_length: '分支長度',
     drag_block_radar_label: '分支標簽',
+    map_range: '地圖範圍',
+    select_map_range: '請選擇地圖範圍',
+    area: '地區',
+    stack_item: '堆疊項',
+    placeholder_field: '拖動字段至此處',
     axis_label_rotate: '標簽角度'
   },
   dataset: {
@@ -976,7 +982,19 @@ export default {
     right_join: '右連接',
     inner_join: '內連接',
     full_join: '全連接',
-    can_not_union_diff_datasource: '被關聯數據集必須與當前數據集的數據源一致'
+    can_not_union_diff_datasource: '被關聯數據集必須與當前數據集的數據源一致',
+    operator: '操作',
+    d_q_trans: '維度/指標轉換',
+    add_calc_field: '新建计算字段',
+    input_name: '請輸入名稱',
+    field_exp: '字段表達式',
+    data_type: '數據類型',
+    click_ref_field: '點擊引用字段',
+    click_ref_function: '點擊引用函數',
+    field_manage: '字段管理',
+    edit_calc_field: '編輯計算字段',
+    calc_field: '計算字段',
+    show_sql: '顯示SQL'
   },
   datasource: {
     datasource: '數據源',
@@ -1129,7 +1147,7 @@ export default {
     lineHeight: '行高',
     letterSpacing: '字間距',
     textAlign: '左右對齊',
-    opacity: '透明度',
+    opacity: '不透明度',
     verticalAlign: '上下對齊',
     text_align_left: '左對齊',
     text_align_center: '左右居中',
@@ -1168,9 +1186,9 @@ export default {
   },
   display: {
     logo: '頭部系統 Logo',
-    loginLogo: '登錄頁面頭部 Logo',
-    loginImage: '登錄頁面右側圖片',
-    loginTitle: '登錄頁面標題',
+    loginLogo: '登陸頁面頭部 Logo',
+    loginImage: '登陸頁面右側圖片',
+    loginTitle: '登陸頁面標題',
     title: '系統名稱',
     advice_size: '建議圖片大小'
   },
@@ -1290,5 +1308,54 @@ export default {
     i18n_msg_type_dataset_sync_faild: '數據集同步失敗',
     i18n_msg_type_all: '全部類型',
     channel_inner_msg: '站內消息'
+  },
+  denumberrange: {
+    label: '數值區間',
+    split_placeholder: '至',
+    please_key_min: '請輸入最小值',
+    please_key_max: '請輸入最大值',
+    out_of_min: '最小值不能小于最小整數-2³²',
+    out_of_max: '最大值不能大于最大整數2³²-1',
+    must_int: '請輸入整數',
+    min_out_max: '最小值必須小于最大值',
+    max_out_min: '最大值必須大于最小值'
+  },
+  denumberselect: {
+    label: '數字下拉',
+    placeholder: '請選擇'
+  },
+  deinputsearch: {
+    label: '文本搜索',
+    placeholder: '請輸入關鍵字'
+  },
+  detextselect: {
+    label: '文本下拉',
+    placeholder: '請選擇'
+  },
+  detextgridselect: {
+    label: '文本列表',
+    placeholder: '請選擇'
+  },
+  denumbergridselect: {
+    label: '數字列表',
+    placeholder: '請選擇'
+  },
+  dedaterange: {
+    label: '日期範圍',
+    to_placeholder: '結束日期',
+    from_placeholder: '開始日期',
+    split_placeholder: '至'
+  },
+  dedate: {
+    label: '日期',
+    placeholder: '請選擇日期'
+  },
+  deyearmonth: {
+    label: '年月',
+    placeholder: '請選擇年月'
+  },
+  deyear: {
+    label: '年份',
+    placeholder: '請選擇年份'
   }
 }

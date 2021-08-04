@@ -4,7 +4,6 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasetTableTaskMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTaskMapper;
-import io.dataease.base.mapper.ext.UtilMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
@@ -52,8 +51,6 @@ public class DataSetTableTaskService {
     private ExtDataSetTaskMapper extDataSetTaskMapper;
     @Resource
     private DatasetTableMapper datasetTableMapper;
-    @Resource
-    private UtilMapper utilMapper;
 
     public DatasetTableTask save(DataSetTaskRequest dataSetTaskRequest) throws Exception {
         checkName(dataSetTaskRequest);
@@ -95,12 +92,15 @@ public class DataSetTableTaskService {
             datasetTableTaskMapper.updateByPrimaryKeySelective(datasetTableTask);
         }
 
+        scheduleService.addSchedule(datasetTableTask);
+
         // simple
         if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) { // SIMPLE 类型，提前占位
             execNow(datasetTableTask);
+        }else {
+            checkTaskIsStopped(datasetTableTask);
         }
-        scheduleService.addSchedule(datasetTableTask);
-        checkTaskIsStopped(datasetTableTask);
+
         return datasetTableTask;
     }
 
@@ -281,7 +281,13 @@ public class DataSetTableTaskService {
         }
     }
 
-    public void updateDatasetTableTaskStatus(DatasetTableTask datasetTableTask){
+    public void updateDatasetTableTaskStatus(DatasetTableTask datasetTableTask)throws Exception{
+
+        DatasetTableTask dbDatasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(datasetTableTask.getId());
+        if(dbDatasetTableTask.getStatus().equalsIgnoreCase(TaskStatus.Exec.name()) || dbDatasetTableTask.getStatus().equals(TaskStatus.Stopped.name())){
+            throw new Exception(Translator.get("i18n_change_task_status_error") + Translator.get("i18n_" + dbDatasetTableTask.getStatus()));
+        }
+
         DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
         DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
         criteria.andIdEqualTo(datasetTableTask.getId());

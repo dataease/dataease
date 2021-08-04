@@ -1,6 +1,17 @@
 <template>
   <div>
-    <div class="toolbar">
+    <!--    linkageActiveStatus:{{ linkageActiveStatus }}-->
+    <div v-if="linkageSettingStatus" class="toolbar">
+      <span style="float: right;">
+        <el-button size="mini" @click="saveLinkage">
+          {{ $t('commons.confirm') }}
+        </el-button>
+        <el-button size="mini" @click="cancelLinkage">
+          {{ $t('commons.cancel') }}
+        </el-button>
+      </span>
+    </div>
+    <div v-else class="toolbar">
 
       <div class="canvas-config" style="margin-right: 10px">
         <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />
@@ -125,7 +136,8 @@ export default {
     'curComponent',
     'changeTimes',
     'snapshotIndex',
-    'lastSaveSnapshotIndex'
+    'lastSaveSnapshotIndex',
+    'linkageSettingStatus'
   ]),
 
   created() {
@@ -302,6 +314,15 @@ export default {
     },
     closeNotSave() {
       this.close()
+    },
+    saveLinkage() {
+      this.cancelLinkageSettingStatus()
+    },
+    cancelLinkage() {
+      this.cancelLinkageSettingStatus()
+    },
+    cancelLinkageSettingStatus() {
+      this.$store.commit('setLinkageSettingStatus', false)
     }
   }
 }

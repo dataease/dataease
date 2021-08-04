@@ -3012,7 +3012,7 @@ INSERT INTO `dataset_table_function` VALUES (43, 'CURRENT_TIMESTAMP', 'CURRENT_T
 INSERT INTO `dataset_table_function` VALUES (44, 'UNIX_TIMESTAMP', 'UNIX_TIMESTAMP()', 'mysql', 3, '返回一个格林尼治标准时间1970-01-01 00:00:00到现在的秒数');
 INSERT INTO `dataset_table_function` VALUES (45, 'UNIX_TIMESTAMP', 'UNIX_TIMESTAMP(date)', 'mysql', 3, '返回一个格林尼治标准时间1970-01-01 00:00:00到指定时间的秒数');
 INSERT INTO `dataset_table_function` VALUES (46, 'FROM_UNIXTIME', 'FROM_UNIXTIME(date)', 'mysql', 3, '把UNIX时间戳转换为普通格式的时间');
-INSERT INTO `dataset_table_function` VALUES (47, 'CASE', 'CASE expr WHEN v1 THEN r1 [WHEN v2 THEN v2] [ELSE rn] END', 'mysql', 3, '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不想等，则返回ELSE后面的rn');
+INSERT INTO `dataset_table_function` VALUES (47, 'CASE', 'CASE expr WHEN v1 THEN r1 [WHEN v2 THEN v2] [ELSE rn] END', 'mysql', 5, '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不想等，则返回ELSE后面的rn');
 INSERT INTO `dataset_table_function` VALUES (48, 'IF', 'IF(expr,v1,v2)', 'mysql', 5, '如果expr是TRUE则返回v1，否则返回v2');
 INSERT INTO `dataset_table_function` VALUES (49, 'IFNULL', 'IFNULL(v1,v2)', 'mysql', 5, '如果v1不为NULL，则返回v1，否则返回v2');
 INSERT INTO `dataset_table_function` VALUES (50, 'ABS', 'ABS(x)', 'doris', 2, '返回x的绝对值');

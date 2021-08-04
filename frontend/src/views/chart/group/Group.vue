@@ -257,13 +257,13 @@
 
     <!--添加视图-选择数据集-->
     <el-dialog
+      v-if="selectTableFlag"
       v-dialogDrag
       :title="$t('chart.add_chart')"
       :visible="selectTableFlag"
       :show-close="false"
       width="70%"
       class="dialog-css"
-      :destroy-on-close="true"
     >
       <el-row style="width: 800px;">
         <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
@@ -1048,10 +1048,12 @@ export default {
     text-overflow: ellipsis;
   }
   .father .child {
-    display: none;
+    /*display: none;*/
+    visibility: hidden;
   }
   .father:hover .child {
-    display: inline;
+    /*display: inline;*/
+    visibility: visible;
   }
   .tree-style {
     padding: 10px 15px;

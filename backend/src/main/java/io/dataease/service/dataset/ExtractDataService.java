@@ -283,7 +283,7 @@ public class ExtractDataService {
                     createDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)), dorisTablColumnSql);
                     generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
                     if (datasetTable.getType().equalsIgnoreCase("sql")) {
-                        generateJobFile("all_scope", datasetTable, fetchSqlField(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql(), datasource));
+                        generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     } else {
                         generateJobFile("all_scope", datasetTable, String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList())));
                     }
@@ -297,6 +297,7 @@ public class ExtractDataService {
                     saveErrorLog(datasetTableId, taskId, e);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
+                    execTime = null;
                 } finally {
                     try { deleteFile("all_scope", datasetTableId); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
                     try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
@@ -316,14 +317,17 @@ public class ExtractDataService {
                         return;
                     }
 
-                    if (datasetTable.getLastUpdateTime() == 0 || datasetTable.getLastUpdateTime() == null) {
-                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
-                        return;
-                    }
-
                     if (datasetTableTask == null ) {
                         datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, taskId);
                     }
+
+                    if (datasetTable.getLastUpdateTime() == null || datasetTable.getLastUpdateTime() == 0) {
+                        updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, null);
+                        saveErrorLog(datasetTableId, taskId, new Exception("未进行全量同步"));
+                        lastExecStatus = JobStatus.Error;
+                        return;
+                    }
+
                     execTime = System.currentTimeMillis();
                     if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
                         String sql = datasetTableIncrementalConfig.getIncrementalAdd().replace(lastUpdateTime, datasetTable.getLastUpdateTime().toString())
@@ -348,6 +352,7 @@ public class ExtractDataService {
                     saveErrorLog(datasetTableId, taskId, e);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
+                    execTime = null;
                 } finally {
                     try { deleteFile("incremental_add", datasetTableId); deleteFile("incremental_delete", datasetTableId); }catch (Exception ignore){}
                     try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){}
