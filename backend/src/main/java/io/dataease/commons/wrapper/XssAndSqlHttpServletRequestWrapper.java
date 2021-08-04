@@ -215,7 +215,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
     }
 
     public static boolean checkSqlInjection(Object obj){
-        Pattern pattern= Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)" +
+        Pattern pattern= Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+|\\-).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)" +
                 "|(.*\\b(select|update|union|and|or|delete|insert|trancate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute)\\b.*)");
         Matcher matcher=pattern.matcher(obj.toString().toLowerCase());
         return matcher.find();
