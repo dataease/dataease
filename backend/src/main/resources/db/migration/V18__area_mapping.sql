@@ -3078,3 +3078,7 @@ COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+
+ALTER TABLE `chart_view` ADD COLUMN `drill_fields` LONGTEXT COMMENT '钻取字段' AFTER `custom_filter`;
+UPDATE `chart_view` SET `drill_fields` = '[]';
+
