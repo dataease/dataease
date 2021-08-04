@@ -20,6 +20,7 @@
     <result column="custom_attr" jdbcType="LONGVARCHAR" property="customAttr" />
     <result column="custom_style" jdbcType="LONGVARCHAR" property="customStyle" />
     <result column="custom_filter" jdbcType="LONGVARCHAR" property="customFilter" />
+    <result column="drill_fields" jdbcType="LONGVARCHAR" property="drillFields" />
     <result column="snapshot" jdbcType="LONGVARCHAR" property="snapshot" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -85,7 +86,8 @@
     style_priority
   </sql>
   <sql id="Blob_Column_List">
-    x_axis, y_axis, ext_stack, custom_attr, custom_style, custom_filter, snapshot
+    x_axis, y_axis, ext_stack, custom_attr, custom_style, custom_filter, drill_fields, 
+    snapshot
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.ChartViewExample" resultMap="ResultMapWithBLOBs">
     select
@@ -141,13 +143,15 @@
       create_by, create_time, update_time, 
       style_priority, x_axis, y_axis, 
       ext_stack, custom_attr, custom_style, 
-      custom_filter, snapshot)
+      custom_filter, drill_fields, snapshot
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
       #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
       #{stylePriority,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, 
       #{extStack,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, 
-      #{customFilter,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR})
+      #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
     insert into chart_view
@@ -199,6 +203,9 @@
       </if>
       <if test="customFilter != null">
         custom_filter,
+      </if>
+      <if test="drillFields != null">
+        drill_fields,
       </if>
       <if test="snapshot != null">
         snapshot,
@@ -252,6 +259,9 @@
       </if>
       <if test="customFilter != null">
         #{customFilter,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="drillFields != null">
+        #{drillFields,jdbcType=LONGVARCHAR},
       </if>
       <if test="snapshot != null">
         #{snapshot,jdbcType=LONGVARCHAR},
@@ -315,6 +325,9 @@
       <if test="record.customFilter != null">
         custom_filter = #{record.customFilter,jdbcType=LONGVARCHAR},
       </if>
+      <if test="record.drillFields != null">
+        drill_fields = #{record.drillFields,jdbcType=LONGVARCHAR},
+      </if>
       <if test="record.snapshot != null">
         snapshot = #{record.snapshot,jdbcType=LONGVARCHAR},
       </if>
@@ -341,6 +354,7 @@
       custom_attr = #{record.customAttr,jdbcType=LONGVARCHAR},
       custom_style = #{record.customStyle,jdbcType=LONGVARCHAR},
       custom_filter = #{record.customFilter,jdbcType=LONGVARCHAR},
+      drill_fields = #{record.drillFields,jdbcType=LONGVARCHAR},
       snapshot = #{record.snapshot,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -410,6 +424,9 @@
       <if test="customFilter != null">
         custom_filter = #{customFilter,jdbcType=LONGVARCHAR},
       </if>
+      <if test="drillFields != null">
+        drill_fields = #{drillFields,jdbcType=LONGVARCHAR},
+      </if>
       <if test="snapshot != null">
         snapshot = #{snapshot,jdbcType=LONGVARCHAR},
       </if>
@@ -433,6 +450,7 @@
       custom_attr = #{customAttr,jdbcType=LONGVARCHAR},
       custom_style = #{customStyle,jdbcType=LONGVARCHAR},
       custom_filter = #{customFilter,jdbcType=LONGVARCHAR},
+      drill_fields = #{drillFields,jdbcType=LONGVARCHAR},
       snapshot = #{snapshot,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
