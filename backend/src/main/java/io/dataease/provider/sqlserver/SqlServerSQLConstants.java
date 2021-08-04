@@ -13,13 +13,16 @@ public class SqlServerSQLConstants extends SQLConstants {
 
     public static final String KEYWORD_FIX = "%s." + sqlServer.getKeywordPrefix() + "%s" + sqlServer.getKeywordSuffix();
 
-    public static final String UNIX_TIMESTAMP = "UNIX_TIMESTAMP(%s)";
+    public static final String UNIX_TIMESTAMP = "(CAST(DATEDIFF(SS, '1970-01-01 00:00:00', s ) as bigint) - 8 * 3600 )   * 1000";
 
-    public static final String DATE_FORMAT = "DATE_FORMAT(%s,'%s')";
+    public static final String DATE_FORMAT = "CONVERT(varchar(100), %s, %s)";
 
     public static final String FROM_UNIXTIME = "FROM_UNIXTIME(%s,'%s')";
 
     public static final String CAST = "CAST(%s AS %s)";
+
+    public static final String LONG_TO_DATE = "DATEADD(second,%s,'1970-01-01 08:00:00') ,120)";
+    public static final String STRING_TO_DATE = "CONVERT(datetime, %s ,120)";
 
     public static final String DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%i:%S";
 

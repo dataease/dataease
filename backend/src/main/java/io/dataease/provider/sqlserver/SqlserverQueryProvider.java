@@ -93,26 +93,31 @@ public class SqlserverQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 if (f.getDeExtractType() == DE_TIME) { // 时间 转为 数值
                     if (f.getDeType() == DE_INT || f.getDeType() == DE_FLOAT) {
-                        fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
+                        fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField);
                     } else {
                         fieldName = originField;
                     }
-                } else if (f.getDeExtractType() == 0) {
-                    if (f.getDeType() == 2) {
-                        fieldName = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
-                    } else if (f.getDeType() == 3) {
-                        fieldName = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
-                    } else if (f.getDeType() == 1) {
-                        fieldName = String.format(SqlServerSQLConstants.DATE_FORMAT, originField, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
+                } else if (f.getDeExtractType() == DE_STRING) {  //字符串转时间
+                    if (f.getDeType() == DE_INT) {
+                        fieldName = originField;
+//                        String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == DE_FLOAT) {
+                        fieldName = originField;
+//                        String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
+                    } else if (f.getDeType() == DE_TIME) {
+                        fieldName = originField;
+//                        String.format(SqlServerSQLConstants.DATE_FORMAT, originField, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
                 } else {
-                    if (f.getDeType() == 1) {
+                    if (f.getDeType() == DE_TIME) { //
                         String cast = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        fieldName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
-                    } else if (f.getDeType() == 2) {
-                        fieldName = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
+                        fieldName = originField;
+//                        String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
+                    } else if (f.getDeType() == DE_INT) {
+                        fieldName = originField;
+//                        String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -139,22 +144,22 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQL(table, fields, isGroup) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
-    }
-
-    @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQL(table, fields, isGroup) + " LIMIT 0," + limit;
-    }
-
-    @Override
-    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT 0," + limit;
+        return createQuerySQL(table, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
     }
 
     @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
+    }
+
+    @Override
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
+        return createQuerySQL(table, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset  0 rows fetch next " + limit  + " rows only";
+    }
+
+    @Override
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset  0 rows fetch next " + limit  + " rows only";
     }
 
     @Override
@@ -601,7 +606,34 @@ public class SqlserverQueryProvider extends QueryProvider {
         return sql;
     }
 
-    private String transDateFormat(String dateStyle, String datePattern) {
+    //日期格式化
+//    private String transDateFormat(String dateStyle, String datePattern) {
+//        String split = "-";
+//        if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
+//            split = "-";
+//        } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+//            split = "/";
+//        }
+//
+//        switch (dateStyle) {
+//            case "y":
+//                return "yyyy";
+//            case "y_M":
+//                return "yyyy" + split + "MM";
+//            case "y_M_d":
+//                return "yyyy" + split + "MM" + split + "dd";
+//            case "H_m_s":
+//                return "%H:%i:%S";
+//            case "y_M_d_H_m":
+//                return "%Y" + split + "%m" + split + "%d" + " %H:%i";
+//            case "y_M_d_H_m_s":
+//                return "%Y" + split + "%m" + split + "%d" + " %H:%i:%S";
+//            default:
+//                return "%Y-%m-%d %H:%i:%S";
+//        }
+//    }
+    //日期格式化
+    private String transDateFormat(String dateStyle, String datePattern, String originField) {
         String split = "-";
         if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
             split = "-";
@@ -611,42 +643,93 @@ public class SqlserverQueryProvider extends QueryProvider {
 
         switch (dateStyle) {
             case "y":
-                return "%Y";
+                return "CONVERT(varchar(100), datepart(yy, " + originField + "))";
             case "y_M":
-                return "%Y" + split + "%m";
+                return "CONVERT(varchar(100), datepart(yy, " + originField + ")) N'" + split + "'CONVERT(varchar(100), datepart(mm, " + originField + "))";
             case "y_M_d":
-                return "%Y" + split + "%m" + split + "%d";
+                if(split.equalsIgnoreCase("-")){
+                    return "CONVERT(varchar(100), " + originField + ", 23)";
+                }else {
+                    return "CONVERT(varchar(100), " + originField + ", 111)";
+                }
             case "H_m_s":
-                return "%H:%i:%S";
+                return "CONVERT(varchar(100), " + originField + ", 24)";
             case "y_M_d_H_m":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i";
+                if(split.equalsIgnoreCase("-")){
+                    return "substring( convert(varchar," + originField + ",120),1,16)";
+                }else {
+                    return "replace("+ "substring( convert(varchar," + originField + ",120),1,16), '-','/')";
+                }
             case "y_M_d_H_m_s":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i:%S";
+                if(split.equalsIgnoreCase("-")){
+                    return "convert(varchar," + originField + ",120)";
+                }else {
+                    return "replace("+ "convert(varchar," + originField + ",120), '-','/')";
+                }
             default:
-                return "%Y-%m-%d %H:%i:%S";
+                return "convert(varchar," + originField + ",120)";
+        }
+    }
+
+    private String transStringToDateFormat(String dateStyle, String datePattern, String originField) {
+        String split = "-";
+        if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
+            split = "-";
+        } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+            split = "/";
+        }
+        switch (dateStyle) {
+            case "y":
+                return "CONVERT(varchar(100), datepart(yy, " + "SELECT CONVERT(datetime, " +  originField + " ,120)" + "))";
+            case "y_M":
+                if(split.equalsIgnoreCase("-")){
+                    return "substring( convert(varchar," + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ",120),1,7)";
+                }else {
+                    return "replace("+ "substring( convert(varchar," + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ",120),1,7), '-','/')";
+                }
+            case "y_M_d":
+                if(split.equalsIgnoreCase("-")){
+                    return "CONVERT(varchar(100), " + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ", 23)";
+                }else {
+                    return "CONVERT(varchar(100), " + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ", 111)";
+                }
+            case "H_m_s":
+                return "CONVERT(varchar(100), " + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ", 24)";
+            case "y_M_d_H_m":
+                if(split.equalsIgnoreCase("-")){
+                    return "substring( convert(varchar," + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ",120),1,16)";
+                }else {
+                    return "replace("+ "substring( convert(varchar," + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ",120),1,16), '-','/')";
+                }
+            case "y_M_d_H_m_s":
+                if(split.equalsIgnoreCase("-")){
+                    return "convert(varchar," + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ",120)";
+                }else {
+                    return "replace("+ "convert(varchar," + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ",120), '-','/')";
+                }
+            default:
+                return "convert(varchar," + "SELECT CONVERT(datetime, " +  originField + " ,120)" + ",120)";
         }
     }
 
     private SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
-        if (x.getDeExtractType() == 1) {
-            if (x.getDeType() == 2 || x.getDeType() == 3) {
-                fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
-            } else if (x.getDeType() == 1) {
-                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(SqlServerSQLConstants.DATE_FORMAT, originField, format);
+        if (x.getDeExtractType() == DE_TIME) {
+            if (x.getDeType() == DE_INT || x.getDeType() == DE_FLOAT) { //时间转数值
+                fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField);
+            } else if (x.getDeType() == DE_TIME) { //时间格式化
+                fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), originField);
             } else {
                 fieldName = originField;
             }
         } else {
-            if (x.getDeType() == 1) {
-                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                if (x.getDeExtractType() == 0) {
-                    fieldName = String.format(SqlServerSQLConstants.DATE_FORMAT, originField, format);
-                } else {
-                    String cast = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                    String from_unixtime = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
-                    fieldName = String.format(SqlServerSQLConstants.DATE_FORMAT, from_unixtime, format);
+            if (x.getDeType() == DE_TIME) {
+                if (x.getDeExtractType() == DE_STRING) {// 字符串转时间
+                    String cast = String.format(SqlServerSQLConstants.STRING_TO_DATE, originField);
+                    fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), cast);
+                } else {// 数值转时间
+                    String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originField+ "/1000");
+                    fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), cast);
                 }
             } else {
                 fieldName = originField;
