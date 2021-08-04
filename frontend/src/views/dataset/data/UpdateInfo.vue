@@ -432,10 +432,14 @@ export default {
   created() {
     this.timer = setInterval(() => {
       this.listTaskLog(false)
+    }, 5000);
+    this.taskTimer = setInterval(() => {
+      this.listTask(false)
     }, 5000)
   },
   beforeDestroy() {
     clearInterval(this.timer)
+    clearInterval(this.taskTimer)
   },
   methods: {
     calHeight() {
