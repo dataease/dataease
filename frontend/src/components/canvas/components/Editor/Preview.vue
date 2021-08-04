@@ -153,6 +153,7 @@ export default {
       this.searchCount++
     }, refreshTime)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
+    this.$store.commit('setLinkageSettingStatus', false)
   },
   beforeDestroy() {
     clearInterval(this.timer)

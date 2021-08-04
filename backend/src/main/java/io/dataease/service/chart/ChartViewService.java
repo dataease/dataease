@@ -494,7 +494,12 @@ public class ChartViewService {
                                 }
                             }
                             if (StringUtils.equals(a.toString(), x.get(i))) {
-                                ss.getData().set(i, new BigDecimal(row[xAxis.size() + extStack.size()]));
+                                if (row.length > xAxis.size() + extStack.size()) {
+                                    String s = row[xAxis.size() + extStack.size()];
+                                    if (StringUtils.isNotEmpty(s)) {
+                                        ss.getData().set(i, new BigDecimal(s));
+                                    }
+                                }
                                 break;
                             }
                         }

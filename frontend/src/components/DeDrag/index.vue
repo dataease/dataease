@@ -19,9 +19,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <setting-menu style="right:5px;position: absolute;z-index: 2">
-      <i slot="icon" class="icon iconfont icon-shezhi" />
-    </setting-menu>
+    <edit-bar v-if="active||linkageSettingStatus" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -46,11 +44,12 @@ let eventsFor = events.mouse
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
+import EditBar from '@/components/canvas/components/Editor/EditBar'
 
 export default {
   replace: true,
   name: 'VueDragResizeRotate',
-  components: { SettingMenu },
+  components: { EditBar },
   props: {
     className: {
       type: String,
@@ -464,7 +463,8 @@ export default {
       'curComponent',
       'editor',
       'curCanvasScale',
-      'canvasStyleData'
+      'canvasStyleData',
+      'linkageSettingStatus'
     ])
   },
   watch: {
@@ -1540,6 +1540,9 @@ export default {
       removeEvent(document.documentElement, 'mouseup', this.handleUp)
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       removeEvent(window, 'resize', this.checkParentSize)
+    },
+    showViewDetails() {
+      this.$emit('showViewDetails')
     }
   }
 
@@ -1628,26 +1631,26 @@ export default {
   user-select: none;
 }
 
-.mouseOn >>> .icon-shezhi{
-  z-index: 2;
-  display:block!important;
-}
-.vdr > i{
-  right: 5px;
-  color: gray;
-  position: absolute;
-}
+/*.mouseOn >>> .icon-shezhi{*/
+/*  z-index: 2;*/
+/*  display:block!important;*/
+/*}*/
+/*.vdr > i{*/
+/*  right: 5px;*/
+/*  color: gray;*/
+/*  position: absolute;*/
+/*}*/
 
-.vdr >>> i:hover {
-  color: red;
-}
+/*.vdr >>> i:hover {*/
+/*  color: red;*/
+/*}*/
 
-.vdr:hover >>> i {
-  z-index: 2;
-  display:block;
-}
+/*.vdr:hover >>> i {*/
+/*  z-index: 2;*/
+/*  display:block;*/
+/*}*/
 
-.vdr>>>.icon-shezhi {
-  display:none
-}
+/*.vdr>>>.icon-shezhi {*/
+/*  display:none*/
+/*}*/
 </style>

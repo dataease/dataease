@@ -21,7 +21,7 @@
     <de-container>
       <!--左侧导航栏-->
       <de-aside-container class="ms-aside-container">
-        <div style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+        <div v-if="!linkageSettingStatus" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
             <!-- 视图图表 start -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
@@ -290,7 +290,8 @@ export default {
       'isClickComponent',
       'canvasStyleData',
       'curComponentIndex',
-      'componentData'
+      'componentData',
+      'linkageSettingStatus'
     ])
   },
 
@@ -322,6 +323,7 @@ export default {
     listenGlobalKeyDown()
 
     this.$store.commit('setCurComponent', { component: null, index: null })
+    this.$store.commit('setLinkageSettingStatus', false)
   },
   mounted() {
     // this.insertToBody()
