@@ -5,11 +5,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ReadListener;
@@ -17,12 +13,20 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import io.dataease.commons.holder.ThreadLocalContextHolder;
+import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.ServletUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StreamUtils;
 
 
 public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
+    private static Gson gson = new Gson();
 
     HttpServletRequest orgRequest = null;
     private Map<String, String[]> parameterMap;
@@ -215,9 +219,24 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
     }
 
     public static boolean checkSqlInjection(Object obj){
+        HttpServletRequest request = ServletUtils.request();
+        String url = request.getRequestURI().toString();
+
+        if (null == obj) return false;
+        if (StringUtils.isEmpty(obj.toString())) return false;
+
+        String orders = orders(obj.toString());
+
+        if (StringUtils.isEmpty(orders)) return false;
+
+        String whiteLists = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.sqlinjection.whitelists", String.class, null);
+        if (StringUtils.isNotEmpty(whiteLists)) {
+            // 命中白名单 无需检测sql注入
+            if (Arrays.stream(whiteLists.split(",")).anyMatch(item -> url.indexOf(item) != -1)) return false;
+        }
         Pattern pattern= Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)" +
                 "|(.*\\b(select|update|union|and|or|delete|insert|trancate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute)\\b.*)");
-        Matcher matcher=pattern.matcher(obj.toString().toLowerCase());
+        Matcher matcher=pattern.matcher(orders.toLowerCase());
         return matcher.find();
     }
 
@@ -330,6 +349,28 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
             }
         }
         return false;
+    }
+
+    private static String orders(String json) {
+        if (StringUtils.isEmpty(json)) return null;
+
+        try{
+            Map<String, Object> map = JSONObject.parseObject(json, Map.class);
+            Object orders = map.get("orders");
+
+            if (orders != null) {
+                return gson.toJson(orders);
+            }
+            Object sort = map.get("sort");
+
+            if (sort != null) {
+                return sort.toString();
+            }
+            return null;
+        }catch (Exception e) {
+            return null;
+        }
+
     }
 
     @Override
