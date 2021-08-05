@@ -11,10 +11,10 @@
       <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"  />
     </collection>
 
-      <collection property="linkageFields" ofType="io.dataease.dto.PanelViewLinkageFieldDTO">
-          <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled"  />
-          <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"  />
-      </collection>
+<!--      <collection property="linkageFields" ofType="io.dataease.dto.PanelViewLinkageFieldDTO">-->
+<!--          <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled"  />-->
+<!--          <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"  />-->
+<!--      </collection>-->
   </resultMap>
 
   <select id ="getViewLinkageGather" resultMap="LinkageGatherMap">
