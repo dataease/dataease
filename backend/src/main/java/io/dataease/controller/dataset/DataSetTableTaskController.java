@@ -57,7 +57,7 @@ public class DataSetTableTaskController {
     }
 
     @PostMapping("/updateStatus")
-    public void updateStatus(@RequestBody DatasetTableTask datasetTableTask) {
+    public void updateStatus(@RequestBody DatasetTableTask datasetTableTask) throws Exception{
         dataSetTableTaskService.updateDatasetTableTaskStatus(datasetTableTask);
     }
 

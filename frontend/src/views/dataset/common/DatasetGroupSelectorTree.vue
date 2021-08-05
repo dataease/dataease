@@ -68,7 +68,6 @@
 
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
-import { authModel } from '@/api/system/sysAuth'
 import { hasDataPermission } from '@/utils/permission'
 
 export default {
@@ -403,11 +402,14 @@ export default {
 
     searchTree(val) {
       const queryCondition = {
-        withExtend: 'parent',
-        modelType: 'dataset',
+        // withExtend: 'parent',
+        // modelType: 'dataset',
         name: val
       }
-      authModel(queryCondition).then(res => {
+      // authModel(queryCondition).then(res => {
+      //   this.data = this.buildTree(res.data)
+      // })
+      post('/dataset/table/search', queryCondition).then(res => {
         this.data = this.buildTree(res.data)
       })
     },
@@ -420,8 +422,8 @@ export default {
       const roots = []
       arrs.forEach(el => {
         // 判断根节点 ###
-        el.type = el.modelInnerType
-        el.isLeaf = el.leaf
+        // el.type = el.modelInnerType
+        // el.isLeaf = el.leaf
         if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
           roots.push(el)
           return

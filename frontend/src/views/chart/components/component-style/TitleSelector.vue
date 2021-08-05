@@ -28,7 +28,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="titleForm.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeTitleStyle" />
+              <el-color-picker v-model="titleForm.color" style="cursor: pointer;z-index: 999;" @change="changeTitleStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.text_h_position')" class="form-item">
               <el-radio-group v-model="titleForm.hPosition" size="mini" @change="changeTitleStyle">

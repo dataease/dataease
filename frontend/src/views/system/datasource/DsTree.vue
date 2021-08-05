@@ -298,10 +298,12 @@ export default {
     text-overflow: ellipsis;
   }
   .father .child {
-    display: none;
+    /*display: none;*/
+    visibility: hidden;
   }
   .father:hover .child {
-    display: inline;
+    /*display: inline;*/
+    visibility: visible;
   }
   .tree-style {
     padding: 10px 15px;

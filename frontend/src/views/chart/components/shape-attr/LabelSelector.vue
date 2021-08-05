@@ -21,7 +21,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="labelForm.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeLabelAttr" />
+              <el-color-picker v-model="labelForm.color" style="cursor: pointer;z-index: 999;" @change="changeLabelAttr" />
             </el-form-item>
             <el-form-item :label="$t('chart.label_position')" class="form-item">
               <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
@@ -54,7 +54,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="labelForm.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeLabelAttr" />
+              <el-color-picker v-model="labelForm.color" style="cursor: pointer;z-index: 999;" @change="changeLabelAttr" />
             </el-form-item>
             <el-form-item class="form-item">
               <span slot="label">
