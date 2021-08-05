@@ -323,7 +323,7 @@ export default {
     listenGlobalKeyDown()
 
     this.$store.commit('setCurComponent', { component: null, index: null })
-    this.$store.commit('setLinkageSettingStatus', false)
+    this.$store.commit('clearLinkageSettingInfo', false)
   },
   mounted() {
     // this.insertToBody()

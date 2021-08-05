@@ -10,7 +10,8 @@
         [classNameResizable]: resizable,
         [classNameRotating]: rotating,
         [classNameRotatable]: rotatable,
-        [classNameMouseOn]: mouseOn || active
+        [classNameMouseOn]: mouseOn || active,
+        ['linkageSetting']:linkageActive
       },
       className
     ]"
@@ -310,6 +311,11 @@ export default {
     changeStyle: {
       require: true,
       type: Object
+    },
+    // 联动设置
+    linkageActive: {
+      type: Boolean,
+      default: false
     }
   },
   data: function() {
@@ -1629,6 +1635,10 @@ export default {
 .mouseOn {
   outline: 1px dashed #70c0ff;
   user-select: none;
+}
+
+.linkageSetting{
+  opacity: 0.5;
 }
 
 /*.mouseOn >>> .icon-shezhi{*/

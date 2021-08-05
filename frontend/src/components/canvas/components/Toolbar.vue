@@ -322,7 +322,7 @@ export default {
       this.cancelLinkageSettingStatus()
     },
     cancelLinkageSettingStatus() {
-      this.$store.commit('setLinkageSettingStatus', false)
+      this.$store.commit('clearLinkageSettingInfo')
     }
   }
 }
