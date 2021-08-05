@@ -112,7 +112,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     }
                 } else {
                     if (f.getDeType() == DE_TIME) { //
-                        String cast = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
+//                        String cast = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
                         fieldName = originField;
 //                        String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
                     } else if (f.getDeType() == DE_INT) {
@@ -511,6 +511,7 @@ public class SqlserverQueryProvider extends QueryProvider {
         }
     }
 
+
     public List<SQLObj> transCustomFilterList(SQLObj tableObj, List<ChartCustomFilterDTO> requestList) {
         if (CollectionUtils.isEmpty(requestList)) {
             return null;
@@ -526,9 +527,9 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereTerm = transMysqlFilterTerm(request.getTerm());
             String whereValue = "";
             String originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format(SqlServerSQLConstants.CAST, originName, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
+            if (field.getDeType() == DE_TIME && field.getDeExtractType() != DE_TIME) {
+                String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
+                whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
             } else {
                 whereName = originName;
             }
@@ -568,8 +569,8 @@ public class SqlserverQueryProvider extends QueryProvider {
             String originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
 
             if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format(SqlServerSQLConstants.CAST, originName, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
+                String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
+                whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
             } else {
                 whereName = originName;
             }
@@ -580,7 +581,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 whereValue = "'%" + value.get(0) + "%'";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
-                if (request.getDatasetTableField().getDeType() == 1) {
+                if (request.getDatasetTableField().getDeType() == DE_TIME) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
@@ -606,32 +607,6 @@ public class SqlserverQueryProvider extends QueryProvider {
         return sql;
     }
 
-    //日期格式化
-//    private String transDateFormat(String dateStyle, String datePattern) {
-//        String split = "-";
-//        if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
-//            split = "-";
-//        } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
-//            split = "/";
-//        }
-//
-//        switch (dateStyle) {
-//            case "y":
-//                return "yyyy";
-//            case "y_M":
-//                return "yyyy" + split + "MM";
-//            case "y_M_d":
-//                return "yyyy" + split + "MM" + split + "dd";
-//            case "H_m_s":
-//                return "%H:%i:%S";
-//            case "y_M_d_H_m":
-//                return "%Y" + split + "%m" + split + "%d" + " %H:%i";
-//            case "y_M_d_H_m_s":
-//                return "%Y" + split + "%m" + split + "%d" + " %H:%i:%S";
-//            default:
-//                return "%Y-%m-%d %H:%i:%S";
-//        }
-//    }
     //日期格式化
     private String transDateFormat(String dateStyle, String datePattern, String originField) {
         String split = "-";
@@ -741,40 +716,6 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .build();
     }
 
-    private List<SQLObj> getXWheres(ChartViewFieldDTO x, String originField, String fieldAlias) {
-        List<SQLObj> list = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0) {
-            x.getFilter().forEach(f -> {
-                String whereName = "";
-                String whereTerm = transMysqlFilterTerm(f.getTerm());
-                String whereValue = "";
-                if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
-                    String cast = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                    whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
-                } else {
-                    whereName = originField;
-                }
-                if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = SqlServerSQLConstants.WHERE_VALUE_NULL;
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereTerm = String.format(whereTerm, originField);
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                    whereValue = "'%" + f.getValue() + "%'";
-                } else {
-                    whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, f.getValue());
-                }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereAlias(fieldAlias)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
-            });
-        }
-        return list;
-    }
-
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
@@ -783,12 +724,12 @@ public class SqlserverQueryProvider extends QueryProvider {
             fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(SqlServerSQLConstants.CAST, originField, y.getDeType() == 2 ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
-                String agg = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(SqlServerSQLConstants.CAST, agg, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
+                String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == DE_INT ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
+                String agg = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), convert);
+                fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, agg);
             } else {
-                String cast = String.format(SqlServerSQLConstants.CAST, originField, y.getDeType() == 2 ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), cast);
+                String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == 2 ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
+                fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), convert);
             }
         }
         return SQLObj.builder()
@@ -824,4 +765,6 @@ public class SqlserverQueryProvider extends QueryProvider {
         }
         return list;
     }
+
+
 }
