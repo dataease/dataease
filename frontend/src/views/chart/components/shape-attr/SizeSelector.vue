@@ -121,19 +121,19 @@
           </el-form>
 
           <el-form v-show="chart.type && chart.type.includes('text')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
-            <el-form-item :label="$t('chart.dimension_show')" class="form-item">
-              <el-checkbox v-model="sizeForm.dimensionShow" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
-            </el-form-item>
-            <el-form-item :label="$t('chart.dimension_font_size')" class="form-item">
-              <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
-                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
-              </el-select>
-            </el-form-item>
             <el-form-item :label="$t('chart.quota_show')" class="form-item">
               <el-checkbox v-model="sizeForm.quotaShow" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
               <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('chart.dimension_show')" class="form-item">
+              <el-checkbox v-model="sizeForm.dimensionShow" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
+            </el-form-item>
+            <el-form-item :label="$t('chart.dimension_font_size')" class="form-item">
+              <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
                 <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>
             </el-form-item>
