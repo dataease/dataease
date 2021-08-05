@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ExtPanelViewLinkageMapper {
 
-    List<PanelViewLinkageDTO> getViewLinkageGather(@Param("panelId") String panelId,@Param("sourceViewId") String sourceViewId);
+    List<PanelViewLinkageDTO> getViewLinkageGather(@Param("panelId") String panelId,@Param("sourceViewId") String sourceViewId,@Param("targetViewIds") List<String> targetViewIds);
 
 }
