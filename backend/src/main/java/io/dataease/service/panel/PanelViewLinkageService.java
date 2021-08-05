@@ -28,8 +28,11 @@ public class PanelViewLinkageService {
 
     public Map<String, PanelViewLinkageDTO> getViewLinkageGather(PanelLinkageRequest request) {
         if(CollectionUtils.isNotEmpty(request.getTargetViewIds())){
-            Map<String, PanelViewLinkageDTO> result = Optional.ofNullable(extPanelViewLinkageMapper.getViewLinkageGather(request.getPanelId(),request.getSourceViewId(),request.getTargetViewIds()))
-                    .orElse(new ArrayList<>()).stream()
+            List<PanelViewLinkageDTO>  linkageDTOList = extPanelViewLinkageMapper.getViewLinkageGather(request.getPanelId(),request.getSourceViewId(),request.getTargetViewIds());
+            linkageDTOList.stream().forEach(linkage ->{
+                linkage.setTargetViewFields(extPanelViewLinkageMapper.queryTableField(linkage.getTableId()));
+            });
+            Map<String, PanelViewLinkageDTO> result = linkageDTOList.stream()
                     .collect(Collectors.toMap(PanelViewLinkageDTO::getTargetViewId,PanelViewLinkageDTO->PanelViewLinkageDTO));
             return result;
         }

@@ -8,10 +8,12 @@
       <el-col :span="10">
         <div class="ellip">联动视图</div>
       </el-col>
-      <el-col :span="10" class="ellip">
+      <el-col :span="10">
         <div class="ellip">{{ linkageInfo.targetViewName }}</div>
       </el-col>
     </el-row>
+
+    linkageInfo{{ linkageInfo }}
 
     <el-row class="bottom">
       <el-button size="mini" type="success" icon="el-icon-plus" round>追加联动依赖字段</el-button>
@@ -96,6 +98,7 @@ export default {
   .ellip{
     /*width: 100%;*/
     margin-left: 10px;
+    margin-right: 10px;
     overflow: hidden;/*超出部分隐藏*/
     white-space: nowrap;/*不换行*/
     text-overflow:ellipsis;/*超出部分文字以...显示*/
@@ -104,6 +107,7 @@ export default {
     font-size: 12px;
     line-height: 24px;
     height: 24px;
+    border-radius: 3px;
   }
 
 </style>
