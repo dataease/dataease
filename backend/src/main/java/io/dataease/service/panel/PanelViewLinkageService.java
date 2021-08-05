@@ -28,17 +28,9 @@ public class PanelViewLinkageService {
 
     public Map<String, PanelViewLinkageDTO> getViewLinkageGather(PanelLinkageRequest request) {
         if(CollectionUtils.isNotEmpty(request.getTargetViewIds())){
-            Map<String, PanelViewLinkageDTO> result = Optional.ofNullable(extPanelViewLinkageMapper.getViewLinkageGather(request.getPanelId(),request.getSourceViewId()))
+            Map<String, PanelViewLinkageDTO> result = Optional.ofNullable(extPanelViewLinkageMapper.getViewLinkageGather(request.getPanelId(),request.getSourceViewId(),request.getTargetViewIds()))
                     .orElse(new ArrayList<>()).stream()
                     .collect(Collectors.toMap(PanelViewLinkageDTO::getTargetViewId,PanelViewLinkageDTO->PanelViewLinkageDTO));
-//            Set<String> innerTargetIds = result.keySet();
-//
-//            // 将对应没有建立关联关系的targetId 也补充进去
-//            request.getTargetViewIds().stream().forEach(targetId->{
-//                if(!innerTargetIds.contains(targetId)){
-//                    result.put(targetId,new PanelViewLinkageDTO(false));
-//                }
-//            });
             return result;
         }
         return new HashMap<>();

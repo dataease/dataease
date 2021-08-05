@@ -5,26 +5,32 @@
   <resultMap id="LinkageGatherMap" type="io.dataease.dto.PanelViewLinkageDTO">
     <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId" />
     <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName" />
-    <collection property="linkageFields">
+    <result column="linkageActive"  property="linkageActive" />
+    <collection property="linkageFields" ofType="io.dataease.dto.PanelViewLinkageFieldDTO">
       <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled"  />
       <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"  />
     </collection>
+
+      <collection property="linkageFields" ofType="io.dataease.dto.PanelViewLinkageFieldDTO">
+          <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled"  />
+          <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"  />
+      </collection>
   </resultMap>
 
   <select id ="getViewLinkageGather" resultMap="LinkageGatherMap">
 
-SELECT
-	chart_view.`name` as 'targetViewName',
-	panel_view_linkage.target_view_id,
-	panel_view_linkage_field.source_filed,
-	panel_view_linkage_field.target_filed
-FROM
-	chart_view
-	LEFT JOIN panel_view_linkage ON chart_view.id = panel_view_linkage.target_view_id
-	LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
-	AND panel_view_linkage.panel_id = #{panelId}
-	AND panel_view_linkage.source_view_id = #{sourceViewId}
-
+    SELECT
+        chart_view.`name` as 'targetViewName',
+        chart_view.id as 'target_view_id',
+        (case  when panel_view_linkage.target_view_id is null then 0 else 1 end) as 'linkageActive',
+        panel_view_linkage_field.source_filed,
+        panel_view_linkage_field.target_filed
+    FROM
+        chart_view
+        LEFT JOIN panel_view_linkage ON chart_view.id = panel_view_linkage.target_view_id
+        LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
+        AND panel_view_linkage.panel_id = #{panelId}
+        AND panel_view_linkage.source_view_id = #{sourceViewId}
 	where chart_view.id in
       <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
           #{targetViewId}
