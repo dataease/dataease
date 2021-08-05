@@ -34,7 +34,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="legendForm.textStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeLegendStyle" />
+              <el-color-picker v-model="legendForm.textStyle.color" style="cursor: pointer;z-index: 999;" @change="changeLegendStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.text_h_position')" class="form-item">
               <el-radio-group v-model="legendForm.hPosition" size="mini" @change="changeLegendStyle">

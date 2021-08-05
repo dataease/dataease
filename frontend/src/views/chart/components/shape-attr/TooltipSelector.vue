@@ -24,7 +24,7 @@
               </el-select>
             </el-form-item>
             <el-form-item :label="$t('chart.text_color')" class="form-item">
-              <colorPicker v-model="tooltipForm.textStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 999;border: solid 1px black" @change="changeTooltipAttr" />
+              <el-color-picker v-model="tooltipForm.textStyle.color" style="cursor: pointer;z-index: 999;" @change="changeTooltipAttr" />
             </el-form-item>
             <el-form-item class="form-item">
               <span slot="label">

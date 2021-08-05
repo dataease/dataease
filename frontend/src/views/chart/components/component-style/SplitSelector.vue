@@ -12,7 +12,7 @@
               <el-checkbox v-model="splitForm.name.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.color')" class="form-item">
-              <colorPicker v-model="splitForm.name.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeSplitStyle" />
+              <el-color-picker v-model="splitForm.name.color" style="cursor: pointer;z-index: 1004;" @change="changeSplitStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.text_fontsize')" class="form-item form-item-slider">
               <el-select v-model="splitForm.name.fontSize" :placeholder="$t('chart.text_fontsize')" @change="changeSplitStyle">
@@ -23,13 +23,13 @@
               <el-checkbox v-model="splitForm.axisLine.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.axis_color')" class="form-item">
-              <colorPicker v-model="splitForm.axisLine.lineStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeSplitStyle" />
+              <el-color-picker v-model="splitForm.axisLine.lineStyle.color" style="cursor: pointer;z-index: 1004;" @change="changeSplitStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label')" class="form-item">
               <el-checkbox v-model="splitForm.axisLabel.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
-              <colorPicker v-model="splitForm.axisLabel.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeSplitStyle" />
+              <el-color-picker v-model="splitForm.axisLabel.color" style="cursor: pointer;z-index: 1004;" @change="changeSplitStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.label_fontsize')" class="form-item form-item-slider">
               <el-select v-model="splitForm.axisLabel.fontSize" :placeholder="$t('chart.label_fontsize')" @change="changeSplitStyle">
@@ -40,7 +40,7 @@
               <el-checkbox v-model="splitForm.splitLine.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
             </el-form-item>
             <el-form-item :label="$t('chart.split_color')" class="form-item">
-              <colorPicker v-model="splitForm.splitLine.lineStyle.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeSplitStyle" />
+              <el-color-picker v-model="splitForm.splitLine.lineStyle.color" style="cursor: pointer;z-index: 1004;" @change="changeSplitStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.shadow')" class="form-item">
               <el-checkbox v-model="splitForm.splitArea.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
