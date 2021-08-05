@@ -22,7 +22,9 @@ public class PanelViewLinkageDTO extends PanelViewLinkage {
     private List<PanelViewLinkageFieldDTO> linkageFields = new ArrayList<>();
 
 
-    private List<DatasetTableField> targetViewField = new ArrayList<>();
+    private List<DatasetTableField> targetViewFields = new ArrayList<>();
+
+    private String tableId;
 
 
 
@@ -30,12 +32,20 @@ public class PanelViewLinkageDTO extends PanelViewLinkage {
 
     }
 
-    public List<DatasetTableField> getTargetViewField() {
-        return targetViewField;
+    public String getTableId() {
+        return tableId;
     }
 
-    public void setTargetViewField(List<DatasetTableField> targetViewField) {
-        this.targetViewField = targetViewField;
+    public void setTableId(String tableId) {
+        this.tableId = tableId;
+    }
+
+    public List<DatasetTableField> getTargetViewFields() {
+        return targetViewFields;
+    }
+
+    public void setTargetViewFields(List<DatasetTableField> targetViewFields) {
+        this.targetViewFields = targetViewFields;
     }
 
     public String getTargetViewName() {
