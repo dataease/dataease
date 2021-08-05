@@ -1,61 +1,61 @@
--- CREATE TABLE `demo_olympiad_athlete` (
---      `code` varchar(255) NOT NULL,
---      `sort` int(255) DEFAULT NULL,
---      `name` varchar(255) DEFAULT NULL,
---      `country` varchar(255) DEFAULT NULL,
---      `game` varchar(255) DEFAULT NULL,
---      `hot_num` int(11) DEFAULT NULL,
---      PRIMARY KEY (`code`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
---
--- CREATE TABLE `demo_olympiad_audience_age` (
---       `age` varchar(255) NOT NULL,
---       `percent` float(255,2) DEFAULT NULL,
---   PRIMARY KEY (`age`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
---
--- CREATE TABLE `demo_olympiad_audience_sex` (
---   `sex` varchar(255) NOT NULL,
---   `percent` float(255,2) DEFAULT NULL,
---   PRIMARY KEY (`sex`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
---
--- CREATE TABLE `demo_olympiad_country` (
---  `code` varchar(255) NOT NULL,
---  `name` varchar(255) DEFAULT NULL,
---  PRIMARY KEY (`code`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
---
--- CREATE TABLE `demo_olympiad_data_update` (
---     `update_date` datetime DEFAULT NULL
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
---
--- CREATE TABLE `demo_olympiad_gold_date` (
---        `id` varchar(255) NOT NULL,
---        `datekey` varchar(255) DEFAULT NULL,
---        `game` varchar(255) DEFAULT NULL,
---        `qty` varchar(255) DEFAULT NULL,
---        PRIMARY KEY (`id`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
---
--- CREATE TABLE `demo_olympiad_hot_game` (
---       `code` varchar(255) NOT NULL,
---       `sort` varchar(255) DEFAULT NULL,
---       `name` varchar(255) DEFAULT NULL,
---       PRIMARY KEY (`code`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- CREATE TABLE `demo_olympiad_medal` (
---        `code` int(11) NOT NULL,
---        `name` varchar(50) NOT NULL,
---        PRIMARY KEY (`code`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
---
--- CREATE TABLE `demo_olympiad_medal_qty` (
---        `id` varchar(255) DEFAULT NULL,
---        `country` varchar(255) DEFAULT NULL,
---        `medal` varchar(255) DEFAULT NULL,
---        `qty` varchar(255) DEFAULT NULL
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `demo_olympiad_athlete` (
+     `code` varchar(255) NOT NULL,
+     `sort` int(255) DEFAULT NULL,
+     `name` varchar(255) DEFAULT NULL,
+     `country` varchar(255) DEFAULT NULL,
+     `game` varchar(255) DEFAULT NULL,
+     `hot_num` int(11) DEFAULT NULL,
+     PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `demo_olympiad_audience_age` (
+      `age` varchar(255) NOT NULL,
+      `percent` float(255,2) DEFAULT NULL,
+  PRIMARY KEY (`age`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `demo_olympiad_audience_sex` (
+  `sex` varchar(255) NOT NULL,
+  `percent` float(255,2) DEFAULT NULL,
+  PRIMARY KEY (`sex`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `demo_olympiad_country` (
+ `code` varchar(255) NOT NULL,
+ `name` varchar(255) DEFAULT NULL,
+ PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `demo_olympiad_data_update` (
+    `update_date` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `demo_olympiad_gold_date` (
+       `id` varchar(255) NOT NULL,
+       `datekey` varchar(255) DEFAULT NULL,
+       `game` varchar(255) DEFAULT NULL,
+       `qty` varchar(255) DEFAULT NULL,
+       PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `demo_olympiad_hot_game` (
+      `code` varchar(255) NOT NULL,
+      `sort` varchar(255) DEFAULT NULL,
+      `name` varchar(255) DEFAULT NULL,
+      PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `demo_olympiad_medal` (
+       `code` int(11) NOT NULL,
+       `name` varchar(50) NOT NULL,
+       PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `demo_olympiad_medal_qty` (
+       `id` varchar(255) DEFAULT NULL,
+       `country` varchar(255) DEFAULT NULL,
+       `medal` varchar(255) DEFAULT NULL,
+       `qty` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `demo_sales_dashboard` (
@@ -277,7 +277,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 
 INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `create_time`) VALUES ('3f551269-d985-4633-884d-d118704da2db', '示例数据', '0', '0', 'group', 'admin', '1628074869229');
-
 delete from chart_group where id='5a8e8b0a-2f64-4d1b-aac1-d284b2b8436f';
 delete from chart_group where id='4de97755-5d5a-4fe0-9af0-27601f967787';
 
@@ -285,6 +284,8 @@ INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `c
 INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `create_time`) VALUES ('5a8e8b0a-2f64-4d1b-aac1-d284b2b8436f', '新冠疫情', '3f551269-d985-4633-884d-d118704da2db', '0', 'group', 'admin', '1623212582950');
 INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `create_time`) VALUES ('bfa7d87f-c76f-4406-9f19-0adccb7c568d', '东京奥运会', '3f551269-d985-4633-884d-d118704da2db', '1', 'group', 'admin', '1628127614480');
 INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `create_time`) VALUES ('4de97755-5d5a-4fe0-9af0-27601f967787', '国内疫情分析', '5a8e8b0a-2f64-4d1b-aac1-d284b2b8436f', '1', 'group', 'admin', '1623212597088');
+
+
 
 
 INSERT INTO    `chart_view` (`id`, `name`, `scene_id`, `table_id`, `type`, `title`, `x_axis`, `y_axis`, `custom_attr`, `custom_style`, `custom_filter`, `create_by`, `create_time`, `update_time`, `style_priority`) VALUES ('0de1d446-8300-4ab3-a4ef-4e8f8579cb2e', '中国金牌总数', 'bfa7d87f-c76f-4406-9f19-0adccb7c568d', '44e5d4c4-e4da-4007-84af-ac5f58c0ed51', 'text', '中国金牌总数', '[{\"id\":\"c5055c91-f768-46b1-b11f-19c9a47e4d12\",\"tableId\":\"44e5d4c4-e4da-4007-84af-ac5f58c0ed51\",\"originName\":\"update_date\",\"name\":\"update_date\",\"dataeaseName\":\"C_41747ca060fc704c1c3f7c0ebacde6e7\",\"groupType\":\"d\",\"type\":\"DATETIME\",\"size\":50,\"deType\":1,\"deTypeFormat\":null,\"deExtractType\":1,\"extField\":0,\"checked\":true,\"columnIndex\":0,\"lastSyncTime\":1628142390856,\"dateStyle\":\"y_M_d\",\"datePattern\":\"date_sub\",\"sort\":\"none\",\"filter\":[]}]', '[]', '{\"color\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#4e81bb\",\"tableItemBgColor\":\"#c6d9f0\",\"tableFontColor\":\"#000000\",\"tableStripe\":true,\"dimensionColor\":\"#BEBEBD\",\"quotaColor\":\"#FFC125\"},\"tableColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#4e81bb\",\"tableItemBgColor\":\"#c6d9f0\",\"tableFontColor\":\"#000000\",\"tableStripe\":true,\"dimensionColor\":\"#000000\",\"quotaColor\":\"#000000\"},\"size\":{\"barDefault\":true,\"barWidth\":40,\"barGap\":0.4,\"lineWidth\":1,\"lineType\":\"solid\",\"lineSymbol\":\"emptyCircle\",\"lineSymbolSize\":4,\"lineSmooth\":false,\"lineArea\":false,\"pieInnerRadius\":0,\"pieOuterRadius\":80,\"pieRoseType\":\"radius\",\"pieRoseRadius\":5,\"funnelWidth\":80,\"radarShape\":\"polygon\",\"tableTitleFontSize\":12,\"tableItemFontSize\":12,\"tableTitleHeight\":36,\"tableItemHeight\":36,\"gaugeMin\":0,\"gaugeMax\":100,\"gaugeStartAngle\":225,\"gaugeEndAngle\":-45,\"dimensionFontSize\":\"14\",\"quotaFontSize\":\"28\",\"spaceSplit\":15,\"dimensionShow\":true,\"quotaShow\":true},\"label\":{\"show\":false,\"position\":\"top\",\"color\":\"#909399\",\"fontSize\":\"10\",\"formatter\":\"{c}\",\"gaugeFormatter\":\"{value}\",\"labelLine\":{\"show\":true}},\"tooltip\":{\"show\":true,\"trigger\":\"item\",\"confine\":true,\"textStyle\":{\"fontSize\":\"10\",\"color\":\"#909399\"},\"formatter\":\"\"}}', '{\"text\":{\"show\":false,\"fontSize\":\"18\",\"color\":\"#303133\",\"hPosition\":\"center\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":false,\"title\":\"中国金牌总数\"},\"legend\":{\"show\":true,\"hPosition\":\"center\",\"vPosition\":\"bottom\",\"orient\":\"horizontal\",\"icon\":\"rect\",\"textStyle\":{\"color\":\"#333333\",\"fontSize\":\"12\"}},\"xAxis\":{\"show\":true,\"position\":\"bottom\",\"name\":\"\",\"nameTextStyle\":{\"color\":\"#333333\",\"fontSize\":12},\"axisLabel\":{\"show\":true,\"color\":\"#333333\",\"fontSize\":\"12\",\"rotate\":0,\"formatter\":\"{value}\"},\"splitLine\":{\"show\":false,\"lineStyle\":{\"color\":\"#cccccc\",\"width\":1,\"style\":\"solid\"}}},\"yAxis\":{\"show\":true,\"position\":\"left\",\"name\":\"\",\"nameTextStyle\":{\"color\":\"#333333\",\"fontSize\":12},\"axisLabel\":{\"show\":true,\"color\":\"#333333\",\"fontSize\":\"12\",\"rotate\":0,\"formatter\":\"{value}\"},\"splitLine\":{\"show\":true,\"lineStyle\":{\"color\":\"#cccccc\",\"width\":1,\"style\":\"solid\"}}},\"background\":{\"color\":\"#ffffff\",\"alpha\":10},\"split\":{\"name\":{\"show\":true,\"color\":\"#999999\",\"fontSize\":\"12\"},\"splitNumber\":5,\"axisLine\":{\"show\":true,\"lineStyle\":{\"color\":\"#999999\",\"width\":1,\"type\":\"solid\"}},\"axisTick\":{\"show\":false,\"length\":5,\"lineStyle\":{\"color\":\"#999999\",\"width\":1,\"type\":\"solid\"}},\"axisLabel\":{\"show\":false,\"rotate\":0,\"margin\":8,\"color\":\"#999999\",\"fontSize\":\"12\",\"formatter\":\"{value}\"},\"splitLine\":{\"show\":true,\"lineStyle\":{\"color\":\"#999999\",\"width\":1,\"type\":\"solid\"}},\"splitArea\":{\"show\":true}}}', '[]', 'admin', '1628127698484', '1628142574715', 'view');
