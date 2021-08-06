@@ -747,6 +747,7 @@ export default {
       view.extStack = JSON.stringify([])
       view.customFilter = JSON.stringify([])
       view.drillFields = JSON.stringify([])
+      view.extBubble = JSON.stringify([])
       post('/chart/view/save', view).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
