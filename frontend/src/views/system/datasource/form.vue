@@ -105,7 +105,9 @@ export default {
         'configuration.host': [{ required: true, message: this.$t('datasource.please_input_host'), trigger: 'change' }],
         'configuration.port': [{ required: true, message: this.$t('datasource.please_input_port'), trigger: 'change' }]
       },
-      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' }, { name: 'oracle', label: 'Oracle', type: 'jdbc' }],
+      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
+                { name: 'oracle', label: 'Oracle', type: 'jdbc' },
+                { name: 'sqlserver', label: 'SQLSERVER', type: 'jdbc' }],
       schemas: [],
       canEdit: false,
       originConfiguration: {}
