@@ -140,8 +140,8 @@ export default {
     createTimer() {
       if (!this.timer) {
         this.timer = setInterval(() => {
-          this.search(this.last_condition, false)
-        }, 1000)
+          this.timerSearch(this.last_condition, false)
+        }, 15000)
       }
     },
     destroyTimer() {
@@ -168,7 +168,7 @@ export default {
     },
     select(selection) {
     },
-    search(condition, showLoading = true) {
+    timerSearch(condition, showLoading = true) {
       if(!this.lastRequestComplete){
         return;
       }else {
@@ -186,6 +186,17 @@ export default {
         this.lastRequestComplete = true;
       }).catch(() => {
         this.lastRequestComplete = true;
+      })
+    },
+    search(condition, showLoading = true) {
+      this.last_condition = condition
+      condition = formatQuickCondition(condition, 'dataset_table_task.name')
+      const temp = formatCondition(condition)
+      const param = temp || {}
+      param['orders'] = formatOrders(this.orderConditions)
+      post('/dataset/taskLog/list/notexcel/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
+        this.data = response.data.listObject
+        this.paginationConfig.total = response.data.itemCount
       })
     },
     showErrorMassage(massage) {

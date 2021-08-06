@@ -6,7 +6,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="config === curComponent" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="config === curComponent" :element="config" @showViewDetails="showViewDetails" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -18,9 +18,9 @@
     />
 
     <component
-      ref="wrapperChild"
       :is="config.component"
       v-else
+      ref="wrapperChild"
       :out-style="config.style"
       :style="getComponentStyleDefault(config.style)"
       :prop-value="config.propValue"
@@ -112,8 +112,8 @@ export default {
       e.stopPropagation()
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
-    showViewDetails(){
-      this.$refs.wrapperChild.openChartDetailsDialog();
+    showViewDetails() {
+      this.$refs.wrapperChild.openChartDetailsDialog()
     }
   }
 }

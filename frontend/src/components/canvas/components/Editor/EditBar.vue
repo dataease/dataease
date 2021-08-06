@@ -1,17 +1,35 @@
 <template>
   <div class="bar-main">
-    <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
-    <i v-if="activeModel==='edit'" class="icon iconfont icon-shezhi" @click.stop="showViewDetails" />
+    <div v-if="linkageSettingStatus&&element!==curLinkageView&&element.type==='view'" style="margin-right: -1px;width: 18px">
+      <el-checkbox v-model="linkageInfo.linkageActive" />
+      <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
+      <!--      <i v-if="linkageInfo.linkageActive" class="icon iconfont icon-edit" @click.stop="linkageEdit" />-->
+    </div>
+    <div v-else-if="!linkageSettingStatus">
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;">
+        <i slot="icon" class="icon iconfont icon-shezhi" />
+      </setting-menu>
+      <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
+      <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
+    </div>
+
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import eventBus from '@/components/canvas/utils/eventBus'
+import bus from '@/utils/bus'
+import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
+import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 
 export default {
+  components: { SettingMenu, LinkageField },
 
   props: {
+    element: {
+      type: Object,
+      required: true
+    },
     active: {
       type: Boolean,
       required: false,
@@ -27,23 +45,54 @@ export default {
   data() {
     return {
       componentType: null,
+      linkageActiveStatus: false,
       editFilter: [
         'view',
         'custom'
       ]
     }
   },
-  computed: mapState([
-    'menuTop',
-    'menuLeft',
-    'menuShow',
-    'curComponent',
-    'componentData',
-    'canvasStyleData'
-  ]),
+  computed: {
+    linkageInfo() {
+      return this.targetLinkageInfo[this.element.propValue.viewId]
+    },
+    ...mapState([
+      'menuTop',
+      'menuLeft',
+      'menuShow',
+      'curComponent',
+      'componentData',
+      'canvasStyleData',
+      'linkageSettingStatus',
+      'targetLinkageInfo',
+      'curLinkageView'
+    ])
+  },
   methods: {
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    edit() {
+      // 编辑时临时保存 当前修改的画布
+      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
+      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
+      if (this.curComponent.type === 'view') {
+        this.$store.dispatch('chart/setViewId', null)
+        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
+        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
+      }
+      if (this.curComponent.type === 'custom') {
+        bus.$emit('component-dialog-edit')
+      }
+
+      // 编辑样式组件
+
+      if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+        bus.$emit('component-dialog-style')
+      }
+    },
+    linkageEdit() {
+
     }
   }
 }

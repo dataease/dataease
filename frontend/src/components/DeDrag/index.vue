@@ -10,7 +10,8 @@
         [classNameResizable]: resizable,
         [classNameRotating]: rotating,
         [classNameRotatable]: rotatable,
-        [classNameMouseOn]: mouseOn || active
+        [classNameMouseOn]: mouseOn || active,
+        ['linkageSetting']:linkageActive
       },
       className
     ]"
@@ -19,9 +20,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <setting-menu style="right:5px;position: absolute;z-index: 2">
-      <i slot="icon" class="icon iconfont icon-shezhi" />
-    </setting-menu>
+    <edit-bar v-if="active||linkageSettingStatus" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -46,11 +45,12 @@ let eventsFor = events.mouse
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
+import EditBar from '@/components/canvas/components/Editor/EditBar'
 
 export default {
   replace: true,
   name: 'VueDragResizeRotate',
-  components: { SettingMenu },
+  components: { EditBar },
   props: {
     className: {
       type: String,
@@ -311,6 +311,11 @@ export default {
     changeStyle: {
       require: true,
       type: Object
+    },
+    // 联动设置
+    linkageActive: {
+      type: Boolean,
+      default: false
     }
   },
   data: function() {
@@ -464,7 +469,8 @@ export default {
       'curComponent',
       'editor',
       'curCanvasScale',
-      'canvasStyleData'
+      'canvasStyleData',
+      'linkageSettingStatus'
     ])
   },
   watch: {
@@ -1540,6 +1546,9 @@ export default {
       removeEvent(document.documentElement, 'mouseup', this.handleUp)
       removeEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       removeEvent(window, 'resize', this.checkParentSize)
+    },
+    showViewDetails() {
+      this.$emit('showViewDetails')
     }
   }
 
@@ -1628,26 +1637,30 @@ export default {
   user-select: none;
 }
 
-.mouseOn >>> .icon-shezhi{
-  z-index: 2;
-  display:block!important;
-}
-.vdr > i{
-  right: 5px;
-  color: gray;
-  position: absolute;
+.linkageSetting{
+  opacity: 0.5;
 }
 
-.vdr >>> i:hover {
-  color: red;
-}
+/*.mouseOn >>> .icon-shezhi{*/
+/*  z-index: 2;*/
+/*  display:block!important;*/
+/*}*/
+/*.vdr > i{*/
+/*  right: 5px;*/
+/*  color: gray;*/
+/*  position: absolute;*/
+/*}*/
 
-.vdr:hover >>> i {
-  z-index: 2;
-  display:block;
-}
+/*.vdr >>> i:hover {*/
+/*  color: red;*/
+/*}*/
 
-.vdr>>>.icon-shezhi {
-  display:none
-}
+/*.vdr:hover >>> i {*/
+/*  z-index: 2;*/
+/*  display:block;*/
+/*}*/
+
+/*.vdr>>>.icon-shezhi {*/
+/*  display:none*/
+/*}*/
 </style>

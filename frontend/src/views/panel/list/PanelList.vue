@@ -463,10 +463,22 @@ export default {
             message: this.$t('panel.delete_success'),
             showClose: true
           })
+          this.clearCanvas()
           this.tree(this.groupForm)
           this.defaultTree()
         })
       }).catch(() => {
+      })
+    },
+
+    clearCanvas() {
+      // 清空当前缓存,快照
+      this.$store.commit('setComponentData', [])
+      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
+      this.$store.dispatch('panel/setPanelInfo', {
+        id: null,
+        name: '',
+        preStyle: null
       })
     },
 
@@ -647,10 +659,12 @@ export default {
   }
 
   .father .child {
-    display: none;
+    /*display: none;*/
+    visibility: hidden;
   }
   .father:hover .child {
-    display: inline;
+    /*display: inline;*/
+    visibility: visible;
   }
 
 </style>

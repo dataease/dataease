@@ -315,6 +315,8 @@ export default {
       if (!this.fieldForm.id) {
         this.fieldForm.type = this.fieldForm.deType
         this.fieldForm.deExtractType = this.fieldForm.deType
+        this.fieldForm.tableId = this.param.id
+        this.fieldForm.columnIndex = this.tableFields.dimensionList.length + this.tableFields.quotaList.length
       }
       post('/dataset/field/save', this.fieldForm).then(response => {
         this.closeCalcField()
@@ -371,7 +373,8 @@ export default {
     padding: 0 4px;
   }
   .field-height{
-    height: calc(50% - 20px);
+    height: calc(50% - 25px);
+    margin-top: 4px;
   }
   .drag-list {
     height: calc(100% - 26px);
@@ -442,8 +445,9 @@ export default {
     text-overflow: ellipsis;
   }
   .function-height{
-    height: calc(100% - 20px);
+    height: calc(100% - 50px);
     overflow: auto;
+    margin-top: 4px;
   }
   .function-pop>>>.el-popover{
     padding: 6px!important;

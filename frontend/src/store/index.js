@@ -50,7 +50,11 @@ const data = {
     isClickComponent: false,
     canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
     // 联动设置状态
-    linkageSettingStatus: false
+    linkageSettingStatus: false,
+    // 当前设置联动的组件
+    curLinkageView: null,
+    // 和当前组件联动的目标组件
+    targetLinkageInfo: []
   },
   mutations: {
     ...animation.mutations,
@@ -176,9 +180,15 @@ const data = {
       }
       state.componentData.splice(index, 1)
     },
-    setLinkageSettingStatus(state, status) {
-      state.linkageSettingStatus = status
-      console.log('linkageSettingStatus:', state.linkageSettingStatus)
+    setLinkageInfo(state, targetLinkageInfo) {
+      state.linkageSettingStatus = true
+      state.curLinkageView = state.curComponent
+      state.targetLinkageInfo = targetLinkageInfo
+    },
+    clearLinkageSettingInfo(state) {
+      state.linkageSettingStatus = false
+      state.curLinkageView = null
+      state.targetLinkageInfo = []
     }
   },
   modules: {

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper">
+
+    <resultMap id="TableFieldMap" type="io.dataease.base.domain.DatasetTableField">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
+        <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="de_type" jdbcType="INTEGER" property="deType"/>
+    </resultMap>
+
+    <resultMap id="LinkageGatherMap" type="io.dataease.dto.PanelViewLinkageDTO">
+        <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
+        <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
+        <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
+        <result column="linkageActive" property="linkageActive"/>
+<!--        <collection property="targetViewFields" ofType="io.dataease.base.domain.DatasetTableField" column="table_id"-->
+<!--                    select="queryTableField">-->
+<!--        </collection>-->
+        <collection property="linkageFields" ofType="io.dataease.dto.PanelViewLinkageFieldDTO">
+            <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled"/>
+            <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"/>
+        </collection>
+    </resultMap>
+
+    <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
+        SELECT
+        chart_view.`name` as 'targetViewName',
+        chart_view.id as 'target_view_id',
+        chart_view.table_id,
+        (case when panel_view_linkage.target_view_id is null then 0 else 1 end) as 'linkageActive',
+        panel_view_linkage_field.source_filed,
+        panel_view_linkage_field.target_filed
+        FROM
+        chart_view
+        LEFT JOIN panel_view_linkage ON chart_view.id = panel_view_linkage.target_view_id
+        LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
+        AND panel_view_linkage.panel_id = #{panelId}
+        AND panel_view_linkage.source_view_id = #{sourceViewId}
+        where chart_view.id in
+        <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
+            #{targetViewId}
+        </foreach>
+    </select>
+
+    <select id="queryTableField" resultMap="TableFieldMap">
+       select
+       dataset_table_field.id,
+       dataset_table_field.table_id,
+       dataset_table_field.origin_name,
+       dataset_table_field.name,
+       dataset_table_field.de_type
+        from dataset_table_field where table_id = #{tableId}
+    </select>
+
+</mapper>

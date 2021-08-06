@@ -233,6 +233,29 @@
                       />
                     </span>
                   </el-row>
+                  <el-row class="padding-lr">
+                    <span style="width: 80px;text-align: right;">
+                      <span>钻取</span>
+                      /
+                      <span>{{ $t('chart.dimension') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.drillFields"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      class="drag-block-style"
+                      @add="addDrill"
+                    >
+                      <transition-group class="draggable-group">
+                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dillItemChange" @onDimensionItemRemove="drillItemRemove" />
+                      </transition-group>
+                    </draggable>
+                    <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
                   <el-row v-if="view.type !=='text' && view.type !== 'gauge'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
@@ -489,13 +512,13 @@
 
     <!--视图更换数据集-->
     <el-dialog
+      v-if="selectTableFlag"
       v-dialogDrag
       :title="changeDsTitle"
       :visible="selectTableFlag"
       :show-close="false"
       width="70%"
       class="dialog-css"
-      :destroy-on-close="true"
     >
       <table-selector @getTable="getTable" />
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
@@ -507,10 +530,10 @@
 
     <!--编辑视图使用的数据集的字段-->
     <el-dialog
+      v-if="editDsField"
       :visible="editDsField"
       :show-close="false"
       class="dialog-css"
-      :destroy-on-close="true"
       :fullscreen="true"
     >
       <field-edit :param="table" />
@@ -532,6 +555,7 @@ import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
 import ChartDragItem from '../components/drag-item/ChartDragItem'
+import DrillItem from '../components/drag-item/DrillItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
 import ChartComponent from '../components/ChartComponent'
 import bus from '@/utils/bus'
@@ -593,7 +617,8 @@ export default {
     QuotaItem,
     DimensionItem,
     draggable,
-    ChartDragItem
+    ChartDragItem,
+    DrillItem
   },
   props: {
     param: {
@@ -613,6 +638,7 @@ export default {
         xaxis: [],
         yaxis: [],
         extStack: [],
+        drillFields: [],
         show: true,
         type: 'bar',
         title: '',
@@ -800,6 +826,7 @@ export default {
       view.customStyle = JSON.stringify(view.customStyle)
       view.customFilter = JSON.stringify(view.customFilter)
       view.extStack = JSON.stringify(view.extStack)
+      view.drillFields = JSON.stringify(view.drillFields)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         // this.getData(response.data.id)
@@ -900,6 +927,7 @@ export default {
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
+          this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
@@ -932,6 +960,7 @@ export default {
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
+          this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
@@ -1352,7 +1381,7 @@ export default {
       return resultNode
     },
     addStack(e) {
-      this.dragCheckType(this.dimensionData, 'd')
+      this.dragCheckType(this.view.extStack, 'd')
       if (this.view.extStack && this.view.extStack.length > 1) {
         this.view.extStack = [this.view.extStack[0]]
       }
@@ -1363,6 +1392,18 @@ export default {
     },
     stackItemRemove(item) {
       this.view.extStack.splice(item.index, 1)
+      this.save(true)
+    },
+    dillItemChange(item) {
+      this.save(true)
+    },
+    drillItemRemove(item) {
+      this.view.drillFields.splice(item.index, 1)
+      this.save(true)
+    },
+    addDrill(e) {
+      this.dragCheckType(this.view.drillFields, 'd')
+      this.dragMoveDuplicate(this.view.drillFields, e)
       this.save(true)
     }
   }

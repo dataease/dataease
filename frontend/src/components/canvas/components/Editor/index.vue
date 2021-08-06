@@ -8,7 +8,7 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid v-if="canvasStyleData.auxiliaryMatrix" :matrix-style="matrixStyle" />
+    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
@@ -29,12 +29,17 @@
       :snap="true"
       :snap-tolerance="2"
       :change-style="customStyle"
+      :draggable="!linkageSettingStatus"
+      :resizable="!linkageSettingStatus"
+      :linkage-active="linkageSettingStatus&&item===curLinkageView"
       @refLineParams="getRefLineParams"
+      @showViewDetails="showViewDetails(index)"
     >
       <component
         :is="item.component"
         v-if="item.type==='v-text'"
         :id="'component' + item.id"
+        ref="wrapperChild"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -69,6 +74,7 @@
         :is="item.component"
         v-else-if="item.type==='other'"
         :id="'component' + item.id"
+        ref="wrapperChild"
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
@@ -80,6 +86,7 @@
         :is="item.component"
         v-else
         :id="'component' + item.id"
+        ref="wrapperChild"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -245,7 +252,9 @@ export default {
       'componentData',
       'curComponent',
       'canvasStyleData',
-      'editor'
+      'editor',
+      'linkageSettingStatus',
+      'curLinkageView'
     ])
   },
   watch: {
@@ -275,6 +284,7 @@ export default {
         // 第一次变化 不需要 重置边界 待改进
         if (this.changeIndex++ > 0) {
           this.resizeParentBounds()
+          this.$store.state.styleChangeTimes++
         }
         // this.changeScale()
       },
@@ -602,6 +612,9 @@ export default {
     },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
+    },
+    showViewDetails(index) {
+      this.$refs.wrapperChild[index].openChartDetailsDialog()
     }
   }
 }
