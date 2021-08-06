@@ -2,11 +2,15 @@ package io.dataease.base.domain;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor //全参构造函数
+@NoArgsConstructor  //无参构造函数
 public class DatasetTableField implements Serializable {
     private String id;
 
