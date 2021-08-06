@@ -828,7 +828,10 @@ export default {
     select_map_range: 'Please select map range',
     area: 'Area',
     placeholder_field: 'Drag Field To Here',
-    axis_label_rotate: 'Label Rotate'
+    axis_label_rotate: 'Label Rotate',
+    chart_scatter_bubble: 'Bubble',
+    chart_scatter: 'Scatter',
+    bubble_size: 'Bubble Size'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

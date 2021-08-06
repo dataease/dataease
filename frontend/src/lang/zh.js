@@ -828,7 +828,10 @@ export default {
     area: '地区',
     stack_item: '堆叠项',
     placeholder_field: '拖动字段至此处',
-    axis_label_rotate: '标签角度'
+    axis_label_rotate: '标签角度',
+    chart_scatter_bubble: '气泡图',
+    chart_scatter: '散点图',
+    bubble_size: '气泡大小'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

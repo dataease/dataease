@@ -37,7 +37,9 @@ export const DEFAULT_SIZE = {
   quotaFontSize: 18,
   spaceSplit: 10,
   dimensionShow: true,
-  quotaShow: true
+  quotaShow: true,
+  scatterSymbol: 'circle',
+  scatterSymbolSize: 20
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -627,6 +629,64 @@ export const BASE_MAP = {
       //     show: true
       //   },
       data: []
+    }
+  ]
+}
+
+export const BASE_SCATTER = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: []
+  },
+  xAxis: {
+    boundaryGap: false,
+    data: []
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [],
+  dataZoom: [
+    {
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 0,
+      end: 100
     }
   ]
 }

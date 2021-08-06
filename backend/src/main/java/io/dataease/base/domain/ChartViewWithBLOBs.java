@@ -15,6 +15,8 @@ public class ChartViewWithBLOBs extends ChartView implements Serializable {
 
     private String extStack;
 
+    private String extBubble;
+
     private String customAttr;
 
     private String customStyle;
