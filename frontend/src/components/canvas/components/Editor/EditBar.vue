@@ -2,7 +2,7 @@
   <div class="bar-main">
     <div v-if="linkageSettingStatus&&element!==curLinkageView&&element.type==='view'" style="margin-right: -1px;width: 18px">
       <el-checkbox v-model="linkageInfo.linkageActive" />
-      <linkage-field v-if="linkageInfo.linkageActive" />
+      <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
       <!--      <i v-if="linkageInfo.linkageActive" class="icon iconfont icon-edit" @click.stop="linkageEdit" />-->
     </div>
     <div v-else-if="!linkageSettingStatus">

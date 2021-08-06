@@ -1,16 +1,19 @@
 <template>
 
   <el-popover
-    v-model="isSetting"
     width="300"
     trigger="click"
   >
     <el-row>
-      <el-col :span="10" />
-      <el-col :span="10" />
+      <el-col :span="10">
+        <div class="ellip">联动视图</div>
+      </el-col>
+      <el-col :span="10">
+        <div class="ellip">{{ linkageInfo.targetViewName }}</div>
+      </el-col>
     </el-row>
 
-    this is test
+    linkageInfo{{ linkageInfo }}
 
     <el-row class="bottom">
       <el-button size="mini" type="success" icon="el-icon-plus" round>追加联动依赖字段</el-button>
@@ -74,23 +77,7 @@ export default {
       this.$emit('showViewDetails')
     },
     edit() {
-      // 编辑时临时保存 当前修改的画布
-      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
-      if (this.curComponent.type === 'view') {
-        this.$store.dispatch('chart/setViewId', null)
-        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
-      }
-      if (this.curComponent.type === 'custom') {
-        bus.$emit('component-dialog-edit')
-      }
 
-      // 编辑样式组件
-
-      if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
-        bus.$emit('component-dialog-style')
-      }
     },
     linkageEdit() {
 
@@ -107,6 +94,20 @@ export default {
   .bottom {
     text-align: center;
 
+  }
+  .ellip{
+    /*width: 100%;*/
+    margin-left: 10px;
+    margin-right: 10px;
+    overflow: hidden;/*超出部分隐藏*/
+    white-space: nowrap;/*不换行*/
+    text-overflow:ellipsis;/*超出部分文字以...显示*/
+    background-color: #f7f8fa;
+    color: #3d4d66;
+    font-size: 12px;
+    line-height: 24px;
+    height: 24px;
+    border-radius: 3px;
   }
 
 </style>
