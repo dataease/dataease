@@ -653,7 +653,6 @@ export const BASE_SCATTER = {
     data: []
   },
   xAxis: {
-    boundaryGap: false,
     data: []
   },
   yAxis: {
