@@ -63,6 +63,23 @@
           </el-select>
         </el-form-item>
 
+
+        <el-form-item v-if="form.type=='sqlServer'">
+          <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
+            {{ $t('datasource.get_schema') }}
+          </el-button>
+        </el-form-item>
+        <el-form-item v-if="form.type=='sqlServer'" :label="$t('datasource.schema')">
+          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width">
+            <el-option
+              v-for="item in schemas"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+
       </el-form>
       <div v-if="canEdit" slot="footer" class="dialog-footer">
         <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" @click="validaDatasource">{{ $t('commons.validate') }}</el-button>
@@ -107,7 +124,7 @@ export default {
       },
       allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
                 { name: 'oracle', label: 'Oracle', type: 'jdbc' },
-                { name: 'sqlserver', label: 'SQLSERVER', type: 'jdbc' }],
+                { name: 'sqlServer', label: 'SQLSERVER', type: 'jdbc' }],
       schemas: [],
       canEdit: false,
       originConfiguration: {}

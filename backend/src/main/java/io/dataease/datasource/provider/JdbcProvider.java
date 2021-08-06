@@ -42,20 +42,25 @@ public class JdbcProvider extends DatasourceProvider {
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
         Connection connection = null;
-        try {
-            connection = getConnectionFromPool(dsr);
-            Statement stat = connection.createStatement();
-            ResultSet rs = stat.executeQuery(dsr.getQuery());
-            list = fetchResult(rs);
-        } catch (SQLException e) {
-            DataEaseException.throwException(e);
-        } catch (Exception e) {
-            DataEaseException.throwException(e);
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
-        }
+        connection = getConnectionFromPool(dsr);
+        Statement stat = connection.createStatement();
+        ResultSet rs = stat.executeQuery(dsr.getQuery());
+        System.out.println(rs == null);
+        list = fetchResult(rs);
+//        try {
+//            connection = getConnectionFromPool(dsr);
+//            Statement stat = connection.createStatement();
+//            ResultSet rs = stat.executeQuery(dsr.getQuery());
+//            list = fetchResult(rs);
+//        } catch (SQLException e) {
+//            DataEaseException.throwException(e);
+//        } catch (Exception e) {
+//            DataEaseException.throwException(e);
+//        } finally {
+//            if(connection != null){
+//                connection.close();
+//            }
+//        }
         return list;
     }
 
@@ -102,18 +107,23 @@ public class JdbcProvider extends DatasourceProvider {
         List<String[]> list = new LinkedList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
+        System.out.println("columnCount: " + columnCount);
         while (rs.next()) {
             String[] row = new String[columnCount];
             for (int j = 0; j < columnCount; j++) {
                 int columType = metaData.getColumnType(j + 1);
+
                 switch (columType) {
                     case Types.DATE:
-                        row[j] = rs.getDate(j + 1).toString();
+                        if(rs.getDate(j + 1) != null){
+                            row[j] = rs.getDate(j + 1).toString();
+                        }
                         break;
                     default:
                         row[j] = rs.getString(j + 1);
                         break;
                 }
+                System.out.println(j + " " + columType + " " + row[j]);
             }
             list.add(row);
         }
@@ -506,7 +516,9 @@ public class JdbcProvider extends DatasourceProvider {
                 return "show tables;";
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';".replace("DATABASE", sqlServerConfigration.getDataBase());
+                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'DS_SCHEMA' ;"
+                        .replace("DATABASE", sqlServerConfigration.getDataBase())
+                        .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
             case oracle:
                 OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
                 if(StringUtils.isEmpty(oracleConfigration.getSchema())){
@@ -523,6 +535,8 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case oracle:
                 return "select * from all_users";
+            case sqlServer:
+                return "select name from sys.schemas;";
             default:
                 return "show tables;";
         }
