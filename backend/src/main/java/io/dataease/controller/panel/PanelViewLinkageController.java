@@ -2,6 +2,7 @@ package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.controller.request.panel.PanelLinkageRequest;
+import io.dataease.dto.PanelViewLinkageDTO;
 import io.dataease.service.panel.PanelViewLinkageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,5 +30,14 @@ public class PanelViewLinkageController {
     public Map getViewLinkageGather(@RequestBody PanelLinkageRequest request){
         return panelViewLinkageService.getViewLinkageGather(request);
     }
+
+
+    @ApiOperation("获取仪表板视图联动信息")
+    @PostMapping("/saveLinkage")
+    public void saveLinkage(@RequestBody PanelLinkageRequest request){
+        panelViewLinkageService.saveLinkage(request);
+    }
+
+
 
 }

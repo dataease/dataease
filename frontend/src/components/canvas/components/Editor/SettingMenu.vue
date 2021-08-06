@@ -124,7 +124,8 @@ export default {
     },
     linkageSetting() {
       debugger
-      const targetViewIds = this.componentData.filter(item => item.type === 'view' && item.propValue && item.propValue.viewId && item !== this.curComponent)
+      // sourceViewId 也加入查询
+      const targetViewIds = this.componentData.filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
         .map(item => item.propValue.viewId)
 
       // 获取当前仪表板当前视图联动信息

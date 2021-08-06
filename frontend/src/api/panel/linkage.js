@@ -9,3 +9,12 @@ export function getViewLinkageGather(requestInfo) {
   })
 }
 
+export function saveLinkage(requestInfo) {
+  return request({
+    url: '/linkage/saveLinkage',
+    method: 'post',
+    data: requestInfo,
+    loading: true
+  })
+}
+
