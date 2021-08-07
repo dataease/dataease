@@ -195,6 +195,16 @@
                             <svg-icon icon-class="map" class="chart-icon" />
                           </span>
                         </el-radio>
+                        <el-radio value="scatter" label="scatter">
+                          <span :title="$t('chart.chart_scatter')">
+                            <svg-icon icon-class="scatter" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                       </div>
@@ -247,9 +257,10 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addDrill"
+                      @update="save(true)"
                     >
                       <transition-group class="draggable-group">
-                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dillItemChange" @onDimensionItemRemove="drillItemRemove" />
+                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="drillItemChange" @onDimensionItemRemove="drillItemRemove" />
                       </transition-group>
                     </draggable>
                     <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
@@ -259,7 +270,7 @@
                   <el-row v-if="view.type !=='text' && view.type !== 'gauge'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line'))">{{ $t('chart.drag_block_type_axis') }}</span>
+                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))">{{ $t('chart.drag_block_type_axis') }}</span>
                       <span v-else-if="view.type && view.type.includes('pie')">{{ $t('chart.drag_block_pie_label') }}</span>
                       <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
@@ -275,6 +286,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addXaxis"
+                      @update="save(true)"
                     >
                       <transition-group class="draggable-group">
                         <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
@@ -287,7 +299,7 @@
                   <el-row class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line'))">{{ $t('chart.drag_block_value_axis') }}</span>
+                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))">{{ $t('chart.drag_block_value_axis') }}</span>
                       <span v-else-if="view.type && view.type.includes('pie')">{{ $t('chart.drag_block_pie_angel') }}</span>
                       <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
@@ -305,6 +317,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addYaxis"
+                      @update="save(true)"
                     >
                       <transition-group class="draggable-group">
                         <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
@@ -328,12 +341,37 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addStack"
+                      @update="save(true)"
                     >
                       <transition-group class="draggable-group">
-                        <chart-drag-item v-for="(item,index) in view.extStack" :key="item.id" :param="param" :index="index" :item="item" @onItemChange="stackItemChange" @onItemRemove="stackItemRemove" />
+                        <chart-drag-item v-for="(item,index) in view.extStack" :key="item.id" :conf="'sort'" :param="param" :index="index" :item="item" @onItemChange="stackItemChange" @onItemRemove="stackItemRemove" />
                       </transition-group>
                     </draggable>
                     <div v-if="!view.extStack || view.extStack.length === 0" class="drag-placeholder-style">
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
+                  <el-row v-if="view.type && view.type.includes('scatter')" class="padding-lr" style="margin-top: 6px;">
+                    <span style="width: 80px;text-align: right;">
+                      <span>{{ $t('chart.bubble_size') }}</span>
+                      /
+                      <span>{{ $t('chart.quota') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.extBubble"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      class="drag-block-style"
+                      @add="addBubble"
+                      @update="save(true)"
+                    >
+                      <transition-group class="draggable-group">
+                        <chart-drag-item v-for="(item,index) in view.extBubble" :key="item.id" :conf="'summary'" :param="param" :index="index" :item="item" @onItemChange="bubbleItemChange" @onItemRemove="bubbleItemRemove" />
+                      </transition-group>
+                    </draggable>
+                    <div v-if="!view.extBubble || view.extBubble.length === 0" class="drag-placeholder-style">
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
@@ -350,6 +388,7 @@
                       :move="onMove"
                       style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @add="addCustomFilter"
+                      @update="save(true)"
                     >
                       <transition-group class="draggable-group">
                         <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index" :item="item" @onFilterItemRemove="filterItemRemove" @editItemFilter="showEditFilter" />
@@ -639,6 +678,7 @@ export default {
         yaxis: [],
         extStack: [],
         drillFields: [],
+        extBubble: [],
         show: true,
         type: 'bar',
         title: '',
@@ -804,6 +844,15 @@ export default {
           ele.sort = 'none'
         }
       })
+      view.extBubble.forEach(function(ele) {
+        if (!ele.summary || ele.summary === '') {
+          if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+            ele.summary = 'count'
+          } else {
+            ele.summary = 'sum'
+          }
+        }
+      })
       if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('text') || view.type.startsWith('gauge')) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
@@ -827,6 +876,7 @@ export default {
       view.customFilter = JSON.stringify(view.customFilter)
       view.extStack = JSON.stringify(view.extStack)
       view.drillFields = JSON.stringify(view.drillFields)
+      view.extBubble = JSON.stringify(view.extBubble)
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         // this.getData(response.data.id)
@@ -928,6 +978,7 @@ export default {
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
+          this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
@@ -961,6 +1012,7 @@ export default {
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
+          this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
@@ -1279,6 +1331,8 @@ export default {
         this.view.xaxis = []
         this.view.yaxis = []
         this.view.customFilter = []
+        this.view.extStack = []
+        this.view.extBubble = []
       }
       this.save(true, 'chart', false)
     },
@@ -1394,7 +1448,7 @@ export default {
       this.view.extStack.splice(item.index, 1)
       this.save(true)
     },
-    dillItemChange(item) {
+    drillItemChange(item) {
       this.save(true)
     },
     drillItemRemove(item) {
@@ -1404,6 +1458,21 @@ export default {
     addDrill(e) {
       this.dragCheckType(this.view.drillFields, 'd')
       this.dragMoveDuplicate(this.view.drillFields, e)
+      this.save(true)
+    },
+
+    addBubble(e) {
+      this.dragCheckType(this.view.extBubble, 'q')
+      if (this.view.extBubble && this.view.extBubble.length > 1) {
+        this.view.extBubble = [this.view.extBubble[0]]
+      }
+      this.save(true)
+    },
+    bubbleItemChange(item) {
+      this.save(true)
+    },
+    bubbleItemRemove(item) {
+      this.view.extBubble.splice(item.index, 1)
       this.save(true)
     }
   }

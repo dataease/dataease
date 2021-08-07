@@ -4,8 +4,8 @@
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.PanelViewLinkageField">
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="linkage_id" jdbcType="VARCHAR" property="linkageId" />
-    <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled" />
-    <result column="target_filed" jdbcType="VARCHAR" property="targetFiled" />
+    <result column="source_field" jdbcType="VARCHAR" property="sourceField" />
+    <result column="target_field" jdbcType="VARCHAR" property="targetField" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -67,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, linkage_id, source_filed, target_filed, update_time
+    id, linkage_id, source_field, target_field, update_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelViewLinkageFieldExample" resultMap="BaseResultMap">
     select
@@ -100,10 +100,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.PanelViewLinkageField">
-    insert into panel_view_linkage_field (id, linkage_id, source_filed, 
-      target_filed, update_time)
-    values (#{id,jdbcType=VARCHAR}, #{linkageId,jdbcType=VARCHAR}, #{sourceFiled,jdbcType=VARCHAR}, 
-      #{targetFiled,jdbcType=VARCHAR}, #{updateTime,jdbcType=BIGINT})
+    insert into panel_view_linkage_field (id, linkage_id, source_field, 
+      target_field, update_time)
+    values (#{id,jdbcType=VARCHAR}, #{linkageId,jdbcType=VARCHAR}, #{sourceField,jdbcType=VARCHAR}, 
+      #{targetField,jdbcType=VARCHAR}, #{updateTime,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelViewLinkageField">
     insert into panel_view_linkage_field
@@ -114,11 +114,11 @@
       <if test="linkageId != null">
         linkage_id,
       </if>
-      <if test="sourceFiled != null">
-        source_filed,
+      <if test="sourceField != null">
+        source_field,
       </if>
-      <if test="targetFiled != null">
-        target_filed,
+      <if test="targetField != null">
+        target_field,
       </if>
       <if test="updateTime != null">
         update_time,
@@ -131,11 +131,11 @@
       <if test="linkageId != null">
         #{linkageId,jdbcType=VARCHAR},
       </if>
-      <if test="sourceFiled != null">
-        #{sourceFiled,jdbcType=VARCHAR},
+      <if test="sourceField != null">
+        #{sourceField,jdbcType=VARCHAR},
       </if>
-      <if test="targetFiled != null">
-        #{targetFiled,jdbcType=VARCHAR},
+      <if test="targetField != null">
+        #{targetField,jdbcType=VARCHAR},
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=BIGINT},
@@ -157,11 +157,11 @@
       <if test="record.linkageId != null">
         linkage_id = #{record.linkageId,jdbcType=VARCHAR},
       </if>
-      <if test="record.sourceFiled != null">
-        source_filed = #{record.sourceFiled,jdbcType=VARCHAR},
+      <if test="record.sourceField != null">
+        source_field = #{record.sourceField,jdbcType=VARCHAR},
       </if>
-      <if test="record.targetFiled != null">
-        target_filed = #{record.targetFiled,jdbcType=VARCHAR},
+      <if test="record.targetField != null">
+        target_field = #{record.targetField,jdbcType=VARCHAR},
       </if>
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=BIGINT},
@@ -175,8 +175,8 @@
     update panel_view_linkage_field
     set id = #{record.id,jdbcType=VARCHAR},
       linkage_id = #{record.linkageId,jdbcType=VARCHAR},
-      source_filed = #{record.sourceFiled,jdbcType=VARCHAR},
-      target_filed = #{record.targetFiled,jdbcType=VARCHAR},
+      source_field = #{record.sourceField,jdbcType=VARCHAR},
+      target_field = #{record.targetField,jdbcType=VARCHAR},
       update_time = #{record.updateTime,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -188,11 +188,11 @@
       <if test="linkageId != null">
         linkage_id = #{linkageId,jdbcType=VARCHAR},
       </if>
-      <if test="sourceFiled != null">
-        source_filed = #{sourceFiled,jdbcType=VARCHAR},
+      <if test="sourceField != null">
+        source_field = #{sourceField,jdbcType=VARCHAR},
       </if>
-      <if test="targetFiled != null">
-        target_filed = #{targetFiled,jdbcType=VARCHAR},
+      <if test="targetField != null">
+        target_field = #{targetField,jdbcType=VARCHAR},
       </if>
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=BIGINT},
@@ -203,8 +203,8 @@
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelViewLinkageField">
     update panel_view_linkage_field
     set linkage_id = #{linkageId,jdbcType=VARCHAR},
-      source_filed = #{sourceFiled,jdbcType=VARCHAR},
-      target_filed = #{targetFiled,jdbcType=VARCHAR},
+      source_field = #{sourceField,jdbcType=VARCHAR},
+      target_field = #{targetField,jdbcType=VARCHAR},
       update_time = #{updateTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=VARCHAR}
   </update>

@@ -101,6 +101,7 @@ import { commonStyle, commonAttr } from '@/components/canvas/custom-component/co
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { panelSave } from '@/api/panel/panel'
+import { saveLinkage } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
@@ -137,7 +138,9 @@ export default {
     'changeTimes',
     'snapshotIndex',
     'lastSaveSnapshotIndex',
-    'linkageSettingStatus'
+    'linkageSettingStatus',
+    'curLinkageView',
+    'targetLinkageInfo'
   ]),
 
   created() {
@@ -316,7 +319,14 @@ export default {
       this.close()
     },
     saveLinkage() {
-      this.cancelLinkageSettingStatus()
+      const request = {
+        panelId: this.$store.state.panel.panelInfo.id,
+        sourceViewId: this.curLinkageView.propValue.viewId,
+        linkageInfo: this.targetLinkageInfo
+      }
+      saveLinkage(request).then(rsp => {
+        this.cancelLinkageSettingStatus()
+      })
     },
     cancelLinkage() {
       this.cancelLinkageSettingStatus()
