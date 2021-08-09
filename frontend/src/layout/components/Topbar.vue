@@ -54,7 +54,7 @@
             <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
           </router-link>
 
-          <router-link to="/ukey/index">
+          <router-link v-if="$store.getters.validate" to="/ukey/index">
             <el-dropdown-item>{{ $t('commons.ukey_title') }}</el-dropdown-item>
           </router-link>
 
