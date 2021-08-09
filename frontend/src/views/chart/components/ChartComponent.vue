@@ -148,9 +148,6 @@ export default {
       window.onresize = function() {
         chart.resize()
       }
-      chart.on('click',function(param) {
-        console.log(param)
-      })
     },
     chartResize() {
       // 指定图表的配置项和数据
