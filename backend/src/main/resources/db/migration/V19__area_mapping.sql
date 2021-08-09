@@ -1,5 +1,7 @@
 ALTER TABLE `chart_view` ADD COLUMN `ext_stack` LONGTEXT COMMENT '堆叠项' AFTER `y_axis`;
 UPDATE `chart_view` SET `ext_stack` = '[]';
+ALTER TABLE `chart_view` ADD COLUMN `ext_bubble` LONGTEXT COMMENT '气泡大小' AFTER `ext_stack`;
+UPDATE `chart_view` SET `ext_bubble` = '[]';
 
 ALTER TABLE `dataset_table_field` MODIFY COLUMN `origin_name` LONGTEXT;
 

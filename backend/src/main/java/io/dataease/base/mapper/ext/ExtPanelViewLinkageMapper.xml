@@ -3,7 +3,7 @@
 <mapper namespace="io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper">
 
     <resultMap id="TableFieldMap" type="io.dataease.base.domain.DatasetTableField">
-        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="id" jdbcType="VARCHAR" property="id"/>
         <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
         <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -15,12 +15,12 @@
         <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
         <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
         <result column="linkageActive" property="linkageActive"/>
-<!--        <collection property="targetViewFields" ofType="io.dataease.base.domain.DatasetTableField" column="table_id"-->
-<!--                    select="queryTableField">-->
-<!--        </collection>-->
-        <collection property="linkageFields" ofType="io.dataease.dto.PanelViewLinkageFieldDTO">
-            <result column="source_filed" jdbcType="VARCHAR" property="sourceFiled"/>
-            <result column="target_filed" jdbcType="VARCHAR" property="targetFiled"/>
+        <collection property="targetViewFields" ofType="io.dataease.base.domain.DatasetTableField" column="table_id"
+                    select="queryTableField">
+        </collection>
+        <collection property="linkageFields" ofType="io.dataease.base.domain.PanelViewLinkageField">
+            <result column="source_field" jdbcType="VARCHAR" property="sourceField"/>
+            <result column="target_field" jdbcType="VARCHAR" property="targetField"/>
         </collection>
     </resultMap>
 
@@ -30,14 +30,14 @@
         chart_view.id as 'target_view_id',
         chart_view.table_id,
         (case when panel_view_linkage.target_view_id is null then 0 else 1 end) as 'linkageActive',
-        panel_view_linkage_field.source_filed,
-        panel_view_linkage_field.target_filed
+        panel_view_linkage_field.source_field,
+        panel_view_linkage_field.target_field
         FROM
         chart_view
         LEFT JOIN panel_view_linkage ON chart_view.id = panel_view_linkage.target_view_id
-        LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
         AND panel_view_linkage.panel_id = #{panelId}
         AND panel_view_linkage.source_view_id = #{sourceViewId}
+        LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
         where chart_view.id in
         <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
             #{targetViewId}
@@ -49,9 +49,33 @@
        dataset_table_field.id,
        dataset_table_field.table_id,
        dataset_table_field.origin_name,
-       dataset_table_field.name,
+       dataset_table_field.`name`,
        dataset_table_field.de_type
-        from dataset_table_field where table_id = #{tableId}
+    from dataset_table_field where table_id = #{table_id}
     </select>
 
+
+    <delete id="deleteViewLinkage">
+        delete from panel_view_linkage where   panel_view_linkage.panel_id = #{panelId}
+        AND panel_view_linkage.source_view_id = #{sourceViewId}
+    </delete>
+
+
+    <delete id="deleteViewLinkageField">
+      DELETE pvl
+        FROM
+            panel_view_linkage pvl,
+            panel_view_linkage_field pvlf
+        WHERE
+            pvl.id = pvlf.linkage_id
+            AND pvl.source_view_id = #{panelId}
+            AND pvl.panel_id = #{panelId}
+    </delete>
+
+    <insert id="savePluginMenu">
+        INSERT INTO `panel_view_linkage` ( menu_id, title, pid, sub_count, permission, hidden,i_frame ) VALUES
+        <foreach collection="menuList" item="menu" index="index" separator=",">
+            (#{menu.menuId},#{menu.title},#{menu.pid},#{menu.subCount},#{menu.permission},#{menu.hidden},ifnull(#{menu.hidden},0))
+        </foreach>
+    </insert>
 </mapper>

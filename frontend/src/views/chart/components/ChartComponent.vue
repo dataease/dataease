@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR, BASE_GAUGE, BASE_MAP } from '../chart/chart'
+import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR, BASE_GAUGE, BASE_MAP, BASE_SCATTER } from '../chart/chart'
 import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
 import { baseLineOption, stackLineOption } from '../chart/line/line'
 import { basePieOption, rosePieOption } from '../chart/pie/pie'
@@ -13,6 +13,7 @@ import { baseMapOption } from '../chart/map/map'
 import { baseFunnelOption } from '../chart/funnel/funnel'
 import { baseRadarOption } from '../chart/radar/radar'
 import { baseGaugeOption } from '../chart/gauge/gauge'
+import { baseScatterOption } from '../chart/scatter/scatter'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import { uuid } from 'vue-uuid'
 import { geoJson } from '@/api/map/map'
@@ -95,6 +96,8 @@ export default {
         chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart)
       } else if (chart.type === 'gauge') {
         chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
+      } else if (chart.type === 'scatter') {
+        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart)
       }
 
       if (chart.type === 'map') {

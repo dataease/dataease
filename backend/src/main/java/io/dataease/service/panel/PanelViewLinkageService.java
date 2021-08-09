@@ -1,11 +1,19 @@
 package io.dataease.service.panel;
 
+import io.dataease.base.domain.PanelViewLinkage;
+import io.dataease.base.domain.PanelViewLinkageExample;
+import io.dataease.base.domain.PanelViewLinkageField;
+import io.dataease.base.mapper.PanelViewLinkageFieldMapper;
 import io.dataease.base.mapper.PanelViewLinkageMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.panel.PanelLinkageRequest;
 import io.dataease.dto.PanelViewLinkageDTO;
+import io.dataease.dto.PanelViewLinkageFieldDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -23,15 +31,15 @@ public class PanelViewLinkageService {
     private PanelViewLinkageMapper panelViewLinkageMapper;
 
     @Resource
+    private PanelViewLinkageFieldMapper panelViewLinkageFieldMapper;
+
+    @Resource
     private ExtPanelViewLinkageMapper extPanelViewLinkageMapper;
 
 
     public Map<String, PanelViewLinkageDTO> getViewLinkageGather(PanelLinkageRequest request) {
         if(CollectionUtils.isNotEmpty(request.getTargetViewIds())){
             List<PanelViewLinkageDTO>  linkageDTOList = extPanelViewLinkageMapper.getViewLinkageGather(request.getPanelId(),request.getSourceViewId(),request.getTargetViewIds());
-            linkageDTOList.stream().forEach(linkage ->{
-                linkage.setTargetViewFields(extPanelViewLinkageMapper.queryTableField(linkage.getTableId()));
-            });
             Map<String, PanelViewLinkageDTO> result = linkageDTOList.stream()
                     .collect(Collectors.toMap(PanelViewLinkageDTO::getTargetViewId,PanelViewLinkageDTO->PanelViewLinkageDTO));
             return result;
@@ -39,5 +47,61 @@ public class PanelViewLinkageService {
         return new HashMap<>();
     }
 
+    @Transactional
+    public void saveLinkage(PanelLinkageRequest request){
+        Long updateTime = System.currentTimeMillis();
+        Map<String, PanelViewLinkageDTO> linkageInfo  = request.getLinkageInfo();
+        String sourceViewId = request.getSourceViewId();
+        String panelId = request.getPanelId();
+
+        Assert.notNull(sourceViewId,"source View ID can not be null");
+        Assert.notNull(panelId,"panelId can not be null");
+
+        //去掉source view 的信息
+        linkageInfo.remove(sourceViewId);
+
+        // 清理原有关系
+        extPanelViewLinkageMapper.deleteViewLinkageField(panelId,sourceViewId);
+        extPanelViewLinkageMapper.deleteViewLinkage(panelId,sourceViewId);
+
+        //重新建立关系
+        for(Map.Entry<String, PanelViewLinkageDTO> entry : linkageInfo.entrySet()){
+            String targetViewId = entry.getKey();
+            PanelViewLinkageDTO linkageDTO = entry.getValue();
+            List<PanelViewLinkageField> linkageFields = linkageDTO.getLinkageFields();
+
+            if(CollectionUtils.isNotEmpty(linkageFields)&&linkageDTO.isLinkageActive()){
+                String linkageId = UUID.randomUUID().toString();
+                PanelViewLinkage linkage = new PanelViewLinkage();
+                linkage.setId(linkageId);
+                linkage.setPanelId(panelId);
+                linkage.setSourceViewId(sourceViewId);
+                linkage.setTargetViewId(targetViewId);
+                linkage.setUpdatePeople(AuthUtils.getUser().getUsername());
+                linkage.setUpdateTime(updateTime);
+                panelViewLinkageMapper.insert(linkage);
+
+                linkageFields.stream().forEach(linkageField->{
+                    linkageField.setId(UUID.randomUUID().toString());
+                    linkageField.setLinkageId(linkageId);
+                    linkageField.setUpdateTime(updateTime);
+                    panelViewLinkageFieldMapper.insert(linkageField);
+                });
+
+            }
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+    }
 
 }

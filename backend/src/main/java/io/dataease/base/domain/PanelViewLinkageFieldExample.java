@@ -244,143 +244,143 @@ public class PanelViewLinkageFieldExample {
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledIsNull() {
-            addCriterion("source_filed is null");
+        public Criteria andSourceFieldIsNull() {
+            addCriterion("source_field is null");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledIsNotNull() {
-            addCriterion("source_filed is not null");
+        public Criteria andSourceFieldIsNotNull() {
+            addCriterion("source_field is not null");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledEqualTo(String value) {
-            addCriterion("source_filed =", value, "sourceFiled");
+        public Criteria andSourceFieldEqualTo(String value) {
+            addCriterion("source_field =", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledNotEqualTo(String value) {
-            addCriterion("source_filed <>", value, "sourceFiled");
+        public Criteria andSourceFieldNotEqualTo(String value) {
+            addCriterion("source_field <>", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledGreaterThan(String value) {
-            addCriterion("source_filed >", value, "sourceFiled");
+        public Criteria andSourceFieldGreaterThan(String value) {
+            addCriterion("source_field >", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledGreaterThanOrEqualTo(String value) {
-            addCriterion("source_filed >=", value, "sourceFiled");
+        public Criteria andSourceFieldGreaterThanOrEqualTo(String value) {
+            addCriterion("source_field >=", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledLessThan(String value) {
-            addCriterion("source_filed <", value, "sourceFiled");
+        public Criteria andSourceFieldLessThan(String value) {
+            addCriterion("source_field <", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledLessThanOrEqualTo(String value) {
-            addCriterion("source_filed <=", value, "sourceFiled");
+        public Criteria andSourceFieldLessThanOrEqualTo(String value) {
+            addCriterion("source_field <=", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledLike(String value) {
-            addCriterion("source_filed like", value, "sourceFiled");
+        public Criteria andSourceFieldLike(String value) {
+            addCriterion("source_field like", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledNotLike(String value) {
-            addCriterion("source_filed not like", value, "sourceFiled");
+        public Criteria andSourceFieldNotLike(String value) {
+            addCriterion("source_field not like", value, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledIn(List<String> values) {
-            addCriterion("source_filed in", values, "sourceFiled");
+        public Criteria andSourceFieldIn(List<String> values) {
+            addCriterion("source_field in", values, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledNotIn(List<String> values) {
-            addCriterion("source_filed not in", values, "sourceFiled");
+        public Criteria andSourceFieldNotIn(List<String> values) {
+            addCriterion("source_field not in", values, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledBetween(String value1, String value2) {
-            addCriterion("source_filed between", value1, value2, "sourceFiled");
+        public Criteria andSourceFieldBetween(String value1, String value2) {
+            addCriterion("source_field between", value1, value2, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andSourceFiledNotBetween(String value1, String value2) {
-            addCriterion("source_filed not between", value1, value2, "sourceFiled");
+        public Criteria andSourceFieldNotBetween(String value1, String value2) {
+            addCriterion("source_field not between", value1, value2, "sourceField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledIsNull() {
-            addCriterion("target_filed is null");
+        public Criteria andTargetFieldIsNull() {
+            addCriterion("target_field is null");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledIsNotNull() {
-            addCriterion("target_filed is not null");
+        public Criteria andTargetFieldIsNotNull() {
+            addCriterion("target_field is not null");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledEqualTo(String value) {
-            addCriterion("target_filed =", value, "targetFiled");
+        public Criteria andTargetFieldEqualTo(String value) {
+            addCriterion("target_field =", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledNotEqualTo(String value) {
-            addCriterion("target_filed <>", value, "targetFiled");
+        public Criteria andTargetFieldNotEqualTo(String value) {
+            addCriterion("target_field <>", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledGreaterThan(String value) {
-            addCriterion("target_filed >", value, "targetFiled");
+        public Criteria andTargetFieldGreaterThan(String value) {
+            addCriterion("target_field >", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledGreaterThanOrEqualTo(String value) {
-            addCriterion("target_filed >=", value, "targetFiled");
+        public Criteria andTargetFieldGreaterThanOrEqualTo(String value) {
+            addCriterion("target_field >=", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledLessThan(String value) {
-            addCriterion("target_filed <", value, "targetFiled");
+        public Criteria andTargetFieldLessThan(String value) {
+            addCriterion("target_field <", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledLessThanOrEqualTo(String value) {
-            addCriterion("target_filed <=", value, "targetFiled");
+        public Criteria andTargetFieldLessThanOrEqualTo(String value) {
+            addCriterion("target_field <=", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledLike(String value) {
-            addCriterion("target_filed like", value, "targetFiled");
+        public Criteria andTargetFieldLike(String value) {
+            addCriterion("target_field like", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledNotLike(String value) {
-            addCriterion("target_filed not like", value, "targetFiled");
+        public Criteria andTargetFieldNotLike(String value) {
+            addCriterion("target_field not like", value, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledIn(List<String> values) {
-            addCriterion("target_filed in", values, "targetFiled");
+        public Criteria andTargetFieldIn(List<String> values) {
+            addCriterion("target_field in", values, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledNotIn(List<String> values) {
-            addCriterion("target_filed not in", values, "targetFiled");
+        public Criteria andTargetFieldNotIn(List<String> values) {
+            addCriterion("target_field not in", values, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledBetween(String value1, String value2) {
-            addCriterion("target_filed between", value1, value2, "targetFiled");
+        public Criteria andTargetFieldBetween(String value1, String value2) {
+            addCriterion("target_field between", value1, value2, "targetField");
             return (Criteria) this;
         }
 
-        public Criteria andTargetFiledNotBetween(String value1, String value2) {
-            addCriterion("target_filed not between", value1, value2, "targetFiled");
+        public Criteria andTargetFieldNotBetween(String value1, String value2) {
+            addCriterion("target_field not between", value1, value2, "targetField");
             return (Criteria) this;
         }
 

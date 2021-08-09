@@ -2,6 +2,7 @@ package io.dataease.dto;
 
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.PanelViewLinkage;
+import io.dataease.base.domain.PanelViewLinkageField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class PanelViewLinkageDTO extends PanelViewLinkage {
     //关联状态
     private boolean linkageActive = false;
 
-    private List<PanelViewLinkageFieldDTO> linkageFields = new ArrayList<>();
+    private List<PanelViewLinkageField> linkageFields = new ArrayList<>();
 
 
     private List<DatasetTableField> targetViewFields = new ArrayList<>();
@@ -68,11 +69,11 @@ public class PanelViewLinkageDTO extends PanelViewLinkage {
         this.linkageActive = linkageActive;
     }
 
-    public List<PanelViewLinkageFieldDTO> getLinkageFields() {
+    public List<PanelViewLinkageField> getLinkageFields() {
         return linkageFields;
     }
 
-    public void setLinkageFields(List<PanelViewLinkageFieldDTO> linkageFields) {
+    public void setLinkageFields(List<PanelViewLinkageField> linkageFields) {
         this.linkageFields = linkageFields;
     }
 }

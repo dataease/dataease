@@ -9,9 +9,9 @@ public class PanelViewLinkageField implements Serializable {
 
     private String linkageId;
 
-    private String sourceFiled;
+    private String sourceField;
 
-    private String targetFiled;
+    private String targetField;
 
     private Long updateTime;
 
