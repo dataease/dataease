@@ -68,7 +68,7 @@ public class ExcelReaderUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        String file ="全国现有确诊趋势.xlsx";
+        String file ="下单渠道.xlsx";
         ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
     }
 }
