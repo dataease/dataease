@@ -689,3 +689,39 @@ export const BASE_SCATTER = {
     }
   ]
 }
+
+export const BASE_TREEMAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect'
+  },
+  series: [
+    {
+      // name: '',
+      type: 'treemap',
+      // radius: ['0%', '60%'],
+      // avoidLabelOverlap: false,
+      // emphasis: {
+      //   itemStyle: {
+      //     shadowBlur: 10,
+      //     shadowOffsetX: 0,
+      //     shadowColor: 'rgba(0, 0, 0, 0.5)'
+      //   }
+      // },
+      data: []
+    }
+  ]
+}

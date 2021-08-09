@@ -108,7 +108,9 @@ public class JdbcProvider extends DatasourceProvider {
                 int columType = metaData.getColumnType(j + 1);
                 switch (columType) {
                     case Types.DATE:
-                        row[j] = rs.getDate(j + 1).toString();
+                        if(rs.getDate(j + 1) != null){
+                            row[j] = rs.getDate(j + 1).toString();
+                        }
                         break;
                     default:
                         row[j] = rs.getString(j + 1);
@@ -287,7 +289,7 @@ public class JdbcProvider extends DatasourceProvider {
         }
         tableFiled.setRemarks(remarks);
         tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
-        String dbType = resultSet.getString("TYPE_NAME");
+        String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
         tableFiled.setFieldType(dbType);
         if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
         if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
@@ -506,7 +508,9 @@ public class JdbcProvider extends DatasourceProvider {
                 return "show tables;";
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';".replace("DATABASE", sqlServerConfigration.getDataBase());
+                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'DS_SCHEMA' ;"
+                        .replace("DATABASE", sqlServerConfigration.getDataBase())
+                        .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
             case oracle:
                 OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
                 if(StringUtils.isEmpty(oracleConfigration.getSchema())){
@@ -523,6 +527,8 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case oracle:
                 return "select * from all_users";
+            case sqlServer:
+                return "select name from sys.schemas;";
             default:
                 return "show tables;";
         }

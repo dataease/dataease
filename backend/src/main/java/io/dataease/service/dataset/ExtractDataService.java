@@ -865,11 +865,25 @@ public class ExtractDataService {
         textFileOutputMeta.setSeparator(separator);
         textFileOutputMeta.setExtension(extention);
 
-        if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
+        if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name()) ) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for(int i=0;i< datasetTableFields.size();i++){
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getOriginName());
+                textFileField.setType("String");
+                outputFields[i] = textFileField;
+            }
+            TextFileField textFileField = new TextFileField();
+            textFileField.setName("dataease_uuid");
+            textFileField.setType("String");
+            outputFields[datasetTableFields.size()] = textFileField;
+
+            textFileOutputMeta.setOutputFields(outputFields);
+        }else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())){
+            TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
+            for(int i=0;i< datasetTableFields.size();i++){
+                TextFileField textFileField = new TextFileField();
+                textFileField.setName(datasetTableFields.get(i).getDataeaseName());
                 textFileField.setType("String");
                 outputFields[i] = textFileField;
             }
@@ -891,6 +905,14 @@ public class ExtractDataService {
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
         String needToChangeColumnType = "";
+        String handleBinaryTypeCode = "";
+
+        for (DatasetTableField datasetTableField : datasetTableFields) {
+            if(datasetTableField.getDeExtractType() == 5){
+                handleBinaryTypeCode = handleBinaryTypeCode + "\n" + this.handleBinaryType.replace("FEILD", datasetTableField.getDataeaseName());
+            }
+        }
+
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
         UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
@@ -906,11 +928,15 @@ public class ExtractDataService {
         } else {
             Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()));
         }
+
         if (datasourceType.equals(DatasourceTypes.excel)) {
             tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields);
         } else {
             tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields);
         }
+
+        tmp_code = tmp_code.replace("handleBinaryType", handleBinaryTypeCode);
+        
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
         userDefinedJavaClassDef.setActive(true);
@@ -993,6 +1019,12 @@ public class ExtractDataService {
         }
     }
 
+    private static String handleBinaryType = "    \t\tif(\"FEILD\".equalsIgnoreCase(filed)){\n" +
+            "           get(Fields.Out, filed).setValue(r, \"\");\n" +
+            "           get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+            "     \t}";
+
+
     private static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
             "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
             "         get(Fields.Out, filed).setValue(r, 1);\n" +
@@ -1049,6 +1081,7 @@ public class ExtractDataService {
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
             "handleWraps \n" +
             "alterColumnTypeCode \n" +
+            "handleBinaryType \n" +
             "handleExcelIntColumn \n" +
             "        str = str + tmp;\n" +
             "    }\n" +

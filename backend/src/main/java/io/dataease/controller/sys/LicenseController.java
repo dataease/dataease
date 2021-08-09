@@ -32,7 +32,6 @@ public class LicenseController {
             return ResultHolder.success(null);
         }
         F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
-        System.out.println(new Gson().toJson(f2CLicenseResponse));
         switch (f2CLicenseResponse.getStatus()) {
             case no_record:
                 return ResultHolder.success(f2CLicenseResponse);

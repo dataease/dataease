@@ -337,7 +337,8 @@ export default {
       confirm: '确认',
       ok: '确认',
       cancel: '取消'
-    }
+    },
+    ukey_title: 'API Keys'
   },
   documentation: {
     documentation: '文档',
@@ -831,7 +832,12 @@ export default {
     axis_label_rotate: '标签角度',
     chart_scatter_bubble: '气泡图',
     chart_scatter: '散点图',
-    bubble_size: '气泡大小'
+    bubble_size: '气泡大小',
+    chart_treemap: '矩形树图',
+    drill: '钻取',
+    drag_block_treemap_label: '色块标签',
+    drag_block_treemap_size: '色块大小',
+    bubble_symbol: '图形'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

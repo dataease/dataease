@@ -163,23 +163,18 @@
                             <svg-icon icon-class="line-stack" class="chart-icon" />
                           </span>
                         </el-radio>
-                        <el-radio value="pie" label="pie">
-                          <span :title="$t('chart.chart_pie')">
-                            <svg-icon icon-class="pie" class="chart-icon" />
+                        <el-radio value="scatter" label="scatter">
+                          <span :title="$t('chart.chart_scatter')">
+                            <svg-icon icon-class="scatter" class="chart-icon" />
                           </span>
                         </el-radio>
-                        <el-radio value="pie-rose" label="pie-rose">
-                          <span :title="$t('chart.chart_pie_rose')">
-                            <svg-icon icon-class="pie-rose" class="chart-icon" />
+                        <el-radio value="map" label="map">
+                          <span :title="$t('chart.chart_map')">
+                            <svg-icon icon-class="map" class="chart-icon" />
                           </span>
                         </el-radio>
                       </div>
                       <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                        <el-radio value="funnel" label="funnel">
-                          <span :title="$t('chart.chart_funnel')">
-                            <svg-icon icon-class="funnel" class="chart-icon" />
-                          </span>
-                        </el-radio>
                         <el-radio value="radar" label="radar">
                           <span :title="$t('chart.chart_radar')">
                             <svg-icon icon-class="radar" class="chart-icon" />
@@ -190,19 +185,28 @@
                             <svg-icon icon-class="gauge" class="chart-icon" />
                           </span>
                         </el-radio>
-                        <el-radio value="map" label="map">
-                          <span :title="$t('chart.chart_map')">
-                            <svg-icon icon-class="map" class="chart-icon" />
+                        <el-radio value="pie" label="pie">
+                          <span :title="$t('chart.chart_pie')">
+                            <svg-icon icon-class="pie" class="chart-icon" />
                           </span>
                         </el-radio>
-                        <el-radio value="scatter" label="scatter">
-                          <span :title="$t('chart.chart_scatter')">
-                            <svg-icon icon-class="scatter" class="chart-icon" />
+                        <el-radio value="pie-rose" label="pie-rose">
+                          <span :title="$t('chart.chart_pie_rose')">
+                            <svg-icon icon-class="pie-rose" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="funnel" label="funnel">
+                          <span :title="$t('chart.chart_funnel')">
+                            <svg-icon icon-class="funnel" class="chart-icon" />
                           </span>
                         </el-radio>
                       </div>
                       <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
-                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+                        <el-radio value="treemap" label="treemap">
+                          <span :title="$t('chart.chart_treemap')">
+                            <svg-icon icon-class="treemap" class="chart-icon" />
+                          </span>
+                        </el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
@@ -213,7 +217,7 @@
                 </el-row>
                 <el-row style="color: #909399;">
                   <span>
-                    <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge'))">
+                    <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge') || chart.type.includes('treemap'))">
                       Tips: {{ $t('chart.only_one_quota') }}
                     </span>
                   <!--              <span v-show="chart.type && (chart.type.includes('text'))">-->
@@ -245,7 +249,7 @@
                   </el-row>
                   <el-row class="padding-lr">
                     <span style="width: 80px;text-align: right;">
-                      <span>钻取</span>
+                      <span>{{ $t('chart.drill') }}</span>
                       /
                       <span>{{ $t('chart.dimension') }}</span>
                     </span>
@@ -274,7 +278,8 @@
                       <span v-else-if="view.type && view.type.includes('pie')">{{ $t('chart.drag_block_pie_label') }}</span>
                       <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
-                      <span v-else-if="view.type && view.type.includes('map')">{{ $t('chart.area') }}</span>
+                      <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
+                      <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
                       /
                       <span>{{ $t('chart.dimension') }}</span>
                     </span>
@@ -305,7 +310,8 @@
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
                       <span v-else-if="view.type && view.type.includes('gauge')">{{ $t('chart.drag_block_gauge_angel') }}</span>
                       <span v-else-if="view.type && view.type.includes('text')">{{ $t('chart.drag_block_label_value') }}</span>
-                      <span v-else-if="view.type && view.type.includes('map')">{{ $t('chart.chart_data') }}</span>
+                      <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
+                      <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
                       /
                       <span>{{ $t('chart.quota') }}</span>
                     </span>
@@ -421,10 +427,10 @@
                   <el-collapse-item name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="chart.type !== 'map'" name="size" :title="$t('chart.size')">
+                  <el-collapse-item v-show="chart.type !== 'map' && chart.type !== 'treemap'" name="size" :title="$t('chart.size')">
                     <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text')" name="label" :title="$t('chart.label')">
+                  <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'treemap'" name="label" :title="$t('chart.label')">
                     <label-selector :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
                   </el-collapse-item>
                   <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text')" name="tooltip" :title="$t('chart.tooltip')">
@@ -453,7 +459,7 @@
                   <el-collapse-item name="title" :title="$t('chart.title')">
                     <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && !view.type.includes('map') && !view.type.includes('table') && !view.type.includes('text')" name="legend" :title="$t('chart.legend')">
+                  <el-collapse-item v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && chart.type !== 'treemap'" name="legend" :title="$t('chart.legend')">
                     <legend-selector :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
                   </el-collapse-item>
                   <el-collapse-item name="background" :title="$t('chart.background')">
@@ -853,7 +859,11 @@ export default {
           }
         }
       })
-      if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('text') || view.type.startsWith('gauge')) {
+      if (view.type.startsWith('pie') ||
+        view.type.startsWith('funnel') ||
+        view.type.startsWith('text') ||
+        view.type.startsWith('gauge') ||
+        view.type === 'treemap') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
@@ -863,6 +873,9 @@ export default {
       }
       if (view.type === 'line-stack' && trigger === 'chart') {
         view.customAttr.size.lineArea = true
+      }
+      if (view.type === 'treemap' && trigger === 'chart') {
+        view.customAttr.label.show = true
       }
       view.customFilter.forEach(function(ele) {
         if (ele && !ele.filter) {
