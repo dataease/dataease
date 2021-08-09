@@ -137,7 +137,7 @@
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('scatter')" ref="sizeFormLine" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.line_symbol')" class="form-item">
+        <el-form-item :label="$t('chart.bubble_symbol')" class="form-item">
           <el-select v-model="sizeForm.scatterSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase">
             <el-option
               v-for="item in lineSymbolOptions"
@@ -147,8 +147,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.line_symbol_size')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+        <el-form-item :label="$t('chart.bubble_size')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
     </el-col>

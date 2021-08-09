@@ -836,7 +836,8 @@ export default {
     chart_treemap: 'Tree Map',
     drill: 'Drill',
     drag_block_treemap_label: 'Color Label',
-    drag_block_treemap_size: 'Color Size'
+    drag_block_treemap_size: 'Color Size',
+    bubble_symbol: 'Shape'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

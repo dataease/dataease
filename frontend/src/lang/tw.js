@@ -836,7 +836,8 @@ export default {
     chart_treemap: '矩形樹圖',
     drill: '鉆取',
     drag_block_treemap_label: '色塊標簽',
-    drag_block_treemap_size: '色塊大小'
+    drag_block_treemap_size: '色塊大小',
+    bubble_symbol: '圖形'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
