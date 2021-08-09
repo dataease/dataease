@@ -34,10 +34,12 @@ export function baseFunnelOption(chart_option, chart) {
       // max value
       chart_option.series[0].max = Math.max.apply(Math, valueArr)
       for (let i = 0; i < valueArr.length; i++) {
-        const y = {
-          name: chart.data.x[i],
-          value: valueArr[i]
-        }
+        // const y = {
+        //   name: chart.data.x[i],
+        //   value: valueArr[i]
+        // }
+        const y = valueArr[i]
+        y.name = chart.data.x[i]
         // color
         y.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)

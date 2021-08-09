@@ -377,6 +377,16 @@ public class SqlserverQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble) {
+        return null;
+    }
+
+    @Override
+    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble) {
+        return null;
+    }
+
+    @Override
     public String searchTable(String table) {
         return "SELECT table_name FROM information_schema.TABLES WHERE table_name ='" + table + "'";
     }

@@ -365,6 +365,8 @@ public class ChartViewService {
             mapChart = transStackChartData(xAxis, yAxis, view, data, extStack);
         } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
             mapChart = transScatterData(xAxis, yAxis, view, data, extBubble);
+        } else if (StringUtils.containsIgnoreCase(view.getType(), "radar")) {
+            mapChart = transRadarChartData(xAxis, yAxis, view, data);
         } else {
             mapChart = transChartData(xAxis, yAxis, view, data);
         }
@@ -430,6 +432,63 @@ public class ChartViewService {
             series1.setData(new ArrayList<>());
             series.add(series1);
         }
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] d = data.get(i1);
+
+            StringBuilder a = new StringBuilder();
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                AxisChartDataDTO axisChartDataDTO = new AxisChartDataDTO();
+
+                for (int j = 0; j < xAxis.size(); j++) {
+                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                    chartDimensionDTO.setId(xAxis.get(j).getId());
+                    chartDimensionDTO.setValue(d[j]);
+                    dimensionList.add(chartDimensionDTO);
+                }
+                axisChartDataDTO.setDimensionList(dimensionList);
+
+                int j = i - xAxis.size();
+                ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                chartQuotaDTO.setId(yAxis.get(j).getId());
+                quotaList.add(chartQuotaDTO);
+                axisChartDataDTO.setQuotaList(quotaList);
+                try {
+                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                } catch (Exception e) {
+                    axisChartDataDTO.setValue(new BigDecimal(0));
+                }
+                series.get(j).getData().add(axisChartDataDTO);
+            }
+            for (int i = 0; i < xAxis.size(); i++) {
+                if (i == xAxis.size() - 1) {
+                    a.append(d[i]);
+                } else {
+                    a.append(d[i]).append("\n");
+                }
+            }
+            x.add(a.toString());
+        }
+
+        map.put("x", x);
+        map.put("series", series);
+        return map;
+    }
+
+    // radar图
+    private Map<String, Object> transRadarChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<String> x = new ArrayList<>();
+        List<Series> series = new ArrayList<>();
+        for (ChartViewFieldDTO y : yAxis) {
+            Series series1 = new Series();
+            series1.setName(y.getName());
+            series1.setType(view.getType());
+            series1.setData(new ArrayList<>());
+            series.add(series1);
+        }
         for (String[] d : data) {
             StringBuilder a = new StringBuilder();
             for (int i = 0; i < xAxis.size(); i++) {
@@ -464,7 +523,9 @@ public class ChartViewService {
         List<Series> series = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(extStack)) {
+            AxisChartDataDTO defaultAxisChartDataDTO = new AxisChartDataDTO();
             BigDecimal defaultValue = StringUtils.containsIgnoreCase(view.getType(), "line") ? new BigDecimal(0) : null;
+            defaultAxisChartDataDTO.setValue(defaultValue);
             // 构建横轴
             for (String[] d : data) {
                 StringBuilder a = new StringBuilder();
@@ -489,7 +550,7 @@ public class ChartViewService {
                 series1.setType(view.getType());
                 List<Object> list = new ArrayList<>();
                 for (int i = 0; i < x.size(); i++) {
-                    list.add(defaultValue);
+                    list.add(defaultAxisChartDataDTO);
                 }
                 series1.setData(list);
                 series.add(series1);
@@ -509,9 +570,31 @@ public class ChartViewService {
                             }
                             if (StringUtils.equals(a.toString(), x.get(i))) {
                                 if (row.length > xAxis.size() + extStack.size()) {
+                                    List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                                    List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                                    AxisChartDataDTO axisChartDataDTO = new AxisChartDataDTO();
+
+                                    ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                                    chartQuotaDTO.setId(yAxis.get(0).getId());
+                                    quotaList.add(chartQuotaDTO);
+                                    axisChartDataDTO.setQuotaList(quotaList);
+
+                                    for (int k = 0; k < xAxis.size(); k++) {
+                                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                                        chartDimensionDTO.setId(xAxis.get(k).getId());
+                                        chartDimensionDTO.setValue(row[k]);
+                                        dimensionList.add(chartDimensionDTO);
+                                    }
+                                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                                    chartDimensionDTO.setId(extStack.get(0).getId());
+                                    chartDimensionDTO.setValue(row[xAxis.size()]);
+                                    dimensionList.add(chartDimensionDTO);
+                                    axisChartDataDTO.setDimensionList(dimensionList);
+
                                     String s = row[xAxis.size() + extStack.size()];
                                     if (StringUtils.isNotEmpty(s)) {
-                                        ss.getData().set(i, new BigDecimal(s));
+                                        axisChartDataDTO.setValue(new BigDecimal(s));
+                                        ss.getData().set(i, axisChartDataDTO);
                                     }
                                 }
                                 break;
@@ -528,8 +611,35 @@ public class ChartViewService {
                 series1.setData(new ArrayList<>());
                 series.add(series1);
             }
-            for (String[] d : data) {
+            for (int i1 = 0; i1 < data.size(); i1++) {
+                String[] d = data.get(i1);
+
                 StringBuilder a = new StringBuilder();
+                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                    List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                    List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                    AxisChartDataDTO axisChartDataDTO = new AxisChartDataDTO();
+
+                    for (int j = 0; j < xAxis.size(); j++) {
+                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                        chartDimensionDTO.setId(xAxis.get(j).getId());
+                        chartDimensionDTO.setValue(d[j]);
+                        dimensionList.add(chartDimensionDTO);
+                    }
+                    axisChartDataDTO.setDimensionList(dimensionList);
+
+                    int j = i - xAxis.size();
+                    ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                    chartQuotaDTO.setId(yAxis.get(j).getId());
+                    quotaList.add(chartQuotaDTO);
+                    axisChartDataDTO.setQuotaList(quotaList);
+                    try {
+                        axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    } catch (Exception e) {
+                        axisChartDataDTO.setValue(new BigDecimal(0));
+                    }
+                    series.get(j).getData().add(axisChartDataDTO);
+                }
                 for (int i = 0; i < xAxis.size(); i++) {
                     if (i == xAxis.size() - 1) {
                         a.append(d[i]);
@@ -538,14 +648,6 @@ public class ChartViewService {
                     }
                 }
                 x.add(a.toString());
-                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
-                    int j = i - xAxis.size();
-                    try {
-                        series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
-                    } catch (Exception e) {
-                        series.get(j).getData().add(new BigDecimal(0));
-                    }
-                }
             }
         }
 
@@ -567,7 +669,66 @@ public class ChartViewService {
             series1.setData(new ArrayList<>());
             series.add(series1);
         }
-        for (String[] d : data) {
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] d = data.get(i1);
+
+            StringBuilder a = new StringBuilder();
+            for (int i = 0; i < xAxis.size(); i++) {
+                if (i == xAxis.size() - 1) {
+                    a.append(d[i]);
+                } else {
+                    a.append(d[i]).append("\n");
+                }
+            }
+            x.add(a.toString());
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                ScatterChartDataDTO scatterChartDataDTO = new ScatterChartDataDTO();
+
+                for (int j = 0; j < xAxis.size(); j++) {
+                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                    chartDimensionDTO.setId(xAxis.get(j).getId());
+                    chartDimensionDTO.setValue(d[j]);
+                    dimensionList.add(chartDimensionDTO);
+                }
+                scatterChartDataDTO.setDimensionList(dimensionList);
+
+                int j = i - xAxis.size();
+                ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                chartQuotaDTO.setId(yAxis.get(j).getId());
+                quotaList.add(chartQuotaDTO);
+                scatterChartDataDTO.setQuotaList(quotaList);
+//                try {
+//                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+//                } catch (Exception e) {
+//                    axisChartDataDTO.setValue(new BigDecimal(0));
+//                }
+                if (CollectionUtils.isNotEmpty(extBubble) && extBubble.size() > 0) {
+                    try {
+                        scatterChartDataDTO.setValue(new Object[]{
+                                a.toString(),
+                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]),
+                                new BigDecimal(StringUtils.isEmpty(d[xAxis.size() + yAxis.size()]) ? "0" : d[xAxis.size() + yAxis.size()])
+                        });
+                    } catch (Exception e) {
+                        scatterChartDataDTO.setValue(new Object[]{a.toString(), new BigDecimal(0), new BigDecimal(0)});
+                    }
+                } else {
+                    try {
+                        scatterChartDataDTO.setValue(new Object[]{
+                                a.toString(),
+                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i])
+                        });
+                    } catch (Exception e) {
+                        scatterChartDataDTO.setValue(new Object[]{a.toString(), new BigDecimal(0)});
+                    }
+                }
+                series.get(j).getData().add(scatterChartDataDTO);
+            }
+        }
+
+        /*for (String[] d : data) {
             StringBuilder a = new StringBuilder();
             for (int i = 0; i < xAxis.size(); i++) {
                 if (i == xAxis.size() - 1) {
@@ -600,7 +761,7 @@ public class ChartViewService {
                     }
                 }
             }
-        }
+        }*/
 
         map.put("x", x);
         map.put("series", series);
