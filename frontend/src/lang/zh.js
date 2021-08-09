@@ -337,7 +337,8 @@ export default {
       confirm: '确认',
       ok: '确认',
       cancel: '取消'
-    }
+    },
+    ukey_title: 'API Keys'
   },
   documentation: {
     documentation: '文档',

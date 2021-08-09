@@ -337,7 +337,8 @@ export default {
       confirm: 'Confirm',
       ok: 'Confirm',
       cancel: 'Cancel'
-    }
+    },
+    ukey_title: 'API Keys'
   },
   documentation: {
     documentation: 'Documentation',
