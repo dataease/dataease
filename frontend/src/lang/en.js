@@ -832,7 +832,11 @@ export default {
     axis_label_rotate: 'Label Rotate',
     chart_scatter_bubble: 'Bubble',
     chart_scatter: 'Scatter',
-    bubble_size: 'Bubble Size'
+    bubble_size: 'Bubble Size',
+    chart_treemap: 'Tree Map',
+    drill: 'Drill',
+    drag_block_treemap_label: 'Color Label',
+    drag_block_treemap_size: 'Color Size'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

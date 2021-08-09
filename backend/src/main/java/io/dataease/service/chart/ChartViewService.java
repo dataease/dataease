@@ -367,6 +367,9 @@ public class ChartViewService {
             mapChart = transScatterData(xAxis, yAxis, view, data, extBubble);
         } else if (StringUtils.containsIgnoreCase(view.getType(), "radar")) {
             mapChart = transRadarChartData(xAxis, yAxis, view, data);
+        } else if (StringUtils.containsIgnoreCase(view.getType(), "text")
+                || StringUtils.containsIgnoreCase(view.getType(), "gauge")) {
+            mapChart = transNormalChartData(xAxis, yAxis, view, data);
         } else {
             mapChart = transChartData(xAxis, yAxis, view, data);
         }
@@ -469,6 +472,44 @@ public class ChartViewService {
                 }
             }
             x.add(a.toString());
+        }
+
+        map.put("x", x);
+        map.put("series", series);
+        return map;
+    }
+
+    // 常规图形
+    private Map<String, Object> transNormalChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<String> x = new ArrayList<>();
+        List<Series> series = new ArrayList<>();
+        for (ChartViewFieldDTO y : yAxis) {
+            Series series1 = new Series();
+            series1.setName(y.getName());
+            series1.setType(view.getType());
+            series1.setData(new ArrayList<>());
+            series.add(series1);
+        }
+        for (String[] d : data) {
+            StringBuilder a = new StringBuilder();
+            for (int i = 0; i < xAxis.size(); i++) {
+                if (i == xAxis.size() - 1) {
+                    a.append(d[i]);
+                } else {
+                    a.append(d[i]).append("\n");
+                }
+            }
+            x.add(a.toString());
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                int j = i - xAxis.size();
+                try {
+                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                } catch (Exception e) {
+                    series.get(j).getData().add(new BigDecimal(0));
+                }
+            }
         }
 
         map.put("x", x);
