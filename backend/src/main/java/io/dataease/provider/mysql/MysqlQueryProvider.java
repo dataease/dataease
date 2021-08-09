@@ -2,6 +2,7 @@ package io.dataease.provider.mysql;
 
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
+import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
@@ -71,22 +72,12 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQueryCountSQL(String table) {
-        return MessageFormat.format("SELECT COUNT(*) FROM {0}", table);
-    }
-
-    @Override
-    public String createQueryCountSQLAsTmp(String sql) {
-        return createQueryCountSQL(" (" + sqlFix(sql) + ") AS tmp ");
-    }
-
-    @Override
     public String createSQLPreview(String sql, String orderBy) {
         return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY null " + " LIMIT 0,1000";
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -150,17 +141,17 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup);
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null);
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQL(table, fields, isGroup) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+        return createQuerySQL(table, fields, isGroup, null) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQL(table, fields, isGroup) + " LIMIT 0," + limit;
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
+        return createQuerySQL(table, fields, isGroup, null) + " LIMIT 0," + limit;
     }
 
     @Override
