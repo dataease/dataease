@@ -68,7 +68,6 @@ public class SqlFilter implements Filter {
             }
             br.close();
         } catch (IOException e) {
-            System.out.println("IOException: " + e);
         }
         return str;
 

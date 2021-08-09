@@ -1,7 +1,11 @@
 package io.dataease.provider.sqlserver;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.Datasource;
+import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
+import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
@@ -38,51 +42,53 @@ public class SqlserverQueryProvider extends QueryProvider {
             case "LONGTEXT":
             case "ENUM":
             case "XML":
-                return 0;// 文本
-            case "DATE":
             case "TIME":
+                return DeTypeConstants.DE_STRING;// 文本
+            case "DATE":
             case "YEAR":
             case "DATETIME":
             case "DATETIME2":
             case "DATETIMEOFFSET":
-            case "TIMESTAMP":
-                return 1;// 时间
+                return DeTypeConstants.DE_TIME;// 时间
             case "INT":
             case "MEDIUMINT":
             case "INTEGER":
             case "BIGINT":
             case "SMALLINT":
-                return 2;// 整型
+                return DeTypeConstants.DE_INT;// 整型
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
             case "MONEY":
             case "NUMERIC":
-                return 3;// 浮点
+                return DeTypeConstants.DE_FLOAT;// 浮点
             case "BIT":
             case "TINYINT":
-                return 4;// 布尔
+                return DeTypeConstants.DE_BOOL;// 布尔
+            case "TIMESTAMP":
+                return DeTypeConstants.DE_Binary;// 二进制
             default:
-                return 0;
+                return DeTypeConstants.DE_STRING;
         }
     }
 
-    private static Integer DE_STRING = 0;
-    private static Integer DE_TIME = 1;
-    private static Integer DE_INT = 2;
-    private static Integer DE_FLOAT = 3;
-    private static Integer DE_BOOL = 4;
     @Override
     public String createSQLPreview(String sql, String orderBy) {
         return "SELECT top 1000 * FROM (" + sqlFix(sql) + ") AS tmp";
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds) {
+
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
+        if(ds != null){
+            String schema = new Gson().fromJson(ds.getConfiguration(), SqlServerConfigration.class).getSchema();
+            tableObj.setTableName(schema + "." + tableObj.getTableName());
+        }
+
         List<SQLObj> xFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
@@ -91,33 +97,28 @@ public class SqlserverQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
                 // 处理横轴字段
-                if (f.getDeExtractType() == DE_TIME) { // 时间 转为 数值
-                    if (f.getDeType() == DE_INT || f.getDeType() == DE_FLOAT) {
+                if (f.getDeExtractType() == DeTypeConstants.DE_TIME) { // 时间 转为 数值
+                    if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField);
                     } else {
                         fieldName = originField;
                     }
-                } else if (f.getDeExtractType() == DE_STRING) {  //字符串转时间
-                    if (f.getDeType() == DE_INT) {
-                        fieldName = originField;
-//                        String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
-                    } else if (f.getDeType() == DE_FLOAT) {
-                        fieldName = originField;
-//                        String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT);
-                    } else if (f.getDeType() == DE_TIME) {
-                        fieldName = originField;
-//                        String.format(SqlServerSQLConstants.DATE_FORMAT, originField, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
+                } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                    if (f.getDeType() == DeTypeConstants.DE_INT) {
+                        fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_INT_FORMAT, originField);
+                    } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                        fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
+                    } else if (f.getDeType() == DeTypeConstants.DE_TIME) { //字符串转时间
+                        fieldName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originField);
                     } else {
                         fieldName = originField;
                     }
                 } else {
-                    if (f.getDeType() == DE_TIME) { //
-//                        String cast = String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        fieldName = originField;
-//                        String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast, SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
-                    } else if (f.getDeType() == DE_INT) {
-                        fieldName = originField;
-//                        String.format(SqlServerSQLConstants.CAST, originField, SqlServerSQLConstants.DEFAULT_INT_FORMAT);
+                    if (f.getDeType() == DeTypeConstants.DE_TIME) { // 数值转时间
+                        String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originField + "/1000");
+                        fieldName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+                    } else if (f.getDeType() == DeTypeConstants.DE_INT) {
+                        fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_INT_FORMAT, originField);
                     } else {
                         fieldName = originField;
                     }
@@ -139,27 +140,27 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup);
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null);
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQL(table, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
+    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
     }
 
     @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQL(table, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset  0 rows fetch next " + limit  + " rows only";
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
+        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit  + " rows only";
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY " + fields.get(0).getOriginName() + " offset  0 rows fetch next " + limit  + " rows only";
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit  + " rows only";
     }
 
     @Override
@@ -463,14 +464,15 @@ public class SqlserverQueryProvider extends QueryProvider {
     public String createRawQuerySQL(String table, List<DatasetTableField> fields) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            if (f.getDeExtractType() == 4) { // 处理 tinyint
-                stringBuilder.append("concat(`").append(f.getOriginName()).append("`,'') AS ").append(f.getDataeaseName());
-            } else {
-                stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
-            }
+//            if (f.getDeExtractType() == 4) { // 处理 tinyint
+//                stringBuilder.append("concat(`").append(f.getOriginName()).append("`,'') AS ").append(f.getDataeaseName());
+//            } else {
+//                stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+//            }
+            stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
     }
 
     @Override
@@ -527,7 +529,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereTerm = transMysqlFilterTerm(request.getTerm());
             String whereValue = "";
             String originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            if (field.getDeType() == DE_TIME && field.getDeExtractType() != DE_TIME) {
+            if (field.getDeType() == DeTypeConstants.DE_TIME && field.getDeExtractType() != DeTypeConstants.DE_TIME) {
                 String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
                 whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
             } else {
@@ -581,7 +583,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 whereValue = "'%" + value.get(0) + "%'";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
-                if (request.getDatasetTableField().getDeType() == DE_TIME) {
+                if (request.getDatasetTableField().getDeType() == DeTypeConstants.DE_TIME) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
@@ -620,7 +622,11 @@ public class SqlserverQueryProvider extends QueryProvider {
             case "y":
                 return "CONVERT(varchar(100), datepart(yy, " + originField + "))";
             case "y_M":
-                return "CONVERT(varchar(100), datepart(yy, " + originField + ")) N'" + split + "'CONVERT(varchar(100), datepart(mm, " + originField + "))";
+                if(split.equalsIgnoreCase("-")){
+                    return "substring( convert(varchar," + originField + ",120),1,7)";
+                }else {
+                    return "replace("+ "substring( convert(varchar," + originField + ",120),1,7), '-','/')";
+                }
             case "y_M_d":
                 if(split.equalsIgnoreCase("-")){
                     return "CONVERT(varchar(100), " + originField + ", 23)";
@@ -628,7 +634,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     return "CONVERT(varchar(100), " + originField + ", 111)";
                 }
             case "H_m_s":
-                return "CONVERT(varchar(100), " + originField + ", 24)";
+                return "CONVERT(varchar(100), " + originField + ", 8)";
             case "y_M_d_H_m":
                 if(split.equalsIgnoreCase("-")){
                     return "substring( convert(varchar," + originField + ",120),1,16)";
@@ -689,17 +695,17 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     private SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
-        if (x.getDeExtractType() == DE_TIME) {
-            if (x.getDeType() == DE_INT || x.getDeType() == DE_FLOAT) { //时间转数值
+        if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
+            if (x.getDeType() == DeTypeConstants.DE_INT || x.getDeType() == DeTypeConstants.DE_FLOAT) { //时间转数值
                 fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField);
-            } else if (x.getDeType() == DE_TIME) { //时间格式化
+            } else if (x.getDeType() == DeTypeConstants.DE_TIME) { //时间格式化
                 fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), originField);
             } else {
                 fieldName = originField;
             }
         } else {
-            if (x.getDeType() == DE_TIME) {
-                if (x.getDeExtractType() == DE_STRING) {// 字符串转时间
+            if (x.getDeType() == DeTypeConstants.DE_TIME) {
+                if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {// 字符串转时间
                     String cast = String.format(SqlServerSQLConstants.STRING_TO_DATE, originField);
                     fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), cast);
                 } else {// 数值转时间
@@ -724,7 +730,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == DE_INT ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
+                String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == DeTypeConstants.DE_INT ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
                 String agg = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), convert);
                 fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, agg);
             } else {

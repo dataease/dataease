@@ -42,25 +42,20 @@ public class JdbcProvider extends DatasourceProvider {
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
         Connection connection = null;
-        connection = getConnectionFromPool(dsr);
-        Statement stat = connection.createStatement();
-        ResultSet rs = stat.executeQuery(dsr.getQuery());
-        System.out.println(rs == null);
-        list = fetchResult(rs);
-//        try {
-//            connection = getConnectionFromPool(dsr);
-//            Statement stat = connection.createStatement();
-//            ResultSet rs = stat.executeQuery(dsr.getQuery());
-//            list = fetchResult(rs);
-//        } catch (SQLException e) {
-//            DataEaseException.throwException(e);
-//        } catch (Exception e) {
-//            DataEaseException.throwException(e);
-//        } finally {
-//            if(connection != null){
-//                connection.close();
-//            }
-//        }
+        try {
+            connection = getConnectionFromPool(dsr);
+            Statement stat = connection.createStatement();
+            ResultSet rs = stat.executeQuery(dsr.getQuery());
+            list = fetchResult(rs);
+        } catch (SQLException e) {
+            DataEaseException.throwException(e);
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        } finally {
+            if(connection != null){
+                connection.close();
+            }
+        }
         return list;
     }
 
@@ -107,12 +102,10 @@ public class JdbcProvider extends DatasourceProvider {
         List<String[]> list = new LinkedList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
-        System.out.println("columnCount: " + columnCount);
         while (rs.next()) {
             String[] row = new String[columnCount];
             for (int j = 0; j < columnCount; j++) {
                 int columType = metaData.getColumnType(j + 1);
-
                 switch (columType) {
                     case Types.DATE:
                         if(rs.getDate(j + 1) != null){
@@ -123,7 +116,6 @@ public class JdbcProvider extends DatasourceProvider {
                         row[j] = rs.getString(j + 1);
                         break;
                 }
-                System.out.println(j + " " + columType + " " + row[j]);
             }
             list.add(row);
         }

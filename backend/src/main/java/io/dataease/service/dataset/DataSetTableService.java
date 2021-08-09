@@ -377,8 +377,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = dataTableInfoDTO.getTable();
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false));
-                System.out.println(datasourceRequest.getQuery());
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
@@ -387,7 +386,7 @@ public class DataSetTableService {
                     DEException.throwException(e.getMessage());
                 }
                 try {
-                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -404,7 +403,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false));
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -413,7 +412,7 @@ public class DataSetTableService {
                     DEException.throwException(e.getMessage());
                 }
                 try {
-                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -459,7 +458,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false));
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -468,7 +467,7 @@ public class DataSetTableService {
                     DEException.throwException(e.getMessage());
                 }
                 try {
-                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -486,7 +485,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false));
+            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
             map.put("sql", datasourceRequest.getQuery());
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -495,7 +494,7 @@ public class DataSetTableService {
                 DEException.throwException(e.getMessage());
             }
             try {
-                datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
+                datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                 dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -538,7 +537,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false));
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -548,7 +547,7 @@ public class DataSetTableService {
                 }
 
                 try {
-                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
+                    datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     e.printStackTrace();

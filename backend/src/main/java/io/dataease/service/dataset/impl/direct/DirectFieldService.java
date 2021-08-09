@@ -67,7 +67,7 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), Collections.singletonList(field), true));
+                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), Collections.singletonList(field), true, ds));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmp(dataTableInfoDTO.getSql(), Collections.singletonList(field), true));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
@@ -85,7 +85,7 @@ public class DirectFieldService implements DataSetFieldService {
             tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQL(tableName, Collections.singletonList(field), true));
+            datasourceRequest.setQuery(qp.createQuerySQL(tableName, Collections.singletonList(field), true, null));
         }
 
         try {
