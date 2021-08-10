@@ -60,6 +60,8 @@ export default {
   },
   methods: {
     preDraw() {
+      const viewId = this.chart.id
+      const _store = this.$store
       // 基于准备好的dom，初始化echarts实例
       // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
       new Promise((resolve) => { resolve() }).then(() => {
@@ -69,6 +71,16 @@ export default {
           this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
         this.drawEcharts()
+        this.myChart.on('click', function(param) {
+          debugger
+          console.log(JSON.stringify(param.data))
+          const trackFilter = {
+            viewId: viewId,
+            dimensionList: param.data.dimensionList,
+            quotaList: param.data.quotaList
+          }
+          _store.commit('addViewTrackFilter', trackFilter)
+        })
       })
     },
     drawEcharts() {

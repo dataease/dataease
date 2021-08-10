@@ -177,6 +177,8 @@ import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
 import { addGroup, delGroup, groupTree, defaultTree, findOne } from '@/api/panel/panel'
+import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
@@ -274,7 +276,10 @@ export default {
   computed: {
     panelDialogTitle() {
       return this.editPanel.titlePre + this.editPanel.titleSuf
-    }
+    },
+    ...mapState([
+      'nowPanelTrackInfo'
+    ])
   },
   watch: {
     // 切换展示页面后 重新点击一下当前节点
@@ -517,12 +522,18 @@ export default {
           const componentDatas = JSON.parse(response.data.panelData)
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])
+            item.linkageFilters = (item.linkageFilters || [])
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
           //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', temp)
           this.$store.dispatch('panel/setPanelInfo', data)
+
+          // 刷新联动信息
+          getPanelAllLinkageInfo(data.id).then(rsp => {
+            this.$store.commit('setNowPanelTrackInfo', rsp.data)
+          })
         })
       }
       if (node.expanded) {

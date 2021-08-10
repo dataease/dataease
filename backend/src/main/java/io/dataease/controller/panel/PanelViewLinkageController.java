@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,5 +40,10 @@ public class PanelViewLinkageController {
     }
 
 
+    @ApiOperation("获取当前仪表板所有联动信息")
+    @GetMapping("/getPanelAllLinkageInfo/{panelId}")
+    public Map<String, List<String>> getPanelAllLinkageInfo(@PathVariable String panelId){
+        return panelViewLinkageService.getPanelAllLinkageInfo(panelId);
+    }
 
 }

@@ -8,6 +8,7 @@ import io.dataease.base.mapper.PanelViewLinkageMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.panel.PanelLinkageRequest;
+import io.dataease.dto.LinkageInfoDTO;
 import io.dataease.dto.PanelViewLinkageDTO;
 import io.dataease.dto.PanelViewLinkageFieldDTO;
 import org.apache.commons.collections4.CollectionUtils;
@@ -89,19 +90,12 @@ public class PanelViewLinkageService {
                 });
 
             }
-
-
-
-
         }
+    }
 
-
-
-
-
-
-
-
+    public Map<String, List<String>> getPanelAllLinkageInfo(String panelId) {
+        List<LinkageInfoDTO> info = extPanelViewLinkageMapper.getPanelAllLinkageInfo(panelId);
+        return Optional.ofNullable(info).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(LinkageInfoDTO::getSourceInfo,LinkageInfoDTO::getTargetInfoList));
     }
 
 }

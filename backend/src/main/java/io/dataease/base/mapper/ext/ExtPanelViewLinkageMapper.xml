@@ -24,6 +24,14 @@
         </collection>
     </resultMap>
 
+
+    <resultMap id="AllLinkageMap" type="io.dataease.dto.LinkageInfoDTO">
+        <result column="sourceInfo" jdbcType="VARCHAR" property="sourceInfo"/>
+        <collection property="targetInfoList" ofType="String">
+            <result column="targetInfo" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
     <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
         SELECT
         chart_view.`name` as 'targetViewName',
@@ -78,4 +86,16 @@
             (#{menu.menuId},#{menu.title},#{menu.pid},#{menu.subCount},#{menu.permission},#{menu.hidden},ifnull(#{menu.hidden},0))
         </foreach>
     </insert>
+
+    <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
+      SELECT
+        distinct
+        CONCAT( panel_view_linkage.source_view_id, '#', panel_view_linkage_field.source_field ) AS 'sourceInfo',
+        CONCAT( panel_view_linkage.target_view_id, '#', panel_view_linkage_field.target_field ) AS 'targetInfo'
+        FROM
+            panel_view_linkage
+            LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
+        WHERE
+            panel_view_linkage.panel_id = #{panelId}
+    </select>
 </mapper>
