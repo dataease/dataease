@@ -11,19 +11,12 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.controller.request.chart.ChartExtRequest;
-import io.dataease.controller.request.chart.ChartGroupRequest;
-import io.dataease.controller.request.chart.ChartViewRequest;
-import io.dataease.controller.request.dataset.DataSetGroupRequest;
-import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.chart.*;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.chart.*;
-import io.dataease.dto.dataset.DataSetGroupDTO;
-import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
@@ -197,6 +190,8 @@ public class ChartViewService {
         }.getType());
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartFieldCustomFilterDTO>>() {
         }.getType());
+        List<ChartViewFieldDTO> drill = new Gson().fromJson(view.getDrillFields(), new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType());
         List<ChartCustomFilterDTO> customFilter = new ArrayList<>();
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             List<ChartCustomFilterDTO> collect = ele.getFilter().stream().map(f -> {
@@ -255,6 +250,38 @@ public class ChartViewService {
                         }
                     } else {
                         extFilterList.add(request);
+                    }
+                }
+            }
+        }
+
+        // 下钻
+        boolean isDrill = false;
+        List<ChartDrillRequest> drillRequest = requestList.getDrill();
+        if (drill.size() > drillRequest.size()) {
+            for (int i = 0; i < drillRequest.size(); i++) {
+                ChartDrillRequest request = drillRequest.get(i);
+                for (ChartDimensionDTO dto : request.getDimensionList()) {
+                    ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
+                    // 将钻取值作为条件传递，将所有钻取字段作为xAxis并加上下一个钻取字段
+                    if (StringUtils.equalsIgnoreCase(dto.getId(), chartViewFieldDTO.getId())) {
+                        isDrill = true;
+                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(dto.getId());
+                        ChartViewFieldDTO d = new ChartViewFieldDTO();
+                        BeanUtils.copyBean(d, datasetTableField);
+
+                        ChartExtFilterRequest drillFilter = new ChartExtFilterRequest();
+                        drillFilter.setFieldId(dto.getId());
+                        drillFilter.setValue(new ArrayList<String>() {{
+                            add(dto.getValue());
+                        }});
+                        drillFilter.setOperator("in");
+                        drillFilter.setDatasetTableField(datasetTableField);
+                        extFilterList.add(drillFilter);
+//                        xAxis.add(d);
+//                        if (i == drillRequest.size() - 1) {
+//                            xAxis.add(drill.get(i + 1));
+//                        }
                     }
                 }
             }
@@ -402,6 +429,11 @@ public class ChartViewService {
         BeanUtils.copyBean(dto, view);
         dto.setData(map);
         dto.setSql(datasourceRequest.getQuery());
+
+        if (CollectionUtils.isNotEmpty(drillRequest) && !isDrill) {
+            drillRequest = drillRequest.subList(0, drillRequest.size() - 1);
+        }
+        dto.setDimensionList(drillRequest);
         return dto;
     }
 

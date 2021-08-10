@@ -16,4 +16,5 @@ public class ChartExtRequest {
 
     //联动过滤条件
     private List<ChartExtFilterRequest> linkageFilters;
+    private List<ChartDrillRequest> drill;
 }
