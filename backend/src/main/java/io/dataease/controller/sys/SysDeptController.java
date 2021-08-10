@@ -4,14 +4,14 @@ import io.dataease.base.domain.SysDept;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.DeptCreateRequest;
+/*import io.dataease.controller.sys.request.DeptCreateRequest;
 import io.dataease.controller.sys.request.DeptDeleteRequest;
-import io.dataease.controller.sys.request.DeptStatusRequest;
+import io.dataease.controller.sys.request.DeptStatusRequest;*/
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.controller.sys.response.DeptTreeNode;
 import io.dataease.service.sys.DeptService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+/*import io.swagger.annotations.ApiOperation;*/
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +46,6 @@ public class SysDeptController extends ResultHolder {
     @PostMapping("/search")
     public List<DeptNodeResponse> search(@RequestBody BaseGridRequest request){
         List<SysDept> nodes = deptService.nodesTreeByCondition(request);
-        //List<SysDept> nodes = deptService.nodesByPid(pid);
         List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
             deptNodeResponse.setHasChildren(node.getSubCount() > 0);
@@ -57,14 +56,14 @@ public class SysDeptController extends ResultHolder {
         return nodeResponses;
     }
 
-    @ApiOperation("查询部门")
+    /*@ApiOperation("查询部门")
     @PostMapping("/root")
     public ResultHolder rootData(){
         List<SysDept> root = deptService.nodesByPid(null);
         return success(root);
-    }
+    }*/
 
-    @ApiOperation("新增部门")
+    /*@ApiOperation("新增部门")
     @PostMapping("/create")
     public void create(@RequestBody DeptCreateRequest dept){
         deptService.add(dept);
@@ -84,7 +83,7 @@ public class SysDeptController extends ResultHolder {
     @PostMapping("/updateStatus")
     public void updateStatus(@RequestBody DeptStatusRequest request){
         deptService.updateStatus(request);
-    }
+    }*/
 
     @PostMapping("/nodesByDeptId/{deptId}")
     public List<DeptTreeNode> nodesByDeptId(@PathVariable("deptId") Long deptId){
