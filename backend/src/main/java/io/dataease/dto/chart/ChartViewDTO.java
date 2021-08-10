@@ -23,5 +23,5 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private String pid;
     private String sql;
 
-    private List<ChartDrillRequest> dimensionList;
+    private boolean drill;
 }

@@ -75,10 +75,6 @@ export default {
 
         this.myChart.off('click')
         this.myChart.on('click', function(param) {
-          that.$emit('onChartClick', param)
-        })
-        this.myChart.on('click', function(param) {
-          debugger
           console.log(JSON.stringify(param.data))
           const trackFilter = {
             viewId: viewId,
@@ -86,6 +82,8 @@ export default {
             quotaList: param.data.quotaList
           }
           _store.commit('addViewTrackFilter', trackFilter)
+
+          that.$emit('onChartClick', param)
         })
       })
     },

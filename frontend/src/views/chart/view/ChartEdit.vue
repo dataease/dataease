@@ -751,6 +751,7 @@ export default {
   },
   watch: {
     'param': function() {
+      this.resetDrill()
       if (this.param.optType === 'new') {
         //
       } else {
@@ -1006,7 +1007,9 @@ export default {
           if (this.chart.privileges) {
             this.param.privileges = this.chart.privileges
           }
-          this.drillClickDimensionList = response.data.drillClickDimensionList ? response.data.drillClickDimensionList : []
+          if (!response.data.drill) {
+            this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+          }
         }).catch(err => {
           this.resetView()
           this.resetDrill()

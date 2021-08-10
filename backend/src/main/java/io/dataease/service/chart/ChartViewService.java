@@ -258,7 +258,7 @@ public class ChartViewService {
         // 下钻
         boolean isDrill = false;
         List<ChartDrillRequest> drillRequest = requestList.getDrill();
-        if (drill.size() > drillRequest.size()) {
+        if (CollectionUtils.isNotEmpty(drillRequest) && (drill.size() >= drillRequest.size())) {
             for (int i = 0; i < drillRequest.size(); i++) {
                 ChartDrillRequest request = drillRequest.get(i);
                 for (ChartDimensionDTO dto : request.getDimensionList()) {
@@ -385,7 +385,9 @@ public class ChartViewService {
                 data = (List<String[]>) cache;
             }*/
             // 仪表板有参数不实用缓存
-            if (CollectionUtils.isNotEmpty(requestList.getFilter()) || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())) {
+            if (CollectionUtils.isNotEmpty(requestList.getFilter())
+                    || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
+                    || CollectionUtils.isNotEmpty(requestList.getDrill())) {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {
@@ -430,10 +432,7 @@ public class ChartViewService {
         dto.setData(map);
         dto.setSql(datasourceRequest.getQuery());
 
-        if (CollectionUtils.isNotEmpty(drillRequest) && !isDrill) {
-            drillRequest = drillRequest.subList(0, drillRequest.size() - 1);
-        }
-        dto.setDimensionList(drillRequest);
+        dto.setDrill(isDrill);
         return dto;
     }
 
