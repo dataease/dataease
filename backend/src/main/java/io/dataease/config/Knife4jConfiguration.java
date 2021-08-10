@@ -77,7 +77,9 @@ public class Knife4jConfiguration {
 
     private Docket defaultApi(String groupName, String packageName) {
         List<SecurityScheme> securitySchemes=new ArrayList<>();
-        securitySchemes.add(apiKey());
+        securitySchemes.add(accessKey());
+        securitySchemes.add(signature());
+
         List<SecurityContext> securityContexts = new ArrayList<>();
         securityContexts.add(securityContext());
 
@@ -100,8 +102,12 @@ public class Knife4jConfiguration {
                 .build();
     }
 
-    private ApiKey apiKey() {
-        return new ApiKey("Authorization", "Authorization", "header");
+    private ApiKey accessKey() {
+        return new ApiKey("accessKey", "accessKey", "header");
+    }
+
+    private ApiKey signature() {
+        return new ApiKey("signature", "signature", "header");
     }
 
 
@@ -109,7 +115,12 @@ public class Knife4jConfiguration {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return CollectionUtil.newArrayList(new SecurityReference("Authorization", authorizationScopes));
+
+        List<SecurityReference> results = new ArrayList<>();
+        results.add(new SecurityReference("accessKey", authorizationScopes));
+        results.add(new SecurityReference("signature", authorizationScopes));
+
+        return results;
     }
 
 }
