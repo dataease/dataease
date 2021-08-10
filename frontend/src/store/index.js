@@ -244,6 +244,7 @@ const data = {
           item.linkageFilters.splice(0, item.linkageFilters.length)
         }
       })
+      state.styleChangeTimes++
     }
   },
   modules: {
