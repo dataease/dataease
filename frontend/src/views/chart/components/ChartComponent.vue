@@ -152,7 +152,7 @@ export default {
     },
     initMapChart(geoJson, chart) {
       // this.$echarts.registerMap('HK', geoJson)
-      this.$echarts.getMap('HK') || this.$echarts.registerMap('HK', geoJson)
+      this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       const chart_option = baseMapOption(base_json, chart)
       this.myEcharts(chart_option)
