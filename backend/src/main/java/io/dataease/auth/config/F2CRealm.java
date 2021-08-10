@@ -2,18 +2,17 @@ package io.dataease.auth.config;
 
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.entity.ASKToken;
 import io.dataease.auth.entity.JWTToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
+import io.dataease.auth.handler.ApiKeyHandler;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.listener.util.CacheUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -37,7 +36,7 @@ public class F2CRealm extends AuthorizingRealm {
 
     @Override
     public boolean supports(AuthenticationToken token) {
-        return token instanceof JWTToken;
+        return token instanceof JWTToken || token instanceof ASKToken;
     }
 
     //验证资源权限
@@ -56,12 +55,27 @@ public class F2CRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
+
+        if (auth instanceof ASKToken) {
+
+            Object accessKey = auth.getPrincipal();
+            Object signature = auth.getCredentials();
+            Long userId = ApiKeyHandler.getUser(accessKey.toString(), signature.toString());
+
+            SysUserEntity userEntity = userWithId(userId);
+            CurrentUserDto currentUserDto = queryCacheUserDto(userEntity);
+            return new SimpleAuthenticationInfo(currentUserDto, signature, "f2cReam");
+        }
+
+
+
         try {
             CacheUtils.get("lic_info", "lic");
         }catch (Exception e) {
             LogUtil.error(e);
             throw new AuthenticationException("lic error");
         }
+
         TokenInfo tokenInfo = null;
         String token = null;
         try {
@@ -78,13 +92,14 @@ public class F2CRealm extends AuthorizingRealm {
             throw new AuthenticationException("token invalid");
         }
         // 使用缓存
-        SysUserEntity user = authUserService.getUserById(userId);
+        /*SysUserEntity user = authUserService.getUserById(userId);
         if (user == null) {
             throw new AuthenticationException("User didn't existed!");
         }
         if (user.getEnabled()==0) {
             throw new AuthenticationException("User is valid!");
-        }
+        }*/
+        SysUserEntity user = userWithId(userId);
         String pass = null;
         try {
             pass = user.getPassword();
@@ -94,6 +109,29 @@ public class F2CRealm extends AuthorizingRealm {
         if (! JWTUtils.verify(token, tokenInfo, pass)) {
             throw new AuthenticationException("Username or password error");
         }
+        /*// 使用缓存
+        List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
+        // 使用缓存
+        List<String> permissions = authUserService.permissions(user.getUserId());
+        CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
+        currentUserDto.setRoles(currentRoleDtos);
+        currentUserDto.setPermissions(permissions);*/
+        CurrentUserDto currentUserDto = queryCacheUserDto(user);
+        return new SimpleAuthenticationInfo(currentUserDto, token, "f2cReam");
+    }
+
+    public SysUserEntity userWithId(Long userId) {
+        SysUserEntity user = authUserService.getUserById(userId);
+        if (user == null) {
+            throw new AuthenticationException("User didn't existed!");
+        }
+        if (user.getEnabled()==0) {
+            throw new AuthenticationException("User is valid!");
+        }
+        return user;
+    }
+
+    public CurrentUserDto queryCacheUserDto(SysUserEntity user) {
         // 使用缓存
         List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
         // 使用缓存
@@ -101,6 +139,6 @@ public class F2CRealm extends AuthorizingRealm {
         CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
         currentUserDto.setRoles(currentRoleDtos);
         currentUserDto.setPermissions(permissions);
-        return new SimpleAuthenticationInfo(currentUserDto, token, "f2cReam");
+        return currentUserDto;
     }
 }
