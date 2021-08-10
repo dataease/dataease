@@ -237,6 +237,13 @@ const data = {
     },
     setNowPanelTrackInfo(state, trackInfo) {
       state.nowPanelTrackInfo = trackInfo
+    },
+    clearPanelLinkageInfo(state) {
+      state.componentData.forEach(item => {
+        if (item.linkageFilters && item.linkageFilters.length > 0) {
+          item.linkageFilters.splice(0, item.linkageFilters.length)
+        }
+      })
     }
   },
   modules: {
