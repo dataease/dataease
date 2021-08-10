@@ -2,6 +2,7 @@ package io.dataease.commons.condition;
 
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
+import io.dataease.commons.utils.CommonBeanFactory;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -15,7 +16,10 @@ public class LicStatusCondition implements Condition {
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
         // BeanDefinitionRegistry registry = conditionContext.getRegistry();
 
-        DefaultLicenseService defaultLicenseService = conditionContext.getBeanFactory().getBean(DefaultLicenseService.class);
+        // DefaultLicenseService defaultLicenseService = conditionContext.getBeanFactory().getBean(DefaultLicenseService.class);
+
+        DefaultLicenseService defaultLicenseService = CommonBeanFactory.getBean(DefaultLicenseService.class);
+
         /*if (null == defaultLicenseService) {
             registry.registerBeanDefinition();
         }*/
