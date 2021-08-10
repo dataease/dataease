@@ -35,7 +35,7 @@ export default {
 <style lang="scss" scoped>
   .bar-main{
     position: absolute;
-    left: 0px;
+    right: 0px;
     z-index: 10;
     height: 20px;
     border-radius:2px;
