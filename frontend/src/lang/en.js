@@ -837,7 +837,10 @@ export default {
     drill: 'Drill',
     drag_block_treemap_label: 'Color Label',
     drag_block_treemap_size: 'Color Size',
-    bubble_symbol: 'Shape'
+    bubble_symbol: 'Shape',
+    gap_width: 'Gap Width',
+    width: 'Width',
+    height: 'Height'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

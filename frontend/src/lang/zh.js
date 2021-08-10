@@ -837,7 +837,10 @@ export default {
     drill: '钻取',
     drag_block_treemap_label: '色块标签',
     drag_block_treemap_size: '色块大小',
-    bubble_symbol: '图形'
+    bubble_symbol: '图形',
+    gap_width: '间隔',
+    width: '宽度',
+    height: '高度'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
