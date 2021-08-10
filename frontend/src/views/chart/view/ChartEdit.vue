@@ -427,7 +427,7 @@
                   <el-collapse-item name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="chart.type !== 'map' && chart.type !== 'treemap'" name="size" :title="$t('chart.size')">
+                  <el-collapse-item v-show="chart.type !== 'map'" name="size" :title="$t('chart.size')">
                     <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
                   </el-collapse-item>
                   <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'treemap'" name="label" :title="$t('chart.label')">
