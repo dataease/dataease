@@ -30,3 +30,9 @@ export const formatCondition = obj => {
   const condition = new Condition(component.id, fieldId, operator, value, viewIds)
   return condition
 }
+
+export const formatLinkageCondition = obj => {
+  const { viewIds, fieldId, value, operator } = obj
+  const condition = new Condition(null, fieldId, operator, value, viewIds)
+  return condition
+}

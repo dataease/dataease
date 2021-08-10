@@ -13,4 +13,7 @@ import java.util.List;
 @Setter
 public class ChartExtRequest {
     private List<ChartExtFilterRequest> filter;
+
+    //联动过滤条件
+    private List<ChartExtFilterRequest> linkageFilters;
 }

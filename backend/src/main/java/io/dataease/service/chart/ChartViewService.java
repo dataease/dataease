@@ -225,8 +225,27 @@ public class ChartViewService {
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
+
+        //组件过滤条件
         if (ObjectUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest request : requestList.getFilter()) {
+                DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
+                request.setDatasetTableField(datasetTableField);
+                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                    if (CollectionUtils.isNotEmpty(request.getViewIds())) {
+                        if (request.getViewIds().contains(view.getId())) {
+                            extFilterList.add(request);
+                        }
+                    } else {
+                        extFilterList.add(request);
+                    }
+                }
+            }
+        }
+
+        //联动过滤条件联动条件全部加上
+        if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
+            for (ChartExtFilterRequest request : requestList.getLinkageFilters()) {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
                 request.setDatasetTableField(datasetTableField);
                 if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
@@ -339,7 +358,7 @@ public class ChartViewService {
                 data = (List<String[]>) cache;
             }*/
             // 仪表板有参数不实用缓存
-            if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
+            if (CollectionUtils.isNotEmpty(requestList.getFilter()) || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())) {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {

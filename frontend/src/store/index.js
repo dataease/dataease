@@ -21,7 +21,9 @@ import event from '@/components/canvas/store/event'
 import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
-import { valueValid, formatCondition } from '@/utils/conditionUtil'
+import { valueValid, formatCondition, formatLinkageCondition } from '@/utils/conditionUtil'
+import { Condition } from '@/components/widget/bean/Condition'
+
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
@@ -54,7 +56,9 @@ const data = {
     // 当前设置联动的组件
     curLinkageView: null,
     // 和当前组件联动的目标组件
-    targetLinkageInfo: []
+    targetLinkageInfo: [],
+    // 当前仪表板联动 下钻 上卷等信息
+    nowPanelTrackInfo: {}
   },
   mutations: {
     ...animation.mutations,
@@ -154,6 +158,48 @@ const data = {
         state.componentData[index] = element
       }
     },
+
+    // 添加联动 下钻 等过滤组件
+    addViewTrackFilter(state, data) {
+      console.log('联动信息', JSON.stringify(data))
+      debugger
+      const viewId = data.viewId
+      const trackInfo = state.nowPanelTrackInfo
+      for (let index = 0; index < state.componentData.length; index++) {
+        const element = state.componentData[index]
+        if (!element.type || element.type !== 'view') continue
+        const currentFilters = element.linkageFilters || [] // 当前联动filter
+
+        data.dimensionList.forEach(dimension => {
+          const sourceInfo = viewId + '#' + dimension.id
+          // 获取所有目标联动信息
+          const targetInfoList = trackInfo[sourceInfo] || []
+          targetInfoList.forEach(targetInfo => {
+            const targetInfoArray = targetInfo.split('#')
+            const targetViewId = targetInfoArray[0] // 目标视图
+            if (element.propValue.viewId === targetViewId) { // 如果目标视图 和 当前循环组件id相等 则进行条件增减
+              const targetFieldId = targetInfoArray[1] // 目标视图列ID
+              const condition = new Condition('', targetFieldId, 'eq', [dimension.value], [targetViewId])
+
+              let j = currentFilters.length
+              while (j--) {
+                const filter = currentFilters[j]
+                // 兼容性准备 viewIds 只会存放一个值
+                if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                  currentFilters.splice(j, 1)
+                }
+              }
+              // 不存在该条件 且 条件有效 直接保存该条件
+              // !filterExist && vValid && currentFilters.push(condition)
+              currentFilters.push(condition)
+            }
+          })
+        })
+
+        element.linkageFilters = currentFilters
+        state.componentData[index] = element
+      }
+    },
     setComponentWithId(state, component) {
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
@@ -189,6 +235,9 @@ const data = {
       state.linkageSettingStatus = false
       state.curLinkageView = null
       state.targetLinkageInfo = []
+    },
+    setNowPanelTrackInfo(state, trackInfo) {
+      state.nowPanelTrackInfo = trackInfo
     }
   },
   modules: {
