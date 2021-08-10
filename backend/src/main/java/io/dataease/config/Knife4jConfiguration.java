@@ -1,13 +1,10 @@
 package io.dataease.config;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
+import io.dataease.commons.condition.LicStatusCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
+import org.springframework.context.annotation.*;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.*;
 import springfox.documentation.oas.annotations.EnableOpenApi;
@@ -15,6 +12,8 @@ import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +26,7 @@ public class Knife4jConfiguration {
 
     @Value("${app.version}")
     private String version;
+
 
 
     @Autowired
@@ -62,6 +62,13 @@ public class Knife4jConfiguration {
     @Bean(value = "sysApi")
     public Docket sysApi() {
         return defaultApi("系统管理", "io.dataease.controller.sys");
+    }
+
+    @Bean(value = "pluginsApi")
+    /*@DependsOn(value = "licStatusCondition")*/
+    @Conditional(LicStatusCondition.class)
+    public Docket pluginsApi() {
+        return defaultApi("插件管理", "io.dataease.plugins.server");
     }
 
 

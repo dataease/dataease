@@ -1,6 +1,7 @@
 package io.dataease.auth.api.dto;
 
 import io.dataease.auth.entity.SysUserEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 public class CurrentUserDto extends SysUserEntity implements Serializable {
 
+    @ApiModelProperty("角色集合")
     private List<CurrentRoleDto> roles;
 
+    @ApiModelProperty("权限集合")
     private List<String> permissions;
 }

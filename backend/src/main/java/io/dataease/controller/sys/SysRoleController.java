@@ -1,30 +1,30 @@
 package io.dataease.controller.sys;
 
 
-import com.github.pagehelper.Page;
+/*import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.base.domain.SysRole;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.RoleMenusRequest;
+import io.dataease.controller.sys.request.RoleMenusRequest;*/
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.service.sys.SysRoleService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+/*import io.swagger.annotations.ApiOperation;*/
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
-@ApiIgnore
+/*@ApiIgnore
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "系统：角色管理")
 @RequestMapping("/api/role")
-public class SysRoleController {
-
+public class SysRoleController {*/
+    /*
     @Resource
     private SysRoleService sysRoleService;
 
@@ -74,4 +74,5 @@ public class SysRoleController {
     public List<RoleUserItem> all(){
         return sysRoleService.allRoles();
     }
-}
+     */
+/*}*/

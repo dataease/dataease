@@ -1,6 +1,7 @@
 package io.dataease.controller.sys.base;
 
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class BaseGridRequest implements Serializable {
 
+    @ApiModelProperty("查询条件")
     private List<ConditionEntity> conditions;
 
     public List<ConditionEntity> getConditions() {
@@ -27,6 +29,7 @@ public class BaseGridRequest implements Serializable {
         this.orders = orders;
     }
 
+    @ApiModelProperty("排序描述")
     private List<String> orders;
 
     public GridExample convertExample(){
