@@ -309,11 +309,11 @@ public class ChartViewService {
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, customFilter, extFilterList));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    datasourceRequest.setQuery(qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extStack));
+                    datasourceRequest.setQuery(qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extStack, ds));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extBubble));
+                    datasourceRequest.setQuery(qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extBubble, ds));
                 } else {
-                    datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList));
+                    datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, ds));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
@@ -362,11 +362,11 @@ public class ChartViewService {
             if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
                 datasourceRequest.setQuery(qp.getSQLSummary(tableName, yAxis, customFilter, extFilterList));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, customFilter, extFilterList, extStack));
+                datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, customFilter, extFilterList, extStack, ds));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, customFilter, extFilterList, extBubble));
+                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, customFilter, extFilterList, extBubble, ds));
             } else {
-                datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList));
+                datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList, ds));
             }
             /*// 定时抽取使用缓存
             Object cache;

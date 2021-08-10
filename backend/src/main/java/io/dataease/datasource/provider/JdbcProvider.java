@@ -3,10 +3,7 @@ package io.dataease.datasource.provider;
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import io.dataease.datasource.constants.DatasourceTypes;
-import io.dataease.datasource.dto.MysqlConfigration;
-import io.dataease.datasource.dto.OracleConfigration;
-import io.dataease.datasource.dto.SqlServerConfigration;
-import io.dataease.datasource.dto.TableFiled;
+import io.dataease.datasource.dto.*;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
@@ -309,7 +306,7 @@ public class JdbcProvider extends DatasourceProvider {
             resultSet.close();
             ps.close();
         } catch (Exception e) {
-            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+            DataEaseException.throwException(e.getMessage());
         } finally {
             if(con != null){con.close();}
         }
@@ -433,6 +430,12 @@ public class JdbcProvider extends DatasourceProvider {
                 props.put( "oracle.net.CONNECT_TIMEOUT" , "5000") ;
 //                props.put( "oracle.jdbc.ReadTimeout" , "5000" ) ;
                 break;
+            case pg:
+                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
+                username = pgConfigration.getUsername();
+                password = pgConfigration.getPassword();
+                driver = pgConfigration.getDriver();
+                jdbcurl = pgConfigration.getJdbc();
             default:
                 break;
         }
@@ -477,6 +480,13 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setPassword(oracleConfigration.getPassword());
                 dataSource.setJdbcUrl(oracleConfigration.getJdbc());
                 break;
+            case pg:
+                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
+                dataSource.setUser(pgConfigration.getUsername());
+                dataSource.setDriverClass(pgConfigration.getDriver());
+                dataSource.setPassword(pgConfigration.getPassword());
+                dataSource.setJdbcUrl(pgConfigration.getJdbc());
+                break;
             default:
                 break;
         }
@@ -494,6 +504,9 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 return sqlServerConfigration.getDataBase();
+            case pg:
+                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
+                return pgConfigration.getDataBase();
             default:
                 return null;
         }
@@ -517,6 +530,12 @@ public class JdbcProvider extends DatasourceProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "select table_name, owner from all_tables where owner='" + oracleConfigration.getSchema() + "'";
+            case pg:
+                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
+                if(StringUtils.isEmpty(pgConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
             default:
                 return "show tables;";
         }
@@ -529,6 +548,8 @@ public class JdbcProvider extends DatasourceProvider {
                 return "select * from all_users";
             case sqlServer:
                 return "select name from sys.schemas;";
+            case pg:
+                return "SELECT nspname FROM pg_namespace;";
             default:
                 return "show tables;";
         }

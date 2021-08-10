@@ -12,5 +12,6 @@ public class JdbcDTO {
     private String username;
     private String password;
     private String dataBase;
+    private String schema;
     private String dataSourceType = "jdbc";
 }
