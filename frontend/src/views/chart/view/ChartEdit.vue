@@ -483,7 +483,7 @@
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
             <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
             <div v-if="!httpRequest.status" class="chart-error-class">
@@ -738,7 +738,8 @@ export default {
       filterItem: {},
       places: [],
       attrActiveNames: [],
-      styleActiveNames: []
+      styleActiveNames: [],
+      drillClickDimensionList: []
     }
   },
   computed: {
@@ -750,6 +751,7 @@ export default {
   },
   watch: {
     'param': function() {
+      this.resetDrill()
       if (this.param.optType === 'new') {
         //
       } else {
@@ -894,6 +896,7 @@ export default {
         // this.get(response.data.id);
         // this.getData(response.data.id)
 
+        this.resetDrill()
         if (getData) {
           this.getData(response.data.id)
         } else {
@@ -983,7 +986,8 @@ export default {
     getData(id) {
       if (id) {
         ajaxGetData(id, {
-          filter: []
+          filter: [],
+          drill: this.drillClickDimensionList
         }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
@@ -1003,8 +1007,12 @@ export default {
           if (this.chart.privileges) {
             this.param.privileges = this.chart.privileges
           }
+          if (!response.data.drill) {
+            this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+          }
         }).catch(err => {
           this.resetView()
+          this.resetDrill()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
           this.$nextTick(() => {
@@ -1487,6 +1495,16 @@ export default {
     bubbleItemRemove(item) {
       this.view.extBubble.splice(item.index, 1)
       this.save(true)
+    },
+
+    chartClick(param) {
+      console.log(param)
+      this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+      this.getData(this.param.id)
+    },
+
+    resetDrill() {
+      this.drillClickDimensionList = []
     }
   }
 }
