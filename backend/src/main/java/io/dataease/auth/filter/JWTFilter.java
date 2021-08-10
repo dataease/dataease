@@ -1,8 +1,10 @@
 package io.dataease.auth.filter;
 
+import io.dataease.auth.entity.ASKToken;
 import io.dataease.auth.entity.JWTToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
+import io.dataease.auth.handler.ApiKeyHandler;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -48,6 +50,18 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+
+
+        if (ApiKeyHandler.isApiKeyCall(httpServletRequest)) {
+            // Long userId = ApiKeyHandler.getUser(httpServletRequest);
+
+            ASKToken askToken = ApiKeyHandler.buildToken(httpServletRequest);
+
+            // UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(userId.toString(), ApiKeyHandler.random);
+            getSubject(request, response).login(askToken);
+            return true;
+        }
+
         String authorization = httpServletRequest.getHeader("Authorization");
         if (StringUtils.startsWith(authorization, "Basic")) {
             return false;
@@ -72,7 +86,10 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        if (isLoginAttempt(request, response)) {
+        // 先判断是不是api调用
+        HttpServletRequest hRequest = (HttpServletRequest) request;
+
+        if (isLoginAttempt(request, response) || ApiKeyHandler.isApiKeyCall(hRequest)) {
             try {
                 boolean loginSuccess = executeLogin(request, response);
                 return loginSuccess;

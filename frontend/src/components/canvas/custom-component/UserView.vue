@@ -84,12 +84,20 @@ export default {
     filter() {
       const filter = {}
       filter.filter = this.element.filters
+      filter.linkageFilters = this.element.linkageFilters
       return filter
     },
     filters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
       if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
+    },
+
+    linkageFilters() {
+      // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
+      if (!this.element.linkageFilters) return []
+      console.log('linkageFilters:' + JSON.stringify(this.element.linkageFilters))
+      return JSON.parse(JSON.stringify(this.element.linkageFilters))
     },
     ...mapState([
       'canvasStyleData'
@@ -100,6 +108,13 @@ export default {
     'filters': function(val1, val2) {
       // this.getData(this.element.propValue.viewId)
       isChange(val1, val2) && this.getData(this.element.propValue.viewId)
+    },
+    linkageFilters: {
+      handler(newVal, oldVal) {
+        debugger
+        isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
+      },
+      deep: true
     },
     // deep监听panel 如果改变 提交到 store
     canvasStyleData: {

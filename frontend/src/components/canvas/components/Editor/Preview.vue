@@ -209,7 +209,6 @@ export default {
       this.$refs['userViewDialog'].exportExcel()
     },
     deselectCurComponent(e) {
-      debugger
       if (!this.isClickComponent) {
         this.$store.commit('setCurComponent', { component: null, index: null })
       }

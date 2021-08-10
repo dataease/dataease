@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR, BASE_GAUGE, BASE_MAP, BASE_SCATTER } from '../chart/chart'
+import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR, BASE_GAUGE, BASE_MAP, BASE_SCATTER, BASE_TREEMAP } from '../chart/chart'
 import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
 import { baseLineOption, stackLineOption } from '../chart/line/line'
 import { basePieOption, rosePieOption } from '../chart/pie/pie'
@@ -14,6 +14,7 @@ import { baseFunnelOption } from '../chart/funnel/funnel'
 import { baseRadarOption } from '../chart/radar/radar'
 import { baseGaugeOption } from '../chart/gauge/gauge'
 import { baseScatterOption } from '../chart/scatter/scatter'
+import { baseTreemapOption } from '../chart/treemap/treemap'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import { uuid } from 'vue-uuid'
 import { geoJson } from '@/api/map/map'
@@ -59,8 +60,11 @@ export default {
   },
   methods: {
     preDraw() {
+      const viewId = this.chart.id
+      const _store = this.$store
       // 基于准备好的dom，初始化echarts实例
       // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
+      const that = this
       new Promise((resolve) => { resolve() }).then(() => {
         //	此dom为echarts图标展示dom
         this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
@@ -68,6 +72,19 @@ export default {
           this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
         this.drawEcharts()
+
+        this.myChart.off('click')
+        this.myChart.on('click', function(param) {
+          console.log(JSON.stringify(param.data))
+          const trackFilter = {
+            viewId: viewId,
+            dimensionList: param.data.dimensionList,
+            quotaList: param.data.quotaList
+          }
+          _store.commit('addViewTrackFilter', trackFilter)
+
+          that.$emit('onChartClick', param)
+        })
       })
     },
     drawEcharts() {
@@ -98,6 +115,8 @@ export default {
         chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
       } else if (chart.type === 'scatter') {
         chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart)
+      } else if (chart.type === 'treemap') {
+        chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart)
       }
 
       if (chart.type === 'map') {

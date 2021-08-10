@@ -7,6 +7,7 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
+import java.util.UUID;
 
 /**
  * 加密解密工具
@@ -152,6 +153,17 @@ public class CodingUtil {
             throw new RuntimeException("decrypt error，please check parameters", e);
         }
     }
+
+    /*public static String getSignature(String accessKey, String secretKey) throws Exception {
+        return aesEncrypt(accessKey + "|" + UUID.randomUUID().toString() + "|" + System.currentTimeMillis(), secretKey, accessKey);
+    }
+
+    public static void main(String[] args) throws Exception{
+        String accessKey = "gnPFmtAsdLhUEWPA";
+        String secretKey = "TfK5FGUle0KRfJJJ";
+        String signature = getSignature(accessKey, secretKey);
+        System.out.println(signature);
+    }*/
 
     public static String secretKey() {
         try {

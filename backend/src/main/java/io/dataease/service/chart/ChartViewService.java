@@ -11,19 +11,12 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.controller.request.chart.ChartExtRequest;
-import io.dataease.controller.request.chart.ChartGroupRequest;
-import io.dataease.controller.request.chart.ChartViewRequest;
-import io.dataease.controller.request.dataset.DataSetGroupRequest;
-import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.chart.*;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.chart.*;
-import io.dataease.dto.dataset.DataSetGroupDTO;
-import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
@@ -197,6 +190,8 @@ public class ChartViewService {
         }.getType());
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartFieldCustomFilterDTO>>() {
         }.getType());
+        List<ChartViewFieldDTO> drill = new Gson().fromJson(view.getDrillFields(), new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType());
         List<ChartCustomFilterDTO> customFilter = new ArrayList<>();
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             List<ChartCustomFilterDTO> collect = ele.getFilter().stream().map(f -> {
@@ -225,6 +220,8 @@ public class ChartViewService {
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
+
+        //组件过滤条件
         if (ObjectUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest request : requestList.getFilter()) {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
@@ -236,6 +233,55 @@ public class ChartViewService {
                         }
                     } else {
                         extFilterList.add(request);
+                    }
+                }
+            }
+        }
+
+        //联动过滤条件联动条件全部加上
+        if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
+            for (ChartExtFilterRequest request : requestList.getLinkageFilters()) {
+                DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
+                request.setDatasetTableField(datasetTableField);
+                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                    if (CollectionUtils.isNotEmpty(request.getViewIds())) {
+                        if (request.getViewIds().contains(view.getId())) {
+                            extFilterList.add(request);
+                        }
+                    } else {
+                        extFilterList.add(request);
+                    }
+                }
+            }
+        }
+
+        // 下钻
+        boolean isDrill = false;
+        List<ChartDrillRequest> drillRequest = requestList.getDrill();
+        if (CollectionUtils.isNotEmpty(drillRequest) && (drill.size() >= drillRequest.size())) {
+            for (int i = 0; i < drillRequest.size(); i++) {
+                ChartDrillRequest request = drillRequest.get(i);
+                for (ChartDimensionDTO dto : request.getDimensionList()) {
+                    ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
+                    // 将钻取值作为条件传递，将所有钻取字段作为xAxis并加上下一个钻取字段
+                    if (StringUtils.equalsIgnoreCase(dto.getId(), chartViewFieldDTO.getId())) {
+                        isDrill = true;
+                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(dto.getId());
+                        ChartViewFieldDTO d = new ChartViewFieldDTO();
+                        BeanUtils.copyBean(d, datasetTableField);
+
+                        ChartExtFilterRequest drillFilter = new ChartExtFilterRequest();
+                        drillFilter.setFieldId(dto.getId());
+                        drillFilter.setValue(new ArrayList<String>() {{
+                            add(dto.getValue());
+                        }});
+                        drillFilter.setOperator("in");
+                        drillFilter.setDatasetTableField(datasetTableField);
+                        extFilterList.add(drillFilter);
+//                        xAxis.add(d);
+//                        if (i == drillRequest.size() - 1) {
+//                            xAxis.add(drill.get(i + 1));
+//                        }
                     }
                 }
             }
@@ -339,7 +385,9 @@ public class ChartViewService {
                 data = (List<String[]>) cache;
             }*/
             // 仪表板有参数不实用缓存
-            if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
+            if (CollectionUtils.isNotEmpty(requestList.getFilter())
+                    || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
+                    || CollectionUtils.isNotEmpty(requestList.getDrill())) {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {
@@ -367,6 +415,9 @@ public class ChartViewService {
             mapChart = transScatterData(xAxis, yAxis, view, data, extBubble);
         } else if (StringUtils.containsIgnoreCase(view.getType(), "radar")) {
             mapChart = transRadarChartData(xAxis, yAxis, view, data);
+        } else if (StringUtils.containsIgnoreCase(view.getType(), "text")
+                || StringUtils.containsIgnoreCase(view.getType(), "gauge")) {
+            mapChart = transNormalChartData(xAxis, yAxis, view, data);
         } else {
             mapChart = transChartData(xAxis, yAxis, view, data);
         }
@@ -380,6 +431,8 @@ public class ChartViewService {
         BeanUtils.copyBean(dto, view);
         dto.setData(map);
         dto.setSql(datasourceRequest.getQuery());
+
+        dto.setDrill(isDrill);
         return dto;
     }
 
@@ -469,6 +522,44 @@ public class ChartViewService {
                 }
             }
             x.add(a.toString());
+        }
+
+        map.put("x", x);
+        map.put("series", series);
+        return map;
+    }
+
+    // 常规图形
+    private Map<String, Object> transNormalChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<String> x = new ArrayList<>();
+        List<Series> series = new ArrayList<>();
+        for (ChartViewFieldDTO y : yAxis) {
+            Series series1 = new Series();
+            series1.setName(y.getName());
+            series1.setType(view.getType());
+            series1.setData(new ArrayList<>());
+            series.add(series1);
+        }
+        for (String[] d : data) {
+            StringBuilder a = new StringBuilder();
+            for (int i = 0; i < xAxis.size(); i++) {
+                if (i == xAxis.size() - 1) {
+                    a.append(d[i]);
+                } else {
+                    a.append(d[i]).append("\n");
+                }
+            }
+            x.add(a.toString());
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                int j = i - xAxis.size();
+                try {
+                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                } catch (Exception e) {
+                    series.get(j).getData().add(new BigDecimal(0));
+                }
+            }
         }
 
         map.put("x", x);

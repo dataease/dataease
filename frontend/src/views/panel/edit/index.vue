@@ -192,6 +192,7 @@ import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import { findOne } from '@/api/panel/panel'
+import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrList from '@/components/canvas/components/AttrList'
@@ -363,6 +364,7 @@ export default {
         const componentDatas = JSON.parse(componentDataTemp)
         componentDatas.forEach(item => {
           item.filters = (item.filters || [])
+          item.linkageFilters = (item.linkageFilters || [])
         })
         this.$store.commit('setComponentData', this.resetID(componentDatas))
         // this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
@@ -375,12 +377,17 @@ export default {
           const componentDatas = JSON.parse(response.data.panelData)
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])
+            item.linkageFilters = (item.linkageFilters || [])
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
           //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', panelStyle)
           this.$store.commit('recordSnapshot')// 记录快照
+          // 刷新联动信息
+          getPanelAllLinkageInfo(panelId).then(rsp => {
+            this.$store.commit('setNowPanelTrackInfo', rsp.data)
+          })
         })
       }
     },
@@ -463,6 +470,7 @@ export default {
             }
             component.propValue = propValue
             component.filters = []
+            component.linkageFilters = []
           }
         })
       } else {
@@ -660,6 +668,7 @@ export default {
           }
           component.propValue = propValue
           component.filters = []
+          component.linkageFilters = []
         }
       })
 

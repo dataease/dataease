@@ -337,7 +337,8 @@ export default {
       confirm: 'Confirm',
       ok: 'Confirm',
       cancel: 'Cancel'
-    }
+    },
+    ukey_title: 'API Keys'
   },
   documentation: {
     documentation: 'Documentation',
@@ -831,7 +832,15 @@ export default {
     axis_label_rotate: 'Label Rotate',
     chart_scatter_bubble: 'Bubble',
     chart_scatter: 'Scatter',
-    bubble_size: 'Bubble Size'
+    bubble_size: 'Bubble Size',
+    chart_treemap: 'Tree Map',
+    drill: 'Drill',
+    drag_block_treemap_label: 'Color Label',
+    drag_block_treemap_size: 'Color Size',
+    bubble_symbol: 'Shape',
+    gap_width: 'Gap Width',
+    width: 'Width',
+    height: 'Height'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

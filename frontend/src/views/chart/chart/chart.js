@@ -39,7 +39,9 @@ export const DEFAULT_SIZE = {
   dimensionShow: true,
   quotaShow: true,
   scatterSymbol: 'circle',
-  scatterSymbolSize: 20
+  scatterSymbolSize: 20,
+  treemapWidth: 80,
+  treemapHeight: 80
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -686,6 +688,42 @@ export const BASE_SCATTER = {
       yAxisIndex: [0],
       start: 0,
       end: 100
+    }
+  ]
+}
+
+export const BASE_TREEMAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect'
+  },
+  series: [
+    {
+      // name: '',
+      type: 'treemap',
+      // radius: ['0%', '60%'],
+      // avoidLabelOverlap: false,
+      // emphasis: {
+      //   itemStyle: {
+      //     shadowBlur: 10,
+      //     shadowOffsetX: 0,
+      //     shadowColor: 'rgba(0, 0, 0, 0.5)'
+      //   }
+      // },
+      data: []
     }
   ]
 }
