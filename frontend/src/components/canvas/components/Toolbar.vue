@@ -101,8 +101,9 @@ import { commonStyle, commonAttr } from '@/components/canvas/custom-component/co
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { panelSave } from '@/api/panel/panel'
-import { saveLinkage } from '@/api/panel/linkage'
+import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
+
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
@@ -325,6 +326,10 @@ export default {
         linkageInfo: this.targetLinkageInfo
       }
       saveLinkage(request).then(rsp => {
+        // 刷新联动信息
+        getPanelAllLinkageInfo(this.$store.state.panel.panelInfo.id).then(rsp => {
+          this.$store.commit('setNowPanelTrackInfo', rsp.data)
+        })
         this.cancelLinkageSettingStatus()
       })
     },
