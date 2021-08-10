@@ -625,7 +625,7 @@ export const BASE_MAP = {
     {
       name: '',
       type: 'map',
-      map: 'HK',
+      map: 'MAP',
       roam: true,
       //   label: {
       //     show: true
