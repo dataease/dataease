@@ -3,6 +3,7 @@ package io.dataease.datasource.constants;
 public enum DatasourceTypes {
     excel("excel", "excel", "", "", "", "", ""),
     mysql("mysql", "mysql", "com.mysql.jdbc.Driver", "`", "`", "'", "'"),
+    pg("pg", "pg", "org.postgresql.Driver", "\"", "\"", "\"", "\""),
     sqlServer("sqlServer", "sqlServer", "com.microsoft.sqlserver.jdbc.SQLServerDriver", "\"", "\"", "\"", "\""),
     doris("doris", "doris", "com.mysql.jdbc.Driver", "`", "`", "", ""),
     oracle("oracle", "oracle", "oracle.jdbc.driver.OracleDriver", "\"", "\"", "\"", "\"");

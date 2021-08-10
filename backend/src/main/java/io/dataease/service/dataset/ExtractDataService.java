@@ -192,7 +192,7 @@ public class ExtractDataService {
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                 } finally {
                     deleteFile("all_scope", datasetTableId);
-                    deleteFile(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData());
+//                    deleteFile(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData());
                 }
                 break;
 
@@ -930,13 +930,15 @@ public class ExtractDataService {
         }
 
         if (datasourceType.equals(DatasourceTypes.excel)) {
+            System.out.println(Column_Fields);
             tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields);
         } else {
             tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields);
         }
 
         tmp_code = tmp_code.replace("handleBinaryType", handleBinaryTypeCode);
-        
+
+        System.out.println(tmp_code);
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
         userDefinedJavaClassDef.setActive(true);
@@ -1019,13 +1021,13 @@ public class ExtractDataService {
         }
     }
 
-    private static String handleBinaryType = "    \t\tif(\"FEILD\".equalsIgnoreCase(filed)){\n" +
+    private final static String handleBinaryType = "    \t\tif(\"FEILD\".equalsIgnoreCase(filed)){\n" +
             "           get(Fields.Out, filed).setValue(r, \"\");\n" +
             "           get(Fields.Out, filed).getValueMeta().setType(2);\n" +
             "     \t}";
 
 
-    private static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
+    private final static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
             "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
             "         get(Fields.Out, filed).setValue(r, 1);\n" +
             "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
@@ -1035,7 +1037,7 @@ public class ExtractDataService {
             "       }\n" +
             "     }\n";
 
-    private static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
+    private final static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
             "            try {\n" +
             "                Long.valueOf(tmp.substring(0, tmp.length()-2));\n" +
             "                get(Fields.Out, filed).setValue(r, tmp.substring(0, tmp.length()-2));\n" +
@@ -1043,14 +1045,14 @@ public class ExtractDataService {
             "            }catch (Exception e){}\n" +
             "        }";
 
-    private static String handleWraps = "        if(tmp != null && ( tmp.contains(\"\\r\") || tmp.contains(\"\\n\"))){\n" +
+    private final static String handleWraps = "        if(tmp != null && ( tmp.contains(\"\\r\") || tmp.contains(\"\\n\"))){\n" +
             "\t\t\ttmp = tmp.trim();\n" +
             "            tmp = tmp.replaceAll(\"\\r\",\" \");\n" +
             "            tmp = tmp.replaceAll(\"\\n\",\" \");\n" +
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
             "        } ";
 
-    private static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
+    private final static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
             "import java.io.File;\n" +
             "import java.security.MessageDigest;\n" +
