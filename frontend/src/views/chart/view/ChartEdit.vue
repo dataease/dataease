@@ -247,30 +247,6 @@
                       />
                     </span>
                   </el-row>
-                  <el-row class="padding-lr">
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.drill') }}</span>
-                      /
-                      <span>{{ $t('chart.dimension') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.drillFields"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addDrill"
-                      @update="save(true)"
-                    >
-                      <transition-group class="draggable-group">
-                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="drillItemChange" @onDimensionItemRemove="drillItemRemove" />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
                   <el-row v-if="view.type !=='text' && view.type !== 'gauge'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
@@ -401,6 +377,30 @@
                       </transition-group>
                     </draggable>
                     <div v-if="!view.customFilter || view.customFilter.length === 0" class="drag-placeholder-style">
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
+                  <el-row v-if="view.type && view.type !== 'treemap' && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('radar') && !view.type.includes('gauge')" class="padding-lr" style="margin-top: 6px;">
+                    <span style="width: 80px;text-align: right;">
+                      <span>{{ $t('chart.drill') }}</span>
+                      /
+                      <span>{{ $t('chart.dimension') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.drillFields"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      class="drag-block-style"
+                      @add="addDrill"
+                      @update="save(true)"
+                    >
+                      <transition-group class="draggable-group">
+                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="drillItemChange" @onDimensionItemRemove="drillItemRemove" />
+                      </transition-group>
+                    </draggable>
+                    <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
@@ -878,6 +878,13 @@ export default {
       }
       if (view.type === 'treemap' && trigger === 'chart') {
         view.customAttr.label.show = true
+      }
+      if (view.type === 'treemap' ||
+        view.type.includes('table') ||
+        view.type.includes('text') ||
+        view.type.includes('gauge') ||
+        view.type.includes('radar')) {
+        view.drillFields = []
       }
       view.customFilter.forEach(function(ele) {
         if (ele && !ele.filter) {
@@ -1498,7 +1505,6 @@ export default {
     },
 
     chartClick(param) {
-      console.log(param)
       this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
       this.getData(this.param.id)
     },
