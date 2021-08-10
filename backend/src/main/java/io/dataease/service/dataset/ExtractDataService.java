@@ -437,28 +437,28 @@ public class ExtractDataService {
         String Column_Fields = "dataease_uuid  varchar(50), `";
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
+            Integer size = datasetTableField.getSize() * 3;
+            if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
+                size = 65533;
+            }
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
-                    if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
-                        Column_Fields = Column_Fields + "varchar(65533)" + ",`";
-                    } else {
-                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize() * 3)) + ",`";
-                    }
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 1:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 2:
-                    Column_Fields = Column_Fields + "bigint(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    Column_Fields = Column_Fields + "bigint(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 3:
                     Column_Fields = Column_Fields + "DOUBLE" + ",`";
                     break;
                 case 4:
-                    Column_Fields = Column_Fields + "TINYINT(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    Column_Fields = Column_Fields + "TINYINT(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 default:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
             }
         }
@@ -735,6 +735,14 @@ public class ExtractDataService {
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer);
                 break;
+            case pg:
+                PgConfigration pgConfigration = new Gson().fromJson(datasource.getConfiguration(), PgConfigration.class);
+                dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfigration.getHost(), pgConfigration.getDataBase(), pgConfigration.getPort().toString(), pgConfigration.getUsername(), pgConfigration.getPassword());
+                transMeta.addDatabase(dataMeta);
+                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.pg);
+                break;
             case oracle:
                 OracleConfigration oracleConfigration = new Gson().fromJson(datasource.getConfiguration(), OracleConfigration.class);
                 if (oracleConfigration.getConnectionType().equalsIgnoreCase("serviceName")) {
@@ -795,7 +803,7 @@ public class ExtractDataService {
         if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("db")) {
             String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-            selectSQL = qp.createRawQuerySQL(tableName, datasetTableFields);
+            selectSQL = qp.createRawQuerySQL(tableName, datasetTableFields, datasource);
         }
 
         if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase("sql")) {
@@ -879,12 +887,18 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())){
+        }else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.pg.name())){
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for(int i=0;i< datasetTableFields.size();i++){
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getDataeaseName());
-                textFileField.setType("String");
+                if (datasetTableFields.get(i).getDeExtractType() == 1) {
+                    textFileField.setType("String");
+                    textFileField.setFormat("yyyy-MM-dd HH:mm:ss");
+                } else {
+                    textFileField.setType("String");
+                }
+
                 outputFields[i] = textFileField;
             }
             TextFileField textFileField = new TextFileField();
@@ -930,15 +944,12 @@ public class ExtractDataService {
         }
 
         if (datasourceType.equals(DatasourceTypes.excel)) {
-            System.out.println(Column_Fields);
             tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields);
         } else {
             tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields);
         }
 
         tmp_code = tmp_code.replace("handleBinaryType", handleBinaryTypeCode);
-
-        System.out.println(tmp_code);
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
         userDefinedJavaClassDef.setActive(true);

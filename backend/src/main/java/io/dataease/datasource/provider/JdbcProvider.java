@@ -219,10 +219,8 @@ public class JdbcProvider extends DatasourceProvider {
     public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest);
-        System.out.println(queryStr);
         Connection con = null;
         try {
-            System.out.println(new Gson().toJson(datasourceRequest));
             con = getConnection(datasourceRequest);
             Statement statement = con.createStatement();
             ResultSet resultSet = statement.executeQuery(queryStr);

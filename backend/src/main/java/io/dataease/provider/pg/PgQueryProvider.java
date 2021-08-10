@@ -1,16 +1,21 @@
 package io.dataease.provider.pg;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
 import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
+import io.dataease.datasource.dto.JdbcDTO;
+import io.dataease.datasource.dto.PgConfigration;
+import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
+import io.dataease.provider.sqlserver.SqlServerSQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,12 +66,12 @@ public class PgQueryProvider extends QueryProvider {
             case "point":
             case "polygon":
             case "bool":
+            case "interval":
                 return DeTypeConstants.DE_STRING;// 文本
             case "date":
             case "time":
             case "timestamp":
             case "timestamptz":
-            case "interval":
                 return DeTypeConstants.DE_TIME;// 时间
             case "int2":
             case "int4":
@@ -100,6 +105,8 @@ public class PgQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
+
+        setSchema(tableObj,ds);
         List<SQLObj> xFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
@@ -183,11 +190,12 @@ public class PgQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
+    public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
+        setSchema(tableObj,ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -291,15 +299,16 @@ public class PgQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
-        return getSQL("(" + sqlFix(sql) + ")", xAxis, yAxis, customFilter, extFilterRequestList);
+        return getSQL("(" + sqlFix(sql) + ")", xAxis, yAxis, customFilter, extFilterRequestList, null);
     }
 
     @Override
-    public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack) {
+    public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
+        setSchema(tableObj,ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -405,15 +414,16 @@ public class PgQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLAsTmpStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack) {
-        return getSQLStack("(" + sqlFix(table) + ")", xAxis, yAxis, customFilter, extFilterRequestList, extStack);
+        return getSQLStack("(" + sqlFix(table) + ")", xAxis, yAxis, customFilter, extFilterRequestList, extStack, null);
     }
 
     @Override
-    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble) {
+    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
+        setSchema(tableObj,ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -519,7 +529,7 @@ public class PgQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble) {
-        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, customFilter, extFilterRequestList, extBubble);
+        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, customFilter, extFilterRequestList, extBubble, null);
     }
 
     @Override
@@ -615,23 +625,24 @@ public class PgQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createRawQuerySQL(String table, List<DatasetTableField> fields) {
+    public String createRawQuerySQL(String table, List<DatasetTableField> fields, Datasource ds) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-//            if (f.getDeExtractType() == 4) { // 处理 tinyint
-//                stringBuilder.append("concat(`").append(f.getOriginName()).append("`,'') AS ").append(f.getDataeaseName());
-//            } else {
-//                stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
-//            }
             stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), table);
+        if(ds != null){
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+            String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
+            return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), tableWithSchema);
+        }else {
+            return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), table);
+        }
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
     }
 
     public String transMysqlFilterTerm(String term) {
@@ -798,7 +809,7 @@ public class PgQueryProvider extends QueryProvider {
             case "y_M_d_H_m":
                 return "'YYYY" + split + "MM" + split + "DD" + " HH24:MI'";
             case "y_M_d_H_m_s":
-                return "'YYYY" + split + "MM" + split + "DD" + " %H:%i:%S'";
+                return "'YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS'";
             default:
                 return "'YYYY-MM-DD HH24:MI:SS'";
         }

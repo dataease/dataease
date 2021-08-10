@@ -379,7 +379,6 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
-                System.out.println(datasourceRequest.getQuery());
                 try {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
@@ -904,9 +903,7 @@ public class DataSetTableService {
                     datasetTableField.setDeType(transFieldType(filed.getFieldType()));
                     datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
                 } else {
-                    System.out.println(new Gson().toJson(filed));
                     Integer fieldType = qp.transFieldType(filed.getFieldType());
-                    System.out.println(fieldType);
                     datasetTableField.setDeType(fieldType == 4 ? 2 : fieldType);
                     datasetTableField.setDeExtractType(fieldType);
                 }
@@ -1090,8 +1087,6 @@ public class DataSetTableService {
             List<TableFiled> fields = (List<TableFiled>) fileMap.get("fields");
             List<String> newFields = fields.stream().map(TableFiled::getRemarks).collect(Collectors.toList());
             List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
-            System.out.println("oldFields: " + oldFields);
-            System.out.println("newFields: "+ newFields);
             if (!oldFields.equals(newFields)) {
                 DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
             }
