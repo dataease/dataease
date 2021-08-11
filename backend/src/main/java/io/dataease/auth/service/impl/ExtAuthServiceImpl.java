@@ -43,9 +43,11 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Override
     public AuthURD resourceTarget(String resourceId) {
         AuthURD authURD = new AuthURD();
-        SysAuthExample example = new SysAuthExample();
+        /*SysAuthExample example = new SysAuthExample();
         example.createCriteria().andAuthSourceEqualTo(resourceId);
-        List<SysAuth> sysAuths = sysAuthMapper.selectByExample(example);
+        List<SysAuth> sysAuths = sysAuthMapper.selectByExample(example);*/
+        List<SysAuth> sysAuths = extAuthMapper.queryByResource(resourceId);
+
         Map<String, List<SysAuth>> authMap = sysAuths.stream().collect(Collectors.groupingBy(SysAuth::getAuthTargetType));
         if (!CollectionUtils.isEmpty(authMap.get("user"))) {
             authURD.setUserIds(authMap.get("user").stream().map(item -> Long.parseLong(item.getAuthTarget())).collect(Collectors.toList()));
