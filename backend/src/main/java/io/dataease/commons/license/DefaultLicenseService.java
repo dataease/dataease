@@ -3,6 +3,7 @@ package io.dataease.commons.license;
 import com.google.gson.Gson;
 import io.dataease.base.domain.License;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.utils.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class DefaultLicenseService {
         command.add(licenseKey);
         try{
             execCommand(result, command);
+            LogUtil.info("read lic content is : " + result.toString());
             F2CLicenseResponse f2CLicenseResponse = new Gson().fromJson(result.toString(), F2CLicenseResponse.class);
             if(f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid){
                 return f2CLicenseResponse;
@@ -43,6 +45,7 @@ public class DefaultLicenseService {
             }
             return f2CLicenseResponse;
         }catch (Exception e){
+            e.printStackTrace();
             return F2CLicenseResponse.invalid(e.getMessage());
         }
     }
