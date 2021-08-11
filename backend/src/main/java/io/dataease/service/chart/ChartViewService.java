@@ -258,7 +258,7 @@ public class ChartViewService {
         // 下钻
         boolean isDrill = false;
         List<ChartDrillRequest> drillRequest = requestList.getDrill();
-        if (CollectionUtils.isNotEmpty(drillRequest) && (drill.size() >= drillRequest.size())) {
+        if (CollectionUtils.isNotEmpty(drillRequest) && (drill.size() > drillRequest.size())) {
             for (int i = 0; i < drillRequest.size(); i++) {
                 ChartDrillRequest request = drillRequest.get(i);
                 for (ChartDimensionDTO dto : request.getDimensionList()) {
@@ -278,10 +278,16 @@ public class ChartViewService {
                         drillFilter.setOperator("in");
                         drillFilter.setDatasetTableField(datasetTableField);
                         extFilterList.add(drillFilter);
-//                        xAxis.add(d);
-//                        if (i == drillRequest.size() - 1) {
-//                            xAxis.add(drill.get(i + 1));
-//                        }
+
+                        if (!checkDrillExist(xAxis, extStack, d, view)) {
+                            xAxis.add(d);
+                        }
+                        if (i == drillRequest.size() - 1) {
+                            ChartViewFieldDTO nextDrillField = drill.get(i + 1);
+                            if (!checkDrillExist(xAxis, extStack, nextDrillField, view)) {
+                                xAxis.add(nextDrillField);
+                            }
+                        }
                     }
                 }
             }
@@ -434,6 +440,24 @@ public class ChartViewService {
 
         dto.setDrill(isDrill);
         return dto;
+    }
+
+    private boolean checkDrillExist(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, ChartViewFieldDTO dto, ChartViewWithBLOBs view) {
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            for (ChartViewFieldDTO x : xAxis) {
+                if (StringUtils.equalsIgnoreCase(x.getId(), dto.getId())) {
+                    return true;
+                }
+            }
+        }
+        if (StringUtils.containsIgnoreCase(view.getType(), "stack") && CollectionUtils.isNotEmpty(extStack)) {
+            for (ChartViewFieldDTO x : extStack) {
+                if (StringUtils.equalsIgnoreCase(x.getId(), dto.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

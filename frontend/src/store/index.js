@@ -161,7 +161,6 @@ const data = {
 
     // 添加联动 下钻 等过滤组件
     addViewTrackFilter(state, data) {
-      debugger
       const viewId = data.viewId
       const trackInfo = state.nowPanelTrackInfo
       for (let index = 0; index < state.componentData.length; index++) {
