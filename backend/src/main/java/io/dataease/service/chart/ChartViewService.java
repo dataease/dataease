@@ -419,27 +419,16 @@ public class ChartViewService {
         // 图表组件可再扩展
         Map<String, Object> mapChart;
         if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-            mapChart = transStackChartData(xAxis, yAxis, view, data, extStack);
+            mapChart = transStackChartData(xAxis, yAxis, view, data, extStack, isDrill);
         } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-            mapChart = transScatterData(xAxis, yAxis, view, data, extBubble);
+            mapChart = transScatterData(xAxis, yAxis, view, data, extBubble, isDrill);
         } else if (StringUtils.containsIgnoreCase(view.getType(), "radar")) {
-            mapChart = transRadarChartData(xAxis, yAxis, view, data);
+            mapChart = transRadarChartData(xAxis, yAxis, view, data, isDrill);
         } else if (StringUtils.containsIgnoreCase(view.getType(), "text")
                 || StringUtils.containsIgnoreCase(view.getType(), "gauge")) {
-            mapChart = transNormalChartData(xAxis, yAxis, view, data);
+            mapChart = transNormalChartData(xAxis, yAxis, view, data, isDrill);
         } else {
-            mapChart = transChartData(xAxis, yAxis, view, data);
-        }
-        // 钻取模式，去除前几层维度值，只保留当前层
-        if (isDrill) {
-            List<String> xList = (List<String>) mapChart.get("x");
-            List<String> xNewList = new ArrayList<>();
-            for (String x : xList) {
-                String[] split = x.split("\n");
-                x = split[split.length - 1];
-                xNewList.add(x);
-            }
-            mapChart.put("x", xNewList);
+            mapChart = transChartData(xAxis, yAxis, view, data, isDrill);
         }
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = transTableNormal(xAxis, yAxis, view, data, extStack);
@@ -512,7 +501,7 @@ public class ChartViewService {
     }
 
     // 基础图形
-    private Map<String, Object> transChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data) {
+    private Map<String, Object> transChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<String> x = new ArrayList<>();
@@ -553,11 +542,15 @@ public class ChartViewService {
                 }
                 series.get(j).getData().add(axisChartDataDTO);
             }
-            for (int i = 0; i < xAxis.size(); i++) {
-                if (i == xAxis.size() - 1) {
-                    a.append(d[i]);
-                } else {
-                    a.append(d[i]).append("\n");
+            if (isDrill) {
+                a.append(d[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(d[i]);
+                    } else {
+                        a.append(d[i]).append("\n");
+                    }
                 }
             }
             x.add(a.toString());
@@ -569,7 +562,7 @@ public class ChartViewService {
     }
 
     // 常规图形
-    private Map<String, Object> transNormalChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data) {
+    private Map<String, Object> transNormalChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<String> x = new ArrayList<>();
@@ -583,11 +576,15 @@ public class ChartViewService {
         }
         for (String[] d : data) {
             StringBuilder a = new StringBuilder();
-            for (int i = 0; i < xAxis.size(); i++) {
-                if (i == xAxis.size() - 1) {
-                    a.append(d[i]);
-                } else {
-                    a.append(d[i]).append("\n");
+            if (isDrill) {
+                a.append(d[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(d[i]);
+                    } else {
+                        a.append(d[i]).append("\n");
+                    }
                 }
             }
             x.add(a.toString());
@@ -607,7 +604,7 @@ public class ChartViewService {
     }
 
     // radar图
-    private Map<String, Object> transRadarChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data) {
+    private Map<String, Object> transRadarChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<String> x = new ArrayList<>();
@@ -621,11 +618,15 @@ public class ChartViewService {
         }
         for (String[] d : data) {
             StringBuilder a = new StringBuilder();
-            for (int i = 0; i < xAxis.size(); i++) {
-                if (i == xAxis.size() - 1) {
-                    a.append(d[i]);
-                } else {
-                    a.append(d[i]).append("\n");
+            if (isDrill) {
+                a.append(d[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(d[i]);
+                    } else {
+                        a.append(d[i]).append("\n");
+                    }
                 }
             }
             x.add(a.toString());
@@ -645,7 +646,7 @@ public class ChartViewService {
     }
 
     // 堆叠图
-    private Map<String, Object> transStackChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack) {
+    private Map<String, Object> transStackChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<String> x = new ArrayList<>();
@@ -659,11 +660,15 @@ public class ChartViewService {
             // 构建横轴
             for (String[] d : data) {
                 StringBuilder a = new StringBuilder();
-                for (int i = 0; i < xAxis.size(); i++) {
-                    if (i == xAxis.size() - 1) {
-                        a.append(d[i]);
-                    } else {
-                        a.append(d[i]).append("\n");
+                if (isDrill) {
+                    a.append(d[xAxis.size() - 1]);
+                } else {
+                    for (int i = 0; i < xAxis.size(); i++) {
+                        if (i == xAxis.size() - 1) {
+                            a.append(d[i]);
+                        } else {
+                            a.append(d[i]).append("\n");
+                        }
                     }
                 }
                 x.add(a.toString());
@@ -770,11 +775,15 @@ public class ChartViewService {
                     }
                     series.get(j).getData().add(axisChartDataDTO);
                 }
-                for (int i = 0; i < xAxis.size(); i++) {
-                    if (i == xAxis.size() - 1) {
-                        a.append(d[i]);
-                    } else {
-                        a.append(d[i]).append("\n");
+                if (isDrill) {
+                    a.append(d[xAxis.size() - 1]);
+                } else {
+                    for (int i = 0; i < xAxis.size(); i++) {
+                        if (i == xAxis.size() - 1) {
+                            a.append(d[i]);
+                        } else {
+                            a.append(d[i]).append("\n");
+                        }
                     }
                 }
                 x.add(a.toString());
@@ -787,7 +796,7 @@ public class ChartViewService {
     }
 
     // 散点图
-    private Map<String, Object> transScatterData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extBubble) {
+    private Map<String, Object> transScatterData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extBubble, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<String> x = new ArrayList<>();
@@ -803,11 +812,15 @@ public class ChartViewService {
             String[] d = data.get(i1);
 
             StringBuilder a = new StringBuilder();
-            for (int i = 0; i < xAxis.size(); i++) {
-                if (i == xAxis.size() - 1) {
-                    a.append(d[i]);
-                } else {
-                    a.append(d[i]).append("\n");
+            if (isDrill) {
+                a.append(d[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(d[i]);
+                    } else {
+                        a.append(d[i]).append("\n");
+                    }
                 }
             }
             x.add(a.toString());
