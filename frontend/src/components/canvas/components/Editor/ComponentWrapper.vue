@@ -7,7 +7,6 @@
     @mousedown="elementMouseDown"
   >
     <edit-bar v-if="config === curComponent" :element="config" @showViewDetails="showViewDetails" />
-<!--    <view-track-bar v-if="config === curComponent" :element="config" />-->
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -38,10 +37,9 @@ import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
-import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 
 export default {
-  components: { DeOutWidget, EditBar, ViewTrackBar },
+  components: { DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     config: {
