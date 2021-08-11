@@ -19,6 +19,9 @@
     <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" @onChartClick="chartClick" />
     <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <label-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <div style="position: absolute;left: 20px;bottom:14px;">
+      <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
+    </div>
   </div>
 </template>
 
@@ -37,10 +40,11 @@ import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { getToken, getLinkToken } from '@/utils/auth'
+import DrillPath from '@/views/chart/view/DrillPath'
 
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponent, TableNormal, LabelNormal, DrillPath },
   props: {
     element: {
       type: Object,
@@ -79,7 +83,8 @@ export default {
       chart: BASE_CHART_STRING,
       requestStatus: 'waiting',
       message: null,
-      drillClickDimensionList: []
+      drillClickDimensionList: [],
+      drillFilters: []
     }
   },
   computed: {
@@ -198,6 +203,7 @@ export default {
             if (!response.data.drill) {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
             }
+            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
             this.requestStatus = 'merging'
             this.mergeStyle()
             this.requestStatus = 'success'
