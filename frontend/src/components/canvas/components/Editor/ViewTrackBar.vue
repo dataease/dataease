@@ -1,124 +1,55 @@
 <template>
-  <div class="bar-main-left">
-    <div>
-      <!--上钻-->
-      <i
-        class="icon iconfont "
-        :class="[
-          {
-            ['icon-shangzuan i-active']: drillUpStatus ,
-            ['icon-quxiaoshangzuan i-on-active']: !drillUpStatus
-          }
-        ]"
-        @click.stop="drillUpChange"
-      />
-      <!--下钻-->
-      <i
-        class="icon iconfont "
-        :class="[
-          {
-            ['icon-xiazuan i-active']: drillDownStatus ,
-            ['icon-quxiaoxiazuan i-on-active']: !drillDownStatus
-          }
-        ]"
-        @click.stop="drillDownChange"
-      />
-      <!--上卷-->
-      <i
-        class="icon iconfont "
-        :class="[
-          {
-            ['icon-linkage i-active']: linkageStatus ,
-            ['icon-quxiaoliandong i-on-active']: !linkageStatus
-          }
-        ]"
-        @click.stop="linkageChange"
-      />
-    </div>
-
+  <div>
+    <el-dropdown trigger="click">
+      <input id="input" ref="trackButton" type="button" hidden>
+      <el-dropdown-menu class="track-menu" :append-to-body="false">
+        <el-dropdown-item v-for="(item, key) in trackMenu" :key="key" @click.native="trackMenuClick(item)"><span class="menu-item">{{ i18n_map[item] }}</span></el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
 
 export default {
-
   props: {
-    element: {
-      type: Object,
+    trackMenu: {
+      type: Array,
       required: true
-    },
-    active: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    // 当前模式 preview 预览 edit 编辑，
-    activeModel: {
-      type: String,
-      required: false,
-      default: 'preview'
     }
   },
   data() {
     return {
-      drillUpStatus: false,
-      drillDownStatus: false,
-      linkageStatus: false
+      i18n_map: {
+        drill: this.$t('panel.drill'),
+        linkage: this.$t('panel.linkage')
+      }
     }
   },
   computed: {
-    linkageInfo() {
-      return this.targetLinkageInfo[this.element.propValue.viewId]
-    },
-    ...mapState([
-      'menuTop',
-      'menuLeft',
-      'menuShow',
-      'curComponent',
-      'componentData',
-      'canvasStyleData',
-      'linkageSettingStatus',
-      'targetLinkageInfo',
-      'curLinkageView'
-    ])
   },
   methods: {
-    drillUpChange() {
-      this.drillUpStatus = !this.drillUpStatus
+    trackButtonClick() {
+      this.$refs.trackButton.click()
     },
-    drillDownChange() {
-      this.drillDownStatus = !this.drillDownStatus
-    },
-    linkageChange() {
-      this.linkageStatus = !this.linkageStatus
+    trackMenuClick(menu) {
+      this.$emit('trackClick', menu)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .bar-main-left{
-    position: absolute;
-    left: 0px;
-    float:right;
-    z-index: 2;
-    border-radius:2px;
-    padding-left: 5px;
-    padding-right: 2px;
-    cursor:pointer!important;
-    background-color: #0a7be0;
-  }
-  .i-on-active{
-    color: whitesmoke;
-    float: right;
-    margin-right: 3px;
+  .menu-item {
+    font-size: 12px;
   }
 
-  .i-active{
-    color: yellow;
-    float: right;
-    margin-right: 3px;
+  ::v-deep ul {
+    width: 80px;
   }
+
+  .track-menu {
+    border: #3a8ee6 1px solid;
+  }
+
 </style>
