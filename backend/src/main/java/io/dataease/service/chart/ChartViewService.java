@@ -430,6 +430,17 @@ public class ChartViewService {
         } else {
             mapChart = transChartData(xAxis, yAxis, view, data);
         }
+        // 钻取模式，去除前几层维度值，只保留当前层
+        if (isDrill) {
+            List<String> xList = (List<String>) mapChart.get("x");
+            List<String> xNewList = new ArrayList<>();
+            for (String x : xList) {
+                String[] split = x.split("\n");
+                x = split[split.length - 1];
+                xNewList.add(x);
+            }
+            mapChart.put("x", xNewList);
+        }
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = transTableNormal(xAxis, yAxis, view, data, extStack);
 
