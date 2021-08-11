@@ -1505,8 +1505,10 @@ export default {
     },
 
     chartClick(param) {
-      this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-      this.getData(this.param.id)
+      if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
+        this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+        this.getData(this.param.id)
+      }
     },
 
     resetDrill() {
