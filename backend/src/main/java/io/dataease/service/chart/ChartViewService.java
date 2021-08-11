@@ -256,6 +256,7 @@ public class ChartViewService {
         }
 
         // 下钻
+        List<ChartExtFilterRequest> drillFilters = new ArrayList<>();
         boolean isDrill = false;
         List<ChartDrillRequest> drillRequest = requestList.getDrill();
         if (CollectionUtils.isNotEmpty(drillRequest) && (drill.size() > drillRequest.size())) {
@@ -278,6 +279,8 @@ public class ChartViewService {
                         drillFilter.setOperator("in");
                         drillFilter.setDatasetTableField(datasetTableField);
                         extFilterList.add(drillFilter);
+
+                        drillFilters.add(drillFilter);
 
                         if (!checkDrillExist(xAxis, extStack, d, view)) {
                             xAxis.add(d);
@@ -439,6 +442,7 @@ public class ChartViewService {
         dto.setSql(datasourceRequest.getQuery());
 
         dto.setDrill(isDrill);
+        dto.setDrillFilters(drillFilters);
         return dto;
     }
 
