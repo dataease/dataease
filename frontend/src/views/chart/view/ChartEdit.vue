@@ -494,6 +494,9 @@
               </div>
             </div>
           </div>
+          <div style="position: absolute;left: 20px;bottom:14px;">
+            <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
+          </div>
         </el-row>
       </el-col>
     </el-row>
@@ -603,6 +606,7 @@ import ChartDragItem from '../components/drag-item/ChartDragItem'
 import DrillItem from '../components/drag-item/DrillItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
 import ChartComponent from '../components/ChartComponent'
+import DrillPath from '@/views/chart/view/DrillPath'
 import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 // shape attr,component style
@@ -663,7 +667,8 @@ export default {
     DimensionItem,
     draggable,
     ChartDragItem,
-    DrillItem
+    DrillItem,
+    DrillPath
   },
   props: {
     param: {
@@ -739,7 +744,8 @@ export default {
       places: [],
       attrActiveNames: [],
       styleActiveNames: [],
-      drillClickDimensionList: []
+      drillClickDimensionList: [],
+      drillFilters: []
     }
   },
   computed: {
@@ -1017,6 +1023,7 @@ export default {
           if (!response.data.drill) {
             this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
           }
+          this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
         }).catch(err => {
           this.resetView()
           this.resetDrill()
@@ -1513,6 +1520,10 @@ export default {
 
     resetDrill() {
       this.drillClickDimensionList = []
+    },
+    drillJump(index) {
+      this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
+      this.getData(this.param.id)
     }
   }
 }
