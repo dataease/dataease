@@ -141,7 +141,13 @@ export default {
     },
     linkageFilters: {
       handler(newVal, oldVal) {
-        isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
+        // isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
+        if (isChange(newVal, oldVal)) {
+        //   if (this.chart.type === 'map') {
+        //     this.doMapLink(newVal)
+        //   }
+          this.getData(this.element.propValue.viewId)
+        }
       },
       deep: true
     },
@@ -327,18 +333,7 @@ export default {
         current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
       }
     },
-    // 根据地名获取areaCode
-    // findEntityByname(name, array) {
-    //   if (array === null || array.length === 0) array = this.places
-    //   for (let index = 0; index < array.length; index++) {
-    //     const node = array[index]
-    //     if (node.name === name) return node
-    //     if (node.children && node.children.length > 0) {
-    //       const temp = this.findEntityByname(name, node.children)
-    //       if (temp) return temp
-    //     }
-    //   }
-    // }
+
     findEntityByCode(code, array) {
       if (array === null || array.length === 0) array = this.places
       for (let index = 0; index < array.length; index++) {
@@ -360,6 +355,29 @@ export default {
         this.places = res.data
         localStorage.setItem('areaMapping', JSON.stringify(res.data))
       })
+    },
+    doMapLink(linkFilters) {
+      if (!linkFilters && linkFilters.length === 0) return
+      const value = linkFilters[0].value
+      if (!value && value.length === 0) return
+      const name = value[0]
+      if (!name) return
+      const areaNode = this.findEntityByname(name, [])
+      if (!areaNode) return
+      const current = this.$refs[this.element.propValue.id]
+      current && current.registerDynamicMap && current.registerDynamicMap(areaNode.code)
+    },
+    // 根据地名获取areaCode
+    findEntityByname(name, array) {
+      if (array === null || array.length === 0) array = this.places
+      for (let index = 0; index < array.length; index++) {
+        const node = array[index]
+        if (node.name === name) return node
+        if (node.children && node.children.length > 0) {
+          const temp = this.findEntityByname(name, node.children)
+          if (temp) return temp
+        }
+      }
     }
   }
 }

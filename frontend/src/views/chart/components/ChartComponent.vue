@@ -145,16 +145,11 @@ export default {
         const customAttr = JSON.parse(chart.customAttr)
         if (!customAttr.areaCode) return
 
-        // if (this.currentGeoJson) {
-        //   this.initMapChart(this.currentGeoJson, chart)
-        //   return
-        // }
-
-        // if (this.$store.getters.geoMap[customAttr.areaCode]) {
-        //   this.currentGeoJson = this.$store.getters.geoMap[customAttr.areaCode]
-        //   this.initMapChart(this.currentGeoJson, chart)
-        //   return
-        // }
+        if (this.$store.getters.geoMap[customAttr.areaCode]) {
+          const json = this.$store.getters.geoMap[customAttr.areaCode]
+          this.initMapChart(json, chart)
+          return
+        }
 
         geoJson(customAttr.areaCode).then(res => {
           this.initMapChart(res, chart)
@@ -171,9 +166,19 @@ export default {
       this.myEcharts(chart_option)
     },
     registerDynamicMap(areaCode) {
+      if (this.$store.getters.geoMap[areaCode]) {
+        this.downOrUp = true
+        const json = this.$store.getters.geoMap[areaCode]
+        this.$echarts.registerMap('MAP', json)
+        return
+      }
       geoJson(areaCode).then(res => {
         this.downOrUp = true
         this.$echarts.registerMap('MAP', res)
+        this.$store.dispatch('map/setGeo', {
+          key: areaCode,
+          value: res
+        })
       })
     },
 
