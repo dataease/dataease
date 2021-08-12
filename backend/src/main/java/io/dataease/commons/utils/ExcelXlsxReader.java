@@ -157,7 +157,7 @@ public class ExcelXlsxReader extends DefaultHandler {
 
             ExcelSheetData excelSheetData = new ExcelSheetData();
             excelSheetData.setData(new ArrayList<>(data));
-            excelSheetData.setSheetName(sheets.getSheetName());
+            excelSheetData.setExcelLable(sheets.getSheetName());
             excelSheetData.setFields(new ArrayList<>(fields));
             totalSheets.add(excelSheetData);
 

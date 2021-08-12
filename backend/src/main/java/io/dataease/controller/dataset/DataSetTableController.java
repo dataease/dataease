@@ -7,6 +7,7 @@ import io.dataease.base.domain.DatasetTableIncrementalConfig;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.dto.dataset.DataSetTableDTO;
+import io.dataease.dto.dataset.ExcelFileData;
 import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,8 +38,12 @@ public class DataSetTableController {
 
     @ApiOperation("更新")
     @PostMapping("update")
-    public DatasetTable save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
-        return dataSetTableService.save(datasetTable);
+    public void save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
+        if(datasetTable.getType().equalsIgnoreCase("excel")){
+            dataSetTableService.saveExcel(datasetTable);
+        }else {
+            dataSetTableService.save(datasetTable);
+        }
     }
 
     @ApiOperation("删除")
@@ -121,8 +126,8 @@ public class DataSetTableController {
 
     @ApiOperation("excel上传")
     @PostMapping("excel/upload")
-    public Map<String, Object> excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId) throws Exception {
-        return dataSetTableService.excelSaveAndParse(file, tableId);
+    public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId, @RequestParam("editType") Integer editType ) throws Exception {
+        return dataSetTableService.excelSaveAndParse(file, tableId, editType);
     }
 
     @ApiOperation("检测doris")
