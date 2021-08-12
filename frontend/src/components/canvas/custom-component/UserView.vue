@@ -16,7 +16,7 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" @onChartClick="chartClick" />
+    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
     <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <label-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 20px;bottom:14px;">
@@ -84,7 +84,8 @@ export default {
       requestStatus: 'waiting',
       message: null,
       drillClickDimensionList: [],
-      drillFilters: []
+      drillFilters: [],
+      drillFields: []
     }
   },
   computed: {
@@ -107,8 +108,23 @@ export default {
       console.log('linkageFilters:' + JSON.stringify(this.element.linkageFilters))
       return JSON.parse(JSON.stringify(this.element.linkageFilters))
     },
+    trackMenu() {
+      const trackMenuInfo = []
+      let linkageCount = 0
+      this.chart.data.fields && this.chart.data.fields.forEach(item => {
+        const sourceInfo = this.chart.id + '#' + item.id
+        if (this.nowPanelTrackInfo[sourceInfo]) {
+          linkageCount++
+        }
+      })
+      linkageCount && trackMenuInfo.push('linkage')
+      this.drillFields.length && trackMenuInfo.push('drill')
+      console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
+      return trackMenuInfo
+    },
     ...mapState([
-      'canvasStyleData'
+      'canvasStyleData',
+      'nowPanelTrackInfo'
     ])
   },
 
@@ -200,10 +216,12 @@ export default {
           if (response.success) {
             this.chart = response.data
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
+            debugger
             if (!response.data.drill) {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
             }
             this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
+            this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
             this.requestStatus = 'merging'
             this.mergeStyle()
             this.requestStatus = 'success'

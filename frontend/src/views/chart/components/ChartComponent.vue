@@ -40,7 +40,7 @@ export default {
       type: Array,
       required: false,
       default: function() {
-        return ['drill', 'linkage']
+        return ['drill']
       }
     }
   },
@@ -97,7 +97,7 @@ export default {
         this.myChart.off('click')
         this.myChart.on('click', function(param) {
           that.pointParam = param
-          if (that.trackMenu.length === 1) { // 只有一个事件直接调用
+          if (that.trackMenu.length < 2) { // 只有一个事件直接调用
             that.trackClick(that.trackMenu[0])
           } else { // 视图关联多个事件
             that.trackBarStyle.left = param.event.offsetX + 'px'
