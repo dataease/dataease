@@ -1,8 +1,6 @@
 package io.dataease.commons.utils;
 import com.google.gson.Gson;
 import io.dataease.datasource.dto.TableFiled;
-
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -46,7 +44,7 @@ public class ExcelReaderUtil {
             ExcelXlsReader excelXls=new ExcelXlsReader();
             excelXls.process(inputStream);
             System.out.println(excelXls.totalSheets.size());
-            System.out.println(excelXls.totalSheets.get(0).getSheetName());
+            System.out.println(excelXls.totalSheets.get(0).getExcelLable());
             for (TableFiled field : excelXls.totalSheets.get(0).getFields()) {
                 System.out.println(new Gson().toJson(field));
             }
@@ -56,7 +54,7 @@ public class ExcelReaderUtil {
             ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
             excelXlsxReader.process(inputStream);
             System.out.println(excelXlsxReader.totalSheets.size());
-            System.out.println(excelXlsxReader.totalSheets.get(0).getSheetName());
+            System.out.println(excelXlsxReader.totalSheets.get(0).getExcelLable());
             for (TableFiled field : excelXlsxReader.totalSheets.get(0).getFields()) {
                 System.out.println(new Gson().toJson(field));
             }
@@ -68,7 +66,7 @@ public class ExcelReaderUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        String file ="下单渠道.xlsx";
-        ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
+//        String file ="下单渠道.xlsx";
+//        ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
     }
 }

@@ -1006,7 +1006,8 @@ export default {
     field_manage: '字段管理',
     edit_calc_field: '编辑计算字段',
     calc_field: '计算字段',
-    show_sql: '显示SQL'
+    show_sql: '显示SQL',
+    ple_select_excel: '请选择要导入的 Excel'
   },
   datasource: {
     datasource: '数据源',

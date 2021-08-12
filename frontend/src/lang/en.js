@@ -1006,7 +1006,8 @@ export default {
     field_manage: 'Field Manage',
     edit_calc_field: 'Edit calc field',
     calc_field: 'Calc Field',
-    show_sql: 'Show SQL'
+    show_sql: 'Show SQL',
+    ple_select_excel: 'Please select excel file to import'
   },
   datasource: {
     datasource: 'Data Source',

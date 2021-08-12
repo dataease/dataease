@@ -1006,7 +1006,8 @@ export default {
     field_manage: '字段管理',
     edit_calc_field: '編輯計算字段',
     calc_field: '計算字段',
-    show_sql: '顯示SQL'
+    show_sql: '顯示SQL',
+    ple_select_excel: '請選擇要導入的 Excel'
   },
   datasource: {
     datasource: '數據源',
