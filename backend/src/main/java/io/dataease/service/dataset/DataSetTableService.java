@@ -100,13 +100,7 @@ public class DataSetTableService {
     }
 
     private void extractData(DataSetTableRequest datasetTable) throws Exception {
-        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            commonThreadPool.addTask(() -> {
-                extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "初始导入");
-            });
-            return;
-        }
-        if (StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
+        if (datasetTable.getMode() == 1 && StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
             DataSetTaskRequest dataSetTaskRequest = new DataSetTaskRequest();
             DatasetTableTask datasetTableTask = new DatasetTableTask();
             datasetTableTask.setTableId(datasetTable.getId());
@@ -118,6 +112,113 @@ public class DataSetTableService {
             datasetTableTask.setStartTime(System.currentTimeMillis());
             dataSetTaskRequest.setDatasetTableTask(datasetTableTask);
             dataSetTableTaskService.save(dataSetTaskRequest);
+        }
+    }
+
+    public void saveExcel(DataSetTableRequest datasetTable)throws Exception {
+        if (StringUtils.isEmpty(datasetTable.getId())) {
+            if(datasetTable.isMergeSheet()){
+                Map<String, List<ExcelSheetData>> map = datasetTable.getSheets().stream().collect(Collectors.groupingBy(ExcelSheetData::getFieldsMd5));
+                for (String s : map.keySet()) {
+                    DataSetTableRequest sheetTable = new DataSetTableRequest();
+                    BeanUtils.copyBean(sheetTable, datasetTable);
+                    sheetTable.setId(UUID.randomUUID().toString());
+                    sheetTable.setCreateBy(AuthUtils.getUser().getUsername());
+                    sheetTable.setCreateTime(System.currentTimeMillis());
+                    List<ExcelSheetData> excelSheetDataList = map.get(s);
+                    sheetTable.setName(excelSheetDataList.get(0).getDatasetName());
+                    checkName(sheetTable);
+                    excelSheetDataList.forEach(excelSheetData -> {
+                        String[] fieldArray = excelSheetData.getFields().stream().map(TableFiled::getFieldName).toArray(String[]::new);
+                        if (checkIsRepeat(fieldArray)) {
+                            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+                        }
+                        excelSheetData.setData(null);
+                        excelSheetData.setJsonArray(null);
+                    });
+                    DataTableInfoDTO info = new DataTableInfoDTO();
+                    info.setExcelSheetDataList(excelSheetDataList);
+                    sheetTable.setInfo(new Gson().toJson(info));
+                    int insert = datasetTableMapper.insert(sheetTable);
+                    if (insert == 1) {
+                        saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields());
+                        commonThreadPool.addTask(() -> {
+                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入");
+                        });
+                    }
+                }
+            }else {
+                for (ExcelSheetData sheet : datasetTable.getSheets()) {
+                    String[] fieldArray = sheet.getFields().stream().map(TableFiled::getFieldName).toArray(String[]::new);
+                    if (checkIsRepeat(fieldArray)) {
+                        DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+                    }
+                    DataSetTableRequest sheetTable = new DataSetTableRequest();
+                    BeanUtils.copyBean(sheetTable, datasetTable);
+                    sheetTable.setId(UUID.randomUUID().toString());
+                    sheetTable.setCreateBy(AuthUtils.getUser().getUsername());
+                    sheetTable.setCreateTime(System.currentTimeMillis());
+                    sheetTable.setName(sheet.getDatasetName());
+                    checkName(sheetTable);
+                    sheet.setData(null);
+                    sheet.setJsonArray(null);
+                    List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
+                    excelSheetDataList.add(sheet);
+                    DataTableInfoDTO info = new DataTableInfoDTO();
+                    info.setExcelSheetDataList(excelSheetDataList);
+                    sheetTable.setInfo(new Gson().toJson(info));
+                    int insert = datasetTableMapper.insert(sheetTable);
+                    if (insert == 1) {
+                        saveExcelTableField(sheetTable.getId(), sheet.getFields());
+                        commonThreadPool.addTask(() -> {
+                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入");
+                        });
+                    }
+                }
+            }
+            return;
+        }
+
+        List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
+        List<String> oldFields = datasetTable.getSheets().get(0).getFields().stream().map(TableFiled::getRemarks).collect(Collectors.toList());
+        for (ExcelSheetData sheet : datasetTable.getSheets()) {
+            //替换时，
+            if(datasetTable.getEditType() == 0){
+                List<String> newFields = sheet.getFields().stream().map(TableFiled::getRemarks).collect(Collectors.toList());
+                if (!oldFields.equals(newFields)) {
+                    DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
+                }
+                oldFields = newFields;
+            }
+
+            String[] fieldArray = sheet.getFields().stream().map(TableFiled::getFieldName).toArray(String[]::new);
+            if (checkIsRepeat(fieldArray)) {
+                DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+            }
+            sheet.setData(null);
+            sheet.setJsonArray(null);
+            excelSheetDataList.add(sheet);
+        }
+        DataTableInfoDTO info = new DataTableInfoDTO();
+        info.setExcelSheetDataList(excelSheetDataList);
+        datasetTable.setInfo(new Gson().toJson(info));
+        int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+        // 删除所有字段，重新抽象
+        if(datasetTable.getEditType() == 0){
+            dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
+            saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields());
+        }
+
+        if (update == 1) {
+            if (datasetTable.getEditType() == 0) {
+                commonThreadPool.addTask(() -> {
+                    extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换");
+                });
+            } else if (datasetTable.getEditType() == 1) {
+                commonThreadPool.addTask(() -> {
+                    extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加");
+                });
+            }
         }
     }
 
@@ -143,21 +244,10 @@ public class DataSetTableService {
             if (datasetTable.getIsRename() == null || !datasetTable.getIsRename()) {
                 // 更新数据和字段
                 if (update == 1) {
-                    if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
+                    if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom") ) {
                         // 删除所有字段，重新抽象
                         dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
                         saveTableField(datasetTable);
-                    }
-                    if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-                        if (datasetTable.getEditType() == 0) {
-                            commonThreadPool.addTask(() -> {
-                                extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换");
-                            });
-                        } else if (datasetTable.getEditType() == 1) {
-                            commonThreadPool.addTask(() -> {
-                                extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加");
-                            });
-                        }
                     }
                 }
             }
@@ -810,6 +900,29 @@ public class DataSetTableService {
         }
     }
 
+    public void saveExcelTableField(String datasetTableId, List<TableFiled> fields) throws Exception {
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (int i = 0; i < fields.size(); i++) {
+                TableFiled filed = fields.get(i);
+                DatasetTableField datasetTableField = DatasetTableField.builder().build();
+                datasetTableField.setTableId(datasetTableId);
+                datasetTableField.setOriginName(filed.getFieldName());
+                datasetTableField.setName(filed.getRemarks());
+                datasetTableField.setDataeaseName(DorisTableUtils.columnName(filed.getFieldName()));
+                datasetTableField.setType(filed.getFieldType());
+                datasetTableField.setDeType(transFieldType(filed.getFieldType()));
+                datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
+                datasetTableField.setSize(filed.getFieldSize());
+                datasetTableField.setChecked(true);
+                datasetTableField.setColumnIndex(i);
+                datasetTableField.setLastSyncTime(System.currentTimeMillis());
+                datasetTableField.setExtField(0);
+                datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
+                dataSetTableFieldsService.save(datasetTableField);
+            }
+        }
+    }
+
     public void saveTableField(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
@@ -828,11 +941,6 @@ public class DataSetTableService {
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            /*DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
-            String path = dataTableInfoDTO.getData();
-            File file = new File(path);
-            Map<String, Object> map = parseExcel(path.substring(path.lastIndexOf("/") + 1), new FileInputStream(file), false);
-            fields = (List<TableFiled>) map.get("fields");*/
             fields = dataSetTableRequest.getFields();
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             if (datasetTable.getMode() == 1) {
@@ -1038,9 +1146,6 @@ public class DataSetTableService {
     }
 
     private void checkName(DatasetTable datasetTable) {
-//        if (StringUtils.isEmpty(datasetTable.getId()) && StringUtils.equalsIgnoreCase("db", datasetTable.getType())) {
-//            return;
-//        }
         DatasetTableExample datasetTableExample = new DatasetTableExample();
         DatasetTableExample.Criteria criteria = datasetTableExample.createCriteria();
         if (StringUtils.isNotEmpty(datasetTable.getId())) {
@@ -1069,11 +1174,13 @@ public class DataSetTableService {
         return map;
     }
 
-    public Map<String, Object> excelSaveAndParse(MultipartFile file, String tableId) throws Exception {
+    public ExcelFileData excelSaveAndParse(MultipartFile file, String tableId, Integer editType) throws Exception {
         String filename = file.getOriginalFilename();
         // parse file
-        Map<String, Object> fileMap = parseExcel2(filename, file.getInputStream(), true);
-        if (StringUtils.isNotEmpty(tableId)) {
+        List<ExcelSheetData> excelSheetDataList = parseExcel2(filename, file.getInputStream(), true);
+        List<ExcelSheetData> retrunSheetDataList = new ArrayList<>();
+
+        if (StringUtils.isNotEmpty(tableId) && editType == 1 ) {
             List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId);
             datasetTableFields.sort((o1, o2) -> {
                 if (o1.getColumnIndex() == null) {
@@ -1084,64 +1191,80 @@ public class DataSetTableService {
                 }
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
             });
-            List<TableFiled> fields = (List<TableFiled>) fileMap.get("fields");
-            List<String> newFields = fields.stream().map(TableFiled::getRemarks).collect(Collectors.toList());
             List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
-            if (!oldFields.equals(newFields)) {
+            for (ExcelSheetData excelSheetData : excelSheetDataList) {
+                List<TableFiled> fields = excelSheetData.getFields();
+                List<String> newFields = fields.stream().map(TableFiled::getRemarks).collect(Collectors.toList());
+                if (oldFields.equals(newFields)) {
+                    retrunSheetDataList.add(excelSheetData);
+                }
+            }
+
+            if (retrunSheetDataList.size() == 0) {
                 DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
             }
+        }else {
+            retrunSheetDataList = excelSheetDataList;
         }
+
         // save file
-        String filePath = saveFile(file);
-        Map<String, Object> map = new HashMap<>(fileMap);
-        map.put("path", filePath);
-        return map;
+        String excelId = UUID.randomUUID().toString();
+        String filePath = saveFile(file, excelId);
+        ExcelFileData excelFileData = new ExcelFileData();
+        excelFileData.setExcelLable(filename);
+        excelFileData.setExcelId(excelId);
+        excelFileData.setPath(filePath);
+
+        filename = filename.substring(0, filename.lastIndexOf('.'));
+        if(retrunSheetDataList.size() == 1){
+            retrunSheetDataList.get(0).setDatasetName(filename);
+            retrunSheetDataList.get(0).setSheetExcelId(excelId);
+            retrunSheetDataList.get(0).setSheetId(UUID.randomUUID().toString());
+            retrunSheetDataList.get(0).setPath(filePath);
+        }else {
+            for (ExcelSheetData excelSheetData : retrunSheetDataList) {
+                excelSheetData.setDatasetName(filename + "-" + excelSheetData.getExcelLable());
+                excelSheetData.setSheetExcelId(excelId);
+                excelSheetData.setSheetId(UUID.randomUUID().toString());
+                excelSheetData.setPath(filePath);
+            }
+        }
+        excelFileData.setSheets(retrunSheetDataList);
+        return excelFileData;
     }
 
-    private Map<String, Object> parseExcel2(String filename, InputStream inputStream, boolean isPreview) throws Exception {
+    private List<ExcelSheetData> parseExcel2(String filename, InputStream inputStream, boolean isPreview) throws Exception {
+        List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-        List<TableFiled> fields = new ArrayList<>();
-        List<List<String>> data = new ArrayList<>();
-        List<Map<String, Object>> jsonArray = new ArrayList<>();
-        List<String> sheets = new ArrayList<>();
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             ExcelXlsReader excelXlsReader = new ExcelXlsReader();
             excelXlsReader.process(inputStream);
-            fields = excelXlsReader.totalSheets.get(0).getFields();
-            data = excelXlsReader.totalSheets.get(0).getData();
-            sheets = excelXlsReader.totalSheets.stream().map(ExcelSheetData::getSheetName).collect(Collectors.toList());
+            excelSheetDataList = excelXlsReader.totalSheets;
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
             excelXlsxReader.process(inputStream);
-            fields = excelXlsxReader.totalSheets.get(0).getFields();
-            data = excelXlsxReader.totalSheets.get(0).getData();
-            sheets = excelXlsxReader.totalSheets.stream().map(ExcelSheetData::getSheetName).collect(Collectors.toList());
-        }
-
-        String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
-
-        // 校验excel字段是否重名
-        if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-        }
-
-        if (CollectionUtils.isNotEmpty(data)) {
-            jsonArray = data.stream().map(ele -> {
-                Map<String, Object> map = new HashMap<>();
-                for (int i = 0; i < ele.size(); i++) {
-                    map.put(fieldArray[i], ele.get(i));
-                }
-                return map;
-            }).collect(Collectors.toList());
+            excelSheetDataList = excelXlsxReader.totalSheets;
         }
         inputStream.close();
+        excelSheetDataList.forEach(excelSheetData -> {
+            List<List<String>> data = excelSheetData.getData();
+            String[] fieldArray = excelSheetData.getFields().stream().map(TableFiled::getFieldName).toArray(String[]::new);
+            List<Map<String, Object>> jsonArray = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(data)) {
+                jsonArray = data.stream().map(ele -> {
+                    Map<String, Object> map = new HashMap<>();
+                    for (int i = 0; i < ele.size(); i++) {
+                        map.put(fieldArray[i], ele.get(i));
+                    }
+                    return map;
+                }).collect(Collectors.toList());
+            }
+            excelSheetData.setFieldsMd5(Md5Utils.md5(StringUtils.join(fieldArray, ",")));
+            excelSheetData.setJsonArray(jsonArray);
+        });
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("fields", fields);
-        map.put("data", jsonArray);
-        map.put("sheets", sheets);
-        return map;
+        return excelSheetDataList;
     }
 
     private Map<String, Object> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
@@ -1387,16 +1510,15 @@ public class DataSetTableService {
         return "";
     }
 
-    private String saveFile(MultipartFile file) throws Exception {
+    private String saveFile(MultipartFile file, String fileNameUUID) throws Exception {
         String filename = file.getOriginalFilename();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-        filename = Md5Utils.md5(filename.substring(0, filename.length() - suffix.length()));
         String dirPath = path + AuthUtils.getUser().getUsername() + "/";
         File p = new File(dirPath);
         if (!p.exists()) {
             p.mkdirs();
         }
-        String filePath = dirPath + filename + "." + suffix;
+        String filePath = dirPath + fileNameUUID + "." + suffix;
         File f = new File(filePath);
         FileOutputStream fileOutputStream = new FileOutputStream(f);
         fileOutputStream.write(file.getBytes());

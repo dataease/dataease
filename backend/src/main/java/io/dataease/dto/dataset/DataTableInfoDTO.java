@@ -14,7 +14,7 @@ import java.util.List;
 public class DataTableInfoDTO {
     private String table;
     private String sql;
-    private List<String> sheets;
+    private List<ExcelSheetData> excelSheetDataList;
     private String data;// file path
     private List<DataTableInfoCustomUnion> list;
 }

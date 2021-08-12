@@ -2,6 +2,7 @@ package io.dataease.controller.request.dataset;
 
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.datasource.dto.TableFiled;
+import io.dataease.dto.dataset.ExcelSheetData;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,4 +24,6 @@ public class DataSetTableRequest extends DatasetTable {
     private Boolean isRename;
     private List<String> typeFilter;
     private List<TableFiled> fields;
+    private List<ExcelSheetData> sheets;
+    private boolean mergeSheet = false;
 }
