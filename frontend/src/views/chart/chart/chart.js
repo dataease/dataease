@@ -618,7 +618,8 @@ export const BASE_MAP = {
     calculable: true,
     inRange: {
       color: ['lightskyblue', 'yellow', 'orangered']
-    }
+    },
+    right: 0
   },
   //   legend: {},
   series: [

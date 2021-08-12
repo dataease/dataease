@@ -483,7 +483,7 @@
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
+            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" ref="dynamicChart" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
             <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
             <div v-if="!httpRequest.status" class="chart-error-class">
@@ -1444,11 +1444,11 @@ export default {
     },
 
     initAreas() {
-      let mapping
-      if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-        this.places = JSON.parse(mapping)
-        return
-      }
+    //   let mapping
+    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
+    //     this.places = JSON.parse(mapping)
+    //     return
+    //   }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
         localStorage.setItem('areaMapping', JSON.stringify(res.data))
@@ -1513,18 +1513,85 @@ export default {
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
+        this.chart.type === 'map' && this.sendToChildren(param)
         this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
         this.getData(this.param.id)
       }
     },
 
     resetDrill() {
+      const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
+
+      this.backToParent(0, length)
+      this.currentAcreaNode = null
     },
     drillJump(index) {
+      const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
+      if (this.chart.type === 'map') {
+        this.backToParent(index, length)
+      }
+
       this.getData(this.param.id)
+    },
+    // 回到父级地图
+    backToParent(index, length) {
+      if (length <= 0) return
+      const times = length - 1 - index
+
+      let temp = times
+      let tempNode = this.currentAcreaNode
+      while (temp >= 0) {
+        tempNode = this.findEntityByCode(tempNode.pcode, this.places)
+        temp--
+      }
+
+      this.currentAcreaNode = tempNode
+      this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
+    },
+
+    // 切换下一级地图
+    sendToChildren(param) {
+      const length = param.data.dimensionList.length
+      const name = param.data.dimensionList[length - 1].value
+      let aCode = null
+      if (this.currentAcreaNode) {
+        aCode = this.currentAcreaNode.code
+      }
+      //   const aCode = this.currentAcreaNode ? this.currentAcreaNode.code : null
+      const currentNode = this.findEntityByCode(aCode || this.view.customAttr.areaCode, this.places)
+      if (currentNode && currentNode.children && currentNode.children.length > 0) {
+        const nextNode = currentNode.children.find(item => item.name === name)
+        // this.view.customAttr.areaCode = nextNode.code
+        this.currentAcreaNode = nextNode
+        this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
+      }
+    },
+    // 根据地名获取areaCode
+    // findEntityByname(name, array) {
+    //   if (array === null || array.length === 0) array = this.places
+    //   for (let index = 0; index < array.length; index++) {
+    //     const node = array[index]
+    //     if (node.name === name) return node
+    //     if (node.children && node.children.length > 0) {
+    //       const temp = this.findEntityByname(name, node.children)
+    //       if (temp) return temp
+    //     }
+    //   }
+    // }
+    findEntityByCode(code, array) {
+      if (array === null || array.length === 0) array = this.places
+      for (let index = 0; index < array.length; index++) {
+        const node = array[index]
+        if (node.code === code) return node
+        if (node.children && node.children.length > 0) {
+          const temp = this.findEntityByCode(code, node.children)
+          if (temp) return temp
+        }
+      }
     }
+
   }
 }
 </script>

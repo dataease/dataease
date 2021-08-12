@@ -55,7 +55,9 @@ export default {
         left: '0px',
         top: '0px'
       },
-      pointParam: null
+      pointParam: null,
+
+      downOrUp: false
     }
   },
 
@@ -143,19 +145,18 @@ export default {
         const customAttr = JSON.parse(chart.customAttr)
         if (!customAttr.areaCode) return
 
-        if (this.currentGeoJson) {
-          this.initMapChart(this.currentGeoJson, chart)
-          return
-        }
+        // if (this.currentGeoJson) {
+        //   this.initMapChart(this.currentGeoJson, chart)
+        //   return
+        // }
 
-        if (this.$store.getters.geoMap[customAttr.areaCode]) {
-          this.currentGeoJson = this.$store.getters.geoMap[customAttr.areaCode]
-          this.initMapChart(this.currentGeoJson, chart)
-          return
-        }
+        // if (this.$store.getters.geoMap[customAttr.areaCode]) {
+        //   this.currentGeoJson = this.$store.getters.geoMap[customAttr.areaCode]
+        //   this.initMapChart(this.currentGeoJson, chart)
+        //   return
+        // }
 
         geoJson(customAttr.areaCode).then(res => {
-          // this.initMapChart(res.data, chart)
           this.initMapChart(res, chart)
 
           this.$store.dispatch('map/setGeo', {
@@ -163,16 +164,24 @@ export default {
             value: res
             // value: res.data
           })
-          // this.currentGeoJson = res.data
           this.currentGeoJson = res
         })
         return
       }
       this.myEcharts(chart_option)
     },
+    registerDynamicMap(areaCode) {
+      geoJson(areaCode).then(res => {
+        this.downOrUp = true
+        this.$echarts.registerMap('MAP', res)
+      })
+    },
+
     initMapChart(geoJson, chart) {
-      // this.$echarts.registerMap('HK', geoJson)
-      this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
+      if (!this.$echarts.getMap('MAP') || !this.downOrUp) {
+        this.$echarts.registerMap('MAP', geoJson)
+      }
+      // this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       const chart_option = baseMapOption(base_json, chart)
       this.myEcharts(chart_option)
