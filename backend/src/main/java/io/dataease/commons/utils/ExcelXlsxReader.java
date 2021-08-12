@@ -19,6 +19,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author y
@@ -248,6 +250,13 @@ public class ExcelXlsxReader extends DefaultHandler {
             String value = this.getDataValue(lastIndex.trim(), "");//根据索引值获取对应的单元格值
 
             if (preRef == null) {
+                String regEx="[^0-9]";
+                Pattern p = Pattern.compile(regEx);
+                Matcher m = p.matcher(ref);
+                if(curCol < Integer.valueOf(m.replaceAll("").trim()) -1 ){
+                    cellList.add(curCol, "");
+                    curCol++;
+                }
                 preRef = ref;
             }
             //补全单元格之间的空单元格
@@ -256,12 +265,16 @@ public class ExcelXlsxReader extends DefaultHandler {
             }else if (!ref.equals(preRef)) {
                 int len = countNullCell(ref, preRef);
                 for (int i = 0; i < len; i++) {
-                    cellList.add(curCol, "");
-                    curCol++;
+                    if(curCol < this.fields.size()){
+                        cellList.add(curCol, "");
+                        curCol++;
+                    }
                 }
             }
 
-            cellList.add(curCol, value);
+            if(curCol < this.fields.size()){
+                cellList.add(curCol, value);
+            }
             curCol++;
             //如果里面某个单元格含有值，则标识该行不为空行
             if (value != null && !"".equals(value)) {
@@ -413,6 +426,9 @@ public class ExcelXlsxReader extends DefaultHandler {
         }else {
             if(CollectionUtils.isEmpty(this.getFields())){
                 throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
+            }
+            if(curCol >= this.fields.size()){
+                return thisStr;
             }
             if(curRow==2){
                 this.getFields().get(curCol).setFieldType(type);

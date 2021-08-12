@@ -6,6 +6,55 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "23496077",
+      "name": "线性图标-取消下钻",
+      "font_class": "quxiaoshangzuan",
+      "unicode": "e973",
+      "unicode_decimal": 59763
+    },
+    {
+      "icon_id": "23005499",
+      "name": "线性图标-取消下钻",
+      "font_class": "quxiaoxiazuan",
+      "unicode": "e6ed",
+      "unicode_decimal": 59117
+    },
+    {
+      "icon_id": "8657066",
+      "name": "联动",
+      "font_class": "linkage",
+      "unicode": "e6f7",
+      "unicode_decimal": 59127
+    },
+    {
+      "icon_id": "12725578",
+      "name": "下钻",
+      "font_class": "xiazuan",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "13006352",
+      "name": "上钻",
+      "font_class": "shangzuan",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "22983243",
+      "name": "取消联动",
+      "font_class": "quxiaoliandong",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "5384479",
+      "name": "edit-2",
+      "font_class": "edit-outline",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
       "icon_id": "3684252",
       "name": "edit-2",
       "font_class": "edit",

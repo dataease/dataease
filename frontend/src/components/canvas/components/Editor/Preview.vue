@@ -3,6 +3,7 @@
     <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
       {{ $t('panel.panelNull') }}
     </el-row>
+    <canvas-opt-bar />
     <ComponentWrapper
       v-for="(item, index) in componentDataInfo"
       :key="index"
@@ -39,9 +40,10 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
+import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 
 export default {
-  components: { ComponentWrapper, UserViewDialog },
+  components: { ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
     prop: 'show',
     event: 'change'
@@ -209,7 +211,6 @@ export default {
       this.$refs['userViewDialog'].exportExcel()
     },
     deselectCurComponent(e) {
-      debugger
       if (!this.isClickComponent) {
         this.$store.commit('setCurComponent', { component: null, index: null })
       }

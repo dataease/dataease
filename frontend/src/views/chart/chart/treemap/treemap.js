@@ -24,12 +24,13 @@ export function baseTreemapOption(chart_option, chart) {
       // chart_option.series[0].name = chart.data.series[0].name
       // size
       if (customAttr.size) {
-        // chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
+        chart_option.series[0].width = (customAttr.size.treemapWidth ? customAttr.size.treemapWidth : 80) + '%'
+        chart_option.series[0].height = (customAttr.size.treemapHeight ? customAttr.size.treemapHeight : 80) + '%'
       }
       // label
-      if (customAttr.label) {
-        // chart_option.series[0].label = customAttr.label
-      }
+      // if (customAttr.label) {
+      // chart_option.series[0].label = customAttr.label
+      // }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
         // const y = {

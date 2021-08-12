@@ -134,7 +134,6 @@ export default {
         return false
       }
 
-      debugger
       if (this.editPanel.panelInfo.name.length > 50) {
         this.$warning(this.$t('commons.char_can_not_more_50'))
         return false

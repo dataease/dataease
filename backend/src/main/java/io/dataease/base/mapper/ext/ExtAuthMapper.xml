@@ -23,5 +23,12 @@
     </select>
 
 
+    <select id="queryByResource" resultMap="io.dataease.base.mapper.SysAuthMapper.BaseResultMap" >
+        select a.*
+        from sys_auth a left join sys_auth_detail b on a.id = b.auth_id
+        where a.auth_source = #{resourceId} and  b.privilege_value = 1
+    </select>
+
+
 
 </mapper>

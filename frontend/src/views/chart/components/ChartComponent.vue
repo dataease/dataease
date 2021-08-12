@@ -1,5 +1,6 @@
 <template>
   <div style="display: flex;">
+    <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
     <div :id="chartId" style="width: 100%;height: 100%;" />
   </div>
 </template>
@@ -18,9 +19,11 @@ import { baseTreemapOption } from '../chart/treemap/treemap'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import { uuid } from 'vue-uuid'
 import { geoJson } from '@/api/map/map'
+import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 
 export default {
   name: 'ChartComponent',
+  components: { ViewTrackBar },
   props: {
     chart: {
       type: Object,
@@ -32,13 +35,33 @@ export default {
       default: function() {
         return {}
       }
+    },
+    trackMenu: {
+      type: Array,
+      required: false,
+      default: function() {
+        return ['drill']
+      }
     }
   },
   data() {
     return {
       myChart: {},
       chartId: uuid.v1(),
-      currentGeoJson: null
+      currentGeoJson: null,
+      showTrackBar: true,
+      trackBarStyle: {
+        position: 'absolute',
+        left: '0px',
+        top: '0px'
+      },
+      pointParam: null
+    }
+  },
+
+  computed: {
+    trackBarStyleTime() {
+      return this.trackBarStyle
     }
   },
   watch: {
@@ -62,6 +85,7 @@ export default {
     preDraw() {
       // 基于准备好的dom，初始化echarts实例
       // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
+      const that = this
       new Promise((resolve) => { resolve() }).then(() => {
         //	此dom为echarts图标展示dom
         this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
@@ -69,6 +93,18 @@ export default {
           this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
         this.drawEcharts()
+
+        this.myChart.off('click')
+        this.myChart.on('click', function(param) {
+          that.pointParam = param
+          if (that.trackMenu.length < 2) { // 只有一个事件直接调用
+            that.trackClick(that.trackMenu[0])
+          } else { // 视图关联多个事件
+            that.trackBarStyle.left = param.event.offsetX + 'px'
+            that.trackBarStyle.top = (param.event.offsetY - 15) + 'px'
+            that.$refs.viewTrack.trackButtonClick()
+          }
+        })
       })
     },
     drawEcharts() {
@@ -136,7 +172,7 @@ export default {
     },
     initMapChart(geoJson, chart) {
       // this.$echarts.registerMap('HK', geoJson)
-      this.$echarts.getMap('HK') || this.$echarts.registerMap('HK', geoJson)
+      this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       const chart_option = baseMapOption(base_json, chart)
       this.myEcharts(chart_option)
@@ -153,6 +189,23 @@ export default {
       // 指定图表的配置项和数据
       const chart = this.myChart
       chart.resize()
+    },
+    trackClick(trackAction) {
+      const linkageParam = {
+        viewId: this.chart.id,
+        dimensionList: this.pointParam.data.dimensionList,
+        quotaList: this.pointParam.data.quotaList
+      }
+      switch (trackAction) {
+        case 'drill':
+          this.$emit('onChartClick', this.pointParam)
+          break
+        case 'linkage':
+          this.$store.commit('addViewTrackFilter', linkageParam)
+          break
+        default:
+          break
+      }
     }
   }
 }

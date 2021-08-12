@@ -247,30 +247,6 @@
                       />
                     </span>
                   </el-row>
-                  <el-row class="padding-lr">
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.drill') }}</span>
-                      /
-                      <span>{{ $t('chart.dimension') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.drillFields"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addDrill"
-                      @update="save(true)"
-                    >
-                      <transition-group class="draggable-group">
-                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="drillItemChange" @onDimensionItemRemove="drillItemRemove" />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
                   <el-row v-if="view.type !=='text' && view.type !== 'gauge'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
@@ -404,6 +380,30 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
+                  <el-row v-if="view.type && view.type !== 'treemap' && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('radar') && !view.type.includes('gauge')" class="padding-lr" style="margin-top: 6px;">
+                    <span style="width: 80px;text-align: right;">
+                      <span>{{ $t('chart.drill') }}</span>
+                      /
+                      <span>{{ $t('chart.dimension') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.drillFields"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      class="drag-block-style"
+                      @add="addDrill"
+                      @update="save(true)"
+                    >
+                      <transition-group class="draggable-group">
+                        <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="drillItemChange" @onDimensionItemRemove="drillItemRemove" />
+                      </transition-group>
+                    </draggable>
+                    <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
                 </el-row>
               </div>
             </el-col>
@@ -427,7 +427,7 @@
                   <el-collapse-item name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="chart.type !== 'map' && chart.type !== 'treemap'" name="size" :title="$t('chart.size')">
+                  <el-collapse-item v-show="chart.type !== 'map'" name="size" :title="$t('chart.size')">
                     <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
                   </el-collapse-item>
                   <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'treemap'" name="label" :title="$t('chart.label')">
@@ -483,7 +483,7 @@
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" />
+            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
             <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
             <div v-if="!httpRequest.status" class="chart-error-class">
@@ -493,6 +493,9 @@
                 {{ $t('chart.chart_error_tips') }}
               </div>
             </div>
+          </div>
+          <div style="position: absolute;left: 20px;bottom:14px;">
+            <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
           </div>
         </el-row>
       </el-col>
@@ -603,6 +606,7 @@ import ChartDragItem from '../components/drag-item/ChartDragItem'
 import DrillItem from '../components/drag-item/DrillItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
 import ChartComponent from '../components/ChartComponent'
+import DrillPath from '@/views/chart/view/DrillPath'
 import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 // shape attr,component style
@@ -663,7 +667,8 @@ export default {
     DimensionItem,
     draggable,
     ChartDragItem,
-    DrillItem
+    DrillItem,
+    DrillPath
   },
   props: {
     param: {
@@ -738,7 +743,9 @@ export default {
       filterItem: {},
       places: [],
       attrActiveNames: [],
-      styleActiveNames: []
+      styleActiveNames: [],
+      drillClickDimensionList: [],
+      drillFilters: []
     }
   },
   computed: {
@@ -750,6 +757,7 @@ export default {
   },
   watch: {
     'param': function() {
+      this.resetDrill()
       if (this.param.optType === 'new') {
         //
       } else {
@@ -877,6 +885,13 @@ export default {
       if (view.type === 'treemap' && trigger === 'chart') {
         view.customAttr.label.show = true
       }
+      if (view.type === 'treemap' ||
+        view.type.includes('table') ||
+        view.type.includes('text') ||
+        view.type.includes('gauge') ||
+        view.type.includes('radar')) {
+        view.drillFields = []
+      }
       view.customFilter.forEach(function(ele) {
         if (ele && !ele.filter) {
           ele.filter = []
@@ -894,6 +909,7 @@ export default {
         // this.get(response.data.id);
         // this.getData(response.data.id)
 
+        this.resetDrill()
         if (getData) {
           this.getData(response.data.id)
         } else {
@@ -983,7 +999,8 @@ export default {
     getData(id) {
       if (id) {
         ajaxGetData(id, {
-          filter: []
+          filter: [],
+          drill: this.drillClickDimensionList
         }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
@@ -1003,8 +1020,13 @@ export default {
           if (this.chart.privileges) {
             this.param.privileges = this.chart.privileges
           }
+          if (!response.data.drill) {
+            this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+          }
+          this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
         }).catch(err => {
           this.resetView()
+          this.resetDrill()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
           this.$nextTick(() => {
@@ -1487,6 +1509,21 @@ export default {
     bubbleItemRemove(item) {
       this.view.extBubble.splice(item.index, 1)
       this.save(true)
+    },
+
+    chartClick(param) {
+      if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
+        this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+        this.getData(this.param.id)
+      }
+    },
+
+    resetDrill() {
+      this.drillClickDimensionList = []
+    },
+    drillJump(index) {
+      this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
+      this.getData(this.param.id)
     }
   }
 }

@@ -16,9 +16,12 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" />
+    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
     <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <label-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <div style="position: absolute;left: 20px;bottom:14px;">
+      <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
+    </div>
   </div>
 </template>
 
@@ -37,9 +40,11 @@ import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { getToken, getLinkToken } from '@/utils/auth'
+import DrillPath from '@/views/chart/view/DrillPath'
+
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponent, TableNormal, LabelNormal, DrillPath },
   props: {
     element: {
       type: Object,
@@ -77,13 +82,18 @@ export default {
       refId: null,
       chart: BASE_CHART_STRING,
       requestStatus: 'waiting',
-      message: null
+      message: null,
+      drillClickDimensionList: [],
+      drillFilters: [],
+      drillFields: []
     }
   },
   computed: {
     filter() {
       const filter = {}
       filter.filter = this.element.filters
+      filter.linkageFilters = this.element.linkageFilters
+      filter.drill = this.drillClickDimensionList
       return filter
     },
     filters() {
@@ -91,8 +101,30 @@ export default {
       if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
     },
+
+    linkageFilters() {
+      // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
+      if (!this.element.linkageFilters) return []
+      console.log('linkageFilters:' + JSON.stringify(this.element.linkageFilters))
+      return JSON.parse(JSON.stringify(this.element.linkageFilters))
+    },
+    trackMenu() {
+      const trackMenuInfo = []
+      let linkageCount = 0
+      this.chart.data.fields && this.chart.data.fields.forEach(item => {
+        const sourceInfo = this.chart.id + '#' + item.id
+        if (this.nowPanelTrackInfo[sourceInfo]) {
+          linkageCount++
+        }
+      })
+      linkageCount && trackMenuInfo.push('linkage')
+      this.drillFields.length && trackMenuInfo.push('drill')
+      console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
+      return trackMenuInfo
+    },
     ...mapState([
-      'canvasStyleData'
+      'canvasStyleData',
+      'nowPanelTrackInfo'
     ])
   },
 
@@ -100,6 +132,13 @@ export default {
     'filters': function(val1, val2) {
       // this.getData(this.element.propValue.viewId)
       isChange(val1, val2) && this.getData(this.element.propValue.viewId)
+    },
+    linkageFilters: {
+      handler(newVal, oldVal) {
+        debugger
+        isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
+      },
+      deep: true
     },
     // deep监听panel 如果改变 提交到 store
     canvasStyleData: {
@@ -176,6 +215,13 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
+            debugger
+            if (!response.data.drill) {
+              this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+            }
+            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
+            this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
             this.requestStatus = 'merging'
             this.mergeStyle()
             this.requestStatus = 'success'
@@ -210,6 +256,22 @@ export default {
       tableChart.customAttr = JSON.stringify(tableChart.customAttr)
       tableChart.customStyle = JSON.stringify(tableChart.customStyle)
       eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart })
+    },
+
+    chartClick(param) {
+      debugger
+      if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
+        this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+        this.getData(this.element.propValue.viewId)
+      }
+    },
+
+    resetDrill() {
+      this.drillClickDimensionList = []
+    },
+    drillJump(index) {
+      this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
+      this.getData(this.element.propValue.viewId)
     }
   }
 }

@@ -39,7 +39,9 @@ export const DEFAULT_SIZE = {
   dimensionShow: true,
   quotaShow: true,
   scatterSymbol: 'circle',
-  scatterSymbolSize: 20
+  scatterSymbolSize: 20,
+  treemapWidth: 80,
+  treemapHeight: 80
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -623,7 +625,7 @@ export const BASE_MAP = {
     {
       name: '',
       type: 'map',
-      map: 'HK',
+      map: 'MAP',
       roam: true,
       //   label: {
       //     show: true

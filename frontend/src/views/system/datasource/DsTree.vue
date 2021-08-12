@@ -156,6 +156,8 @@ export default {
         return 'SQL Server'
       } else if (type === 'oracle') {
         return 'Oracle'
+      }else if (type === 'pg') {
+        return 'PostgreSQL'
       }
     },
 

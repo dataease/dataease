@@ -1,9 +1,11 @@
 package io.dataease.dto.chart;
 
 import io.dataease.base.domain.ChartViewWithBLOBs;
+import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,4 +22,8 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private Boolean isLeaf;
     private String pid;
     private String sql;
+
+    private boolean drill;
+
+    private List<ChartExtFilterRequest> drillFilters;
 }

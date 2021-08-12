@@ -837,7 +837,10 @@ export default {
     drill: 'Drill',
     drag_block_treemap_label: 'Color Label',
     drag_block_treemap_size: 'Color Size',
-    bubble_symbol: 'Shape'
+    bubble_symbol: 'Shape',
+    gap_width: 'Gap Width',
+    width: 'Width',
+    height: 'Height'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1176,7 +1179,9 @@ export default {
     panel_save_tips: 'Do you want to save the changes you made to.',
     panel_save_warn_tips: "Your changes will be lost if you don't save them！",
     do_not_save: "Don't Save",
-    save_and_close: 'Save'
+    save_and_close: 'Save',
+    drill: 'drill',
+    linkage: 'linkage'
   },
   plugin: {
     local_install: 'Local installation',

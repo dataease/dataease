@@ -151,6 +151,15 @@
           <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
+
+      <el-form v-show="chart.type && chart.type === 'treemap'" ref="sizeFormLine" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
+        <el-form-item :label="$t('chart.width')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.treemapWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.height')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.treemapHeight" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
     </el-col>
     <!--      <el-popover-->
     <!--        placement="right"-->
@@ -353,6 +362,8 @@ export default {
         }
         if (customAttr.size) {
           this.sizeForm = customAttr.size
+          this.sizeForm.treemapWidth = this.sizeForm.treemapWidth ? this.sizeForm.treemapWidth : 80
+          this.sizeForm.treemapHeight = this.sizeForm.treemapHeight ? this.sizeForm.treemapHeight : 80
         }
       }
     },

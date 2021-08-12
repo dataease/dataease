@@ -41,7 +41,6 @@ export default {
       data.id = generateID()
 
       // 如果是用户视图 测先进行底层复制
-      debugger
       if (data.type === 'view') {
         chartCopy(data.propValue.viewId).then(res => {
           const newView = deepCopy(data)

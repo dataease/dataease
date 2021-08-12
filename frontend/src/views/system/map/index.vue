@@ -37,7 +37,7 @@ export default {
           series: [
             {
               type: 'map',
-              map: 'HK', // 自定义扩展图表类型
+              map: 'MAP', // 自定义扩展图表类型
               roam: true,
               label: {
                 show: false

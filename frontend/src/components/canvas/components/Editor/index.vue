@@ -9,6 +9,9 @@
   >
     <!-- 网格线 -->
     <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
+
+    <!-- 仪表板联动清除按钮-->
+    <canvas-opt-bar />
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
@@ -156,8 +159,10 @@ import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
+import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar },
   props: {
     isEdit: {
       type: Boolean,

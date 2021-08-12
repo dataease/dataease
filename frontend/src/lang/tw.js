@@ -837,7 +837,10 @@ export default {
     drill: '鉆取',
     drag_block_treemap_label: '色塊標簽',
     drag_block_treemap_size: '色塊大小',
-    bubble_symbol: '圖形'
+    bubble_symbol: '圖形',
+    gap_width: '間隔',
+    width: '寬度',
+    height: '高度'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -1176,7 +1179,9 @@ export default {
     panel_save_tips: '仪表板已变动，是否保存？',
     panel_save_warn_tips: '如果未保存，你对仪表板做的变更将会丢失！',
     do_not_save: '不保存',
-    save: '保存'
+    save: '保存',
+    drill: '下钻',
+    linkage: '联动'
   },
   plugin: {
     local_install: '本地安裝',

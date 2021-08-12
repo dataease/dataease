@@ -46,30 +46,13 @@
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
           <el-input v-model="form.configuration.port" autocomplete="off" />
         </el-form-item>
-        <el-form-item v-if="form.type=='oracle'">
+        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'">
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
             {{ $t('datasource.get_schema') }}
           </el-button>
         </el-form-item>
 
-        <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.schema')">
-          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width">
-            <el-option
-              v-for="item in schemas"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
-        </el-form-item>
-
-
-        <el-form-item v-if="form.type=='sqlServer'">
-          <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
-            {{ $t('datasource.get_schema') }}
-          </el-button>
-        </el-form-item>
-        <el-form-item v-if="form.type=='sqlServer'" :label="$t('datasource.schema')">
+        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'" :label="$t('datasource.schema')">
           <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width">
             <el-option
               v-for="item in schemas"
@@ -124,7 +107,8 @@ export default {
       },
       allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
                 { name: 'oracle', label: 'Oracle', type: 'jdbc' },
-                { name: 'sqlServer', label: 'SQLSERVER', type: 'jdbc' }],
+                { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
+                { name: 'pg', label: 'PostgreSQL', type: 'jdbc' }],
       schemas: [],
       canEdit: false,
       originConfiguration: {}

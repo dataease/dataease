@@ -20,7 +20,8 @@ public class ShiroServiceImpl implements ShiroService {
         // 配置过滤:不会被拦截的链接 -> 放行 start ----------------------------------------------------------
         // 放行Swagger2页面，需要放行这些
 
-        filterChainDefinitionMap.put("/doc.html",ANON);
+        filterChainDefinitionMap.put("/doc.html**","doc");
+        filterChainDefinitionMap.put("/deApi**",ANON);
         filterChainDefinitionMap.put("/swagger-ui.html",ANON);
         filterChainDefinitionMap.put("/swagger-ui/**",ANON);
         filterChainDefinitionMap.put("/swagger/**",ANON);
