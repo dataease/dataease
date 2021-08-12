@@ -696,11 +696,15 @@ public class ChartViewService {
                         String stackColumn = row[xAxis.size()];
                         if (StringUtils.equals(ss.getName(), stackColumn)) {
                             StringBuilder a = new StringBuilder();
-                            for (int j = 0; j < xAxis.size(); j++) {
-                                if (j == xAxis.size() - 1) {
-                                    a.append(row[j]);
-                                } else {
-                                    a.append(row[j]).append("\n");
+                            if (isDrill) {
+                                a.append(row[xAxis.size() - 1]);
+                            } else {
+                                for (int j = 0; j < xAxis.size(); j++) {
+                                    if (j == xAxis.size() - 1) {
+                                        a.append(row[j]);
+                                    } else {
+                                        a.append(row[j]).append("\n");
+                                    }
                                 }
                             }
                             if (StringUtils.equals(a.toString(), x.get(i))) {
