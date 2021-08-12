@@ -113,7 +113,7 @@ export default {
     trackMenu() {
       const trackMenuInfo = []
       let linkageCount = 0
-      this.chart.data.fields && this.chart.data.fields.forEach(item => {
+      this.chart.data && this.chart.data.fields && this.chart.data.fields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
