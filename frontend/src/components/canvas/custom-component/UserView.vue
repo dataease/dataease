@@ -267,6 +267,7 @@ export default {
       }
     },
 
+
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
@@ -274,6 +275,7 @@ export default {
         this.backToParent(0, length)
       }
     },
+
     drillJump(index) {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
