@@ -16,10 +16,10 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <!-- <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" /> -->
-    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
-    <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
-    <label-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
+    <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
+    <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 20px;bottom:14px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
@@ -87,7 +87,11 @@ export default {
       drillClickDimensionList: [],
       drillFilters: [],
       drillFields: [],
-      places: []
+      places: [],
+      httpRequest: {
+        status: true,
+        msg: ''
+      }
     }
   },
   computed: {
@@ -226,12 +230,15 @@ export default {
             this.requestStatus = 'merging'
             this.mergeStyle()
             this.requestStatus = 'success'
+            this.httpRequest.status = true
           } else {
             this.requestStatus = 'error'
             this.message = response.message
           }
           return true
         }).catch(err => {
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
           this.requestStatus = 'error'
           if (err && err.response && err.response.data) {
             this.message = err.response.data.message
@@ -266,7 +273,6 @@ export default {
         this.getData(this.element.propValue.viewId)
       }
     },
-
 
     resetDrill() {
       const length = this.drillClickDimensionList.length
