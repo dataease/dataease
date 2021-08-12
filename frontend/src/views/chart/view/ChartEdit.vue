@@ -1444,11 +1444,11 @@ export default {
     },
 
     initAreas() {
-    //   let mapping
-    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-    //     this.places = JSON.parse(mapping)
-    //     return
-    //   }
+      let mapping
+      if ((mapping = localStorage.getItem('areaMapping')) !== null) {
+        this.places = JSON.parse(mapping)
+        return
+      }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
         localStorage.setItem('areaMapping', JSON.stringify(res.data))
@@ -1522,9 +1522,10 @@ export default {
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
-
-      this.backToParent(0, length)
-      this.currentAcreaNode = null
+      if (this.chart.type === 'map') {
+        this.backToParent(0, length)
+        this.currentAcreaNode = null
+      }
     },
     drillJump(index) {
       const length = this.drillClickDimensionList.length
