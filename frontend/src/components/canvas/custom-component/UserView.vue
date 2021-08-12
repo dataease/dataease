@@ -266,9 +266,6 @@ export default {
       }
     },
 
-    resetDrill() {
-      this.drillClickDimensionList = []
-    },
     drillJump(index) {
       this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
       this.getData(this.element.propValue.viewId)

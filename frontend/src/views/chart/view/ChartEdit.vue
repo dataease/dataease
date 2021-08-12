@@ -757,10 +757,10 @@ export default {
   },
   watch: {
     'param': function() {
-      this.resetDrill()
       if (this.param.optType === 'new') {
         //
       } else {
+        this.resetDrill()
         this.getData(this.param.id)
       }
     },
@@ -909,8 +909,8 @@ export default {
         // this.get(response.data.id);
         // this.getData(response.data.id)
 
-        this.resetDrill()
         if (getData) {
+          this.resetDrill()
           this.getData(response.data.id)
         } else {
           this.getChart(response.data.id)
