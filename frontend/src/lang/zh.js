@@ -1182,7 +1182,9 @@ export default {
     panel_save_tips: '仪表板已变动，是否保存？',
     panel_save_warn_tips: '如果未保存，你对仪表板做的变更将会丢失！',
     do_not_save: '不保存',
-    save: '保存'
+    save: '保存',
+    drill: '下钻',
+    linkage: '联动'
   },
   plugin: {
     local_install: '本地安装',

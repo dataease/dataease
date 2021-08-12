@@ -64,12 +64,11 @@ public class Knife4jConfiguration {
         return defaultApi("系统管理", "io.dataease.controller.sys");
     }
 
-    @Bean(value = "pluginsApi")
-    /*@DependsOn(value = "licStatusCondition")*/
+    /*@Bean(value = "pluginsApi")
     @Conditional(LicStatusCondition.class)
     public Docket pluginsApi() {
         return defaultApi("插件管理", "io.dataease.plugins.server");
-    }
+    }*/
 
 
     private ApiInfo apiInfo(){

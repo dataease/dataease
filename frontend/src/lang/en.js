@@ -1180,7 +1180,9 @@ export default {
     panel_save_tips: 'Do you want to save the changes you made to.',
     panel_save_warn_tips: "Your changes will be lost if you don't save them！",
     do_not_save: "Don't Save",
-    save_and_close: 'Save'
+    save_and_close: 'Save',
+    drill: 'drill',
+    linkage: 'linkage'
   },
   plugin: {
     local_install: 'Local installation',
