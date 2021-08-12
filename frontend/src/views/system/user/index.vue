@@ -208,8 +208,9 @@ export default {
               { label: this.$t('commons.disable'), value: '0' }
             ],
             multiple: false
-          }
-        //   { field: 'deptId', label: '组织', component: conditionTable }
+          },
+          { field: 'd.name', label: this.$t('commons.organization'), component: 'DeComplexInput' },
+          { field: 'r.name', label: this.$t('commons.role'), component: 'DeComplexInput' }
         ]
       },
       paginationConfig: {
