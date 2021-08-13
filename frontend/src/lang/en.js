@@ -1007,7 +1007,11 @@ export default {
     edit_calc_field: 'Edit calc field',
     calc_field: 'Calc Field',
     show_sql: 'Show SQL',
-    ple_select_excel: 'Please select excel file to import'
+    ple_select_excel: 'Please select excel file to import',
+    merge: 'Merge',
+    no_merge: 'Dont Merge',
+    merge_msg: 'If the fields in the data table are consistent, merge them into one data set?',
+    merge_title: 'Merge data'
   },
   datasource: {
     datasource: 'Data Source',

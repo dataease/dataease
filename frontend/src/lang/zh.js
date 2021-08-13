@@ -1007,7 +1007,11 @@ export default {
     edit_calc_field: '编辑计算字段',
     calc_field: '计算字段',
     show_sql: '显示SQL',
-    ple_select_excel: '请选择要导入的 Excel'
+    ple_select_excel: '请选择要导入的 Excel',
+    merge: '合并',
+    no_merge: '不合并',
+    merge_msg: '数据表中存在字段一致的情况，是否合并到一个数据集中?',
+    merge_title: '合并数据'
   },
   datasource: {
     datasource: '数据源',

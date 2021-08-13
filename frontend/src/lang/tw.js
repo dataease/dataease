@@ -1007,7 +1007,11 @@ export default {
     edit_calc_field: '編輯計算字段',
     calc_field: '計算字段',
     show_sql: '顯示SQL',
-    ple_select_excel: '請選擇要導入的 Excel'
+    ple_select_excel: '請選擇要導入的 Excel',
+    merge: '合併',
+    no_merge: '不合併',
+    merge_msg: '數據表中存在自斷一直的情況，是否合併到一個數據集中?',
+    merge_title: '合併數據'
   },
   datasource: {
     datasource: '數據源',

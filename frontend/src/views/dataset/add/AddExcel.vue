@@ -272,6 +272,7 @@ export default {
       for(var i=0;i<selectNode.length;i++){
         if(selectNode[i].sheet){
           if (!selectNode[i].datasetName || selectNode[i].datasetName === '') {
+            validate = false
             this.$message({
               showClose: true,
               message: this.$t('dataset.pls_input_name'),
@@ -280,6 +281,7 @@ export default {
             return
           }
           if (selectNode[i].datasetName.length > 50) {
+            validate = false
             this.$message({
               showClose: true,
               message: this.$t('dataset.char_can_not_more_50'),
@@ -287,7 +289,6 @@ export default {
             })
             return
           }
-
           selectedSheet.push(selectNode[i])
           sheetFileMd5.push(selectNode[i].fieldsMd5)
         }
@@ -324,9 +325,9 @@ export default {
         }
       }
       if(new Set(sheetFileMd5).size !== sheetFileMd5.length){
-        this.$confirm('The fields in the data table are consistent, whether they are merged into one table?', 'Merge data table ', {
-          confirmButtonText: 'Merge',
-          cancelButtonText: 'Do not merge',
+        this.$confirm(this.$t('dataset.merge_msg'), this.$t('dataset.merge_title'), {
+          confirmButtonText: this.$t('dataset.merge'),
+          cancelButtonText: this.$t('dataset.no_merge'),
           type: 'info'
         }).then(() => {
           table.mergeSheet = true
@@ -344,6 +345,11 @@ export default {
             this.cancel()
           })
         });
+      }else {
+        post('/dataset/table/update', table).then(response => {
+          this.$emit('saveSuccess', table)
+          this.cancel()
+        })
       }
     },
 
