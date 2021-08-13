@@ -711,7 +711,8 @@ export default {
       },
       moveId: -1,
       chart: {
-        id: 'echart'
+        id: 'echart',
+        type: null
       },
       dimensionFilterEdit: false,
       dimensionItem: {},
@@ -754,6 +755,9 @@ export default {
     //   this.getData(this.$store.state.chart.viewId)
     //   return this.$store.state.chart.viewId
     // }
+    chartType() {
+      return this.chart.type
+    }
   },
   watch: {
     'param': function() {
@@ -766,11 +770,16 @@ export default {
     },
     searchField(val) {
       this.fieldFilter(val)
+    },
+    'chartType': function(newVal, oldVal) {
+      if (newVal === 'map' && newVal !== oldVal) {
+        this.initAreas()
+      }
     }
   },
   created() {
     // this.get(this.$store.state.chart.viewId);
-    this.initAreas()
+    // this.initAreas()
   },
   mounted() {
     // this.get(this.$store.state.chart.viewId);
@@ -1327,14 +1336,14 @@ export default {
     },
 
     initAreas() {
-      let mapping
-      if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-        this.places = JSON.parse(mapping)
-        return
-      }
+    //   let mapping
+    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
+    //     this.places = JSON.parse(mapping)
+    //     return
+    //   }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
-        localStorage.setItem('areaMapping', JSON.stringify(res.data))
+        // localStorage.setItem('areaMapping', JSON.stringify(res.data))
       })
     },
 
