@@ -1023,7 +1023,7 @@ export default {
           if (!response.data.drill) {
             this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
           }
-          this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
+          this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
         }).catch(err => {
           this.resetView()
           this.resetDrill()
