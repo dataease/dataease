@@ -7,6 +7,8 @@
 import Preview from './Preview'
 import { uuid } from 'vue-uuid'
 import { findOne } from '@/api/panel/panel'
+import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+
 
 export default {
   components: { Preview },
@@ -24,6 +26,10 @@ export default {
           id: response.data.id,
           name: response.data.name
         }
+        // 刷新联动信息
+        getPanelAllLinkageInfo(this.panelId).then(rsp => {
+          this.$store.commit('setNowPanelTrackInfo', rsp.data)
+        })
         this.$store.dispatch('panel/setPanelInfo', data)
       })
     },

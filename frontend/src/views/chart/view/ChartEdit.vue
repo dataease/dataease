@@ -711,7 +711,8 @@ export default {
       },
       moveId: -1,
       chart: {
-        id: 'echart'
+        id: 'echart',
+        type: null
       },
       dimensionFilterEdit: false,
       dimensionItem: {},
@@ -754,6 +755,9 @@ export default {
     //   this.getData(this.$store.state.chart.viewId)
     //   return this.$store.state.chart.viewId
     // }
+    chartType() {
+      return this.chart.type
+    }
   },
   watch: {
     'param': function() {
@@ -766,11 +770,16 @@ export default {
     },
     searchField(val) {
       this.fieldFilter(val)
+    },
+    'chartType': function(newVal, oldVal) {
+      if (newVal === 'map' && newVal !== oldVal) {
+        this.initAreas()
+      }
     }
   },
   created() {
     // this.get(this.$store.state.chart.viewId);
-    this.initAreas()
+    // this.initAreas()
   },
   mounted() {
     // this.get(this.$store.state.chart.viewId);
@@ -821,6 +830,9 @@ export default {
         return
       }
       view.tableId = this.view.tableId
+      if (view.type === 'map' && view.xaxis.length > 1) {
+        view.xaxis = [view.xaxis[0]]
+      }
       view.xaxis.forEach(function(ele) {
         // if (!ele.summary || ele.summary === '') {
         //   ele.summary = 'sum'
@@ -838,6 +850,9 @@ export default {
           ele.filter = []
         }
       })
+      if (view.type === 'map' && view.yaxis.length > 1) {
+        view.yaxis = [view.yaxis[0]]
+      }
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
           if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
@@ -925,67 +940,6 @@ export default {
       })
     },
 
-    // saveSnapshot() {
-    //   if (this.view.title && this.view.title.length > 50) {
-    //     this.$warning(this.$t('chart.title_limit'))
-    //     return
-    //   }
-    //   if (this.loading) {
-    //     return
-    //   }
-    //   this.loading = true
-    //   html2canvas(this.$refs.imageWrapper).then(canvas => {
-    //     const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
-    //     if (snapshot !== '') {
-    //       const view = JSON.parse(JSON.stringify(this.view))
-    //       view.id = this.view.id
-    //       view.sceneId = this.view.sceneId
-    //       view.name = this.view.name ? this.view.name : this.table.name
-    //       view.tableId = this.view.tableId
-    //       view.xaxis.forEach(function(ele) {
-    //         // if (!ele.summary || ele.summary === '') {
-    //         //   ele.summary = 'sum'
-    //         // }
-    //         if (!ele.sort || ele.sort === '') {
-    //           ele.sort = 'none'
-    //         }
-    //         if (!ele.filter) {
-    //           ele.filter = []
-    //         }
-    //       })
-    //       view.yaxis.forEach(function(ele) {
-    //         if (!ele.summary || ele.summary === '') {
-    //           if (ele.id === 'count') {
-    //             ele.summary = 'count'
-    //           } else {
-    //             ele.summary = 'sum'
-    //           }
-    //         }
-    //         if (!ele.sort || ele.sort === '') {
-    //           ele.sort = 'none'
-    //         }
-    //         if (!ele.filter) {
-    //           ele.filter = []
-    //         }
-    //       })
-    //       if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('gauge')) {
-    //         if (view.yaxis.length > 1) {
-    //           view.yaxis.splice(1, view.yaxis.length)
-    //         }
-    //       }
-    //       view.xaxis = JSON.stringify(view.xaxis)
-    //       view.yaxis = JSON.stringify(view.yaxis)
-    //       view.customAttr = JSON.stringify(view.customAttr)
-    //       view.customStyle = JSON.stringify(view.customStyle)
-    //       view.customFilter = JSON.stringify(view.customFilter)
-    //       view.snapshot = snapshot
-    //       post('/chart/view/save', view).then(response => {
-    //         this.loading = false
-    //         this.$success(this.$t('commons.save_success'))
-    //       })
-    //     }
-    //   })
-    // },
     closeEdit() {
       if (this.view.title && this.view.title.length > 50) {
         this.$warning(this.$t('chart.title_limit'))
@@ -1067,74 +1021,6 @@ export default {
       }
     },
 
-    // 左边往右边拖动时的事件
-    // start1(e) {
-    //   // console.log(e)
-    //   e.clone.className = 'item'
-    //   e.item.className = 'item'
-    // },
-    // end1(e) {
-    //   // console.log(e)
-    //   e.clone.className = 'item'
-    //   e.item.className = 'item'
-    //   this.refuseMove(e)
-    //   this.removeCheckedKey(e)
-    //   this.save(true)
-    // },
-    // 右边往左边拖动时的事件
-    // start2(e) {
-    // console.log(e)
-    // },
-    // end2(e) {
-    //   // console.log(e)
-    //   this.removeDuplicateKey(e)
-    //   this.save(true)
-    // },
-    // removeCheckedKey(e) {
-    //   const that = this
-    //   const xItems = this.view.xaxis.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   const yItems = this.view.yaxis.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   if (xItems && xItems.length > 1) {
-    //     this.view.xaxis.splice(e.newDraggableIndex, 1)
-    //   }
-    //   if (yItems && yItems.length > 1) {
-    //     this.view.yaxis.splice(e.newDraggableIndex, 1)
-    //   }
-    // },
-    // refuseMove(e) {
-    //   const that = this
-    //   const xItems = this.dimension.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   const yItems = this.quota.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   if (xItems && xItems.length > 1) {
-    //     this.dimension.splice(e.newDraggableIndex, 1)
-    //   }
-    //   if (yItems && yItems.length > 1) {
-    //     this.quota.splice(e.newDraggableIndex, 1)
-    //   }
-    // },
-    // removeDuplicateKey(e) {
-    //   const that = this
-    //   const xItems = this.dimension.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   const yItems = this.quota.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   if (xItems && xItems.length > 1) {
-    //     this.dimension.splice(e.newDraggableIndex, 1)
-    //   }
-    //   if (yItems && yItems.length > 1) {
-    //     this.quota.splice(e.newDraggableIndex, 1)
-    //   }
-    // },
     // move回调方法
     onMove(e, originalEvent) {
       // console.log(e)
@@ -1411,11 +1297,17 @@ export default {
       }
     },
     addXaxis(e) {
+      if (this.view.type === 'map' && this.view.xaxis.length > 1) {
+        this.view.xaxis = [this.view.xaxis[0]]
+      }
       this.dragCheckType(this.view.xaxis, 'd')
       this.dragMoveDuplicate(this.view.xaxis, e)
       this.save(true)
     },
     addYaxis(e) {
+      if (this.view.type === 'map' && this.view.yaxis.length > 1) {
+        this.view.yaxis = [this.view.yaxis[0]]
+      }
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
       this.save(true)
@@ -1444,14 +1336,14 @@ export default {
     },
 
     initAreas() {
-      let mapping
-      if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-        this.places = JSON.parse(mapping)
-        return
-      }
+    //   let mapping
+    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
+    //     this.places = JSON.parse(mapping)
+    //     return
+    //   }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
-        localStorage.setItem('areaMapping', JSON.stringify(res.data))
+        // localStorage.setItem('areaMapping', JSON.stringify(res.data))
       })
     },
 

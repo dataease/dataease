@@ -128,6 +128,9 @@ export default {
       console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
       return trackMenuInfo
     },
+    chartType() {
+      return this.chart.type
+    },
     ...mapState([
       'canvasStyleData',
       'nowPanelTrackInfo'
@@ -159,12 +162,13 @@ export default {
       },
       deep: true
     },
-    // 监听外部的样式变化
+    // 监听外部的样式变化 （非实时性要求）
     outStyle: {
       handler(newVal, oldVla) {
-        if (this.$refs[this.element.propValue.id]) {
-          this.$refs[this.element.propValue.id].chartResize()
-        }
+        //
+        // if (this.$refs[this.element.propValue.id]) {
+        //   this.$refs[this.element.propValue.id].chartResize()
+        // }
       },
       deep: true
     },
@@ -173,6 +177,11 @@ export default {
       if (val1 > 0) {
         this.getData(this.element.propValue.viewId)
       }
+    },
+    'chartType': function(newVal, oldVal) {
+      if (newVal === 'map' && newVal !== oldVal) {
+        this.initAreas()
+      }
     }
   },
 
@@ -180,7 +189,7 @@ export default {
     this.refId = uuid.v1
     // this.filter.filter = this.$store.getters.conditions
     this.getData(this.element.propValue.viewId)
-    this.initAreas()
+    // this.initAreas()
   },
   mounted() {
   },
@@ -219,7 +228,9 @@ export default {
 
         // 增加判断 仪表板公共连接中使用viewInfo 正常使用viewData
         let method = viewData
-        if (!getToken() && getLinkToken()) {
+        const token = this.$store.getters.token || getToken()
+        const linkToken = this.$store.getters.linkToken || getLinkToken()
+        if (!token && linkToken) {
           method = viewInfo
         }
 
@@ -346,14 +357,14 @@ export default {
       }
     },
     initAreas() {
-      let mapping
-      if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-        this.places = JSON.parse(mapping)
-        return
-      }
+    //   let mapping
+    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
+    //     this.places = JSON.parse(mapping)
+    //     return
+    //   }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
-        localStorage.setItem('areaMapping', JSON.stringify(res.data))
+        // localStorage.setItem('areaMapping', JSON.stringify(res.data))
       })
     },
     doMapLink(linkFilters) {
@@ -377,6 +388,12 @@ export default {
           const temp = this.findEntityByname(name, node.children)
           if (temp) return temp
         }
+      }
+    },
+    // chart
+    chartResize() {
+      if (this.$refs[this.element.propValue.id]) {
+        this.$refs[this.element.propValue.id].chartResize()
       }
     }
   }
