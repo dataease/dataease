@@ -34,6 +34,10 @@ service.interceptors.request.use(
     if ((linkToken = getLinkToken()) !== null) {
       config.headers[LinkTokenKey] = linkToken
     }
+    if (!linkToken) {
+      linkToken = store.getters.linkToken
+      config.headers[LinkTokenKey] = linkToken
+    }
 
     if (i18n.locale) {
       const lang = i18n.locale.replace('_', '-')
@@ -92,6 +96,7 @@ const checkAuth = response => {
   if (response.headers[LinkTokenKey.toLocaleLowerCase()] || (response.config.headers && response.config.headers[LinkTokenKey.toLocaleLowerCase()])) {
     const linkToken = response.headers[LinkTokenKey.toLocaleLowerCase()] || response.config.headers[LinkTokenKey.toLocaleLowerCase()]
     setLinkToken(linkToken)
+    store.dispatch('user/setLinkToken', linkToken)
   }
   // 许可状态改变 刷新页面
 //   if (response.headers['lic-status']) {

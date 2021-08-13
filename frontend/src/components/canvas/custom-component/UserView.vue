@@ -165,7 +165,9 @@ export default {
 
         // 增加判断 仪表板公共连接中使用viewInfo 正常使用viewData
         let method = viewData
-        if (!getToken() && getLinkToken()) {
+        const token = this.$store.getters.token || getToken()
+        const linkToken = this.$store.getters.linkToken || getLinkToken()
+        if (!token && linkToken) {
           method = viewInfo
         }
 
