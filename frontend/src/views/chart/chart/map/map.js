@@ -45,6 +45,7 @@ export function baseMapOption(chart_option, chart) {
 
       if (customAttr.color && customAttr.color.colors) {
         chart_option.visualMap.inRange.color = customAttr.color.colors
+        chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
       }
       for (let i = 0; i < valueArr.length; i++) {
         // const y = {
