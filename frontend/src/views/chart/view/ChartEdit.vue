@@ -821,6 +821,9 @@ export default {
         return
       }
       view.tableId = this.view.tableId
+      if (view.type === 'map' && view.xaxis.length > 1) {
+        view.xaxis = [view.xaxis[0]]
+      }
       view.xaxis.forEach(function(ele) {
         // if (!ele.summary || ele.summary === '') {
         //   ele.summary = 'sum'
@@ -838,6 +841,9 @@ export default {
           ele.filter = []
         }
       })
+      if (view.type === 'map' && view.yaxis.length > 1) {
+        view.yaxis = [view.yaxis[0]]
+      }
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
           if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
@@ -1282,11 +1288,17 @@ export default {
       }
     },
     addXaxis(e) {
+      if (this.view.type === 'map' && this.view.xaxis.length > 1) {
+        this.view.xaxis = [this.view.xaxis[0]]
+      }
       this.dragCheckType(this.view.xaxis, 'd')
       this.dragMoveDuplicate(this.view.xaxis, e)
       this.save(true)
     },
     addYaxis(e) {
+      if (this.view.type === 'map' && this.view.yaxis.length > 1) {
+        this.view.yaxis = [this.view.yaxis[0]]
+      }
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
       this.save(true)
