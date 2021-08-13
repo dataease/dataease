@@ -159,12 +159,13 @@ export default {
       },
       deep: true
     },
-    // 监听外部的样式变化
+    // 监听外部的样式变化 （非实时性要求）
     outStyle: {
       handler(newVal, oldVla) {
-        if (this.$refs[this.element.propValue.id]) {
-          this.$refs[this.element.propValue.id].chartResize()
-        }
+        //
+        // if (this.$refs[this.element.propValue.id]) {
+        //   this.$refs[this.element.propValue.id].chartResize()
+        // }
       },
       deep: true
     },
@@ -381,6 +382,12 @@ export default {
         }
       }
     }
+  // chart
+  chartResize() {
+    if (this.$refs[this.element.propValue.id]) {
+      this.$refs[this.element.propValue.id].chartResize()
+    }
+  }
   }
 }
 </script>
