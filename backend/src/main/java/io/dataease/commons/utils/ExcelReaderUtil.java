@@ -1,6 +1,8 @@
 package io.dataease.commons.utils;
 import com.google.gson.Gson;
 import io.dataease.datasource.dto.TableFiled;
+
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -49,16 +51,19 @@ public class ExcelReaderUtil {
                 System.out.println(new Gson().toJson(field));
             }
             System.out.println(excelXls.totalSheets.get(0).getData().get(0));
-
+            System.out.println(excelXls.totalSheets.get(0).getData().get(1));
+            System.out.println(excelXls.totalSheets.get(0).getData().get(2));
         } else if (fileName.endsWith(EXCEL07_EXTENSION)) {//处理excel2007文件
             ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
             excelXlsxReader.process(inputStream);
             System.out.println(excelXlsxReader.totalSheets.size());
-            System.out.println(excelXlsxReader.totalSheets.get(0).getExcelLable());
-            for (TableFiled field : excelXlsxReader.totalSheets.get(0).getFields()) {
+            System.out.println(excelXlsxReader.totalSheets.get(1).getExcelLable());
+            for (TableFiled field : excelXlsxReader.totalSheets.get(1).getFields()) {
                 System.out.println(new Gson().toJson(field));
             }
             System.out.println(excelXlsxReader.totalSheets.get(0).getData().get(0));
+            System.out.println(excelXlsxReader.totalSheets.get(0).getData().get(1));
+            System.out.println(excelXlsxReader.totalSheets.get(0).getData().get(2));
 
         } else {
             throw new Exception("文件格式错误，fileName的扩展名只能是xls或xlsx。");
@@ -66,7 +71,7 @@ public class ExcelReaderUtil {
     }
 
     public static void main(String[] args) throws Exception {
-//        String file ="下单渠道.xlsx";
-//        ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
+        String file ="赤收管理 2.xlsx";
+        ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
     }
 }

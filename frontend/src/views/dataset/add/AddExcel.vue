@@ -324,7 +324,7 @@ export default {
           editType: this.param.editType ? this.param.editType : 0
         }
       }
-      if(new Set(sheetFileMd5).size !== sheetFileMd5.length){
+      if(new Set(sheetFileMd5).size !== sheetFileMd5.length && !this.param.tableId){
         this.$confirm(this.$t('dataset.merge_msg'), this.$t('dataset.merge_title'), {
           confirmButtonText: this.$t('dataset.merge'),
           cancelButtonText: this.$t('dataset.no_merge'),
