@@ -96,7 +96,8 @@ export default {
           if (!res.data) {
             this.msg = this.$t('pblink.pwd_error')
           } else {
-            window.location.reload()
+            // window.location.reload()
+            this.$emit('fresh-token')
           }
         })
       })
