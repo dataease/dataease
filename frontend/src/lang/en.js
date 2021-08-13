@@ -1140,6 +1140,7 @@ export default {
     bottomComponent: 'Bottom Component',
     upComponent: 'Up One Level',
     downComponent: 'Down One Level',
+    linkage_setting: 'Linkage Setting',
     open_aided_design: 'Open Component Aided Design',
     close_aided_design: 'Close Component Aided Design',
     open_style_design: 'Open Style Design',
