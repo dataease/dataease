@@ -1144,6 +1144,7 @@ export default {
     bottomComponent: '置底',
     upComponent: '上移',
     downComponent: '下移',
+    linkage_setting: '联动设置',
     open_aided_design: '打開組件輔助設計',
     close_aided_design: '關閉組件輔助設計',
     open_style_design: '打開樣式設計',

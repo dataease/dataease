@@ -11,7 +11,7 @@
           <el-dropdown-item icon="el-icon-download" @click.native="bottomComponent">{{ $t('panel.bottomComponent') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-arrow-up" @click.native="upComponent">{{ $t('panel.upComponent') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-arrow-down" @click.native="downComponent">{{ $t('panel.downComponent') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-link" @click.native="linkageSetting">联动设置</el-dropdown-item>
+          <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-link" @click.native="linkageSetting">{{ $t('panel.linkage_setting') }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
