@@ -141,9 +141,9 @@ public class DataSetTableService {
                     sheetTable.setInfo(new Gson().toJson(info));
                     int insert = datasetTableMapper.insert(sheetTable);
                     if (insert == 1) {
-                        saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields());
+                        saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
                         commonThreadPool.addTask(() -> {
-                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入");
+                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null);
                         });
                     }
                 }
@@ -169,9 +169,9 @@ public class DataSetTableService {
                     sheetTable.setInfo(new Gson().toJson(info));
                     int insert = datasetTableMapper.insert(sheetTable);
                     if (insert == 1) {
-                        saveExcelTableField(sheetTable.getId(), sheet.getFields());
+                        saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
                         commonThreadPool.addTask(() -> {
-                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入");
+                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null);
                         });
                     }
                 }
@@ -203,20 +203,16 @@ public class DataSetTableService {
         info.setExcelSheetDataList(excelSheetDataList);
         datasetTable.setInfo(new Gson().toJson(info));
         int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
-        // 删除所有字段，重新抽象
-        if(datasetTable.getEditType() == 0){
-            dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
-            saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields());
-        }
+        // 替換時，先不刪除旧字段；同步成功后再删除
 
         if (update == 1) {
             if (datasetTable.getEditType() == 0) {
                 commonThreadPool.addTask(() -> {
-                    extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换");
+                    extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换", saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields(), false));
                 });
             } else if (datasetTable.getEditType() == 1) {
                 commonThreadPool.addTask(() -> {
-                    extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加");
+                    extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加", null);
                 });
             }
         }
@@ -900,7 +896,8 @@ public class DataSetTableService {
         }
     }
 
-    public void saveExcelTableField(String datasetTableId, List<TableFiled> fields) throws Exception {
+    public List<DatasetTableField> saveExcelTableField(String datasetTableId, List<TableFiled> fields, boolean insert){
+        List<DatasetTableField> datasetTableFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
@@ -918,9 +915,13 @@ public class DataSetTableService {
                 datasetTableField.setLastSyncTime(System.currentTimeMillis());
                 datasetTableField.setExtField(0);
                 datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
-                dataSetTableFieldsService.save(datasetTableField);
+                if(insert){
+                    dataSetTableFieldsService.save(datasetTableField);
+                }
+                datasetTableFields.add(datasetTableField);
             }
         }
+        return datasetTableFields;
     }
 
     public void saveTableField(DatasetTable datasetTable) throws Exception {

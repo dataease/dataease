@@ -151,7 +151,7 @@ public class ExtractDataService {
         }
     }
 
-    public void extractExcelData(String datasetTableId, String type, String ops) {
+    public void extractExcelData(String datasetTableId, String type, String ops, List<DatasetTableField> datasetTableFields) {
         Datasource datasource = new Datasource();
         datasource.setType("excel");
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
@@ -161,7 +161,9 @@ public class ExtractDataService {
         }
         UpdateType updateType = UpdateType.valueOf(type);
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
+        if(datasetTableFields == null){
+            datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
+        }
         datasetTableFields.sort((o1, o2) -> {
             if (o1.getColumnIndex() == null) {
                 return -1;
@@ -186,6 +188,12 @@ public class ExtractDataService {
                     saveSucessLog(datasetTableTaskLog);
 //                    sendWebMsg(datasetTable, null, true);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
+                    if(ops.equalsIgnoreCase("替换")){
+                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
+                        datasetTableFields.forEach(datasetTableField -> {
+                            dataSetTableFieldsService.save(datasetTableField);
+                        });
+                    }
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
 //                    sendWebMsg(datasetTable, null, false);
