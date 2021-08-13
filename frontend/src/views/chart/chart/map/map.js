@@ -33,16 +33,21 @@ export function baseMapOption(chart_option, chart) {
       }
       // visualMap
       const valueArr = chart.data.series[0].data
-      const values = []
-      valueArr.forEach(function(ele) {
-        values.push(ele.value)
-      })
-      chart_option.visualMap.min = Math.min(...values)
-      chart_option.visualMap.max = Math.max(...values)
-      if (chart_option.visualMap.min === chart_option.visualMap.max) {
+      if (valueArr && valueArr.length > 0) {
+        const values = []
+        valueArr.forEach(function(ele) {
+          values.push(ele.value)
+        })
+        chart_option.visualMap.min = Math.min(...values)
+        chart_option.visualMap.max = Math.max(...values)
+        if (chart_option.visualMap.min === chart_option.visualMap.max) {
+          chart_option.visualMap.min = 0
+        }
+      } else {
         chart_option.visualMap.min = 0
+        chart_option.visualMap.max = 0
       }
-
+      // color
       if (customAttr.color && customAttr.color.colors) {
         chart_option.visualMap.inRange.color = customAttr.color.colors
         chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
