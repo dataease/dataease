@@ -381,13 +381,13 @@ export default {
           if (temp) return temp
         }
       }
+    },
+    // chart
+    chartResize() {
+      if (this.$refs[this.element.propValue.id]) {
+        this.$refs[this.element.propValue.id].chartResize()
+      }
     }
-  // chart
-  chartResize() {
-    if (this.$refs[this.element.propValue.id]) {
-      this.$refs[this.element.propValue.id].chartResize()
-    }
-  }
   }
 }
 </script>
