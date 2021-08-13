@@ -19,8 +19,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author y
@@ -251,8 +249,10 @@ public class ExcelXlsxReader extends DefaultHandler {
             String value = this.getDataValue(lastIndex.trim(), "");//根据索引值获取对应的单元格值
             if (preRef == null) {
                 preRef = "A" + curRow;
-                cellList.add(curCol, "");
-                curCol++;
+                if(!preRef.equalsIgnoreCase(ref)){
+                    cellList.add(curCol, "");
+                    curCol++;
+                }
             }
 
             //补全单元格之间的空单元格
