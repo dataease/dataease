@@ -68,7 +68,7 @@ public class MapUtils {
 
         AreaEntity china = root();
 
-        maps.parallelStream().forEach(map -> {
+        maps.stream().forEach(map -> {
             // maps.stream().forEach(map -> {
             String province_code = map.get(Constants.PROVINCE_CODE).toString();
             String city_code = map.get(Constants.CITY_CODE).toString();
