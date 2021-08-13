@@ -1155,7 +1155,9 @@ export default {
         this.resizing = false
         await this.conflictCheck()
         this.$emit('refLineParams', refLine)
-        this.$emit('resizestop', this.left, this.top, this.width, this.height)
+        // this.$emit('resizestop', this.left, this.top, this.width, this.height)
+        // private
+        // this.$emit('resizestop')
       }
       if (this.dragging) {
         this.dragging = false
@@ -1484,6 +1486,12 @@ export default {
       style.rotate = this.rotate
       // this.hasMove = true
       this.$store.commit('setShapeStyle', style)
+
+      // resize
+      const self = this
+      setTimeout(function() {
+        self.$emit('resizestop')
+      }, 200)
     },
     mountedFunction() {
       // private 冲突检测 和水平设计值保持一致

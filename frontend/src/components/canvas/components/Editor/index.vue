@@ -37,6 +37,7 @@
       :linkage-active="linkageSettingStatus&&item===curLinkageView"
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
+      @resizestop="resizestop(index,item)"
     >
       <component
         :is="item.component"
@@ -620,6 +621,11 @@ export default {
     },
     showViewDetails(index) {
       this.$refs.wrapperChild[index].openChartDetailsDialog()
+    },
+    resizestop(index, item) {
+      if (item.type === 'view') {
+        this.$refs.wrapperChild[index].chartResize()
+      }
     }
   }
 }
