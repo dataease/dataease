@@ -1,13 +1,9 @@
 package io.dataease.commons.utils;
-import com.google.gson.Gson;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
-import io.dataease.service.message.MsgAop;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
@@ -23,8 +19,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author y
@@ -152,6 +146,7 @@ public class ExcelXlsxReader extends DefaultHandler {
         parser.setContentHandler(this);
         XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) xssfReader.getSheetsData();
         while (sheets.hasNext()) { //遍历sheet
+
             curRow = 1; //标记初始行为第一行
             fields.clear();
             data.clear();
@@ -252,17 +247,14 @@ public class ExcelXlsxReader extends DefaultHandler {
         } else if ("v".equals(name)) {
             //v => 单元格的值，如果单元格是字符串，则v标签的值为该字符串在SST中的索引
             String value = this.getDataValue(lastIndex.trim(), "");//根据索引值获取对应的单元格值
-
             if (preRef == null) {
-                String regEx="[^0-9]";
-                Pattern p = Pattern.compile(regEx);
-                Matcher m = p.matcher(ref);
-                if(curCol < Integer.valueOf(m.replaceAll("").trim()) -1 ){
+                preRef = "A" + curRow;
+                if(!preRef.equalsIgnoreCase(ref)){
                     cellList.add(curCol, "");
                     curCol++;
                 }
-                preRef = ref;
             }
+
             //补全单元格之间的空单元格
             if (!"A".equals(preRef.substring(0, 1)) && curRow==1 && preRef.equalsIgnoreCase(ref)) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
@@ -291,14 +283,6 @@ public class ExcelXlsxReader extends DefaultHandler {
                 //默认第一行为表头，以该行单元格数目为最大数目
                 if (curRow == 1) {
                     maxRef = ref;
-                }
-                //补全一行尾部可能缺失的单元格
-                if (maxRef != null) {
-                    int len = countNullCell(maxRef, ref);
-                    for (int i = 0; i <= len; i++) {
-                        cellList.add(curCol, "");
-                        curCol++;
-                    }
                 }
                 if(curRow>1){
                     List<String> tmp = new ArrayList<>(cellList);

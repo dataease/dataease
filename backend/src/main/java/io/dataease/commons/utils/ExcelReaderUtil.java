@@ -70,7 +70,7 @@ public class ExcelReaderUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        String file ="全国现有确诊趋势.xlsx";
+        String file ="【审批】客户接待07.11-08.10.xlsx";
         ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
     }
 }
