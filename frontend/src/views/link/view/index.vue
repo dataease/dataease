@@ -8,6 +8,8 @@
 import { loadResource } from '@/api/link'
 import { uuid } from 'vue-uuid'
 import Preview from '@/components/canvas/components/Editor/Preview'
+import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+
 export default {
   name: 'LinkView',
   components: { Preview },
@@ -29,6 +31,10 @@ export default {
   methods: {
     setPanelInfo() {
       loadResource(this.resourceId).then(res => {
+        // 刷新联动信息
+        getPanelAllLinkageInfo(this.resourceId).then(rsp => {
+          this.$store.commit('setNowPanelTrackInfo', rsp.data)
+        })
         this.$store.commit('setComponentData', this.resetID(JSON.parse(res.data.panelData)))
         // this.$store.commit('setComponentData', JSON.parse(res.data.panelData))
         this.$store.commit('setCanvasStyle', JSON.parse(res.data.panelStyle))
