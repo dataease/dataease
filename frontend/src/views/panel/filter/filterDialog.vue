@@ -39,8 +39,18 @@
                   @node-click="handleNodeClick"
                 >
                   <div slot-scope="{ node, data }" class="custom-tree-node">
-                    <el-button v-if="data.type === 'db'" icon="el-icon-s-data" type="text" size="mini" />
-                    <span class="label-span">{{ node.label }}</span>
+                    <!-- <el-button v-if="data.type === 'db'" icon="el-icon-s-data" type="text" size="mini" /> -->
+                    <span>
+                      <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                      <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                      <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                      <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                    </span>
+                    <el-tooltip class="item" effect="dark" placement="top">
+                      <div slot="content">{{ node.label }}</div>
+                      <span class="label-span">{{ node.label }}</span>
+                    </el-tooltip>
+
                   </div>
                 </el-tree>
 
