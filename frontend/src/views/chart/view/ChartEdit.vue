@@ -1406,9 +1406,16 @@ export default {
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
-        this.chart.type === 'map' && this.sendToChildren(param)
-        this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-        this.getData(this.param.id)
+        // const isSwitch = (this.chart.type === 'map' && this.sendToChildren(param))
+        if (this.chart.type === 'map') {
+          if (this.sendToChildren(param)) {
+            this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+            this.getData(this.param.id)
+          }
+        } else {
+          this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+          this.getData(this.param.id)
+        }
       }
     },
 
