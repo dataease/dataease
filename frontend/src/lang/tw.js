@@ -840,7 +840,9 @@ export default {
     bubble_symbol: '圖形',
     gap_width: '間隔',
     width: '寬度',
-    height: '高度'
+    height: '高度',
+    system_case: '系統方案',
+    custom_case: '自定義'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

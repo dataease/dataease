@@ -840,7 +840,9 @@ export default {
     bubble_symbol: 'Shape',
     gap_width: 'Gap Width',
     width: 'Width',
-    height: 'Height'
+    height: 'Height',
+    system_case: 'System',
+    custom_case: 'Custom'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

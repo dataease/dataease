@@ -840,7 +840,9 @@ export default {
     bubble_symbol: '图形',
     gap_width: '间隔',
     width: '宽度',
-    height: '高度'
+    height: '高度',
+    system_case: '系统方案',
+    custom_case: '自定义'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
