@@ -34,7 +34,8 @@ public class MapUtils {
 
 
     public static String formatCode(String code) {
-        return code.substring(3);
+//        return code.substring(3);
+        return code;
     }
 
     /*public static List<Map<String, Object>> readCodeList( ) {

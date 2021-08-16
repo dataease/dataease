@@ -572,7 +572,7 @@
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table || !table.id || !changeTable || !changeTable.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!changeTable || !changeTable.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -1254,6 +1254,7 @@ export default {
         this.view.customFilter = []
         this.view.extStack = []
         this.view.extBubble = []
+        this.view.drillFields = []
       }
       this.save(true, 'chart', false)
     },
