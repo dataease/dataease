@@ -40,7 +40,7 @@
                   </span>
                 </div>
               </div>
-              <div slot="reference" style="cursor: pointer;margin-top: 2px;">
+              <div slot="reference" style="cursor: pointer;margin-top: 2px;width: 180px;">
                 <span v-for="(c,index) in colorForm.colors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
               </div>
             </el-popover>
@@ -285,7 +285,7 @@ export default {
     display: none;
   }
   .el-radio{
-    margin:0 4px 0 0!important;
+    margin:0 2px 0 0!important;
   }
   .el-radio>>>.el-radio__label{
     padding-left: 0;
