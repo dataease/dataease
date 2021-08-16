@@ -91,7 +91,9 @@ export default {
       httpRequest: {
         status: true,
         msg: ''
-      }
+      },
+      timeMachine: null,
+      changeIndex: 0
     }
   },
   computed: {
@@ -131,6 +133,9 @@ export default {
     chartType() {
       return this.chart.type
     },
+    hw() {
+      return this.outStyle.width * this.outStyle.height
+    },
     ...mapState([
       'canvasStyleData',
       'nowPanelTrackInfo'
@@ -159,6 +164,22 @@ export default {
       handler(newVal, oldVla) {
         // this.chart.stylePriority == panel 优先使用仪表板样式
         this.mergeStyle()
+      },
+      deep: true
+    },
+    // 监听外部的样式变化 （非实时性要求）
+    'hw': {
+      handler(newVal, oldVla) {
+        // console.log('hw:' + newVal + '---' + oldVla)
+        if (newVal !== oldVla) {
+          this.destroyTimeMachine()
+          this.changeIndex++
+          this.chartResize(this.changeIndex)
+        }
+        //
+        // if (this.$refs[this.element.propValue.id]) {
+        //   this.$refs[this.element.propValue.id].chartResize()
+        // }
       },
       deep: true
     },
@@ -392,10 +413,20 @@ export default {
         }
       }
     },
-    // chart
-    chartResize() {
+    destroyTimeMachine() {
+      this.timeMachine && clearTimeout(this.timeMachine)
+      this.timeMachine = null
+    },
+
+    // 边框变化
+    chartResize(index) {
       if (this.$refs[this.element.propValue.id]) {
-        this.$refs[this.element.propValue.id].chartResize()
+        this.timeMachine = setTimeout(() => {
+          if (index === this.changeIndex) {
+            this.$refs[this.element.propValue.id].chartResize()
+          }
+          this.destroyTimeMachine()
+        }, 200)
       }
     }
   }
