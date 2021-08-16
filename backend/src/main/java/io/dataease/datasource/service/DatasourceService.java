@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,7 +78,11 @@ public class DatasourceService {
 
     public List<DatasourceDTO> getDatasourceList(DatasourceUnionRequest request) throws Exception {
         request.setSort("update_time desc");
-        return extDataSourceMapper.queryUnion(request);
+        List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.queryUnion(request);
+        datasourceDTOS.forEach(datasourceDTO -> {
+            datasourceDTO.getType();
+        });
+        return datasourceDTOS;
     }
 
     public List<DatasourceDTO> gridQuery(BaseGridRequest request) {
