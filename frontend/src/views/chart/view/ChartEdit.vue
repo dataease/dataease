@@ -1425,6 +1425,7 @@ export default {
       if (this.chart.type === 'map') {
         this.backToParent(0, length)
         this.currentAcreaNode = null
+        this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(null)
       }
     },
     drillJump(index) {
