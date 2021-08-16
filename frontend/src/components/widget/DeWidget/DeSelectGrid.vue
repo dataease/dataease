@@ -4,7 +4,7 @@
     <div class="de-select-grid-search">
       <el-input v-model="keyWord" :placeholder="$t('deinputsearch.placeholder')" size="mini" prefix-icon="el-icon-search" clearable />
     </div>
-    <div>
+    <div class="list">
       <el-tree
         v-if="options!== null && options.attrs!==null"
         ref="deSelectGrid"
@@ -244,6 +244,15 @@ export default {
 .de-select-grid-search {
   >>>input {
     border-radius: 0px;
+  }
+}
+.de-select-grid-class {
+  .list {
+    overflow-y: auto;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
   }
 }
 </style>
