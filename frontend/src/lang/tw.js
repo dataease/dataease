@@ -840,7 +840,9 @@ export default {
     bubble_symbol: '圖形',
     gap_width: '間隔',
     width: '寬度',
-    height: '高度'
+    height: '高度',
+    system_case: '系統方案',
+    custom_case: '自定義'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -1044,7 +1046,21 @@ export default {
     get_schema: '獲取 Schema',
     schema: '數據庫 Schema',
     please_choose_schema: '請選擇數據庫 Schema',
-    in_valid: '無效數據源'
+    in_valid: '無效數據源',
+    initial_pool_size: '初始連結數',
+    min_pool_size: '最小連結數',
+    max_pool_size: '最大連結數',
+    max_idle_time: '最大空閒(秒)',
+    acquire_increment: '增長數',
+    connect_timeout: '連接超時(秒)',
+    please_input_initial_pool_size: '請輸入初始連結數',
+    please_input_min_pool_size: '請輸入最小連結數',
+    please_input_max_pool_size: '請輸入最大連結數',
+    please_input_max_idle_time: '請輸入最大空閒(秒)',
+    please_input_acquire_increment: '請輸入增長數',
+    please_input_connect_timeout: '請輸入連接超時(秒)',
+    no_less_then_0: '高級設置中的參數不能小於零',
+    priority: '高級設置'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',

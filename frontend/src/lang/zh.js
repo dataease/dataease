@@ -840,7 +840,9 @@ export default {
     bubble_symbol: '图形',
     gap_width: '间隔',
     width: '宽度',
-    height: '高度'
+    height: '高度',
+    system_case: '系统方案',
+    custom_case: '自定义'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1046,7 +1048,21 @@ export default {
     schema: '数据库 Schema',
     please_choose_schema: '请选择数据库 Schema',
     edit_datasource_msg: '修改数据源信息，可能会导致改数据源下的数据集不可用，确认修改？',
-    in_valid: '无效数据源'
+    in_valid: '无效数据源',
+    initial_pool_size: '初始连接数',
+    min_pool_size: '最小连接数',
+    max_pool_size: '最大连接数',
+    max_idle_time: '最大空闲(秒)',
+    acquire_increment: '增长数',
+    connect_timeout: '连接超时(秒)',
+    please_input_initial_pool_size: '请输入初始连接数',
+    please_input_min_pool_size: '请输入最小连接数',
+    please_input_max_pool_size: '请输入最大连接数',
+    please_input_max_idle_time: '请输入最大空闲(秒)',
+    please_input_acquire_increment: '请输入增长数',
+    please_input_connect_timeout: '请输入连接超时(秒)',
+    no_less_then_0: '高级设置中的参数不能小于零',
+    priority: '高级设置'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

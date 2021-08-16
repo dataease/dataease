@@ -1,10 +1,8 @@
 package io.dataease.dto.dataset;
 
-import io.dataease.datasource.dto.TableFiled;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 public class ExcelFileData {

@@ -373,12 +373,12 @@ public class JdbcProvider extends DatasourceProvider {
     private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
         ComboPooledDataSource dataSource;
         dataSource = new ComboPooledDataSource();
-        setCredential(datasourceRequest, dataSource);
-        dataSource.setMaxIdleTime(30); // 最大空闲时间
-        dataSource.setAcquireIncrement(5);// 增长数
-        dataSource.setInitialPoolSize(initPoolSize);// 初始连接数
-        dataSource.setMinPoolSize(initPoolSize); // 最小连接数
-        dataSource.setMaxPoolSize(maxConnections); // 最大连接数
+        JdbcDTO jdbcDTO = setCredential(datasourceRequest, dataSource);
+        dataSource.setMaxIdleTime(jdbcDTO.getMaxIdleTime()); // 最大空闲时间
+        dataSource.setAcquireIncrement(jdbcDTO.getAcquireIncrement());// 增长数
+        dataSource.setInitialPoolSize(jdbcDTO.getInitialPoolSize());// 初始连接数
+        dataSource.setMinPoolSize(jdbcDTO.getMinPoolSize()); // 最小连接数
+        dataSource.setMaxPoolSize(jdbcDTO.getMaxPoolSize()); // 最大连接数
         dataSource.setAcquireRetryAttempts(30);// 获取连接重试次数
         dataSource.setIdleConnectionTestPeriod(60); // 每60s检查数据库空闲连接
         dataSource.setMaxStatements(0); // c3p0全局的PreparedStatements缓存的大小
@@ -449,8 +449,9 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
 
-    private void setCredential(DatasourceRequest datasourceRequest, ComboPooledDataSource dataSource) throws PropertyVetoException {
+    private JdbcDTO setCredential(DatasourceRequest datasourceRequest, ComboPooledDataSource dataSource) throws PropertyVetoException {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        JdbcDTO jdbcDTO = new JdbcDTO();
         switch (datasourceType) {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
@@ -458,6 +459,7 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setDriverClass(mysqlConfigration.getDriver());
                 dataSource.setPassword(mysqlConfigration.getPassword());
                 dataSource.setJdbcUrl(mysqlConfigration.getJdbc());
+                jdbcDTO = mysqlConfigration;
                 break;
             case doris:
                 MysqlConfigration dorisConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
@@ -465,6 +467,7 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setDriverClass(dorisConfigration.getDriver());
                 dataSource.setPassword(dorisConfigration.getPassword());
                 dataSource.setJdbcUrl(dorisConfigration.getJdbc());
+                jdbcDTO = dorisConfigration;
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
@@ -472,6 +475,7 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setDriverClass(sqlServerConfigration.getDriver());
                 dataSource.setPassword(sqlServerConfigration.getPassword());
                 dataSource.setJdbcUrl(sqlServerConfigration.getJdbc());
+                jdbcDTO = sqlServerConfigration;
                 break;
             case oracle:
                 OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
@@ -479,6 +483,7 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setDriverClass(oracleConfigration.getDriver());
                 dataSource.setPassword(oracleConfigration.getPassword());
                 dataSource.setJdbcUrl(oracleConfigration.getJdbc());
+                jdbcDTO = oracleConfigration;
                 break;
             case pg:
                 PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
@@ -486,10 +491,12 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setDriverClass(pgConfigration.getDriver());
                 dataSource.setPassword(pgConfigration.getPassword());
                 dataSource.setJdbcUrl(pgConfigration.getJdbc());
+                jdbcDTO = pgConfigration;
                 break;
             default:
                 break;
         }
+        return jdbcDTO;
     }
 
     private String getDatabase(DatasourceRequest datasourceRequest) {

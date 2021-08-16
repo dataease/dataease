@@ -296,6 +296,8 @@ export default {
       this.drillClickDimensionList = []
       if (this.chart.type === 'map') {
         this.backToParent(0, length)
+        const current = this.$refs[this.element.propValue.id]
+        current && current.registerDynamicMap && current.registerDynamicMap(null)
       }
     },
 

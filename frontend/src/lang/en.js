@@ -840,7 +840,9 @@ export default {
     bubble_symbol: 'Shape',
     gap_width: 'Gap Width',
     width: 'Width',
-    height: 'Height'
+    height: 'Height',
+    system_case: 'System',
+    custom_case: 'Custom'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1044,7 +1046,21 @@ export default {
     get_schema: 'Get Schema',
     schema: 'Database Schema',
     please_choose_schema: 'Please select Schema',
-    in_valid: 'Invalid datasource'
+    in_valid: 'Invalid datasource',
+    initial_pool_size: 'Initial connections',
+    min_pool_size: 'Minimum of connections',
+    max_pool_size: 'Maximum connection',
+    max_idle_time: 'Maximum idle (seconds)',
+    acquire_increment: 'Growth number',
+    connect_timeout: 'Connection timeout (seconds)',
+    please_input_initial_pool_size: 'Please enter the number of initial connections',
+    please_input_min_pool_size: 'Please enter the minimum number of connections',
+    please_input_max_pool_size: 'Please enter the maximum number of connections',
+    please_input_max_idle_time: 'Please enter the maximum idle (seconds)',
+    please_input_acquire_increment: 'Please enter the growth number',
+    please_input_connect_timeout: 'Please enter the connection timeout (seconds)',
+    no_less_then_0: 'Parameters in advanced settings cannot be less than zero',
+    priority: 'Advanced setting'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
