@@ -1006,7 +1006,12 @@ export default {
     field_manage: 'Field Manage',
     edit_calc_field: 'Edit calc field',
     calc_field: 'Calc Field',
-    show_sql: 'Show SQL'
+    show_sql: 'Show SQL',
+    ple_select_excel: 'Please select excel file to import',
+    merge: 'Merge',
+    no_merge: 'Dont Merge',
+    merge_msg: 'If the fields in the data table are consistent, merge them into one data set?',
+    merge_title: 'Merge data'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1038,7 +1043,8 @@ export default {
     oracle_service_name: 'Service Name',
     get_schema: 'Get Schema',
     schema: 'Database Schema',
-    please_choose_schema: 'Please select Schema'
+    please_choose_schema: 'Please select Schema',
+    in_valid: 'Invalid datasource'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
@@ -1139,6 +1145,7 @@ export default {
     bottomComponent: 'Bottom Component',
     upComponent: 'Up One Level',
     downComponent: 'Down One Level',
+    linkage_setting: 'Linkage Setting',
     open_aided_design: 'Open Component Aided Design',
     close_aided_design: 'Close Component Aided Design',
     open_style_design: 'Open Style Design',

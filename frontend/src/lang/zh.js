@@ -1006,7 +1006,12 @@ export default {
     field_manage: '字段管理',
     edit_calc_field: '编辑计算字段',
     calc_field: '计算字段',
-    show_sql: '显示SQL'
+    show_sql: '显示SQL',
+    ple_select_excel: '请选择要导入的 Excel',
+    merge: '合并',
+    no_merge: '不合并',
+    merge_msg: '数据表中存在字段一致的情况，是否合并到一个数据集中?',
+    merge_title: '合并数据'
   },
   datasource: {
     datasource: '数据源',
@@ -1040,7 +1045,8 @@ export default {
     get_schema: '获取 Schema',
     schema: '数据库 Schema',
     please_choose_schema: '请选择数据库 Schema',
-    edit_datasource_msg: '修改数据源信息，可能会导致改数据源下的数据集不可用，确认修改？'
+    edit_datasource_msg: '修改数据源信息，可能会导致改数据源下的数据集不可用，确认修改？',
+    in_valid: '无效数据源'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
@@ -1141,6 +1147,7 @@ export default {
     bottomComponent: '置底',
     upComponent: '上移',
     downComponent: '下移',
+    linkage_setting: '联动设置',
     open_aided_design: '打开组件辅助设计',
     close_aided_design: '关闭组件辅助设计',
     open_style_design: '打开样式设计',

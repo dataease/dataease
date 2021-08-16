@@ -34,7 +34,8 @@ public class MapUtils {
 
 
     public static String formatCode(String code) {
-        return code.substring(3);
+//        return code.substring(3);
+        return code;
     }
 
     /*public static List<Map<String, Object>> readCodeList( ) {
@@ -68,7 +69,7 @@ public class MapUtils {
 
         AreaEntity china = root();
 
-        maps.parallelStream().forEach(map -> {
+        maps.stream().forEach(map -> {
             // maps.stream().forEach(map -> {
             String province_code = map.get(Constants.PROVINCE_CODE).toString();
             String city_code = map.get(Constants.CITY_CODE).toString();

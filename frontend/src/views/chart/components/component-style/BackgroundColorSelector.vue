@@ -10,26 +10,6 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <!--    <div style="width: 100%">-->
-    <!--      <el-popover-->
-    <!--        placement="right"-->
-    <!--        width="400"-->
-    <!--        trigger="click"-->
-    <!--      >-->
-    <!--        <el-col>-->
-    <!--          <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">-->
-    <!--            <el-form-item :label="$t('chart.color')" class="form-item">-->
-    <!--              <colorPicker v-model="colorForm.color" style="margin-top: 6px;cursor: pointer;z-index: 1004;border: solid 1px black" @change="changeBackgroundStyle" />-->
-    <!--            </el-form-item>-->
-    <!--            <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">-->
-    <!--              <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeBackgroundStyle" />-->
-    <!--            </el-form-item>-->
-    <!--          </el-form>-->
-    <!--        </el-col>-->
-
-    <!--        <el-button slot="reference" :disabled="param && !hasDataPermission('manage',param.privileges)" size="mini" class="shape-item">{{ $t('chart.background') }}<i class="el-icon-setting el-icon&#45;&#45;right" /></el-button>-->
-    <!--      </el-popover>-->
-    <!--    </div>-->
   </div>
 </template>
 

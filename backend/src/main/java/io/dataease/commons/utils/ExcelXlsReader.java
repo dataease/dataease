@@ -300,9 +300,9 @@ public class ExcelXlsReader implements HSSFListener {
             }
             lastColumnNumber = -1;
 
-            if(!totalSheets.stream().map(ExcelSheetData::getSheetName).collect(Collectors.toList()).contains(sheetName)){
+            if(!totalSheets.stream().map(ExcelSheetData::getExcelLable).collect(Collectors.toList()).contains(sheetName)){
                 ExcelSheetData excelSheetData = new ExcelSheetData();
-                excelSheetData.setSheetName(sheetName);
+                excelSheetData.setExcelLable(sheetName);
                 excelSheetData.setData(new ArrayList<>());
                 excelSheetData.setFields(new ArrayList<>());
                 totalSheets.add(excelSheetData);
@@ -322,10 +322,10 @@ public class ExcelXlsReader implements HSSFListener {
 
 
             if (flag && curRow != 0) { //该行不为空行且该行不是第一行，发送（第一行为列名，不需要）
-                if(!totalSheets.stream().map(ExcelSheetData::getSheetName).collect(Collectors.toList()).contains(sheetName)){
+                if(!totalSheets.stream().map(ExcelSheetData::getExcelLable).collect(Collectors.toList()).contains(sheetName)){
                     ExcelSheetData excelSheetData = new ExcelSheetData();
                     excelSheetData.setData(new ArrayList<>(data));
-                    excelSheetData.setSheetName(sheetName);
+                    excelSheetData.setExcelLable(sheetName);
                     excelSheetData.setFields(new ArrayList<>(fields));
                     List<String> tmp = new ArrayList<>(cellList);
                     excelSheetData.getData().add(tmp);
@@ -333,7 +333,7 @@ public class ExcelXlsReader implements HSSFListener {
                     totalSheets.add(excelSheetData);
                 }else {
                     List<String> tmp = new ArrayList<>(cellList);
-                    totalSheets.stream().filter(s->s.getSheetName().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
                     totalRows++;
                 }
             }

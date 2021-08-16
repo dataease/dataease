@@ -483,7 +483,7 @@
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
+            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" ref="dynamicChart" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
             <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
             <div v-if="!httpRequest.status" class="chart-error-class">
@@ -572,7 +572,7 @@
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table || !table.id || !changeTable || !changeTable.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button type="primary" size="mini" :disabled="!changeTable || !changeTable.id" @click="changeChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -711,7 +711,8 @@ export default {
       },
       moveId: -1,
       chart: {
-        id: 'echart'
+        id: 'echart',
+        type: null
       },
       dimensionFilterEdit: false,
       dimensionItem: {},
@@ -754,23 +755,31 @@ export default {
     //   this.getData(this.$store.state.chart.viewId)
     //   return this.$store.state.chart.viewId
     // }
+    chartType() {
+      return this.chart.type
+    }
   },
   watch: {
     'param': function() {
-      this.resetDrill()
       if (this.param.optType === 'new') {
         //
       } else {
+        this.resetDrill()
         this.getData(this.param.id)
       }
     },
     searchField(val) {
       this.fieldFilter(val)
+    },
+    'chartType': function(newVal, oldVal) {
+      if (newVal === 'map' && newVal !== oldVal) {
+        this.initAreas()
+      }
     }
   },
   created() {
     // this.get(this.$store.state.chart.viewId);
-    this.initAreas()
+    // this.initAreas()
   },
   mounted() {
     // this.get(this.$store.state.chart.viewId);
@@ -821,6 +830,9 @@ export default {
         return
       }
       view.tableId = this.view.tableId
+      if (view.type === 'map' && view.xaxis.length > 1) {
+        view.xaxis = [view.xaxis[0]]
+      }
       view.xaxis.forEach(function(ele) {
         // if (!ele.summary || ele.summary === '') {
         //   ele.summary = 'sum'
@@ -838,6 +850,9 @@ export default {
           ele.filter = []
         }
       })
+      if (view.type === 'map' && view.yaxis.length > 1) {
+        view.yaxis = [view.yaxis[0]]
+      }
       view.yaxis.forEach(function(ele) {
         if (!ele.summary || ele.summary === '') {
           if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
@@ -909,8 +924,8 @@ export default {
         // this.get(response.data.id);
         // this.getData(response.data.id)
 
-        this.resetDrill()
         if (getData) {
+          this.resetDrill()
           this.getData(response.data.id)
         } else {
           this.getChart(response.data.id)
@@ -925,67 +940,6 @@ export default {
       })
     },
 
-    // saveSnapshot() {
-    //   if (this.view.title && this.view.title.length > 50) {
-    //     this.$warning(this.$t('chart.title_limit'))
-    //     return
-    //   }
-    //   if (this.loading) {
-    //     return
-    //   }
-    //   this.loading = true
-    //   html2canvas(this.$refs.imageWrapper).then(canvas => {
-    //     const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
-    //     if (snapshot !== '') {
-    //       const view = JSON.parse(JSON.stringify(this.view))
-    //       view.id = this.view.id
-    //       view.sceneId = this.view.sceneId
-    //       view.name = this.view.name ? this.view.name : this.table.name
-    //       view.tableId = this.view.tableId
-    //       view.xaxis.forEach(function(ele) {
-    //         // if (!ele.summary || ele.summary === '') {
-    //         //   ele.summary = 'sum'
-    //         // }
-    //         if (!ele.sort || ele.sort === '') {
-    //           ele.sort = 'none'
-    //         }
-    //         if (!ele.filter) {
-    //           ele.filter = []
-    //         }
-    //       })
-    //       view.yaxis.forEach(function(ele) {
-    //         if (!ele.summary || ele.summary === '') {
-    //           if (ele.id === 'count') {
-    //             ele.summary = 'count'
-    //           } else {
-    //             ele.summary = 'sum'
-    //           }
-    //         }
-    //         if (!ele.sort || ele.sort === '') {
-    //           ele.sort = 'none'
-    //         }
-    //         if (!ele.filter) {
-    //           ele.filter = []
-    //         }
-    //       })
-    //       if (view.type.startsWith('pie') || view.type.startsWith('funnel') || view.type.startsWith('gauge')) {
-    //         if (view.yaxis.length > 1) {
-    //           view.yaxis.splice(1, view.yaxis.length)
-    //         }
-    //       }
-    //       view.xaxis = JSON.stringify(view.xaxis)
-    //       view.yaxis = JSON.stringify(view.yaxis)
-    //       view.customAttr = JSON.stringify(view.customAttr)
-    //       view.customStyle = JSON.stringify(view.customStyle)
-    //       view.customFilter = JSON.stringify(view.customFilter)
-    //       view.snapshot = snapshot
-    //       post('/chart/view/save', view).then(response => {
-    //         this.loading = false
-    //         this.$success(this.$t('commons.save_success'))
-    //       })
-    //     }
-    //   })
-    // },
     closeEdit() {
       if (this.view.title && this.view.title.length > 50) {
         this.$warning(this.$t('chart.title_limit'))
@@ -1023,7 +977,7 @@ export default {
           if (!response.data.drill) {
             this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
           }
-          this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
+          this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
         }).catch(err => {
           this.resetView()
           this.resetDrill()
@@ -1067,74 +1021,6 @@ export default {
       }
     },
 
-    // 左边往右边拖动时的事件
-    // start1(e) {
-    //   // console.log(e)
-    //   e.clone.className = 'item'
-    //   e.item.className = 'item'
-    // },
-    // end1(e) {
-    //   // console.log(e)
-    //   e.clone.className = 'item'
-    //   e.item.className = 'item'
-    //   this.refuseMove(e)
-    //   this.removeCheckedKey(e)
-    //   this.save(true)
-    // },
-    // 右边往左边拖动时的事件
-    // start2(e) {
-    // console.log(e)
-    // },
-    // end2(e) {
-    //   // console.log(e)
-    //   this.removeDuplicateKey(e)
-    //   this.save(true)
-    // },
-    // removeCheckedKey(e) {
-    //   const that = this
-    //   const xItems = this.view.xaxis.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   const yItems = this.view.yaxis.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   if (xItems && xItems.length > 1) {
-    //     this.view.xaxis.splice(e.newDraggableIndex, 1)
-    //   }
-    //   if (yItems && yItems.length > 1) {
-    //     this.view.yaxis.splice(e.newDraggableIndex, 1)
-    //   }
-    // },
-    // refuseMove(e) {
-    //   const that = this
-    //   const xItems = this.dimension.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   const yItems = this.quota.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   if (xItems && xItems.length > 1) {
-    //     this.dimension.splice(e.newDraggableIndex, 1)
-    //   }
-    //   if (yItems && yItems.length > 1) {
-    //     this.quota.splice(e.newDraggableIndex, 1)
-    //   }
-    // },
-    // removeDuplicateKey(e) {
-    //   const that = this
-    //   const xItems = this.dimension.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   const yItems = this.quota.filter(function(m) {
-    //     return m.id === that.moveId
-    //   })
-    //   if (xItems && xItems.length > 1) {
-    //     this.dimension.splice(e.newDraggableIndex, 1)
-    //   }
-    //   if (yItems && yItems.length > 1) {
-    //     this.quota.splice(e.newDraggableIndex, 1)
-    //   }
-    // },
     // move回调方法
     onMove(e, originalEvent) {
       // console.log(e)
@@ -1368,6 +1254,7 @@ export default {
         this.view.customFilter = []
         this.view.extStack = []
         this.view.extBubble = []
+        this.view.drillFields = []
       }
       this.save(true, 'chart', false)
     },
@@ -1411,11 +1298,17 @@ export default {
       }
     },
     addXaxis(e) {
+      if (this.view.type === 'map' && this.view.xaxis.length > 1) {
+        this.view.xaxis = [this.view.xaxis[0]]
+      }
       this.dragCheckType(this.view.xaxis, 'd')
       this.dragMoveDuplicate(this.view.xaxis, e)
       this.save(true)
     },
     addYaxis(e) {
+      if (this.view.type === 'map' && this.view.yaxis.length > 1) {
+        this.view.yaxis = [this.view.yaxis[0]]
+      }
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
       this.save(true)
@@ -1444,14 +1337,14 @@ export default {
     },
 
     initAreas() {
-      let mapping
-      if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-        this.places = JSON.parse(mapping)
-        return
-      }
+    //   let mapping
+    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
+    //     this.places = JSON.parse(mapping)
+    //     return
+    //   }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
-        localStorage.setItem('areaMapping', JSON.stringify(res.data))
+        // localStorage.setItem('areaMapping', JSON.stringify(res.data))
       })
     },
 
@@ -1513,18 +1406,95 @@ export default {
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
-        this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-        this.getData(this.param.id)
+        // const isSwitch = (this.chart.type === 'map' && this.sendToChildren(param))
+        if (this.chart.type === 'map') {
+          if (this.sendToChildren(param)) {
+            this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+            this.getData(this.param.id)
+          }
+        } else {
+          this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+          this.getData(this.param.id)
+        }
       }
     },
 
     resetDrill() {
+      const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
+      if (this.chart.type === 'map') {
+        this.backToParent(0, length)
+        this.currentAcreaNode = null
+      }
     },
     drillJump(index) {
+      const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
+      if (this.chart.type === 'map') {
+        this.backToParent(index, length)
+      }
+
       this.getData(this.param.id)
+    },
+    // 回到父级地图
+    backToParent(index, length) {
+      if (length <= 0) return
+      const times = length - 1 - index
+
+      let temp = times
+      let tempNode = this.currentAcreaNode
+      while (temp >= 0) {
+        tempNode = this.findEntityByCode(tempNode.pcode, this.places)
+        temp--
+      }
+
+      this.currentAcreaNode = tempNode
+      this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
+    },
+
+    // 切换下一级地图
+    sendToChildren(param) {
+      const length = param.data.dimensionList.length
+      const name = param.data.dimensionList[length - 1].value
+      let aCode = null
+      if (this.currentAcreaNode) {
+        aCode = this.currentAcreaNode.code
+      }
+      //   const aCode = this.currentAcreaNode ? this.currentAcreaNode.code : null
+      const currentNode = this.findEntityByCode(aCode || this.view.customAttr.areaCode, this.places)
+      if (currentNode && currentNode.children && currentNode.children.length > 0) {
+        const nextNode = currentNode.children.find(item => item.name === name)
+        if (!nextNode || !nextNode.code) return null
+        // this.view.customAttr.areaCode = nextNode.code
+        this.currentAcreaNode = nextNode
+        this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
+        return nextNode
+      }
+    },
+    // 根据地名获取areaCode
+    // findEntityByname(name, array) {
+    //   if (array === null || array.length === 0) array = this.places
+    //   for (let index = 0; index < array.length; index++) {
+    //     const node = array[index]
+    //     if (node.name === name) return node
+    //     if (node.children && node.children.length > 0) {
+    //       const temp = this.findEntityByname(name, node.children)
+    //       if (temp) return temp
+    //     }
+    //   }
+    // }
+    findEntityByCode(code, array) {
+      if (array === null || array.length === 0) array = this.places
+      for (let index = 0; index < array.length; index++) {
+        const node = array[index]
+        if (node.code === code) return node
+        if (node.children && node.children.length > 0) {
+          const temp = this.findEntityByCode(code, node.children)
+          if (temp) return temp
+        }
+      }
     }
+
   }
 }
 </script>

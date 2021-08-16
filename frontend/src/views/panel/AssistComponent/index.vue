@@ -267,7 +267,7 @@ export default {
       height: 24px;
       position: relative;
       flex-shrink: 0;
-      font-size: 24px;
+      font-size: 24px!important;
       margin: auto;
       font-family: fineui;
       font-style: normal;

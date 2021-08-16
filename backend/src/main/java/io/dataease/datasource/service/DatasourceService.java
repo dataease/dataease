@@ -57,6 +57,7 @@ public class DatasourceService {
         datasource.setCreateBy(String.valueOf(AuthUtils.getUser().getUsername()));
         datasourceMapper.insertSelective(datasource);
         handleConnectionPool(datasource, "add");
+        checkAndUpdateDatasourceStatus(datasource);
         return datasource;
     }
 
@@ -111,6 +112,7 @@ public class DatasourceService {
         datasource.setUpdateTime(System.currentTimeMillis());
         datasourceMapper.updateByPrimaryKeySelective(datasource);
         handleConnectionPool(datasource, "edit");
+        checkAndUpdateDatasourceStatus(datasource);
     }
 
     public void validate(Datasource datasource) throws Exception {
@@ -198,6 +200,27 @@ public class DatasourceService {
         }
         if (CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))) {
             DEException.throwException(Translator.get("i18n_ds_name_exists"));
+        }
+    }
+
+    public void updateDatasourceStatus(){
+        List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
+        datasources.forEach(datasource -> {
+            checkAndUpdateDatasourceStatus(datasource);
+        });
+    }
+
+    private void checkAndUpdateDatasourceStatus(Datasource datasource){
+        try {
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(datasource);
+            datasourceProvider.checkStatus(datasourceRequest);
+            datasource.setStatus("Success");
+            datasourceMapper.updateByPrimaryKeySelective(datasource);
+        } catch (Exception e) {
+            datasource.setStatus("Error");
+            datasourceMapper.updateByPrimaryKeySelective(datasource);
         }
     }
 }

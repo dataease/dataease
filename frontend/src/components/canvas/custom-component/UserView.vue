@@ -16,9 +16,10 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="requestStatus==='success'&&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
-    <table-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
-    <label-normal v-if="requestStatus==='success'&&chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
+    <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
+    <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 20px;bottom:14px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
@@ -41,7 +42,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
-
+import { areaMapping } from '@/api/map/map'
 export default {
   name: 'UserView',
   components: { ChartComponent, TableNormal, LabelNormal, DrillPath },
@@ -85,7 +86,12 @@ export default {
       message: null,
       drillClickDimensionList: [],
       drillFilters: [],
-      drillFields: []
+      drillFields: [],
+      places: [],
+      httpRequest: {
+        status: true,
+        msg: ''
+      }
     }
   },
   computed: {
@@ -111,7 +117,7 @@ export default {
     trackMenu() {
       const trackMenuInfo = []
       let linkageCount = 0
-      this.chart.data.fields && this.chart.data.fields.forEach(item => {
+      this.chart.data && this.chart.data.fields && this.chart.data.fields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
@@ -121,6 +127,9 @@ export default {
       this.drillFields.length && trackMenuInfo.push('drill')
       console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
       return trackMenuInfo
+    },
+    chartType() {
+      return this.chart.type
     },
     ...mapState([
       'canvasStyleData',
@@ -135,8 +144,13 @@ export default {
     },
     linkageFilters: {
       handler(newVal, oldVal) {
-        debugger
-        isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
+        // isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
+        if (isChange(newVal, oldVal)) {
+        //   if (this.chart.type === 'map') {
+        //     this.doMapLink(newVal)
+        //   }
+          this.getData(this.element.propValue.viewId)
+        }
       },
       deep: true
     },
@@ -148,12 +162,13 @@ export default {
       },
       deep: true
     },
-    // 监听外部的样式变化
+    // 监听外部的样式变化 （非实时性要求）
     outStyle: {
       handler(newVal, oldVla) {
-        if (this.$refs[this.element.propValue.id]) {
-          this.$refs[this.element.propValue.id].chartResize()
-        }
+        //
+        // if (this.$refs[this.element.propValue.id]) {
+        //   this.$refs[this.element.propValue.id].chartResize()
+        // }
       },
       deep: true
     },
@@ -162,6 +177,11 @@ export default {
       if (val1 > 0) {
         this.getData(this.element.propValue.viewId)
       }
+    },
+    'chartType': function(newVal, oldVal) {
+      if (newVal === 'map' && newVal !== oldVal) {
+        this.initAreas()
+      }
     }
   },
 
@@ -169,6 +189,7 @@ export default {
     this.refId = uuid.v1
     // this.filter.filter = this.$store.getters.conditions
     this.getData(this.element.propValue.viewId)
+    // this.initAreas()
   },
   mounted() {
   },
@@ -207,7 +228,9 @@ export default {
 
         // 增加判断 仪表板公共连接中使用viewInfo 正常使用viewData
         let method = viewData
-        if (!getToken() && getLinkToken()) {
+        const token = this.$store.getters.token || getToken()
+        const linkToken = this.$store.getters.linkToken || getLinkToken()
+        if (!token && linkToken) {
           method = viewInfo
         }
 
@@ -216,7 +239,6 @@ export default {
           if (response.success) {
             this.chart = response.data
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
-            debugger
             if (!response.data.drill) {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
             }
@@ -225,12 +247,15 @@ export default {
             this.requestStatus = 'merging'
             this.mergeStyle()
             this.requestStatus = 'success'
+            this.httpRequest.status = true
           } else {
             this.requestStatus = 'error'
             this.message = response.message
           }
           return true
         }).catch(err => {
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
           this.requestStatus = 'error'
           if (err && err.response && err.response.data) {
             this.message = err.response.data.message
@@ -259,19 +284,117 @@ export default {
     },
 
     chartClick(param) {
-      debugger
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
+        this.chart.type === 'map' && this.sendToChildren(param)
         this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
         this.getData(this.element.propValue.viewId)
       }
     },
 
     resetDrill() {
+      const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
+      if (this.chart.type === 'map') {
+        this.backToParent(0, length)
+      }
     },
+
     drillJump(index) {
+      const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
+      if (this.chart.type === 'map') {
+        this.backToParent(index, length)
+      }
       this.getData(this.element.propValue.viewId)
+    },
+    // 回到父级地图
+    backToParent(index, length) {
+      if (length <= 0) return
+      const times = length - 1 - index
+
+      let temp = times
+      let tempNode = this.currentAcreaNode
+      while (temp >= 0) {
+        tempNode = this.findEntityByCode(tempNode.pcode, this.places)
+        temp--
+      }
+
+      this.currentAcreaNode = tempNode
+      const current = this.$refs[this.element.propValue.id]
+      current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+      // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
+    },
+
+    // 切换下一级地图
+    sendToChildren(param) {
+      const length = param.data.dimensionList.length
+      const name = param.data.dimensionList[length - 1].value
+      let aCode = null
+      if (this.currentAcreaNode) {
+        aCode = this.currentAcreaNode.code
+      }
+      //   const aCode = this.currentAcreaNode ? this.currentAcreaNode.code : null
+      const customAttr = JSON.parse(this.chart.customAttr)
+      const currentNode = this.findEntityByCode(aCode || customAttr.areaCode, this.places)
+      if (currentNode && currentNode.children && currentNode.children.length > 0) {
+        const nextNode = currentNode.children.find(item => item.name === name)
+        // this.view.customAttr.areaCode = nextNode.code
+        this.currentAcreaNode = nextNode
+        const current = this.$refs[this.element.propValue.id]
+        current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+      }
+    },
+
+    findEntityByCode(code, array) {
+      if (array === null || array.length === 0) array = this.places
+      for (let index = 0; index < array.length; index++) {
+        const node = array[index]
+        if (node.code === code) return node
+        if (node.children && node.children.length > 0) {
+          const temp = this.findEntityByCode(code, node.children)
+          if (temp) return temp
+        }
+      }
+    },
+    initAreas() {
+    //   let mapping
+    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
+    //     this.places = JSON.parse(mapping)
+    //     return
+    //   }
+      Object.keys(this.places).length === 0 && areaMapping().then(res => {
+        this.places = res.data
+        // localStorage.setItem('areaMapping', JSON.stringify(res.data))
+      })
+    },
+    doMapLink(linkFilters) {
+      if (!linkFilters && linkFilters.length === 0) return
+      const value = linkFilters[0].value
+      if (!value && value.length === 0) return
+      const name = value[0]
+      if (!name) return
+      const areaNode = this.findEntityByname(name, [])
+      if (!areaNode) return
+      const current = this.$refs[this.element.propValue.id]
+      current && current.registerDynamicMap && current.registerDynamicMap(areaNode.code)
+    },
+    // 根据地名获取areaCode
+    findEntityByname(name, array) {
+      if (array === null || array.length === 0) array = this.places
+      for (let index = 0; index < array.length; index++) {
+        const node = array[index]
+        if (node.name === name) return node
+        if (node.children && node.children.length > 0) {
+          const temp = this.findEntityByname(name, node.children)
+          if (temp) return temp
+        }
+      }
+    },
+    // chart
+    chartResize() {
+      if (this.$refs[this.element.propValue.id]) {
+        this.$refs[this.element.propValue.id].chartResize()
+      }
     }
   }
 }

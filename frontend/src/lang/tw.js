@@ -1006,7 +1006,12 @@ export default {
     field_manage: '字段管理',
     edit_calc_field: '編輯計算字段',
     calc_field: '計算字段',
-    show_sql: '顯示SQL'
+    show_sql: '顯示SQL',
+    ple_select_excel: '請選擇要導入的 Excel',
+    merge: '合併',
+    no_merge: '不合併',
+    merge_msg: '數據表中存在自斷一直的情況，是否合併到一個數據集中?',
+    merge_title: '合併數據'
   },
   datasource: {
     datasource: '數據源',
@@ -1038,7 +1043,8 @@ export default {
     oracle_service_name: '服務名',
     get_schema: '獲取 Schema',
     schema: '數據庫 Schema',
-    please_choose_schema: '請選擇數據庫 Schema'
+    please_choose_schema: '請選擇數據庫 Schema',
+    in_valid: '無效數據源'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
@@ -1139,6 +1145,7 @@ export default {
     bottomComponent: '置底',
     upComponent: '上移',
     downComponent: '下移',
+    linkage_setting: '联动设置',
     open_aided_design: '打開組件輔助設計',
     close_aided_design: '關閉組件輔助設計',
     open_style_design: '打開樣式設計',

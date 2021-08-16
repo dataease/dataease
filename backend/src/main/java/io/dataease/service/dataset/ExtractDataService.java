@@ -17,6 +17,7 @@ import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.exception.DataEaseException;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
@@ -150,7 +151,7 @@ public class ExtractDataService {
         }
     }
 
-    public void extractExcelData(String datasetTableId, String type, String ops) {
+    public void extractExcelData(String datasetTableId, String type, String ops, List<DatasetTableField> datasetTableFields) {
         Datasource datasource = new Datasource();
         datasource.setType("excel");
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
@@ -160,7 +161,9 @@ public class ExtractDataService {
         }
         UpdateType updateType = UpdateType.valueOf(type);
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
+        if(datasetTableFields == null){
+            datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
+        }
         datasetTableFields.sort((o1, o2) -> {
             if (o1.getColumnIndex() == null) {
                 return -1;
@@ -185,6 +188,12 @@ public class ExtractDataService {
                     saveSucessLog(datasetTableTaskLog);
 //                    sendWebMsg(datasetTable, null, true);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
+                    if(ops.equalsIgnoreCase("替换")){
+                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
+                        datasetTableFields.forEach(datasetTableField -> {
+                            dataSetTableFieldsService.save(datasetTableField);
+                        });
+                    }
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
 //                    sendWebMsg(datasetTable, null, false);
@@ -192,7 +201,9 @@ public class ExtractDataService {
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                 } finally {
                     deleteFile("all_scope", datasetTableId);
-//                    deleteFile(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getData());
+                    for (ExcelSheetData excelSheetData : new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()) {
+                        deleteFile(excelSheetData.getPath());
+                    }
                 }
                 break;
 
@@ -213,6 +224,9 @@ public class ExtractDataService {
                 } finally {
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
+                    for (ExcelSheetData excelSheetData : new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()) {
+                        deleteFile(excelSheetData.getPath());
+                    }
                 }
                 break;
         }
@@ -831,18 +845,30 @@ public class ExtractDataService {
 
     private StepMeta excelInputStep(String Info, List<DatasetTableField> datasetTableFields){
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(Info, DataTableInfoDTO.class);
-        String suffix = dataTableInfoDTO.getData().substring(dataTableInfoDTO.getData().lastIndexOf(".") + 1);
+        List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
+        String suffix = excelSheetDataList.get(0).getPath().substring(excelSheetDataList.get(0).getPath().lastIndexOf(".") + 1);
         ExcelInputMeta excelInputMeta = new ExcelInputMeta();
+
+        List<String> sheetNames = new ArrayList<>();
+        List<String> files = new ArrayList<>();
+        for (ExcelSheetData excelSheetData : excelSheetDataList) {
+            if(!sheetNames.contains(excelSheetData.getExcelLable())){
+                sheetNames.add(excelSheetData.getExcelLable());
+            }
+            if(!files.contains(excelSheetData.getPath())){
+                files.add(excelSheetData.getPath());
+            }
+        }
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
-            excelInputMeta.setSheetName(new String[]{dataTableInfoDTO.getSheets().get(0)});
+            excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             excelInputMeta.setSpreadSheetType(SpreadSheetType.JXL);
-            excelInputMeta.setSheetName(new String[]{dataTableInfoDTO.getSheets().get(0)});
+            excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
         }
         excelInputMeta.setPassword("Encrypted");
-        excelInputMeta.setFileName(new String[]{dataTableInfoDTO.getData()});
+        excelInputMeta.setFileName( files.toArray(new String[files.size()]));
         excelInputMeta.setStartsWithHeader(true);
         excelInputMeta.setIgnoreEmptyRows(true);
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
