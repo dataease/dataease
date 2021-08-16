@@ -1457,9 +1457,11 @@ export default {
       const currentNode = this.findEntityByCode(aCode || this.view.customAttr.areaCode, this.places)
       if (currentNode && currentNode.children && currentNode.children.length > 0) {
         const nextNode = currentNode.children.find(item => item.name === name)
+        if (!nextNode || !nextNode.code) return null
         // this.view.customAttr.areaCode = nextNode.code
         this.currentAcreaNode = nextNode
         this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
+        return nextNode
       }
     },
     // 根据地名获取areaCode

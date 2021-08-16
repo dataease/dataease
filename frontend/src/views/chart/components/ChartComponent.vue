@@ -166,24 +166,28 @@ export default {
       this.myEcharts(chart_option)
     },
     registerDynamicMap(areaCode) {
+      this.downOrUp = true
       if (this.$store.getters.geoMap[areaCode]) {
-        this.downOrUp = true
         const json = this.$store.getters.geoMap[areaCode]
         this.$echarts.registerMap('MAP', json)
+        console.log('开始切换地图：' + areaCode)
         return
       }
       geoJson(areaCode).then(res => {
-        this.downOrUp = true
         this.$echarts.registerMap('MAP', res)
+        console.log('开始切换地图：' + areaCode)
         this.$store.dispatch('map/setGeo', {
           key: areaCode,
           value: res
         })
+      }).catch(() => {
+        this.downOrUp = true
       })
     },
 
     initMapChart(geoJson, chart) {
       if (!this.$echarts.getMap('MAP') || !this.downOrUp) {
+        console.log('开始初始化地图：')
         this.$echarts.registerMap('MAP', geoJson)
       }
       // this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
