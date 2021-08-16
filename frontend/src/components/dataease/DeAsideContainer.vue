@@ -4,10 +4,6 @@
     class="ms-aside-container"
     :style="{'margin-left': !asideHidden ? 0 : '-' + width}"
   >
-    <!--<div v-if="enableAsideHidden" class="hiddenBottom" @click="asideHidden = !asideHidden">-->
-    <!--<i v-if="!asideHidden" class="el-icon-arrow-left"/>-->
-    <!--<i v-if="asideHidden" class="el-icon-arrow-right"/>-->
-    <!--</div>-->
     <slot />
     <de-horizontal-drag-bar v-if="showDragBar" />
   </el-aside>

@@ -384,76 +384,6 @@ public class DatasourceExample {
             return (Criteria) this;
         }
 
-        public Criteria andCreateByIsNull() {
-            addCriterion("create_by is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByIsNotNull() {
-            addCriterion("create_by is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByEqualTo(String value) {
-            addCriterion("create_by =", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByNotEqualTo(String value) {
-            addCriterion("create_by <>", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByGreaterThan(String value) {
-            addCriterion("create_by >", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByGreaterThanOrEqualTo(String value) {
-            addCriterion("create_by >=", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByLessThan(String value) {
-            addCriterion("create_by <", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByLessThanOrEqualTo(String value) {
-            addCriterion("create_by <=", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByLike(String value) {
-            addCriterion("create_by like", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByNotLike(String value) {
-            addCriterion("create_by not like", value, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByIn(List<String> values) {
-            addCriterion("create_by in", values, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByNotIn(List<String> values) {
-            addCriterion("create_by not in", values, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByBetween(String value1, String value2) {
-            addCriterion("create_by between", value1, value2, "createBy");
-            return (Criteria) this;
-        }
-
-        public Criteria andCreateByNotBetween(String value1, String value2) {
-            addCriterion("create_by not between", value1, value2, "createBy");
-            return (Criteria) this;
-        }
-
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;
@@ -571,6 +501,146 @@ public class DatasourceExample {
 
         public Criteria andUpdateTimeNotBetween(Long value1, Long value2) {
             addCriterion("update_time not between", value1, value2, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByIsNull() {
+            addCriterion("create_by is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByIsNotNull() {
+            addCriterion("create_by is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByEqualTo(String value) {
+            addCriterion("create_by =", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByNotEqualTo(String value) {
+            addCriterion("create_by <>", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByGreaterThan(String value) {
+            addCriterion("create_by >", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByGreaterThanOrEqualTo(String value) {
+            addCriterion("create_by >=", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByLessThan(String value) {
+            addCriterion("create_by <", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByLessThanOrEqualTo(String value) {
+            addCriterion("create_by <=", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByLike(String value) {
+            addCriterion("create_by like", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByNotLike(String value) {
+            addCriterion("create_by not like", value, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByIn(List<String> values) {
+            addCriterion("create_by in", values, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByNotIn(List<String> values) {
+            addCriterion("create_by not in", values, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByBetween(String value1, String value2) {
+            addCriterion("create_by between", value1, value2, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateByNotBetween(String value1, String value2) {
+            addCriterion("create_by not between", value1, value2, "createBy");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNull() {
+            addCriterion("`status` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNotNull() {
+            addCriterion("`status` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusEqualTo(String value) {
+            addCriterion("`status` =", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotEqualTo(String value) {
+            addCriterion("`status` <>", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThan(String value) {
+            addCriterion("`status` >", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThanOrEqualTo(String value) {
+            addCriterion("`status` >=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThan(String value) {
+            addCriterion("`status` <", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThanOrEqualTo(String value) {
+            addCriterion("`status` <=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLike(String value) {
+            addCriterion("`status` like", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotLike(String value) {
+            addCriterion("`status` not like", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIn(List<String> values) {
+            addCriterion("`status` in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotIn(List<String> values) {
+            addCriterion("`status` not in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusBetween(String value1, String value2) {
+            addCriterion("`status` between", value1, value2, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotBetween(String value1, String value2) {
+            addCriterion("`status` not between", value1, value2, "status");
             return (Criteria) this;
         }
     }

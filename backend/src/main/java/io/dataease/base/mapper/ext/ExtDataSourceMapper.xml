@@ -24,7 +24,7 @@
     </select>
 
     <select id="queryUnion"  resultMap="BaseResultMapDTO">
-        select id , name , `desc` ,`type` , configuration ,create_time ,update_time,
+        select id , name , `desc` ,`type` , configuration ,create_time ,update_time, status,
         get_auths(id,'link',#{userId}) as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'link') cids) t,datasource
         <where>

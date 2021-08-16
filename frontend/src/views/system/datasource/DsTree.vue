@@ -37,13 +37,22 @@
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex;flex: 1;width: 0;">
-                <span v-if="data.type !== 'folder'">
+                <span v-if="data.type !== 'folder' && data.status !== 'Error'">
                   <svg-icon icon-class="datasource" class="ds-icon-scene" />
                 </span>
+                <span v-if="data.status === 'Error'">
+                    <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
+                    <el-tooltip  v-if="data.status === 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" effect="dark" :content="$t('datasource.in_valid')" placement="right">
+                      <el-button type="text" > {{ data.name }} </el-button>
+                    </el-tooltip>
+                  </span>
                 <span v-if="data.type === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span v-if=" data.status !== 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                  {{ data.name }}
+                </span>
+
               </span>
               <span class="child">
                 <span v-if="data.type ==='folder'" @click.stop>
@@ -67,24 +76,6 @@
                       @click="_handleDelete(data)"
                     />
                   </span>
-                  <!-- <el-dropdown trigger="click" size="small" @command="clickFileMore">
-                    <span class="el-dropdown-link">
-                      <el-button
-                        icon="el-icon-more"
-                        type="text"
-                        size="small"
-                      />
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit" :command="beforeClickFile('edit',data,node)">
-                        {{ $t('panel.edit') }}
-                      </el-dropdown-item>
-
-                      <el-dropdown-item icon="el-icon-delete" :command="beforeClickFile('delete',data,node)">
-                        {{ $t('panel.delete') }}
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown> -->
                 </span>
               </span>
             </span>

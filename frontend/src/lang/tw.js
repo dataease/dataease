@@ -1043,7 +1043,8 @@ export default {
     oracle_service_name: '服務名',
     get_schema: '獲取 Schema',
     schema: '數據庫 Schema',
-    please_choose_schema: '請選擇數據庫 Schema'
+    please_choose_schema: '請選擇數據庫 Schema',
+    in_valid: '無效數據源'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',

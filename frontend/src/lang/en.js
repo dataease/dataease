@@ -1043,7 +1043,8 @@ export default {
     oracle_service_name: 'Service Name',
     get_schema: 'Get Schema',
     schema: 'Database Schema',
-    please_choose_schema: 'Please select Schema'
+    please_choose_schema: 'Please select Schema',
+    in_valid: 'Invalid datasource'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',

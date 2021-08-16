@@ -13,11 +13,13 @@ public class Datasource implements Serializable {
 
     private String type;
 
-    private String createBy;
-
     private Long createTime;
 
     private Long updateTime;
+
+    private String createBy;
+
+    private String status;
 
     private String configuration;
 

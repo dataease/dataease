@@ -1542,7 +1542,6 @@ public class DataSetTableService {
     @Resource
     private UtilMapper utilMapper;
 
-    @QuartzScheduled(cron = "0 0/3 * * * ?")
     public void updateDatasetTableStatus() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > utilMapper.currentTimestamp()).map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
