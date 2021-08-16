@@ -13,7 +13,7 @@
               <div style="padding: 6px 10px;">
                 <div>
                   <span class="color-label">{{ $t('chart.system_case') }}</span>
-                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorCase">
+                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorOption">
                     <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
                       <div style="float: left">
                         <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
@@ -187,10 +187,14 @@ export default {
     }
   },
   watch: {
-    'chart': {
+    'chart.id': {
       handler: function() {
         this.customColor = null
         this.colorIndex = 0
+      }
+    },
+    'chart': {
+      handler: function() {
         this.init()
       }
     }
@@ -199,17 +203,26 @@ export default {
     this.init()
   },
   methods: {
-    changeColorCase() {
+    changeColorOption() {
       const that = this
       const items = this.colorCases.filter(ele => {
         return ele.value === that.colorForm.value
       })
-      const val = JSON.parse(JSON.stringify(this.colorForm))
-      val.value = items[0].value
-      val.colors = items[0].colors
-      this.$emit('onColorChange', val)
-      this.customColor = null
+      // const val = JSON.parse(JSON.stringify(this.colorForm))
+      // val.value = items[0].value
+      // val.colors = items[0].colors
+      // this.colorForm.value = items[0].value
+      this.colorForm.colors = JSON.parse(JSON.stringify(items[0].colors))
+
+      this.customColor = this.colorForm.colors[0]
       this.colorIndex = 0
+
+      this.changeColorCase()
+    },
+    changeColorCase() {
+      this.$emit('onColorChange', this.colorForm)
+      // this.customColor = null
+      // this.colorIndex = 0
     },
     init() {
       const chart = JSON.parse(JSON.stringify(this.chart))
@@ -239,9 +252,7 @@ export default {
     },
 
     resetCustomColor() {
-      this.customColor = this.colorForm.colors[0]
-      this.colorIndex = 0
-      this.changeColorCase()
+      this.changeColorOption()
     }
   }
 }
