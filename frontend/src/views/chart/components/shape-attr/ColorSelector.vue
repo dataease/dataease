@@ -4,14 +4,46 @@
       <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini" :disabled="param && !hasDataPermission('manage',param.privileges)">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
           <el-form-item v-show="chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :label="$t('chart.color_case')" class="form-item">
-            <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorCase">
-              <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
-                <div style="float: left">
-                  <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
+            <el-popover
+              placement="bottom"
+              width="400"
+              trigger="click"
+              :disabled="param && !hasDataPermission('manage',param.privileges)"
+            >
+              <div style="padding: 6px 10px;">
+                <div>
+                  <span class="color-label">{{ $t('chart.system_case') }}</span>
+                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorCase">
+                    <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
+                      <div style="float: left">
+                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
+                      </div>
+                      <span style="margin-left: 4px;">{{ option.name }}</span>
+                    </el-option>
+                  </el-select>
+                  <el-button size="mini" type="text" style="margin-left: 2px;" @click="resetCustomColor">{{ $t('commons.reset') }}</el-button>
                 </div>
-                <span style="margin-left: 4px;">{{ option.name }}</span>
-              </el-option>
-            </el-select>
+                <div style="display: flex;align-items: center;margin-top: 10px;">
+                  <span class="color-label">{{ $t('chart.custom_case') }}</span>
+                  <span>
+                    <el-radio-group v-model="customColor" class="color-type">
+                      <el-radio v-for="(c,index) in colorForm.colors" :key="index" :label="c" style="padding: 2px;" @change="switchColor(index)">
+                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+                      </el-radio>
+                    </el-radio-group>
+                  </span>
+                </div>
+                <div style="display: flex;align-items: center;margin-top: 10px;">
+                  <span class="color-label" />
+                  <span>
+                    <el-color-picker v-model="customColor" class="color-picker-style" @change="switchColorCase" />
+                  </span>
+                </div>
+              </div>
+              <div slot="reference" style="cursor: pointer;margin-top: 2px;width: 180px;">
+                <span v-for="(c,index) in colorForm.colors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+              </div>
+            </el-popover>
           </el-form-item>
 
           <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
@@ -149,12 +181,16 @@ export default {
           colors: ['#00a3af', '#4da798', '#57baaa', '#62d0bd', '#6ee4d0', '#86e7d6', '#aeede1', '#bde1e6', '#e5e5e5']
         }
       ],
-      colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE))
+      colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
+      customColor: null,
+      colorIndex: 0
     }
   },
   watch: {
     'chart': {
       handler: function() {
+        this.customColor = null
+        this.colorIndex = 0
         this.init()
       }
     }
@@ -172,6 +208,8 @@ export default {
       val.value = items[0].value
       val.colors = items[0].colors
       this.$emit('onColorChange', val)
+      this.customColor = null
+      this.colorIndex = 0
     },
     init() {
       const chart = JSON.parse(JSON.stringify(this.chart))
@@ -184,8 +222,26 @@ export default {
         }
         if (customAttr.color) {
           this.colorForm = customAttr.color
+          if (!this.customColor) {
+            this.customColor = this.colorForm.colors[0]
+            this.colorIndex = 0
+          }
         }
       }
+    },
+
+    switchColor(index) {
+      this.colorIndex = index
+    },
+    switchColorCase() {
+      this.colorForm.colors[this.colorIndex] = this.customColor
+      this.$emit('onColorChange', this.colorForm)
+    },
+
+    resetCustomColor() {
+      this.customColor = this.colorForm.colors[0]
+      this.colorIndex = 0
+      this.changeColorCase()
     }
   }
 }
@@ -219,5 +275,23 @@ export default {
   .color-picker-style{
     cursor: pointer;
     z-index: 1003;
+  }
+  .color-label{
+    display: inline-block;
+    width: 60px;
+  }
+
+  .color-type>>>.el-radio__input{
+    display: none;
+  }
+  .el-radio{
+    margin:0 2px 0 0!important;
+  }
+  .el-radio>>>.el-radio__label{
+    padding-left: 0;
+  }
+
+  .el-radio.is-checked{
+    border: 1px solid #0a7be0;
   }
 </style>

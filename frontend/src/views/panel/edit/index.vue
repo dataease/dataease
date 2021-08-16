@@ -116,7 +116,7 @@
 
     <el-dialog
       v-if="filterVisible && panelInfo.id"
-      :title="$t('panel.module')"
+      :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
     >

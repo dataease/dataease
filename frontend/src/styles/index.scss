@@ -235,6 +235,15 @@ div:focus {
   div.el-input-group__append {
     width: 10% !important;
   }
+  .de-select-grid-class {
+    .list {
+      position: relative !important;
+      height: 200px !important;
+      overflow-y: scroll !important;
+      top: 0px !important;
+    }
+  }
+
 }
 
 %field-icon {

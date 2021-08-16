@@ -104,7 +104,7 @@ export default {
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
-      if (this.config.component !== 'v-text' && this.config.component !== 'rect-shape' && this.config.component !== 'de-input-search' && this.config.component !== 'de-number-range') {
+      if (this.config.component !== 'v-text' && this.config.component !== 'rect-shape' && this.config.component !== 'de-input-search' && this.config.component !== 'de-select-grid' && this.config.component !== 'de-number-range') {
         e.preventDefault()
       }
       // 阻止冒泡事件
