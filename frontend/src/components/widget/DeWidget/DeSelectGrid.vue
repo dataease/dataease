@@ -8,10 +8,9 @@
       <el-tree
         v-if="options!== null && options.attrs!==null"
         ref="deSelectGrid"
-        :data="options.attrs.multiple ? [allNode, ...options.attrs.datas] : options.attrs.datas"
+        :data="(options.attrs.multiple ? [allNode, ...options.attrs.datas] : options.attrs.datas).filter(node => node.text.includes(keyWord))"
         :props="defaultProp"
         :indent="0"
-        :filter-node-method="filterNode"
         class="de-filter-tree"
         default-expand-all
       >
@@ -71,7 +70,7 @@ export default {
         label: 'text',
         children: 'children'
       },
-      keyWord: null,
+      keyWord: '',
       allNode: {
         id: (-2 << 16) + '',
         text: this.$t('commons.all'),
@@ -107,10 +106,11 @@ export default {
         sourceValid && Array.isArray(sourceValue) && (this.options.value = sourceValue[0])
         !this.inDraw && (this.options.value = null)
       }
-    },
-    keyWord(val) {
-      this.$refs.deSelectGrid.filter(val)
     }
+    // keyWord(val) {
+    //   console.log(val)
+    //   this.$refs.deSelectGrid.filter(val)
+    // }
   },
   created() {
     this.options = this.element.options
@@ -206,10 +206,10 @@ export default {
       this.options.value = null
       this.changeRadioBox()
     },
-    filterNode(value, data) {
-      if (!value) return true
-      return data[this.defaultProp.label].indexOf(value) !== -1
-    },
+    // filterNode(value, data) {
+    //   if (!value) return true
+    //   return data[this.defaultProp.label].indexOf(value) !== -1
+    // },
     styleChange() {
       this.$store.state.styleChangeTimes++
     }
@@ -251,7 +251,7 @@ export default {
     overflow-y: auto;
     width: 100%;
     position: absolute;
-    top: 0;
+    top: 30px;
     bottom: 0;
   }
 }
