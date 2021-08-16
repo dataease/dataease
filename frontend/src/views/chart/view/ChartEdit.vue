@@ -1406,9 +1406,16 @@ export default {
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
-        this.chart.type === 'map' && this.sendToChildren(param)
-        this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-        this.getData(this.param.id)
+        // const isSwitch = (this.chart.type === 'map' && this.sendToChildren(param))
+        if (this.chart.type === 'map') {
+          if (this.sendToChildren(param)) {
+            this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+            this.getData(this.param.id)
+          }
+        } else {
+          this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+          this.getData(this.param.id)
+        }
       }
     },
 
@@ -1457,9 +1464,11 @@ export default {
       const currentNode = this.findEntityByCode(aCode || this.view.customAttr.areaCode, this.places)
       if (currentNode && currentNode.children && currentNode.children.length > 0) {
         const nextNode = currentNode.children.find(item => item.name === name)
+        if (!nextNode || !nextNode.code) return null
         // this.view.customAttr.areaCode = nextNode.code
         this.currentAcreaNode = nextNode
         this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
+        return nextNode
       }
     },
     // 根据地名获取areaCode
