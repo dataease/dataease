@@ -696,6 +696,10 @@ export default {
     filter: 'Filter',
     none: 'None',
     background: 'Background',
+
+    border: 'Corner',
+    border_width: 'Border width',
+    border_radius: 'Border radius',
     alpha: 'Transparency',
     add_filter: 'Add Filter',
     no_limit: 'No limit',
