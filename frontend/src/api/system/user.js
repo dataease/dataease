@@ -89,4 +89,13 @@ export const allRoles = () => {
   })
 }
 
-export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd, allRoles }
+export function roleGrid(pageIndex, pageSize, data) {
+  return request({
+    url: '/api/user/roleGrid/' + pageIndex + '/' + pageSize,
+    method: 'post',
+    data,
+    loading: true
+  })
+}
+
+export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd, allRoles, roleGrid }
