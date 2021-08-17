@@ -9,6 +9,15 @@ export function query(pageIndex, pageSize, data) {
   })
 }
 
+export function unReadCount(data) {
+  return request({
+    url: '/api/sys_msg/unReadCount',
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
 export function updateStatus(msgId) {
   return request({
     url: '/api/sys_msg/setReaded/' + msgId,

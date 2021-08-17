@@ -105,6 +105,13 @@ public class SysMsgService {
         return msgGridDtos;
     }
 
+    public Long queryCount(Long userId) {
+        SysMsgExample example = new SysMsgExample();
+        SysMsgExample.Criteria criteria = example.createCriteria();
+        criteria.andUserIdEqualTo(userId).andStatusEqualTo(false);
+        return sysMsgMapper.countByExample(example);
+    }
+
     public void setReaded(Long msgId) {
         SysMsg sysMsg = new SysMsg();
         sysMsg.setMsgId(msgId);

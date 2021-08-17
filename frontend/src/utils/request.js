@@ -8,7 +8,7 @@ import i18n from '@/lang'
 import { tryShowLoading, tryHideLoading } from './loading'
 import { getLinkToken, setLinkToken } from '@/utils/auth'
 // import router from '@/router'
-const interruptTokenContineUrls = Config.interruptTokenContineUrls
+// const interruptTokenContineUrls = Config.interruptTokenContineUrls
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
 const LinkTokenKey = Config.LinkTokenKey
@@ -88,7 +88,8 @@ const checkAuth = response => {
     })
   }
   // token到期后自动续命 刷新token
-  if (response.headers[RefreshTokenKey] && !interruptTokenContineUrls.some(item => response.config.url.indexOf(item) >= 0)) {
+  //   if (response.headers[RefreshTokenKey] && !interruptTokenContineUrls.some(item => response.config.url.indexOf(item) >= 0)) {
+  if (response.headers[RefreshTokenKey]) {
     const refreshToken = response.headers[RefreshTokenKey]
     store.dispatch('user/refreshToken', refreshToken)
   }
