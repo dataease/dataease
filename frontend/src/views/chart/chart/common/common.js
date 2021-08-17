@@ -51,7 +51,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
     }
-    if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line'))) {
+    if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
       chart_option.xAxis.show = customStyle.xAxis.show
       chart_option.xAxis.position = customStyle.xAxis.position
       chart_option.xAxis.name = customStyle.xAxis.name
@@ -59,7 +59,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
       chart_option.xAxis.nameTextStyle = customStyle.xAxis.nameTextStyle
     }
-    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line'))) {
+    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
       chart_option.yAxis.show = customStyle.yAxis.show
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name
