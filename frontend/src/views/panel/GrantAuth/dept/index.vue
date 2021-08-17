@@ -1,30 +1,42 @@
 <template>
-  <div class="my_table">
-    <el-table
-      ref="table"
-      :data="data"
-      lazy
-      :show-header="true"
-      :load="loadExpandDatas"
-      style="width: 100%"
-      :row-style="{height: '35px'}"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      row-key="deptId"
-    >
-      <el-table-column :label="$t('panel.all_org')" prop="name" />
-      <el-table-column type="selection" fixd />
-      <!-- <el-table-column label="分享给" prop="deptId" width="80" fixed="right">
-        <template slot-scope="scope">
-          <el-checkbox :v-model="scope.row.deptId===0" />
-        </template>
-      </el-table-column> -->
-    </el-table>
-  </div>
+  <el-col>
+    <el-row class="tree-head">
+      <span style="float: left;padding-left: 10px">{{ $t('panel.all_org') }}</span>
+
+    </el-row>
+    <el-row style="margin-top: 5px">
+
+      <el-tree
+        ref="tree"
+        :data="data"
+        lazy
+        :load="loadTree"
+        style="width: 100%"
+        :props="defaultProps"
+        :default-expanded-keys="expandNodeIds"
+        node-key="deptId"
+      >
+        <span slot-scope="{ node, data }" class="custom-tree-node">
+          <span>
+            <span style="margin-left: 6px">{{ data.name }}</span>
+          </span>
+          <span @click.stop>
+
+            <div>
+              <span class="auth-span">
+                <el-checkbox v-model="data.checked" />
+              </span>
+            </div>
+          </span>
+        </span>
+      </el-tree>
+    </el-row>
+  </el-col>
 </template>
 
 <script>
 import { getDeptTree, loadTable } from '@/api/system/dept'
-import { saveShare, loadShares } from '@/api/panel/share'
+import { loadShares } from '@/api/panel/share'
 export default {
   name: 'GrantDept',
   props: {
@@ -48,7 +60,15 @@ export default {
       type: 2, // 类型2代表组织
       shares: [],
       changeIndex: 0,
-      timeMachine: null
+      timeMachine: null,
+      defaultProps: {
+        children: 'children',
+        label: 'name',
+        isLeaf: (data, node) => {
+          return !data.hasChildren
+        }
+      },
+      expandNodeIds: []
     }
   },
   watch: {
@@ -81,9 +101,9 @@ export default {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
     },
-    // 加载下一级子节点数据
-    loadExpandDatas(row, treeNode, resolve) {
-      getDeptTree(row.deptId).then(res => {
+    loadTree(node, resolve) {
+      if (!node || !node.data || !node.data.deptId) return
+      getDeptTree(node.data.deptId).then(res => {
         let data = res.data
         data = data.map(obj => {
           if (obj.subCount > 0) {
@@ -91,17 +111,13 @@ export default {
           }
           return obj
         })
-        // this.maps.set(row.deptId, { row, treeNode, resolve })
+        this.setCheckExpandNodes(data)
         resolve && resolve(data)
-        this.$nextTick(() => {
-          this.setCheckExpandNodes(data)
-        })
       })
     },
+
     // 加载表格数据
     search(condition) {
-      // this.setTableAttr()
-
       this.data = []
       let param = {}
       if (condition && condition.value) {
@@ -110,31 +126,41 @@ export default {
         param = { conditions: [this.defaultCondition] }
       }
 
-      loadTable(param).then(res => {
-        let data = res.data
-        data = data.map(obj => {
-          if (obj.subCount > 0) {
-            obj.hasChildren = true
-          }
-          return obj
-        })
-
-        if (condition && condition.value) {
-          data = data.map(node => {
-            delete (node.hasChildren)
-            return node
+      this.queryShareNodeIds(() => {
+        loadTable(param).then(res => {
+          let data = res.data
+          data = data.map(obj => {
+            if (obj.subCount > 0) {
+              obj.hasChildren = true
+            }
+            return obj
           })
-          this.data = this.buildTree(data)
-          this.$nextTick(() => {
-            data.forEach(node => {
-              this.$refs.table.toggleRowExpansion(node, true)
+
+          this.setCheckExpandNodes(data)
+          this.expandNodeIds = []
+          if (condition && condition.value) {
+            // data = data.map(node => {
+            //   delete (node.hasChildren)
+            //   return node
+            // })
+            this.data = this.buildTree(data)
+            this.$nextTick(() => {
+              // this.expandNodeIds.push()
+              this.expandResult(this.data)
             })
-          })
-        } else {
-          this.data = data
-        }
+          } else {
+            this.data = data
+          }
+        })
+      })
+    },
 
-        this.queryShareNodeIds()
+    expandResult(list) {
+      list.forEach(node => {
+        if (node.children && node.children.length > 0) {
+          this.expandNodeIds.push(node.deptId)
+          this.expandResult(node.children)
+        }
       })
     },
 
@@ -159,22 +185,21 @@ export default {
     },
 
     getSelected() {
+    //   const ids = []
+    //   this.searchChecked(ids)
+    //   return {
+    //     deptIds: ids
+    //   }
+      // const ids = []
+      const nodesMap = this.$refs.tree.store.nodesMap
+
+      const ids = Object.values(nodesMap).filter(node => node.data.checked).map(item => item.data.deptId)
+
       return {
-        deptIds: this.$refs.table.store.states.selection.map(item => item.deptId)
+        deptIds: ids
       }
     },
 
-    save(msg) {
-      const rows = this.$refs.table.store.states.selection
-      const request = this.buildRequest(rows)
-      saveShare(request).then(res => {
-        this.$success(msg)
-        return true
-      }).catch(err => {
-        this.$error(err.message)
-        return false
-      })
-    },
     cancel() {
     },
 
@@ -196,23 +221,23 @@ export default {
         const shares = res.data
         const nodeIds = shares.map(share => share.targetId)
         this.shares = nodeIds
-        this.$nextTick(() => {
-          this.setCheckNodes()
-        })
+        // this.$nextTick(() => {
+        //   this.setCheckNodes()
+        // })
         callBack && callBack()
       })
     },
 
-    setCheckNodes() {
-      this.data.forEach(node => {
-        const nodeId = node.deptId
-        this.shares.includes(nodeId) && this.$refs.table.toggleRowSelection(node, true)
-      })
-    },
+    // setCheckNodes() {
+    //   this.data.forEach(node => {
+    //     const nodeId = node.deptId
+    //     this.shares.includes(nodeId) && (node.checked = true)
+    //   })
+    // },
     setCheckExpandNodes(rows) {
       rows.forEach(node => {
         const nodeId = node.deptId
-        this.shares.includes(nodeId) && this.$refs.table.toggleRowSelection(node, true)
+        this.shares.includes(nodeId) && (node.checked = true)
       })
     }
 
@@ -221,6 +246,37 @@ export default {
 </script>
 
 <style scoped>
+
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-left: 8px;
+  }
+  .tree-main{
+    height:  calc(100vh - 210px);
+    border: 1px solid #e6e6e6;
+    overflow-y: auto;
+  }
+  .tree-head{
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid #e6e6e6;
+    background-color: #f7f8fa;
+    font-size: 12px;
+    color: #3d4d66 ;
+  }
+
+  .auth-span{
+    float: right;
+    width:50px;
+    margin-right: 30px
+  }
+  .highlights-text {
+    color: #faaa39 !important;
+  }
 
 .my_table >>> .el-table__row>td{
   /* 去除表格线 */

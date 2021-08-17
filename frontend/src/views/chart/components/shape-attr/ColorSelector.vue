@@ -297,6 +297,7 @@ export default {
   }
   .el-radio{
     margin:0 2px 0 0!important;
+    border: 1px solid transparent;
   }
   .el-radio>>>.el-radio__label{
     padding-left: 0;

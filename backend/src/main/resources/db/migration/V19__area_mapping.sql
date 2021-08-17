@@ -87,8 +87,6 @@ INSERT INTO `dataset_table_function` VALUES (57, 'ROUND', 'ROUND(x,y)', 'doris',
 INSERT INTO `dataset_table_function` VALUES (58, 'SIGN', 'SIGN(x)', 'doris', 2, '返回参数x的符号，-1表示负数，0表示0，1表示正数');
 INSERT INTO `dataset_table_function` VALUES (59, 'POW', 'POW(x,y)', 'doris', 2, '返回x的y次乘方的值');
 INSERT INTO `dataset_table_function` VALUES (60, 'EXP', 'EXP(x)', 'doris', 2, '返回e的x乘方后的值');
-INSERT INTO `dataset_table_function` VALUES (61, 'LOG', 'LOG(x)', 'doris', 2, '返回x的自然对数，x相对于基数e的对数');
-INSERT INTO `dataset_table_function` VALUES (62, 'LOG10', 'LOG10(x)', 'doris', 2, '返回x的基数为10的对数');
 INSERT INTO `dataset_table_function` VALUES (63, 'RADIANS', 'RADIANS(x)', 'doris', 2, '返回x由角度转化为弧度的值');
 INSERT INTO `dataset_table_function` VALUES (64, 'DEGREES', 'DEGREES(x)', 'doris', 2, '返回x由弧度转化为角度的值');
 INSERT INTO `dataset_table_function` VALUES (65, 'SIN', 'SIN(x)', 'doris', 2, '返回x的正弦，其中x为给定的弧度值');
@@ -105,18 +103,11 @@ INSERT INTO `dataset_table_function` VALUES (75, 'RTRIM', 'RTRIM(s)', 'doris', 4
 INSERT INTO `dataset_table_function` VALUES (76, 'REPLACE', 'REPLACE(s,s1,s2)', 'doris', 4, '返回一个字符串，用字符串s2替代字符串s中所有的字符串s1');
 INSERT INTO `dataset_table_function` VALUES (77, 'SUBSTRING', 'SUBSTRING(s,n,len)', 'doris', 4, '获取从字符串s中的第n个位置开始长度为len的字符串');
 INSERT INTO `dataset_table_function` VALUES (78, 'CONCAT', 'CONCAT(s1,s2，...)', 'doris', 4, '返回连接参数产生的字符串，一个或多个待拼接的内容，任意一个为NULL则返回值为NULL');
-INSERT INTO `dataset_table_function` VALUES (79, 'INSERT', 'INSERT(s1,x,len,s2)', 'doris', 4, '返回字符串s1，其子字符串起始于位置x，被字符串s2取代len个字符');
 INSERT INTO `dataset_table_function` VALUES (80, 'LOWER', 'LOWER(str)', 'doris', 4, '将str中的字母全部转换成小写');
 INSERT INTO `dataset_table_function` VALUES (81, 'UPPER', 'UPPER(str)', 'doris', 4, '将字符串中的字母全部转换成大写');
-INSERT INTO `dataset_table_function` VALUES (82, 'LEFT', 'LEFT(s,n)', 'doris', 4, '返回字符串s从最左边开始的n个字符');
-INSERT INTO `dataset_table_function` VALUES (83, 'RIGHT', 'RIGHT(s,n)', 'doris', 4, '返回字符串s从最右边开始的n个字符');
-INSERT INTO `dataset_table_function` VALUES (84, 'REPEAT', 'REPEAT(s,n)', 'doris', 4, '返回一个由重复字符串s组成的字符串，字符串s的数目等于n');
-INSERT INTO `dataset_table_function` VALUES (85, 'SPACE', 'SPACE(n)', 'doris', 4, '返回一个由n个空格组成的字符串');
-INSERT INTO `dataset_table_function` VALUES (86, 'REVERSE', 'REVERSE(s)', 'doris', 4, '将字符串s反转');
 INSERT INTO `dataset_table_function` VALUES (87, 'CURDATE', 'CURDATE()', 'doris', 3, '将当前日期按照\"YYYY-MM-DD\"或者\"YYYYMMDD\"格式的值返回，具体格式根据函数用在字符串或是数字语境中而定');
 INSERT INTO `dataset_table_function` VALUES (88, 'CURRENT_DATE', 'CURRENT_DATE()', 'doris', 3, '将当前日期按照\"YYYY-MM-DD\"或者\"YYYYMMDD\"格式的值返回，具体格式根据函数用在字符串或是数字语境中而定');
 INSERT INTO `dataset_table_function` VALUES (89, 'NOW', 'NOW()', 'doris', 3, '返回当前日期和时间值，格式为\"YYYY_MM-DD HH:MM:SS\"或\"YYYYMMDDHHMMSS\"，具体格式根据函数用在字符串或数字语境中而定');
-INSERT INTO `dataset_table_function` VALUES (90, 'SYSDATE', 'SYSDATE()', 'doris', 3, '返回当前日期和时间值，格式为\"YYYY_MM-DD HH:MM:SS\"或\"YYYYMMDDHHMMSS\"，具体格式根据函数用在字符串或数字语境中而定');
 INSERT INTO `dataset_table_function` VALUES (91, 'LOCALTIME', 'LOCALTIME()', 'doris', 3, '返回当前日期和时间值，格式为\"YYYY_MM-DD HH:MM:SS\"或\"YYYYMMDDHHMMSS\"，具体格式根据函数用在字符串或数字语境中而定');
 INSERT INTO `dataset_table_function` VALUES (92, 'CURRENT_TIMESTAMP', 'CURRENT_TIMESTAMP()', 'doris', 3, '返回当前日期和时间值，格式为\"YYYY_MM-DD HH:MM:SS\"或\"YYYYMMDDHHMMSS\"，具体格式根据函数用在字符串或数字语境中而定');
 INSERT INTO `dataset_table_function` VALUES (93, 'UNIX_TIMESTAMP', 'UNIX_TIMESTAMP()', 'doris', 3, '返回一个格林尼治标准时间1970-01-01 00:00:00到现在的秒数');
