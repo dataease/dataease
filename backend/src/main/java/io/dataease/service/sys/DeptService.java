@@ -8,7 +8,6 @@ import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.controller.sys.request.DeptCreateRequest;
 import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
@@ -19,7 +18,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 

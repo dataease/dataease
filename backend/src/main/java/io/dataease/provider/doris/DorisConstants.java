@@ -3,7 +3,6 @@ package io.dataease.provider.doris;
 import io.dataease.provider.SQLConstants;
 
 import static io.dataease.datasource.constants.DatasourceTypes.doris;
-import static io.dataease.datasource.constants.DatasourceTypes.mysql;
 
 /**
  * @Author gin

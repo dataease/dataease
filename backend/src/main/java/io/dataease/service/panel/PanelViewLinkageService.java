@@ -1,7 +1,6 @@
 package io.dataease.service.panel;
 
 import io.dataease.base.domain.PanelViewLinkage;
-import io.dataease.base.domain.PanelViewLinkageExample;
 import io.dataease.base.domain.PanelViewLinkageField;
 import io.dataease.base.mapper.PanelViewLinkageFieldMapper;
 import io.dataease.base.mapper.PanelViewLinkageMapper;
@@ -10,7 +9,6 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.panel.PanelLinkageRequest;
 import io.dataease.dto.LinkageInfoDTO;
 import io.dataease.dto.PanelViewLinkageDTO;
-import io.dataease.dto.PanelViewLinkageFieldDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
