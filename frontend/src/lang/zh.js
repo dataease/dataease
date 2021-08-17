@@ -696,6 +696,9 @@ export default {
     filter: '过滤',
     none: '无',
     background: '背景',
+    border: '边角',
+    border_width: '边框宽度',
+    border_radius: '边框半径',
     alpha: '透明度',
     add_filter: '添加过滤',
     no_limit: '无限制',
@@ -842,7 +845,8 @@ export default {
     width: '宽度',
     height: '高度',
     system_case: '系统方案',
-    custom_case: '自定义'
+    custom_case: '自定义',
+    last_layer: '当前已经是最后一级'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1013,7 +1017,8 @@ export default {
     merge: '合并',
     no_merge: '不合并',
     merge_msg: '数据表中存在字段一致的情况，是否合并到一个数据集中?',
-    merge_title: '合并数据'
+    merge_title: '合并数据',
+    field_name_less_50: '字段名不能超过50个字符'
   },
   datasource: {
     datasource: '数据源',

@@ -696,6 +696,9 @@ export default {
     filter: '過濾',
     none: '無',
     background: '背景',
+    border: '邊角',
+    border_width: '邊框寬度',
+    border_radius: '邊框半徑',
     alpha: '透明度',
     add_filter: '添加過濾',
     no_limit: '無顯示',
@@ -842,7 +845,8 @@ export default {
     width: '寬度',
     height: '高度',
     system_case: '系統方案',
-    custom_case: '自定義'
+    custom_case: '自定義',
+    last_layer: '当前已经是最后一级'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -1013,7 +1017,8 @@ export default {
     merge: '合併',
     no_merge: '不合併',
     merge_msg: '數據表中存在自斷一直的情況，是否合併到一個數據集中?',
-    merge_title: '合併數據'
+    merge_title: '合併數據',
+    field_name_less_50: '字段名不能超過50個字符'
   },
   datasource: {
     datasource: '數據源',

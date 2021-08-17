@@ -45,6 +45,8 @@ public class ShiroServiceImpl implements ShiroService {
         //验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
         filterChainDefinitionMap.put("/api/map/areaEntitys/**", ANON);
+        //未读消息数量
+        filterChainDefinitionMap.put("/api/sys_msg/unReadCount", ANON);
 
         filterChainDefinitionMap.put("/**/*.json", ANON);
         filterChainDefinitionMap.put("/system/ui/**", ANON);
