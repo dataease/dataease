@@ -1013,7 +1013,8 @@ export default {
     merge: 'Merge',
     no_merge: 'Dont Merge',
     merge_msg: 'If the fields in the data table are consistent, merge them into one data set?',
-    merge_title: 'Merge data'
+    merge_title: 'Merge data',
+    field_name_less_50: 'Field name can not more 50 chars.'
   },
   datasource: {
     datasource: 'Data Source',
