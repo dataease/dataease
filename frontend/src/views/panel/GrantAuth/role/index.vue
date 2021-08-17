@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { roleGrid } from '@/api/system/role'
+import { roleGrid } from '@/api/system/user'
 import { formatCondition } from '@/utils/index'
 import { saveShare, loadShares } from '@/api/panel/share'
 export default {
