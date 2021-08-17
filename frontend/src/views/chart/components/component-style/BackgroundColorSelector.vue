@@ -8,6 +8,10 @@
         <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeBackgroundStyle" />
         </el-form-item>
+
+        <el-form-item :label="$t('chart.border_radius')" class="form-item form-item-slider">
+          <el-slider v-model="colorForm.borderRadius" show-input :show-input-controls="false" input-size="mini" @change="changeBackgroundStyle" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
