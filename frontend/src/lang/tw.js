@@ -1209,7 +1209,9 @@ export default {
     do_not_save: '不保存',
     save: '保存',
     drill: '下钻',
-    linkage: '联动'
+    linkage: '联动',
+    cancel_linkage: '取消联动',
+    remove_all_linkage: '清除所有联动'
   },
   plugin: {
     local_install: '本地安裝',
