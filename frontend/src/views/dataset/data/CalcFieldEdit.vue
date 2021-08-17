@@ -312,6 +312,10 @@ export default {
     },
 
     saveCalcField() {
+      if (this.fieldForm.name && this.fieldForm.name.length > 50) {
+        this.$message.error(this.$t('dataset.field_name_less_50'))
+        return
+      }
       if (!this.fieldForm.id) {
         this.fieldForm.type = this.fieldForm.deType
         this.fieldForm.deExtractType = this.fieldForm.deType
