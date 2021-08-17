@@ -1013,7 +1013,8 @@ export default {
     merge: '合并',
     no_merge: '不合并',
     merge_msg: '数据表中存在字段一致的情况，是否合并到一个数据集中?',
-    merge_title: '合并数据'
+    merge_title: '合并数据',
+    field_name_less_50: '字段名不能超过50个字符'
   },
   datasource: {
     datasource: '数据源',

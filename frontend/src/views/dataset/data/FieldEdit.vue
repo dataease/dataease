@@ -327,6 +327,10 @@ export default {
       //   // this.closeEdit()
       //   this.initField()
       // })
+      if (item.name && item.name.length > 50) {
+        this.$message.error(this.$t('dataset.field_name_less_50'))
+        return
+      }
 
       post('/dataset/field/save', item).then(response => {
         this.initField()

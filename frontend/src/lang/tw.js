@@ -1013,7 +1013,8 @@ export default {
     merge: '合併',
     no_merge: '不合併',
     merge_msg: '數據表中存在自斷一直的情況，是否合併到一個數據集中?',
-    merge_title: '合併數據'
+    merge_title: '合併數據',
+    field_name_less_50: '字段名不能超過50個字符'
   },
   datasource: {
     datasource: '數據源',
