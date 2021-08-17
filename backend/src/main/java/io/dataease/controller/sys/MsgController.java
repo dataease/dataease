@@ -6,6 +6,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.base.domain.SysMsgChannel;
 import io.dataease.base.domain.SysMsgSetting;
 import io.dataease.base.domain.SysMsgType;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -21,6 +22,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Api(tags = "系统：消息管理")
@@ -44,6 +46,16 @@ public class MsgController {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         Pager<List<MsgGridDto>> listPager = PageUtils.setPageInfo(page, sysMsgService.queryGrid(userId, msgRequest, typeIds));
         return listPager;
+    }
+
+    @ApiOperation("查询未读数量")
+    @PostMapping("/unReadCount")
+    public Long unReadCount(@RequestBody Map<String, Long> request) {
+        if(null == request || null == request.get("userId")) {
+            throw new RuntimeException("缺少用户ID");
+        }
+        Long userId = request.get("userId");
+        return sysMsgService.queryCount(userId);
     }
 
     @ApiOperation("设置已读")

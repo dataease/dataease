@@ -2,9 +2,7 @@ package io.dataease.service.dataset;
 
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableFunctionMapper;
-import io.dataease.commons.utils.DorisTableUtils;
 import io.dataease.datasource.service.DatasourceService;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

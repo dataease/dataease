@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.base.domain.SysRole;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -115,5 +116,15 @@ public class SysUserController {
     @PostMapping("/all")
     public List<RoleUserItem> all(){
         return sysRoleService.allRoles();
+    }
+
+
+
+    @ApiOperation("查询角色")
+    @PostMapping("/roleGrid/{goPage}/{pageSize}")
+    public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
+        Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        Pager<List<SysRole>> listPager = PageUtils.setPageInfo(page, sysRoleService.query(request));
+        return listPager;
     }
 }

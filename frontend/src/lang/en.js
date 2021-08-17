@@ -696,6 +696,10 @@ export default {
     filter: 'Filter',
     none: 'None',
     background: 'Background',
+
+    border: 'Corner',
+    border_width: 'Border width',
+    border_radius: 'Border radius',
     alpha: 'Transparency',
     add_filter: 'Add Filter',
     no_limit: 'No limit',
@@ -842,7 +846,8 @@ export default {
     width: 'Width',
     height: 'Height',
     system_case: 'System',
-    custom_case: 'Custom'
+    custom_case: 'Custom',
+    last_layer: 'This Is The Last Layer'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1013,7 +1018,8 @@ export default {
     merge: 'Merge',
     no_merge: 'Dont Merge',
     merge_msg: 'If the fields in the data table are consistent, merge them into one data set?',
-    merge_title: 'Merge data'
+    merge_title: 'Merge data',
+    field_name_less_50: 'Field name can not more 50 chars.'
   },
   datasource: {
     datasource: 'Data Source',

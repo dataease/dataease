@@ -76,10 +76,10 @@
     <!--关闭弹框-->
     <el-dialog :visible.sync="closePanelVisible" :title="$t('panel.panel_save_tips')" :show-close="false" width="30%" class="dialog-css">
       <el-row style="height: 20px">
-        <el-col :span="6">
+        <el-col :span="4">
           <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
         </el-col>
-        <el-col :span="16">
+        <el-col :span="20">
           <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_save_warn_tips') }}</span>
         </el-col>
       </el-row>

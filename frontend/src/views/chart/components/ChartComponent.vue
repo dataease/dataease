@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex;">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
-    <div :id="chartId" style="width: 100%;height: 100%;" />
+    <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
   </div>
 </template>
 
@@ -56,7 +56,8 @@ export default {
       },
       pointParam: null,
 
-      dynamicAreaCode: null
+      dynamicAreaCode: null,
+      borderRadius: '0px'
     }
   },
 
@@ -195,9 +196,18 @@ export default {
     myEcharts(option) {
       // 指定图表的配置项和数据
       const chart = this.myChart
+      this.setBackGroundBorder()
       setTimeout(chart.setOption(option, true), 500)
       window.onresize = function() {
         chart.resize()
+      }
+    },
+    setBackGroundBorder() {
+      if (this.chart.customStyle) {
+        const customStyle = JSON.parse(this.chart.customStyle)
+        if (customStyle.background) {
+          this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
+        }
       }
     },
     chartResize() {

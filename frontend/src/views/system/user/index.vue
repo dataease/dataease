@@ -15,10 +15,10 @@
       </template>
 
       <el-table-column prop="username" label="ID" />
-      <el-table-column prop="nickName" sortable="custom" :label="$t('commons.nick_name')" />
-      <el-table-column prop="gender" :label="$t('commons.gender')" />
+      <el-table-column :show-overflow-tooltip="true" prop="nickName" sortable="custom" :label="$t('commons.nick_name')" />
+      <el-table-column prop="gender" :label="$t('commons.gender')" width="60" />
 
-      <el-table-column :show-overflow-tooltip="true" prop="phone" :label="$t('commons.phone')" />
+      <!-- <el-table-column :show-overflow-tooltip="true" prop="phone" :label="$t('commons.phone')" /> -->
       <el-table-column :show-overflow-tooltip="true" prop="email" :label="$t('commons.email')" />
       <el-table-column :show-overflow-tooltip="true" prop="dept" sortable="custom" :label="$t('commons.organization')">
         <template slot-scope="scope">
@@ -43,12 +43,12 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="status" sortable="custom" :label="$t('commons.status')">
+      <el-table-column prop="status" sortable="custom" :label="$t('commons.status')" width="80">
         <template v-slot:default="scope">
           <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" :disabled="!checkPermission(['user:edit']) || scope.row.isAdmin" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" sortable="custom" :label="$t('commons.create_time')">
+      <el-table-column :show-overflow-tooltip="true" prop="createTime" sortable="custom" :label="$t('commons.create_time')" width="180">
         <template v-slot:default="scope">
           <span>{{ scope.row.createTime | timestampFormatDate }}</span>
         </template>
@@ -190,6 +190,9 @@ export default {
           show: this.checkPermission(['user:del'])
         }, {
           label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'success', click: this.editPassword,
+          show: this.checkPermission(['user:editPwd'])
+        }, {
+          label: '权限查看', icon: 'el-icon-lock', type: 'warning', click: this.showAuth,
           show: this.checkPermission(['user:editPwd'])
         }
       ],
@@ -350,6 +353,9 @@ export default {
     //   this.dialogVisible = true
     // },
     edit(row) {
+      this.$router.push({ name: 'system-user-form', params: row })
+    },
+    showAuth(row) {
       this.$router.push({ name: 'system-user-form', params: row })
     },
     // edit(row) {
