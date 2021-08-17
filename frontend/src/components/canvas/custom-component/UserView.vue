@@ -309,6 +309,12 @@ export default {
         this.chart.type === 'map' && this.sendToChildren(param)
         this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
         this.getData(this.element.propValue.viewId)
+      } else if (this.chart.drillFields.length > 0) {
+        this.$message({
+          type: 'error',
+          message: this.$t('chart.last_layer'),
+          showClose: true
+        })
       }
     },
 

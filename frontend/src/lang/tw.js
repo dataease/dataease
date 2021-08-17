@@ -842,7 +842,8 @@ export default {
     width: '寬度',
     height: '高度',
     system_case: '系統方案',
-    custom_case: '自定義'
+    custom_case: '自定義',
+    last_layer: '当前已经是最后一级'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

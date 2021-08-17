@@ -1416,6 +1416,12 @@ export default {
           this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
           this.getData(this.param.id)
         }
+      } else if (this.view.drillFields.length > 0) {
+        this.$message({
+          type: 'error',
+          message: this.$t('chart.last_layer'),
+          showClose: true
+        })
       }
     },
 
