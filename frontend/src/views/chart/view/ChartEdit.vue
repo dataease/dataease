@@ -338,6 +338,12 @@
                       <span>{{ $t('chart.bubble_size') }}</span>
                       /
                       <span>{{ $t('chart.quota') }}</span>
+                      <el-tooltip class="item" effect="dark" placement="bottom">
+                        <div slot="content">
+                          该指标生效时，样式大小中的气泡大小属性将失效
+                        </div>
+                        <i class="el-icon-info" style="cursor: pointer;color: #606266;" />
+                      </el-tooltip>
                     </span>
                     <draggable
                       v-model="view.extBubble"

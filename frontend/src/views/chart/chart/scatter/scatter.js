@@ -59,7 +59,7 @@ export function baseScatterOption(chart_option, chart) {
 }
 
 const funcSize = function(data) {
-  const k = 100
+  const k = 80
   const max = Math.max(...bubbleArray)
   return (data[2] / max) * k
 }
