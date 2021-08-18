@@ -151,7 +151,7 @@
               <p class="pop-title">{{ item.name }}</p>
               <p class="pop-info">{{ item.func }}</p>
               <p class="pop-info">{{ item.desc }}</p>
-              <span slot="reference" class="function-style" :title="item.func" @click="insertParamToCodeMirror(item.func)">{{ item.func }}</span>
+              <span slot="reference" class="function-style" @click="insertParamToCodeMirror(item.func)">{{ item.func }}</span>
             </el-popover>
           </el-row>
         </el-col>
@@ -468,9 +468,13 @@ export default {
     padding: 2px 4px;
     cursor: pointer;
     margin: 4px 0;
-    overflow-x: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    word-break: break-word;
+    border: solid 1px #eee;
+  }
+  .function-style:hover {
+    background: #e8f4ff;
+    border-color: #a3d3ff;
+    cursor: pointer;
   }
   .function-height{
     height: calc(100% - 50px);

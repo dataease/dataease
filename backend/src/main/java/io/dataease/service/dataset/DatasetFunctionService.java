@@ -33,6 +33,7 @@ public class DatasetFunctionService {
         if (StringUtils.isNotEmpty(datasetTableFunction.getDbType())) {
             criteria.andDbTypeEqualTo(datasetTableFunction.getDbType());
         }
+        datasetTableFunctionExample.setOrderByClause("name asc");
         return datasetTableFunctionMapper.selectByExampleWithBLOBs(datasetTableFunctionExample);
     }
 
