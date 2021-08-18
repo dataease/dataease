@@ -11,6 +11,7 @@
       </setting-menu>
       <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
       <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
+      <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
     </div>
 
   </div>
@@ -53,6 +54,19 @@ export default {
     }
   },
   computed: {
+    existLinkage() {
+      let linkageFiltersCount = 0
+      this.componentData.forEach(item => {
+        if (item.linkageFilters && item.linkageFilters.length > 0) {
+          item.linkageFilters.forEach(linkage => {
+            if (this.element.propValue.viewId === linkage.sourceViewId) {
+              linkageFiltersCount++
+            }
+          })
+        }
+      })
+      return linkageFiltersCount
+    },
     linkageInfo() {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
@@ -93,6 +107,21 @@ export default {
     },
     linkageEdit() {
 
+    },
+    // 清除相同sourceViewId 的 联动条件
+    clearLinkage() {
+      this.componentData.forEach(item => {
+        if (item.linkageFilters && item.linkageFilters.length > 0) {
+          const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== this.element.propValue.viewId)
+          item.linkageFilters.splice(0, item.linkageFilters.length)
+          // 重新push 可保证数组指针不变 可以watch到
+          if (newList.length > 0) {
+            newList.forEach(newLinkage => {
+              item.linkageFilters.push(newLinkage)
+            })
+          }
+        }
+      })
     }
   }
 }
