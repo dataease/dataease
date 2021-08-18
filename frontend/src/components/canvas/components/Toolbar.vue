@@ -320,6 +320,38 @@ export default {
       this.close()
     },
     saveLinkage() {
+      // 字段检查
+      // let checkCount = 0
+      for (const key in this.targetLinkageInfo) {
+        let subCheckCount = 0
+        const linkageInfo = this.targetLinkageInfo[key]
+        const linkageFields = linkageInfo['linkageFields']
+        if (linkageFields) {
+          linkageFields.forEach(function(linkage) {
+            if (!(linkage.sourceField && linkage.targetField)) {
+              subCheckCount++
+            }
+          })
+        }
+
+        if (subCheckCount > 0) {
+          this.$message({
+            message: this.$t('chart.datalist') + '【' + linkageInfo.targetViewName + '】' + this.$t('panel.exit_un_march_linkage_field'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
+      // if (checkCount > 0) {
+      //   this.$message({
+      //     message: this.$t('panel.exit_un_march_linkage_field'),
+      //     type: 'error',
+      //     showClose: true
+      //   })
+      //   return
+      // }
+
       const request = {
         panelId: this.$store.state.panel.panelInfo.id,
         sourceViewId: this.curLinkageView.propValue.viewId,

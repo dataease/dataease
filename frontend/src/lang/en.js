@@ -1212,7 +1212,8 @@ export default {
     drill: 'drill',
     linkage: 'linkage',
     cancel_linkage: 'Cancel Linkage',
-    remove_all_linkage: 'Remove All Linkage'
+    remove_all_linkage: 'Remove All Linkage',
+    exit_un_march_linkage_field: 'Exit Un March Linkage Field'
   },
   plugin: {
     local_install: 'Local installation',
