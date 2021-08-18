@@ -21,7 +21,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
 import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
-
+import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
 import '@/components/canvas/custom-component' // 注册自定义组件
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
@@ -74,6 +74,7 @@ Vue.use(directives)
 Vue.use(message)
 Vue.component('Treeselect', Treeselect)
 Vue.component('DeComplexInput', DeComplexInput)
+Vue.component('DeComplexSelect', DeComplexSelect)
 Vue.config.productionTip = false
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
