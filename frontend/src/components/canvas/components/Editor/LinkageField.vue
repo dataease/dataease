@@ -3,6 +3,7 @@
   <el-popover
     width="400"
     trigger="click"
+    style="max-height: 400px;overflow-y: auto"
   >
     <el-row>
       <el-col :span="11">
@@ -13,52 +14,55 @@
       </el-col>
     </el-row>
 
-    <el-row v-for="(item, index) in linkageInfo.linkageFields" :key="index">
-      <el-col :span="11">
-        <div class="select-filed">
-          <el-select v-model="item.sourceField" size="mini" placeholder="请选择">
-            <el-option
-              v-for="item in sourceLinkageInfo.targetViewFields"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            >
-              <span style="float: left">
-                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-              </span>
-              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
-            </el-option>
-          </el-select>
-        </div>
-      </el-col>
-      <el-col :span="11">
-        <div class="select-filed">
-          <el-select v-model="item.targetField" size="mini" placeholder="请选择">
-            <el-option
-              v-for="item in linkageInfo.targetViewFields"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            >
-              <span style="float: left">
-                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-              </span>
-              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
-            </el-option>
-          </el-select>
-        </div>
-      </el-col>
-      <el-col :span="2">
-        <div>
-          <el-button icon="el-icon-delete" type="text" size="small" style="float: left" @click="deleteLinkageField(index)" />
-        </div>
-      </el-col>
+    <el-row style="height: 120px;overflow-y: auto">
+
+      <el-row v-for="(item, index) in linkageInfo.linkageFields" :key="index">
+        <el-col :span="11">
+          <div class="select-filed">
+            <el-select v-model="item.sourceField" size="mini" placeholder="请选择">
+              <el-option
+                v-for="item in sourceLinkageInfo.targetViewFields"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              >
+                <span style="float: left">
+                  <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                  <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
+                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                </span>
+                <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+              </el-option>
+            </el-select>
+          </div>
+        </el-col>
+        <el-col :span="11">
+          <div class="select-filed">
+            <el-select v-model="item.targetField" size="mini" placeholder="请选择">
+              <el-option
+                v-for="item in linkageInfo.targetViewFields"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              >
+                <span style="float: left">
+                  <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                  <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
+                  <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                </span>
+                <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+              </el-option>
+            </el-select>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <div>
+            <el-button icon="el-icon-delete" type="text" size="small" style="float: left" @click="deleteLinkageField(index)" />
+          </div>
+        </el-col>
+      </el-row>
     </el-row>
 
     <el-row class="bottom">
@@ -67,7 +71,6 @@
 
     <!--    <el-button slot="reference">T</el-button>-->
     <i slot="reference" class="icon iconfont icon-edit slot-class" />
-
   </el-popover>
 </template>
 
@@ -182,6 +185,10 @@ export default {
     line-height: 35px;
     height: 35px;
     border-radius: 3px;
+  }
+  >>>.el-popover{
+    height: 200px;
+    overflow: auto;
   }
 
 </style>
