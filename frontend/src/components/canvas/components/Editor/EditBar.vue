@@ -7,11 +7,19 @@
     </div>
     <div v-else-if="!linkageSettingStatus">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;">
-        <i slot="icon" class="icon iconfont icon-shezhi" />
+        <span slot="icon" :title="$t('panel.setting')">
+          <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
+        </span>
       </setting-menu>
-      <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
-      <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
-      <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
+      <span :title="$t('panel.edit')">
+        <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
+      </span>
+      <span :title="$t('panel.details')">
+        <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
+      </span>
+      <span :title="$t('panel.cancel_linkage')">
+        <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
+      </span>
     </div>
 
   </div>
