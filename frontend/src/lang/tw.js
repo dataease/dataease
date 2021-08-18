@@ -1212,7 +1212,9 @@ export default {
     linkage: '联动',
     cancel_linkage: '取消联动',
     remove_all_linkage: '清除所有联动',
-    exit_un_march_linkage_field: '存在未匹配联动关系的字段'
+    exit_un_march_linkage_field: '存在未匹配联动关系的字段',
+    details: '详情',
+    setting: '设置'
   },
   plugin: {
     local_install: '本地安裝',
