@@ -206,7 +206,7 @@ export default {
           {
             field: 'u.enabled',
             label: this.$t('commons.status'),
-            component: 'FuComplexSelect',
+            component: 'DeComplexSelect',
             options: [
               { label: this.$t('commons.enable'), value: '1' },
               { label: this.$t('commons.disable'), value: '0' }
