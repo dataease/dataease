@@ -44,6 +44,8 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.filerep.KettleFileRepository;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -56,6 +58,7 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
+import org.pentaho.di.www.SlaveServerTransStatus;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -572,16 +575,20 @@ public class ExtractDataService {
         datasourceService.validate(datasetTable.getDataSourceId());
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
+        TransMeta transMeta = null;
         JobMeta jobMeta = null;
         switch (extractType) {
             case "all_scope":
                 jobMeta = repository.loadJob("job_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, null);
+                transMeta = repository.loadTransformation("trans_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, true, "");
                 break;
             case "incremental_add":
                 jobMeta = repository.loadJob("job_add_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, null);
+                transMeta = repository.loadTransformation("trans_add_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, true, "");
                 break;
             case "incremental_delete":
                 jobMeta = repository.loadJob("job_delete_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, null);
+                transMeta = repository.loadTransformation("trans_delete_" + DorisTableUtils.dorisName(datasetTable.getId()), repositoryDirectoryInterface, null, true, "");
                 break;
             default:
                 break;
@@ -591,9 +598,29 @@ public class ExtractDataService {
         JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
         jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
         jobExecutionConfiguration.setRepository(repository);
+
+        TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+        transExecutionConfiguration.setRepository(repository);
+        transExecutionConfiguration.setRemoteServer(remoteSlaveServer);
+
+        String lastTranceId = Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, repository, null);
+        SlaveServerTransStatus transStatus = null;
+        boolean executing = true;
+        while (executing) {
+            transStatus = remoteSlaveServer.getTransStatus(transMeta.getName(), lastTranceId, 0);
+            executing = transStatus.isRunning() || transStatus.isWaiting();
+            if (!executing)
+                break;
+            Thread.sleep(1000);
+        }
+        if (!transStatus.getStatusDescription().equals("Finished")) {
+            DataEaseException.throwException((transStatus.getLoggingString()));
+        }
+
+        executing = true;
         String lastCarteObjectId = Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, repository, null);
         SlaveServerJobStatus jobStatus = null;
-        boolean executing = true;
+
         while (executing) {
             jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), lastCarteObjectId, 0);
             executing = jobStatus.isRunning() || jobStatus.isWaiting();
@@ -666,18 +693,18 @@ public class ExtractDataService {
         jobMeta.addJobEntry(startEntry);
 
         //trans
-        JobEntryTrans transrans = new JobEntryTrans();
-        transrans.clearResultFiles = true;
-        transrans.clearResultRows = true;
-        transrans.followingAbortRemotely = true;
-        transrans.setTransname(transName);
-        transrans.setName("Transformation");
-        JobEntryCopy transEntry = new JobEntryCopy(transrans);
-        transEntry.setDrawn(true);
-        transEntry.setLocation(300, 100);
-        jobMeta.addJobEntry(transEntry);
+//        JobEntryTrans transrans = new JobEntryTrans();
+//        transrans.clearResultFiles = true;
+//        transrans.clearResultRows = true;
+//        transrans.followingAbortRemotely = true;
+//        transrans.setTransname(transName);
+//        transrans.setName("Transformation");
+//        JobEntryCopy transEntry = new JobEntryCopy(transrans);
+//        transEntry.setDrawn(true);
+//        transEntry.setLocation(300, 100);
+//        jobMeta.addJobEntry(transEntry);
 
-        jobMeta.addJobHop(new JobHopMeta(startEntry, transEntry));
+//        jobMeta.addJobHop(new JobHopMeta(startEntry, transEntry));
 
         //exec shell
         JobEntryShell shell = new JobEntryShell();
@@ -689,7 +716,7 @@ public class ExtractDataService {
         shellEntry.setLocation(500, 100);
         jobMeta.addJobEntry(shellEntry);
 
-        JobHopMeta transHop = new JobHopMeta(transEntry, shellEntry);
+        JobHopMeta transHop = new JobHopMeta(startEntry, shellEntry);
         transHop.setEvaluation(true);
         jobMeta.addJobHop(transHop);
 
