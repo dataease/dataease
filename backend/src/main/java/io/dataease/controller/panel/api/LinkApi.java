@@ -2,6 +2,7 @@ package io.dataease.controller.panel.api;
 
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
@@ -51,4 +52,8 @@ public interface LinkApi {
     @ApiOperation("视图详息")
     @PostMapping("/viewDetail/{viewId}")
     Object viewDetail(@PathVariable String viewId, @RequestBody ChartExtRequest requestList) throws Exception;
+
+    @ApiOperation("压缩链接")
+    @PostMapping("/shortUrl")
+    ResultHolder shortUrl(@RequestBody Map<String,String> param);
 }

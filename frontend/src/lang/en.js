@@ -1082,6 +1082,8 @@ export default {
     drag_here: 'Please drag the left field here',
     copy_link_passwd: 'Copy link and password',
     copy_link: 'Copy link',
+    copy_short_link: 'Copy short link',
+    copy_short_link_passwd: 'Copy short link and password',
     passwd_protect: 'Password Protect',
     link: 'Link',
     link_share: 'Share Link',
