@@ -65,3 +65,11 @@ export function viewInfo(id, data) {
     data
   })
 }
+
+export function shortUrl(data) {
+  return request({
+    url: 'api/link/shortUrl',
+    method: 'post',
+    data
+  })
+}
