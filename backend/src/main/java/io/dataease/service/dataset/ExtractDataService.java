@@ -164,7 +164,7 @@ public class ExtractDataService {
         if(datasetTableFields == null){
             datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
         }
-        datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getName().startsWith("C_")).collect(Collectors.toList());
+        datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getDataeaseName().startsWith("C_")).collect(Collectors.toList());
         datasetTableFields.sort((o1, o2) -> {
             if (o1.getColumnIndex() == null) {
                 return -1;
@@ -274,7 +274,7 @@ public class ExtractDataService {
             datasource.setType(datasetTable.getType());
         }
         List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
-        datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getName().startsWith("C_")).collect(Collectors.toList());
+        datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getDataeaseName().startsWith("C_")).collect(Collectors.toList());
         datasetTableFields.sort((o1, o2) -> {
             if (o1.getColumnIndex() == null) {
                 return -1;

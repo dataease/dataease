@@ -1183,7 +1183,7 @@ public class DataSetTableService {
 
         if (StringUtils.isNotEmpty(tableId) && editType == 1 ) {
             List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId);
-            datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getName().startsWith("C_")).collect(Collectors.toList());
+            datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getDataeaseName().startsWith("C_")).collect(Collectors.toList());
             datasetTableFields.sort((o1, o2) -> {
                 if (o1.getColumnIndex() == null) {
                     return -1;
