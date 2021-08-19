@@ -1081,6 +1081,8 @@ export default {
     drag_here: '請將左側字段拖至此處',
     copy_link_passwd: '複製鏈接及密碼',
     copy_link: '複製鏈接',
+    copy_short_link: '複製短鏈接',
+    copy_short_link_passwd: '複製短鏈接及密碼',
     passwd_protect: '密碼保護',
     link: '鏈接',
     link_share: '鏈接分享',

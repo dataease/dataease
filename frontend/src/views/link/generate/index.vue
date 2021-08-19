@@ -32,6 +32,8 @@
       <div v-if="valid" class="auth-root-class">
         <span slot="footer">
 
+          <el-button v-if="newUrl && !form.enablePwd" v-clipboard:copy="newUrl" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_short_link') }}</el-button>
+          <el-button v-if="newUrl && form.enablePwd" v-clipboard:copy="newUrl + ' Password: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_short_link_passwd') }}</el-button>
           <el-button v-if="!form.enablePwd" v-clipboard:copy="form.uri" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link') }}</el-button>
           <el-button v-if="form.enablePwd" v-clipboard:copy="form.uri + ' Password: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link_passwd') }}</el-button>
 
@@ -43,9 +45,8 @@
 </template>
 <script>
 
-import { loadGenerate, setPwd, switchValid, switchEnablePwd } from '@/api/link'
+import { loadGenerate, setPwd, switchValid, switchEnablePwd, shortUrl } from '@/api/link'
 import { encrypt, decrypt } from '@/utils/rsaEncrypt'
-
 export default {
 
   name: 'LinkGenerate',
@@ -63,6 +64,7 @@ export default {
       pwdNums: 4,
       valid: false,
       form: {},
+      newUrl: null,
       defaultForm: { enablePwd: false, pwd: null, uri: null }
     }
   },
@@ -84,6 +86,7 @@ export default {
         this.form.uri = uri ? (this.origin + uri) : uri
         // 返回的密码是共钥加密后的 所以展示需要私钥解密一波
         pwd && (this.form.pwd = decrypt(pwd))
+        this.requestShort()
       })
     },
 
@@ -134,6 +137,20 @@ export default {
       }
       switchValid(param).then(res => {
 
+      })
+    },
+    requestShort() {
+      const url = this.form.uri
+      if (!url) return
+      //   if (this.origin.includes('localhost') || this.origin.includes('127.0.0.1')) {
+      //     console.log('本地无法生成短链接')
+      //     this.$warning('本地无法生成短链接')
+      //     return
+      //   }
+      shortUrl({ url }).then(res => {
+        if (res.success) {
+          this.newUrl = res.data
+        }
       })
     }
   }
