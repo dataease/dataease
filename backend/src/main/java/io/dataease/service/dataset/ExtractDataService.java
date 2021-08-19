@@ -668,8 +668,8 @@ public class ExtractDataService {
         //trans
         JobEntryTrans transrans = new JobEntryTrans();
         transrans.clearResultFiles = true;
-        transrans.execPerRow = true;
         transrans.clearResultRows = true;
+        transrans.followingAbortRemotely = true;
         transrans.setTransname(transName);
         transrans.setName("Transformation");
         JobEntryCopy transEntry = new JobEntryCopy(transrans);
