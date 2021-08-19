@@ -656,7 +656,8 @@ export const BASE_SCATTER = {
     data: []
   },
   xAxis: {
-    data: []
+    data: [],
+    boundaryGap: false
   },
   yAxis: {
     type: 'value'
@@ -715,6 +716,12 @@ export const BASE_TREEMAP = {
     {
       // name: '',
       type: 'treemap',
+      itemStyle: {
+        gapWidth: 2
+      },
+      breadcrumb: {
+        show: false
+      },
       // radius: ['0%', '60%'],
       // avoidLabelOverlap: false,
       // emphasis: {

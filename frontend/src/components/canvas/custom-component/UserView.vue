@@ -113,7 +113,7 @@ export default {
     linkageFilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
       if (!this.element.linkageFilters) return []
-      console.log('linkageFilters:' + JSON.stringify(this.element.linkageFilters))
+      // console.log('linkageFilters:' + JSON.stringify(this.element.linkageFilters))
       return JSON.parse(JSON.stringify(this.element.linkageFilters))
     },
     trackMenu() {
@@ -127,7 +127,7 @@ export default {
       })
       linkageCount && trackMenuInfo.push('linkage')
       this.drillFields.length && trackMenuInfo.push('drill')
-      console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
+      // console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
       return trackMenuInfo
     },
     chartType() {

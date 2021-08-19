@@ -1,6 +1,8 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
+let bubbleArray = []
+
 export function baseScatterOption(chart_option, chart) {
   // 处理shape attr
   let customAttr = {}
@@ -21,6 +23,7 @@ export function baseScatterOption(chart_option, chart) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
+    bubbleArray = []
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       // color
@@ -33,6 +36,9 @@ export function baseScatterOption(chart_option, chart) {
 
         const extBubble = JSON.parse(chart.extBubble)
         if (extBubble && extBubble.length > 0) {
+          y.data.forEach(ele => {
+            bubbleArray.push(ele.value[2])
+          })
           y.symbolSize = funcSize
         } else {
           y.symbolSize = customAttr.size.scatterSymbolSize ? customAttr.size.scatterSymbolSize : 20
@@ -53,5 +59,7 @@ export function baseScatterOption(chart_option, chart) {
 }
 
 const funcSize = function(data) {
-  return data[2]
+  const k = 80
+  const max = Math.max(...bubbleArray)
+  return (data[2] / max) * k
 }
