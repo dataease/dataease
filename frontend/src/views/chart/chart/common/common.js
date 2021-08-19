@@ -60,6 +60,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.xAxis.nameTextStyle = customStyle.xAxis.nameTextStyle
 
       chart_option.xAxis.axisLabel.showMaxLabel = true
+      chart_option.xAxis.axisLabel.showMinLabel = true
     }
     if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
       chart_option.yAxis.show = customStyle.yAxis.show
@@ -70,6 +71,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis.nameTextStyle = customStyle.yAxis.nameTextStyle
 
       chart_option.xAxis.axisLabel.showMaxLabel = true
+      chart_option.xAxis.axisLabel.showMinLabel = true
     }
     if (customStyle.split && chart.type.includes('radar')) {
       chart_option.radar.name = customStyle.split.name
