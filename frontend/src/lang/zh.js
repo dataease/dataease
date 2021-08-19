@@ -1083,6 +1083,8 @@ export default {
     drag_here: '请将左侧字段拖至此处',
     copy_link_passwd: '复制链接及密码',
     copy_link: '复制链接',
+    copy_short_link: '复制短链接',
+    copy_short_link_passwd: '复制短链接及密码',
     passwd_protect: '密码保护',
     link: '链接',
     link_share: '链接分享',

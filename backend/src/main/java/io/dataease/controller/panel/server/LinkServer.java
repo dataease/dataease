@@ -3,6 +3,7 @@ package io.dataease.controller.panel.server;
 
 import com.google.gson.Gson;
 import io.dataease.base.domain.PanelLink;
+import io.dataease.controller.ResultHolder;
 import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
@@ -89,5 +90,11 @@ public class LinkServer implements LinkApi {
     @Override
     public Object viewDetail(String viewId, ChartExtRequest requestList) throws Exception{
         return chartViewService.getData(viewId, requestList);
+    }
+
+    @Override
+    public ResultHolder shortUrl(Map<String,String> param) {
+        String url = param.get("url");
+        return panelLinkService.getShortUrl(url);
     }
 }
