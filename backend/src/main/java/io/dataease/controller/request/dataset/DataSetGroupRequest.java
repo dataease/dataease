@@ -3,7 +3,6 @@ package io.dataease.controller.request.dataset;
 import io.dataease.base.domain.DatasetGroup;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Set;
 
 /**

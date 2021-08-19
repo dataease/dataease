@@ -2,7 +2,6 @@ package io.dataease.auth.service.impl;
 
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.base.domain.SysAuth;
-import io.dataease.base.domain.SysAuthExample;
 import io.dataease.base.mapper.SysAuthMapper;
 import io.dataease.base.mapper.ext.ExtAuthMapper;
 import io.dataease.commons.model.AuthURD;

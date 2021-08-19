@@ -8,8 +8,6 @@ import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.datasource.dto.JdbcDTO;
-import io.dataease.datasource.dto.PgConfigration;
-import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;

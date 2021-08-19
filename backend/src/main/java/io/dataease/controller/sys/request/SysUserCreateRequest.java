@@ -4,7 +4,6 @@ import io.dataease.base.domain.SysUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

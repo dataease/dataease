@@ -56,7 +56,19 @@
       </el-col>
       <el-col :span="10" style="height: 100%;border-left: 1px solid #E6E6E6;">
         <el-col :span="12" style="height: 100%" class="padding-lr">
-          <span>{{ $t('dataset.click_ref_field') }}</span>
+          <span>
+            {{ $t('dataset.click_ref_field') }}
+            <el-tooltip class="item" effect="dark" placement="bottom">
+              <div slot="content">
+                引用字段以 "[" 开始， "]" 结束
+                <br>
+                请勿修改引用内容，否则将引用失败
+                <br>
+                若输入与引用字段相同格式的内容，将被当作引用字段处理
+              </div>
+              <i class="el-icon-info" style="cursor: pointer;" />
+            </el-tooltip>
+          </span>
           <el-input
             v-model="searchField"
             size="mini"
@@ -106,7 +118,19 @@
           </div>
         </el-col>
         <el-col :span="12" style="height: 100%" class="padding-lr">
-          <span>{{ $t('dataset.click_ref_function') }}</span>
+          <span>
+            {{ $t('dataset.click_ref_function') }}
+            <el-tooltip class="item" effect="dark" placement="bottom">
+              <div slot="content">
+                使用数据集对应数据库类型所支持的函数，语法同对应数据库
+                <br>
+                如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])
+                <br>
+                非直连模式数据集，使用Doris数据库函数，可参考Doris官网 http://doris.apache.org/master/zh-CN/
+              </div>
+              <i class="el-icon-info" style="cursor: pointer;" />
+            </el-tooltip>
+          </span>
           <el-input
             v-model="searchFunction"
             size="mini"
@@ -127,7 +151,7 @@
               <p class="pop-title">{{ item.name }}</p>
               <p class="pop-info">{{ item.func }}</p>
               <p class="pop-info">{{ item.desc }}</p>
-              <span slot="reference" class="function-style" :title="item.func" @click="insertParamToCodeMirror(item.func)">{{ item.func }}</span>
+              <span slot="reference" class="function-style" @click="insertParamToCodeMirror(item.func)">{{ item.func }}</span>
             </el-popover>
           </el-row>
         </el-col>
@@ -444,9 +468,13 @@ export default {
     padding: 2px 4px;
     cursor: pointer;
     margin: 4px 0;
-    overflow-x: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    word-break: break-word;
+    border: solid 1px #eee;
+  }
+  .function-style:hover {
+    background: #e8f4ff;
+    border-color: #a3d3ff;
+    cursor: pointer;
   }
   .function-height{
     height: calc(100% - 50px);

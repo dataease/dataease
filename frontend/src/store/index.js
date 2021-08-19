@@ -178,7 +178,7 @@ const data = {
             if (element.propValue.viewId === targetViewId) { // 如果目标视图 和 当前循环组件id相等 则进行条件增减
               const targetFieldId = targetInfoArray[1] // 目标视图列ID
               const condition = new Condition('', targetFieldId, 'eq', [dimension.value], [targetViewId])
-
+              condition.sourceViewId = viewId
               let j = currentFilters.length
               while (j--) {
                 const filter = currentFilters[j]

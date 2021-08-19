@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -35,7 +34,7 @@ public class DataSetTableFieldsService {
             datasetTableField.setId(UUID.randomUUID().toString());
             // 若dataeasename为空，则用MD5(id)作为dataeasename
             if (StringUtils.isEmpty(datasetTableField.getDataeaseName())) {
-                datasetTableField.setDataeaseName(DorisTableUtils.dorisFieldName(datasetTableField.getId()));
+                datasetTableField.setDataeaseName(DorisTableUtils.columnName(datasetTableField.getId()));
             }
             if (ObjectUtils.isEmpty(datasetTableField.getLastSyncTime())) {
                 datasetTableField.setLastSyncTime(System.currentTimeMillis());

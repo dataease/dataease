@@ -192,6 +192,10 @@ export default {
           label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'success', click: this.editPassword,
           show: this.checkPermission(['user:editPwd'])
         }
+        // , {
+        //   label: '权限查看', icon: 'el-icon-lock', type: 'warning', click: this.showAuth,
+        //   show: this.checkPermission(['user:editPwd'])
+        // }
       ],
       searchConfig: {
         useQuickSearch: true,
@@ -202,7 +206,7 @@ export default {
           {
             field: 'u.enabled',
             label: this.$t('commons.status'),
-            component: 'FuComplexSelect',
+            component: 'DeComplexSelect',
             options: [
               { label: this.$t('commons.enable'), value: '1' },
               { label: this.$t('commons.disable'), value: '0' }
@@ -350,6 +354,9 @@ export default {
     //   this.dialogVisible = true
     // },
     edit(row) {
+      this.$router.push({ name: 'system-user-form', params: row })
+    },
+    showAuth(row) {
       this.$router.push({ name: 'system-user-form', params: row })
     },
     // edit(row) {

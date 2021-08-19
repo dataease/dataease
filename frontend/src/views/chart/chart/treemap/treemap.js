@@ -28,9 +28,17 @@ export function baseTreemapOption(chart_option, chart) {
         chart_option.series[0].height = (customAttr.size.treemapHeight ? customAttr.size.treemapHeight : 80) + '%'
       }
       // label
-      // if (customAttr.label) {
-      // chart_option.series[0].label = customAttr.label
-      // }
+      if (customAttr.label) {
+        // chart_option.series[0].label = customAttr.label
+        const l = {
+          show: true,
+          position: customAttr.label.position,
+          color: customAttr.label.color,
+          fontSize: customAttr.label.fontSize,
+          formatter: customAttr.label.show ? customAttr.label.formatter : ''
+        }
+        chart_option.series[0].label = l
+      }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
         // const y = {

@@ -76,10 +76,10 @@
     <!--关闭弹框-->
     <el-dialog :visible.sync="closePanelVisible" :title="$t('panel.panel_save_tips')" :show-close="false" width="30%" class="dialog-css">
       <el-row style="height: 20px">
-        <el-col :span="6">
+        <el-col :span="4">
           <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
         </el-col>
-        <el-col :span="16">
+        <el-col :span="20">
           <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_save_warn_tips') }}</span>
         </el-col>
       </el-row>
@@ -320,6 +320,38 @@ export default {
       this.close()
     },
     saveLinkage() {
+      // 字段检查
+      // let checkCount = 0
+      for (const key in this.targetLinkageInfo) {
+        let subCheckCount = 0
+        const linkageInfo = this.targetLinkageInfo[key]
+        const linkageFields = linkageInfo['linkageFields']
+        if (linkageFields) {
+          linkageFields.forEach(function(linkage) {
+            if (!(linkage.sourceField && linkage.targetField)) {
+              subCheckCount++
+            }
+          })
+        }
+
+        if (subCheckCount > 0) {
+          this.$message({
+            message: this.$t('chart.datalist') + '【' + linkageInfo.targetViewName + '】' + this.$t('panel.exit_un_march_linkage_field'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
+      // if (checkCount > 0) {
+      //   this.$message({
+      //     message: this.$t('panel.exit_un_march_linkage_field'),
+      //     type: 'error',
+      //     showClose: true
+      //   })
+      //   return
+      // }
+
       const request = {
         panelId: this.$store.state.panel.panelInfo.id,
         sourceViewId: this.curLinkageView.propValue.viewId,

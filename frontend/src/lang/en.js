@@ -1210,7 +1210,12 @@ export default {
     do_not_save: "Don't Save",
     save_and_close: 'Save',
     drill: 'drill',
-    linkage: 'linkage'
+    linkage: 'linkage',
+    cancel_linkage: 'Cancel Linkage',
+    remove_all_linkage: 'Remove All Linkage',
+    exit_un_march_linkage_field: 'Exit Un March Linkage Field',
+    details: 'Details',
+    setting: 'Setting'
   },
   plugin: {
     local_install: 'Local installation',
