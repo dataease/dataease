@@ -40,6 +40,10 @@
             <p v-if="detail.table.type === 'excel'" class="info-content">{{ $t('dataset.excel_data') }}</p>
             <p v-if="detail.table.type === 'custom'" class="info-content">{{ $t('dataset.custom_data') }}</p>
           </el-col>
+          <el-col v-show="detail.table.type === 'db'" class="info-item">
+            <p class="info-title">{{ $t('dataset.table') }}</p>
+            <p class="info-content">{{ info.table }}</p>
+          </el-col>
           <el-col v-if="detail.table.type === 'db' || detail.table.type === 'sql'" class="info-item">
             <p class="info-title">{{ $t('dataset.mode') }}</p>
             <p v-if="detail.table.mode === 0" class="info-content">{{ $t('dataset.direct_connect') }}</p>
@@ -105,7 +109,8 @@ export default {
         chart: {},
         table: {},
         datasource: {}
-      }
+      },
+      info: {}
     }
   },
   watch: {
@@ -128,10 +133,12 @@ export default {
         if (this.type === 'dataset') {
           post('/dataset/table/datasetDetail/' + this.data.id, null).then(res => {
             this.detail = res.data
+            this.info = JSON.parse(res.data.table.info)
           })
         } else if (this.type === 'chart') {
           post('/chart/view/chartDetail/' + this.data.id, null).then(res => {
             this.detail = res.data
+            this.info = JSON.parse(res.data.table.info)
           })
         }
       }
