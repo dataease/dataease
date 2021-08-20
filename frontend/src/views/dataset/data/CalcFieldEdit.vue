@@ -86,7 +86,7 @@
               :disabled="true"
             >
               <transition-group>
-                <span v-for="item in dimensionData" :key="item.id" class="item-dimension" :title="item.name" @click="insertParamToCodeMirror('['+item.id+']')">
+                <span v-for="item in dimensionData" :key="item.id" class="item-dimension" :title="item.name" @click="insertFieldToCodeMirror('['+item.id+']')">
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -106,7 +106,7 @@
               :disabled="true"
             >
               <transition-group>
-                <span v-for="item in quotaData" :key="item.id" class="item-quota" :title="item.name" @click="insertParamToCodeMirror('['+item.id+']')">
+                <span v-for="item in quotaData" :key="item.id" class="item-quota" :title="item.name" @click="insertFieldToCodeMirror('['+item.id+']')">
                   <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                   <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                   <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -308,6 +308,13 @@ export default {
       this.fieldForm.originName = newCode
     },
     insertParamToCodeMirror(param) {
+      const pos1 = this.$refs.myCm.codemirror.getCursor()
+      const pos2 = {}
+      pos2.line = pos1.line
+      pos2.ch = pos1.ch
+      this.$refs.myCm.codemirror.replaceRange(param, pos2)
+    },
+    insertFieldToCodeMirror(param) {
       const pos1 = this.$refs.myCm.codemirror.getCursor()
       const pos2 = {}
       pos2.line = pos1.line
