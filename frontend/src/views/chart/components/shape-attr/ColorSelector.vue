@@ -46,11 +46,11 @@
             </el-popover>
           </el-form-item>
 
-          <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
-            <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" @change="changeColorCase" />
-          </el-form-item>
           <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
             <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
+            <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" @change="changeColorCase" />
           </el-form-item>
         </div>
         <div v-if="sourceType==='view' || sourceType==='panelTable'">
