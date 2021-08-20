@@ -3,9 +3,11 @@ package io.dataease.job.sechedule;
 import com.fit2cloud.quartz.anno.QuartzScheduled;
 import io.dataease.datasource.service.DatasourceService;
 import io.dataease.service.dataset.DataSetTableService;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+@Component
 public class Schedular {
     @Resource
     private DataSetTableService dataSetTableService;
