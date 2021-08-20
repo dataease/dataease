@@ -40,7 +40,6 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.shell.JobEntryShell;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entries.success.JobEntrySuccess;
-import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.filerep.KettleFileRepository;
@@ -965,7 +964,7 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }else if(datasource.getType().equalsIgnoreCase(DatasourceTypes.excel.name())){
+        }else if(datasource.getType().equalsIgnoreCase(DatasourceTypes.excel.name())) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for(int i=0;i< datasetTableFields.size();i++){
                 TextFileField textFileField = new TextFileField();
@@ -976,7 +975,6 @@ public class ExtractDataService {
                 } else {
                     textFileField.setType("String");
                 }
-
                 outputFields[i] = textFileField;
             }
             TextFileField textFileField = new TextFileField();
@@ -985,7 +983,7 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }{
+        }else {
             textFileOutputMeta.setOutputFields(new TextFileField[0]);
         }
 
