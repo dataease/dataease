@@ -965,7 +965,27 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }else {
+        }else if(datasource.getType().equalsIgnoreCase(DatasourceTypes.excel.name())){
+            TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
+            for(int i=0;i< datasetTableFields.size();i++){
+                TextFileField textFileField = new TextFileField();
+                textFileField.setName(datasetTableFields.get(i).getOriginName());
+                if (datasetTableFields.get(i).getDeExtractType() == 1) {
+                    textFileField.setType("Integer");
+                    textFileField.setFormat("0");
+                } else {
+                    textFileField.setType("String");
+                }
+
+                outputFields[i] = textFileField;
+            }
+            TextFileField textFileField = new TextFileField();
+            textFileField.setName("dataease_uuid");
+            textFileField.setType("String");
+            outputFields[datasetTableFields.size()] = textFileField;
+
+            textFileOutputMeta.setOutputFields(outputFields);
+        }{
             textFileOutputMeta.setOutputFields(new TextFileField[0]);
         }
 
