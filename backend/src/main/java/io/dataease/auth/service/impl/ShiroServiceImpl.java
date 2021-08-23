@@ -63,11 +63,12 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/tokenExpired", ANON);
         filterChainDefinitionMap.put("/downline", ANON);
         filterChainDefinitionMap.put("/common-files/**", ANON);
-
+        filterChainDefinitionMap.put("/linkage/getPanelAllLinkageInfo/**", ANON);
         filterChainDefinitionMap.put("/api/auth/logout", "logout");
 
         filterChainDefinitionMap.put("/api/link/resourceDetail/**", "link");
         filterChainDefinitionMap.put("/api/link/viewDetail/**", "link");
+
 
         filterChainDefinitionMap.put("/**", "authc");
 
