@@ -43,7 +43,8 @@ public class IndexController {
                 return "doc.html";
             default:
                 // DataEaseException.throwException("Invalid License.");
-                return "nolic.html";
+                // return "nolic.html";
+                return "doc.html";
         }
         // return "index.html";
     }
