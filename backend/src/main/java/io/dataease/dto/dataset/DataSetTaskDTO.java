@@ -1,6 +1,7 @@
 package io.dataease.dto.dataset;
 
 import io.dataease.base.domain.DatasetTableTask;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,9 +12,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DataSetTaskDTO extends DatasetTableTask {
+    @ApiModelProperty("数据集名称")
     private String datasetName;
+    @ApiModelProperty("下次执行时间")
     private Long nextExecTime;
+    @ApiModelProperty("任务状态")
     private String taskStatus;
+    @ApiModelProperty("消息")
     private String msg;
+    @ApiModelProperty("权限")
     private String privileges;
 }

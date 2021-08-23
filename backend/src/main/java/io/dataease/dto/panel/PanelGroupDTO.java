@@ -2,6 +2,7 @@ package io.dataease.dto.panel;
 
 import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.commons.model.ITreeBase;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -14,21 +15,21 @@ import java.util.List;
  */
 @Data
 public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<PanelGroupDTO> {
-
+    @ApiModelProperty("标签")
     private String label;
-
+    @ApiModelProperty("是否叶子节点")
     private Boolean leaf;
-
+    @ApiModelProperty("权限")
     private String privileges;
-
+    @ApiModelProperty("默认仪表板ID")
     private String defaultPanelId;
-
+    @ApiModelProperty("默认仪表板名称")
     private String defaultPanelName;
-
+    @ApiModelProperty("是否默认")
     private Boolean isDefault;
-
+    @ApiModelProperty("源仪表板名称")
     private String sourcePanelName;
-
+    @ApiModelProperty("子节点")
     private List<PanelGroupDTO> children = new ArrayList<>();
 
 

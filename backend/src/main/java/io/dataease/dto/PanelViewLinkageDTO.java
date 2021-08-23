@@ -3,6 +3,7 @@ package io.dataease.dto;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.PanelViewLinkage;
 import io.dataease.base.domain.PanelViewLinkageField;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,17 +15,18 @@ import java.util.List;
  */
 public class PanelViewLinkageDTO extends PanelViewLinkage {
 
+    @ApiModelProperty("目标视图名称")
     //目标视图名称
     private String targetViewName;
-
+    @ApiModelProperty("启用联动")
     //关联状态
     private boolean linkageActive = false;
-
+    @ApiModelProperty("联动字段")
     private List<PanelViewLinkageField> linkageFields = new ArrayList<>();
 
-
+    @ApiModelProperty("目标视图字段")
     private List<DatasetTableField> targetViewFields = new ArrayList<>();
-
+    @ApiModelProperty("表ID")
     private String tableId;
 
 

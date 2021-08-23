@@ -1,6 +1,7 @@
 package io.dataease.dto;
 
 import io.dataease.base.domain.Datasource;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -11,6 +12,7 @@ import lombok.Data;
 @Data
 public class DatasourceDTO extends Datasource {
 
+    @ApiModelProperty("权限")
     private String privileges;
 
 }
