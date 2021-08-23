@@ -282,6 +282,9 @@ export default {
     },
 
     save(withClose) {
+      // 清理联动信息
+      this.$store.commit('clearPanelLinkageInfo')
+
       // 保存到数据库
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
