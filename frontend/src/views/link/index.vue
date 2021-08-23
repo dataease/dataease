@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <link-error v-if="showIndex===0" :resource-id="resourceId" />
-    <link-pwd v-if="showIndex===1" :resource-id="resourceId" />
+    <link-pwd v-if="showIndex===1" :resource-id="resourceId" @fresh-token="refreshToken" />
     <link-view v-if="showIndex===2" :resource-id="resourceId" />
   </div>
 </template>
@@ -48,6 +48,9 @@ export default {
       }).catch(() => {
         this.showError()
       })
+    },
+    refreshToken() {
+      this.loadInit()
     },
 
     // 显示无效链接
