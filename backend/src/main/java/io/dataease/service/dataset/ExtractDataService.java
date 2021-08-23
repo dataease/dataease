@@ -905,7 +905,7 @@ public class ExtractDataService {
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
         for (int i = 0; i < datasetTableFields.size(); i++) {
             ExcelInputField field = new ExcelInputField();
-            field.setName(datasetTableFields.get(i).getOriginName());
+            field.setName(datasetTableFields.get(i).getDataeaseName());
             if (datasetTableFields.get(i).getDeExtractType() == 1) {
                 field.setType("String");
                 field.setFormat("yyyy-MM-dd HH:mm:ss");
@@ -968,13 +968,14 @@ public class ExtractDataService {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for(int i=0;i< datasetTableFields.size();i++){
                 TextFileField textFileField = new TextFileField();
-                textFileField.setName(datasetTableFields.get(i).getOriginName());
+                textFileField.setName(datasetTableFields.get(i).getDataeaseName());
                 if (datasetTableFields.get(i).getDeExtractType() == 2) {
                     textFileField.setType("Integer");
                     textFileField.setFormat("0");
                 } else {
                     textFileField.setType("String");
                 }
+
                 outputFields[i] = textFileField;
             }
             TextFileField textFileField = new TextFileField();
@@ -1013,7 +1014,7 @@ public class ExtractDataService {
 
         tmp_code = tmp_code.replace("handleWraps", handleWraps);
         String Column_Fields = "";
-        if (datasourceType.equals(DatasourceTypes.excel) || datasourceType.equals(DatasourceTypes.oracle)) {
+        if (datasourceType.equals(DatasourceTypes.oracle)) {
             Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()));
         } else {
             Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()));

@@ -104,23 +104,15 @@
             <artifactId>pagehelper</artifactId>
             <version>5.0.3</version>
         </dependency>
-
-        <!--<dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-spring</artifactId>
-            <version>${shiro.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-spring-boot-starter</artifactId>
             <version>${shiro.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -139,41 +131,26 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.72</version>
         </dependency>
-
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>${jwt.version}</version>
         </dependency>
-
-
-
-
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
             <version>7.4.1.jre8</version>
         </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.14</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>19.7.0.0</version>
-        </dependency>
-
-
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
@@ -184,8 +161,6 @@
             <artifactId>curator-recipes</artifactId>
             <version>4.0.1</version>
         </dependency>
-
-
         <!-- easyexcel -->
         <dependency>
             <groupId>com.alibaba</groupId>
