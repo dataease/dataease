@@ -329,7 +329,7 @@ public class ExcelXlsxReader extends DefaultHandler {
             formatString = style.getDataFormatString();
             short format = this.formatIndex;
             if (format == 14 || format == 31 || format == 57 ||format == 59||
-                    format == 58 || (176 < format && format < 178)
+                    format == 58 || (176 <= format && format < 178)
                     || (182 <= format && format <= 196) ||
                     (210 <= format && format <= 213) || (208 == format))
             { // 日期
