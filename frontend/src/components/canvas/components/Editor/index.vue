@@ -3,7 +3,12 @@
     v-if="showDrag"
     id="editor"
     class="editor"
-    :class="{ edit: isEdit }"
+    :class="[
+      {
+        ['edit']: isEdit ,
+        ['parent_transform']:!chartDetailsVisible
+      }
+    ]"
     :style="customStyle"
     @mousedown="handleMouseDown"
   >
@@ -167,6 +172,7 @@ export default {
   props: {
     isEdit: {
       type: Boolean,
+      require: false,
       default: true
     },
 
@@ -637,11 +643,15 @@ export default {
     /*background: #fff;*/
     margin: auto;
     background-size:100% 100% !important;
-    transform-style:preserve-3d;
-
+    /*transform-style:preserve-3d;*/
     .lock {
         opacity: .5;
     }
+}
+.parent_transform {
+  //transform transform 会使z-index 失效；为了使编辑仪表板时 按钮一直在上面 采用transform-style 的方式
+  // transform-style 会导致 dialog 遮罩有问题 此处暂时用这个样式做控制
+  transform-style:preserve-3d;
 }
 .edit {
     outline: 1px solid gainsboro;
