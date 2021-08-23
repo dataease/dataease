@@ -1,6 +1,7 @@
 package io.dataease.controller.request.panel;
 
 import io.dataease.dto.PanelViewLinkageDTO;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 import java.util.Map;
@@ -11,13 +12,14 @@ import java.util.Map;
  * Description:
  */
 public class PanelLinkageRequest {
-
+    @ApiModelProperty("仪表板ID")
     private String panelId;
-
+    @ApiModelProperty("源视图ID")
     private String sourceViewId;
-
+    @ApiModelProperty("目标视图ID集合")
     private List<String> targetViewIds;
 
+    @ApiModelProperty("联动信息")
     private Map<String, PanelViewLinkageDTO> linkageInfo;
 
     public Map<String, PanelViewLinkageDTO> getLinkageInfo() {
