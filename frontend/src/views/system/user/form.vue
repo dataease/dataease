@@ -45,6 +45,7 @@
       </el-form-item>
       <el-form-item :label="$t('commons.role')" prop="roleIds">
         <el-select
+          ref="roleSelect"
           v-model="form.roleIds"
           style="width: 100%"
           :disabled="formType !== 'add' && form.isAdmin"
@@ -298,6 +299,7 @@ export default {
       this.$router.push({ name: 'system-user' })
     },
     filterData(instanceId) {
+      this.$refs.roleSelect && this.$refs.roleSelect.blur && this.$refs.roleSelect.blur()
       if (!this.depts) {
         return
       }
