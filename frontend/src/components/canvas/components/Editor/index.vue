@@ -637,6 +637,7 @@ export default {
     /*background: #fff;*/
     margin: auto;
     background-size:100% 100% !important;
+    transform-style:preserve-3d;
 
     .lock {
         opacity: .5;
