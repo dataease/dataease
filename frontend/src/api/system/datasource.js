@@ -50,6 +50,14 @@ export function validateDs(data) {
   })
 }
 
+export function validateDsById(datasourceId) {
+  return request({
+    url: 'datasource/validate/' + datasourceId,
+    method: 'get',
+    loading: true
+  })
+}
+
 export function getSchema(data) {
   return request({
     url: 'datasource/getSchema/',
