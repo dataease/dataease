@@ -2,7 +2,9 @@ package io.dataease.controller;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import springfox.documentation.annotations.ApiIgnore;
 
+@ApiIgnore
 public class ResultHolder {
     public ResultHolder() {
         this.success = true;

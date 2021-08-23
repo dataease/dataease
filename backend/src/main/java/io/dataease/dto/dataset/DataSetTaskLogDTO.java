@@ -1,6 +1,7 @@
 package io.dataease.dto.dataset;
 
 import io.dataease.base.domain.DatasetTableTaskLog;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DataSetTaskLogDTO extends DatasetTableTaskLog {
+    @ApiModelProperty("名称")
     private String name;
+    @ApiModelProperty("数据集名称")
     private String datasetName;
 }
