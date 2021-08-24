@@ -278,7 +278,7 @@ export default {
           data.configuration = JSON.stringify(data.configuration)
           if(data.showModel === 'show' && !this.canEdit){
             validateDsById(data.id).then(res => {
-              if(res.success === 'true'){
+              if(res.success){
                 this.$success(this.$t('datasource.validate_success'))
               }else {
                 this.$error(this.$t(res.message))
@@ -290,7 +290,7 @@ export default {
 
           }else {
             validateDs(data).then(res => {
-              if(res.success === 'true'){
+              if(res.success){
                 this.$success(this.$t('datasource.validate_success'))
               }else {
                 this.$error(this.$t(res.message))

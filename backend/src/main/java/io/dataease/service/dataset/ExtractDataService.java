@@ -572,7 +572,9 @@ public class ExtractDataService {
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
-        datasourceService.validate(datasetTable.getDataSourceId());
+        if(StringUtils.isNotEmpty(datasetTable.getDataSourceId())){
+            datasourceService.validate(datasetTable.getDataSourceId());
+        }
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
         TransMeta transMeta = null;

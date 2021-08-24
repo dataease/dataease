@@ -120,11 +120,17 @@ public class DatasourceService {
         checkAndUpdateDatasourceStatus(datasource);
     }
 
-    public void validate(Datasource datasource) throws Exception {
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(datasource);
-        datasourceProvider.checkStatus(datasourceRequest);
+    public ResultHolder validate(Datasource datasource) throws Exception {
+        try {
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(datasource);
+            datasourceProvider.checkStatus(datasourceRequest);
+            return ResultHolder.success("Success");
+        }catch (Exception e){
+            return ResultHolder.error("Datasource is invalid: " + e.getMessage());
+        }
+
     }
 
     public ResultHolder validate(String datasourceId) {
@@ -133,7 +139,10 @@ public class DatasourceService {
             return ResultHolder.error("Can not find datasource: "+ datasourceId);
         }
         try {
-            validate(datasource);
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(datasource);
+            datasourceProvider.checkStatus(datasourceRequest);
             datasource.setStatus("Success");
             return ResultHolder.success("Success");
         }catch (Exception e){

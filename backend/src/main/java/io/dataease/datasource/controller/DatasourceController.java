@@ -38,8 +38,8 @@ public class DatasourceController {
 
     @ApiOperation("验证数据源")
     @PostMapping("/validate")
-    public void validate(@RequestBody Datasource datasource) throws Exception {
-        datasourceService.validate(datasource);
+    public ResultHolder validate(@RequestBody Datasource datasource) throws Exception {
+        return datasourceService.validate(datasource);
     }
 
     @ApiOperation("验证数据源")
