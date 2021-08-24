@@ -12,6 +12,7 @@ export function baseRadarOption(chart_option, chart) {
     // size
     if (customAttr.size) {
       chart_option.radar.shape = customAttr.size.radarShape
+      chart_option.radar.radius = (customAttr.size.radarSize ? customAttr.size.radarSize : 80) + '%'
     }
     // tooltip
     if (customAttr.tooltip) {

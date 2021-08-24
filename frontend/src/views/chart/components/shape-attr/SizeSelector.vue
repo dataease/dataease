@@ -78,6 +78,9 @@
             <el-radio-button label="circle">{{ $t('chart.circle') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
+        <el-form-item :label="$t('chart.radar_size')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.radarSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormPie" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="100px" size="mini">
@@ -220,6 +223,7 @@ export default {
           this.sizeForm = customAttr.size
           this.sizeForm.treemapWidth = this.sizeForm.treemapWidth ? this.sizeForm.treemapWidth : 80
           this.sizeForm.treemapHeight = this.sizeForm.treemapHeight ? this.sizeForm.treemapHeight : 80
+          this.sizeForm.radarSize = this.sizeForm.radarSize ? this.sizeForm.radarSize : 80
         }
       }
     },
