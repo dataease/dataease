@@ -437,28 +437,29 @@ public class ExtractDataService {
         String Column_Fields = "dataease_uuid  varchar(50), `";
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
+            Integer size = datasetTableField.getSize() * 3;
+            if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
+                size = 65533;
+            }
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
-                    if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
-                        Column_Fields = Column_Fields + "varchar(65533)" + ",`";
-                    } else {
-                        Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize() * 3)) + ",`";
-                    }
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 1:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    size  = size < 50? 50 : size;
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 2:
-                    Column_Fields = Column_Fields + "bigint(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    Column_Fields = Column_Fields + "bigint(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 3:
                     Column_Fields = Column_Fields + "DOUBLE" + ",`";
                     break;
                 case 4:
-                    Column_Fields = Column_Fields + "TINYINT(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    Column_Fields = Column_Fields + "TINYINT(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 default:
-                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(datasetTableField.getSize())) + ",`";
+                    Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
             }
         }
