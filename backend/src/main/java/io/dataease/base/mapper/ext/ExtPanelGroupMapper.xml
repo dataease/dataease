@@ -30,10 +30,41 @@
         panel_group.`source`,
         panel_group.`panel_type`,
         sourcePanelGroup.`name` as source_panel_name,
-        get_auths(panel_group.id,'panel',#{userId}) as `privileges`
+        authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
-        LEFT JOIN (select id,`name` from panel_group) sourcePanelGroup
+        LEFT JOIN panel_group sourcePanelGroup
         on sourcePanelGroup.id=panel_group.source
+        left join (
+            SELECT
+            auth_source,
+            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+            FROM
+            (
+            `sys_auth`
+            LEFT JOIN `sys_auth_detail` ON ((
+            `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+            )))
+            WHERE
+            sys_auth_detail.privilege_value = 1
+            AND sys_auth.auth_source_type = 'panel'
+            AND (
+            (
+            sys_auth.auth_target_type = 'dept'
+            AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+            )
+            OR (
+            sys_auth.auth_target_type = 'user'
+            AND sys_auth.auth_target = #{userId}
+            )
+            OR (
+            sys_auth.auth_target_type = 'role'
+            AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+            )
+            )
+            GROUP BY
+            `sys_auth`.`auth_source`
+        ) authInfo
+        on panel_group.id = authInfo.auth_source
         <where>
             FIND_IN_SET(panel_group.id,cids)
             <if test="name != null">
@@ -78,10 +109,41 @@
         (case when ISNULL(defaultPanelGroup.id) then false else true end) is_default,
         defaultPanelGroup.id as default_panel_id,
         defaultPanelGroup.`name` as default_panel_name,
-        get_auths(panel_group.id,'panel',#{userId}) as `privileges`
+        authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
-        LEFT JOIN (select source,id,`name` from panel_group where source is not null) defaultPanelGroup
-        on defaultPanelGroup.source=panel_group.id
+        LEFT JOIN panel_group defaultPanelGroup
+        on defaultPanelGroup.source=panel_group.id and defaultPanelGroup.source is not null
+        left join (
+            SELECT
+            auth_source,
+            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+            FROM
+            (
+            `sys_auth`
+            LEFT JOIN `sys_auth_detail` ON ((
+            `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+            )))
+            WHERE
+            sys_auth_detail.privilege_value = 1
+            AND sys_auth.auth_source_type = 'panel'
+            AND (
+            (
+            sys_auth.auth_target_type = 'dept'
+            AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+            )
+            OR (
+            sys_auth.auth_target_type = 'user'
+            AND sys_auth.auth_target = #{userId}
+            )
+            OR (
+            sys_auth.auth_target_type = 'role'
+            AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+            )
+            )
+            GROUP BY
+            `sys_auth`.`auth_source`
+        ) authInfo
+        on panel_group.id = authInfo.auth_source
         <where>
             FIND_IN_SET(panel_group.id,cids)
             <if test="name != null">
