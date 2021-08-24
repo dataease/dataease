@@ -38,8 +38,39 @@
     <select id="search" resultMap="BaseResultMapDTO">
         select
         id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
-        get_auths(id,'dataset',#{userId}) as `privileges`
+        authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_table
+        left join (
+        SELECT
+        auth_source,
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        FROM
+        (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE
+        sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'dataset'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+        )
+        )
+        GROUP BY
+        `sys_auth`.`auth_source`
+        ) authInfo
+        on dataset_table.id = authInfo.auth_source
         <where>
             FIND_IN_SET(dataset_table.id,cids)
             <if test="sceneId != null">
