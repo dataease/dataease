@@ -464,6 +464,7 @@ public class ExtractDataService {
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 1:
+                    size  = size < 50? 50 : size;
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 2:
