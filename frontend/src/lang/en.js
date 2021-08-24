@@ -1217,7 +1217,8 @@ export default {
     remove_all_linkage: 'Remove All Linkage',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
-    setting: 'Setting'
+    setting: 'Setting',
+    no_drill_field: 'Miss relation field'
   },
   plugin: {
     local_install: 'Local installation',
