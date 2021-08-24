@@ -846,7 +846,8 @@ export default {
     height: '高度',
     system_case: '系统方案',
     custom_case: '自定义',
-    last_layer: '当前已经是最后一级'
+    last_layer: '当前已经是最后一级',
+    radar_size: '大小'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
