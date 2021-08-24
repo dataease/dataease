@@ -84,7 +84,7 @@ export default {
       componentDataShow: [],
       mainWidth: '100%',
       mainHeight: '100%',
-      searchCount: -1,
+      searchCount: 0,
       chartDetailsVisible: false,
       showChartInfo: {},
       showChartTableInfo: {}

@@ -25,6 +25,7 @@ export const DEFAULT_SIZE = {
   pieRoseRadius: 5,
   funnelWidth: 80,
   radarShape: 'polygon',
+  radarSize: 80,
   tableTitleFontSize: 12,
   tableItemFontSize: 12,
   tableTitleHeight: 36,
