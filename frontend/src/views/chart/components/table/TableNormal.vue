@@ -1,5 +1,5 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="padding: 8px;">
+  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <ux-grid
       ref="plxTable"
@@ -68,9 +68,10 @@ export default {
         fontStyle: 'normal',
         fontWeight: 'normal'
       },
-      bg_class: {
-        background: hexColorToRGBA('#ffffff', 0)
-      },
+      //   bg_class: {
+      //     background: hexColorToRGBA('#ffffff', 0),
+      //     borderRadius: this.borderRadius
+      //   },
       table_header_class: {
         fontSize: '12px',
         color: '#606266',
@@ -89,7 +90,16 @@ export default {
         background: '#ffffff',
         height: '36px'
       },
-      title_show: true
+      title_show: true,
+      borderRadius: '0px'
+    }
+  },
+  computed: {
+    bg_class() {
+      return {
+        background: hexColorToRGBA('#ffffff', 0),
+        borderRadius: this.borderRadius
+      }
     }
   },
   watch: {
@@ -111,6 +121,15 @@ export default {
         this.initData()
         this.calcHeightDelay()
       })
+      this.setBackGroundBorder()
+    },
+    setBackGroundBorder() {
+      if (this.chart.customStyle) {
+        const customStyle = JSON.parse(this.chart.customStyle)
+        if (customStyle.background) {
+          this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
+        }
+      }
     },
     initData() {
       const that = this
