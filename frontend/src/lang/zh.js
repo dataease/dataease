@@ -846,7 +846,8 @@ export default {
     height: '高度',
     system_case: '系统方案',
     custom_case: '自定义',
-    last_layer: '当前已经是最后一级'
+    last_layer: '当前已经是最后一级',
+    radar_size: '大小'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1218,7 +1219,8 @@ export default {
     remove_all_linkage: '清除所有联动',
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
     details: '详情',
-    setting: '设置'
+    setting: '设置',
+    no_drill_field: '缺少关联字段'
   },
   plugin: {
     local_install: '本地安装',

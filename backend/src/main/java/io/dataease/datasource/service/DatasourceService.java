@@ -9,6 +9,7 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
@@ -119,20 +120,39 @@ public class DatasourceService {
         checkAndUpdateDatasourceStatus(datasource);
     }
 
-    public void validate(Datasource datasource) throws Exception {
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(datasource);
-        datasourceProvider.checkStatus(datasourceRequest);
+    public ResultHolder validate(Datasource datasource) throws Exception {
+        try {
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(datasource);
+            datasourceProvider.checkStatus(datasourceRequest);
+            return ResultHolder.success("Success");
+        }catch (Exception e){
+            return ResultHolder.error("Datasource is invalid: " + e.getMessage());
+        }
+
     }
 
-    public void validate(String datasourceId) throws Exception {
-        if(StringUtils.isEmpty(datasourceId)){
-            return;
-        }
+    public ResultHolder validate(String datasourceId) {
         Datasource datasource = datasourceMapper.selectByPrimaryKey(datasourceId);
-        validate(datasource);
+        if(datasource == null){
+            return ResultHolder.error("Can not find datasource: "+ datasourceId);
+        }
+        try {
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(datasource);
+            datasourceProvider.checkStatus(datasourceRequest);
+            datasource.setStatus("Success");
+            return ResultHolder.success("Success");
+        }catch (Exception e){
+            datasource.setStatus("Error");
+            return ResultHolder.error("Datasource is invalid: " + e.getMessage());
+        }finally {
+            datasourceMapper.updateByPrimaryKey(datasource);
+        }
     }
+
     public List<String> getSchema(Datasource datasource) throws Exception {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();

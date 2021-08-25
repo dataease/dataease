@@ -717,8 +717,8 @@ export default {
     area_mode: '面積',
     rose_radius: '園角',
     view_name: '視圖標題',
-    belong_group: '所属分组',
-    select_group: '选择分组',
+    belong_group: '所屬分組',
+    select_group: '選擇分組',
     name_can_not_empty: '名稱不能為空',
     template_can_not_empty: '請選擇儀表板',
     custom_count: '記錄數',
@@ -812,8 +812,8 @@ export default {
     color_red: '火紅',
     color_fast: '輕快',
     color_spiritual: '靈動',
-    chart_details: '视图明细',
-    export_details: '导出明细',
+    chart_details: '視圖明細',
+    export_details: '導出明細',
     chart_data: '數據',
     chart_style: '樣式',
     drag_block_type_axis: '類別軸',
@@ -846,7 +846,8 @@ export default {
     height: '高度',
     system_case: '系統方案',
     custom_case: '自定義',
-    last_layer: '当前已经是最后一级'
+    last_layer: '當前已經是最後一級',
+    radar_size: '大小'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
@@ -988,7 +989,7 @@ export default {
       dataset: '數據集',
       search_by_name: '根據名稱搜索',
       underway: '等待執行',
-      stopped: '執行结束',
+      stopped: '執行結束',
       pending: '暫停',
       exec: '執行一次',
       confirm_exec: '手動觸發執行？',
@@ -1003,7 +1004,7 @@ export default {
     can_not_union_diff_datasource: '被關聯數據集必須與當前數據集的數據源一致',
     operator: '操作',
     d_q_trans: '維度/指標轉換',
-    add_calc_field: '新建计算字段',
+    add_calc_field: '新建計算字段',
     input_name: '請輸入名稱',
     field_exp: '字段表達式',
     data_type: '數據類型',
@@ -1168,7 +1169,7 @@ export default {
     bottomComponent: '置底',
     upComponent: '上移',
     downComponent: '下移',
-    linkage_setting: '联动设置',
+    linkage_setting: '聯動設置',
     open_aided_design: '打開組件輔助設計',
     close_aided_design: '關閉組件輔助設計',
     open_style_design: '打開樣式設計',
@@ -1206,17 +1207,18 @@ export default {
     source_panel_name: '原儀表板名稱',
     content_style: '內容樣式',
     canvas_self_adaption: '自適應畫布區域',
-    panel_save_tips: '仪表板已变动，是否保存？',
-    panel_save_warn_tips: '如果未保存，你对仪表板做的变更将会丢失！',
+    panel_save_tips: '儀表板已變動，是否保存？',
+    panel_save_warn_tips: '如果未保存，你對儀表板做的變更將會丟失！',
     do_not_save: '不保存',
     save: '保存',
-    drill: '下钻',
-    linkage: '联动',
-    cancel_linkage: '取消联动',
-    remove_all_linkage: '清除所有联动',
-    exit_un_march_linkage_field: '存在未匹配联动关系的字段',
-    details: '详情',
-    setting: '设置'
+    drill: '下鑽',
+    linkage: '聯動',
+    cancel_linkage: '取消聯動',
+    remove_all_linkage: '清除所有聯動',
+    exit_un_march_linkage_field: '存在未匹配聯動關系的字段',
+    details: '詳情',
+    setting: '設置',
+    no_drill_field: '缺少關聯字段'
   },
   plugin: {
     local_install: '本地安裝',
@@ -1323,7 +1325,7 @@ export default {
     week_start: '從星期',
     week_end: '至星期',
     every_year: '每年',
-    week_tips: '说明：1-7 分别对应 周日-周六',
+    week_tips: '說明：1-7 分別對應 周日-周六',
     minute_limit: '分鐘不能小於1，大於59',
     hour_limit: '小時不能小於1，大於523',
     day_limit: '天不能小於1，大於531'
@@ -1408,3 +1410,4 @@ export default {
     placeholder: '請選擇年份'
   }
 }
+

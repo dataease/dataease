@@ -847,7 +847,8 @@ export default {
     height: 'Height',
     system_case: 'System',
     custom_case: 'Custom',
-    last_layer: 'This Is The Last Layer'
+    last_layer: 'This Is The Last Layer',
+    radar_size: 'Size'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1217,7 +1218,8 @@ export default {
     remove_all_linkage: 'Remove All Linkage',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
-    setting: 'Setting'
+    setting: 'Setting',
+    no_drill_field: 'Miss relation field'
   },
   plugin: {
     local_install: 'Local installation',

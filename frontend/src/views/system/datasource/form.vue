@@ -100,7 +100,7 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import { addDs, editDs, getSchema, validateDs } from '@/api/system/datasource'
+import { addDs, editDs, getSchema, validateDs, validateDsById } from '@/api/system/datasource'
 import { $confirm } from '@/utils/message'
 
 export default {
@@ -276,9 +276,29 @@ export default {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
           data.configuration = JSON.stringify(data.configuration)
-          validateDs(data).then(res => {
-            this.$success(this.$t('datasource.validate_success'))
-          })
+          if(data.showModel === 'show' && !this.canEdit){
+            validateDsById(data.id).then(res => {
+              if(res.success){
+                this.$success(this.$t('datasource.validate_success'))
+              }else {
+                this.$error(this.$t(res.message))
+              }
+              this.refreshTree()
+            }).catch(res => {
+              this.$error(res.message)
+            })
+
+          }else {
+            validateDs(data).then(res => {
+              if(res.success){
+                this.$success(this.$t('datasource.validate_success'))
+              }else {
+                this.$error(this.$t(res.message))
+              }
+            }).catch(res => {
+              this.$error(res.message)
+            })
+          }
         } else {
           return false
         }

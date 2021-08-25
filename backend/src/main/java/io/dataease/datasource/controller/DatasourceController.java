@@ -7,6 +7,7 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.datasource.dto.DBTableDTO;
@@ -37,9 +38,16 @@ public class DatasourceController {
 
     @ApiOperation("验证数据源")
     @PostMapping("/validate")
-    public void validate(@RequestBody Datasource datasource) throws Exception {
-        datasourceService.validate(datasource);
+    public ResultHolder validate(@RequestBody Datasource datasource) throws Exception {
+        return datasourceService.validate(datasource);
     }
+
+    @ApiOperation("验证数据源")
+    @GetMapping("/validate/{datasourceId}")
+    public ResultHolder validate(@PathVariable String datasourceId) {
+        return datasourceService.validate(datasourceId);
+    }
+
 
     @ApiOperation("查询当前用户数据源")
     @GetMapping("/list")

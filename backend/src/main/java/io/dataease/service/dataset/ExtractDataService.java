@@ -464,6 +464,7 @@ public class ExtractDataService {
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 1:
+                    size  = size < 50? 50 : size;
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 2:
@@ -571,7 +572,9 @@ public class ExtractDataService {
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
-        datasourceService.validate(datasetTable.getDataSourceId());
+        if(StringUtils.isNotEmpty(datasetTable.getDataSourceId())){
+            datasourceService.validate(datasetTable.getDataSourceId());
+        }
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
         TransMeta transMeta = null;

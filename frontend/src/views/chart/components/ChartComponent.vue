@@ -216,6 +216,11 @@ export default {
       chart.resize()
     },
     trackClick(trackAction) {
+      const param = this.pointParam
+      if (!param || !param.data || !param.data.dimensionList) {
+        this.$warning(this.$t('panel.no_drill_field'))
+        return
+      }
       const linkageParam = {
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,

@@ -20,7 +20,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="active||linkageSettingStatus" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
+    <edit-bar style="transform: translateZ(10px)" v-if="active||linkageSettingStatus" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -1566,6 +1566,7 @@ export default {
 .vdr {
   touch-action: none;
   position: absolute;
+  transform-style:preserve-3d;
   border: 1px
 }
 
