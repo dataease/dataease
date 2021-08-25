@@ -1,13 +1,28 @@
 <template>
   <el-card class="el-card-main" :style="mainStyle">
     <div style="position: relative;">
+      <div style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-radio-group v-model="styleInfo.textAlign" size="mini" @change="styleChange">
+          <el-radio-button
+            v-for="item in textAlignOptions"
+            :key="item.label"
+            :label="item.label"
+          >
+            <el-tooltip :content="item.tooltip">
+              <span style="float: left;">
+                <i :class="item.icon" />
+              </span>
+            </el-tooltip>
+          </el-radio-button>
+        </el-radio-group>
+      </div>
       <el-tooltip :content="$t('panel.fontSize')">
 
         <i style="float: left;margin-top: 3px;margin-left: 2px;" class="iconfont icon-font_size" />
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.fontSize" type="number" size="mini" min="12" max="128" @change="styleChange"/>
+        <el-input v-model="styleInfo.fontSize" type="number" size="mini" min="12" max="128" @change="styleChange" />
       </div>
 
       <el-tooltip :content="$t('panel.fontWeight')">
@@ -15,7 +30,7 @@
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.fontWeight" type="number" size="mini" min="100" step="100" max="900" @change="styleChange"/>
+        <el-input v-model="styleInfo.fontWeight" type="number" size="mini" min="100" step="100" max="900" @change="styleChange" />
       </div>
 
       <el-tooltip :content="$t('panel.letterSpacing')">
@@ -23,7 +38,7 @@
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.letterSpacing" type="number" size="mini" min="0" max="99" @change="styleChange"/>
+        <el-input v-model="styleInfo.letterSpacing" type="number" size="mini" min="0" max="99" @change="styleChange" />
       </div>
 
       <div style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
@@ -32,7 +47,7 @@
             <i class="icon iconfont icon-zimua" @click="goColor" />
           </el-tooltip>
           <div :style="letterDivColor" />
-          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange"/>
+          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
         </div>
       </div>
 
@@ -42,7 +57,7 @@
             <i class="iconfont icon-beijingse1" @click="goBackgroundColor" />
           </el-tooltip>
           <div :style="backgroundDivColor" />
-          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange"/>
+          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
         </div>
       </div>
     </div>
@@ -109,6 +124,13 @@ export default {
     styleInfo() {
       return this.$store.state.curComponent.style
     },
+    canvasWidth() {
+      let scaleWidth = 1
+      if (this.canvasStyleData.selfAdaption) {
+        scaleWidth = this.curCanvasScale.scaleWidth / 100
+      }
+      return this.canvasStyleData.width * scaleWidth
+    },
     ...mapState([
       'curComponent',
       'curCanvasScale',
@@ -124,10 +146,19 @@ export default {
       this.$refs.backgroundColorPicker.handleTrigger()
     },
     getPositionX(x) {
+      let ps = 0
       if (this.canvasStyleData.selfAdaption) {
-        return (x * this.curCanvasScale.scaleWidth / 100) + 60
+        ps = (x * this.curCanvasScale.scaleWidth / 100) + 60
       } else {
-        return x + 60
+        ps = x + 60
+      }
+      // 防止toolbar超出边界
+      const xGap = ps + 395 - this.canvasWidth
+      // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
+      if (xGap > 0) {
+        return ps - xGap
+      } else {
+        return ps
       }
     },
     getPositionY(y) {
@@ -138,7 +169,6 @@ export default {
       }
     },
     styleChange() {
-      debugger
       this.$store.state.styleChangeTimes++
     }
   }
@@ -155,7 +185,7 @@ export default {
   .el-card-main {
     height: 34px;
     z-index: 10;
-    width: 350px;
+    width: 450px;
     position: absolute;
 
   }

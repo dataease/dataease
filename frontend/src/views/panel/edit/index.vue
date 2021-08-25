@@ -214,8 +214,8 @@ import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
 import RectangleAttr from '@/components/canvas/components/RectangleAttr'
-import TextAttr from '@/views/Tinymce/TextAttr'
-import FilterTextAttr from '@/views/Tinymce/FilterTextAttr'
+import TextAttr from '@/components/canvas/components/TextAttr'
+import FilterTextAttr from '@/components/canvas/components/FilterTextAttr'
 
 export default {
   name: 'PanelEdit',
