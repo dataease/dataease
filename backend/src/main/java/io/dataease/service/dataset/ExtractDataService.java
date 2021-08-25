@@ -885,12 +885,14 @@ public class ExtractDataService {
 
         List<String> sheetNames = new ArrayList<>();
         List<String> files = new ArrayList<>();
+        List<String> filesRequired = new ArrayList<>();
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
             if(!sheetNames.contains(excelSheetData.getExcelLable())){
                 sheetNames.add(excelSheetData.getExcelLable());
             }
             if(!files.contains(excelSheetData.getPath())){
                 files.add(excelSheetData.getPath());
+                filesRequired.add("Y");
             }
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
@@ -903,6 +905,7 @@ public class ExtractDataService {
         }
         excelInputMeta.setPassword("Encrypted");
         excelInputMeta.setFileName( files.toArray(new String[files.size()]));
+        excelInputMeta.setFileRequired(filesRequired.toArray(new String[filesRequired.size()]));
         excelInputMeta.setStartsWithHeader(true);
         excelInputMeta.setIgnoreEmptyRows(true);
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
