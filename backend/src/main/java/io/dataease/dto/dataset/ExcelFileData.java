@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class ExcelFileData {
     @ApiModelProperty("excelID")
-    private String excelId;
+    private String id;
     @ApiModelProperty("excel标签")
     private String excelLable;
     @ApiModelProperty("sheets")

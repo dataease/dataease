@@ -1214,20 +1214,20 @@ public class DataSetTableService {
         String filePath = saveFile(file, excelId);
         ExcelFileData excelFileData = new ExcelFileData();
         excelFileData.setExcelLable(filename);
-        excelFileData.setExcelId(excelId);
+        excelFileData.setId(excelId);
         excelFileData.setPath(filePath);
 
         filename = filename.substring(0, filename.lastIndexOf('.'));
         if(retrunSheetDataList.size() == 1){
             retrunSheetDataList.get(0).setDatasetName(filename);
             retrunSheetDataList.get(0).setSheetExcelId(excelId);
-            retrunSheetDataList.get(0).setSheetId(UUID.randomUUID().toString());
+            retrunSheetDataList.get(0).setId(UUID.randomUUID().toString());
             retrunSheetDataList.get(0).setPath(filePath);
         }else {
             for (ExcelSheetData excelSheetData : retrunSheetDataList) {
                 excelSheetData.setDatasetName(filename + "-" + excelSheetData.getExcelLable());
                 excelSheetData.setSheetExcelId(excelId);
-                excelSheetData.setSheetId(UUID.randomUUID().toString());
+                excelSheetData.setId(UUID.randomUUID().toString());
                 excelSheetData.setPath(filePath);
             }
         }
