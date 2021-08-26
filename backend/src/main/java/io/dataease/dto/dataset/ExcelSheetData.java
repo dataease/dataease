@@ -24,7 +24,7 @@ public class ExcelSheetData {
     @ApiModelProperty("excelID")
     private String sheetExcelId;
     @ApiModelProperty("sheetId")
-    private String sheetId;
+    private String id;
     @ApiModelProperty("路径")
     private String path;
     @ApiModelProperty("字段MD5")

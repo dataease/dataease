@@ -161,6 +161,13 @@ export default {
     styleInfo() {
       return this.$store.state.curComponent.style
     },
+    canvasWidth() {
+      let scaleWidth = 1
+      if (this.canvasStyleData.selfAdaption) {
+        scaleWidth = this.curCanvasScale.scaleWidth / 100
+      }
+      return this.canvasStyleData.width * scaleWidth
+    },
     ...mapState([
       'curComponent',
       'curCanvasScale',
@@ -176,10 +183,19 @@ export default {
       this.$refs.backgroundColorPicker.handleTrigger()
     },
     getPositionX(x) {
+      let ps = 0
       if (this.canvasStyleData.selfAdaption) {
-        return (x * this.curCanvasScale.scaleWidth / 100) + 60
+        ps = (x * this.curCanvasScale.scaleWidth / 100) + 60
       } else {
-        return x + 60
+        ps = x + 60
+      }
+      // 防止toolbar超出边界
+      const xGap = ps + 345 - this.canvasWidth
+      // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
+      if (xGap > 0) {
+        return ps - xGap
+      } else {
+        return ps
       }
     },
     getPositionY(y) {

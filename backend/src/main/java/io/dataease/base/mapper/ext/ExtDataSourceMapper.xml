@@ -70,7 +70,7 @@
         )))
         WHERE
         sys_auth_detail.privilege_value = 1
-        AND sys_auth.auth_source_type = 'chart'
+        AND sys_auth.auth_source_type = 'link'
         AND (
         (
         sys_auth.auth_target_type = 'dept'

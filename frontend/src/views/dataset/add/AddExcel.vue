@@ -50,14 +50,15 @@
 
 
             <el-tree ref="tree"
-              :data="excelData"
-
-               node-key="excelId"
-              :props="props"
-              show-checkbox
-              highlight-current
-              @node-click="handleNodeClick"
-              @check-change="handleCheckChange">
+                     :data="excelData"
+                     :default-expanded-keys=defaultExpandedKeys
+                     :default-checked-keys=defaultCheckedKeys
+                     node-key="id"
+                    :props="props"
+                    show-checkbox
+                    highlight-current
+                    @node-click="handleNodeClick"
+                    @check-change="handleCheckChange">
             </el-tree>
 
 
@@ -186,7 +187,9 @@ export default {
         children: 'sheets'
       },
       count: 1,
-      excelData: []
+      excelData: [],
+      defaultExpandedKeys: [],
+      defaultCheckedKeys: []
     }
   },
   watch: {
@@ -207,6 +210,17 @@ export default {
   },
   methods: {
     handleCheckChange(data, checked, indeterminate) {
+      if(checked){
+        this.defaultCheckedKeys.push(data.id)
+        this.handleNodeClick(data)
+      }else {
+        var index = this.defaultCheckedKeys.findIndex(id => {
+          if ( id == data.id) {
+            return true;
+          }
+        })
+        this.defaultCheckedKeys.splice(index,1)
+      }
     },
     handleNodeClick(data) {
       if(data.sheet){
@@ -258,9 +272,14 @@ export default {
       })
     },
     uploadSuccess(response, file, fileList) {
-      this.excelData.push(response.data)
-      this.fileList = fileList
       this.uploading = false
+      this.excelData.push(response.data)
+      this.defaultExpandedKeys.push(response.data.id)
+      this.defaultCheckedKeys.push(response.data.sheets[0].id)
+      this.$nextTick(() => {
+        this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys);
+      });
+      this.fileList = fileList
     },
 
     save() {
@@ -326,6 +345,7 @@ export default {
       }
       if(new Set(sheetFileMd5).size !== sheetFileMd5.length && !this.param.tableId){
         this.$confirm(this.$t('dataset.merge_msg'), this.$t('dataset.merge_title'), {
+          distinguishCancelAndClose: true,
           confirmButtonText: this.$t('dataset.merge'),
           cancelButtonText: this.$t('dataset.no_merge'),
           type: 'info'
@@ -336,7 +356,7 @@ export default {
             this.cancel()
           })
         }).catch(action => {
-          if(action == 'cancle'){
+          if(action === 'close'){
             return
           }
           table.mergeSheet = false
@@ -352,7 +372,6 @@ export default {
         })
       }
     },
-
     cancel() {
       this.dataReset()
       if (this.param.tableId) {

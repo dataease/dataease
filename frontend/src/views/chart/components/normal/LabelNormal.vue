@@ -1,5 +1,5 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="padding: 8px;">
+  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <div
       v-if="chart.data && chart.data.x && chart.data.x.length > 0 && chart.data.series && chart.data.series.length > 0 && chart.data.series[0].data && chart.data.series[0].data.length > 0"
@@ -76,8 +76,17 @@ export default {
       bg_class: {
         background: hexColorToRGBA('#ffffff', 0)
       },
-      title_show: true
+      title_show: true,
+      borderRadius: '0px'
     }
+  },
+  computed: {
+    // bg_class() {
+    //   return {
+    //     background: hexColorToRGBA('#ffffff', 0),
+    //     borderRadius: this.borderRadius
+    //   }
+    // }
   },
   watch: {
     chart() {
@@ -99,6 +108,16 @@ export default {
       this.initStyle()
       window.onresize = function() {
         that.calcHeight()
+      }
+      this.setBackGroundBorder()
+    },
+    setBackGroundBorder() {
+      if (this.chart.customStyle) {
+        const customStyle = JSON.parse(this.chart.customStyle)
+        if (customStyle.background) {
+          this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
+          this.bg_class.borderRadius = this.borderRadius
+        }
       }
     },
     calcHeight() {
