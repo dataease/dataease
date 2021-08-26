@@ -41,6 +41,14 @@
         <el-input v-model="styleInfo.letterSpacing" type="number" size="mini" min="0" max="99" @change="styleChange" />
       </div>
 
+      <el-tooltip :content="$t('panel.opacity')">
+        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-touming" />
+      </el-tooltip>
+
+      <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-input v-model="innerOpacity" type="number" size="mini" min="0" max="100" step="10" @change="styleChange" />
+      </div>
+
       <div style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <div style="width: 16px;height: 18px">
           <el-tooltip :content="$t('panel.color')">
@@ -79,6 +87,7 @@ export default {
   },
   data() {
     return {
+      innerOpacity: 0,
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',
@@ -97,8 +106,19 @@ export default {
         }
       ] }
   },
+  watch: {
+    innerOpacity: {
+      handler(oldVal, newVal) {
+        this.styleInfo['opacity'] = this.innerOpacity / 100
+      }
+    }
+  },
+  mounted() {
+    if (this.styleInfo['opacity']) {
+      this.innerOpacity = this.styleInfo['opacity'] * 100
+    }
+  },
   computed: {
-
     letterDivColor() {
       const style = {
         height: '2px',
@@ -153,7 +173,7 @@ export default {
         ps = x + 60
       }
       // 防止toolbar超出边界
-      const xGap = ps + 395 - this.canvasWidth
+      const xGap = ps + 495 - this.canvasWidth
       // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
       if (xGap > 0) {
         return ps - xGap
@@ -185,7 +205,7 @@ export default {
   .el-card-main {
     height: 34px;
     z-index: 10;
-    width: 450px;
+    width: 550px;
     position: absolute;
 
   }
