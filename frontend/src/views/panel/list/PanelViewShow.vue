@@ -21,6 +21,11 @@
                 <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
               </el-tooltip>
             </span>
+            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('panel.export_to_pdf')">
+                <el-button class="el-icon-notebook-2" size="mini" circle @click="downloadAsPDF" />
+              </el-tooltip>
+            </span>
             <span style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.fullscreen_preview')">
                 <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
@@ -80,6 +85,7 @@ import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
 import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
+import JsPDF from 'jspdf'
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate },
@@ -170,6 +176,33 @@ export default {
           const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
           FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
         }
+      })
+    },
+
+    downloadAsPDF() {
+      html2canvas(this.$refs.imageWrapper).then(canvas => {
+        const contentWidth = canvas.width
+        const contentHeight = canvas.height
+        const pageHeight = contentWidth / 592.28 * 841.89
+        let leftHeight = contentHeight
+        let position = 0
+        const imgWidth = 595.28
+        const imgHeight = 592.28 / contentWidth * contentHeight
+        const pageData = canvas.toDataURL('image/jpeg', 1.0)
+        const PDF = new JsPDF('', 'pt', 'a4')
+        if (leftHeight < pageHeight) {
+          PDF.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
+        } else {
+          while (leftHeight > 0) {
+            PDF.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
+            leftHeight -= pageHeight
+            position -= 841.89
+            if (leftHeight > 0) {
+              PDF.addPage()
+            }
+          }
+        }
+        PDF.save('PDF-test' + '.pdf')
       })
     },
     refreshTemplateInfo() {
