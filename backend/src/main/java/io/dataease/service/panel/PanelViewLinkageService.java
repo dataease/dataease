@@ -1,7 +1,9 @@
 package io.dataease.service.panel;
 
+import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.domain.PanelViewLinkage;
 import io.dataease.base.domain.PanelViewLinkageField;
+import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelViewLinkageFieldMapper;
 import io.dataease.base.mapper.PanelViewLinkageMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper;
@@ -10,6 +12,7 @@ import io.dataease.controller.request.panel.PanelLinkageRequest;
 import io.dataease.dto.LinkageInfoDTO;
 import io.dataease.dto.PanelViewLinkageDTO;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -34,6 +37,9 @@ public class PanelViewLinkageService {
 
     @Resource
     private ExtPanelViewLinkageMapper extPanelViewLinkageMapper;
+
+    @Resource
+    private PanelGroupMapper panelGroupMapper;
 
 
     public Map<String, PanelViewLinkageDTO> getViewLinkageGather(PanelLinkageRequest request) {
@@ -92,6 +98,10 @@ public class PanelViewLinkageService {
     }
 
     public Map<String, List<String>> getPanelAllLinkageInfo(String panelId) {
+        PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(panelId);
+        if(panelInfo!=null && StringUtils.isNotEmpty(panelInfo.getSource())){
+            panelId=panelInfo.getSource();
+        }
         List<LinkageInfoDTO> info = extPanelViewLinkageMapper.getPanelAllLinkageInfo(panelId);
         return Optional.ofNullable(info).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(LinkageInfoDTO::getSourceInfo,LinkageInfoDTO::getTargetInfoList));
     }
