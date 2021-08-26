@@ -212,6 +212,7 @@ export default {
     handleCheckChange(data, checked, indeterminate) {
       if(checked){
         this.defaultCheckedKeys.push(data.id)
+        this.handleNodeClick(data)
       }else {
         var index = this.defaultCheckedKeys.findIndex(id => {
           if ( id == data.id) {
