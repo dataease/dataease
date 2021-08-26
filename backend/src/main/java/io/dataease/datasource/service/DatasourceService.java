@@ -1,5 +1,6 @@
 package io.dataease.datasource.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
@@ -14,6 +15,8 @@ import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.datasource.dto.DBTableDTO;
+import io.dataease.datasource.dto.MysqlConfigration;
+import io.dataease.datasource.dto.OracleConfigration;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -80,7 +83,12 @@ public class DatasourceService {
         request.setSort("update_time desc");
         List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.queryUnion(request);
         datasourceDTOS.forEach(datasourceDTO -> {
-            datasourceDTO.getType();
+            if(datasourceDTO.getType().equalsIgnoreCase("mysql")){
+                datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfigration.class)) );
+            };
+            if(datasourceDTO.getType().equalsIgnoreCase("oracle")){
+                datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), OracleConfigration.class)));
+            };
         });
         return datasourceDTOS;
     }

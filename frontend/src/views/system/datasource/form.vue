@@ -193,27 +193,6 @@ export default {
       this.form = Object.assign({}, row)
       this.originConfiguration = this.form.configuration
       this.form.configuration = JSON.parse(this.form.configuration)
-      if (!this.form.configuration.initialPoolSize) {
-        this.form.configuration.initialPoolSize = 5
-      }
-      if (!this.form.configuration.minPoolSize) {
-        this.form.configuration.minPoolSize = 5
-      }
-      if (!this.form.configuration.maxPoolSize) {
-        this.form.configuration.maxPoolSize = 50
-      }
-      if (!this.form.configuration.maxIdleTime) {
-        this.form.configuration.maxIdleTime = 30
-      }
-      if (!this.form.configuration.acquireIncrement) {
-        this.form.configuration.acquireIncrement = 5
-      }
-      if (!this.form.configuration.idleConnectionTestPeriod) {
-        this.form.configuration.idleConnectionTestPeriod = 5
-      }
-      if (!this.form.configuration.connectTimeout) {
-        this.form.configuration.connectTimeout = 5
-      }
     },
     reset() {
       this.$refs.dsForm.resetFields()
