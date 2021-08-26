@@ -1128,6 +1128,7 @@ export default {
     store: '收藏',
     save_to_panel: '保存為模板',
     export_to_panel: '導出為模板',
+    export_to_pdf: '導出為PDF',
     preview: '預覽',
     fullscreen_preview: '全屏預覽',
     new_tab_preview: '新Tab頁預覽',
