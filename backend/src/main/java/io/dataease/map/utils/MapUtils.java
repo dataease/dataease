@@ -121,7 +121,7 @@ public class MapUtils {
     }
 
     private static AreaEntity root() {
-        return AreaEntity.builder().code("100000").name("中华人名共和国").build();
+        return AreaEntity.builder().code("100000").name("中华人民共和国").build();
     }
 
     public static void recursionWrite(List<AreaEntity> areaEntityList) {
