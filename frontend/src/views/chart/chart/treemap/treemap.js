@@ -54,6 +54,7 @@ export function baseTreemapOption(chart_option, chart) {
         // y.type = 'treemap'
         chart_option.series[0].data.push(y)
       }
+      chart_option.series[0].name = chart.data.series[0].name
     }
   }
   // console.log(chart_option);
