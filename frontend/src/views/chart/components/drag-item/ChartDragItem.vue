@@ -55,7 +55,7 @@
                 <span>
                   <i class="el-icon-sort" />
                   <span>{{ $t('chart.sort') }}</span>
-                  <span class="summary-span">({{ $t('chart.'+item.sort) }})</span>
+                  <span class="summary-span-item">({{ $t('chart.'+item.sort) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -171,11 +171,6 @@ export default {
     font-size: 12px;
   }
 
-  .summary-span{
-    margin-left: 4px;
-    color: #878d9f;;
-  }
-
   .inner-dropdown-menu{
     display: flex;
     justify-content: space-between;
@@ -185,7 +180,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 100px;
+    width: 80px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
