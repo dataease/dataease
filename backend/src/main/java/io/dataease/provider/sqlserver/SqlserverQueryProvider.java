@@ -37,6 +37,7 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
+        field = field.toUpperCase();
         switch (field) {
             case "CHAR":
             case "NCHAR":
