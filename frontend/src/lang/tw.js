@@ -1350,6 +1350,7 @@ export default {
     read_time: '查看時間',
     type: '消息類型',
     mark_readed: '標記已讀',
+    all_mark_readed: '全部已讀',
     please_select: '請至少選擇一條消息',
     mark_success: '標記已讀成功',
     receive_manage: '接收管理',

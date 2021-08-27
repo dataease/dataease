@@ -1351,6 +1351,7 @@ export default {
     read_time: 'Read Time',
     type: 'Message Type',
     mark_readed: 'Mark As Read',
+    all_mark_readed: 'Mark All As Read',
     please_select: 'Please select at least one message',
     mark_success: 'Mark read successfully',
     receive_manage: 'Receive Manage',

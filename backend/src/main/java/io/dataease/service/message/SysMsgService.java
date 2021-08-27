@@ -312,4 +312,12 @@ public class SysMsgService {
         return sourceLists;
     }
 
+    public void setAllRead() {
+        SysMsg record = new SysMsg();
+        record.setStatus(true);
+        SysMsgExample example = new SysMsgExample();
+        example.createCriteria().andUserIdEqualTo(AuthUtils.getUser().getUserId()).andStatusEqualTo(false);
+        sysMsgMapper.updateByExampleSelective(record, example);
+    }
+
 }
