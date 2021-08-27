@@ -55,6 +55,9 @@ export default {
     },
     refreshTree() {
       this.$refs.dsTree && this.$refs.dsTree.queryTreeDatas()
+    },
+    msg2Current(sourceParam) {
+      this.$refs.dsTree && this.$refs.dsTree.markInvalid(sourceParam)
     }
   }
 }

@@ -1362,6 +1362,7 @@ export default {
     i18n_msg_type_dataset_sync: '数据集同步',
     i18n_msg_type_dataset_sync_success: '数据集同步成功',
     i18n_msg_type_dataset_sync_faild: '数据集同步失败',
+    i18n_msg_type_ds_invalid: '数据源失效',
     i18n_msg_type_all: '全部类型',
     channel_inner_msg: '站内消息'
   },
