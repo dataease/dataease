@@ -18,7 +18,7 @@
     >
       <template #toolbar>
         <el-button :disabled="multipleSelection.length === 0" @click="markReaded">{{ $t('webmsg.mark_readed') }}</el-button>
-        <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
+        <el-button @click="allMarkReaded">{{ $t('webmsg.all_mark_readed') }}</el-button>
       </template>
       <el-table-column
         type="selection"
@@ -61,7 +61,7 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import { query, updateStatus, batchRead } from '@/api/system/msg'
+import { query, updateStatus, batchRead, allRead } from '@/api/system/msg'
 import { msgTypes, getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import bus from '@/utils/bus'
 import { addOrder, formatOrders } from '@/utils/index'
@@ -163,6 +163,12 @@ export default {
     setReaded(row) {
       updateStatus(row.msgId).then(res => {
         bus.$emit('refresh-top-notification')
+        this.search()
+      })
+    },
+    allMarkReaded() {
+      allRead().then(res => {
+        this.$success(this.$t('webmsg.mark_success'))
         this.search()
       })
     },
