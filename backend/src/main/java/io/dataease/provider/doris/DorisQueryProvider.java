@@ -121,6 +121,8 @@ public class DorisQueryProvider extends QueryProvider {
                         fieldName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
                     } else if (f.getDeType() == 2) {
                         fieldName = String.format(DorisConstants.CAST, originField, DorisConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == 3) {
+                        fieldName = String.format(DorisConstants.CAST, originField, DorisConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
                         fieldName = originField;
                     }
