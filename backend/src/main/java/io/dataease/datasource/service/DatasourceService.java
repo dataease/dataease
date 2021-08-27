@@ -272,9 +272,13 @@ public class DatasourceService {
             datasource.setStatus("Success");
             datasourceMapper.updateByPrimaryKeySelective(datasource);
         } catch (Exception e) {
+            Datasource temp = datasourceMapper.selectByPrimaryKey(datasource.getId());
             datasource.setStatus("Error");
-            sendWebMsg(datasource);
-            datasourceMapper.updateByPrimaryKeySelective(datasource);
+            if (!StringUtils.equals(temp.getStatus(), "Error")) {
+                sendWebMsg(datasource);
+                datasourceMapper.updateByPrimaryKeySelective(datasource);
+            }            
+            
         }
     }
 

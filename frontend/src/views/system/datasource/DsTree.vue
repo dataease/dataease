@@ -41,11 +41,11 @@
                   <svg-icon icon-class="datasource" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.status === 'Error'">
-                    <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
-                    <el-tooltip  v-if="data.status === 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" effect="dark" :content="$t('datasource.in_valid')" placement="right">
-                      <el-button type="text" > {{ data.name }} </el-button>
-                    </el-tooltip>
-                  </span>
+                  <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
+                  <el-tooltip v-if="data.status === 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" effect="dark" :content="$t('datasource.in_valid')" placement="right">
+                    <el-button type="text" :style="!!data.msgNode ? {'color': 'red'} : {}"> {{ data.name }} </el-button>
+                  </el-tooltip>
+                </span>
                 <span v-if="data.type === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
@@ -129,6 +129,11 @@ export default {
       const newArr = []
       for (let index = 0; index < array.length; index++) {
         const element = array[index]
+        if (this.msgNodeId) {
+          if (element.id === this.msgNodeId) {
+            element.msgNode = true
+          }
+        }
         if (!(element.type in types)) {
           types[element.type] = []
           // newArr.push(...element, ...{ children: types[element.type] })
@@ -147,7 +152,7 @@ export default {
         return 'SQL Server'
       } else if (type === 'oracle') {
         return 'Oracle'
-      }else if (type === 'pg') {
+      } else if (type === 'pg') {
         return 'PostgreSQL'
       }
     },
@@ -207,6 +212,21 @@ export default {
       this.$emit('switch-main', {
         component,
         componentParam
+      })
+    },
+    markInvalid(msgParam) {
+      const param = JSON.parse(msgParam)
+      const msgNodeId = param.id
+      this.msgNodeId = msgNodeId
+      this.$nextTick(() => {
+        this.tData.forEach(folder => {
+          const nodes = folder.children
+          nodes.forEach(node => {
+            if (node.id === msgNodeId) {
+              node.msgNode = true
+            }
+          })
+        })
       })
     }
   }
@@ -302,5 +322,11 @@ export default {
     padding: 10px 15px;
     height: 100%;
     overflow-y: auto;
+  }
+  .msg-node-class {
+    color: red;
+    >>> i{
+      color: red;
+    }
   }
 </style>
