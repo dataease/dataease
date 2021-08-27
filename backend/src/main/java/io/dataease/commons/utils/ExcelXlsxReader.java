@@ -237,6 +237,14 @@ public class ExcelXlsxReader extends DefaultHandler {
         if (isTElement) {//这个程序没经过
             //将单元格内容加入rowlist中，在这之前先去掉字符串前后的空白符
             String value = lastIndex.trim();
+            if(curRow==1){
+                TableFiled tableFiled = new TableFiled();
+                tableFiled.setFieldType("TEXT");
+                tableFiled.setFieldSize(65533);
+                tableFiled.setFieldName(value);
+                tableFiled.setRemarks(value);
+                this.fields.add(tableFiled);
+            }
             cellList.add(curCol, value);
             curCol++;
             isTElement = false;
@@ -431,6 +439,10 @@ public class ExcelXlsxReader extends DefaultHandler {
                     this.getFields().get(curCol).setFieldType(type);
                 }
             }
+        }
+        if(curCol==1){
+            System.out.println(type);
+            System.out.println(nextDataType);
         }
         return thisStr;
     }
