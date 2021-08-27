@@ -72,6 +72,7 @@
       <de-out-widget
         v-else-if="item.type==='custom'"
         :id="'component' + item.id"
+        ref="wrapperChild"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
