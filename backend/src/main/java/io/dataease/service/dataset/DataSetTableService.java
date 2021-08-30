@@ -251,12 +251,9 @@ public class DataSetTableService {
         return datasetTable;
     }
 
-    public void rename(DataSetTableRequest request)throws Exception {
+    public void alter(DataSetTableRequest request)throws Exception {
         checkName(request);
-        DatasetTable datasetTable = new DatasetTable();
-        datasetTable.setId(request.getId());
-        datasetTable.setName(request.getName());
-        datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+        datasetTableMapper.updateByPrimaryKeySelective(request);
     }
 
     public void delete(String id) throws Exception {
