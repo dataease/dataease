@@ -66,6 +66,12 @@ export default {
   },
   created() {
     this.options = this.element.options
+    if (this.inDraw && this.options.value && this.options.value.length > 0) {
+      this.form.min = this.options.value[0]
+      if (this.options.value.length > 1) {
+        this.form.max = this.options.value[1]
+      }
+    }
   },
   methods: {
     searchWithKey(index) {
@@ -134,6 +140,7 @@ export default {
         if (!valid) {
           return false
         }
+
         this.setCondition()
         this.styleChange()
       })
@@ -145,6 +152,8 @@ export default {
         value: [this.form.min, this.form.max],
         operator: this.operator
       }
+
+      this.inDraw && (this.options.value = param.value)
       if (this.form.min && this.form.max) {
         this.inDraw && this.$store.commit('addViewFilter', param)
         return

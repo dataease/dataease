@@ -2,7 +2,7 @@
 
   <el-input
     v-if="options!== null && options.attrs!==null"
-    v-model="values"
+    v-model="value"
     resize="vertical"
     :placeholder="$t(options.attrs.placeholder)"
     @keypress.enter.native="search"
@@ -31,22 +31,30 @@ export default {
     return {
       options: null,
       operator: 'like',
-      values: null,
+      value: null,
       canEdit: false
     }
   },
   created() {
     this.options = this.element.options
+    if (this.inDraw && this.options.value && this.options.value.length > 0) {
+      this.value = this.options.value[0]
+    }
   },
   methods: {
     search() {
     //   this.options.value && this.setCondition()
+      this.options.value = []
+      if (this.inDraw && this.value) {
+        this.options.value = [this.value]
+      }
+
       this.setCondition()
     },
     setCondition() {
       const param = {
         component: this.element,
-        value: !this.values ? [] : Array.isArray(this.values) ? this.values : [this.values],
+        value: !this.options.value ? [] : Array.isArray(this.options.value) ? this.options.value : [this.options.value],
         operator: this.operator
       }
       this.inDraw && this.$store.commit('addViewFilter', param)
