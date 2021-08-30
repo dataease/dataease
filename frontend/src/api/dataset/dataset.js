@@ -43,9 +43,9 @@ export function addTable(data) {
   })
 }
 
-export function rename(data) {
+export function alter(data) {
   return request({
-    url: '/dataset/table/rename',
+    url: '/dataset/table/alter',
     method: 'post',
     loading: true,
     data
