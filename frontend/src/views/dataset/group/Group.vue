@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning} from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning, rename} from '@/api/dataset/dataset'
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
 
@@ -551,30 +551,21 @@ export default {
     },
 
     saveTable(table) {
-      //   console.log(table)
       table.mode = parseInt(table.mode)
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
           table.isRename = true
-          addTable(table).then(response => {
+          rename(table).then(response => {
             this.closeTable()
             this.$message({
               message: this.$t('dataset.save_success'),
               type: 'success',
               showClose: true
             })
-            // this.tableTree()
             this.refreshNodeBy(table.sceneId)
-            // this.$router.push('/dataset/home')
-            // this.$emit('switchComponent', { name: 'ViewTable', param: table.id })
             this.$store.dispatch('dataset/setTable', new Date().getTime())
           })
         } else {
-          // this.$message({
-          //   message: this.$t('commons.input_content'),
-          //   type: 'error',
-          //   showClose: true
-          // })
           return false
         }
       })
