@@ -1001,8 +1001,9 @@ public class ExtractDataService {
     }
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
-        String needToChangeColumnType = "";
+//        String needToChangeColumnType = "";
         String handleBinaryTypeCode = "";
+        String excelCompletion = "";
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
             if(datasetTableField.getDeExtractType() == 5){
@@ -1016,9 +1017,8 @@ public class ExtractDataService {
         fields.add(fieldInfo);
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
-        String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType);
+        String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode);
 
-        tmp_code = tmp_code.replace("handleWraps", handleWraps);
         String Column_Fields = "";
         if (datasourceType.equals(DatasourceTypes.oracle)) {
             Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()));
@@ -1027,12 +1027,13 @@ public class ExtractDataService {
         }
 
         if (datasourceType.equals(DatasourceTypes.excel)) {
-            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields);
+            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields)
+                    .replace("ExcelCompletion", excelCompletion);
         } else {
-            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields);
+            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields)
+                    .replace("ExcelCompletion", "");;
         }
 
-        tmp_code = tmp_code.replace("handleBinaryType", handleBinaryTypeCode);
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
         userDefinedJavaClassDef.setActive(true);
@@ -1121,15 +1122,15 @@ public class ExtractDataService {
             "     \t}";
 
 
-    private final static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
-            "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
-            "         get(Fields.Out, filed).setValue(r, 1);\n" +
-            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
-            "       }else{\n" +
-            "         get(Fields.Out, filed).setValue(r, 0);\n" +
-            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
-            "       }\n" +
-            "     }\n" ;
+//    private final static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
+//            "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
+//            "         get(Fields.Out, filed).setValue(r, 1);\n" +
+//            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+//            "       }else{\n" +
+//            "         get(Fields.Out, filed).setValue(r, 0);\n" +
+//            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+//            "       }\n" +
+//            "     }\n" ;
 
     private final static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
             "            try {\n" +
@@ -1144,8 +1145,9 @@ public class ExtractDataService {
             "            tmp = tmp.replaceAll(\"\\r\",\" \");\n" +
             "            tmp = tmp.replaceAll(\"\\n\",\" \");\n" +
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
-            "        } \n" +
-            "\t\tif(tmp == null){\n" +
+            "        } \n";
+
+    private final static String excelCompletion = "\t\tif(tmp == null){\n" +
             " \t\t\ttmp = \"\";\n" +
             "\t\t\tget(Fields.Out, filed).setValue(r, tmp);\n" +
             "\t\t}";
@@ -1180,7 +1182,7 @@ public class ExtractDataService {
             "    for (String filed : fileds) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
             "handleWraps \n" +
-            "alterColumnTypeCode \n" +
+            "ExcelCompletion \n" +
             "handleBinaryType \n" +
             "handleExcelIntColumn \n" +
             "        str = str + tmp;\n" +
