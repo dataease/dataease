@@ -1129,7 +1129,7 @@ public class ExtractDataService {
             "         get(Fields.Out, filed).setValue(r, 0);\n" +
             "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
             "       }\n" +
-            "     }\n";
+            "     }\n" ;
 
     private final static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
             "            try {\n" +
@@ -1144,7 +1144,11 @@ public class ExtractDataService {
             "            tmp = tmp.replaceAll(\"\\r\",\" \");\n" +
             "            tmp = tmp.replaceAll(\"\\n\",\" \");\n" +
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
-            "        } ";
+            "        } \n" +
+            "\t\tif(tmp == null){\n" +
+            " \t\t\ttmp = \"\";\n" +
+            "\t\t\tget(Fields.Out, filed).setValue(r, tmp);\n" +
+            "\t\t}";
 
     private final static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
