@@ -218,7 +218,10 @@ export default {
     trackClick(trackAction) {
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
-        this.$warning(this.$t('panel.no_drill_field'))
+        // 地图提示没有关联字段 其他没有维度信息的 直接返回
+        if (this.chart.type === 'map') {
+          this.$warning(this.$t('panel.no_drill_field'))
+        }
         return
       }
       const linkageParam = {
