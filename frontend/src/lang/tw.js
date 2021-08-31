@@ -542,7 +542,7 @@ export default {
     create: '新建組織',
     modify: '修改組織',
     delete: '刪除組織',
-    delete_confirm: '刪除該組織會關聯刪除該組織的下屬組織，確定要刪除嗎?',
+    delete_confirm: '確定要刪除該組織嗎?',
     input_name: '請輸入組織名稱',
     select_organization: '請選擇組織',
     search_by_name: '根據名稱搜索',
