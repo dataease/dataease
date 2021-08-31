@@ -61,7 +61,7 @@ import { commonStyle, commonAttr } from '@/components/canvas/custom-component/co
 import generateID from '@/components/canvas/utils/generateID'
 
 export default {
-  name: 'FilterGroup',
+  name: 'AssisComponent',
   data() {
     return {
       assistList,
