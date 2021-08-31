@@ -555,7 +555,7 @@ public class ExtractDataService {
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
         datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
             if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
                 return datasetTableTaskLogs.get(0);
@@ -768,7 +768,7 @@ public class ExtractDataService {
         switch (datasourceType) {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
-                dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost(), mysqlConfigration.getDataBase(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
+                dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost().trim(), mysqlConfigration.getDataBase().trim(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
                 dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
@@ -777,7 +777,7 @@ public class ExtractDataService {
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfigration.class);
-                dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
+                dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost().trim(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
@@ -785,7 +785,7 @@ public class ExtractDataService {
                 break;
             case pg:
                 PgConfigration pgConfigration = new Gson().fromJson(datasource.getConfiguration(), PgConfigration.class);
-                dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfigration.getHost(), pgConfigration.getDataBase(), pgConfigration.getPort().toString(), pgConfigration.getUsername(), pgConfigration.getPassword());
+                dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfigration.getHost().trim(), pgConfigration.getDataBase(), pgConfigration.getPort().toString(), pgConfigration.getUsername(), pgConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
@@ -797,7 +797,7 @@ public class ExtractDataService {
                     String database = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ORACLE_HOSTNAME)(PORT = ORACLE_PORT))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = ORACLE_SERVICE_NAME )))".replace("ORACLE_HOSTNAME", oracleConfigration.getHost()).replace("ORACLE_PORT", oracleConfigration.getPort().toString()).replace("ORACLE_SERVICE_NAME", oracleConfigration.getDataBase());
                     dataMeta = new DatabaseMeta("db", "ORACLE", "Native", "", database, "-1", oracleConfigration.getUsername(), oracleConfigration.getPassword());
                 } else {
-                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfigration.getHost(), oracleConfigration.getDataBase(), oracleConfigration.getPort().toString(), oracleConfigration.getUsername(), oracleConfigration.getPassword());
+                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfigration.getHost().trim(), oracleConfigration.getDataBase(), oracleConfigration.getPort().toString(), oracleConfigration.getUsername(), oracleConfigration.getPassword());
                 }
                 transMeta.addDatabase(dataMeta);
 
