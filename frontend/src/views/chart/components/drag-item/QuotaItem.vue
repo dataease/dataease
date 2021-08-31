@@ -6,9 +6,9 @@
         <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
         <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
         <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-        <svg-icon v-if="item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
-        <svg-icon v-if="item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
-        <svg-icon v-if="item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
+        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
+        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
+        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
         <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
         <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
       </span>
@@ -23,9 +23,9 @@
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
             <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-            <svg-icon v-if="item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
-            <svg-icon v-if="item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
-            <svg-icon v-if="item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
+            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
+            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
+            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
             <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
