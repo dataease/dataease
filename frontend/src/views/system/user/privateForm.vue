@@ -77,7 +77,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
-import { allRoles } from '@/api/system/role'
+import { allRoles } from '@/api/system/user'
 import { updatePerson, persionInfo } from '@/api/system/user'
 export default {
 
