@@ -51,7 +51,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
     }
-    if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
+    if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
       chart_option.xAxis.show = customStyle.xAxis.show
       chart_option.xAxis.position = customStyle.xAxis.position
       chart_option.xAxis.name = customStyle.xAxis.name
@@ -61,8 +61,12 @@ export function componentStyle(chart_option, chart) {
 
       chart_option.xAxis.axisLabel.showMaxLabel = true
       chart_option.xAxis.axisLabel.showMinLabel = true
+
+      if (!customStyle.xAxis.show) {
+        chart_option.xAxis.axisLabel.show = false
+      }
     }
-    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
+    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
       chart_option.yAxis.show = customStyle.yAxis.show
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name
@@ -70,8 +74,12 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis.nameTextStyle = customStyle.yAxis.nameTextStyle
 
-      chart_option.xAxis.axisLabel.showMaxLabel = true
-      chart_option.xAxis.axisLabel.showMinLabel = true
+      chart_option.yAxis.axisLabel.showMaxLabel = true
+      chart_option.yAxis.axisLabel.showMinLabel = true
+
+      if (!customStyle.yAxis.show) {
+        chart_option.yAxis.axisLabel.show = false
+      }
     }
     if (customStyle.split && chart.type.includes('radar')) {
       chart_option.radar.name = customStyle.split.name

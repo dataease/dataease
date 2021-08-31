@@ -848,7 +848,8 @@ export default {
     system_case: 'System',
     custom_case: 'Custom',
     last_layer: 'This Is The Last Layer',
-    radar_size: 'Size'
+    radar_size: 'Size',
+    chart_mix: 'Mix'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

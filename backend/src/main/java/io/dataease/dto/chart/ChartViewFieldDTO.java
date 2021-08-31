@@ -44,4 +44,6 @@ public class ChartViewFieldDTO implements Serializable {
     private String datePattern;
 
     private Integer extField;
+
+    private String chartType;
 }
