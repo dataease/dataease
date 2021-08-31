@@ -635,12 +635,17 @@ public class OracleQueryProvider extends QueryProvider {
             stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table );
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), "\"" + table + "\"");
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") DE_TMP ", fields, null);
+        String[] array = fields.stream().map(f -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), " (" + sqlFix(sql) + ") DE_TMP " );
     }
 
     public String transMysqlFilterTerm(String term) {
