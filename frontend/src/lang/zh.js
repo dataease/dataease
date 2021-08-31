@@ -1353,6 +1353,7 @@ export default {
     read_time: '查看时间',
     type: '消息类型',
     mark_readed: '标记已读',
+    all_mark_readed: '全部已读',
     please_select: '请至少选择一条消息',
     mark_success: '标记已读成功',
     receive_manage: '接收管理',
@@ -1361,6 +1362,7 @@ export default {
     i18n_msg_type_dataset_sync: '数据集同步',
     i18n_msg_type_dataset_sync_success: '数据集同步成功',
     i18n_msg_type_dataset_sync_faild: '数据集同步失败',
+    i18n_msg_type_ds_invalid: '数据源失效',
     i18n_msg_type_all: '全部类型',
     channel_inner_msg: '站内消息'
   },

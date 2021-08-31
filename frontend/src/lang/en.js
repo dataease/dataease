@@ -1351,6 +1351,7 @@ export default {
     read_time: 'Read Time',
     type: 'Message Type',
     mark_readed: 'Mark As Read',
+    all_mark_readed: 'Mark All As Read',
     please_select: 'Please select at least one message',
     mark_success: 'Mark read successfully',
     receive_manage: 'Receive Manage',
@@ -1360,6 +1361,7 @@ export default {
     i18n_msg_type_dataset_sync_success: 'Dataset synchronization successful',
     i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
     i18n_msg_type_all: 'All type',
+    i18n_msg_type_ds_invalid: 'Datasource invalid',
     channel_inner_msg: 'On site news'
   },
   denumberrange: {

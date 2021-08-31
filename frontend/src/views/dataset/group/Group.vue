@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning} from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning, alter} from '@/api/dataset/dataset'
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
 
@@ -419,23 +419,12 @@ export default {
     }
   },
   computed: {
-    // sceneData: function() {
-    //   // this.tableTree()
-    //   // console.log(this.$store.state.dataset.sceneData)
-    //   this.refreshNodeBy(this.currGroup.id)
-    //   return this.$store.state.dataset.sceneData
-    // }
   },
   created() {
     this.kettleState()
   },
   watch: {
     search(val) {
-      // if (val && val !== '') {
-      //   this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
-      // } else {
-      //   this.tableData = JSON.parse(JSON.stringify(this.tables))
-      // }
       this.$emit('switchComponent', { name: '' })
       this.tData = []
       this.expandedArray = []
@@ -526,7 +515,6 @@ export default {
     },
 
     saveGroup(group) {
-      // console.log(group);
       this.$refs['groupForm'].validate((valid) => {
         if (valid) {
           addGroup(group).then(res => {
@@ -536,45 +524,30 @@ export default {
               type: 'success',
               showClose: true
             })
-            // this.tree(this.groupForm)
             this.refreshNodeBy(group.pid)
           })
         } else {
-          // this.$message({
-          //   message: this.$t('commons.input_error'),
-          //   type: 'error',
-          //   showClose: true
-          // })
           return false
         }
       })
     },
 
     saveTable(table) {
-      //   console.log(table)
       table.mode = parseInt(table.mode)
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
           table.isRename = true
-          addTable(table).then(response => {
+          alter(table).then(response => {
             this.closeTable()
             this.$message({
               message: this.$t('dataset.save_success'),
               type: 'success',
               showClose: true
             })
-            // this.tableTree()
             this.refreshNodeBy(table.sceneId)
-            // this.$router.push('/dataset/home')
-            // this.$emit('switchComponent', { name: 'ViewTable', param: table.id })
             this.$store.dispatch('dataset/setTable', new Date().getTime())
           })
         } else {
-          // this.$message({
-          //   message: this.$t('commons.input_content'),
-          //   type: 'error',
-          //   showClose: true
-          // })
           return false
         }
       })
@@ -796,14 +769,10 @@ export default {
       }
     },
     saveMoveDs() {
-      // if (this.tDs && this.tDs.type === 'group') {
-      //   return
-      // }
       this.dsForm.sceneId = this.tDs.id
       this.dsForm.isRename = true
-      addTable(this.dsForm).then(res => {
+      alter(this.dsForm).then(res => {
         this.closeMoveDs()
-        // this.tableTree()
         this.refreshNodeBy(this.dsForm.sceneId)
       })
     },

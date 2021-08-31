@@ -46,6 +46,12 @@ public class DataSetTableController {
         }
     }
 
+    @ApiOperation("修改")
+    @PostMapping("alter")
+    public void alter(@RequestBody DataSetTableRequest request) throws Exception {
+        dataSetTableService.alter(request);
+    }
+    
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
     public void delete(@PathVariable String id) throws Exception {

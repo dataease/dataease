@@ -251,6 +251,11 @@ public class DataSetTableService {
         return datasetTable;
     }
 
+    public void alter(DataSetTableRequest request)throws Exception {
+        checkName(request);
+        datasetTableMapper.updateByPrimaryKeySelective(request);
+    }
+
     public void delete(String id) throws Exception {
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
         datasetTableMapper.deleteByPrimaryKey(id);

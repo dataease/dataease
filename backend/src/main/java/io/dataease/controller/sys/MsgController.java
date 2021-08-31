@@ -6,7 +6,6 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.base.domain.SysMsgChannel;
 import io.dataease.base.domain.SysMsgSetting;
 import io.dataease.base.domain.SysMsgType;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -69,6 +68,12 @@ public class MsgController {
     @PostMapping("/batchRead")
     public void batchRead(@RequestBody List<Long> msgIds) {
         sysMsgService.setBatchReaded(msgIds);
+    }
+
+    @ApiOperation("全部设置已读")
+    @PostMapping("/allRead")
+    public void allRead() {
+        sysMsgService.setAllRead();
     }
 
     @ApiOperation("批量删除")

@@ -214,7 +214,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.10.3</version>
+            <version>1.14.2</version>
         </dependency>
 
         <dependency>
@@ -226,7 +226,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.20</version>
+            <version>1.21</version>
         </dependency>
 
         <dependency>
@@ -255,7 +255,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.6</version>
+            <version>4.5.13</version>
         </dependency>
         <!-- 反射工具包 -->
         <dependency>

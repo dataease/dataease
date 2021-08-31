@@ -43,6 +43,15 @@ export function addTable(data) {
   })
 }
 
+export function alter(data) {
+  return request({
+    url: '/dataset/table/alter',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function delTable(tableId) {
   return request({
     url: '/dataset/table/delete/' + tableId,

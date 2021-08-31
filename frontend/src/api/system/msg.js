@@ -35,6 +35,14 @@ export function batchRead(data) {
   })
 }
 
+export function allRead() {
+  return request({
+    url: '/api/sys_msg/allRead',
+    method: 'post',
+    loading: true
+  })
+}
+
 export function batchDelete(data) {
   return request({
     url: '/api/sys_msg/batchDelete',
