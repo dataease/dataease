@@ -211,7 +211,7 @@ export default {
     //   return data[this.defaultProp.label].indexOf(value) !== -1
     // },
     styleChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('recordStyleChange')
     }
 
   }
