@@ -707,7 +707,7 @@ public class OracleQueryProvider extends QueryProvider {
             }
 
             if (field.getDeType() == 1) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
@@ -726,7 +726,11 @@ public class OracleQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
+                if (field.getDeType() == 1) {
+                    whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                } else {
+                    whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -762,7 +766,7 @@ public class OracleQueryProvider extends QueryProvider {
             }
 
             if (field.getDeType() == 1) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
@@ -782,7 +786,9 @@ public class OracleQueryProvider extends QueryProvider {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(OracleConstants.WHERE_BETWEEN, startTime, endTime);
+                    String st = String.format(OracleConstants.TO_DATE, "'" + startTime + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                    String et = String.format(OracleConstants.TO_DATE, "'" + endTime + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                    whereValue = st + " AND " + et;
                 } else {
                     whereValue = String.format(OracleConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
