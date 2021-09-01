@@ -645,7 +645,7 @@ public class OracleQueryProvider extends QueryProvider {
             stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), " (" + sqlFix(sql) + ") DE_TMP " );
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), " (" + sqlFix(sql) + ") DE_TMP ");
     }
 
     public String transMysqlFilterTerm(String term) {
@@ -706,9 +706,14 @@ public class OracleQueryProvider extends QueryProvider {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                    whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                    String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
             } else {
                 whereName = originName;
             }
@@ -756,9 +761,14 @@ public class OracleQueryProvider extends QueryProvider {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                    whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                    String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
             } else {
                 whereName = originName;
             }
