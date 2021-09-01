@@ -274,7 +274,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 80px;
+    width: 70px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
