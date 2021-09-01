@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
-export function baseLineOption(chart_option, chart) {
+export function baseMixOption(chart_option, chart) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -23,32 +23,50 @@ export function baseLineOption(chart_option, chart) {
     chart_option.xAxis.data = chart.data.x
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
+      y.type = y.type ? y.type : 'bar'
       // color
       y.itemStyle = {
         color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
       }
       // size
       if (customAttr.size) {
-        y.symbol = customAttr.size.lineSymbol
-        y.symbolSize = customAttr.size.lineSymbolSize
-        y.lineStyle = {
-          width: customAttr.size.lineWidth,
-          type: customAttr.size.lineType
-        }
-        y.smooth = customAttr.size.lineSmooth
-        if (customAttr.size.lineArea) {
-          y.areaStyle = {
-            opacity: 0.6
+        // bar
+        if (y.type === 'bar') {
+          if (customAttr.size.barDefault) {
+            y.barWidth = null
+            y.barGap = null
+          } else {
+            y.barWidth = customAttr.size.barWidth
+            y.barGap = customAttr.size.barGap
           }
-        } else {
-          delete y.areaStyle
+        }
+        // line
+        if (y.type === 'line') {
+          y.symbol = customAttr.size.lineSymbol
+          y.symbolSize = customAttr.size.lineSymbolSize
+          y.lineStyle = {
+            width: customAttr.size.lineWidth,
+            type: customAttr.size.lineType
+          }
+          y.smooth = customAttr.size.lineSmooth
+          if (customAttr.size.lineArea) {
+            y.areaStyle = {
+              opacity: 0.6
+            }
+          } else {
+            delete y.areaStyle
+          }
+        }
+        // scatter
+        if (y.type === 'scatter') {
+          y.symbol = customAttr.size.scatterSymbol ? customAttr.size.scatterSymbol : 'circle'
+          y.symbolSize = customAttr.size.scatterSymbolSize ? customAttr.size.scatterSymbolSize : 20
         }
       }
       // label
       if (customAttr.label) {
         y.label = customAttr.label
       }
-      y.type = 'line'
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -57,15 +75,3 @@ export function baseLineOption(chart_option, chart) {
   componentStyle(chart_option, chart)
   return chart_option
 }
-
-export function stackLineOption(chart_option, chart) {
-  baseLineOption(chart_option, chart)
-
-  // ext
-  // chart_option.tooltip.trigger = 'axis'
-  chart_option.series.forEach(function(s) {
-    s.stack = 'stack'
-  })
-  return chart_option
-}
-

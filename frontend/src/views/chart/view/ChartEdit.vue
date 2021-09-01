@@ -113,7 +113,6 @@
                 <span>{{ $t('chart.chart_type') }}</span>
                 <el-row>
                   <div class="chart-type">
-                    <!--这里要替换好看点的图标，UI标签可以重新定义-->
                     <el-radio-group
                       v-model="view.type"
                       style="width: 100%"
@@ -168,13 +167,18 @@
                             <svg-icon icon-class="scatter" class="chart-icon" />
                           </span>
                         </el-radio>
+                        <el-radio value="chart-mix" label="chart-mix">
+                          <span :title="$t('chart.chart_mix')">
+                            <svg-icon icon-class="chart-mix" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="map" label="map">
                           <span :title="$t('chart.chart_map')">
                             <svg-icon icon-class="map" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="radar" label="radar">
                           <span :title="$t('chart.chart_radar')">
                             <svg-icon icon-class="radar" class="chart-icon" />
@@ -195,19 +199,18 @@
                             <svg-icon icon-class="pie-rose" class="chart-icon" />
                           </span>
                         </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="funnel" label="funnel">
                           <span :title="$t('chart.chart_funnel')">
                             <svg-icon icon-class="funnel" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="treemap" label="treemap">
                           <span :title="$t('chart.chart_treemap')">
                             <svg-icon icon-class="treemap" class="chart-icon" />
                           </span>
                         </el-radio>
-                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
@@ -250,7 +253,7 @@
                   <el-row v-if="view.type !=='text' && view.type !== 'gauge'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))">{{ $t('chart.drag_block_type_axis') }}</span>
+                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')">{{ $t('chart.drag_block_type_axis') }}</span>
                       <span v-else-if="view.type && view.type.includes('pie')">{{ $t('chart.drag_block_pie_label') }}</span>
                       <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
@@ -280,7 +283,7 @@
                   <el-row class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))">{{ $t('chart.drag_block_value_axis') }}</span>
+                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')">{{ $t('chart.drag_block_value_axis') }}</span>
                       <span v-else-if="view.type && view.type.includes('pie')">{{ $t('chart.drag_block_pie_angel') }}</span>
                       <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
@@ -302,7 +305,7 @@
                       @update="save(true)"
                     >
                       <transition-group class="draggable-group">
-                        <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
+                        <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" :chart="chart" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
                       </transition-group>
                     </draggable>
                     <div v-if="!view.yaxis || view.yaxis.length === 0" class="drag-placeholder-style">
@@ -453,10 +456,10 @@
               <el-row>
                 <span class="padding-lr">{{ $t('chart.module_style') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
-                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))" name="xAxis" :title="$t('chart.xAxis')">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="xAxis" :title="$t('chart.xAxis')">
                     <x-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))" name="yAxis" :title="$t('chart.yAxis')">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="yAxis" :title="$t('chart.yAxis')">
                     <y-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
                   </el-collapse-item>
                   <el-collapse-item v-show="view.type && view.type.includes('radar')" name="split" :title="$t('chart.split')">
@@ -860,6 +863,9 @@ export default {
         view.yaxis = [view.yaxis[0]]
       }
       view.yaxis.forEach(function(ele) {
+        if (!ele.chartType) {
+          ele.chartType = 'bar'
+        }
         if (!ele.summary || ele.summary === '') {
           if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
             ele.summary = 'count'
@@ -1644,7 +1650,7 @@ export default {
   }
 
   .chart-type>>>.el-radio__input{
-    display: none;
+    display: none!important;
   }
 
   .el-radio{

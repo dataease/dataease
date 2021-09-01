@@ -20,7 +20,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar style="transform: translateZ(10px)" v-if="active||linkageSettingStatus" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -629,7 +629,7 @@ export default {
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range') {
+      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
         e.preventDefault()
       }
       // 阻止冒泡事件
@@ -1176,7 +1176,7 @@ export default {
       if (this.canvasStyleData.auxiliaryMatrix) {
         this.recordMatrixCurStyle()
       }
-      this.hasMove && this.$store.commit('recordSnapshot')
+      this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
       // 记录snapshot后 移动已记录设置为false
       this.hasMove = false
 

@@ -542,7 +542,7 @@ export default {
     create: 'Create',
     modify: 'Modify',
     delete: 'Delete',
-    delete_confirm: 'Deleting the organization will be associated with deleting the subordinate organization, Are you sure you want to delete it?',
+    delete_confirm: 'Are you sure you want to delete the organization?',
     input_name: 'Please enter name',
     select_organization: 'Please select organization',
     search_by_name: 'Search by name',
@@ -848,7 +848,8 @@ export default {
     system_case: 'System',
     custom_case: 'Custom',
     last_layer: 'This Is The Last Layer',
-    radar_size: 'Size'
+    radar_size: 'Size',
+    chart_mix: 'Mix'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

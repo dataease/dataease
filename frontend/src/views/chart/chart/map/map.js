@@ -47,6 +47,9 @@ export function baseMapOption(chart_option, chart) {
         chart_option.visualMap.min = 0
         chart_option.visualMap.max = 0
       }
+      if (chart_option.visualMap.min === 0 && chart_option.visualMap.max === 0) {
+        chart_option.visualMap.max = 100
+      }
       // color
       if (customAttr.color && customAttr.color.colors) {
         chart_option.visualMap.inRange.color = customAttr.color.colors

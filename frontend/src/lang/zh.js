@@ -542,7 +542,7 @@ export default {
     create: '新建组织',
     modify: '修改组织',
     delete: '删除组织',
-    delete_confirm: '删除该组织会关联删除该组织的下属组织，确定要删除吗?',
+    delete_confirm: '确定要删除该组织吗?',
     input_name: '请输入组织名称',
     select_organization: '请选择组织',
     search_by_name: '根据名称搜索',
@@ -847,7 +847,8 @@ export default {
     system_case: '系统方案',
     custom_case: '自定义',
     last_layer: '当前已经是最后一级',
-    radar_size: '大小'
+    radar_size: '大小',
+    chart_mix: '组合图'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

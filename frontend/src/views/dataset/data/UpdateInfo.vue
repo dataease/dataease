@@ -513,8 +513,8 @@ export default {
       }
       this.update_task = true
     },
-    listTask() {
-      post('/dataset/task/list', { tableId: this.table.id }).then(response => {
+    listTask(loading = true) {
+      post('/dataset/task/list', { tableId: this.table.id }, loading).then(response => {
         this.taskData = response.data
       })
     },

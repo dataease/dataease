@@ -311,6 +311,7 @@ export default {
       this.init(newVal.id)
     },
     '$store.state.styleChangeTimes'() {
+      // console.log('styleChangeTimes' + this.$store.state.styleChangeTimes)
       if (this.$store.state.styleChangeTimes > 0) {
         this.destroyTimeMachine()
         this.recordStyleChange(this.$store.state.styleChangeTimes)
@@ -383,7 +384,7 @@ export default {
           //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', panelStyle)
-          this.$store.commit('recordSnapshot')// 记录快照
+          this.$store.commit('recordSnapshot', 'init')// 记录快照
           // 刷新联动信息
           getPanelAllLinkageInfo(panelId).then(rsp => {
             this.$store.commit('setNowPanelTrackInfo', rsp.data)
@@ -493,7 +494,7 @@ export default {
       component.style.left = this.getPositionX(e.layerX)
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'handleDrop')
       this.clearCurrentInfo()
 
       // // 文字组件
@@ -545,7 +546,7 @@ export default {
 
       //   this.$store.commit('addComponent', { component })
       this.$store.commit('setComponentWithId', component)
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'sureFilter')
       this.cancelFilter()
     },
     reFreshComponent(component) {
@@ -625,7 +626,7 @@ export default {
             }
           })
 
-          this.$store.commit('recordSnapshot')
+          this.$store.commit('recordSnapshot', 'handleFileChange')
         }
 
         img.src = fileResult
@@ -677,7 +678,7 @@ export default {
       component.style.left = 600
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'newViewInfo')
       this.clearCurrentInfo()
       this.$store.commit('setCurComponent', { component: component, index: this.componentData.length - 1 })
 
@@ -703,7 +704,7 @@ export default {
     recordStyleChange(index) {
       this.timeMachine = setTimeout(() => {
         if (index === this.$store.state.styleChangeTimes) {
-          this.$store.commit('recordSnapshot')
+          this.$store.commit('recordSnapshot', 'recordStyleChange')
           this.$store.state.styleChangeTimes = 0
         }
         this.destroyTimeMachine()
