@@ -41,7 +41,7 @@
     "vue-axios": "3.2.4",
     "vue-clipboard2": "0.3.1",
     "vue-codemirror": "^4.0.6",
-    "vue-fullscreen": "^2.5.1",
+    "vue-fullscreen": "^2.5.2",
     "vue-i18n": "7.3.2",
     "vue-router": "3.0.6",
     "vue-uuid": "2.0.2",
