@@ -113,7 +113,6 @@
                 <span>{{ $t('chart.chart_type') }}</span>
                 <el-row>
                   <div class="chart-type">
-                    <!--这里要替换好看点的图标，UI标签可以重新定义-->
                     <el-radio-group
                       v-model="view.type"
                       style="width: 100%"
@@ -1651,7 +1650,7 @@ export default {
   }
 
   .chart-type>>>.el-radio__input{
-    display: none;
+    display: none!important;
   }
 
   .el-radio{
