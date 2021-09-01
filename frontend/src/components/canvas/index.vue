@@ -96,7 +96,7 @@ export default {
       component.style.left = e.offsetX
       component.id = generateID()
       this.$store.commit('addComponent', { component })
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','handleDrop')
     },
 
     handleDragOver(e) {

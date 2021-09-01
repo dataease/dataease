@@ -104,7 +104,7 @@ export default {
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     styleChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('recordStyleChange')
     }
 
   }

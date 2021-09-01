@@ -67,6 +67,7 @@ export default {
   methods: {
     handleInput(e) {
       this.$emit('input', this.element, e.target.innerHTML)
+      this.$store.commit('recordStyleChange')
     },
 
     handleKeydown(e) {

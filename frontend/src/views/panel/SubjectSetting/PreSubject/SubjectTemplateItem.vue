@@ -189,7 +189,7 @@ export default {
     },
     subjectChange() {
       this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','subjectChange')
       bus.$emit('onSubjectChange')
     },
     templateEdit() {

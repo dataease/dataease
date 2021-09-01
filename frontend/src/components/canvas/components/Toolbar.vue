@@ -214,12 +214,12 @@ export default {
 
     compose() {
       this.$store.commit('compose')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','compose')
     },
 
     decompose() {
       this.$store.commit('decompose')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','decompose')
     },
 
     undo() {
@@ -267,7 +267,7 @@ export default {
             }
           })
 
-          this.$store.commit('recordSnapshot')
+          this.$store.commit('recordSnapshot','handleFileChange')
         }
 
         img.src = fileResult
@@ -306,7 +306,7 @@ export default {
     clearCanvas() {
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','clearCanvas')
     },
 
     handlePreviewChange() {
