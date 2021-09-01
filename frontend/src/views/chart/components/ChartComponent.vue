@@ -16,7 +16,8 @@ import {
   BASE_GAUGE,
   BASE_MAP,
   BASE_SCATTER,
-  BASE_TREEMAP
+  BASE_TREEMAP,
+  BASE_MIX
 } from '../chart/chart'
 import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
 import { baseLineOption, stackLineOption } from '../chart/line/line'
@@ -152,8 +153,9 @@ export default {
       } else if (chart.type === 'treemap') {
         chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart)
       } else if (chart.type === 'chart-mix') {
-        chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+        chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
       }
+      console.log(JSON.stringify(chart_option))
 
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)
