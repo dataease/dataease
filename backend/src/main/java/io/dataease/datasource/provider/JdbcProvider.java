@@ -528,6 +528,9 @@ public class JdbcProvider extends DatasourceProvider {
                 return "show tables;";
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                if(StringUtils.isEmpty(sqlServerConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'DS_SCHEMA' ;"
                         .replace("DATABASE", sqlServerConfigration.getDataBase())
                         .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
