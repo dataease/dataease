@@ -1245,7 +1245,15 @@ export default {
     loginImage: '登录页面右侧图片',
     loginTitle: '登录页面标题',
     title: '系统名称',
-    advice_size: '建议图片大小'
+    advice_size: '建议图片大小',
+    theme: '头部背景',
+
+    topMenuActiveColor: '主题颜色',
+
+    topMenuTextColor: '字体颜色',
+
+    topMenuTextActiveColor: '字体选中颜色'
+
   },
   auth: {
     authConfig: '权限配置',
