@@ -44,7 +44,7 @@ export default {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','onChangePanelStyle')
     }
   }
 }

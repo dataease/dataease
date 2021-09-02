@@ -142,7 +142,7 @@ export default {
         }
 
         this.setCondition()
-        this.styleChange()
+        this.$store.commit('recordStyleChange')
       })
     },
     setCondition() {
@@ -177,7 +177,7 @@ export default {
       }
     },
     styleChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('recordStyleChange')
     }
   }
 }

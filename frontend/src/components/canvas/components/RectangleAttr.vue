@@ -206,7 +206,7 @@ export default {
       }
     },
     styleChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('recordStyleChange')
     }
   }
 }

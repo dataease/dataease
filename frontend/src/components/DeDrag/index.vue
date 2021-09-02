@@ -1176,7 +1176,7 @@ export default {
       if (this.canvasStyleData.auxiliaryMatrix) {
         this.recordMatrixCurStyle()
       }
-      this.hasMove && this.$store.commit('recordSnapshot')
+      this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
       // 记录snapshot后 移动已记录设置为false
       this.hasMove = false
 

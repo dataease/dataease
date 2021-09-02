@@ -115,7 +115,7 @@ export default {
             }
           })
 
-          this.$store.commit('recordSnapshot')
+          this.$store.commit('recordSnapshot','handleFileChange')
         }
 
         img.src = fileResult

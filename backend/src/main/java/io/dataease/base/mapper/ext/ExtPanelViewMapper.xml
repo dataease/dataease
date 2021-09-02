@@ -17,7 +17,7 @@
         <where>
             FIND_IN_SET(chart_group.id,cids)
         </where>
-        order by create_time desc
+        order by `type` desc,name asc
 
     </select>
 
@@ -27,7 +27,7 @@
         <where>
             FIND_IN_SET(chart_view.id,cids)
         </where>
-        order by create_time desc
+        order by `type` desc,name asc
     </select>
 
 

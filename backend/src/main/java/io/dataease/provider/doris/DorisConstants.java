@@ -19,6 +19,8 @@ public class DorisConstants extends SQLConstants {
 
     public static final String FROM_UNIXTIME = "FROM_UNIXTIME(%s,'%s')";
 
+    public static final String STR_TO_DATE = "STR_TO_DATE(%s,'%s')";
+
     public static final String CAST = "CAST(%s AS %s)";
 
     public static final String DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%i:%S";
