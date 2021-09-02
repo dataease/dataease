@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import static io.dataease.provider.SQLConstants.TABLE_ALIAS_PREFIX;
 
 
-
 @Service("pgQuery")
 public class PgQueryProvider extends QueryProvider {
     @Resource
@@ -86,7 +85,7 @@ public class PgQueryProvider extends QueryProvider {
             case "TINYINT":
                 return DeTypeConstants.DE_BOOL;// 布尔
             case "bytea":
-                return DeTypeConstants.DE_Binary;// 二进制
+                return DeTypeConstants.DE_BINARY;// 二进制
             default:
                 return DeTypeConstants.DE_STRING;
         }
@@ -100,11 +99,11 @@ public class PgQueryProvider extends QueryProvider {
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
 
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
@@ -114,35 +113,35 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(f.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
                 // 处理横轴字段
                 if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
                     if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format( PgConstants.UNIX_TIMESTAMP, originField);
+                        fieldName = String.format(PgConstants.UNIX_TIMESTAMP, originField);
                     } else {
                         fieldName = originField;
                     }
                 } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format( PgConstants.CAST, originField, PgConstants.DEFAULT_INT_FORMAT);
+                        fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format( PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format( PgConstants.CAST, originField, "timestamp");
+                        fieldName = String.format(PgConstants.CAST, originField, "timestamp");
                     } else {
                         fieldName = originField;
                     }
                 } else {
                     if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        String cast = String.format( PgConstants.CAST, originField,  "bigint");
-                        fieldName = String.format( PgConstants.FROM_UNIXTIME, cast );
+                        String cast = String.format(PgConstants.CAST, originField, "bigint");
+                        fieldName = String.format(PgConstants.FROM_UNIXTIME, cast);
                     } else if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format( PgConstants.CAST, originField, PgConstants.DEFAULT_INT_FORMAT);
+                        fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_INT_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -190,10 +189,10 @@ public class PgQueryProvider extends QueryProvider {
     @Override
     public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -205,9 +204,9 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -235,9 +234,9 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -285,7 +284,7 @@ public class PgQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format( PgConstants.BRACKETS, sql))
+                .tableName(String.format(PgConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -303,10 +302,10 @@ public class PgQueryProvider extends QueryProvider {
     @Override
     public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -321,9 +320,9 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -351,9 +350,9 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -401,7 +400,7 @@ public class PgQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format( PgConstants.BRACKETS, sql))
+                .tableName(String.format(PgConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -418,10 +417,10 @@ public class PgQueryProvider extends QueryProvider {
     @Override
     public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -433,9 +432,9 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -466,9 +465,9 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -516,7 +515,7 @@ public class PgQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format( PgConstants.BRACKETS, sql))
+                .tableName(String.format(PgConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -539,7 +538,7 @@ public class PgQueryProvider extends QueryProvider {
     public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format( PgConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(PgConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> yFields = new ArrayList<>();
@@ -553,9 +552,9 @@ public class PgQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -598,7 +597,7 @@ public class PgQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format( PgConstants.BRACKETS, sql))
+                .tableName(String.format(PgConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -629,11 +628,11 @@ public class PgQueryProvider extends QueryProvider {
             stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        if(ds != null){
+        if (ds != null) {
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
             String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
             return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), tableWithSchema);
-        }else {
+        } else {
             return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), table);
         }
     }
@@ -695,18 +694,23 @@ public class PgQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                originName = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format( PgConstants.CAST, originName,  "bigint");
-                whereName = String.format( PgConstants.FROM_UNIXTIME, cast);
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(PgConstants.TO_DATE, originName, PgConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                    String cast = String.format(PgConstants.CAST, originName, "bigint");
+                    whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
+                }
             } else {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue =  PgConstants.WHERE_VALUE_NULL;
+                whereValue = PgConstants.WHERE_VALUE_NULL;
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
                 whereTerm = String.format(whereTerm, originName);
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
@@ -714,7 +718,7 @@ public class PgQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                whereValue = String.format( PgConstants.WHERE_VALUE_VALUE, value);
+                whereValue = String.format(PgConstants.WHERE_VALUE_VALUE, value);
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -744,14 +748,19 @@ public class PgQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                originName = String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format( PgConstants.CAST, originName,  "bigint");
-                whereName = String.format( PgConstants.FROM_UNIXTIME, cast);
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(PgConstants.TO_DATE, originName, PgConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                    String cast = String.format(PgConstants.CAST, originName, "bigint");
+                    whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
+                }
             } else {
                 whereName = originName;
             }
@@ -765,12 +774,12 @@ public class PgQueryProvider extends QueryProvider {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format( PgConstants.WHERE_BETWEEN, startTime, endTime);
+                    whereValue = String.format(PgConstants.WHERE_BETWEEN, startTime, endTime);
                 } else {
-                    whereValue = String.format( PgConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    whereValue = String.format(PgConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format( PgConstants.WHERE_VALUE_VALUE, value.get(0));
+                whereValue = String.format(PgConstants.WHERE_VALUE_VALUE, value.get(0));
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -817,10 +826,10 @@ public class PgQueryProvider extends QueryProvider {
         String fieldName = "";
         if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
             if (x.getDeType() == 2 || x.getDeType() == 3) {
-                fieldName = String.format( PgConstants.UNIX_TIMESTAMP, originField);
+                fieldName = String.format(PgConstants.UNIX_TIMESTAMP, originField);
             } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format( PgConstants.DATE_FORMAT, originField, format);
+                fieldName = String.format(PgConstants.DATE_FORMAT, originField, format);
             } else {
                 fieldName = originField;
             }
@@ -828,11 +837,11 @@ public class PgQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    fieldName = String.format( PgConstants.DATE_FORMAT, originField, format);
+                    fieldName = String.format(PgConstants.DATE_FORMAT, originField, format);
                 } else {
-                    String cast = String.format( PgConstants.CAST, originField,  "bigint");
-                    String from_unixtime = String.format( PgConstants.FROM_UNIXTIME, cast);
-                    fieldName = String.format( PgConstants.DATE_FORMAT, from_unixtime, format);
+                    String cast = String.format(PgConstants.CAST, originField, "bigint");
+                    String from_unixtime = String.format(PgConstants.FROM_UNIXTIME, cast);
+                    fieldName = String.format(PgConstants.DATE_FORMAT, from_unixtime, format);
                 }
             } else {
                 fieldName = originField;
@@ -847,17 +856,17 @@ public class PgQueryProvider extends QueryProvider {
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-            fieldName =  PgConstants.AGG_COUNT;
+            fieldName = PgConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format( PgConstants.AGG_FIELD, y.getSummary(), originField);
+            fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format( PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ?  PgConstants.DEFAULT_INT_FORMAT :  PgConstants.DEFAULT_FLOAT_FORMAT);
-                String agg = String.format( PgConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format( PgConstants.CAST, agg,  PgConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgConstants.DEFAULT_FLOAT_FORMAT);
+                String agg = String.format(PgConstants.AGG_FIELD, y.getSummary(), cast);
+                fieldName = String.format(PgConstants.CAST, agg, PgConstants.DEFAULT_FLOAT_FORMAT);
             } else {
-                String cast = String.format( PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ?  PgConstants.DEFAULT_INT_FORMAT :  PgConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format( PgConstants.AGG_FIELD, y.getSummary(), cast);
+                String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }
         return SQLObj.builder()
@@ -874,7 +883,7 @@ public class PgQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue =  PgConstants.WHERE_VALUE_NULL;
+                    whereValue = PgConstants.WHERE_VALUE_NULL;
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
                     whereTerm = String.format(whereTerm, originField);
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
@@ -882,7 +891,7 @@ public class PgQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    whereValue = String.format( PgConstants.WHERE_VALUE_VALUE, f.getValue());
+                    whereValue = String.format(PgConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)
@@ -913,7 +922,7 @@ public class PgQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format( PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
         }
         return originField;
     }

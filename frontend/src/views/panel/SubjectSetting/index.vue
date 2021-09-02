@@ -135,7 +135,7 @@ export default {
       chart.customFilter = JSON.stringify(this.chart.customFilter)
       canvasStyleData.chart = chart
       this.$store.commit('setCanvasStyle', canvasStyleData)
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','save')
     }
   }
 }

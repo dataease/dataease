@@ -154,8 +154,7 @@ export default {
       }
     },
     styleChange() {
-      debugger
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('recordStyleChange')
     }
   }
 }
