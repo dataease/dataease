@@ -54,7 +54,7 @@
       </el-row>
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
-        <div ref="imageWrapper" style="width: 100%;height: 100%">
+        <div id="imageWrapper" ref="imageWrapper" style="width: 100%;height: 100%">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
             <Preview v-if="showMain" :in-screen="!fullscreen" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
           </fullscreen>
@@ -75,9 +75,31 @@
     >
       <save-to-template :template-info="templateInfo" @closeSaveDialog="closeSaveDialog" />
     </el-dialog>
+    <el-dialog
+      v-if="pdfExportShow"
+      :title="'['+panelInfo.name+']'+'PDF导出'"
+      :visible.sync="pdfExportShow"
+      width="70%"
+      :destroy-on-close="true"
+      class="dialog-css2"
+    >
+      <span style="position: absolute;right: 70px;top:15px">
+        <svg-icon icon-class="PDF" class="ds-icon-pdf" />
+        <el-select v-model="pdfTemplateSelectedIndex" :placeholder="'切换PDF模板'" @change="changePdfTemplate()">
+          <el-option
+            v-for="(item, index) in pdfTemplateAll"
+            :key="index"
+            :label="item.name"
+            :value="index"
+          />
+        </el-select>
+      </span>
+      <PDFPreExport :snapshot="snapshotInfo" :panel-name="panelInfo.name" :template-content="pdfTemplateContent" @closePreExport="closePreExport" />
+    </el-dialog>
   </el-row>
 </template>
 <script>
+import PDFPreExport from '@/views/panel/export/PDFPreExport'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
@@ -85,10 +107,11 @@ import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
 import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
-import JsPDF from 'jspdf'
+import { queryAll } from '@/api/panel/pdfTemplate'
+
 export default {
   name: 'PanelViewShow',
-  components: { Preview, SaveToTemplate },
+  components: { Preview, SaveToTemplate, PDFPreExport },
   props: {
     activeTab: {
       type: String,
@@ -98,11 +121,16 @@ export default {
   data() {
     return {
       showMain: true,
+      pdfTemplateSelectedIndex: 0,
+      pdfTemplateContent: '',
       templateInfo: {},
+      pdfTemplateAll: [],
       templateSaveTitle: '保存为模板',
       templateSaveShow: false,
       hasStar: false,
-      fullscreen: false
+      fullscreen: false,
+      pdfExportShow: false,
+      snapshotInfo: ''
     }
   },
   computed: {
@@ -133,8 +161,15 @@ export default {
     }
   },
   mounted() {
+    this.initPdfTemplate()
   },
   methods: {
+    initPdfTemplate() {
+      queryAll().then(res => {
+        this.pdfTemplateAll = res.data
+        this.changePdfTemplate()
+      })
+    },
     clickFullscreen() {
       this.fullscreen = true
     },
@@ -144,7 +179,7 @@ export default {
     },
     saveToTemplate() {
       this.templateSaveShow = true
-      html2canvas(this.$refs.imageWrapper).then(canvas => {
+      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
@@ -162,7 +197,7 @@ export default {
       })
     },
     downloadToTemplate() {
-      html2canvas(this.$refs.imageWrapper).then(canvas => {
+      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
@@ -180,34 +215,17 @@ export default {
     },
 
     downloadAsPDF() {
-      html2canvas(this.$refs.imageWrapper).then(canvas => {
-        const contentWidth = canvas.width
-        const contentHeight = canvas.height
-        const pageHeight = contentWidth / 592.28 * 841.89
-        let leftHeight = contentHeight
-        let position = 0
-        const imgWidth = 595.28
-        const imgHeight = 592.28 / contentWidth * contentHeight
-        const pageData = canvas.toDataURL('image/jpeg', 1.0)
-        const PDF = new JsPDF('', 'pt', 'a4')
-        if (leftHeight < pageHeight) {
-          PDF.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
-        } else {
-          while (leftHeight > 0) {
-            PDF.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
-            leftHeight -= pageHeight
-            position -= 841.89
-            if (leftHeight > 0) {
-              PDF.addPage()
-            }
-          }
+      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+        const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.2是图片质量
+        if (snapshot !== '') {
+          this.snapshotInfo = snapshot
+          this.pdfExportShow = true
         }
-        PDF.save('PDF-test' + '.pdf')
       })
     },
     refreshTemplateInfo() {
       this.templateInfo = {}
-      html2canvas(this.$refs.imageWrapper).then(canvas => {
+      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
@@ -244,6 +262,12 @@ export default {
       if (this.activeTab !== 'PanelList') {
         bus.$emit('panle_start_list_refresh', isStar)
       }
+    },
+    changePdfTemplate() {
+      this.pdfTemplateContent = this.pdfTemplateAll[this.pdfTemplateSelectedIndex].templateContent
+    },
+    closePreExport() {
+      this.pdfExportShow = false
     }
 
   }
@@ -302,5 +326,15 @@ export default {
     font-size: 14px;
     flex-flow: row nowrap;
     color: #9ea6b2;
+  }
+
+  .dialog-css2 ::v-deep .el-dialog__title {
+    font-size: 14px!important;
+  }
+  .dialog-css2 ::v-deep .el-dialog__header {
+    padding: 20px 20px 0!important;
+  }
+  .dialog-css2 ::v-deep .el-dialog__body {
+    padding: 0px 20px!important;
   }
 </style>
