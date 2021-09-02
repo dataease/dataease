@@ -77,6 +77,9 @@ Vue.component('DeComplexInput', DeComplexInput)
 Vue.component('DeComplexSelect', DeComplexSelect)
 Vue.config.productionTip = false
 
+import vueToPdf from 'vue-to-pdf'
+Vue.use(vueToPdf)
+
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
   if (this.$store.state.user.user.isAdmin) {
     return true
