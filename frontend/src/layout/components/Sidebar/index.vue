@@ -78,8 +78,12 @@ export default {
       }
     }
 
-    /* .is-active > .el-submenu__title {
+    >>>.el-submenu.is-active .el-submenu__title {
       color: var(--theme) !important;
-    } */
+    }
+
+    .is-active > .el-submenu__title {
+      color: var(--theme) !important;
+    }
 }
 </style>
