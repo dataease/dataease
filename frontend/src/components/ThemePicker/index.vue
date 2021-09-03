@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { getThemeCluster } from '@/utils/style'
 const version = require('element-ui/package.json').version // element-ui version from node_modules
 const ORIGINAL_THEME = '#409EFF' // default color
 export default {
@@ -38,12 +39,12 @@ export default {
     async switch(val) {
       const oldVal = this.chalk ? this.theme : ORIGINAL_THEME
       if (typeof val !== 'string') return
-      const themeCluster = this.getThemeCluster(val.replace('#', ''))
-      const originalCluster = this.getThemeCluster(oldVal.replace('#', ''))
+      const themeCluster = getThemeCluster(val.replace('#', ''))
+      const originalCluster = getThemeCluster(oldVal.replace('#', ''))
 
       const getHandler = (variable, id) => {
         return () => {
-          const originalCluster = this.getThemeCluster(ORIGINAL_THEME.replace('#', ''))
+          const originalCluster = getThemeCluster(ORIGINAL_THEME.replace('#', ''))
           const newStyle = this.updateStyle(this[variable], originalCluster, themeCluster)
 
           let styleTag = document.getElementById(id)
@@ -98,8 +99,8 @@ export default {
         xhr.open('GET', url)
         xhr.send()
       })
-    },
-
+    }
+    /*
     getThemeCluster(theme) {
       const tintColor = (color, tint) => {
         let red = parseInt(color.slice(0, 2), 16)
@@ -144,6 +145,8 @@ export default {
       clusters.push(shadeColor(theme, 0.1))
       return clusters
     }
+     */
+
   }
 }
 </script>

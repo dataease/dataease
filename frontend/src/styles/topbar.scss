@@ -18,7 +18,7 @@
     font-weight: bold;
     // color: rgb(191, 203, 217);
     // color: rgba(255, 255, 255, 0.87);
-    color: $topBarBg;
+    // color: $topBarBg;
     float: left;
 
     img {
@@ -30,32 +30,27 @@
   .el-menu {
     float: left;
     border: none !important;
-    // background-color: #304156;
     background-color: $topBarBg;
 
     .nav-item {
       display: inline-block;
 
       .el-menu-item:not(.is-active) {
-        // color: rgb(191, 203, 217);
         color: $topBarMenuText;
 
         &:hover {
           background-color: $topBarMenuHovor !important;
-          // color: $subMenuActiveText !important;
         }
 
         &:focus {
           background-color: $topBarMenuHovor !important;
-          color: $topBarMenuText !important;
         }
 
       }
 
-      .is-active {
+      /* .is-active {
         background-color: $topBarMenuActive !important;
-        color: $topBarMenuTextActive !important;
-      }
+      } */
     }
   }
 
@@ -77,7 +72,7 @@
       height: 100%;
       font-size: 18px;
       // color: #5a5e66;
-      color: #606266;
+      // color: #606266;
       vertical-align: text-bottom;
 
       &.hover-effect {

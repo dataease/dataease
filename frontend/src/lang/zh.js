@@ -1246,13 +1246,14 @@ export default {
     loginTitle: '登录页面标题',
     title: '系统名称',
     advice_size: '建议图片大小',
-    theme: '头部背景',
+    theme: '主题颜色',
 
-    topMenuActiveColor: '主题颜色',
+    topMenuColor: '头部背景',
+    topMenuActiveColor: '头部选中背景',
 
-    topMenuTextColor: '字体颜色',
+    topMenuTextColor: '头部字体颜色',
 
-    topMenuTextActiveColor: '字体选中颜色'
+    topMenuTextActiveColor: '头部字体选中颜色'
 
   },
   auth: {

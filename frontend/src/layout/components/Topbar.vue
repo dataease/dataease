@@ -1,10 +1,14 @@
 <template>
-  <div class="top-nav">
+  <div class="top-nav" :style="{backgroundColor: topMenuColor, '--active-bg-color': topMenuActiveColor}">
     <div v-loading="!axiosFinished" class="log">
       <svg-icon v-if="!logoUrl && axiosFinished" icon-class="DataEase" custom-class="top-nav-logo-icon" />
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
+      class="de-top-menu"
+      :background-color="topMenuColor"
+      :text-color="topMenuTextColor"
+      :active-text-color="topMenuTextActiveColor"
       :default-active="activeMenu"
       mode="horizontal"
       :style="{'margin-left': '260px', 'position': 'absolute'}"
@@ -20,7 +24,7 @@
       </div>
     </el-menu>
 
-    <div class="right-menu">
+    <div class="right-menu" :style=" {color: topMenuTextColor}">
       <template>
 
         <notification class="right-menu-item hover-effect" />
@@ -33,7 +37,7 @@
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;">
-        <span class="el-dropdown-link" style="font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+        <span :style=" {color: topMenuTextColor}" class="el-dropdown-link" style="font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
           {{ name }}
           <i class="el-icon-arrow-down el-icon--right" />
         </span>
@@ -59,6 +63,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <theme-picker v-show="false" ref="de-theme" />
   </div>
 
 </template>
@@ -69,16 +74,17 @@ import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
 import Notification from '@/components/Notification'
-// import bus from '@/utils/bus'
+import bus from '@/utils/bus'
 import LangSelect from '@/components/LangSelect'
 import { getSysUI } from '@/utils/auth'
-
+import ThemePicker from '@/components/ThemePicker'
 export default {
   name: 'Topbar',
   components: {
     AppLink,
     Notification,
-    LangSelect
+    LangSelect,
+    ThemePicker
   },
   data() {
     return {
@@ -92,6 +98,26 @@ export default {
     theme() {
       return this.$store.state.settings.theme
     },
+
+    topMenuColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuColor'] && this.$store.getters.uiInfo['ui.topMenuColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuColor'].paramValue }
+      return this.variables.topBarBg
+    },
+    topMenuActiveColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuActiveColor'] && this.$store.getters.uiInfo['ui.topMenuActiveColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuActiveColor'].paramValue }
+      return this.variables.topBarMenuActive
+    },
+    topMenuTextColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextColor'] && this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue }
+      return this.variables.topBarMenuText
+    },
+    topMenuTextActiveColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextActiveColor'] && this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue }
+      return this.variables.topBarMenuTextActive
+    },
+    /* topMenuColor() {
+      return this.$store.getters.uiInfo.topMenuColor
+    }, */
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
@@ -122,6 +148,11 @@ export default {
 
   mounted() {
     this.initCurrentRoutes()
+    bus.$on('set-theme-info', this.setThemeInfo)
+    bus.$on('set-top-menu-info', this.setTopMenuInfo)
+    bus.$on('set-top-menu-active-info', this.setTopMenuActiveInfo)
+    bus.$on('set-top-text-info', this.setTopTextInfo)
+    bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
   },
   created() {
     this.loadUiInfo()
@@ -230,6 +261,22 @@ export default {
         }
         this.axiosFinished = true
       })
+    },
+    setThemeInfo(val) {
+      // console.log('切换的主题颜色是：' + val)
+      this.$refs['de-theme'] && this.$refs['de-theme'].switch && this.$refs['de-theme'].switch(val)
+    },
+    setTopMenuInfo(val) {
+      this.loadUiInfo()
+    },
+    setTopMenuActiveInfo(val) {
+      this.loadUiInfo()
+    },
+    setTopTextInfo(val) {
+      this.loadUiInfo()
+    },
+    setTopTextActiveInfo(val) {
+      this.loadUiInfo()
     }
 
   }
@@ -252,5 +299,12 @@ export default {
     color: #1e212a;
     vertical-align: text-bottom;
     margin-right: 10px;
+  }
+
+  .de-top-menu {
+      >>>li.is-active {
+          // background-color: #0a7be0 !important;
+          background-color: var(--active-bg-color) !important;
+      }
   }
 </style>

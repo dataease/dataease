@@ -25,10 +25,10 @@
         </el-form-item>
 
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host">
-          <el-input v-model="form.configuration.host" autocomplete="off"  />
+          <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase">
-          <el-input v-model="form.configuration.dataBase" autocomplete="off"  />
+          <el-input v-model="form.configuration.dataBase" autocomplete="off" />
         </el-form-item>
 
         <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.oracle_connection_type')" prop="configuration.connectionType">
@@ -37,7 +37,7 @@
         </el-form-item>
 
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')" prop="configuration.username">
-          <el-input v-model="form.configuration.username" autocomplete="off"  />
+          <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')" prop="configuration.password">
           <el-input v-model="form.configuration.password" autocomplete="off" show-password />
@@ -52,7 +52,7 @@
         </el-form-item>
 
         <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'" :label="$t('datasource.schema')">
-          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width">
+          <el-select v-model="form.configuration.schema" filterable :placeholder="$t('datasource.please_choose_schema')" class="select-width">
             <el-option
               v-for="item in schemas"
               :key="item"
@@ -68,19 +68,19 @@
               <el-input v-model="form.configuration.initialPoolSize" autocomplete="off" type="number" min="0" size="small" />
             </el-form-item>
             <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
-              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
             <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
-              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
             <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.max_idle_time')" prop="configuration.maxIdleTime">
-              <el-input v-model="form.configuration.maxIdleTime" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.maxIdleTime" autocomplete="off" type="number" min="0" />
             </el-form-item>
             <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.acquire_increment')" prop="configuration.acquireIncrement">
-              <el-input v-model="form.configuration.acquireIncrement" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.acquireIncrement" autocomplete="off" type="number" min="0" />
             </el-form-item>
             <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.connect_timeout')" prop="configuration.connectTimeout">
-              <el-input v-model="form.configuration.connectTimeout" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.connectTimeout" autocomplete="off" type="number" min="0" />
             </el-form-item>
 
           </el-collapse-item>
@@ -144,9 +144,9 @@ export default {
         'configuration.connectTimeout': [{ required: true, message: this.$t('datasource.please_input_connect_timeout'), trigger: 'change' }]
       },
       allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
-                { name: 'oracle', label: 'Oracle', type: 'jdbc' },
-                { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
-                { name: 'pg', label: 'PostgreSQL', type: 'jdbc' }],
+        { name: 'oracle', label: 'Oracle', type: 'jdbc' },
+        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
+        { name: 'pg', label: 'PostgreSQL', type: 'jdbc' }],
       schemas: [],
       canEdit: false,
       originConfiguration: {}
@@ -202,8 +202,8 @@ export default {
         this.$message.error(this.$t('datasource.please_choose_schema'))
         return
       }
-      if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0 || this.form.configuration.maxIdleTime < 0
-        || this.form.configuration.acquireIncrement < 0 || this.form.configuration.idleConnectionTestPeriod < 0 || this.form.configuration.connectTimeout < 0) {
+      if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0 || this.form.configuration.maxIdleTime < 0 ||
+        this.form.configuration.acquireIncrement < 0 || this.form.configuration.idleConnectionTestPeriod < 0 || this.form.configuration.connectTimeout < 0) {
         this.$message.error(this.$t('datasource.no_less_then_0'))
         return
       }
@@ -212,7 +212,7 @@ export default {
           const method = this.formType === 'add' ? addDs : editDs
           const form = JSON.parse(JSON.stringify(this.form))
           form.configuration = JSON.stringify(form.configuration)
-          if(this.formType !== 'add' && this.originConfiguration !== form.configuration) {
+          if (this.formType !== 'add' && this.originConfiguration !== form.configuration) {
             $confirm(this.$t('datasource.edit_datasource_msg'), () => {
               method(form).then(res => {
                 this.$success(this.$t('commons.save_success'))
@@ -220,7 +220,7 @@ export default {
                 this.backToList()
               })
             })
-          }else {
+          } else {
             method(form).then(res => {
               this.$success(this.$t('commons.save_success'))
               this.refreshTree()
@@ -255,23 +255,22 @@ export default {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
           data.configuration = JSON.stringify(data.configuration)
-          if(data.showModel === 'show' && !this.canEdit){
+          if (data.showModel === 'show' && !this.canEdit) {
             validateDsById(data.id).then(res => {
-              if(res.success){
+              if (res.success) {
                 this.$success(this.$t('datasource.validate_success'))
-              }else {
+              } else {
                 this.$error(this.$t(res.message))
               }
               this.refreshTree()
             }).catch(res => {
               this.$error(res.message)
             })
-
-          }else {
+          } else {
             validateDs(data).then(res => {
-              if(res.success){
+              if (res.success) {
                 this.$success(this.$t('datasource.validate_success'))
-              }else {
+              } else {
                 this.$error(this.$t(res.message))
               }
             }).catch(res => {
@@ -301,8 +300,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import "~@/styles/mixin.scss";
-@import "~@/styles/variables.scss";
 
 .back-button {
   cursor: pointer;
