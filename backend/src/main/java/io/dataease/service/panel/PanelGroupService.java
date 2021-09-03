@@ -103,7 +103,19 @@ public class PanelGroupService {
             newDefaultPanel.setCreateBy(AuthUtils.getUser().getUsername());
             checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId());
             panelGroupMapper.insertSelective(newDefaultPanel);
-        } else {
+        }  else if ("copy".equals(request.getOptType())) {
+            panelId = UUID.randomUUID().toString();
+            // 复制模板
+            PanelGroupWithBLOBs newPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
+            // 插入校验
+            if (StringUtils.isNotEmpty(request.getName())) {
+                checkPanelName(request.getName(), newPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId());
+            }
+            newPanel.setName(request.getName());
+            newPanel.setId(panelId);
+            newPanel.setCreateBy(AuthUtils.getUser().getUsername());
+            panelGroupMapper.insertSelective(newPanel);
+        }else {
             // 更新
             if (StringUtils.isNotEmpty(request.getName())) {
                 checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_UPDATE, request.getId());

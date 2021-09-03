@@ -109,6 +109,9 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
                         {{ $t('panel.share') }}
                       </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-document-copy" :command="beforeClickMore('copy',data,node)">
+                        {{ $t('panel.copy') }}
+                      </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
                         {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
@@ -306,11 +309,16 @@ export default {
             this.lastActiveNodeData.name = panelInfo.name
             return
           }
-          if (!this.lastActiveNodeData.children) {
-            this.$set(this.lastActiveNodeData, 'children', [])
+          // 复制后的仪表板 放在父节点下面
+          if (this.editPanel.optType === 'copy') {
+            this.lastActiveNode.parent.data.children.push(panelInfo)
+          } else {
+            if (!this.lastActiveNodeData.children) {
+              this.$set(this.lastActiveNodeData, 'children', [])
+            }
+            this.lastActiveNodeData.children.push(panelInfo)
+            this.lastActiveNode.expanded = true
           }
-          this.lastActiveNodeData.children.push(panelInfo)
-          this.lastActiveNode.expanded = true
           this.activeNodeAndClick(panelInfo)
         } else {
           this.tree(this.groupForm)
@@ -367,6 +375,18 @@ export default {
             }
           }
           break
+        case 'copy':
+          this.editPanel = {
+            visible: true,
+            titlePre: this.$t('panel.copy'),
+            optType: 'copy',
+            panelInfo: {
+              id: param.data.id,
+              name: param.data.name,
+              optType: 'copy'
+            }
+          }
+          break
       }
       switch (param.type) {
         case 'folder':
@@ -388,6 +408,7 @@ export default {
 
     clickMore(param) {
       switch (param.optType) {
+        case 'copy':
         case 'toDefaultPanel':
         case 'rename':
           this.showEditPanel(param)
