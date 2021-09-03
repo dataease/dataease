@@ -155,7 +155,7 @@ export default {
       } else if (chart.type === 'chart-mix') {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
       }
-      console.log(JSON.stringify(chart_option))
+      // console.log(JSON.stringify(chart_option))
 
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)
