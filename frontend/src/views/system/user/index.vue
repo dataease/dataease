@@ -18,7 +18,6 @@
       <el-table-column :show-overflow-tooltip="true" prop="nickName" sortable="custom" :label="$t('commons.nick_name')" />
       <el-table-column prop="gender" :label="$t('commons.gender')" width="60" />
 
-      <!-- <el-table-column :show-overflow-tooltip="true" prop="phone" :label="$t('commons.phone')" /> -->
       <el-table-column :show-overflow-tooltip="true" prop="email" :label="$t('commons.email')" />
       <el-table-column :show-overflow-tooltip="true" prop="dept" sortable="custom" :label="$t('commons.organization')">
         <template slot-scope="scope">
@@ -162,7 +161,6 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-// import { checkPermission } from '@/utils/permission'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
@@ -170,7 +168,6 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 import { userLists, addUser, editUser, delUser, editPassword, editStatus, allRoles } from '@/api/system/user'
-// import { allRoles } from '@/api/system/role'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 
 export default {
@@ -192,10 +189,7 @@ export default {
           label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'success', click: this.editPassword,
           show: this.checkPermission(['user:editPwd'])
         }
-        // , {
-        //   label: '权限查看', icon: 'el-icon-lock', type: 'warning', click: this.showAuth,
-        //   show: this.checkPermission(['user:editPwd'])
-        // }
+
       ],
       searchConfig: {
         useQuickSearch: true,
@@ -307,7 +301,6 @@ export default {
     }
   },
   mounted() {
-    // this.form = Object.assign({}, this.defaultForm);
     this.allRoles()
     this.search()
   },
@@ -347,28 +340,14 @@ export default {
     create() {
       this.$router.push({ name: 'system-user-form' })
     },
-    // create() {
-    //   this.depts = null
-    //   this.formType = 'add'
-    //   this.form = Object.assign({}, this.defaultForm)
-    //   this.dialogVisible = true
-    // },
+
     edit(row) {
       this.$router.push({ name: 'system-user-form', params: row })
     },
     showAuth(row) {
       this.$router.push({ name: 'system-user-form', params: row })
     },
-    // edit(row) {
-    //   this.depts = null
-    //   this.formType = 'modify'
-    //   this.dialogVisible = true
-    //   this.form = Object.assign({}, row)
-    //   if (this.form.deptId === 0) {
-    //     this.form.deptId = null
-    //   }
-    //   this.initDeptTree()
-    // },
+
     editPassword(row) {
       this.editPasswordVisible = true
       const tempForm = Object.assign({}, row)

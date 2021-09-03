@@ -1,15 +1,17 @@
 <template>
-  <div class="top-nav" :style="{'background-color': '#f1f3f8'}">
+  <div class="top-nav" :style="{backgroundColor: topMenuColor, '--active-bg-color': topMenuActiveColor}">
     <div v-loading="!axiosFinished" class="log">
-      <!--      <img      v-if="!logoUrl" src="@/assets/DataEase-color.png" width="140" alt="" style="padding-top: 10px;">-->
       <svg-icon v-if="!logoUrl && axiosFinished" icon-class="DataEase" custom-class="top-nav-logo-icon" />
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
-      :active-text-color="variables.topMenuActiveText"
+      class="de-top-menu"
+      :background-color="topMenuColor"
+      :text-color="topMenuTextColor"
+      :active-text-color="topMenuTextActiveColor"
       :default-active="activeMenu"
       mode="horizontal"
-      :style="{'background-color': '#f1f3f8', 'margin-left': '260px', 'position': 'absolute'}"
+      :style="{'margin-left': '260px', 'position': 'absolute'}"
       @select="handleSelect"
     >
       <div v-for="item in permission_routes" :key="item.path" class="nav-item">
@@ -22,19 +24,9 @@
       </div>
     </el-menu>
 
-    <div class="right-menu">
+    <div class="right-menu" :style=" {color: topMenuTextColor}">
       <template>
-        <!--        <el-tooltip content="项目文档" effect="dark" placement="bottom">-->
-        <!--          <doc class="right-menu-item hover-effect" />-->
-        <!--        </el-tooltip>-->
 
-        <!--        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">-->
-        <!--          <screenfull id="screenfull" class="right-menu-item hover-effect" />-->
-        <!--        </el-tooltip>-->
-
-        <!-- <el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip> -->
         <notification class="right-menu-item hover-effect" />
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
@@ -45,7 +37,7 @@
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;">
-        <span class="el-dropdown-link" style="font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+        <span :style=" {color: topMenuTextColor}" class="el-dropdown-link" style="font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
           {{ name }}
           <i class="el-icon-arrow-down el-icon--right" />
         </span>
@@ -61,9 +53,7 @@
           <router-link to="/person-pwd/index">
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link>
-          <!--          <a href="https://de-docs.fit2cloud.com/" target="_blank">-->
-          <!--            <el-dropdown-item>{{ $t('commons.help_documentation') }} </el-dropdown-item>-->
-          <!--          </a>-->
+
           <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link>
@@ -73,7 +63,9 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <theme-picker v-show="false" ref="de-theme" />
   </div>
+
 </template>
 
 <script>
@@ -82,19 +74,17 @@ import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
 import Notification from '@/components/Notification'
-// import Screenfull from '@/components/Screenfull'
-// import SizeSelect from '@/components/SizeSelect'
+import bus from '@/utils/bus'
 import LangSelect from '@/components/LangSelect'
 import { getSysUI } from '@/utils/auth'
+import ThemePicker from '@/components/ThemePicker'
 export default {
   name: 'Topbar',
   components: {
     AppLink,
-    // Screenfull,
-    // SizeSelect,
     Notification,
-    LangSelect
-    // Doc
+    LangSelect,
+    ThemePicker
   },
   data() {
     return {
@@ -108,6 +98,26 @@ export default {
     theme() {
       return this.$store.state.settings.theme
     },
+
+    topMenuColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuColor'] && this.$store.getters.uiInfo['ui.topMenuColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuColor'].paramValue }
+      return this.variables.topBarBg
+    },
+    topMenuActiveColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuActiveColor'] && this.$store.getters.uiInfo['ui.topMenuActiveColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuActiveColor'].paramValue }
+      return this.variables.topBarMenuActive
+    },
+    topMenuTextColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextColor'] && this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue }
+      return this.variables.topBarMenuText
+    },
+    topMenuTextActiveColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextActiveColor'] && this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue }
+      return this.variables.topBarMenuTextActive
+    },
+    /* topMenuColor() {
+      return this.$store.getters.uiInfo.topMenuColor
+    }, */
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
@@ -138,15 +148,14 @@ export default {
 
   mounted() {
     this.initCurrentRoutes()
+    bus.$on('set-theme-info', this.setThemeInfo)
+    bus.$on('set-top-menu-info', this.setTopMenuInfo)
+    bus.$on('set-top-menu-active-info', this.setTopMenuActiveInfo)
+    bus.$on('set-top-text-info', this.setTopTextInfo)
+    bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
   },
   created() {
-    this.$store.dispatch('user/getUI').then(() => {
-      this.uiInfo = getSysUI()
-      if (this.uiInfo['ui.logo'] && this.uiInfo['ui.logo'].paramValue) {
-        this.logoUrl = '/system/ui/image/' + this.uiInfo['ui.logo'].paramValue
-      }
-      this.axiosFinished = true
-    })
+    this.loadUiInfo()
   },
   methods: {
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单
@@ -236,6 +245,38 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    loadUiInfo() {
+      this.$store.dispatch('user/getUI').then(() => {
+        this.uiInfo = getSysUI()
+        if (this.uiInfo['ui.logo'] && this.uiInfo['ui.logo'].paramValue) {
+          this.logoUrl = '/system/ui/image/' + this.uiInfo['ui.logo'].paramValue
+        }
+        if (this.uiInfo['ui.theme'] && this.uiInfo['ui.theme'].paramValue) {
+          const val = this.uiInfo['ui.theme'].paramValue
+          this.$store.dispatch('settings/changeSetting', {
+            key: 'theme',
+            value: val
+          })
+        }
+        this.axiosFinished = true
+      })
+    },
+    setThemeInfo(val) {
+      // console.log('切换的主题颜色是：' + val)
+      this.$refs['de-theme'] && this.$refs['de-theme'].switch && this.$refs['de-theme'].switch(val)
+    },
+    setTopMenuInfo(val) {
+      this.loadUiInfo()
+    },
+    setTopMenuActiveInfo(val) {
+      this.loadUiInfo()
+    },
+    setTopTextInfo(val) {
+      this.loadUiInfo()
+    },
+    setTopTextActiveInfo(val) {
+      this.loadUiInfo()
     }
 
   }
@@ -258,5 +299,12 @@ export default {
     color: #1e212a;
     vertical-align: text-bottom;
     margin-right: 10px;
+  }
+
+  .de-top-menu {
+      >>>li.is-active {
+          // background-color: #0a7be0 !important;
+          background-color: var(--active-bg-color) !important;
+      }
   }
 </style>

@@ -7,6 +7,7 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 import { buildMenus } from '@/api/system/menu'
 import { filterAsyncRouter } from '@/store/modules/permission'
+// import bus from './utils/bus'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -21,7 +22,7 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
-
+  //   bus.$emit('set-theme-info', store.state.settings.theme)
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -76,7 +77,6 @@ export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     const filterDatas = filterRouter(res.data)
     const asyncRouter = filterAsyncRouter(filterDatas)
-    // addMsgMenu(asyncRouter)
     asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)
@@ -89,43 +89,6 @@ export const loadMenus = (next, to) => {
   })
 }
 
-export const addMsgMenu = asyncRouter => {
-  const menu = {
-    path: 'system-msg-web',
-    component: () => import('@/views/msg/index'),
-    name: 'sys-msg-web',
-    meta: { title: '站内消息', icon: 'all-msg' },
-    children: [
-      {
-        path: 'all',
-        component: () => import('@/views/msg/all'),
-        name: 'sys-msg-web-all',
-        meta: { title: '所有消息', icon: 'web-msg' }
-      },
-      {
-        path: 'unread',
-        component: () => import('@/views/msg/unread'),
-        name: 'sys-msg-web-unread',
-        meta: { title: '未读消息', icon: 'unread-msg' }
-
-      },
-      {
-        path: 'readed',
-        component: () => import('@/views/msg/readed'),
-        name: 'sys-msg-web-readed',
-        meta: { title: '已读消息', icon: 'readed-msg' }
-      }
-    ]
-  }
-  asyncRouter.forEach(element => {
-    if (element.name === 'system') {
-      if (element.children) {
-        element.children.splice(0, 0, menu)
-      }
-      // element.children.push(menu)
-    }
-  })
-}
 /**
  * 验证path是否有效
  * @param {*} path

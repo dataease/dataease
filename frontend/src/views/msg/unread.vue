@@ -218,8 +218,8 @@ export default {
 
   >>>.el-radio-button__orig-radio:checked+.el-radio-button__inner {
     color: #fff;
-    background-color: #0a7be0;
-    border-color: #0a7be0;
+    /* background-color: #0a7be0;
+    border-color: #0a7be0; */
     -webkit-box-shadow: 0px 0 0 0 #0a7be0;
     box-shadow: 0px 0 0 0 #0a7be0;
   }

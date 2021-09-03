@@ -17,9 +17,9 @@ export default {
     }
   },
   computed: {
-    theme() {
+    /* theme() {
       return this.$store.state.settings.theme
-    },
+    }, */
     licValidate() {
       return this.$store.state.lic.validate
     },
