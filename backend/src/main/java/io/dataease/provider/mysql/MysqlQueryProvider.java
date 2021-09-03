@@ -675,7 +675,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(MySQLConstants.STR_TO_DATE, originName, MySQLConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
                 }
@@ -733,7 +733,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(MySQLConstants.STR_TO_DATE, originName, MySQLConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
                 }

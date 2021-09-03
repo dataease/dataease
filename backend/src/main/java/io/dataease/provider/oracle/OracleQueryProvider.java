@@ -710,7 +710,7 @@ public class OracleQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
@@ -772,7 +772,7 @@ public class OracleQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
