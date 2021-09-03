@@ -112,6 +112,9 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-document-copy" :command="beforeClickMore('copy',data,node)">
                         {{ $t('panel.copy') }}
                       </el-dropdown-item>
+                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">
+                        {{ $t('dataset.move_to') }}
+                      </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
                         {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
@@ -169,6 +172,16 @@
       <el-dialog v-dialogDrag :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
         <edit-panel v-if="editPanel.visible" :edit-panel-out="editPanel" @closeEditPanelDialog="closeEditPanelDialog" @newPanelSave="newPanelSave" />
       </el-dialog>
+
+      <!--移动-->
+      <el-dialog v-if="moveGroup" v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
+        <tree-selector :item="moveInfo" :t-data="tGroupData" @targetGroup="targetGroup" />
+        <div slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="closeMoveGroup()">{{ $t('dataset.cancel') }}</el-button>
+          <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{ $t('dataset.confirm') }}
+          </el-button>
+        </div>
+      </el-dialog>
     </el-col>
   </el-col>
 </template>
@@ -179,16 +192,18 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import { addGroup, delGroup, groupTree, defaultTree, findOne } from '@/api/panel/panel'
+import { addGroup, delGroup, groupTree, defaultTree, findOne, panelSave } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
+import TreeSelector from '@/components/TreeSelector'
+import { post } from '@/api/chart/chart'
 
 export default {
   name: 'PanelList',
-  components: { GrantAuth, LinkGenerate, EditPanel },
+  components: { GrantAuth, LinkGenerate, EditPanel, TreeSelector },
   data() {
     return {
       lastActiveNode: null, // 激活的节点 在这个节点下面动态放置子节点
@@ -273,7 +288,13 @@ export default {
         mode: [
           { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
         ]
-      }
+      },
+      moveGroup: false,
+      groupMoveConfirmDisabled: true,
+      moveDialogTitle: '',
+      moveInfo: {},
+      tGroup: {},
+      tGroupData: [] // 所有目录
     }
   },
   computed: {
@@ -413,8 +434,6 @@ export default {
         case 'rename':
           this.showEditPanel(param)
           break
-        case 'move':
-          break
         case 'delete':
           this.delete(param.data)
           break
@@ -426,6 +445,9 @@ export default {
           break
         case 'link':
           this.link(param.data)
+          break
+        case 'move':
+          this.moveTo(param.data)
           break
       }
     },
@@ -649,6 +671,45 @@ export default {
           })
         })
       }
+    },
+    moveTo(data) {
+      const _this = this
+      this.moveInfo = data
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
+      const queryInfo = JSON.parse(JSON.stringify(this.groupForm))
+      queryInfo['nodeType'] = 'folder'
+      groupTree(queryInfo).then(res => {
+        if (data.nodeType === 'folder') {
+          _this.tGroupData = [
+            {
+              id: 'panel_list',
+              name: _this.$t('panel.panel_list'),
+              label: _this.$t('panel.panel_list'),
+              children: res.data
+            }
+          ]
+          // console.log('tGroupData=>' + JSON.stringify(_this.tGroupData))
+        } else {
+          _this.tGroupData = res.data
+        }
+        _this.moveGroup = true
+      })
+    },
+    closeMoveGroup() {
+      this.moveGroup = false
+      this.tGroup = {}
+    },
+    saveMoveGroup() {
+      this.moveInfo.pid = this.tGroup.id
+      this.moveInfo['optType'] = 'move'
+      panelSave(this.moveInfo).then(response => {
+        this.tree(this.groupForm)
+        this.closeMoveGroup()
+      })
+    },
+    targetGroup(val) {
+      this.tGroup = val
+      this.groupMoveConfirmDisabled = false
     }
   }
 }
