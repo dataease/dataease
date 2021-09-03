@@ -107,6 +107,12 @@ export const DEFAULT_XAXIS_STYLE = {
       width: 1,
       style: 'solid'
     }
+  },
+  axisValue: {
+    auto: true,
+    min: null,
+    max: null,
+    split: null
   }
 }
 export const DEFAULT_YAXIS_STYLE = {
@@ -131,6 +137,12 @@ export const DEFAULT_YAXIS_STYLE = {
       width: 1,
       style: 'solid'
     }
+  },
+  axisValue: {
+    auto: true,
+    min: null,
+    max: null,
+    split: null
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {

@@ -849,7 +849,12 @@ export default {
     custom_case: 'Custom',
     last_layer: 'This Is The Last Layer',
     radar_size: 'Size',
-    chart_mix: 'Mix'
+    chart_mix: 'Mix',
+    axis_value: 'Axis Value',
+    axis_value_min: 'Min',
+    axis_value_max: 'Max',
+    axis_value_split: 'Split',
+    axis_auto: 'Auto'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

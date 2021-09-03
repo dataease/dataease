@@ -23,6 +23,36 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+          <span v-show="chart.type && chart.type.includes('horizontal')">
+            <el-divider />
+            <el-form-item class="form-item">
+              <span slot="label">
+                <span class="span-box">
+                  <span>{{ $t('chart.axis_value') }}</span>
+                  <el-tooltip class="item" effect="dark" placement="bottom">
+                    <div slot="content">
+                      最小值、最大值、间隔均为数值类型；若不填，则该项视为自动。
+                      <br>
+                      请确保填写数值能正确计算，否则将无法正常显示轴值。
+                    </div>
+                    <i class="el-icon-info" style="cursor: pointer;" />
+                  </el-tooltip>
+                </span>
+              </span>
+              <el-checkbox v-model="axisForm.axisValue.auto" @change="changeXAxisStyle">{{ $t('chart.axis_auto') }}</el-checkbox>
+            </el-form-item>
+            <span v-show="!axisForm.axisValue.auto">
+              <el-form-item :label="$t('chart.axis_value_min')" class="form-item">
+                <el-input v-model="axisForm.axisValue.min" @blur="changeXAxisStyle" />
+              </el-form-item>
+              <el-form-item :label="$t('chart.axis_value_max')" class="form-item">
+                <el-input v-model="axisForm.axisValue.max" @blur="changeXAxisStyle" />
+              </el-form-item>
+              <el-form-item :label="$t('chart.axis_value_split')" class="form-item">
+                <el-input v-model="axisForm.axisValue.split" @blur="changeXAxisStyle" />
+              </el-form-item>
+            </span>
+          </span>
           <el-divider />
           <el-form-item :label="$t('chart.axis_show')" class="form-item">
             <el-checkbox v-model="axisForm.splitLine.show" @change="changeXAxisStyle">{{ $t('chart.axis_show') }}</el-checkbox>
@@ -119,6 +149,9 @@ export default {
           }
           if (!this.axisForm.nameTextStyle) {
             this.axisForm.nameTextStyle = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.nameTextStyle))
+          }
+          if (!this.axisForm.axisValue) {
+            this.axisForm.axisValue = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.axisValue))
           }
         }
       }
