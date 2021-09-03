@@ -1,7 +1,7 @@
 <template>
   <el-dropdown style="display: flex;align-items: center;" trigger="click" class="international" @command="handleSetLanguage">
     <div>
-      <svg-icon class-name="international-icon" icon-class="language" />
+      <svg-icon :style="{color: topMenuTextColor}" class-name="international-icon" icon-class="language" />
     </div>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item :disabled="language==='zh_CN'" command="zh_CN">
@@ -24,10 +24,18 @@
 </template>
 
 <script>
+import variables from '@/styles/variables.scss'
 export default {
   computed: {
     language() {
       return this.$store.getters.language
+    },
+    variables() {
+      return variables
+    },
+    topMenuTextColor() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextColor'] && this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue }
+      return this.variables.topBarMenuText
     }
   },
   methods: {

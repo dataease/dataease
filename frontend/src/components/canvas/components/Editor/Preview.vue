@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
+  <div id="canvasInfoTemp" ref="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
     <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
       {{ $t('panel.panelNull') }}
     </el-row>
