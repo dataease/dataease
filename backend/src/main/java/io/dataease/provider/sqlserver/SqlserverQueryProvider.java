@@ -661,6 +661,9 @@ public class SqlserverQueryProvider extends QueryProvider {
                     String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
                     whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
                 }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -706,6 +709,9 @@ public class SqlserverQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
                     String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
                     whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
                 }
             } else {
                 whereName = originName;

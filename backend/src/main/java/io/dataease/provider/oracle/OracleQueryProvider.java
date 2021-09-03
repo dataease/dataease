@@ -714,6 +714,9 @@ public class OracleQueryProvider extends QueryProvider {
                     String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -772,6 +775,9 @@ public class OracleQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
                     String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
                 }
             } else {
                 whereName = originName;
