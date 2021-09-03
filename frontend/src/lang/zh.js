@@ -848,7 +848,12 @@ export default {
     custom_case: '自定义',
     last_layer: '当前已经是最后一级',
     radar_size: '大小',
-    chart_mix: '组合图'
+    chart_mix: '组合图',
+    axis_value: '轴值',
+    axis_value_min: '最小值',
+    axis_value_max: '最大值',
+    axis_value_split: '间隔',
+    axis_auto: '自动'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

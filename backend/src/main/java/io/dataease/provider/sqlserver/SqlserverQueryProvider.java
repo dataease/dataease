@@ -13,6 +13,7 @@ import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
+import io.dataease.provider.mysql.MySQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +74,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             case "TINYINT":
                 return DeTypeConstants.DE_BOOL;// 布尔
             case "TIMESTAMP":
-                return DeTypeConstants.DE_Binary;// 二进制
+                return DeTypeConstants.DE_BINARY;// 二进制
             default:
                 return DeTypeConstants.DE_STRING;
         }
@@ -91,7 +92,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
 
         List<SQLObj> xFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
@@ -159,12 +160,12 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit  + " rows only";
+        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit + " rows only";
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit  + " rows only";
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit + " rows only";
     }
 
     @Override
@@ -173,7 +174,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -270,7 +271,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -388,7 +389,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        setSchema(tableObj,ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -588,11 +589,11 @@ public class SqlserverQueryProvider extends QueryProvider {
             stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        if(ds != null){
+        if (ds != null) {
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
             String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
             return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), tableWithSchema);
-        }else {
+        } else {
             return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), table);
         }
     }
@@ -651,9 +652,15 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereTerm = transMysqlFilterTerm(request.getTerm());
             String whereValue = "";
             String originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            if (field.getDeType() == DeTypeConstants.DE_TIME && field.getDeExtractType() != DeTypeConstants.DE_TIME) {
-                String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
-                whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originName);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                    String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
+                    whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+                }
             } else {
                 whereName = originName;
             }
@@ -692,9 +699,14 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
             String originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
 
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
-                whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originName);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                    String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
+                    whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+                }
             } else {
                 whereName = originName;
             }
@@ -744,30 +756,30 @@ public class SqlserverQueryProvider extends QueryProvider {
             case "y":
                 return "CONVERT(varchar(100), datepart(yy, " + originField + "))";
             case "y_M":
-                if(split.equalsIgnoreCase("-")){
+                if (split.equalsIgnoreCase("-")) {
                     return "substring( convert(varchar," + originField + ",120),1,7)";
-                }else {
-                    return "replace("+ "substring( convert(varchar," + originField + ",120),1,7), '-','/')";
+                } else {
+                    return "replace(" + "substring( convert(varchar," + originField + ",120),1,7), '-','/')";
                 }
             case "y_M_d":
-                if(split.equalsIgnoreCase("-")){
+                if (split.equalsIgnoreCase("-")) {
                     return "CONVERT(varchar(100), " + originField + ", 23)";
-                }else {
+                } else {
                     return "CONVERT(varchar(100), " + originField + ", 111)";
                 }
             case "H_m_s":
                 return "CONVERT(varchar(100), " + originField + ", 8)";
             case "y_M_d_H_m":
-                if(split.equalsIgnoreCase("-")){
+                if (split.equalsIgnoreCase("-")) {
                     return "substring( convert(varchar," + originField + ",120),1,16)";
-                }else {
-                    return "replace("+ "substring( convert(varchar," + originField + ",120),1,16), '-','/')";
+                } else {
+                    return "replace(" + "substring( convert(varchar," + originField + ",120),1,16), '-','/')";
                 }
             case "y_M_d_H_m_s":
-                if(split.equalsIgnoreCase("-")){
+                if (split.equalsIgnoreCase("-")) {
                     return "convert(varchar," + originField + ",120)";
-                }else {
-                    return "replace("+ "convert(varchar," + originField + ",120), '-','/')";
+                } else {
+                    return "replace(" + "convert(varchar," + originField + ",120), '-','/')";
                 }
             default:
                 return "convert(varchar," + originField + ",120)";
@@ -790,7 +802,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     String cast = String.format(SqlServerSQLConstants.STRING_TO_DATE, originField);
                     fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), cast);
                 } else {// 数值转时间
-                    String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originField+ "/1000");
+                    String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originField + "/1000");
                     fieldName = transDateFormat(x.getDateStyle(), x.getDatePattern(), cast);
                 }
             } else {

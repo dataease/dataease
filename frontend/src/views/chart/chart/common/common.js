@@ -65,6 +65,18 @@ export function componentStyle(chart_option, chart) {
       if (!customStyle.xAxis.show) {
         chart_option.xAxis.axisLabel.show = false
       }
+
+      // 轴值设置
+      delete chart_option.xAxis.min
+      delete chart_option.xAxis.max
+      delete chart_option.xAxis.split
+      if (chart.type.includes('horizontal')) {
+        if (customStyle.xAxis.axisValue && !customStyle.xAxis.axisValue.auto) {
+          customStyle.xAxis.axisValue.min && (chart_option.xAxis.min = parseFloat(customStyle.xAxis.axisValue.min))
+          customStyle.xAxis.axisValue.max && (chart_option.xAxis.max = parseFloat(customStyle.xAxis.axisValue.max))
+          customStyle.xAxis.axisValue.split && (chart_option.xAxis.interval = parseFloat(customStyle.xAxis.axisValue.split))
+        }
+      }
     }
     if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
       chart_option.yAxis.show = customStyle.yAxis.show
@@ -79,6 +91,18 @@ export function componentStyle(chart_option, chart) {
 
       if (!customStyle.yAxis.show) {
         chart_option.yAxis.axisLabel.show = false
+      }
+
+      // 轴值设置
+      delete chart_option.yAxis.min
+      delete chart_option.yAxis.max
+      delete chart_option.yAxis.split
+      if (!chart.type.includes('horizontal')) {
+        if (customStyle.yAxis.axisValue && !customStyle.yAxis.axisValue.auto) {
+          customStyle.yAxis.axisValue.min && (chart_option.yAxis.min = parseFloat(customStyle.yAxis.axisValue.min))
+          customStyle.yAxis.axisValue.max && (chart_option.yAxis.max = parseFloat(customStyle.yAxis.axisValue.max))
+          customStyle.yAxis.axisValue.split && (chart_option.yAxis.interval = parseFloat(customStyle.yAxis.axisValue.split))
+        }
       }
     }
     if (customStyle.split && chart.type.includes('radar')) {

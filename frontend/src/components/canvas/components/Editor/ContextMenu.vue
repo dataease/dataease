@@ -87,13 +87,13 @@ export default {
 
     paste() {
       this.$store.commit('paste', true)
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'paste')
     },
 
     deleteComponent() {
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'deleteComponent')
       this.$store.commit('setCurComponent', { component: null, index: null })
     },
 
@@ -106,22 +106,22 @@ export default {
 
     upComponent() {
       this.$store.commit('upComponent')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'upComponent')
     },
 
     downComponent() {
       this.$store.commit('downComponent')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'downComponent')
     },
 
     topComponent() {
       this.$store.commit('topComponent')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'topComponent')
     },
 
     bottomComponent() {
       this.$store.commit('bottomComponent')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'bottomComponent')
     }
   }
 }
