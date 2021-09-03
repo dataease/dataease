@@ -702,7 +702,7 @@ public class PgQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(PgConstants.TO_DATE, originName, PgConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(PgConstants.CAST, originName, "bigint");
                     whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
                 }
@@ -760,7 +760,7 @@ public class PgQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(PgConstants.TO_DATE, originName, PgConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(PgConstants.CAST, originName, "bigint");
                     whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
                 }
