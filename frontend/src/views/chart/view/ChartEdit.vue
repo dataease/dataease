@@ -117,12 +117,17 @@
                       v-model="view.type"
                       style="width: 100%"
                       :disabled="!hasDataPermission('manage',param.privileges)"
-                      @change="save(true,'chart',true)"
+                      @change="save(true,'chart',true,true)"
                     >
                       <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="table-normal" label="table-normal">
                           <span :title="$t('chart.chart_table_normal')">
                             <svg-icon icon-class="table-normal" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="table-info" label="table-info">
+                          <span :title="$t('chart.chart_table_info')">
+                            <svg-icon icon-class="table-info" class="chart-icon" />
                           </span>
                         </el-radio>
                         <el-radio value="text" label="text">
@@ -140,13 +145,13 @@
                             <svg-icon icon-class="bar-stack" class="chart-icon" />
                           </span>
                         </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="bar-horizontal" label="bar-horizontal">
                           <span :title="$t('chart.chart_bar_horizontal')">
                             <svg-icon icon-class="bar-horizontal" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal">
                           <span :title="$t('chart.chart_bar_stack_horizontal')">
                             <svg-icon icon-class="bar-stack-horizontal" class="chart-icon" />
@@ -167,13 +172,13 @@
                             <svg-icon icon-class="scatter" class="chart-icon" />
                           </span>
                         </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="chart-mix" label="chart-mix">
                           <span :title="$t('chart.chart_mix')">
                             <svg-icon icon-class="chart-mix" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="map" label="map">
                           <span :title="$t('chart.chart_map')">
                             <svg-icon icon-class="map" class="chart-icon" />
@@ -194,13 +199,13 @@
                             <svg-icon icon-class="pie" class="chart-icon" />
                           </span>
                         </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="pie-rose" label="pie-rose">
                           <span :title="$t('chart.chart_pie_rose')">
                             <svg-icon icon-class="pie-rose" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="funnel" label="funnel">
                           <span :title="$t('chart.chart_funnel')">
                             <svg-icon icon-class="funnel" class="chart-icon" />
@@ -211,7 +216,6 @@
                             <svg-icon icon-class="treemap" class="chart-icon" />
                           </span>
                         </el-radio>
-                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                       </div>
@@ -280,7 +284,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
-                  <el-row class="padding-lr" style="margin-top: 6px;">
+                  <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
                       <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')">{{ $t('chart.drag_block_value_axis') }}</span>
@@ -446,12 +450,6 @@
                     <tooltip-selector :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
                   </el-collapse-item>
                 </el-collapse>
-                <!--              <el-row>-->
-                <!--                <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />-->
-                <!--                <size-selector v-show="chart.type !== 'map'" :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />-->
-                <!--                <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />-->
-                <!--                <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />-->
-                <!--              </el-row>-->
               </el-row>
               <el-row>
                 <span class="padding-lr">{{ $t('chart.module_style') }}</span>
@@ -475,14 +473,6 @@
                     <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
                   </el-collapse-item>
                 </el-collapse>
-                <!--              <el-row>-->
-                <!--                <x-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />-->
-                <!--                <y-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />-->
-                <!--                <split-selector v-show="view.type && view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />-->
-                <!--                <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
-                <!--                <legend-selector v-show="view.type && !view.type.includes('map') && !view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />-->
-                <!--                <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />-->
-                <!--              </el-row>-->
               </el-row>
             </div>
           </el-row>
@@ -493,7 +483,7 @@
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
             <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" ref="dynamicChart" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
-            <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+            <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
             <div v-if="!httpRequest.status" class="chart-error-class">
               <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
@@ -829,7 +819,15 @@ export default {
         this.resetDatasetField()
       }
     },
-    save(getData, trigger, needRefreshGroup = false) {
+    save(getData, trigger, needRefreshGroup = false, switchType = false) {
+      if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.table_info_switch'),
+          type: 'warning'
+        })
+        this.view.xaxis = []
+      }
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -1313,7 +1311,9 @@ export default {
       if (this.view.type === 'map' && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
-      this.dragCheckType(this.view.xaxis, 'd')
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
+      }
       this.dragMoveDuplicate(this.view.xaxis, e)
       this.save(true)
     },
@@ -1697,7 +1697,6 @@ export default {
   }
   .table-class{
     height: calc(100% - 20px);
-    margin: 10px;
   }
 
   .dialog-css>>>.el-dialog__title {

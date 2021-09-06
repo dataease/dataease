@@ -746,7 +746,8 @@ export default {
     filter_condition: 'Filter Condition',
     filter_field_can_null: 'Filter field must choose',
     preview_100_data: 'Preview 100 rows',
-    chart_table_normal: 'Detail Table',
+    chart_table_normal: 'Summary Table',
+    chart_table_info: 'Detail Table',
     chart_card: 'KPI Card',
     chart_bar: 'Base Bar',
     chart_bar_stack: 'Stack Bar',
@@ -854,7 +855,8 @@ export default {
     axis_value_min: 'Min',
     axis_value_max: 'Max',
     axis_value_split: 'Split',
-    axis_auto: 'Auto'
+    axis_auto: 'Auto',
+    table_info_switch: 'Switch detail table will clear dimensions'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
