@@ -848,7 +848,12 @@ export default {
     custom_case: '自定义',
     last_layer: '当前已经是最后一级',
     radar_size: '大小',
-    chart_mix: '组合图'
+    chart_mix: '组合图',
+    axis_value: '轴值',
+    axis_value_min: '最小值',
+    axis_value_max: '最大值',
+    axis_value_split: '间隔',
+    axis_auto: '自动'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1245,7 +1250,16 @@ export default {
     loginImage: '登录页面右侧图片',
     loginTitle: '登录页面标题',
     title: '系统名称',
-    advice_size: '建议图片大小'
+    advice_size: '建议图片大小',
+    theme: '主题颜色',
+
+    topMenuColor: '头部背景',
+    topMenuActiveColor: '头部选中背景',
+
+    topMenuTextColor: '头部字体颜色',
+
+    topMenuTextActiveColor: '头部字体选中颜色'
+
   },
   auth: {
     authConfig: '权限配置',

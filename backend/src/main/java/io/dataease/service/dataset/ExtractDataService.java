@@ -1006,7 +1006,7 @@ public class ExtractDataService {
         String excelCompletion = "";
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            if(datasetTableField.getDeExtractType() == 5){
+            if(datasetTableField.getDeExtractType() == DeTypeConstants.DE_BINARY){
                 handleBinaryTypeCode = handleBinaryTypeCode + "\n" + this.handleBinaryType.replace("FEILD", datasetTableField.getDataeaseName());
             }
         }

@@ -9,7 +9,7 @@
       <div>
         <slot name="toolbar" />
       </div>
-      <fu-search-bar v-bind="searchConfig"  @exec="search" ref="search">
+      <fu-search-bar ref="search" v-bind="searchConfig" @exec="search">
         <template #complex>
           <slot name="complex" />
         </template>
@@ -65,7 +65,7 @@ export default {
   },
   data() {
     return {
-      condition: {},
+      condition: {}
     }
   },
   mounted() {
@@ -86,7 +86,6 @@ export default {
 
 <style lang="scss">
 @import "~@/styles/mixin.scss";
-@import "~@/styles/variables.scss";
 .complex-table {
   .complex-table__header {
     @include flex-row(flex-start, center);

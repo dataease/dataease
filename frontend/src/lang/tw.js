@@ -848,7 +848,12 @@ export default {
     custom_case: '自定義',
     last_layer: '當前已經是最後一級',
     radar_size: '大小',
-    chart_mix: '組合圖'
+    chart_mix: '組合圖',
+    axis_value: '軸值',
+    axis_value_min: '最小值',
+    axis_value_max: '最大值',
+    axis_value_split: '間隔',
+    axis_auto: '自動'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

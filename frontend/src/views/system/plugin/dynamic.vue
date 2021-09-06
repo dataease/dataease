@@ -1,12 +1,12 @@
 <template>
   <layout-content v-if="!noLayout" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
-    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" />
+    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
   </layout-content>
   <div v-else>
-    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" />
+    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
@@ -18,6 +18,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import AsyncComponent from '@/components/AsyncComponent'
 import i18n from '@/lang'
+import bus from '@/utils/bus'
 import { execute } from '@/api/system/dynamic'
 export default {
   name: 'Dynamic',
@@ -85,6 +86,12 @@ export default {
       const { header, backName } = param
       this.header = header
       this.backName = backName
+    },
+    pluginCallBack(param) {
+      // console.log(param)
+
+      const { eventName, eventParam } = param
+      bus.$emit(eventName, eventParam)
     }
   }
 }

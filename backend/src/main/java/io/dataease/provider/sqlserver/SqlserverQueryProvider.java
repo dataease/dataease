@@ -657,9 +657,12 @@ public class SqlserverQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originName);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
                     whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
                 }
             } else {
                 whereName = originName;
@@ -703,9 +706,12 @@ public class SqlserverQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originName);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
                     whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
                 }
             } else {
                 whereName = originName;
