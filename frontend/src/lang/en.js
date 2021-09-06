@@ -856,7 +856,11 @@ export default {
     axis_value_max: 'Max',
     axis_value_split: 'Split',
     axis_auto: 'Auto',
-    table_info_switch: 'Switch detail table will clear dimensions'
+    table_info_switch: 'Switch detail table will clear dimensions',
+    drag_block_value_axis_main: 'Main Axis Value',
+    drag_block_value_axis_ext: 'Ext Axis Value',
+    yAxis_main: 'Main Axis',
+    yAxis_ext: 'Ext Axis'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

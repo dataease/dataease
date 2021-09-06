@@ -15,15 +15,17 @@ public class ChartViewWithBLOBs extends ChartView implements Serializable {
     private String xAxis;
     @ApiModelProperty("y轴")
     private String yAxis;
+    @ApiModelProperty("副y轴")
+    private String yAxisExt;
     @ApiModelProperty("堆叠")
     private String extStack;
     @ApiModelProperty("气泡")
     private String extBubble;
-    @ApiModelProperty("客户端属性")
+    @ApiModelProperty("图形属性")
     private String customAttr;
-    @ApiModelProperty("客户端样式")
+    @ApiModelProperty("组件样式")
     private String customStyle;
-    @ApiModelProperty("客户端过滤条件")
+    @ApiModelProperty("过滤条件")
     private String customFilter;
     @ApiModelProperty("下钻字段")
     private String drillFields;

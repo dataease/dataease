@@ -17,7 +17,7 @@
     >
       <ux-table-column
         v-for="field in fields"
-        :key="field.dataeaseName"
+        :key="Math.random()"
         :field="field.dataeaseName"
         :resizable="true"
         sortable

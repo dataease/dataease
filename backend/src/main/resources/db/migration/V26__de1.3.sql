@@ -51,3 +51,5 @@ CREATE TABLE `panel_pdf_template` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `chart_view` ADD COLUMN `y_axis_ext` LONGTEXT COMMENT '副轴' AFTER `y_axis`;
+UPDATE `chart_view` SET `y_axis_ext` = '[]';
