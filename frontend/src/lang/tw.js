@@ -745,7 +745,8 @@ export default {
     filter_condition: '過濾條件',
     filter_field_can_null: '過濾字段必填',
     preview_100_data: '預覽前100條記錄',
-    chart_table_normal: '明細表',
+    chart_table_normal: '匯總表',
+    chart_table_info: '明細表',
     chart_card: '指標卡',
     chart_bar: '基礎柱狀圖',
     chart_bar_stack: '堆疊柱狀圖',
@@ -853,7 +854,8 @@ export default {
     axis_value_min: '最小值',
     axis_value_max: '最大值',
     axis_value_split: '間隔',
-    axis_auto: '自動'
+    axis_auto: '自動',
+    table_info_switch: '明細表切換將清空維度'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

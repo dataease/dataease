@@ -28,6 +28,17 @@
         <!--        </template>-->
       </ux-table-column>
     </ux-grid>
+
+    <!--    <el-pagination-->
+    <!--      v-show="chart.type === 'table-info'"-->
+    <!--      :current-page="currentPage.page"-->
+    <!--      :page-sizes="[100]"-->
+    <!--      :page-size="currentPage.pageSize"-->
+    <!--      :pager-count="5"-->
+    <!--      layout="sizes, prev, pager, next"-->
+    <!--      :total="currentPage.show"-->
+    <!--      @current-change="pageChange"-->
+    <!--    />-->
   </div>
 </template>
 
@@ -92,6 +103,11 @@ export default {
       },
       title_show: true,
       borderRadius: '0px'
+      // currentPage: {
+      //   page: 1,
+      //   pageSize: 10,
+      //   show: 0
+      // }
     }
   },
   computed: {
@@ -137,9 +153,13 @@ export default {
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+        // if (this.chart.data.page) {
+        //   this.currentPage = JSON.parse(JSON.stringify(this.chart.data.page))
+        // }
       } else {
         this.fields = []
         datas = []
+        // this.resetPage()
       }
       this.$refs.plxTable.reloadData(datas)
       this.$nextTick(() => {
@@ -279,7 +299,19 @@ export default {
 
     resetHeight() {
       this.height = 100
+    },
+
+    pageChange() {
+
     }
+
+    // resetPage() {
+    //   this.currentPage = {
+    //     page: 1,
+    //     pageSize: 10,
+    //     show: 0
+    //   }
+    // }
   }
 }
 </script>
