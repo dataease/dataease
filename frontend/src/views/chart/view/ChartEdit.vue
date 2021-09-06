@@ -287,7 +287,7 @@
                   <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')">{{ $t('chart.drag_block_value_axis') }}</span>
+                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))">{{ $t('chart.drag_block_value_axis') }}</span>
                       <span v-else-if="view.type && view.type.includes('pie')">{{ $t('chart.drag_block_pie_angel') }}</span>
                       <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
@@ -295,6 +295,7 @@
                       <span v-else-if="view.type && view.type.includes('text')">{{ $t('chart.drag_block_label_value') }}</span>
                       <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
                       <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
+                      <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
                       /
                       <span>{{ $t('chart.quota') }}</span>
                     </span>
@@ -313,6 +314,30 @@
                       </transition-group>
                     </draggable>
                     <div v-if="!view.yaxis || view.yaxis.length === 0" class="drag-placeholder-style">
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
+                  <el-row v-if="view.type && view.type === 'chart-mix'" class="padding-lr" style="margin-top: 6px;">
+                    <span style="width: 80px;text-align: right;">
+                      <span>{{ $t('chart.drag_block_value_axis_ext') }}</span>
+                      /
+                      <span>{{ $t('chart.quota') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.yaxisExt"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      class="drag-block-style"
+                      @add="addYaxisExt"
+                      @update="save(true)"
+                    >
+                      <transition-group class="draggable-group">
+                        <quota-ext-item v-for="(item,index) in view.yaxisExt" :key="item.id" :param="param" :index="index" :item="item" :chart="chart" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
+                      </transition-group>
+                    </draggable>
+                    <div v-if="!view.yaxisExt || view.yaxisExt.length === 0" class="drag-placeholder-style">
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
@@ -457,8 +482,11 @@
                   <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="xAxis" :title="$t('chart.xAxis')">
                     <x-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="yAxis" :title="$t('chart.yAxis')">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="yAxis" :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')">
                     <y-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="view.type && view.type === 'chart-mix'" name="yAxisExt" :title="$t('chart.yAxis_ext')">
+                    <y-axis-ext-selector :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisExtForm" />
                   </el-collapse-item>
                   <el-collapse-item v-show="view.type && view.type.includes('radar')" name="split" :title="$t('chart.split')">
                     <split-selector :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
@@ -619,7 +647,8 @@ import {
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
-  DEFAULT_SPLIT
+  DEFAULT_SPLIT,
+  DEFAULT_YAXIS_EXT_STYLE
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -639,9 +668,13 @@ import LabelNormal from '../components/normal/LabelNormal'
 import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
 import { areaMapping } from '@/api/map/map'
+import QuotaExtItem from '@/views/chart/components/drag-item/QuotaExtItem'
+import YAxisExtSelector from '@/views/chart/components/component-style/YAxisExtSelector'
 export default {
   name: 'ChartEdit',
   components: {
+    YAxisExtSelector,
+    QuotaExtItem,
     FilterItem,
     FieldEdit,
     SplitSelector,
@@ -686,6 +719,7 @@ export default {
       view: {
         xaxis: [],
         yaxis: [],
+        yaxisExt: [],
         extStack: [],
         drillFields: [],
         extBubble: [],
@@ -703,6 +737,7 @@ export default {
           legend: DEFAULT_LEGEND_STYLE,
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
+          yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
         },
@@ -878,6 +913,26 @@ export default {
           ele.filter = []
         }
       })
+      if (view.type === 'chart-mix') {
+        view.yaxisExt.forEach(function(ele) {
+          if (!ele.chartType) {
+            ele.chartType = 'bar'
+          }
+          if (!ele.summary || ele.summary === '') {
+            if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+              ele.summary = 'count'
+            } else {
+              ele.summary = 'sum'
+            }
+          }
+          if (!ele.sort || ele.sort === '') {
+            ele.sort = 'none'
+          }
+          if (!ele.filter) {
+            ele.filter = []
+          }
+        })
+      }
       view.extStack.forEach(function(ele) {
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
@@ -924,6 +979,7 @@ export default {
       })
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
+      view.yaxisExt = JSON.stringify(view.yaxisExt)
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
       view.customFilter = JSON.stringify(view.customFilter)
@@ -970,6 +1026,7 @@ export default {
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
@@ -1009,6 +1066,7 @@ export default {
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
@@ -1058,7 +1116,11 @@ export default {
     },
 
     quotaItemRemove(item) {
-      this.view.yaxis.splice(item.index, 1)
+      if (item.removeType === 'quota') {
+        this.view.yaxis.splice(item.index, 1)
+      } else if (item.removeType === 'quotaExt') {
+        this.view.yaxisExt.splice(item.index, 1)
+      }
       this.save(true)
     },
 
@@ -1100,6 +1162,11 @@ export default {
 
     onChangeYAxisForm(val) {
       this.view.customStyle.yAxis = val
+      this.save()
+    },
+
+    onChangeYAxisExtForm(val) {
+      this.view.customStyle.yAxisExt = val
       this.save()
     },
 
@@ -1156,7 +1223,11 @@ export default {
           return
         }
       }
-      this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
+      if (this.quotaItem.filterType === 'quota') {
+        this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
+      } else if (this.quotaItem.filterType === 'quotaExt') {
+        this.view.yaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
+      }
       this.save(true)
       this.closeQuotaFilter()
     },
@@ -1201,6 +1272,8 @@ export default {
             this.view.yaxis[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'dimension') {
             this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'quotaExt') {
+            this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
           }
           this.save(true)
           this.closeRename()
@@ -1323,6 +1396,14 @@ export default {
       }
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
+      this.save(true)
+    },
+    addYaxisExt(e) {
+      if (this.view.type === 'map' && this.view.yaxisExt.length > 1) {
+        this.view.yaxisExt = [this.view.yaxisExt[0]]
+      }
+      this.dragCheckType(this.view.yaxisExt, 'q')
+      this.dragMoveDuplicate(this.view.yaxisExt, e)
       this.save(true)
     },
     moveToDimension(e) {

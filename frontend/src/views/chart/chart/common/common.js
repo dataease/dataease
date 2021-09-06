@@ -78,7 +78,7 @@ export function componentStyle(chart_option, chart) {
         }
       }
     }
-    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
+    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
       chart_option.yAxis.show = customStyle.yAxis.show
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name
@@ -102,6 +102,60 @@ export function componentStyle(chart_option, chart) {
           customStyle.yAxis.axisValue.min && (chart_option.yAxis.min = parseFloat(customStyle.yAxis.axisValue.min))
           customStyle.yAxis.axisValue.max && (chart_option.yAxis.max = parseFloat(customStyle.yAxis.axisValue.max))
           customStyle.yAxis.axisValue.split && (chart_option.yAxis.interval = parseFloat(customStyle.yAxis.axisValue.split))
+        }
+      }
+    }
+    if (customStyle.yAxis && chart.type === 'chart-mix') {
+      chart_option.yAxis[0].show = customStyle.yAxis.show
+      chart_option.yAxis[0].position = customStyle.yAxis.position
+      chart_option.yAxis[0].name = customStyle.yAxis.name
+      chart_option.yAxis[0].axisLabel = customStyle.yAxis.axisLabel
+      chart_option.yAxis[0].splitLine = customStyle.yAxis.splitLine
+      chart_option.yAxis[0].nameTextStyle = customStyle.yAxis.nameTextStyle
+
+      chart_option.yAxis[0].axisLabel.showMaxLabel = true
+      chart_option.yAxis[0].axisLabel.showMinLabel = true
+
+      if (!customStyle.yAxis.show) {
+        chart_option.yAxis[0].axisLabel.show = false
+      }
+
+      // 轴值设置
+      delete chart_option.yAxis[0].min
+      delete chart_option.yAxis[0].max
+      delete chart_option.yAxis[0].split
+      if (!chart.type.includes('horizontal')) {
+        if (customStyle.yAxis.axisValue && !customStyle.yAxis.axisValue.auto) {
+          customStyle.yAxis.axisValue.min && (chart_option.yAxis[0].min = parseFloat(customStyle.yAxis.axisValue.min))
+          customStyle.yAxis.axisValue.max && (chart_option.yAxis[0].max = parseFloat(customStyle.yAxis.axisValue.max))
+          customStyle.yAxis.axisValue.split && (chart_option.yAxis[0].interval = parseFloat(customStyle.yAxis.axisValue.split))
+        }
+      }
+
+      // axis ext
+      chart_option.yAxis[1].show = customStyle.yAxisExt.show
+      chart_option.yAxis[1].position = customStyle.yAxisExt.position
+      chart_option.yAxis[1].name = customStyle.yAxisExt.name
+      chart_option.yAxis[1].axisLabel = customStyle.yAxisExt.axisLabel
+      chart_option.yAxis[1].splitLine = customStyle.yAxisExt.splitLine
+      chart_option.yAxis[1].nameTextStyle = customStyle.yAxisExt.nameTextStyle
+
+      chart_option.yAxis[1].axisLabel.showMaxLabel = true
+      chart_option.yAxis[1].axisLabel.showMinLabel = true
+
+      if (!customStyle.yAxisExt.show) {
+        chart_option.yAxis[1].axisLabel.show = false
+      }
+
+      // 轴值设置
+      delete chart_option.yAxis[1].min
+      delete chart_option.yAxis[1].max
+      delete chart_option.yAxis[1].split
+      if (!chart.type.includes('horizontal')) {
+        if (customStyle.yAxisExt.axisValue && !customStyle.yAxisExt.axisValue.auto) {
+          customStyle.yAxisExt.axisValue.min && (chart_option.yAxis[1].min = parseFloat(customStyle.yAxisExt.axisValue.min))
+          customStyle.yAxisExt.axisValue.max && (chart_option.yAxis[1].max = parseFloat(customStyle.yAxisExt.axisValue.max))
+          customStyle.yAxisExt.axisValue.split && (chart_option.yAxis[1].interval = parseFloat(customStyle.yAxisExt.axisValue.split))
         }
       }
     }

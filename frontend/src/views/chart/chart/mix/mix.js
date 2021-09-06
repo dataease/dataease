@@ -4,6 +4,7 @@ import { componentStyle } from '../common/common'
 export function baseMixOption(chart_option, chart) {
   // 处理shape attr
   let customAttr = {}
+  const yAxis = JSON.parse(chart.yaxis)
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
@@ -68,6 +69,7 @@ export function baseMixOption(chart_option, chart) {
         y.label = customAttr.label
       }
       chart_option.legend.data.push(y.name)
+      i >= yAxis.length ? (y.yAxisIndex = 1) : (y.yAxisIndex = 0)
       chart_option.series.push(y)
     }
   }

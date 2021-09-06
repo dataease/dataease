@@ -121,7 +121,7 @@
 
 <script>
 export default {
-  name: 'QuotaItem',
+  name: 'QuotaExtItem',
   props: {
     param: {
       type: Object,
@@ -215,17 +215,17 @@ export default {
     },
     showRename() {
       this.item.index = this.index
-      this.item.renameType = 'quota'
+      this.item.renameType = 'quotaExt'
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {
       this.item.index = this.index
-      this.item.removeType = 'quota'
+      this.item.removeType = 'quotaExt'
       this.$emit('onQuotaItemRemove', this.item)
     },
     editFilter() {
       this.item.index = this.index
-      this.item.filterType = 'quota'
+      this.item.filterType = 'quotaExt'
       this.$emit('editItemFilter', this.item)
     }
   }

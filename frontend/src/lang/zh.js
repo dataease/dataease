@@ -855,7 +855,11 @@ export default {
     axis_value_max: '最大值',
     axis_value_split: '间隔',
     axis_auto: '自动',
-    table_info_switch: '明细表切换将清空维度'
+    table_info_switch: '明细表切换将清空维度',
+    drag_block_value_axis_main: '主轴值',
+    drag_block_value_axis_ext: '副轴值',
+    yAxis_main: '主轴',
+    yAxis_ext: '副轴'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
