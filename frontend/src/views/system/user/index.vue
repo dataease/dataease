@@ -12,6 +12,9 @@
     >
       <template #toolbar>
         <el-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('user.create') }}</el-button>
+
+        <!-- <el-button v-permission="['user:import']" icon="el-icon-download" @click="importLdap">{{ $t('user.import_ldap') }}</el-button> -->
+        <el-button icon="el-icon-download" @click="importLdap">{{ $t('user.import_ldap') }}</el-button>
       </template>
 
       <el-table-column prop="username" label="ID" />
@@ -479,6 +482,9 @@ export default {
     },
     btnDisabled(row) {
       return row.userId === 1
+    },
+    importLdap() {
+      this.$router.push({ name: 'system-user-import' })
     }
   }
 }
