@@ -1,4 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { DEFAULT_YAXIS_EXT_STYLE } from '@/views/chart/chart/chart'
 
 export function componentStyle(chart_option, chart) {
   const padding = '8px'
@@ -133,6 +134,7 @@ export function componentStyle(chart_option, chart) {
       }
 
       // axis ext
+      !customStyle.yAxisExt && (customStyle.yAxisExt = JSON.parse(JSON.stringify(DEFAULT_YAXIS_EXT_STYLE)))
       chart_option.yAxis[1].show = customStyle.yAxisExt.show
       chart_option.yAxis[1].position = customStyle.yAxisExt.position
       chart_option.yAxis[1].name = customStyle.yAxisExt.name
