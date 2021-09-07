@@ -42,7 +42,8 @@ export default {
       varsInfo: {
         panelName: this.panelName,
         snapshot: this.snapshot,
-        userName: this.$store.state.user.user.name
+        userName: this.$store.state.user.user.userName,
+        nickName: this.$store.state.user.user.nickName
       },
       timeInfo: [
         'yyyy-MM-dd',
