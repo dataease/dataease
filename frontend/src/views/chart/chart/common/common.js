@@ -50,6 +50,9 @@ export function componentStyle(chart_option, chart) {
       chart_option.legend.orient = customStyle.legend.orient
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
+      if (chart.type === 'treemap') {
+        chart_option.legend.show = false
+      }
     }
     if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
       chart_option.xAxis.show = customStyle.xAxis.show
