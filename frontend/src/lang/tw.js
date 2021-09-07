@@ -858,8 +858,8 @@ export default {
     table_info_switch: '明細表切換將清空維度',
     drag_block_value_axis_main: '主軸值',
     drag_block_value_axis_ext: '副軸值',
-    yAxis_main: '主軸',
-    yAxis_ext: '副軸'
+    yAxis_main: '主縱軸',
+    yAxis_ext: '副縱軸'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',
