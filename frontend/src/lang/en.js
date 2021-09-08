@@ -860,7 +860,9 @@ export default {
     drag_block_value_axis_main: 'Main Axis Value',
     drag_block_value_axis_ext: 'Ext Axis Value',
     yAxis_main: 'Main Vertical Axis',
-    yAxis_ext: 'Ext Vertical Axis'
+    yAxis_ext: 'Ext Vertical Axis',
+    total: 'Total',
+    items: 'Items'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

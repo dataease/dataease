@@ -77,7 +77,7 @@
                   @add="moveToQuota"
                 >
                   <transition-group>
-                    <span v-for="item in quotaData" :key="item.id" class="item-quota" :title="item.name">
+                    <span v-for="item in quotaData" v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))" :key="item.id" class="item-quota" :title="item.name">
                       <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                       <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                       <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />

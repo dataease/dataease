@@ -1,44 +1,55 @@
 <template>
   <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
-    <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
-    <ux-grid
-      ref="plxTable"
-      size="mini"
-      style="width: 100%;"
-      :height="height"
-      :checkbox-config="{highlight: true}"
-      :width-resize="true"
-      :header-row-style="table_header_class"
-      :row-style="getRowStyle"
-      class="table-class"
-      :class="chart.id"
-      :show-summary="showSummary"
-      :summary-method="summaryMethod"
-    >
-      <ux-table-column
-        v-for="field in fields"
-        :key="Math.random()"
-        :field="field.dataeaseName"
-        :resizable="true"
-        sortable
-        :title="field.name"
+    <el-row style="height: 100%;">
+      <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
+      <ux-grid
+        ref="plxTable"
+        size="mini"
+        style="width: 100%;"
+        :height="height"
+        :checkbox-config="{highlight: true}"
+        :width-resize="true"
+        :header-row-style="table_header_class"
+        :row-style="getRowStyle"
+        class="table-class"
+        :class="chart.id"
+        :show-summary="showSummary"
+        :summary-method="summaryMethod"
       >
-        <!--        <template slot="header">-->
-        <!--          <span>{{ field.name }}</span>-->
-        <!--        </template>-->
-      </ux-table-column>
-    </ux-grid>
+        <ux-table-column
+          v-for="field in fields"
+          :key="Math.random()"
+          :field="field.dataeaseName"
+          :resizable="true"
+          sortable
+          :title="field.name"
+        >
+          <!--        <template slot="header">-->
+          <!--          <span>{{ field.name }}</span>-->
+          <!--        </template>-->
+        </ux-table-column>
+      </ux-grid>
 
-    <!--    <el-pagination-->
-    <!--      v-show="chart.type === 'table-info'"-->
-    <!--      :current-page="currentPage.page"-->
-    <!--      :page-sizes="[100]"-->
-    <!--      :page-size="currentPage.pageSize"-->
-    <!--      :pager-count="5"-->
-    <!--      layout="sizes, prev, pager, next"-->
-    <!--      :total="currentPage.show"-->
-    <!--      @current-change="pageChange"-->
-    <!--    />-->
+      <el-row v-show="chart.type === 'table-info'" class="table-page">
+        <span class="total-style">
+          {{ $t('chart.total') }}
+          <span>{{ chart.data.tableRow.length }}</span>
+          {{ $t('chart.items') }}
+        </span>
+        <el-pagination
+          small
+          :current-page="currentPage.page"
+          :page-sizes="[10,20,50,100]"
+          :page-size="currentPage.pageSize"
+          :pager-count="5"
+          layout="sizes, prev, pager, next"
+          :total="currentPage.show"
+          class="page-style"
+          @current-change="pageClick"
+          @size-change="pageChange"
+        />
+      </el-row>
+    </el-row>
   </div>
 </template>
 
@@ -102,12 +113,12 @@ export default {
         height: '36px'
       },
       title_show: true,
-      borderRadius: '0px'
-      // currentPage: {
-      //   page: 1,
-      //   pageSize: 10,
-      //   show: 0
-      // }
+      borderRadius: '0px',
+      currentPage: {
+        page: 1,
+        pageSize: 10,
+        show: 0
+      }
     }
   },
   computed: {
@@ -153,13 +164,17 @@ export default {
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        // if (this.chart.data.page) {
-        //   this.currentPage = JSON.parse(JSON.stringify(this.chart.data.page))
-        // }
+        if (this.chart.type === 'table-info') {
+          // 计算分页
+          this.currentPage.show = datas.length
+          const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
+          const pageEnd = pageStart + this.currentPage.pageSize
+          datas = datas.slice(pageStart, pageEnd)
+        }
       } else {
         this.fields = []
         datas = []
-        // this.resetPage()
+        this.resetPage()
       }
       this.$refs.plxTable.reloadData(datas)
       this.$nextTick(() => {
@@ -172,11 +187,19 @@ export default {
     calcHeightRightNow() {
       this.$nextTick(() => {
         if (this.$refs.tableContainer) {
+          let pageHeight = 0
+          if (this.chart.type === 'table-info') {
+            pageHeight = 36
+          }
           const currentHeight = this.$refs.tableContainer.offsetHeight
-          const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight - 16
+          const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight - 16 - pageHeight
           let tableHeight
           if (this.chart.data) {
-            tableHeight = (this.chart.data.tableRow.length + 2) * 36
+            if (this.chart.type === 'table-info') {
+              tableHeight = (this.currentPage.pageSize + 2) * 36 - pageHeight
+            } else {
+              tableHeight = (this.chart.data.tableRow.length + 2) * 36 - pageHeight
+            }
           } else {
             tableHeight = 0
           }
@@ -301,17 +324,23 @@ export default {
       this.height = 100
     },
 
-    pageChange() {
+    pageChange(val) {
+      this.currentPage.pageSize = val
+      this.init()
+    },
 
+    pageClick(val) {
+      this.currentPage.page = val
+      this.init()
+    },
+
+    resetPage() {
+      this.currentPage = {
+        page: 1,
+        pageSize: 10,
+        show: 0
+      }
     }
-
-    // resetPage() {
-    //   this.currentPage = {
-    //     page: 1,
-    //     pageSize: 10,
-    //     show: 0
-    //   }
-    // }
   }
 }
 </script>
@@ -323,5 +352,26 @@ export default {
   .table-class>>>.elx-cell{
     max-height: none!important;
     line-height: normal!important;
+  }
+  .table-page{
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    overflow: hidden;
+  }
+  .page-style{
+    margin-right: auto;
+  }
+  .total-style{
+    flex: 1;
+    font-size: 12px;
+    color: #606266;
+    white-space:nowrap;
+  }
+  .page-style >>> .el-input__inner{
+    height: 24px;
   }
 </style>
