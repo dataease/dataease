@@ -42,7 +42,8 @@ export default {
       varsInfo: {
         panelName: this.panelName,
         snapshot: this.snapshot,
-        userName: this.$store.state.user.user.name
+        userName: this.$store.state.user.user.userName,
+        nickName: this.$store.state.user.user.nickName
       },
       timeInfo: [
         'yyyy-MM-dd',
@@ -85,7 +86,7 @@ export default {
         const contentWidth = canvas.width
         const contentHeight = canvas.height
         const pageData = canvas.toDataURL('image/jpeg', 1.0)
-        const PDF = new JsPDF('p', 'pt', [contentWidth, contentHeight])
+        const PDF = new JsPDF('l', 'px', [contentWidth, contentHeight])
         PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
         PDF.save(_this.panelName + '.pdf')
       }
@@ -103,7 +104,7 @@ export default {
   }
   .export_body_class{
     border: 1px solid #dcdfe6 ;
-    height: 500px;
+    height: 65vh;
     overflow-y: auto;
   }
 

@@ -6,36 +6,6 @@ INSERT INTO `sys_msg_type` VALUES (7, 0, 'i18n_msg_type_ds_invalid', 'datasource
 INSERT INTO `sys_msg_type` VALUES (8, 7, 'i18n_msg_type_ds_invalid', 'datasource', 'to-msg-ds');
 COMMIT;
 
--- ----------------------------
--- Table structure for system_parameter
--- ----------------------------
-DROP TABLE IF EXISTS `system_parameter`;
-CREATE TABLE `system_parameter` (
-  `param_key` varchar(64) NOT NULL COMMENT 'Parameter name',
-  `param_value` varchar(255) DEFAULT NULL COMMENT 'Parameter value',
-  `type` varchar(100) NOT NULL DEFAULT 'text' COMMENT 'Parameter type',
-  `sort` int(5) DEFAULT NULL COMMENT 'Sort',
-  PRIMARY KEY (`param_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Records of system_parameter
--- ----------------------------
-BEGIN;
-INSERT INTO `system_parameter` VALUES ('', NULL, 'text', NULL);
-INSERT INTO `system_parameter` VALUES ('default.language', 'zh_CN', 'text', -1);
-INSERT INTO `system_parameter` VALUES ('ui.favicon', NULL, 'file', -1);
-INSERT INTO `system_parameter` VALUES ('ui.loginImage', NULL, 'file', 4);
-INSERT INTO `system_parameter` VALUES ('ui.loginLogo', NULL, 'file', 5);
-INSERT INTO `system_parameter` VALUES ('ui.loginTitle', NULL, 'text', 3);
-INSERT INTO `system_parameter` VALUES ('ui.logo', NULL, 'file', 6);
-INSERT INTO `system_parameter` VALUES ('ui.theme', NULL, 'text', 2);
-INSERT INTO `system_parameter` VALUES ('ui.title', NULL, 'text', 1);
-INSERT INTO `system_parameter` VALUES ('ui.topMenuActiveColor', NULL, 'text', 8);
-INSERT INTO `system_parameter` VALUES ('ui.topMenuColor', NULL, 'text', 7);
-INSERT INTO `system_parameter` VALUES ('ui.topMenuTextActiveColor', NULL, 'text', 10);
-INSERT INTO `system_parameter` VALUES ('ui.topMenuTextColor', NULL, 'text', 9);
-COMMIT;
 
 -- ----------------------------
 -- Table structure for panel_pdf_template
@@ -50,4 +20,12 @@ CREATE TABLE `panel_pdf_template` (
   `sort` int(8) DEFAULT NULL COMMENT '排序',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `chart_view` ADD COLUMN `y_axis_ext` LONGTEXT COMMENT '副轴' AFTER `y_axis`;
+UPDATE `chart_view` SET `y_axis_ext` = '[]';
+
+
+ALTER TABLE `sys_user` ADD COLUMN `from` int(4) NOT NULL COMMENT '来源' AFTER `language`;
+
+INSERT INTO `sys_menu` VALUES (60, 1, 0, 1, '导入LDAP用户', 'system-user-import', 'system/user/imp-ldap', 11, NULL, 'user-ldap', b'0', b'0', b'1', 'user:import', NULL, NULL, NULL, NULL);
 

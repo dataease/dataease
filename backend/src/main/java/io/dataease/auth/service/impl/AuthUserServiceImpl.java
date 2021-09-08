@@ -8,6 +8,9 @@ import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -102,4 +105,10 @@ public class AuthUserServiceImpl implements AuthUserService {
         LogUtil.info("正在清除用户缓存【{}】",userId);
     }
 
+    @Override
+    public boolean supportLdap() {
+        LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
+        if(ObjectUtils.isEmpty(ldapXpackService)) return false;
+        return ldapXpackService.isOpen();
+    }
 }

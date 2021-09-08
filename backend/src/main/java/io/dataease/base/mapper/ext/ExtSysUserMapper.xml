@@ -62,4 +62,8 @@
         left join sys_role r on r.role_id = sur.role_id
         where sur.user_id = #{user_id}
     </select>
+
+    <select id="ldapUserNames" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select username from sys_user u where u.from = #{from}
+    </select>
 </mapper>

@@ -327,6 +327,7 @@ import {
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
+  DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_BACKGROUND_COLOR,
   DEFAULT_SPLIT
 } from '../chart/chart'
@@ -739,11 +740,13 @@ export default {
         legend: DEFAULT_LEGEND_STYLE,
         xAxis: DEFAULT_XAXIS_STYLE,
         yAxis: DEFAULT_YAXIS_STYLE,
+        yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
         background: DEFAULT_BACKGROUND_COLOR,
         split: DEFAULT_SPLIT
       })
       view.xaxis = JSON.stringify([])
       view.yaxis = JSON.stringify([])
+      view.yaxisExt = JSON.stringify([])
       view.extStack = JSON.stringify([])
       view.customFilter = JSON.stringify([])
       view.drillFields = JSON.stringify([])
