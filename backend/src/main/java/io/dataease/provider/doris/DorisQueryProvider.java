@@ -772,7 +772,13 @@ public class DorisQueryProvider extends QueryProvider {
                     whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value.get(0));
+                if (request.getDatasetTableField().getDeType() == 1) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String time = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
+                    whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, time);
+                } else {
+                    whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value.get(0));
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
