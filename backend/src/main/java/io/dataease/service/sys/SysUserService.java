@@ -14,12 +14,14 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
 import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.entity.XpackLdapUserEntity;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +87,7 @@ public class SysUserService {
         user.setCreateTime(now);
         user.setUpdateTime(now);
         user.setIsAdmin(false);
+        user.setFrom(0);
         if (ObjectUtils.isEmpty(user.getPassword()) || StringUtils.equals(user.getPassword(), DEFAULT_PWD)) {
             user.setPassword(CodingUtil.md5(DEFAULT_PWD));
         } else {
@@ -97,6 +100,39 @@ public class SysUserService {
         SysUser dbUser = findOne(user);
         saveUserRoles(dbUser.getUserId(), request.getRoleIds());//插入用户角色关联
         return insert;
+    }
+
+    @Transactional
+    public void saveLdapUsers(LdapAddRequest request) {
+        long now = System.currentTimeMillis();
+
+        List<XpackLdapUserEntity> users = request.getUsers();
+        List<SysUser> sysUsers = users.stream().map(user -> {
+            SysUser sysUser = BeanUtils.copyBean(new SysUser(), user);
+            sysUser.setUsername(user.getUserName());
+            sysUser.setDeptId(request.getDeptId());
+            sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+            sysUser.setCreateTime(now);
+            sysUser.setUpdateTime(now);
+            sysUser.setEnabled(request.getEnabled());
+            sysUser.setFrom(1);
+            return sysUser;
+        }).collect(Collectors.toList());
+
+        sysUsers.forEach(sysUser -> {
+            sysUserMapper.insert(sysUser);
+            SysUser dbUser = findOne(sysUser);
+            if (null != dbUser && null != dbUser.getUserId()) {
+                saveUserRoles( dbUser.getUserId(), request.getRoleIds());
+            }
+        });
+    }
+
+    public List<String> ldapUserNames() {
+
+        List<String> usernames = extSysUserMapper.ldapUserNames(1);
+        return usernames;
+
     }
 
     /**

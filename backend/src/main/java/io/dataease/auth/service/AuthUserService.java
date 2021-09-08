@@ -21,6 +21,8 @@ public interface AuthUserService {
 
     void clearCache(Long userId);
 
+    boolean supportLdap();
+
 
 
 }

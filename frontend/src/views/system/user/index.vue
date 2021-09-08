@@ -14,12 +14,17 @@
         <el-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('user.create') }}</el-button>
 
         <!-- <el-button v-permission="['user:import']" icon="el-icon-download" @click="importLdap">{{ $t('user.import_ldap') }}</el-button> -->
-        <el-button icon="el-icon-download" @click="importLdap">{{ $t('user.import_ldap') }}</el-button>
+        <el-button v-if="openLdap" v-permission="['user:import']" icon="el-icon-download" @click="importLdap">{{ $t('user.import_ldap') }}</el-button>
       </template>
 
       <el-table-column prop="username" label="ID" />
       <el-table-column :show-overflow-tooltip="true" prop="nickName" sortable="custom" :label="$t('commons.nick_name')" />
-      <el-table-column prop="gender" :label="$t('commons.gender')" width="60" />
+      <!-- <el-table-column prop="gender" :label="$t('commons.gender')" width="60" /> -->
+      <el-table-column prop="from" :label="$t('user.source')" width="80">
+        <template slot-scope="scope">
+          <div>{{ scope.row.from === 0 ? 'LOCAL' : 'LDAP' }}</div>
+        </template>
+      </el-table-column>
 
       <el-table-column :show-overflow-tooltip="true" prop="email" :label="$t('commons.email')" />
       <el-table-column :show-overflow-tooltip="true" prop="dept" sortable="custom" :label="$t('commons.organization')">
@@ -169,7 +174,7 @@ import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-
+import { ldapStatus } from '@/api/user'
 import { userLists, addUser, editUser, delUser, editPassword, editStatus, allRoles } from '@/api/system/user'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 
@@ -300,14 +305,19 @@ export default {
         editPwd: ['user:editPwd']
       },
       orderConditions: [],
-      last_condition: null
+      last_condition: null,
+      openLdap: false
     }
   },
   mounted() {
     this.allRoles()
     this.search()
   },
-
+  beforeCreate() {
+    ldapStatus().then(res => {
+      this.openLdap = res.success && res.data
+    })
+  },
   methods: {
     sortChange({ column, prop, order }) {
       this.orderConditions = []

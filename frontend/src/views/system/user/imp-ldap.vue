@@ -2,6 +2,30 @@
   <layout-content :header="$t('user.import_ldap') " back-name="system-user">
     <el-form ref="importUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
 
+      <el-form-item :label="$t('commons.user')" prop="userIds">
+        <el-select
+          ref="userSelect"
+          v-model="form.userIds"
+          filterable
+          style="width: 100%"
+          multiple
+          :placeholder="$t('commons.please_select')"
+          @change="changeUser"
+        >
+          <el-option
+            v-for="item in users"
+            :key="item.userName"
+            :disabled="item.disabled"
+            :label="item.nickName"
+            :value="item.userName"
+          >
+            <span>{{ item.nickName + (item.disabled ? '(已存在)':'') }}</span>
+            <!-- <span><el-checkbox v-model="item.checked">{{ item.nickName }}</el-checkbox></span> -->
+
+          </el-option>
+        </el-select>
+      </el-form-item>
+
       <el-form-item :label="$t('commons.organization')" prop="deptId">
         <treeselect
           ref="deptTreeSelect"
@@ -27,11 +51,20 @@
           <el-option
             v-for="item in roles"
             :key="item.name"
+
             :label="item.name"
             :value="item.id"
           />
         </el-select>
       </el-form-item>
+
+      <el-form-item :label="$t('commons.status')" prop="enabled">
+        <el-radio-group v-model="form.enabled" style="width: 140px">
+          <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
+          <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
       <el-form-item>
         <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
         <el-button @click="cancel">{{ $t('commons.cancel') }}</el-button>
@@ -44,7 +77,7 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
-import { addUser, allRoles } from '@/api/system/user'
+import { allRoles, ldapUsers, saveLdapUser, existLdapUsers } from '@/api/system/user'
 export default {
 
   components: { LayoutContent },
@@ -56,22 +89,27 @@ export default {
         }]
       },
       rule: {
-
+        userIds: [{ required: true, message: this.$t('user.select_users'), trigger: 'change' }],
         roleIds: [{ required: true, message: this.$t('user.input_roles'), trigger: 'change' }],
         deptId: [],
         enable: []
 
       },
-      defaultForm: { enabled: 1, deptId: null, roleIds: [2] },
+      defaultForm: { deptId: null, enabled: 1, roleIds: [2] },
       depts: null,
       roles: [],
       roleDatas: [],
-      userRoles: []
+      userRoles: [],
+      users: [],
+      exitsUsers: []
     }
   },
 
   created() {
     this.initRoles()
+    this.remoteMethod()
+    this.getExistUsers()
+    this.create()
   },
   mounted() {
     this.bindKey()
@@ -160,8 +198,15 @@ export default {
     save() {
       this.$refs.importUserForm.validate(valid => {
         if (valid) {
-          const method = addUser
-          method(this.form).then(res => {
+          const checkedUsers = this.users.filter(user => user.checked)
+          const param = {
+            users: checkedUsers,
+            deptId: this.form.deptId,
+            roleIds: this.form.roleIds,
+            enabled: this.form.enabled
+          }
+          const method = saveLdapUser
+          method(param).then(res => {
             this.$success(this.$t('commons.save_success'))
             this.backToList()
           })
@@ -185,7 +230,38 @@ export default {
         return node
       })
       this.depts = results
+    },
+    remoteMethod() {
+      this.users = []
+      existLdapUsers().then(resout => {
+        this.exitsUsers = resout.data
+        ldapUsers().then(res => {
+          if (res && res.data) {
+            this.users = res.data.map(item => {
+              if (this.exitsUsers.some(existUser => existUser === item.userName)) {
+                item.disabled = true
+              }
+              return item
+            })
+          }
+        })
+      })
+    },
+    changeUser(values) {
+      this.users.forEach(user => {
+        user.checked = false
+        if (values.includes(user.userName)) {
+          user.checked = true
+        }
+      })
+    },
+
+    getExistUsers() {
+      /* existLdapUsers().then(res => {
+        this.exitsUsers = res.data
+      }) */
     }
+
   }
 }
 </script>

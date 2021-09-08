@@ -58,6 +58,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/api/auth/login", ANON);
         filterChainDefinitionMap.put("/api/auth/logout", ANON);
         filterChainDefinitionMap.put("/api/auth/validateName", ANON);
+        filterChainDefinitionMap.put("/api/auth/isOpenLdap", ANON);
         filterChainDefinitionMap.put("/unauth", ANON);
         filterChainDefinitionMap.put("/display/**", ANON);
         filterChainDefinitionMap.put("/tokenExpired", ANON);
