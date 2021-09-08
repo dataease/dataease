@@ -18,7 +18,7 @@
     </div>
     <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
     <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
-    <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
     <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 20px;bottom:14px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />

@@ -859,7 +859,9 @@ export default {
     drag_block_value_axis_main: '主轴值',
     drag_block_value_axis_ext: '副轴值',
     yAxis_main: '主纵轴',
-    yAxis_ext: '副纵轴'
+    yAxis_ext: '副纵轴',
+    total: '共',
+    items: '条数据'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
