@@ -50,3 +50,10 @@ export function languageApi(language) {
     method: 'post'
   })
 }
+
+export function ldapStatus() {
+  return request({
+    url: '/api/auth/isOpenLdap',
+    method: 'post'
+  })
+}

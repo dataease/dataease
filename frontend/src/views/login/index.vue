@@ -15,6 +15,13 @@
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
             </div>
             <div class="login-form">
+              <el-form-item>
+                <el-radio-group v-model="loginForm.loginType">
+                  <el-radio v-if="openLdap" :label="0" size="mini">普通登录</el-radio>
+                  <el-radio v-if="openLdap" :label="1" size="mini">LDAP</el-radio>
+
+                </el-radio-group>
+              </el-form-item>
               <el-form-item prop="username">
                 <el-input v-model="loginForm.username" placeholder="ID" autofocus />
               </el-form-item>
@@ -55,7 +62,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-// import { validateUserName } from '@/api/user'
+import { ldapStatus } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 export default {
   name: 'Login',
@@ -86,6 +93,7 @@ export default {
     // }
     return {
       loginForm: {
+        loginType: 0,
         username: '',
         password: ''
       },
@@ -99,7 +107,8 @@ export default {
       uiInfo: null,
       loginImageUrl: null,
       loginLogoUrl: null,
-      axiosFinished: false
+      axiosFinished: false,
+      openLdap: true
     }
   },
   computed: {
@@ -114,6 +123,11 @@ export default {
       },
       immediate: true
     }
+  },
+  beforeCreate() {
+    ldapStatus().then(res => {
+      this.openLdap = res.success && res.data
+    })
   },
   created() {
     this.$store.dispatch('user/getUI').then(() => {
@@ -141,7 +155,8 @@ export default {
           this.loading = true
           const user = {
             username: this.loginForm.username,
-            password: this.loginForm.password
+            password: this.loginForm.password,
+            loginType: this.loginForm.loginType
           }
           user.password = encrypt(user.password)
           this.$store.dispatch('user/login', user).then(() => {

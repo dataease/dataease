@@ -1153,6 +1153,66 @@ public class SysUserExample {
             addCriterion("`language` not between", value1, value2, "language");
             return (Criteria) this;
         }
+
+        public Criteria andFromIsNull() {
+            addCriterion("`from` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromIsNotNull() {
+            addCriterion("`from` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromEqualTo(Integer value) {
+            addCriterion("`from` =", value, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromNotEqualTo(Integer value) {
+            addCriterion("`from` <>", value, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromGreaterThan(Integer value) {
+            addCriterion("`from` >", value, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromGreaterThanOrEqualTo(Integer value) {
+            addCriterion("`from` >=", value, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromLessThan(Integer value) {
+            addCriterion("`from` <", value, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromLessThanOrEqualTo(Integer value) {
+            addCriterion("`from` <=", value, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromIn(List<Integer> values) {
+            addCriterion("`from` in", values, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromNotIn(List<Integer> values) {
+            addCriterion("`from` not in", values, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromBetween(Integer value1, Integer value2) {
+            addCriterion("`from` between", value1, value2, "from");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromNotBetween(Integer value1, Integer value2) {
+            addCriterion("`from` not between", value1, value2, "from");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
