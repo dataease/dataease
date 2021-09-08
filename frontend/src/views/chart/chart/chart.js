@@ -42,7 +42,14 @@ export const DEFAULT_SIZE = {
   scatterSymbol: 'circle',
   scatterSymbolSize: 20,
   treemapWidth: 80,
-  treemapHeight: 80
+  treemapHeight: 80,
+  liquidMax: 100,
+  liquidSize: 80,
+  liquidOutlineBorder: 4,
+  liquidOutlineDistance: 8,
+  liquidWaveLength: 128,
+  liquidWaveCount: 3,
+  liquidShape: 'circle'
 }
 export const DEFAULT_LABEL = {
   show: false,

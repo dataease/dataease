@@ -893,7 +893,20 @@ export default {
     yAxis_main: '主纵轴',
     yAxis_ext: '副纵轴',
     total: '共',
-    items: '条数据'
+    items: '条数据',
+    chart_liquid: '水波图',
+    drag_block_progress: '进度指示',
+    liquid_max: '目标值',
+    liquid_outline_border: '边框粗细',
+    liquid_outline_distance: '边框间隔',
+    liquid_wave_length: '水波长度',
+    liquid_wave_count: '水波数量',
+    liquid_shape: '形状',
+    liquid_shape_circle: '圆形',
+    liquid_shape_diamond: '菱形',
+    liquid_shape_triangle: '三角形',
+    liquid_shape_pin: '气球',
+    liquid_shape_rect: '矩形'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

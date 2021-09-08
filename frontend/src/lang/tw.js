@@ -861,7 +861,20 @@ export default {
     yAxis_main: '主縱軸',
     yAxis_ext: '副縱軸',
     total: '共',
-    items: '條數據'
+    items: '條數據',
+    chart_liquid: '水波圖',
+    drag_block_progress: '進度指示',
+    liquid_max: '目標值',
+    liquid_outline_border: '邊框粗細',
+    liquid_outline_distance: '邊框間隔',
+    liquid_wave_length: '水波長度',
+    liquid_wave_count: '水波數量',
+    liquid_shape: '形狀',
+    liquid_shape_circle: '圓形',
+    liquid_shape_diamond: '菱形',
+    liquid_shape_triangle: '三角形',
+    liquid_shape_pin: '氣球',
+    liquid_shape_rect: '矩形'
   },
   dataset: {
     sheet_warn: '有多個sheet頁面，默認抽取第一個',

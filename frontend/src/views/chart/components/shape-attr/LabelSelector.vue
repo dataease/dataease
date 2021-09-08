@@ -17,12 +17,12 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="labelForm.color" class="color-picker-style" @change="changeLabelAttr" />
           </el-form-item>
-          <el-form-item :label="$t('chart.label_position')" class="form-item">
+          <el-form-item v-show="chart.type && chart.type !== 'liquid'" :label="$t('chart.label_position')" class="form-item">
             <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
               <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
-          <el-form-item class="form-item">
+          <el-form-item v-show="chart.type && chart.type !== 'liquid'" class="form-item">
             <span slot="label">
               <span class="span-box">
                 <span>{{ $t('chart.content_formatter') }}</span>
@@ -126,7 +126,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 20; i = i + 2) {
+      for (let i = 10; i <= 40; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
