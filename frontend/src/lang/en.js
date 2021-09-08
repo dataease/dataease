@@ -1044,6 +1044,7 @@ export default {
     please_input_user_name: 'Please enter user name',
     please_input_password: 'Please enter Password',
     please_input_host: 'Please enter host',
+    please_input_url: 'Please enter url adress',
     please_input_port: 'Please enter port',
     modify: 'Edit data Source',
     validate_success: 'Verification successful',

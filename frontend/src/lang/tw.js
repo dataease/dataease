@@ -1043,6 +1043,7 @@ export default {
     please_input_user_name: '請輸入用戶名',
     please_input_password: '請輸入密碼',
     please_input_host: '請輸入主機',
+    please_input_url: '請輸入URL地址',
     please_input_port: '請輸入',
     modify: '編輯數據源',
     validate_success: '校驗成功',

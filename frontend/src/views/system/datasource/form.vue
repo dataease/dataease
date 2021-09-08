@@ -27,6 +27,9 @@
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host">
           <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
+        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.url')" prop="configuration.url">
+          <el-input v-model="form.configuration.url" placeholder="请输入 Elasticsearch 地址，如: http://es_host:es_port" autocomplete="off" />
+        </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase">
           <el-input v-model="form.configuration.dataBase" autocomplete="off" />
         </el-form-item>
@@ -36,10 +39,10 @@
           <el-radio v-model="form.configuration.connectionType" label="serviceName">{{ $t('datasource.oracle_service_name') }}</el-radio>
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')" prop="configuration.username">
+        <el-form-item :label="$t('datasource.user_name')" prop="configuration.username">
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')" prop="configuration.password">
+        <el-form-item :label="$t('datasource.password')" prop="configuration.password">
           <el-input v-model="form.configuration.password" autocomplete="off" show-password />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
@@ -61,25 +64,25 @@
             />
           </el-select>
         </el-form-item>
-        <el-collapse>
+        <el-collapse v-if="form.configuration.dataSourceType=='jdbc'">
           <el-collapse-item :title="$t('datasource.priority')" name="1">
 
-            <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
+            <el-form-item :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
               <el-input v-model="form.configuration.initialPoolSize" autocomplete="off" type="number" min="0" size="small" />
             </el-form-item>
-            <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
+            <el-form-item :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
               <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
-            <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
+            <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
               <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
-            <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.max_idle_time')" prop="configuration.maxIdleTime">
+            <el-form-item :label="$t('datasource.max_idle_time')" prop="configuration.maxIdleTime">
               <el-input v-model="form.configuration.maxIdleTime" autocomplete="off" type="number" min="0" />
             </el-form-item>
-            <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.acquire_increment')" prop="configuration.acquireIncrement">
+            <el-form-item :label="$t('datasource.acquire_increment')" prop="configuration.acquireIncrement">
               <el-input v-model="form.configuration.acquireIncrement" autocomplete="off" type="number" min="0" />
             </el-form-item>
-            <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.connect_timeout')" prop="configuration.connectTimeout">
+            <el-form-item :label="$t('datasource.connect_timeout')" prop="configuration.connectTimeout">
               <el-input v-model="form.configuration.connectTimeout" autocomplete="off" type="number" min="0" />
             </el-form-item>
 
@@ -135,6 +138,7 @@ export default {
         'configuration.username': [{ required: true, message: this.$t('datasource.please_input_user_name'), trigger: 'blur' }],
         'configuration.password': [{ required: true, message: this.$t('datasource.please_input_password'), trigger: 'change' }],
         'configuration.host': [{ required: true, message: this.$t('datasource.please_input_host'), trigger: 'change' }],
+        'configuration.url': [{ required: true, message: this.$t('datasource.please_input_url'), trigger: 'change' }],
         'configuration.port': [{ required: true, message: this.$t('datasource.please_input_port'), trigger: 'change' }],
         'configuration.initialPoolSize': [{ required: true, message: this.$t('datasource.please_input_initial_pool_size'), trigger: 'change' }],
         'configuration.minPoolSize': [{ required: true, message: this.$t('datasource.please_input_min_pool_size'), trigger: 'change' }],
@@ -146,7 +150,8 @@ export default {
       allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
         { name: 'oracle', label: 'Oracle', type: 'jdbc' },
         { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
-        { name: 'pg', label: 'PostgreSQL', type: 'jdbc' }],
+        { name: 'pg', label: 'PostgreSQL', type: 'jdbc' },
+        { name: 'es', label: 'Elasticsearch', type: 'es' }],
       schemas: [],
       canEdit: false,
       originConfiguration: {}

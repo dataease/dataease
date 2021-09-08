@@ -1044,6 +1044,7 @@ export default {
     please_input_user_name: '请输入用户名',
     please_input_password: '请输入密码',
     please_input_host: '请输入主机',
+    please_input_url: '请输入URL地址',
     please_input_port: '请输入端口',
     modify: '编辑数据源',
     validate_success: '校验成功',
