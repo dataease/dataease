@@ -94,10 +94,10 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.table_title_height')" class="form-item">
+        <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.table_item_height')" class="form-item">
+        <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>

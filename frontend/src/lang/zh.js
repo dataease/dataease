@@ -777,7 +777,8 @@ export default {
     filter_condition: '过滤条件',
     filter_field_can_null: '过滤字段必填',
     preview_100_data: '预览前100条记录',
-    chart_table_normal: '明细表',
+    chart_table_normal: '汇总表',
+    chart_table_info: '明细表',
     chart_card: '指标卡',
     chart_bar: '基础柱状图',
     chart_bar_stack: '堆叠柱状图',
@@ -885,7 +886,14 @@ export default {
     axis_value_min: '最小值',
     axis_value_max: '最大值',
     axis_value_split: '间隔',
-    axis_auto: '自动'
+    axis_auto: '自动',
+    table_info_switch: '明细表切换将清空维度',
+    drag_block_value_axis_main: '主轴值',
+    drag_block_value_axis_ext: '副轴值',
+    yAxis_main: '主纵轴',
+    yAxis_ext: '副纵轴',
+    total: '共',
+    items: '条数据'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

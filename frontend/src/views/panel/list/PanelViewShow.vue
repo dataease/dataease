@@ -79,7 +79,8 @@
       v-if="pdfExportShow"
       :title="'['+panelInfo.name+']'+'PDF导出'"
       :visible.sync="pdfExportShow"
-      width="70%"
+      width="80%"
+      :top="'8vh'"
       :destroy-on-close="true"
       class="dialog-css2"
     >
