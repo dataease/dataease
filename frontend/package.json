@@ -15,6 +15,7 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
+    "@antv/g2plot": "^2.3.32",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.21.1",

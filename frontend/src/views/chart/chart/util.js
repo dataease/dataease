@@ -17,3 +17,12 @@ export function hexColorToRGBA(hex, alpha) {
     return 'rgb(0,0,0)'
   }
 }
+
+export function digToHex(dig) {
+  let prefix = ''
+  const num = parseInt(dig * 2.55)
+  if (num < 16) {
+    prefix = '0'
+  }
+  return prefix.concat(num.toString(16).toUpperCase())
+}

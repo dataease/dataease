@@ -862,7 +862,20 @@ export default {
     yAxis_main: 'Main Vertical Axis',
     yAxis_ext: 'Ext Vertical Axis',
     total: 'Total',
-    items: 'Items'
+    items: 'Items',
+    chart_liquid: 'Liquid',
+    drag_block_progress: 'Progress',
+    liquid_max: 'End Value',
+    liquid_outline_border: 'Border Width',
+    liquid_outline_distance: 'Border Distance',
+    liquid_wave_length: 'Wave Length',
+    liquid_wave_count: 'Wave Count',
+    liquid_shape: 'Shape',
+    liquid_shape_circle: 'Circle',
+    liquid_shape_diamond: 'Diamond',
+    liquid_shape_triangle: 'Triangle',
+    liquid_shape_pin: 'Pin',
+    liquid_shape_rect: 'Rect'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
