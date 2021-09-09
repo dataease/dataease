@@ -15,8 +15,8 @@
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
             </div>
             <div class="login-form">
-              <el-form-item>
-                <el-radio-group v-model="loginForm.loginType">
+              <el-form-item v-if="openLdap">
+                <el-radio-group v-if="openLdap" v-model="loginForm.loginType">
                   <el-radio v-if="openLdap" :label="0" size="mini">普通登录</el-radio>
                   <el-radio v-if="openLdap" :label="1" size="mini">LDAP</el-radio>
 

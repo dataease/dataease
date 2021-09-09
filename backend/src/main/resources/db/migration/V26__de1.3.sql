@@ -29,3 +29,12 @@ ALTER TABLE `sys_user` ADD COLUMN `from` int(4) NOT NULL COMMENT '来源' AFTER 
 
 INSERT INTO `sys_menu` VALUES (60, 1, 0, 1, '导入LDAP用户', 'system-user-import', 'system/user/imp-ldap', 11, NULL, 'user-ldap', b'0', b'0', b'1', 'user:import', NULL, NULL, NULL, NULL);
 
+BEGIN;
+INSERT INTO `system_parameter` VALUES ('ldap.dn', NULL, 'text', 2);
+INSERT INTO `system_parameter` VALUES ('ldap.mapping', NULL, 'text', 6);
+INSERT INTO `system_parameter` VALUES ('ldap.open', NULL, 'text', 7);
+INSERT INTO `system_parameter` VALUES ('ldap.ou', NULL, 'text', 4);
+INSERT INTO `system_parameter` VALUES ('ldap.password', NULL, 'password', 3);
+INSERT INTO `system_parameter` VALUES ('ldap.url', NULL, 'text', 1);
+COMMIT;
+
