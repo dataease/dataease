@@ -130,6 +130,8 @@ export default {
     re_login: '重新登录'
   },
   commons: {
+    search: '搜索',
+    folder: '目录',
     no_target_permission: '没有权限',
     success: '成功',
     switch_lang: '切换语言成功',
