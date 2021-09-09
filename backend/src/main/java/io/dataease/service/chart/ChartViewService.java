@@ -208,7 +208,9 @@ public class ChartViewService {
             customFilter.addAll(collect);
         }
 
-        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+        if (StringUtils.equalsIgnoreCase("text", view.getType())
+                || StringUtils.equalsIgnoreCase("gauge", view.getType())
+                || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
             xAxis = new ArrayList<>();
             if (CollectionUtils.isEmpty(yAxis)) {
                 ChartViewDTO dto = new ChartViewDTO();
