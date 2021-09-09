@@ -773,6 +773,9 @@ export default {
           return true
         }
         if (this.searchPids.indexOf(data.pid) !== -1) {
+          if (data.nodeType === 'folder') {
+            this.searchPids.push(data.id)
+          }
           return true
         }
       } else {
