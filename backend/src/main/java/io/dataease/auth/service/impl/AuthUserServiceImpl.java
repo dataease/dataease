@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -107,6 +108,8 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     public boolean supportLdap() {
+        Map<String, LdapXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LdapXpackService.class));
+        if(beansOfType.keySet().size() == 0) return false;
         LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
         if(ObjectUtils.isEmpty(ldapXpackService)) return false;
         return ldapXpackService.isOpen();
