@@ -337,10 +337,10 @@
             <version>5.7.4</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-ldap</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!--<dependency>
             <groupId>org.apache.poi</groupId>
