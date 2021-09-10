@@ -532,6 +532,15 @@ export default {
     mapping_cannot_be_empty: 'LDAP 用户属性映射不能为空',
     password_cannot_be_empty: 'LDAP 密码不能为空'
   },
+  oidc: {
+    auth_endpoint: '请输入AuthEndpoint',
+    token_endpoint: '请输入TokenEndpoint',
+    userinfo_endpoint: '请输入UserinfoEndpoint',
+    logout_endpoint: '请输入logoutEndpoint',
+    clientId: '请输入ClientId',
+    secret: '请输入Secret',
+    open: '启用OIDC认证'
+  },
   role: {
     menu_authorization: '菜单授权',
     data_authorization: '数据授权',
