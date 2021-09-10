@@ -80,6 +80,7 @@ public class SysUserService {
     @Transactional
     public int save(SysUserCreateRequest request) {
         checkUsername(request);
+        checkEmail(request);
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setCreateTime(now);
@@ -109,6 +110,7 @@ public class SysUserService {
     @Transactional
     public int update(SysUserCreateRequest request) {
         checkUsername(request);
+        checkEmail(request);
         if (StringUtils.isEmpty(request.getPassword())) {
             request.setPassword(null);
         }
@@ -251,4 +253,19 @@ public class SysUserService {
             throw new RuntimeException(Translator.get("i18n_username_exists"));
         }
     }
+
+    private void checkEmail(SysUserCreateRequest request) {
+        SysUserExample sysUserExample = new SysUserExample();
+        SysUserExample.Criteria criteria = sysUserExample.createCriteria();
+        if (request.getUserId() != null) {
+            criteria.andUserIdNotEqualTo(request.getUserId());
+        }
+        criteria.andEmailEqualTo(request.getEmail());
+        List<SysUser> sysUsers = sysUserMapper.selectByExample(sysUserExample);
+        if (CollectionUtils.isNotEmpty(sysUsers)) {
+            throw new RuntimeException(Translator.get("i18n_email_exists"));
+        }
+    }
+
+
 }
