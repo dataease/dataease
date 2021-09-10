@@ -436,6 +436,9 @@ public class ChartViewService {
         map.putAll(mapChart);
         map.putAll(mapTableNormal);
 
+        List<DatasetTableField>  sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
+        map.put("sourceFields",sourceFields);
+
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
         dto.setData(map);
