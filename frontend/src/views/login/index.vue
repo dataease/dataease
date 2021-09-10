@@ -108,7 +108,7 @@ export default {
       loginImageUrl: null,
       loginLogoUrl: null,
       axiosFinished: false,
-      openLdap: true
+      openLdap: false
     }
   },
   computed: {
