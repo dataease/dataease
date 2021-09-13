@@ -165,6 +165,7 @@
       </el-form>
 
       <el-form v-show="chart.type && chart.type === 'chart-mix'" ref="sizeFormBar" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_bar') }}</el-divider>
         <el-form-item :label="$t('chart.adapt')" class="form-item">
           <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
         </el-form-item>
@@ -174,7 +175,7 @@
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-divider />
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_line') }}</el-divider>
         <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />
         </el-form-item>
@@ -203,7 +204,7 @@
         <el-form-item :label="$t('chart.line_area')" class="form-item">
           <el-checkbox v-model="sizeForm.lineArea" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-divider />
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_scatter') }}</el-divider>
         <el-form-item :label="$t('chart.bubble_symbol')" class="form-item">
           <el-select v-model="sizeForm.scatterSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase">
             <el-option
@@ -371,5 +372,11 @@ export default {
 }
 .el-divider--horizontal {
   margin: 10px 0
+}
+.divider-style>>>.el-divider__text{
+  color: #606266;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 0 10px;
 }
 </style>
