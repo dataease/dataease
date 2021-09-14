@@ -28,7 +28,7 @@ export function baseLiquid(plot, container, chart) {
       max = size.liquidMax ? size.liquidMax : DEFAULT_SIZE.liquidMax
       radius = parseFloat((size.liquidSize ? size.liquidSize : DEFAULT_SIZE.liquidSize) / 100)
       outlineBorder = parseInt(size.liquidOutlineBorder ? size.liquidOutlineBorder : DEFAULT_SIZE.liquidOutlineBorder)
-      outlineDistance = parseInt(size.liquidOutlineDistance ? size.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance)
+      outlineDistance = parseInt((size.liquidOutlineDistance || size.liquidOutlineDistance === 0) ? size.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance)
       waveLength = parseInt(size.liquidWaveLength ? size.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength)
       waveCount = parseInt(size.liquidWaveCount ? size.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount)
       shape = size.liquidShape ? size.liquidShape : DEFAULT_SIZE.liquidShape
