@@ -235,19 +235,19 @@
           <el-input-number v-model="sizeForm.liquidMax" :min="1" size="mini" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.radar_size')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.liquidSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.liquidSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.liquid_outline_border')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.liquidOutlineBorder" show-input :show-input-controls="false" input-size="mini" :min="1" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.liquid_outline_distance')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.liquidOutlineDistance" show-input :show-input-controls="false" input-size="mini" :min="1" :max="20" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.liquidOutlineDistance" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.liquid_wave_length')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.liquidWaveLength" show-input :show-input-controls="false" input-size="mini" :min="1" :max="500" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.liquidWaveLength" show-input :show-input-controls="false" input-size="mini" :min="10" :max="500" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.liquid_wave_count')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.liquidWaveCount" show-input :show-input-controls="false" input-size="mini" :min="1" :max="10" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.liquidWaveCount" show-input :show-input-controls="false" input-size="mini" :min="2" :max="10" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
     </el-col>
@@ -323,7 +323,7 @@ export default {
           this.sizeForm.liquidMax = this.sizeForm.liquidMax ? this.sizeForm.liquidMax : DEFAULT_SIZE.liquidMax
           this.sizeForm.liquidSize = this.sizeForm.liquidSize ? this.sizeForm.liquidSize : DEFAULT_SIZE.liquidSize
           this.sizeForm.liquidOutlineBorder = this.sizeForm.liquidOutlineBorder ? this.sizeForm.liquidOutlineBorder : DEFAULT_SIZE.liquidOutlineBorder
-          this.sizeForm.liquidOutlineDistance = this.sizeForm.liquidOutlineDistance ? this.sizeForm.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance
+          this.sizeForm.liquidOutlineDistance = (this.sizeForm.liquidOutlineDistance || this.sizeForm.liquidOutlineDistance === 0) ? this.sizeForm.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
         }
