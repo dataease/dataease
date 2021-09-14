@@ -22,17 +22,17 @@ import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;
 import io.dataease.plugins.xpack.ldap.dto.response.ValidateResult;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -115,13 +115,13 @@ public class AuthServer implements AuthApi {
     @Override
     public String logout() {
         String token = ServletUtils.getToken();
+        
         if (isOpenOidc()) {
+            HttpServletRequest request = ServletUtils.request();
+            String idToken = request.getHeader("IdToken");
             OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
-            TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
-            String idToken = tokenInfo.getIdToken();
             oidcXpackService.logout(idToken);
         }
-        // String token = ServletUtils.getToken();
         if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
             return "success";
         }

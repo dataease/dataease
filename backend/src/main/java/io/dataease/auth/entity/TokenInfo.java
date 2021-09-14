@@ -13,7 +13,7 @@ public class TokenInfo implements Serializable {
 
     private Long userId;
 
-    private String idToken;
+   /*  private String idToken; */
 
     public String format(){
         return username + "," +userId;

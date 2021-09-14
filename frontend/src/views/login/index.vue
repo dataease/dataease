@@ -56,6 +56,7 @@
         </el-col>
       </el-row>
     </div>
+    <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
   </div>
 </template>
 
@@ -64,8 +65,10 @@
 import { encrypt } from '@/utils/rsaEncrypt'
 import { ldapStatus, oidcStatus } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'Login',
+  components: { PluginCom },
   data() {
     return {
       loginForm: {
@@ -156,6 +159,9 @@ export default {
     },
     changeLoginType(val) {
       if (val !== 2) return
+      this.$nextTick(() => {
+
+      })
     }
   }
 }

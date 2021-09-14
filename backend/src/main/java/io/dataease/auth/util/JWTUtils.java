@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.entity.TokenInfo;
+import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.ObjectUtils;
@@ -38,9 +39,9 @@ public class JWTUtils {
         Verification verification = JWT.require(algorithm)
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("userId", tokenInfo.getUserId());
-        if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
+        /* if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
             verification.withClaim("idToken", tokenInfo.getIdToken());
-        }
+        } */
         JWTVerifier verifier = verification.build();        
         verifier.verify(token);
         return true;
@@ -54,10 +55,15 @@ public class JWTUtils {
         DecodedJWT jwt = JWT.decode(token);
         String username = jwt.getClaim("username").asString();
         Long userId = jwt.getClaim("userId").asLong();
+        // String idToken = jwt.getClaim("idToken").asString();
         if (StringUtils.isEmpty(username) || ObjectUtils.isEmpty(userId) ){
             DataEaseException.throwException("token格式错误！");
         }
-        TokenInfo tokenInfo = TokenInfo.builder().username(username).userId(userId).build();
+        TokenInfoBuilder tokenInfoBuilder = TokenInfo.builder().username(username).userId(userId);
+        /* if (StringUtils.isNotBlank(idToken)) {
+            tokenInfoBuilder.idToken(idToken);
+        } */
+        TokenInfo tokenInfo = tokenInfoBuilder.build();
         return tokenInfo;
     }
 
@@ -114,11 +120,11 @@ public class JWTUtils {
             Builder builder = JWT.create()
                     .withClaim("username", tokenInfo.getUsername())
                     .withClaim("userId", tokenInfo.getUserId());
-            if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
+            /* if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
                 builder.withClaim("idToken", tokenInfo.getIdToken());
-            }
-            return builder.withExpiresAt(date)
-                    .sign(algorithm);
+            } */
+            return builder.withExpiresAt(date).sign(algorithm);
+                    
         } catch (Exception e) {
             return null;
         }
