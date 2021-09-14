@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="showDrag"
     id="editor"
     class="editor"
     :class="[
