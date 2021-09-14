@@ -22,6 +22,8 @@ import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
+import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,6 +108,33 @@ public class SysUserService {
     }
 
     @Transactional
+    public void saveOIDCUser(SSOUserInfo ssoUserInfo) {
+        long now = System.currentTimeMillis();
+        SysUser sysUser = new SysUser();
+        sysUser.setUsername(ssoUserInfo.getUserName());
+        sysUser.setNickName(ssoUserInfo.getNickName());
+        sysUser.setEmail(ssoUserInfo.getEmail());
+        sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setCreateTime(now);
+        sysUser.setUpdateTime(now);
+        sysUser.setEnabled(1L);
+        sysUser.setLanguage("zh_CN");
+        sysUser.setFrom(2);
+        sysUserMapper.insert(sysUser);
+        SysUser dbUser = findOne(sysUser);
+        if (null != dbUser && null != dbUser.getUserId()) {
+            // oidc默认角色是普通员工
+            List<Long> roleIds = new ArrayList<Long>();
+            roleIds.add(2L);
+            saveUserRoles( dbUser.getUserId(), roleIds);
+        }
+    }
+
+    public String defaultPWD() {
+        return DEFAULT_PWD;
+    }
+
+    @Transactional
     public void saveLdapUsers(LdapAddRequest request) {
         long now = System.currentTimeMillis();
 
@@ -116,6 +147,7 @@ public class SysUserService {
             sysUser.setCreateTime(now);
             sysUser.setUpdateTime(now);
             sysUser.setEnabled(request.getEnabled());
+            sysUser.setLanguage("zh_CN");
             sysUser.setFrom(1);
             return sysUser;
         }).collect(Collectors.toList());

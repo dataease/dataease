@@ -2,16 +2,18 @@ package io.dataease.auth.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.entity.TokenInfo;
+import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
-
 import java.util.Date;
 
 
@@ -34,10 +36,13 @@ public class JWTUtils {
      */
     public static boolean verify(String token, TokenInfo tokenInfo, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
-        JWTVerifier verifier = JWT.require(algorithm)
+        Verification verification = JWT.require(algorithm)
                 .withClaim("username", tokenInfo.getUsername())
-                .withClaim("userId", tokenInfo.getUserId())
-                .build();
+                .withClaim("userId", tokenInfo.getUserId());
+        /* if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
+            verification.withClaim("idToken", tokenInfo.getIdToken());
+        } */
+        JWTVerifier verifier = verification.build();        
         verifier.verify(token);
         return true;
     }
@@ -50,10 +55,15 @@ public class JWTUtils {
         DecodedJWT jwt = JWT.decode(token);
         String username = jwt.getClaim("username").asString();
         Long userId = jwt.getClaim("userId").asLong();
+        // String idToken = jwt.getClaim("idToken").asString();
         if (StringUtils.isEmpty(username) || ObjectUtils.isEmpty(userId) ){
             DataEaseException.throwException("token格式错误！");
         }
-        TokenInfo tokenInfo = TokenInfo.builder().username(username).userId(userId).build();
+        TokenInfoBuilder tokenInfoBuilder = TokenInfo.builder().username(username).userId(userId);
+        /* if (StringUtils.isNotBlank(idToken)) {
+            tokenInfoBuilder.idToken(idToken);
+        } */
+        TokenInfo tokenInfo = tokenInfoBuilder.build();
         return tokenInfo;
     }
 
@@ -107,12 +117,14 @@ public class JWTUtils {
         try {
             Date date = new Date(System.currentTimeMillis()+EXPIRE_TIME);
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            // 附带username信息
-            return JWT.create()
+            Builder builder = JWT.create()
                     .withClaim("username", tokenInfo.getUsername())
-                    .withClaim("userId", tokenInfo.getUserId())
-                    .withExpiresAt(date)
-                    .sign(algorithm);
+                    .withClaim("userId", tokenInfo.getUserId());
+            /* if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
+                builder.withClaim("idToken", tokenInfo.getIdToken());
+            } */
+            return builder.withExpiresAt(date).sign(algorithm);
+                    
         } catch (Exception e) {
             return null;
         }

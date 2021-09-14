@@ -252,11 +252,11 @@
             <version>20171018</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
-        </dependency>
+        </dependency>-->
         <!-- 反射工具包 -->
         <dependency>
             <groupId>net.oneandone.reflections8</groupId>

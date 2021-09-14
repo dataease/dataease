@@ -10,6 +10,8 @@ import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
+import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -114,4 +116,15 @@ public class AuthUserServiceImpl implements AuthUserService {
         if(ObjectUtils.isEmpty(ldapXpackService)) return false;
         return ldapXpackService.isOpen();
     }
+
+    @Override
+    public Boolean supportOidc() {
+        Map<String, OidcXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((OidcXpackService.class));
+        if(beansOfType.keySet().size() == 0) return false;
+        OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
+        if(ObjectUtils.isEmpty(oidcXpackService)) return false;
+        return oidcXpackService.isSuuportOIDC();
+    }
+
+    
 }
