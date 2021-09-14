@@ -21,6 +21,8 @@ import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;
 import io.dataease.plugins.xpack.ldap.dto.response.ValidateResult;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
+import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -113,6 +115,13 @@ public class AuthServer implements AuthApi {
     @Override
     public String logout() {
         String token = ServletUtils.getToken();
+        if (isOpenOidc()) {
+            OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
+            TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
+            String idToken = tokenInfo.getIdToken();
+            oidcXpackService.logout(idToken);
+        }
+        // String token = ServletUtils.getToken();
         if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
             return "success";
         }
@@ -143,6 +152,15 @@ public class AuthServer implements AuthApi {
         boolean open = authUserService.supportLdap();
         return open;
     }
+
+    @Override
+    public boolean isOpenOidc() {
+        Boolean licValid = PluginUtils.licValid();
+        if(!licValid) return false;
+        return authUserService.supportOidc();
+    }
+
+    
 
     /*@Override
     public Boolean isLogin() {
