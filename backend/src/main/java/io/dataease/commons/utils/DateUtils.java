@@ -95,7 +95,7 @@ public class DateUtils {
     }
 
 
-    public static void main(String[] args) throws Exception {
+    /* public static void main(String[] args) throws Exception {
 //        System.out.println("start:");
         Date paramTime = getTime(getTimeString(new Long("1607672440731")));
 
@@ -110,7 +110,7 @@ public class DateUtils {
 
 //        System.out.println(getTimeString(--countTimeLong));
 
-    }
+    } */
 
 
     /**
