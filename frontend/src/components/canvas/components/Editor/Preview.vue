@@ -110,12 +110,16 @@ export default {
           }
         }
       }
-      if (this.canvasStyleData.selfAdaption) {
-        style = {
-          overflow: 'hidden',
-          ...style
-        }
-      }
+      // if (this.canvasStyleData.selfAdaption) {
+      //   style = {
+      //     overflow: 'hidden',
+      //     ...style
+      //   }
+      // }
+      // style = {
+      //   overflow-x :'hidden',
+      //   ...style
+      // }
       return style
     },
     // 此处单独计算componentData的值 不放入全局mapState中
@@ -168,10 +172,13 @@ export default {
       const canvasWidth = document.getElementById('canvasInfoTemp').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
-      if (this.showType === 'width') {
-        this.scaleHeight = this.scaleWidth
-        this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
-      }
+
+      this.scaleHeight = this.scaleWidth
+      // this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
+      // if (this.showType === 'width') {
+      //   this.scaleHeight = this.scaleWidth
+      //   this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
+      // }
       this.handleScaleChange()
     },
     resetID(data) {
