@@ -57,8 +57,11 @@ const list = [
       fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
-      textAlign: 'left',
-      color: '#000000'
+      textAlign: 'center',
+      color: '#000000',
+      verticalAlign: 'middle',
+      backgroundColor: '#ffffff',
+      borderRadius: 0
     }
   },
   {

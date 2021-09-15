@@ -16,7 +16,8 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
+    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
+    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'g2'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
     <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
     <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
     <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
@@ -43,9 +44,10 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
+import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal, DrillPath },
+  components: { ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -119,7 +121,7 @@ export default {
     trackMenu() {
       const trackMenuInfo = []
       let linkageCount = 0
-      this.chart.data && this.chart.data.fields && this.chart.data.fields.forEach(item => {
+      this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
@@ -262,6 +264,7 @@ export default {
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
             if (!response.data.drill) {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+              this.resetDrill()
             }
             this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
             this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
@@ -433,6 +436,14 @@ export default {
           }
           this.destroyTimeMachine()
         }, 200)
+      }
+    },
+
+    renderComponent() {
+      if (this.chart.type === 'liquid') {
+        return 'g2'
+      } else {
+        return 'echarts'
       }
     }
   }

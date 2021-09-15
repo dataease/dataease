@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="showDrag"
     id="editor"
     class="editor"
     :class="[
@@ -13,7 +12,7 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
+<!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -217,10 +216,10 @@ export default {
         width: 80,
         height: 20
       },
-      // 矩阵数量 默认 12 * 24
+      // 矩阵数量 默认 128 * 72
       matrixCount: {
-        x: 24,
-        y: 72
+        x: 80,
+        y: 45
       },
       customStyleHistory: null,
       showDrag: true,
@@ -556,6 +555,9 @@ export default {
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }
+      // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
+      // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
+
       if (this.outStyle.width && this.outStyle.height) {
         // 矩阵计算
         if (!this.canvasStyleData.selfAdaption) {
@@ -643,6 +645,7 @@ export default {
     position: relative;
     /*background: #fff;*/
     margin: auto;
+    overflow-x: hidden;
     background-size:100% 100% !important;
     /*transform-style:preserve-3d;*/
     .lock {

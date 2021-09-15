@@ -130,6 +130,8 @@ export default {
     re_login: '重新登录'
   },
   commons: {
+    search: '搜索',
+    folder: '目录',
     no_target_permission: '没有权限',
     success: '成功',
     switch_lang: '切换语言成功',
@@ -431,6 +433,11 @@ export default {
     fixedHeader: '固定 Header',
     sidebarLogo: '侧边栏 Logo'
   },
+  sysParams: {
+    display: '显示设置',
+    ldap: 'LDAP设置',
+    oidc: 'OIDC设置'
+  },
   license: {
     i18n_no_license_record: '没有 License 记录',
     i18n_license_is_empty: 'License 为空',
@@ -529,6 +536,17 @@ export default {
     filter_cannot_be_empty: 'LDAP 用户过滤器不能为空',
     mapping_cannot_be_empty: 'LDAP 用户属性映射不能为空',
     password_cannot_be_empty: 'LDAP 密码不能为空'
+  },
+  oidc: {
+    auth_endpoint: '请输入AuthEndpoint',
+    token_endpoint: '请输入TokenEndpoint',
+    userinfo_endpoint: '请输入UserinfoEndpoint',
+    logout_endpoint: '请输入logoutEndpoint',
+    clientId: '请输入ClientId',
+    secret: '请输入Secret',
+    scope: '请输入scope',
+    redirectUrl: '请输入redirectUrl',
+    open: '启用OIDC认证'
   },
   role: {
     menu_authorization: '菜单授权',
@@ -893,7 +911,20 @@ export default {
     yAxis_main: '主纵轴',
     yAxis_ext: '副纵轴',
     total: '共',
-    items: '条数据'
+    items: '条数据',
+    chart_liquid: '水波图',
+    drag_block_progress: '进度指示',
+    liquid_max: '目标值',
+    liquid_outline_border: '边框粗细',
+    liquid_outline_distance: '边框间隔',
+    liquid_wave_length: '水波长度',
+    liquid_wave_count: '水波数量',
+    liquid_shape: '形状',
+    liquid_shape_circle: '圆形',
+    liquid_shape_diamond: '菱形',
+    liquid_shape_triangle: '三角形',
+    liquid_shape_pin: '气球',
+    liquid_shape_rect: '矩形'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

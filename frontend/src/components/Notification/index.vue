@@ -199,6 +199,7 @@ export default {
       query(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
+        this.count = this.paginationConfig.total
       }).catch(() => {
         const token = getToken()
         if (!token || token === 'null' || token === 'undefined') {
@@ -232,7 +233,7 @@ export default {
     right: 178px;
     top: 8px;
     background: red;
-    // color: #fff;
+    color: #fff;
     border-radius: 17px;
     padding: 4px 7px;
     font-size: 16px;

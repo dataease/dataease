@@ -1,6 +1,41 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col style="padding: 0 5px 0 5px;">
     <el-col>
+      <el-row style="margin-bottom: 10px">
+        <el-col :span="16">
+          <el-input
+            v-model="filterText"
+            size="mini"
+            :placeholder="$t('commons.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+        </el-col>
+        <el-col :span="8">
+          <el-dropdown>
+            <el-button size="mini" type="primary">
+              {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="searchTypeClick('all')">全部</el-dropdown-item>
+              <el-dropdown-item @click.native="searchTypeClick('folder')">目录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <!--          <el-select-->
+          <!--            v-model="searchType"-->
+          <!--            default-first-option-->
+          <!--            size="mini"-->
+          <!--          >-->
+          <!--            <el-option-->
+          <!--              v-for="item in searchTypeList"-->
+          <!--              :key="item.value"-->
+          <!--              :label="item.label"-->
+          <!--              :value="item.value"-->
+          <!--            />-->
+          <!--          </el-select>-->
+        </el-col>
+      </el-row>
       <el-row>
         <span class="header-title">{{ $t('panel.default_panel') }}</span>
         <div class="block">
@@ -11,6 +46,7 @@
             node-key="id"
             :highlight-current="activeTree==='system'"
             :expand-on-click-node="true"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node father">
@@ -59,6 +95,7 @@
             node-key="id"
             :highlight-current="activeTree==='self'"
             :expand-on-click-node="true"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
@@ -294,7 +331,14 @@ export default {
       moveDialogTitle: '',
       moveInfo: {},
       tGroup: {},
-      tGroupData: [] // 所有目录
+      tGroupData: [], // 所有目录
+      searchPids: [], // 查询命中的pid
+      filterText: '',
+      searchType: 'all',
+      searchMap: {
+        all: this.$t('commons.all'),
+        folder: this.$t('commons.folder')
+      }
     }
   },
   computed: {
@@ -311,6 +355,16 @@ export default {
       if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
+    },
+    filterText(val) {
+      this.searchPids = []
+      this.$refs.default_panel_tree.filter(val)
+      this.$refs.panel_list_tree.filter(val)
+    },
+    searchType(val) {
+      this.searchPids = []
+      this.$refs.default_panel_tree.filter(this.filterText)
+      this.$refs.panel_list_tree.filter(this.filterText)
     }
   },
   mounted() {
@@ -710,6 +764,27 @@ export default {
     targetGroup(val) {
       this.tGroup = val
       this.groupMoveConfirmDisabled = false
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      if (this.searchType === 'folder') {
+        if (data.nodeType === 'folder' && data.label.indexOf(value) !== -1) {
+          this.searchPids.push(data.id)
+          return true
+        }
+        if (this.searchPids.indexOf(data.pid) !== -1) {
+          if (data.nodeType === 'folder') {
+            this.searchPids.push(data.id)
+          }
+          return true
+        }
+      } else {
+        return data.label.indexOf(value) !== -1
+      }
+      return false
+    },
+    searchTypeClick(searchTypeInfo) {
+      this.searchType = searchTypeInfo
     }
   }
 }

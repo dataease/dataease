@@ -28,6 +28,10 @@
         select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin from sys_user where username = #{username}
     </select>
 
+    <select id="findUserBySub" resultMap="baseMap">
+        select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin from sys_user where sub = #{sub}
+    </select>
+
     <select id="roleCodes" resultType="String">
         select r.id from sys_role r
             left join sys_users_roles sur on sur.role_id = r.role_id

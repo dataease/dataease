@@ -100,7 +100,7 @@ export function roleGrid(pageIndex, pageSize, data) {
 
 export function ldapUsers(data) {
   return request({
-    url: '/api/ldap/users',
+    url: '/plugin/ldap/users',
     method: 'post',
     loading: true
   })

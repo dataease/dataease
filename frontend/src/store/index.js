@@ -79,6 +79,9 @@ const data = {
     },
 
     setCanvasStyle(state, style) {
+      if (style) {
+        style['selfAdaption'] = true
+      }
       state.canvasStyleData = style
     },
 

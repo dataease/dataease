@@ -252,11 +252,11 @@
             <version>20171018</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
-        </dependency>
+        </dependency>-->
         <!-- 反射工具包 -->
         <dependency>
             <groupId>net.oneandone.reflections8</groupId>
@@ -337,10 +337,10 @@
             <version>5.7.4</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-ldap</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>ru.yandex.clickhouse</groupId>

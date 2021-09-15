@@ -1213,6 +1213,76 @@ public class SysUserExample {
             addCriterion("`from` not between", value1, value2, "from");
             return (Criteria) this;
         }
+
+        public Criteria andSubIsNull() {
+            addCriterion("sub is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubIsNotNull() {
+            addCriterion("sub is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubEqualTo(String value) {
+            addCriterion("sub =", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubNotEqualTo(String value) {
+            addCriterion("sub <>", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubGreaterThan(String value) {
+            addCriterion("sub >", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubGreaterThanOrEqualTo(String value) {
+            addCriterion("sub >=", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubLessThan(String value) {
+            addCriterion("sub <", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubLessThanOrEqualTo(String value) {
+            addCriterion("sub <=", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubLike(String value) {
+            addCriterion("sub like", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubNotLike(String value) {
+            addCriterion("sub not like", value, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubIn(List<String> values) {
+            addCriterion("sub in", values, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubNotIn(List<String> values) {
+            addCriterion("sub not in", values, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubBetween(String value1, String value2) {
+            addCriterion("sub between", value1, value2, "sub");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubNotBetween(String value1, String value2) {
+            addCriterion("sub not between", value1, value2, "sub");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

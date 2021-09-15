@@ -68,8 +68,8 @@ public class ExcelReaderUtil {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    /* public static void main(String[] args) throws Exception {
         String file ="Metersphere_case_DataEase功能用例.xlsx";
         ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
-    }
+    } */
 }
