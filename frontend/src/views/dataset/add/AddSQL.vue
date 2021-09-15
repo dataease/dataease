@@ -18,7 +18,7 @@
       <el-row>
         <el-form :inline="true">
           <el-form-item class="form-item">
-            <el-select v-model="dataSource" filterable :placeholder="$t('dataset.pls_slc_data_source')" size="mini">
+            <el-select v-model="dataSource" filterable :placeholder="$t('dataset.pls_slc_data_source')" size="mini" @change="changeDatasource()">
               <el-option
                 v-for="item in options"
                 :key="item.id"
@@ -32,8 +32,8 @@
           </el-form-item>
           <el-form-item v-if="!param.tableId" class="form-item">
             <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-              <el-option :label="$t('dataset.direct_connect')" value="0" />
-              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning" />
+              <el-option :label="$t('dataset.direct_connect')" value="0" :disabled="selectedDatasource.computeType==='EXTRACT'"/>
+              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning || selectedDatasource.computeType==='DIRECT'" />
             </el-select>
           </el-form-item>
 
@@ -145,14 +145,15 @@ export default {
         theme: 'solarized',
         hintOptions: { // 自定义提示选项
           completeSingle: false // 当匹配只有一项的时候是否自动补全
-        }
+        },
       },
       data: [],
       fields: [],
       mode: '0',
       syncType: 'sync_now',
       height: 500,
-      kettleRunning: false
+      kettleRunning: false,
+      selectedDatasource: {}
     }
   },
   computed: {
@@ -188,6 +189,13 @@ export default {
       isKettleRunning().then(res => {
         this.kettleRunning = res.data
       })
+    },
+    changeDatasource() {
+      for (let i = 0; i < this.options.length; i++) {
+        if (this.options[i].id === this.form.dataSource) {
+          this.selectedDatasource = this.options[i]
+        }
+      }
     },
     calHeight() {
       const that = this

@@ -40,7 +40,7 @@ public class JdbcProvider extends DatasourceProvider {
         List<String[]> list = new LinkedList<>();
         Connection connection = null;
         try {
-            connection = getConnectionFromPool(dsr);
+            connection = getConnection(dsr);
             Statement stat = connection.createStatement();
             ResultSet rs = stat.executeQuery(dsr.getQuery());
             list = fetchResult(rs);
@@ -196,7 +196,7 @@ public class JdbcProvider extends DatasourceProvider {
         String queryStr = getTablesSql(datasourceRequest);
         Connection con = null;
         try {
-            con = getConnectionFromPool(datasourceRequest);
+            con = getConnection(datasourceRequest);
             Statement statement = con.createStatement();
             ResultSet resultSet = statement.executeQuery(queryStr);
             while (resultSet.next()) {
@@ -250,7 +250,12 @@ public class JdbcProvider extends DatasourceProvider {
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
-                String database = resultSet.getString("TABLE_CAT");
+                String database = null;
+                if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("ch")){
+                    database = resultSet.getString("TABLE_SCHEM");
+                }else {
+                    database = resultSet.getString("TABLE_CAT");
+                }
                 if(database != null){
                     if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
                         TableFiled tableFiled = getTableFiled(resultSet);
@@ -436,6 +441,14 @@ public class JdbcProvider extends DatasourceProvider {
                 password = pgConfigration.getPassword();
                 driver = pgConfigration.getDriver();
                 jdbcurl = pgConfigration.getJdbc();
+                break;
+            case ch:
+                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
+                username = chConfigration.getUsername();
+                password = chConfigration.getPassword();
+                driver = chConfigration.getDriver();
+                jdbcurl = chConfigration.getJdbc();
+                break;
             default:
                 break;
         }
@@ -493,6 +506,14 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setJdbcUrl(pgConfigration.getJdbc());
                 jdbcDTO = pgConfigration;
                 break;
+            case ch:
+                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
+                dataSource.setUser(chConfigration.getUsername());
+                dataSource.setDriverClass(chConfigration.getDriver());
+                dataSource.setPassword(chConfigration.getPassword());
+                dataSource.setJdbcUrl(chConfigration.getJdbc());
+                jdbcDTO = chConfigration;
+                break;
             default:
                 break;
         }
@@ -515,7 +536,8 @@ public class JdbcProvider extends DatasourceProvider {
                 PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
                 return pgConfigration.getDataBase();
             default:
-                return null;
+                JdbcDTO jdbcDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcDTO.class);
+                return jdbcDTO.getDataBase();
         }
     }
 
@@ -546,6 +568,9 @@ public class JdbcProvider extends DatasourceProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+            case ch:
+                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
+                return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfigration.getDataBase());
             default:
                 return "show tables;";
         }
