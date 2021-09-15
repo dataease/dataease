@@ -53,6 +53,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    public SysUserEntity getUserBySub(String sub) {
+        return authMapper.findUserBySub(sub);
+    }
+
+    @Override
     public List<String> roles(Long userId){
         return authMapper.roleCodes(userId);
     }

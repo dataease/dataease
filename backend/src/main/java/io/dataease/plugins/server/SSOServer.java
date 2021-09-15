@@ -52,10 +52,10 @@ public class SSOServer {
         SSOToken ssoToken = oidcXpackService.requestSsoToken(config, code, state);
         
         SSOUserInfo ssoUserInfo = oidcXpackService.requestUserInfo(config, ssoToken.getAccessToken());
-        SysUserEntity sysUserEntity = authUserService.getUserByName(ssoUserInfo.getUserName());
+        SysUserEntity sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
         if(null == sysUserEntity){
             sysUserService.saveOIDCUser(ssoUserInfo);
-            sysUserEntity = authUserService.getUserByName(ssoUserInfo.getUserName());
+            sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
         }
         TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
         String realPwd = CodingUtil.md5(sysUserService.defaultPWD());

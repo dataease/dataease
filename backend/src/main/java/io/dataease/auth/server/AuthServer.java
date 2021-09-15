@@ -119,8 +119,11 @@ public class AuthServer implements AuthApi {
         if (isOpenOidc()) {
             HttpServletRequest request = ServletUtils.request();
             String idToken = request.getHeader("IdToken");
-            OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
-            oidcXpackService.logout(idToken);
+            if (StringUtils.isNotBlank(idToken)) {
+                OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
+                oidcXpackService.logout(idToken);
+            }
+            
         }
         if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
             return "success";
