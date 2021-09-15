@@ -208,7 +208,9 @@ public class ChartViewService {
             customFilter.addAll(collect);
         }
 
-        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+        if (StringUtils.equalsIgnoreCase("text", view.getType())
+                || StringUtils.equalsIgnoreCase("gauge", view.getType())
+                || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
             xAxis = new ArrayList<>();
             if (CollectionUtils.isEmpty(yAxis)) {
                 ChartViewDTO dto = new ChartViewDTO();
@@ -457,6 +459,9 @@ public class ChartViewService {
 
         map.putAll(mapChart);
         map.putAll(mapTableNormal);
+
+        List<DatasetTableField>  sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
+        map.put("sourceFields",sourceFields);
 
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);

@@ -15,11 +15,11 @@
               {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
             </div>
             <div class="login-form">
-              <el-form-item v-if="openLdap">
-                <el-radio-group v-if="openLdap" v-model="loginForm.loginType">
-                  <el-radio v-if="openLdap" :label="0" size="mini">普通登录</el-radio>
-                  <el-radio v-if="openLdap" :label="1" size="mini">LDAP</el-radio>
-
+              <el-form-item v-if="loginTypes.length > 1">
+                <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
+                  <el-radio :label="0" size="mini">普通登录</el-radio>
+                  <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
+                  <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item prop="username">
@@ -56,41 +56,20 @@
         </el-col>
       </el-row>
     </div>
+    <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
   </div>
 </template>
 
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus } from '@/api/user'
+import { ldapStatus, oidcStatus } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'Login',
+  components: { PluginCom },
   data() {
-    // const validateUsername = (rule, value, callback) => {
-    //   const userName = value.trim()
-    //   validateUserName({ userName: userName }).then(res => {
-    //     if (res.data) {
-    //       callback()
-    //     } else {
-    //       callback(this.$t('login.username_error'))
-    //     }
-    //   }).catch(() => {
-    //     callback(this.$t('login.username_error'))
-    //   })
-    // //   if (!validUsername(value)) {
-    // //     callback(new Error('Please enter the correct user name'))
-    // //   } else {
-    // //     callback()
-    // //   }
-    // }
-    // const validatePassword = (rule, value, callback) => {
-    //   if (value.length < 8) {
-    //     callback(this.$t('login.password_error'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
     return {
       loginForm: {
         loginType: 0,
@@ -108,7 +87,7 @@ export default {
       loginImageUrl: null,
       loginLogoUrl: null,
       axiosFinished: false,
-      openLdap: true
+      loginTypes: [0]
     }
   },
   computed: {
@@ -126,7 +105,15 @@ export default {
   },
   beforeCreate() {
     ldapStatus().then(res => {
-      this.openLdap = res.success && res.data
+      if (res.success && res.data) {
+        this.loginTypes.push(1)
+      }
+    })
+
+    oidcStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(2)
+      }
     })
   },
   created() {
@@ -168,6 +155,12 @@ export default {
         } else {
           return false
         }
+      })
+    },
+    changeLoginType(val) {
+      if (val !== 2) return
+      this.$nextTick(() => {
+
       })
     }
   }

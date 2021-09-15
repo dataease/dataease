@@ -24,14 +24,14 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="titleForm.color" class="color-picker-style" @change="changeTitleStyle" />
           </el-form-item>
-          <el-form-item :label="$t('chart.text_h_position')" class="form-item">
+          <el-form-item v-show="chart.type && chart.type !== 'liquid'" :label="$t('chart.text_h_position')" class="form-item">
             <el-radio-group v-model="titleForm.hPosition" size="mini" @change="changeTitleStyle">
               <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
               <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item v-show="chart.type && !chart.type.includes('table')" :label="$t('chart.text_v_position')" class="form-item">
+          <el-form-item v-show="chart.type && !chart.type.includes('table') && chart.type !== 'liquid'" :label="$t('chart.text_v_position')" class="form-item">
             <el-radio-group v-model="titleForm.vPosition" size="mini" @change="changeTitleStyle">
               <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
               <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>

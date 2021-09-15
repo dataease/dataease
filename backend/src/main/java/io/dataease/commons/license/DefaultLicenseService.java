@@ -45,9 +45,12 @@ public class DefaultLicenseService {
             }
             return f2CLicenseResponse;
         }catch (Exception e){
-            e.printStackTrace();
-            return F2CLicenseResponse.invalid(e.getMessage());
+            LogUtil.error(e.getMessage());
+            // e.printStackTrace();
+            // return F2CLicenseResponse.invalid(e.getMessage());
+            return F2CLicenseResponse.noRecord();
         }
+
     }
 
 

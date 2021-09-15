@@ -130,6 +130,8 @@ export default {
     re_login: '重新登录'
   },
   commons: {
+    search: '搜索',
+    folder: '目录',
     no_target_permission: '没有权限',
     success: '成功',
     switch_lang: '切换语言成功',
@@ -529,6 +531,15 @@ export default {
     filter_cannot_be_empty: 'LDAP 用户过滤器不能为空',
     mapping_cannot_be_empty: 'LDAP 用户属性映射不能为空',
     password_cannot_be_empty: 'LDAP 密码不能为空'
+  },
+  oidc: {
+    auth_endpoint: '请输入AuthEndpoint',
+    token_endpoint: '请输入TokenEndpoint',
+    userinfo_endpoint: '请输入UserinfoEndpoint',
+    logout_endpoint: '请输入logoutEndpoint',
+    clientId: '请输入ClientId',
+    secret: '请输入Secret',
+    open: '启用OIDC认证'
   },
   role: {
     menu_authorization: '菜单授权',

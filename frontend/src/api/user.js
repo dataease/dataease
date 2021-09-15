@@ -57,3 +57,10 @@ export function ldapStatus() {
     method: 'post'
   })
 }
+
+export function oidcStatus() {
+  return request({
+    url: '/api/auth/isOpenOidc',
+    method: 'post'
+  })
+}

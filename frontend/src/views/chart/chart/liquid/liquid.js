@@ -5,15 +5,7 @@ import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
 export function baseLiquid(plot, container, chart) {
   let value = 0
   const colors = []
-  let max
-  let radius
-  let outlineBorder
-  let outlineDistance
-  let waveLength
-  let waveCount
-  let bgColor
-  let shape
-  let labelContent
+  let max, radius, outlineBorder, outlineDistance, waveLength, waveCount, bgColor, shape, labelContent, title
   if (chart.data) {
     if (chart.data.series.length > 0) {
       value = chart.data.series[0].data[0].value
@@ -36,7 +28,7 @@ export function baseLiquid(plot, container, chart) {
       max = size.liquidMax ? size.liquidMax : DEFAULT_SIZE.liquidMax
       radius = parseFloat((size.liquidSize ? size.liquidSize : DEFAULT_SIZE.liquidSize) / 100)
       outlineBorder = parseInt(size.liquidOutlineBorder ? size.liquidOutlineBorder : DEFAULT_SIZE.liquidOutlineBorder)
-      outlineDistance = parseInt(size.liquidOutlineDistance ? size.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance)
+      outlineDistance = parseInt((size.liquidOutlineDistance || size.liquidOutlineDistance === 0) ? size.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance)
       waveLength = parseInt(size.liquidWaveLength ? size.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength)
       waveCount = parseInt(size.liquidWaveCount ? size.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount)
       shape = size.liquidShape ? size.liquidShape : DEFAULT_SIZE.liquidShape
@@ -61,6 +53,22 @@ export function baseLiquid(plot, container, chart) {
     customStyle = JSON.parse(chart.customStyle)
     if (customStyle.background) {
       bgColor = customStyle.background.color.concat(digToHex(parseInt(customStyle.background.alpha)))
+    }
+    if (customStyle.text) {
+      const t = JSON.parse(JSON.stringify(customStyle.text))
+      if (t.show) {
+        title = {
+          formatter: () => { return chart.title },
+          style: ({ percent }) => ({
+            fontSize: parseInt(t.fontSize),
+            color: t.color,
+            fontWeight: t.isBolder ? 'bold' : 'normal',
+            fontStyle: t.isItalic ? 'italic' : 'normal'
+          })
+        }
+      } else {
+        title = false
+      }
     }
   }
   // 开始渲染
@@ -87,6 +95,7 @@ export function baseLiquid(plot, container, chart) {
       count: waveCount
     },
     statistic: {
+      title: title,
       content: labelContent
     }
   })

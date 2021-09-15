@@ -23,6 +23,8 @@ public interface AuthUserService {
 
     boolean supportLdap();
 
+    Boolean supportOidc();
+
 
 
 }

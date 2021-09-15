@@ -130,6 +130,8 @@ export default {
     re_login: 'Login again'
   },
   commons: {
+    search: 'Search',
+    folder: 'Folder',
     no_target_permission: 'No permission',
     success: 'Success',
     switch_lang: 'Switch Language Success',

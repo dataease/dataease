@@ -503,7 +503,7 @@
                   <el-collapse-item v-show="view.type && view.type.includes('radar')" name="split" :title="$t('chart.split')">
                     <split-selector :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && view.type !== 'liquid'" name="title" :title="$t('chart.title')">
+                  <el-collapse-item v-show="view.type" name="title" :title="$t('chart.title')">
                     <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
                   </el-collapse-item>
                   <el-collapse-item v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && chart.type !== 'treemap' && view.type !== 'liquid'" name="legend" :title="$t('chart.legend')">

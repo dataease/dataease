@@ -22,7 +22,7 @@
       <!-- <el-table-column prop="gender" :label="$t('commons.gender')" width="60" /> -->
       <el-table-column prop="from" :label="$t('user.source')" width="80">
         <template slot-scope="scope">
-          <div>{{ scope.row.from === 0 ? 'LOCAL' : 'LDAP' }}</div>
+          <div>{{ scope.row.from === 0 ? 'LOCAL' : scope.row.from === 1 ? 'LDAP' : 'OIDC' }}</div>
         </template>
       </el-table-column>
 
