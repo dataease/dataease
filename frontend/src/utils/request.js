@@ -2,7 +2,7 @@ import axios from 'axios'
 // import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { $alert, $error } from './message'
-import { getToken } from '@/utils/auth'
+import { getToken, getIdToken } from '@/utils/auth'
 import Config from '@/settings'
 import i18n from '@/lang'
 import { tryShowLoading, tryHideLoading } from './loading'
@@ -23,6 +23,10 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
+    const idToken = getIdToken()
+    if (idToken) {
+      config.headers[Config.IdTokenKey] = idToken
+    }
 
     if (store.getters.token) {
       // let each request carry token

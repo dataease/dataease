@@ -25,6 +25,8 @@ public interface AuthMapper {
 
     SysUserEntity findUserByName(@Param("username") String username);
 
+    SysUserEntity findUserBySub(@Param("sub") String sub);
+
 
     List<CurrentRoleDto> roles(@Param("userId") Long userId);
 
