@@ -29,3 +29,5 @@ ALTER TABLE `sys_user` ADD COLUMN `from` int(4) NOT NULL COMMENT '来源' AFTER 
 
 INSERT INTO `sys_menu` VALUES (60, 1, 0, 1, '导入LDAP用户', 'system-user-import', 'system/user/imp-ldap', 11, NULL, 'user-ldap', b'0', b'0', b'1', 'user:import', NULL, NULL, NULL, NULL);
 
+ALTER TABLE `datasource` ADD COLUMN `compute_type` VARCHAR(45) NULL DEFAULT 'ALL' COMMENT '数据计算模式' AFTER `status`;
+update datasource set compute_type='ALL';

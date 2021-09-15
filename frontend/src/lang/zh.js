@@ -1074,11 +1074,14 @@ export default {
     create: '新建数据源',
     type: '类型',
     please_choose_type: '请选择数据源类型',
+    please_choose_data_type: '请选择计算模式',
     data_base: '数据库名称',
     user_name: '用户名',
     password: '密码',
     host: '主机名/IP地址',
     port: '端口',
+    datasource_url: '地址',
+    please_input_datasource_url: '请输入 Elasticsearch 地址，如: http://es_host:es_port',
     please_input_data_base: '请输入数据库名称',
     please_select_oracle_type: '选择连接类型',
     please_input_user_name: '请输入用户名',
@@ -1115,7 +1118,11 @@ export default {
     please_input_acquire_increment: '请输入增长数',
     please_input_connect_timeout: '请输入连接超时(秒)',
     no_less_then_0: '高级设置中的参数不能小于零',
-    priority: '高级设置'
+    priority: '高级设置',
+    data_mode: '数据模式',
+    direct: '直连模式',
+    extract: '抽取模式',
+    all_compute_mode: '直连、抽取模式'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

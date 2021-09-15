@@ -1047,6 +1047,8 @@ export default {
     password: '密碼',
     host: '主機名/IP地址',
     port: '端口',
+    datasource_url: '地址',
+    please_input_datasource_url: '請輸入 Elasticsearch 地址，如: http://es_host:es_port',
     please_input_data_base: '請輸入數據庫名稱',
     please_input_user_name: '請輸入用戶名',
     please_input_password: '請輸入密碼',
