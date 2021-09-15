@@ -264,6 +264,7 @@ export default {
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
             if (!response.data.drill) {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+              this.resetDrill()
             }
             this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
             this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
