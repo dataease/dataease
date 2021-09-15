@@ -610,7 +610,7 @@ export default {
         const rect = this.$el.parentNode.getBoundingClientRect()
         this.parentX = rect.x
         this.parentY = rect.y
-        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)), Math.round(parseFloat(style.getPropertyValue('height'), 10))]
+        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)), 100000]
       }
       if (typeof this.parent === 'string') {
         const parentNode = document.querySelector(this.parent)
