@@ -433,6 +433,11 @@ export default {
     fixedHeader: 'Fixed Header',
     sidebarLogo: 'Sidebar Logo'
   },
+  sysParams: {
+    display: 'Display Setting',
+    ldap: 'LDAP Setting',
+    oidc: 'OIDC Setting'
+  },
   license: {
     i18n_no_license_record: 'No License Record',
     i18n_license_is_empty: 'License is empty.',
@@ -499,6 +504,47 @@ export default {
     confirm_passwd: 'Confirm Password',
     change_password: 'Change Password',
     search_by_name: 'Search by name'
+  },
+  ldap: {
+    url: 'LDAP url',
+    dn: 'LDAP DN',
+    password: 'Password',
+    ou: 'OU',
+    filter: 'filter',
+    mapping: 'LDAP mapping',
+    open: 'Enable LDAP Authentication',
+    input_url: 'Please key LDAP url',
+    input_dn: 'Please key DN',
+    input_password: 'Please key password',
+    input_ou: 'Please key OU',
+    input_filter: 'Please key filter',
+    input_mapping: 'Please key LDAP mapping',
+    input_username: 'Please key username',
+    input_url_placeholder: 'Please key url (like ldap://localhost:389)',
+    input_ou_placeholder: 'Please key OU ',
+    input_filter_placeholder: 'Please key filter',
+    input_mapping_placeholder: 'like：{"username":"uid","name":"sn","email":"mail"}',
+    test_connect: 'Test connect',
+    edit: 'Edit',
+    login_success: 'Login success',
+    url_cannot_be_empty: 'LDAP url can not be empty',
+    dn_cannot_be_empty: 'LDAP DN can not be empty',
+    ou_cannot_be_empty: 'LDAP OU can not be empty',
+    filter_cannot_be_empty: 'LDAP filter can not be empty',
+    mapping_cannot_be_empty: 'LDAP mapping can not be empty',
+    password_cannot_be_empty: 'LDAP password can not be empty',
+    import_ldap: 'Import LDAP User'
+  },
+  oidc: {
+    auth_endpoint: 'Please key AuthEndpoint',
+    token_endpoint: 'Please key TokenEndpoint',
+    userinfo_endpoint: 'Please key UserinfoEndpoint',
+    logout_endpoint: 'Please key logoutEndpoint',
+    clientId: 'Please key ClientId',
+    secret: 'Please key Secret',
+    scope: 'Please key scope',
+    redirectUrl: 'Please key redirectUrl',
+    open: 'Enable OIDC Authentication'
   },
   role: {
     menu_authorization: 'Menu Authorization',

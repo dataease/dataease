@@ -433,6 +433,11 @@ export default {
     fixedHeader: '固定 Header',
     sidebarLogo: '侧边栏 Logo'
   },
+  sysParams: {
+    display: '显示设置',
+    ldap: 'LDAP设置',
+    oidc: 'OIDC设置'
+  },
   license: {
     i18n_no_license_record: '没有 License 记录',
     i18n_license_is_empty: 'License 为空',
@@ -539,6 +544,8 @@ export default {
     logout_endpoint: '请输入logoutEndpoint',
     clientId: '请输入ClientId',
     secret: '请输入Secret',
+    scope: '请输入scope',
+    redirectUrl: '请输入redirectUrl',
     open: '启用OIDC认证'
   },
   role: {
