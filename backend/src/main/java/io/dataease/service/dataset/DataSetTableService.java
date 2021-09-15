@@ -797,18 +797,32 @@ public class DataSetTableService {
             String f = field.substring(0, field.length() - 1);
 
             StringBuilder join = new StringBuilder();
+            List<DataSetTableUnionDTO> unions = new ArrayList<>();
             for (DataTableInfoCustomUnion dataTableInfoCustomUnion : dataTableInfoDTO.getList()) {
                 for (DataSetTableUnionDTO dto : list) {
                     // 被关联表和自助数据集的表相等
                     if (StringUtils.equals(dto.getTargetTableId(), dataTableInfoCustomUnion.getTableId())) {
-                        DatasetTableField sourceField = dataSetTableFieldsService.get(dto.getSourceTableFieldId());
-                        DatasetTableField targetField = dataSetTableFieldsService.get(dto.getTargetTableFieldId());
-                        if (ObjectUtils.isEmpty(sourceField) || ObjectUtils.isEmpty(targetField)) {
-                            DEException.throwException(Translator.get("i18n_dataset_field_delete"));
-                        }
+                        unions.add(dto);
+                    }
+                }
+            }
+            if (CollectionUtils.isNotEmpty(unions)) {
+                for (int i = 0; i < unions.size(); i++) {
+                    DataSetTableUnionDTO dto = unions.get(i);
+                    DatasetTableField sourceField = dataSetTableFieldsService.get(dto.getSourceTableFieldId());
+                    DatasetTableField targetField = dataSetTableFieldsService.get(dto.getTargetTableFieldId());
+                    if (ObjectUtils.isEmpty(sourceField) || ObjectUtils.isEmpty(targetField)) {
+                        DEException.throwException(Translator.get("i18n_dataset_field_delete"));
+                    }
+                    if (i == 0) {
                         join.append(convertUnionTypeToSQL(dto.getSourceUnionRelation()))
                                 .append(DorisTableUtils.dorisName(dto.getTargetTableId()))
                                 .append(" ON ")
+                                .append(DorisTableUtils.dorisName(dto.getSourceTableId())).append(".").append(sourceField.getDataeaseName())
+                                .append(" = ")
+                                .append(DorisTableUtils.dorisName(dto.getTargetTableId())).append(".").append(targetField.getDataeaseName());
+                    } else {
+                        join.append(" AND ")
                                 .append(DorisTableUtils.dorisName(dto.getSourceTableId())).append(".").append(sourceField.getDataeaseName())
                                 .append(" = ")
                                 .append(DorisTableUtils.dorisName(dto.getTargetTableId())).append(".").append(targetField.getDataeaseName());
@@ -857,22 +871,36 @@ public class DataSetTableService {
             String f = field.substring(0, field.length() - 1);
 
             StringBuilder join = new StringBuilder();
+            List<DataSetTableUnionDTO> unions = new ArrayList<>();
             for (DataTableInfoCustomUnion dataTableInfoCustomUnion : dataTableInfoDTO.getList()) {
                 for (DataSetTableUnionDTO dto : list) {
                     // 被关联表和自助数据集的表相等
                     if (StringUtils.equals(dto.getTargetTableId(), dataTableInfoCustomUnion.getTableId())) {
-                        DatasetTableField sourceField = dataSetTableFieldsService.get(dto.getSourceTableFieldId());
-                        DatasetTableField targetField = dataSetTableFieldsService.get(dto.getTargetTableFieldId());
-                        if (ObjectUtils.isEmpty(sourceField) || ObjectUtils.isEmpty(targetField)) {
-                            DEException.throwException(Translator.get("i18n_dataset_field_delete"));
-                        }
-                        DatasetTable sourceTable = datasetTableMapper.selectByPrimaryKey(dto.getSourceTableId());
-                        String sourceTableName = new Gson().fromJson(sourceTable.getInfo(), DataTableInfoDTO.class).getTable();
-                        DatasetTable targetTable = datasetTableMapper.selectByPrimaryKey(dto.getTargetTableId());
-                        String targetTableName = new Gson().fromJson(targetTable.getInfo(), DataTableInfoDTO.class).getTable();
+                        unions.add(dto);
+                    }
+                }
+            }
+            if (CollectionUtils.isNotEmpty(unions)) {
+                for (int i = 0; i < unions.size(); i++) {
+                    DataSetTableUnionDTO dto = unions.get(i);
+                    DatasetTableField sourceField = dataSetTableFieldsService.get(dto.getSourceTableFieldId());
+                    DatasetTableField targetField = dataSetTableFieldsService.get(dto.getTargetTableFieldId());
+                    if (ObjectUtils.isEmpty(sourceField) || ObjectUtils.isEmpty(targetField)) {
+                        DEException.throwException(Translator.get("i18n_dataset_field_delete"));
+                    }
+                    DatasetTable sourceTable = datasetTableMapper.selectByPrimaryKey(dto.getSourceTableId());
+                    String sourceTableName = new Gson().fromJson(sourceTable.getInfo(), DataTableInfoDTO.class).getTable();
+                    DatasetTable targetTable = datasetTableMapper.selectByPrimaryKey(dto.getTargetTableId());
+                    String targetTableName = new Gson().fromJson(targetTable.getInfo(), DataTableInfoDTO.class).getTable();
+                    if (i == 0) {
                         join.append(convertUnionTypeToSQL(dto.getSourceUnionRelation()))
                                 .append(String.format(keyword, targetTableName))
                                 .append(" ON ")
+                                .append(String.format(keyword, sourceTableName)).append(".").append(String.format(keyword, sourceField.getOriginName()))
+                                .append(" = ")
+                                .append(String.format(keyword, targetTableName)).append(".").append(String.format(keyword, targetField.getOriginName()));
+                    } else {
+                        join.append(" AND ")
                                 .append(String.format(keyword, sourceTableName)).append(".").append(String.format(keyword, sourceField.getOriginName()))
                                 .append(" = ")
                                 .append(String.format(keyword, targetTableName)).append(".").append(String.format(keyword, targetField.getOriginName()));
