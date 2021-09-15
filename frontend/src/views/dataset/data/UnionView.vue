@@ -222,7 +222,7 @@ export default {
       //   if (response.data) {
       this.union.sourceTableId = this.table.id
       fieldList(this.table.id).then(response => {
-        this.sourceFieldOption = response.data
+        this.sourceFieldOption = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
       })
       this.editUnion = true
       //   } else {
@@ -320,7 +320,7 @@ export default {
       this.union.targetTableId = param.id
       this.union.targetTableFieldId = ''
       fieldList(param.id).then(response => {
-        this.targetFieldOption = response.data
+        this.targetFieldOption = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
       })
       this.$refs['targetTable'].doClose()
     }

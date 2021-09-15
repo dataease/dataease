@@ -57,7 +57,7 @@ export default {
   watch: {
     'table': function() {
       fieldList(this.table.id).then(response => {
-        this.fields = response.data
+        this.fields = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
 
         this.checkedFields = []
         this.checkedList.forEach(ele => {
@@ -78,7 +78,7 @@ export default {
     initField() {
       if (this.table.id) {
         fieldList(this.table.id).then(response => {
-          this.fields = response.data
+          this.fields = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
         })
       }
     },
