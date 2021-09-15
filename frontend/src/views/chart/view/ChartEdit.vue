@@ -949,6 +949,12 @@ export default {
         })
       }
       view.extStack.forEach(function(ele) {
+        if (!ele.dateStyle || ele.dateStyle === '') {
+          ele.dateStyle = 'y_M_d'
+        }
+        if (!ele.datePattern || ele.datePattern === '') {
+          ele.datePattern = 'date_sub'
+        }
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
         }
