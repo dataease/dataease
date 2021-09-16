@@ -52,7 +52,7 @@ import EditBar from '@/components/canvas/components/Editor/EditBar'
 
 export default {
   replace: true,
-  name: 'VueDragResizeRotate',
+  name: 'Dedrag',
   components: { EditBar },
   props: {
     className: {
@@ -1572,6 +1572,10 @@ export default {
       addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       //  窗口变化时，检查容器大小
       addEvent(window, 'resize', this.checkParentSize)
+
+      // private 记录当前组件的操作状态
+      this.curComponent.optStatus.resizing = this.resizing
+      this.curComponent.optStatus.dragging = this.dragging
     },
     createdFunction() {
       // minWidth不能大于maxWidth

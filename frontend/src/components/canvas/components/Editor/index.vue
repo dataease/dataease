@@ -104,9 +104,8 @@
         :active="item === curComponent"
       />
     </de-drag>
-
     <!--拖拽阴影部分-->
-
+    <drag-shadow v-if="curComponent&&this.curComponent.optStatus.dragging" />
     <!-- 右击菜单 -->
     <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
@@ -169,9 +168,10 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import DragShadow from '@/components/DeDrag/shadow'
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow },
   props: {
     isEdit: {
       type: Boolean,
