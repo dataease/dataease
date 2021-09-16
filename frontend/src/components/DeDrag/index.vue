@@ -32,7 +32,9 @@
     >
       <slot :name="handlei" />
     </div>
-    <slot />
+    <div :style="mainSlotStyle">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -445,7 +447,7 @@ export default {
       return {
         width: this.computedWidth,
         height: this.computedHeight,
-        opacity: 0.2,
+        opacity: 0.4,
         background: 'gray'
       }
     },
@@ -473,7 +475,44 @@ export default {
       return this.height + 'px'
     },
 
+    //  根据left right 算出元素的宽度
+    computedMainSlotWidth() {
+      if (this.w === 'auto') {
+        if (!this.widthTouched) {
+          return 'auto'
+        }
+      }
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
+        return width + 'px'
+      } else {
+        return this.width + 'px'
+      }
+    },
+    // 根据top bottom 算出元素的宽度
+    computedMainSlotHeight() {
+      if (this.h === 'auto') {
+        if (!this.heightTouched) {
+          return 'auto'
+        }
+      }
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+        return height + 'px'
+      } else {
+        return this.height + 'px'
+      }
+    },
+
     // private
+    mainSlotStyle() {
+      const style = {
+        width: this.computedMainSlotWidth,
+        height: this.computedMainSlotHeight
+      }
+      console.log('style=>' + JSON.stringify(style))
+      return style
+    },
     ...mapState([
       'curComponent',
       'editor',

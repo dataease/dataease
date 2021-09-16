@@ -435,7 +435,7 @@ export default {
             this.$refs[this.element.propValue.id].chartResize()
           }
           this.destroyTimeMachine()
-        }, 200)
+        }, 50)
       }
     },
 

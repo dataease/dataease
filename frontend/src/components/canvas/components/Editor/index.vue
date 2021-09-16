@@ -12,7 +12,7 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
+    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -221,8 +221,8 @@ export default {
       },
       // 矩阵数量 默认 128 * 72
       matrixCount: {
-        x: 80,
-        y: 45
+        x: 36,
+        y: 18
       },
       customStyleHistory: null,
       showDrag: true,
@@ -636,6 +636,7 @@ export default {
     },
     resizeView(index, item) {
       if (item.type === 'view') {
+        console.log('view:resizeView')
         this.$refs.wrapperChild[index].chartResize()
       }
     }
