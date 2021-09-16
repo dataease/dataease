@@ -12,7 +12,7 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-<!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
+    <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -41,7 +41,7 @@
       :linkage-active="linkageSettingStatus&&item===curLinkageView"
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
-      @resizestop="resizestop(index,item)"
+      @resizeView="resizeView(index,item)"
     >
       <component
         :is="item.component"
@@ -104,6 +104,9 @@
         :active="item === curComponent"
       />
     </de-drag>
+
+    <!--拖拽阴影部分-->
+
     <!-- 右击菜单 -->
     <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
@@ -631,7 +634,7 @@ export default {
     showViewDetails(index) {
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
-    resizestop(index, item) {
+    resizeView(index, item) {
       if (item.type === 'view') {
         this.$refs.wrapperChild[index].chartResize()
       }
