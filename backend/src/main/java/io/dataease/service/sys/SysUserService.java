@@ -120,6 +120,7 @@ public class SysUserService {
         sysUser.setEnabled(1L);
         sysUser.setLanguage("zh_CN");
         sysUser.setFrom(2);
+        sysUser.setIsAdmin(false);
         sysUser.setSub(ssoUserInfo.getSub());
         sysUserMapper.insert(sysUser);
         SysUser dbUser = findOne(sysUser);
@@ -149,6 +150,7 @@ public class SysUserService {
             sysUser.setUpdateTime(now);
             sysUser.setEnabled(request.getEnabled());
             sysUser.setLanguage("zh_CN");
+            sysUser.setIsAdmin(false);
             sysUser.setFrom(1);
             return sysUser;
         }).collect(Collectors.toList());
