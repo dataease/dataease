@@ -21,6 +21,7 @@
     @mouseleave="leave"
   >
     <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
+    <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -438,6 +439,14 @@ export default {
         zIndex: this.zIndex,
         fontSize: this.handleInfo.size * 2 + 'px',
         ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
+      }
+    },
+    resizeShadowStyle() {
+      return {
+        width: this.computedWidth,
+        height: this.computedHeight,
+        opacity: 0.2,
+        background: 'gray'
       }
     },
     // 控制柄显示与否
@@ -1490,7 +1499,7 @@ export default {
       // resize
       const self = this
       setTimeout(function() {
-        self.$emit('resizestop')
+        self.$emit('resizeView')
       }, 200)
     },
     mountedFunction() {
