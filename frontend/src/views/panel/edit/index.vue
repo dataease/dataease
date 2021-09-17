@@ -440,6 +440,7 @@ export default {
       return data
     },
     handleDrop(e) {
+      this.$store.commit('clearDragComponentInfo')
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
@@ -509,6 +510,7 @@ export default {
     },
 
     handleDragOver(e) {
+      console.log('handleDragOver=>x:' + this.getPositionX(e.layerX) + ';y=' + this.getPositionY(e.layerY) + e.dataTransfer.getData('componentInfo'))
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
     },
