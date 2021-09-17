@@ -12,7 +12,7 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
+<!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -636,7 +636,7 @@ export default {
     },
     resizeView(index, item) {
       if (item.type === 'view') {
-        console.log('view:resizeView')
+        // console.log('view:resizeView')
         this.$refs.wrapperChild[index].chartResize()
       }
     }
