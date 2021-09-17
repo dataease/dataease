@@ -58,7 +58,9 @@ const data = {
     // 和当前组件联动的目标组件
     targetLinkageInfo: [],
     // 当前仪表板联动 下钻 上卷等信息
-    nowPanelTrackInfo: {}
+    nowPanelTrackInfo: {},
+    // 拖拽的组件信息
+    dragComponentInfo: null
   },
   mutations: {
     ...animation.mutations,
@@ -254,6 +256,12 @@ const data = {
         }
       })
       // state.styleChangeTimes++
+    },
+    setDragComponentInfo(state, dragComponentInfo) {
+      state.dragComponentInfo = dragComponentInfo
+    },
+    clearDragComponentInfo(state) {
+      state.dragComponentInfo = null
     }
   },
   modules: {

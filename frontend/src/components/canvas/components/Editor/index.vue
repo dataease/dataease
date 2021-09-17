@@ -670,7 +670,7 @@ export default {
 }
 
 .gap_class{
-   padding:5px;
+   padding:3px;
 }
 
 // 拖拽组件样式

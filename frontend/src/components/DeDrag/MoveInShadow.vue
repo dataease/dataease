@@ -1,19 +1,41 @@
 <template>
-  <div style="z-index:1" :style="style" />
+  <div style="z-index:-1" :style="style" />
 </template>
 
 <script>
 import { mapState } from 'vuex'
 export default {
   replace: true,
-  name: 'Shadow',
+  name: 'MoveInShadow',
+  props: {
+    w: {
+      type: Number,
+      required: true
+    },
+    h: {
+      type: Number,
+      required: true
+    },
+    x: {
+      type: Number,
+      required: true
+    },
+    y: {
+      type: Number,
+      required: true
+    },
+    z: {
+      type: Number,
+      required: true
+    }
+  },
   computed: {
     style() {
       // 当前默认为自适应
-      let left = this.curComponent.style.left * this.curCanvasScale.scaleWidth / 100
-      let top = this.curComponent.style.top * this.curCanvasScale.scaleHeight / 100
-      let width = this.curComponent.style.width * this.curCanvasScale.scaleWidth / 100
-      let height = this.curComponent.style.height * this.curCanvasScale.scaleHeight / 100
+      let left = this.x
+      let top = this.y
+      let width = this.w
+      let height = this.h
       if (this.canvasStyleData.auxiliaryMatrix) {
         left = Math.round(left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
         width = Math.round(width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
