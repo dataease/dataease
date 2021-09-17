@@ -87,9 +87,11 @@ const data = {
 
     setCurComponent(state, { component, index }) {
       // 当前视图操作状态置空
-      component['optStatus'] = {
-        dragging: false,
-        resizing: false
+      if (component) {
+        component['optStatus'] = {
+          dragging: false,
+          resizing: false
+        }
       }
       state.styleChangeTimes = 0
       state.curComponent = component

@@ -510,11 +510,13 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      console.log('style=>' + JSON.stringify(style))
+      // console.log('style=>' + JSON.stringify(style))
       return style
     },
+    curComponent() {
+      return this.$store.state.curComponent
+    },
     ...mapState([
-      'curComponent',
       'editor',
       'curCanvasScale',
       'canvasStyleData',
@@ -614,6 +616,18 @@ export default {
       this.beforeDestroyFunction()
       this.createdFunction()
       this.mountedFunction()
+    },
+    // private 监控dragging  resizing
+    dragging(val) {
+      if (this.enabled) {
+        this.curComponent.optStatus.dragging = val
+      }
+    },
+    // private 监控dragging  resizing
+    resizing(val) {
+      if (this.enabled) {
+        this.curComponent.optStatus.resizing = val
+      }
     }
   },
   created: function() {
@@ -1572,10 +1586,6 @@ export default {
       addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       //  窗口变化时，检查容器大小
       addEvent(window, 'resize', this.checkParentSize)
-
-      // private 记录当前组件的操作状态
-      this.curComponent.optStatus.resizing = this.resizing
-      this.curComponent.optStatus.dragging = this.dragging
     },
     createdFunction() {
       // minWidth不能大于maxWidth
