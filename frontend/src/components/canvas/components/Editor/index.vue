@@ -32,7 +32,6 @@
       :active="item === curComponent"
       :element="item"
       class-name-active="de-drag-active"
-      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
       :snap-tolerance="2"
       :change-style="customStyle"
@@ -671,7 +670,7 @@ export default {
 }
 
 .gap_class{
-   padding:3px;
+   padding:5px;
 }
 
 // 拖拽组件样式
