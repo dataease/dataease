@@ -32,7 +32,7 @@
     >
       <slot :name="handlei" />
     </div>
-    <div :style="mainSlotStyle">
+    <div :style="mainSlotStyle" :class="{'gap_class':canvasStyleData.panel.gap==='yes'}">
       <slot />
     </div>
   </div>
@@ -1710,6 +1710,10 @@ export default {
 
 .linkageSetting{
   opacity: 0.5;
+}
+
+.gap_class{
+  padding:5px;
 }
 
 /*.mouseOn >>> .icon-shezhi{*/
