@@ -816,6 +816,12 @@ public class EsQueryProvider extends QueryProvider {
             split = "-";
         } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
             split = "/";
+        } else {
+            split = "-";
+        }
+
+        if (StringUtils.isEmpty(dateStyle)) {
+            return "YYYY-MM-dd HH:mm:ss";
         }
 
         switch (dateStyle) {
