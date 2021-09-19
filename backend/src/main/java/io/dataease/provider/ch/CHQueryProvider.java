@@ -1,9 +1,10 @@
-package io.dataease.provider.mysql;
+package io.dataease.provider.ch;
 
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
 import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
+import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
@@ -31,15 +32,21 @@ import static io.dataease.provider.SQLConstants.TABLE_ALIAS_PREFIX;
  * @Author gin
  * @Date 2021/5/17 2:43 下午
  */
-@Service("mysqlQuery")
-public class MysqlQueryProvider extends QueryProvider {
+@Service("chQuery")
+public class CHQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
 
     @Override
     public Integer transFieldType(String field) {
+        if(field.indexOf("ARRAY") > -1){
+            field = "ARRAY";
+        }
+        if(field.indexOf("DATETIME64") > -1){
+            field = "DATETIME64";
+        }
         switch (field) {
-            case "CHAR":
+            case "STRING":
             case "VARCHAR":
             case "TEXT":
             case "TINYTEXT":
@@ -48,19 +55,21 @@ public class MysqlQueryProvider extends QueryProvider {
             case "ENUM":
                 return 0;// 文本
             case "DATE":
-            case "TIME":
-            case "YEAR":
             case "DATETIME":
+            case "DATETIME64":
             case "TIMESTAMP":
                 return 1;// 时间
-            case "INT":
-            case "SMALLINT":
-            case "MEDIUMINT":
-            case "INTEGER":
-            case "BIGINT":
+            case "INT8":
+            case "INT16":
+            case "INT32":
+            case "INT64":
+            case "UINT8":
+            case "UINT16":
+            case "UINT32":
+            case "UINT64":
                 return 2;// 整型
-            case "FLOAT":
-            case "DOUBLE":
+            case "FLOAT32":
+            case "Float64":
             case "DECIMAL":
                 return 3;// 浮点
             case "BIT":
@@ -79,7 +88,7 @@ public class MysqlQueryProvider extends QueryProvider {
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -91,35 +100,39 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(f.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
                 // 处理横轴字段
-                if (f.getDeExtractType() == 1) {
-                    if (f.getDeType() == 2 || f.getDeType() == 3) {
-                        fieldName = String.format(MySQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
+                if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
+                    if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                        if(f.getType().equalsIgnoreCase("DATE")){
+                            fieldName = String.format(CHConstants.toInt32, String.format(CHConstants.toDateTime, originField)) + "*1000";
+                        }else {
+                            fieldName = String.format(CHConstants.toInt32, originField) + "*1000";
+                        }
                     } else {
                         fieldName = originField;
                     }
-                } else if (f.getDeExtractType() == 0) {
-                    if (f.getDeType() == 2) {
-                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT);
-                    } else if (f.getDeType() == 3) {
-                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_FLOAT_FORMAT);
-                    } else if (f.getDeType() == 1) {
-                        fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
+                } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                    if (f.getDeType() == DeTypeConstants.DE_INT) {
+                        fieldName = String.format(CHConstants.toInt64, originField);
+                    } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                        fieldName = String.format(CHConstants.toFloat64, originField);
+                    } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                        fieldName = String.format(CHConstants.toDateTime, originField);
                     } else {
                         fieldName = originField;
                     }
                 } else {
-                    if (f.getDeType() == 1) {
-                        String cast = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        fieldName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
-                    } else if (f.getDeType() == 2) {
-                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT);
+                    if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                        String cast = String.format(CHConstants.toFloat64, originField);
+                        fieldName = String.format(CHConstants.toDateTime, cast);
+                    } else if (f.getDeType() == DeTypeConstants.DE_INT) {
+                        fieldName = String.format(CHConstants.toInt64, originField);
                     } else {
                         fieldName = originField;
                     }
@@ -167,7 +180,7 @@ public class MysqlQueryProvider extends QueryProvider {
     @Override
     public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -181,9 +194,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -211,9 +224,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -261,7 +274,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(MySQLConstants.BRACKETS, sql))
+                .tableName(String.format(CHConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -273,7 +286,7 @@ public class MysqlQueryProvider extends QueryProvider {
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -287,9 +300,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -334,7 +347,7 @@ public class MysqlQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("previewSql");
         st.add("isGroup", false);
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(MySQLConstants.BRACKETS, sql))
+                .tableName(String.format(CHConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
@@ -356,7 +369,7 @@ public class MysqlQueryProvider extends QueryProvider {
     @Override
     public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -373,9 +386,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -403,9 +416,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -453,7 +466,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(MySQLConstants.BRACKETS, sql))
+                .tableName(String.format(CHConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -470,7 +483,7 @@ public class MysqlQueryProvider extends QueryProvider {
     @Override
     public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -484,9 +497,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -517,9 +530,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -567,7 +580,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(MySQLConstants.BRACKETS, sql))
+                .tableName(String.format(CHConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -590,7 +603,7 @@ public class MysqlQueryProvider extends QueryProvider {
     public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> yFields = new ArrayList<>();
@@ -604,9 +617,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -649,7 +662,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(MySQLConstants.BRACKETS, sql))
+                .tableName(String.format(CHConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -744,17 +757,17 @@ public class MysqlQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
-            if (field.getDeType() == 1) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(MySQLConstants.STR_TO_DATE, originName, MySQLConstants.DEFAULT_DATE_FORMAT);
+            if (field.getDeType() == DeTypeConstants.DE_TIME) {
+                if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
+                    whereName = String.format(CHConstants.toDateTime, originName);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                    whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
+                if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == 4) {
+                    String cast = String.format(CHConstants.toFloat64, originName);
+                    whereName = String.format(CHConstants.toDateTime, cast);
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
@@ -763,7 +776,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                whereValue = CHConstants.WHERE_VALUE_NULL;
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
                 whereTerm = String.format(whereTerm, originName);
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
@@ -771,7 +784,7 @@ public class MysqlQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
+                whereValue = String.format(CHConstants.WHERE_VALUE_VALUE, value);
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -801,18 +814,18 @@ public class MysqlQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
-            if (field.getDeType() == 1) {
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(MySQLConstants.STR_TO_DATE, originName, MySQLConstants.DEFAULT_DATE_FORMAT);
+            if (field.getDeType() == DeTypeConstants.DE_TIME) {
+                if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
+                    whereName = String.format(CHConstants.toDateTime, originName);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                    whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
+                if (field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == 4) {
+                    String cast = String.format(CHConstants.toFloat64, originName);
+                    whereName = String.format(CHConstants.toDateTime, cast);
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
@@ -827,16 +840,16 @@ public class MysqlQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 whereValue = "'%" + value.get(0) + "%'";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
-                if (request.getDatasetTableField().getDeType() == 1) {
+                if (request.getDatasetTableField().getDeType() == DeTypeConstants.DE_TIME) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(MySQLConstants.WHERE_BETWEEN, startTime, endTime);
+                    whereValue = String.format(CHConstants.WHERE_BETWEEN, startTime, endTime);
                 } else {
-                    whereValue = String.format(MySQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    whereValue = String.format(CHConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value.get(0));
+                whereValue = String.format(CHConstants.WHERE_VALUE_VALUE, value.get(0));
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -864,7 +877,7 @@ public class MysqlQueryProvider extends QueryProvider {
         }
 
         if (StringUtils.isEmpty(dateStyle)) {
-            return "%Y-%m-%d %H:%i:%S";
+            return "%Y-%m-%d %H:%M:%S";
         }
 
         switch (dateStyle) {
@@ -875,36 +888,38 @@ public class MysqlQueryProvider extends QueryProvider {
             case "y_M_d":
                 return "%Y" + split + "%m" + split + "%d";
             case "H_m_s":
-                return "%H:%i:%S";
+                return "%H:%M:%S";
             case "y_M_d_H_m":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i";
+                return "%Y" + split + "%m" + split + "%d" + " %H:%M";
             case "y_M_d_H_m_s":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i:%S";
+                return "%Y" + split + "%m" + split + "%d" + " %H:%M:%S";
             default:
-                return "%Y-%m-%d %H:%i:%S";
+                return "%Y-%m-%d %H:%M:%S";
         }
     }
 
     private SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
-        if (x.getDeExtractType() == 1) {
-            if (x.getDeType() == 2 || x.getDeType() == 3) {
-                fieldName = String.format(MySQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
-            } else if (x.getDeType() == 1) {
+        if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
+            if (x.getDeType() == DeTypeConstants.DE_INT || x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                if(x.getType().equalsIgnoreCase("DATE")){
+                    fieldName = String.format(CHConstants.toInt32, String.format(CHConstants.toDateTime, originField)) + "*1000";
+                }else {
+                    fieldName = String.format(CHConstants.toInt32, originField) + "*1000";
+                }
+            } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                fieldName = String.format(CHConstants.formatDateTime, originField, format);
             } else {
                 fieldName = originField;
             }
         } else {
-            if (x.getDeType() == 1) {
+            if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                if (x.getDeExtractType() == 0) {
-                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                    fieldName = String.format(CHConstants.formatDateTime, String.format(CHConstants.toDateTime, originField), format);
                 } else {
-                    String cast = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                    String from_unixtime = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
-                    fieldName = String.format(MySQLConstants.DATE_FORMAT, from_unixtime, format);
+                    fieldName = String.format(CHConstants.formatDateTime, String.format(CHConstants.toDateTime, String.format(CHConstants.toFloat64, originField)), format);
                 }
             } else {
                 fieldName = originField;
@@ -916,54 +931,21 @@ public class MysqlQueryProvider extends QueryProvider {
                 .build();
     }
 
-    private List<SQLObj> getXWheres(ChartViewFieldDTO x, String originField, String fieldAlias) {
-        List<SQLObj> list = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0) {
-            x.getFilter().forEach(f -> {
-                String whereName = "";
-                String whereTerm = transMysqlFilterTerm(f.getTerm());
-                String whereValue = "";
-                if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
-                    String cast = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                    whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
-                } else {
-                    whereName = originField;
-                }
-                if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = MySQLConstants.WHERE_VALUE_NULL;
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereTerm = String.format(whereTerm, originField);
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                    whereValue = "'%" + f.getValue() + "%'";
-                } else {
-                    whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, f.getValue());
-                }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereAlias(fieldAlias)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
-            });
-        }
-        return list;
-    }
 
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-            fieldName = MySQLConstants.AGG_COUNT;
+            fieldName = CHConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), originField);
+            fieldName = String.format(CHConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(MySQLConstants.CAST, originField, y.getDeType() == 2 ? MySQLConstants.DEFAULT_INT_FORMAT : MySQLConstants.DEFAULT_FLOAT_FORMAT);
-                String agg = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(MySQLConstants.CAST, agg, MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = y.getDeType() == 2? String.format(CHConstants.toInt64, originField) : String.format(CHConstants.toFloat64, originField);
+                String agg = String.format(CHConstants.AGG_FIELD, y.getSummary(), cast);
+                fieldName = String.format(CHConstants.toDecimal, agg);
             } else {
-                String cast = String.format(MySQLConstants.CAST, originField, y.getDeType() == 2 ? MySQLConstants.DEFAULT_INT_FORMAT : MySQLConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), cast);
+                String cast = y.getDeType() == 2 ? String.format(CHConstants.toInt64, originField) : String.format(CHConstants.toFloat64, originField);
+                fieldName = String.format(CHConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }
         return SQLObj.builder()
@@ -980,7 +962,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                    whereValue = CHConstants.WHERE_VALUE_NULL;
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
                     whereTerm = String.format(whereTerm, originField);
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
@@ -988,7 +970,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, f.getValue());
+                    whereValue = String.format(CHConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)
@@ -1019,7 +1001,7 @@ public class MysqlQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
         }
         return originField;
     }

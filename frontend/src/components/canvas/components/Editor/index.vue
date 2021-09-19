@@ -12,7 +12,7 @@
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
+<!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -32,7 +32,6 @@
       :active="item === curComponent"
       :element="item"
       class-name-active="de-drag-active"
-      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
       :snap-tolerance="2"
       :change-style="customStyle"
@@ -41,7 +40,7 @@
       :linkage-active="linkageSettingStatus&&item===curLinkageView"
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
-      @resizestop="resizestop(index,item)"
+      @resizeView="resizeView(index,item)"
     >
       <component
         :is="item.component"
@@ -104,6 +103,8 @@
         :active="item === curComponent"
       />
     </de-drag>
+    <!--拖拽阴影部分-->
+    <drag-shadow v-if="curComponent&&this.curComponent.optStatus.dragging" />
     <!-- 右击菜单 -->
     <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
@@ -166,9 +167,10 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import DragShadow from '@/components/DeDrag/shadow'
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow },
   props: {
     isEdit: {
       type: Boolean,
@@ -216,10 +218,10 @@ export default {
         width: 80,
         height: 20
       },
-      // 矩阵数量 默认 12 * 24
+      // 矩阵数量 默认 128 * 72
       matrixCount: {
-        x: 24,
-        y: 72
+        x: 36,
+        y: 18
       },
       customStyleHistory: null,
       showDrag: true,
@@ -555,6 +557,9 @@ export default {
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }
+      // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
+      // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
+
       if (this.outStyle.width && this.outStyle.height) {
         // 矩阵计算
         if (!this.canvasStyleData.selfAdaption) {
@@ -628,8 +633,9 @@ export default {
     showViewDetails(index) {
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
-    resizestop(index, item) {
+    resizeView(index, item) {
       if (item.type === 'view') {
+        // console.log('view:resizeView')
         this.$refs.wrapperChild[index].chartResize()
       }
     }
@@ -642,6 +648,7 @@ export default {
     position: relative;
     /*background: #fff;*/
     margin: auto;
+    overflow-x: hidden;
     background-size:100% 100% !important;
     /*transform-style:preserve-3d;*/
     .lock {

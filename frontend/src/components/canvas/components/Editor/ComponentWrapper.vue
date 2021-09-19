@@ -127,7 +127,7 @@ export default {
   box-shadow:0px 0px 7px #0a7be0;
 }
 .gap_class{
-  padding:3px;
+  padding:5px;
 }
 .component-custom {
   outline: none;

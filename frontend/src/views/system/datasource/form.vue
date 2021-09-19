@@ -24,11 +24,22 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item :label="$t('datasource.data_mode')" prop="type">
+          <el-select v-model="form.computeType" :placeholder="$t('datasource.please_choose_data_type')" class="select-width" :disabled="formType=='modify' || (formType==='add' && params && !!params.computeMode)">
+            <el-option
+              v-for="item in compute_mode"
+              :key="item.type"
+              :label="item.label"
+              :value="item.type"
+            />
+          </el-select>
+        </el-form-item>
+
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host">
           <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.url')" prop="configuration.url">
-          <el-input v-model="form.configuration.url" placeholder="请输入 Elasticsearch 地址，如: http://es_host:es_port" autocomplete="off" />
+        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.datasource_url')" prop="configuration.url">
+          <el-input v-model="form.configuration.url" :placeholder="$t('datasource.please_input_datasource_url')"  autocomplete="off" />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')" prop="configuration.dataBase">
           <el-input v-model="form.configuration.dataBase" autocomplete="off" />
@@ -147,12 +158,20 @@ export default {
         'configuration.acquireIncrement': [{ required: true, message: this.$t('datasource.please_input_acquire_increment'), trigger: 'change' }],
         'configuration.connectTimeout': [{ required: true, message: this.$t('datasource.please_input_connect_timeout'), trigger: 'change' }]
       },
-      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
+      allTypes: [
+        { name: 'mysql', label: 'MySQL', type: 'jdbc'},
         { name: 'oracle', label: 'Oracle', type: 'jdbc' },
         { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
         { name: 'pg', label: 'PostgreSQL', type: 'jdbc' },
-        { name: 'es', label: 'Elasticsearch', type: 'es' }],
+        { name: 'es', label: 'Elasticsearch', type: 'es' },
+        { name: 'ch', label: 'ClickHouse', type: 'jdbc' }
+        ],
       schemas: [],
+      compute_mode: [
+        {type: "DIRECT",  label: this.$t('datasource.direct')},
+        {type: "EXTRACT", label: this.$t('datasource.extract')},
+        {type: "ALL",     label: this.$t('datasource.all_compute_mode')}
+      ],
       canEdit: false,
       originConfiguration: {}
     }
@@ -292,6 +311,15 @@ export default {
         if (this.allTypes[i].name === this.form.type) {
           this.form.configuration.dataSourceType = this.allTypes[i].type
         }
+      }
+      if(this.form.type === 'es'){
+        this.compute_mode = [{type: "DIRECT", label: this.$t('datasource.direct')}];
+      }else {
+        this.compute_mode = [
+          {type: "DIRECT", label: this.$t('datasource.direct')},
+          {type: "EXTRACT", label: this.$t('datasource.extract')},
+          {type: "ALL", label: this.$t('datasource.all_compute_mode')}
+        ];
       }
     },
     backToList() {

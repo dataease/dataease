@@ -39,5 +39,7 @@ public class SysUser implements Serializable {
 
     private Integer from;
 
+    private String sub;
+
     private static final long serialVersionUID = 1L;
 }

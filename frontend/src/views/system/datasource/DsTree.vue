@@ -154,6 +154,10 @@ export default {
         return 'Oracle'
       } else if (type === 'pg') {
         return 'PostgreSQL'
+      } else if (type === 'es') {
+        return 'Elasticsearch'
+      } else if (type === 'ch') {
+        return 'ClickHouse'
       }
     },
 

@@ -229,9 +229,9 @@ public class SystemParameterService {
 
     }
 
-    public static void main(String[] args) {
+    /* public static void main(String[] args) {
         String info="[{\"paramKey\":\"base.url\",\"paramValue\":null,\"type\":\"text\",\"sort\":1,\"file\":null,\"fileName\":null},{\"paramKey\":\"base.title\",\"paramValue\":\"DataEase Title\",\"type\":\"text\",\"sort\":3,\"file\":null,\"fileName\":null},{\"paramKey\":\"base.logo\",\"paramValue\":\"DataEase\",\"type\":\"text\",\"sort\":4,\"file\":null,\"fileName\":\"favicon.icon.png\"}]";
         List<SystemParameterDTO> temp = JSON.parseArray(info,SystemParameterDTO.class);
 //        System.out.println("===>");
-    }
+    } */
 }

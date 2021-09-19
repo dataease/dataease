@@ -21,6 +21,7 @@
     @mouseleave="leave"
   >
     <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
+    <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       v-for="(handlei, indexi) in actualHandles"
       :key="indexi"
@@ -31,7 +32,9 @@
     >
       <slot :name="handlei" />
     </div>
-    <slot />
+    <div :style="mainSlotStyle" :class="{'gap_class':canvasStyleData.panel.gap==='yes'}">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -49,7 +52,7 @@ import EditBar from '@/components/canvas/components/Editor/EditBar'
 
 export default {
   replace: true,
-  name: 'VueDragResizeRotate',
+  name: 'Dedrag',
   components: { EditBar },
   props: {
     className: {
@@ -440,6 +443,14 @@ export default {
         ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
       }
     },
+    resizeShadowStyle() {
+      return {
+        width: this.computedWidth,
+        height: this.computedHeight,
+        opacity: 0.4,
+        background: 'gray'
+      }
+    },
     // 控制柄显示与否
     actualHandles() {
       if (!this.resizable) return []
@@ -464,9 +475,48 @@ export default {
       return this.height + 'px'
     },
 
+    //  根据left right 算出元素的宽度
+    computedMainSlotWidth() {
+      if (this.w === 'auto') {
+        if (!this.widthTouched) {
+          return 'auto'
+        }
+      }
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
+        return width + 'px'
+      } else {
+        return this.width + 'px'
+      }
+    },
+    // 根据top bottom 算出元素的宽度
+    computedMainSlotHeight() {
+      if (this.h === 'auto') {
+        if (!this.heightTouched) {
+          return 'auto'
+        }
+      }
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+        return height + 'px'
+      } else {
+        return this.height + 'px'
+      }
+    },
+
     // private
+    mainSlotStyle() {
+      const style = {
+        width: this.computedMainSlotWidth,
+        height: this.computedMainSlotHeight
+      }
+      // console.log('style=>' + JSON.stringify(style))
+      return style
+    },
+    curComponent() {
+      return this.$store.state.curComponent
+    },
     ...mapState([
-      'curComponent',
       'editor',
       'curCanvasScale',
       'canvasStyleData',
@@ -566,6 +616,18 @@ export default {
       this.beforeDestroyFunction()
       this.createdFunction()
       this.mountedFunction()
+    },
+    // private 监控dragging  resizing
+    dragging(val) {
+      if (this.enabled) {
+        this.curComponent.optStatus.dragging = val
+      }
+    },
+    // private 监控dragging  resizing
+    resizing(val) {
+      if (this.enabled) {
+        this.curComponent.optStatus.resizing = val
+      }
     }
   },
   created: function() {
@@ -610,7 +672,7 @@ export default {
         const rect = this.$el.parentNode.getBoundingClientRect()
         this.parentX = rect.x
         this.parentY = rect.y
-        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)), Math.round(parseFloat(style.getPropertyValue('height'), 10))]
+        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)), 100000]
       }
       if (typeof this.parent === 'string') {
         const parentNode = document.querySelector(this.parent)
@@ -1490,7 +1552,7 @@ export default {
       // resize
       const self = this
       setTimeout(function() {
-        self.$emit('resizestop')
+        self.$emit('resizeView')
       }, 200)
     },
     mountedFunction() {
@@ -1648,6 +1710,10 @@ export default {
 
 .linkageSetting{
   opacity: 0.5;
+}
+
+.gap_class{
+  padding:5px;
 }
 
 /*.mouseOn >>> .icon-shezhi{*/

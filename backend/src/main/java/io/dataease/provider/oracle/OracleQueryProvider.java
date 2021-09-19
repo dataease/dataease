@@ -899,6 +899,12 @@ public class OracleQueryProvider extends QueryProvider {
             split = "-";
         } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
             split = "/";
+        } else {
+            split = "-";
+        }
+
+        if (StringUtils.isEmpty(dateStyle)) {
+            return OracleConstants.DEFAULT_DATE_FORMAT;
         }
 
         switch (dateStyle) {

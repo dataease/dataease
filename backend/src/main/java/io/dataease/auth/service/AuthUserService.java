@@ -13,6 +13,8 @@ public interface AuthUserService {
 
     SysUserEntity getUserByName(String username);
 
+    SysUserEntity getUserBySub(String sub);
+
     List<String> roles(Long userId);
 
     List<String> permissions(Long userId);

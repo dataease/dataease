@@ -96,7 +96,6 @@
 
         <div
           id="canvasInfo"
-          :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
           @drop="handleDrop"
           @dragover="handleDragOver"
@@ -441,6 +440,7 @@ export default {
       return data
     },
     handleDrop(e) {
+      this.$store.commit('clearDragComponentInfo')
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
@@ -510,6 +510,7 @@ export default {
     },
 
     handleDragOver(e) {
+      console.log('handleDragOver=>x:' + this.getPositionX(e.layerX) + ';y=' + this.getPositionY(e.layerY) + e.dataTransfer.getData('componentInfo'))
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
     },
@@ -839,7 +840,7 @@ export default {
   }
 }
   .style-hidden{
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
 </style>

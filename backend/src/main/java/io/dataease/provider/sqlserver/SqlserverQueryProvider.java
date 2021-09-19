@@ -13,6 +13,7 @@ import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
+import io.dataease.provider.oracle.OracleConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -825,6 +826,12 @@ public class SqlserverQueryProvider extends QueryProvider {
             split = "-";
         } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
             split = "/";
+        } else {
+            split = "-";
+        }
+
+        if (StringUtils.isEmpty(dateStyle)) {
+            return "convert(varchar," + originField + ",120)";
         }
 
         switch (dateStyle) {

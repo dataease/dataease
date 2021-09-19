@@ -643,6 +643,76 @@ public class DatasourceExample {
             addCriterion("`status` not between", value1, value2, "status");
             return (Criteria) this;
         }
+
+        public Criteria andComputeTypeIsNull() {
+            addCriterion("compute_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeIsNotNull() {
+            addCriterion("compute_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeEqualTo(String value) {
+            addCriterion("compute_type =", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeNotEqualTo(String value) {
+            addCriterion("compute_type <>", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeGreaterThan(String value) {
+            addCriterion("compute_type >", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeGreaterThanOrEqualTo(String value) {
+            addCriterion("compute_type >=", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeLessThan(String value) {
+            addCriterion("compute_type <", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeLessThanOrEqualTo(String value) {
+            addCriterion("compute_type <=", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeLike(String value) {
+            addCriterion("compute_type like", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeNotLike(String value) {
+            addCriterion("compute_type not like", value, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeIn(List<String> values) {
+            addCriterion("compute_type in", values, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeNotIn(List<String> values) {
+            addCriterion("compute_type not in", values, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeBetween(String value1, String value2) {
+            addCriterion("compute_type between", value1, value2, "computeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andComputeTypeNotBetween(String value1, String value2) {
+            addCriterion("compute_type not between", value1, value2, "computeType");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
