@@ -33,6 +33,8 @@ public class DorisConstants extends SQLConstants {
 
     public static final String WHERE_VALUE_VALUE = "'%s'";
 
+    public static final String WHERE_NUMBER_VALUE = "%s";
+
     public static final String AGG_COUNT = "COUNT(*)";
 
     public static final String AGG_FIELD = "%s(%s)";
