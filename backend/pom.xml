@@ -342,6 +342,12 @@
             <artifactId>spring-boot-starter-data-ldap</artifactId>
         </dependency>-->
 
+<!--        <dependency>-->
+<!--            <groupId>io.dataease.kettle</groupId>-->
+<!--            <artifactId>ck-plugin</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>ru.yandex.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>

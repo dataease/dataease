@@ -1,17 +1,17 @@
-package io.dataease.provider.ch;
+package io.dataease.provider.ck;
 
 import io.dataease.provider.SQLConstants;
 
-import static io.dataease.datasource.constants.DatasourceTypes.ch;
+import static io.dataease.datasource.constants.DatasourceTypes.ck;
 
 /**
  * @Author gin
  * @Date 2021/7/8 7:22 下午
  */
-public class CHConstants extends SQLConstants {
-    public static final String KEYWORD_TABLE = ch.getKeywordPrefix() + "%s" + ch.getKeywordSuffix();
+public class CKConstants extends SQLConstants {
+    public static final String KEYWORD_TABLE = ck.getKeywordPrefix() + "%s" + ck.getKeywordSuffix();
 
-    public static final String KEYWORD_FIX = "%s." + ch.getKeywordPrefix() + "%s" + ch.getKeywordSuffix();
+    public static final String KEYWORD_FIX = "%s." + ck.getKeywordPrefix() + "%s" + ck.getKeywordSuffix();
 
     public static final String toInt32 = "toInt32(%s)";
 

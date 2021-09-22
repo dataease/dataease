@@ -54,6 +54,9 @@ public abstract class QueryProvider {
 
     public abstract String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList);
 
+    public  Integer transFieldSize(String type){
+        return 50;
+    };
     /**
      * 单指标汇总
      *
