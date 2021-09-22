@@ -275,7 +275,8 @@ export default {
       adviceGroupId: null,
       scrollLeft: 0,
       scrollTop: 0,
-      timeMachine: null
+      timeMachine: null,
+      dropComponentInfo: null
     }
   },
 
@@ -440,6 +441,8 @@ export default {
       return data
     },
     handleDrop(e) {
+      // 记录拖拽信息
+      this.dropComponentInfo = deepCopy(this.dragComponentInfo)
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
@@ -491,10 +494,10 @@ export default {
       // position = absolution 或导致有偏移 这里中和一下偏移量
       // component.style.top = this.getPositionY(e.layerY)
       // component.style.left = this.getPositionX(e.layerX)
-      component.style.top = this.dragComponentInfo.shadowStyle.y
-      component.style.left = this.dragComponentInfo.shadowStyle.x
-      component.style.width = this.dragComponentInfo.shadowStyle.width
-      component.style.height = this.dragComponentInfo.shadowStyle.height
+      component.style.top = this.dropComponentInfo.shadowStyle.y
+      component.style.left = this.dropComponentInfo.shadowStyle.x
+      component.style.width = this.dropComponentInfo.shadowStyle.width
+      component.style.height = this.dropComponentInfo.shadowStyle.height
 
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
@@ -594,6 +597,7 @@ export default {
       this.$refs.files.click()
     },
     handleFileChange(e) {
+      const _this = this
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
         toast('只能插入图片')
@@ -618,10 +622,10 @@ export default {
               propValue: fileResult,
               style: {
                 ...commonStyle,
-                top: this.dragComponentInfo.shadowStyle.y,
-                left: this.dragComponentInfo.shadowStyle.x,
-                width: this.dragComponentInfo.shadowStyle.width,
-                height: this.dragComponentInfo.shadowStyle.height
+                top: _this.dropComponentInfo.shadowStyle.y,
+                left: _this.dropComponentInfo.shadowStyle.x,
+                width: _this.dropComponentInfo.shadowStyle.width,
+                height: _this.dropComponentInfo.shadowStyle.height
               }
             }
           })

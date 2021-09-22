@@ -1,6 +1,6 @@
 <template>
 
-  <div class="filter-container" @dragstart="handleDragStart">
+  <div class="filter-container" @dragstart="handleDragStart" @dragend="handleDragEnd()">
 
     <div class="widget-subject">
       <div class="filter-header">
@@ -134,6 +134,9 @@ export default {
         }
       })
       return component
+    },
+    handleDragEnd(ev) {
+      this.$store.commit('clearDragComponentInfo')
     }
   }
 }
