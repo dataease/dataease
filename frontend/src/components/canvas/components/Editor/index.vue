@@ -11,6 +11,7 @@
     :style="customStyle"
     @dragover="handleDragOver"
     @mousedown="handleMouseDown"
+    @scroll="canvasScroll"
   >
     <!-- 网格线 -->
     <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
@@ -666,6 +667,9 @@ export default {
       } else {
         return y
       }
+    },
+    canvasScroll(event) {
+      this.$emit('canvasScroll', event)
     }
   }
 }
