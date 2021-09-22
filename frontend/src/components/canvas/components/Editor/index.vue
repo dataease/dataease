@@ -9,7 +9,9 @@
       }
     ]"
     :style="customStyle"
+    @dragover="handleDragOver"
     @mousedown="handleMouseDown"
+    @scroll="canvasScroll"
   >
     <!-- 网格线 -->
     <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
@@ -32,7 +34,6 @@
       :active="item === curComponent"
       :element="item"
       class-name-active="de-drag-active"
-      :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
       :snap="true"
       :snap-tolerance="2"
       :change-style="customStyle"
@@ -104,9 +105,8 @@
         :active="item === curComponent"
       />
     </de-drag>
-
     <!--拖拽阴影部分-->
-
+    <drag-shadow v-if="(curComponent&&this.curComponent.optStatus.dragging)||dragComponentInfo" />
     <!-- 右击菜单 -->
     <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
@@ -169,9 +169,10 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import DragShadow from '@/components/DeDrag/shadow'
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow },
   props: {
     isEdit: {
       type: Boolean,
@@ -221,8 +222,8 @@ export default {
       },
       // 矩阵数量 默认 128 * 72
       matrixCount: {
-        x: 80,
-        y: 45
+        x: 36,
+        y: 18
       },
       customStyleHistory: null,
       showDrag: true,
@@ -262,6 +263,9 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    dragComponentInfo() {
+      return this.$store.state.dragComponentInfo
     },
     ...mapState([
       'componentData',
@@ -636,8 +640,36 @@ export default {
     },
     resizeView(index, item) {
       if (item.type === 'view') {
+        // console.log('view:resizeView')
         this.$refs.wrapperChild[index].chartResize()
       }
+    },
+    handleDragOver(e) {
+      // console.log('handleDragOver=>layer:' + e.layerX + ':' + e.layerY + ';offSet=>' + e.offsetX + ':' + e.offsetY + ';page=' + e.pageX + ':' + e.pageY)
+      // console.log('e=>x=>' + JSON.stringify(e))
+      // 使用e.pageX 避免抖动的情况
+      this.dragComponentInfo.shadowStyle.x = e.pageX - 220
+      this.dragComponentInfo.shadowStyle.y = e.pageY - 90
+      // console.log('handleDragOver=>x=>' + this.dragComponentInfo.shadowStyle.x)
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'copy'
+    },
+    getPositionX(x) {
+      if (this.canvasStyleData.selfAdaption) {
+        return x * 100 / this.curCanvasScale.scaleWidth
+      } else {
+        return x
+      }
+    },
+    getPositionY(y) {
+      if (this.canvasStyleData.selfAdaption) {
+        return y * 100 / this.curCanvasScale.scaleHeight
+      } else {
+        return y
+      }
+    },
+    canvasScroll(event) {
+      this.$emit('canvasScroll', event)
     }
   }
 }

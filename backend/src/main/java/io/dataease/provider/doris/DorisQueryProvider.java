@@ -785,7 +785,11 @@ public class DorisQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value);
+                } else {
+                    whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -849,7 +853,11 @@ public class DorisQueryProvider extends QueryProvider {
                     whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value.get(0));
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value.get(0));
+                } else {
+                    whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value.get(0));
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -865,6 +873,12 @@ public class DorisQueryProvider extends QueryProvider {
             split = "-";
         } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
             split = "/";
+        } else {
+            split = "-";
+        }
+
+        if (StringUtils.isEmpty(dateStyle)) {
+            return "%Y-%m-%d %H:%i:%S";
         }
 
         switch (dateStyle) {

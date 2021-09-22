@@ -169,6 +169,7 @@ export default {
     allMarkReaded() {
       allRead().then(res => {
         this.$success(this.$t('webmsg.mark_success'))
+        bus.$emit('refresh-top-notification')
         this.search()
       })
     },
@@ -180,6 +181,7 @@ export default {
       const param = this.multipleSelection.map(item => item.msgId)
       batchRead(param).then(res => {
         this.$success(this.$t('webmsg.mark_success'))
+        bus.$emit('refresh-top-notification')
         this.search()
       })
     },

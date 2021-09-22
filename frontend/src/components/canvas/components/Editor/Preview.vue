@@ -259,7 +259,7 @@ export default {
   color: #9ea6b2;
 }
 .gap_class{
-  padding:3px;
+  padding:5px;
 }
 .dialog-css>>>.el-dialog__title {
   font-size: 14px;

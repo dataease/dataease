@@ -859,6 +859,12 @@ public class MysqlQueryProvider extends QueryProvider {
             split = "-";
         } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
             split = "/";
+        } else {
+            split = "-";
+        }
+
+        if (StringUtils.isEmpty(dateStyle)) {
+            return "%Y-%m-%d %H:%i:%S";
         }
 
         switch (dateStyle) {

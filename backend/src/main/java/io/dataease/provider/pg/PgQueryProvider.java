@@ -886,6 +886,12 @@ public class PgQueryProvider extends QueryProvider {
             split = "-";
         } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
             split = "/";
+        } else {
+            split = "-";
+        }
+
+        if (StringUtils.isEmpty(dateStyle)) {
+            return "'YYYY-MM-DD HH24:MI:SS'";
         }
 
         switch (dateStyle) {

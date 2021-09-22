@@ -1,6 +1,6 @@
 <template>
 
-  <div class="filter-container" @dragstart="handleDragStart">
+  <div class="filter-container" @dragstart="handleDragStart" @dragend="handleDragEnd()">
 
     <div class="widget-subject">
       <div class="filter-header">
@@ -55,10 +55,11 @@
 </template>
 
 <script>
-import { assistList, pictureList } from '@/components/canvas/custom-component/component-list'
+import componentList, { assistList, pictureList } from '@/components/canvas/custom-component/component-list'
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'FilterGroup',
@@ -71,6 +72,7 @@ export default {
 
   methods: {
     handleDragStart(ev) {
+      this.$store.commit('setDragComponentInfo', this.componentInfo(ev.target.dataset.id))
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
         type: 'assist',
@@ -115,13 +117,26 @@ export default {
             }
           })
 
-          this.$store.commit('recordSnapshot','handleFileChange')
+          this.$store.commit('recordSnapshot', 'handleFileChange')
         }
 
         img.src = fileResult
       }
 
       reader.readAsDataURL(file)
+    },
+    componentInfo(id) {
+    // 辅助设计组件
+      let component
+      componentList.forEach(componentTemp => {
+        if (id === componentTemp.id) {
+          component = deepCopy(componentTemp)
+        }
+      })
+      return component
+    },
+    handleDragEnd(ev) {
+      this.$store.commit('clearDragComponentInfo')
     }
   }
 }

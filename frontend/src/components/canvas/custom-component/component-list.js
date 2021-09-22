@@ -51,9 +51,9 @@ const list = [
     icon: 'wenben',
     type: 'v-text',
     style: {
-      width: 300,
+      width: 400,
       height: 100,
-      fontSize: 18,
+      fontSize: 22,
       fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
@@ -120,10 +120,10 @@ const list = [
     icon: 'juxing',
     type: 'rect-shape',
     style: {
-      width: 200,
-      height: 200,
+      width: 400,
+      height: 300,
       borderStyle: 'solid',
-      borderWidth: 1,
+      borderWidth: 0,
       borderColor: '#000000',
       backgroundColor: '#ffffff',
       borderRadius: 0
@@ -137,7 +137,7 @@ const list = [
     icon: 'juxing',
     type: 'view',
     style: {
-      width: 200,
+      width: 400,
       height: 300,
       borderRadius: ''
     }
@@ -148,7 +148,12 @@ const list = [
     type: 'picture-add',
     label: '拖拽上传',
     icon: 'iconfont icon-picture',
-    defaultClass: 'text-filter'
+    defaultClass: 'text-filter',
+    style: {
+      width: 400,
+      height: 200,
+      borderRadius: ''
+    }
   }
 ]
 
