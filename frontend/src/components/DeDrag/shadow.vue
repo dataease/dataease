@@ -37,6 +37,13 @@ export default {
         top = Math.round(top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
         height = Math.round(height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
       }
+
+      // 防止阴影区超出边界
+      const xGap = left + width - this.canvasWidth
+      // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
+      if (xGap > 0) {
+        left = left - xGap
+      }
       const style = {
         transform: `translate(${left}px, ${top}px) rotate(0deg)`,
         width: width + 'px',
@@ -54,6 +61,10 @@ export default {
     },
     dragComponentInfo() {
       return this.$store.state.dragComponentInfo
+    },
+    canvasWidth() {
+      const scaleWidth = this.curCanvasScale.scaleWidth / 100
+      return this.canvasStyleData.width * scaleWidth
     },
     ...mapState([
       'curComponent',
