@@ -98,7 +98,6 @@
           id="canvasInfo"
           class="content this_canvas"
           @drop="handleDrop"
-          @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
           @scroll="canvasScroll"
@@ -291,7 +290,8 @@ export default {
       'canvasStyleData',
       'curComponentIndex',
       'componentData',
-      'linkageSettingStatus'
+      'linkageSettingStatus',
+      'dragComponentInfo'
     ])
   },
 
@@ -440,7 +440,6 @@ export default {
       return data
     },
     handleDrop(e) {
-      this.$store.commit('clearDragComponentInfo')
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
@@ -490,12 +489,18 @@ export default {
       }
 
       // position = absolution 或导致有偏移 这里中和一下偏移量
-      component.style.top = this.getPositionY(e.layerY)
-      component.style.left = this.getPositionX(e.layerX)
+      // component.style.top = this.getPositionY(e.layerY)
+      // component.style.left = this.getPositionX(e.layerX)
+      component.style.top = this.dragComponentInfo.shadowStyle.y
+      component.style.left = this.dragComponentInfo.shadowStyle.x
+      component.style.width = this.dragComponentInfo.shadowStyle.width
+      component.style.height = this.dragComponentInfo.shadowStyle.height
+
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'handleDrop')
       this.clearCurrentInfo()
+      // this.$store.commit('clearDragComponentInfo')
 
       // // 文字组件
       // if (component.type === 'v-text') {
@@ -507,12 +512,6 @@ export default {
     clearCurrentInfo() {
       this.currentWidget = null
       this.currentFilterCom = null
-    },
-
-    handleDragOver(e) {
-      console.log('handleDragOver=>x:' + this.getPositionX(e.layerX) + ';y=' + this.getPositionY(e.layerY) + e.dataTransfer.getData('componentInfo'))
-      e.preventDefault()
-      e.dataTransfer.dropEffect = 'copy'
     },
 
     handleMouseDown() {
@@ -619,10 +618,10 @@ export default {
               propValue: fileResult,
               style: {
                 ...commonStyle,
-                top: this.getPositionY(this.currentDropElement.layerY),
-                left: this.getPositionX(this.currentDropElement.layerX),
-                width: img.width / scale,
-                height: img.height / scale
+                top: this.dragComponentInfo.shadowStyle.y,
+                left: this.dragComponentInfo.shadowStyle.x,
+                width: this.dragComponentInfo.shadowStyle.width,
+                height: this.dragComponentInfo.shadowStyle.height
               }
             }
           })

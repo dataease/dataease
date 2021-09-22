@@ -258,6 +258,12 @@ const data = {
       // state.styleChangeTimes++
     },
     setDragComponentInfo(state, dragComponentInfo) {
+      dragComponentInfo['shadowStyle'] = {
+        x: 0,
+        y: 0,
+        height: 0,
+        width: 0
+      }
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {

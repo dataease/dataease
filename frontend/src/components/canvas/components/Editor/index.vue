@@ -9,10 +9,11 @@
       }
     ]"
     :style="customStyle"
+    @dragover="handleDragOver"
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-<!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
+    <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -104,7 +105,7 @@
       />
     </de-drag>
     <!--拖拽阴影部分-->
-    <drag-shadow v-if="curComponent&&this.curComponent.optStatus.dragging" />
+    <drag-shadow v-if="(curComponent&&this.curComponent.optStatus.dragging)||dragComponentInfo" />
     <!-- 右击菜单 -->
     <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
@@ -261,6 +262,9 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    dragComponentInfo() {
+      return this.$store.state.dragComponentInfo
     },
     ...mapState([
       'componentData',
@@ -637,6 +641,30 @@ export default {
       if (item.type === 'view') {
         // console.log('view:resizeView')
         this.$refs.wrapperChild[index].chartResize()
+      }
+    },
+    handleDragOver(e) {
+      // console.log('handleDragOver=>layer:' + e.layerX + ':' + e.layerY + ';offSet=>' + e.offsetX + ':' + e.offsetY + ';page=' + e.pageX + ':' + e.pageY)
+      // console.log('e=>x=>' + JSON.stringify(e))
+      // 使用e.pageX 避免抖动的情况
+      this.dragComponentInfo.shadowStyle.x = e.pageX - 220
+      this.dragComponentInfo.shadowStyle.y = e.pageY - 90
+      // console.log('handleDragOver=>x=>' + this.dragComponentInfo.shadowStyle.x)
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'copy'
+    },
+    getPositionX(x) {
+      if (this.canvasStyleData.selfAdaption) {
+        return x * 100 / this.curCanvasScale.scaleWidth
+      } else {
+        return x
+      }
+    },
+    getPositionY(y) {
+      if (this.canvasStyleData.selfAdaption) {
+        return y * 100 / this.curCanvasScale.scaleHeight
+      } else {
+        return y
       }
     }
   }

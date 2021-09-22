@@ -31,6 +31,7 @@
           :highlight-current="true"
           @node-drag-start="handleDragStart"
           @node-click="nodeClick"
+          @node-drag-end="dragEnd"
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
@@ -62,6 +63,8 @@
 
 <script>
 import { tree, findOne } from '@/api/panel/view'
+import componentList from '@/components/canvas/custom-component/component-list'
+import { deepCopy } from '@/components/canvas/utils/utils'
 export default {
   name: 'ViewSelect',
   data() {
@@ -105,19 +108,21 @@ export default {
       })
     },
     handleDragStart(node, ev) {
-      this.$store.commit('setDragComponentInfo', node)
+      this.$store.commit('setDragComponentInfo', this.viewComponentInfo())
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
         type: 'view',
         id: node.data.id
       }
-
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
     },
-
+    dragEnd() {
+      console.log('dragEnd')
+      this.$store.commit('clearDragComponentInfo')
+    },
     // 判断节点能否被拖拽
     allowDrag(draggingNode) {
-      if (draggingNode.data.type === 'scene') {
+      if (draggingNode.data.type === 'scene' || draggingNode.data.type === 'group') {
         return false
       } else {
         return true
@@ -128,6 +133,16 @@ export default {
     },
     newChart() {
       this.$emit('newChart')
+    },
+    viewComponentInfo() {
+      let component
+      // 用户视图设置 复制一个模板
+      componentList.forEach(componentTemp => {
+        if (componentTemp.type === 'view') {
+          component = deepCopy(componentTemp)
+        }
+      })
+      return component
     }
 
   }
