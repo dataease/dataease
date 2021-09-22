@@ -100,9 +100,8 @@
           @drop="handleDrop"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
-          @scroll="canvasScroll"
         >
-          <Editor v-if="!previewVisible" :out-style="outStyle" />
+          <Editor v-if="!previewVisible" :out-style="outStyle" @canvasScroll="canvasScroll" />
         </div>
       </de-main-container>
       <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
@@ -696,6 +695,7 @@ export default {
       }
     },
     canvasScroll(event) {
+      console.log('testTop' + event.target.scrollTop)
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
     },
