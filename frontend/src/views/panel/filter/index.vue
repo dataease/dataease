@@ -1,6 +1,6 @@
 <template>
 
-  <div class="filter-container" @dragstart="handleDragStart">
+  <div class="filter-container" @dragstart="handleDragStart" @dragend="handleDragEnd()">
 
     <div v-for="(item, key) in widgetSubjects" :key="key" class="widget-subject">
       <div class="filter-header">
@@ -30,6 +30,7 @@
 
 <script>
 import { ApplicationContext } from '@/utils/ApplicationContext'
+import { deepCopy } from '@/components/canvas/utils/utils'
 export default {
   name: 'FilterGroup',
   data() {
@@ -80,12 +81,18 @@ export default {
 
   methods: {
     handleDragStart(ev) {
+      // 记录拖拽信息
+      this.$store.commit('setDragComponentInfo', deepCopy(ApplicationContext.getService(ev.target.dataset.id).getDrawPanel()))
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
         type: 'other',
         id: ev.target.dataset.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+    },
+    handleDragEnd(ev) {
+      console.log('handleDragEnd==>')
+      this.$store.commit('clearDragComponentInfo')
     }
   }
 }
