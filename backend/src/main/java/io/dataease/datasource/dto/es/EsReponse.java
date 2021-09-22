@@ -12,6 +12,7 @@ public class EsReponse {
     private String cursor;
     private Integer status;
     private Error error;
+    private String version;
 
     @Data
     public class Error{

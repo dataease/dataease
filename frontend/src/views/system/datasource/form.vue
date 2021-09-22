@@ -24,17 +24,6 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="$t('datasource.data_mode')" prop="type">
-          <el-select v-model="form.computeType" :placeholder="$t('datasource.please_choose_data_type')" class="select-width" :disabled="formType=='modify' || (formType==='add' && params && !!params.computeMode)">
-            <el-option
-              v-for="item in compute_mode"
-              :key="item.type"
-              :label="item.label"
-              :value="item.type"
-            />
-          </el-select>
-        </el-form-item>
-
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')" prop="configuration.host">
           <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
@@ -50,10 +39,10 @@
           <el-radio v-model="form.configuration.connectionType" label="serviceName">{{ $t('datasource.oracle_service_name') }}</el-radio>
         </el-form-item>
 
-        <el-form-item :label="$t('datasource.user_name')" prop="configuration.username">
+        <el-form-item :label="$t('datasource.user_name')"  >
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.password')" prop="configuration.password">
+        <el-form-item :label="$t('datasource.password')"  >
           <el-input v-model="form.configuration.password" autocomplete="off" show-password />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
@@ -164,14 +153,9 @@ export default {
         { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
         { name: 'pg', label: 'PostgreSQL', type: 'jdbc' },
         { name: 'es', label: 'Elasticsearch', type: 'es' },
-        { name: 'ch', label: 'ClickHouse', type: 'jdbc' }
+        { name: 'ck', label: 'ClickHouse', type: 'jdbc' }
         ],
       schemas: [],
-      compute_mode: [
-        {type: "DIRECT",  label: this.$t('datasource.direct')},
-        {type: "EXTRACT", label: this.$t('datasource.extract')},
-        {type: "ALL",     label: this.$t('datasource.all_compute_mode')}
-      ],
       canEdit: false,
       originConfiguration: {}
     }
@@ -222,6 +206,14 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
+      if(this.form.type !== 'es' && !this.form.configuration.username){
+          this.$message.error(this.$t('datasource.please_input_user_name'))
+          return
+      }
+      if(this.form.type !== 'es' && !this.form.configuration.username){
+          this.$message.error(this.$t('datasource.please_input_password'))
+          return
+      }
       if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer')) {
         this.$message.error(this.$t('datasource.please_choose_schema'))
         return
@@ -311,15 +303,6 @@ export default {
         if (this.allTypes[i].name === this.form.type) {
           this.form.configuration.dataSourceType = this.allTypes[i].type
         }
-      }
-      if(this.form.type === 'es'){
-        this.compute_mode = [{type: "DIRECT", label: this.$t('datasource.direct')}];
-      }else {
-        this.compute_mode = [
-          {type: "DIRECT", label: this.$t('datasource.direct')},
-          {type: "EXTRACT", label: this.$t('datasource.extract')},
-          {type: "ALL", label: this.$t('datasource.all_compute_mode')}
-        ];
       }
     },
     backToList() {

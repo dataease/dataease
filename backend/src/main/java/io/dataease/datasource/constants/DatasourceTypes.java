@@ -7,7 +7,7 @@ public enum DatasourceTypes {
     sqlServer("sqlServer", "sqlServer", "com.microsoft.sqlserver.jdbc.SQLServerDriver", "\"", "\"", "\"", "\""),
     doris("doris", "doris", "com.mysql.jdbc.Driver", "`", "`", "", ""),
     oracle("oracle", "oracle", "oracle.jdbc.driver.OracleDriver", "\"", "\"", "\"", "\""),
-    ch("ch", "ch", "ru.yandex.clickhouse.ClickHouseDriver", "`", "`", "'", "'"),
+    ck("ch", "ch", "ru.yandex.clickhouse.ClickHouseDriver", "`", "`", "'", "'"),
     es("es", "es", "", "\"", "\"", "\"", "\"");
 
     private String feature;

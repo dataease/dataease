@@ -32,8 +32,8 @@
           </el-form-item>
           <el-form-item v-if="!param.tableId" class="form-item">
             <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-              <el-option :label="$t('dataset.direct_connect')" value="0" :disabled="selectedDatasource.computeType==='EXTRACT'"/>
-              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning || selectedDatasource.computeType==='DIRECT'" />
+              <el-option :label="$t('dataset.direct_connect')" value="0" />
+              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning || selectedDatasource.type==='es' || selectedDatasource.type==='ck'" />
             </el-select>
           </el-form-item>
 

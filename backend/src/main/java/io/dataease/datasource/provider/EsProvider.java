@@ -1,5 +1,7 @@
 package io.dataease.datasource.provider;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import io.dataease.commons.utils.HttpClientConfig;
@@ -10,6 +12,7 @@ import io.dataease.datasource.dto.es.Requst;
 import io.dataease.datasource.dto.es.RequstWithCursor;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import io.dataease.provider.es.EsQueryProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +57,7 @@ public class EsProvider extends DatasourceProvider {
             Requst requst = new Requst();
             requst.setQuery(dsr.getQuery());
             requst.setFetch_size(dsr.getFetchSize());
-            String url = esConfigDTO.getUrl().endsWith("/") ? esConfigDTO.getUrl() + "_sql?format=json" : esConfigDTO.getUrl() + "/" + "_sql?format=json";
+            String url = esConfigDTO.getUrl().endsWith("/") ? esConfigDTO.getUrl() + esConfigDTO.getUri() + "?format=json" : esConfigDTO.getUrl() + "/" + esConfigDTO.getUri() + "?format=json";
             String  response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
             EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
 
@@ -84,7 +87,7 @@ public class EsProvider extends DatasourceProvider {
     public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
         List<String[]> list = new LinkedList<>();
         try {
-            String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "_sql?format=json");
+            String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             list = fetchResult(response);
         } catch (Exception e) {
             DataEaseException.throwException(e);
@@ -110,7 +113,7 @@ public class EsProvider extends DatasourceProvider {
     public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
         List<TableFiled> tableFileds = new ArrayList<>();
         try {
-            String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "_sql?format=json");
+            String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             tableFileds = fetchResultField(response);
         } catch (Exception e) {
             DataEaseException.throwException(e);
@@ -140,7 +143,7 @@ public class EsProvider extends DatasourceProvider {
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
         Map<String, List> result = new HashMap<>();
         try {
-            String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "_sql?format=json");
+            String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             result.put("dataList", fetchResult(response));
             result.put("fieldList", fetchResultField(response));
         } catch (Exception e) {
@@ -157,7 +160,7 @@ public class EsProvider extends DatasourceProvider {
     public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
         try {
-            String response = exexQuery(datasourceRequest, "show tables", "_sql?format=json");
+            String response = exexQuery(datasourceRequest, "show tables", "?format=json");
             tables = fetchTables(response);
         } catch (Exception e) {
             DataEaseException.throwException(e);
@@ -176,6 +179,9 @@ public class EsProvider extends DatasourceProvider {
            if(row.length == 3 && row[1].equalsIgnoreCase("TABLE") && row[2].equalsIgnoreCase("INDEX")){
                tables.add(row[0]);
            }
+            if(row.length == 2 && row[1].equalsIgnoreCase("BASE TABLE")){
+                tables.add(row[0]);
+            }
         }
         return tables;
     }
@@ -189,7 +195,7 @@ public class EsProvider extends DatasourceProvider {
     public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
         List<TableFiled> tableFileds = new ArrayList<>();
         try {
-            String response = exexQuery(datasourceRequest, "desc " + datasourceRequest.getTable(), "_sql?format=json");
+            String response = exexQuery(datasourceRequest, "desc " + datasourceRequest.getTable(), "?format=json");
             tableFileds = fetchResultField(response);
         } catch (Exception e) {
             DataEaseException.throwException(e);
@@ -199,22 +205,53 @@ public class EsProvider extends DatasourceProvider {
 
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
+        String response = exexGetQuery(datasourceRequest);
+        String version =  JSONObject.parseObject(response).getJSONObject("version").getString("number");
+        if(Integer.valueOf(version.substring(0,1)) < 6 ){
+            throw new Exception(Translator.get("i18n_es_limit"));
+        }
+        if(Integer.valueOf(version.substring(2,3)) < 3 ){
+            throw new Exception(Translator.get("i18n_es_limit"));
+        }
+        if(Integer.valueOf(version.substring(0,1)) == 6 ) {
+            esConfigDTO.setUri("_xpack/sql");
+        }
+        if(Integer.valueOf(version.substring(0,1)) == 7 ) {
+            esConfigDTO.setUri("_sql");
+        }
+        datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfigDTO));
         getTables(datasourceRequest);
     }
 
     private String exexQuery(DatasourceRequest datasourceRequest, String sql, String uri){
         EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
-
+        uri = esConfigDTO.getUri()+uri;
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
-        httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
+        if(StringUtils.isNotEmpty(esConfigDTO.getUsername()) && StringUtils.isNotEmpty(esConfigDTO.getPassword())){
+            String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
+            httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
+        }
 
         Requst requst = new Requst();
         requst.setQuery(sql);
         requst.setFetch_size(datasourceRequest.getFetchSize());
         String url = esConfigDTO.getUrl().endsWith("/") ? esConfigDTO.getUrl() + uri : esConfigDTO.getUrl() + "/" + uri;
         String  response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
+        return response;
+    }
+
+    private String exexGetQuery(DatasourceRequest datasourceRequest){
+        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
+        HttpClientConfig httpClientConfig = new HttpClientConfig();
+        if(StringUtils.isNotEmpty(esConfigDTO.getUsername()) && StringUtils.isNotEmpty(esConfigDTO.getPassword())){
+            String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
+            httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
+        }
+
+        String  response = HttpClientUtil.get(esConfigDTO.getUrl(), httpClientConfig);
         return response;
     }
 

@@ -10,7 +10,6 @@
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="compute_type" jdbcType="VARCHAR" property="computeType" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.Datasource">
     <result column="configuration" jdbcType="LONGVARCHAR" property="configuration" />
@@ -74,7 +73,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, `desc`, `type`, create_time, update_time, create_by, `status`, compute_type
+    id, `name`, `desc`, `type`, create_time, update_time, create_by, `status`
   </sql>
   <sql id="Blob_Column_List">
     configuration
@@ -130,12 +129,12 @@
   <insert id="insert" parameterType="io.dataease.base.domain.Datasource">
     insert into datasource (id, `name`, `desc`, 
       `type`, create_time, update_time, 
-      create_by, `status`, compute_type, 
-      configuration)
+      create_by, `status`, configuration
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{createBy,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{computeType,jdbcType=VARCHAR}, 
-      #{configuration,jdbcType=LONGVARCHAR})
+      #{createBy,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{configuration,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.Datasource">
     insert into datasource
@@ -163,9 +162,6 @@
       </if>
       <if test="status != null">
         `status`,
-      </if>
-      <if test="computeType != null">
-        compute_type,
       </if>
       <if test="configuration != null">
         configuration,
@@ -195,9 +191,6 @@
       </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
-      </if>
-      <if test="computeType != null">
-        #{computeType,jdbcType=VARCHAR},
       </if>
       <if test="configuration != null">
         #{configuration,jdbcType=LONGVARCHAR},
@@ -237,9 +230,6 @@
       <if test="record.status != null">
         `status` = #{record.status,jdbcType=VARCHAR},
       </if>
-      <if test="record.computeType != null">
-        compute_type = #{record.computeType,jdbcType=VARCHAR},
-      </if>
       <if test="record.configuration != null">
         configuration = #{record.configuration,jdbcType=LONGVARCHAR},
       </if>
@@ -258,7 +248,6 @@
       update_time = #{record.updateTime,jdbcType=BIGINT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       `status` = #{record.status,jdbcType=VARCHAR},
-      compute_type = #{record.computeType,jdbcType=VARCHAR},
       configuration = #{record.configuration,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -273,8 +262,7 @@
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
-      `status` = #{record.status,jdbcType=VARCHAR},
-      compute_type = #{record.computeType,jdbcType=VARCHAR}
+      `status` = #{record.status,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -303,9 +291,6 @@
       <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
       </if>
-      <if test="computeType != null">
-        compute_type = #{computeType,jdbcType=VARCHAR},
-      </if>
       <if test="configuration != null">
         configuration = #{configuration,jdbcType=LONGVARCHAR},
       </if>
@@ -321,7 +306,6 @@
       update_time = #{updateTime,jdbcType=BIGINT},
       create_by = #{createBy,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
-      compute_type = #{computeType,jdbcType=VARCHAR},
       configuration = #{configuration,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -333,8 +317,7 @@
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
       create_by = #{createBy,jdbcType=VARCHAR},
-      `status` = #{status,jdbcType=VARCHAR},
-      compute_type = #{computeType,jdbcType=VARCHAR}
+      `status` = #{status,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>
