@@ -91,7 +91,6 @@ export default {
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
     },
     handleDragEnd(ev) {
-      console.log('handleDragEnd==>')
       this.$store.commit('clearDragComponentInfo')
     }
   }
