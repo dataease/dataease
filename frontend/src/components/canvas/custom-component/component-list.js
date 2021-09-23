@@ -33,7 +33,7 @@ export const assistList = [
     component: 'de-tabs',
     type: 'de-tabs',
     label: '选项卡',
-    icon: 'iconfont icon-juxing',
+    icon: 'iconfont icon-tabs',
     defaultClass: 'text-filter'
   }
 ]
@@ -152,7 +152,7 @@ const list = [
     component: 'de-tabs',
     label: '选项卡',
     propValue: '',
-    icon: 'juxing',
+    icon: 'tabs',
     type: 'de-tabs',
     style: {
       width: 200,
