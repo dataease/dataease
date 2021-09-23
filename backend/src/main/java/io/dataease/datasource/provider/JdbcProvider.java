@@ -173,7 +173,6 @@ public class JdbcProvider extends DatasourceProvider {
         List<TableFiled> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
-        QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
         for (int j = 0; j < columnCount; j++) {
             String f = metaData.getColumnName(j + 1);
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
@@ -184,6 +183,7 @@ public class JdbcProvider extends DatasourceProvider {
             field.setFieldType(t);
 
             if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+                QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
                 field.setFieldSize(qp.transFieldSize(t));
             }else {
                 field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
@@ -200,9 +200,9 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
-        String queryStr = getTablesSql(datasourceRequest);
         Connection con = null;
         try {
+            String queryStr = getTablesSql(datasourceRequest);
             con = getConnection(datasourceRequest);
             Statement statement = con.createStatement();
             ResultSet resultSet = statement.executeQuery(queryStr);
@@ -211,6 +211,20 @@ public class JdbcProvider extends DatasourceProvider {
             }
             resultSet.close();
             statement.close();
+
+            String queryView = getViewSql(datasourceRequest);
+            if(StringUtils.isNotEmpty(queryView)){
+                con = getConnection(datasourceRequest);
+                statement = con.createStatement();
+                resultSet = statement.executeQuery(queryView);
+                while (resultSet.next()) {
+                    tables.add(resultSet.getString(1));
+                }
+                resultSet.close();
+                statement.close();
+            }
+
+
             return tables;
         } catch (Exception e) {
             DataEaseException.throwException(e);
@@ -580,12 +594,46 @@ public class JdbcProvider extends DatasourceProvider {
                 if(StringUtils.isEmpty(pgConfigration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+                return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
             case ck:
                 CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
                 return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfigration.getDataBase());
             default:
                 return "show tables;";
+        }
+    }
+
+    private String getViewSql(DatasourceRequest datasourceRequest) throws Exception {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType) {
+            case mysql:
+                return null;
+            case doris:
+                return null;
+            case sqlServer:
+                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                if(StringUtils.isEmpty(sqlServerConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
+                        .replace("DATABASE", sqlServerConfigration.getDataBase())
+                        .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                if(StringUtils.isEmpty(oracleConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "select VIEW_NAME  from all_views where owner='" + oracleConfigration.getSchema() + "'";
+            case pg:
+                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
+                if(StringUtils.isEmpty(pgConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+            case ck:
+                return null;
+            default:
+                return null;
         }
     }
 
