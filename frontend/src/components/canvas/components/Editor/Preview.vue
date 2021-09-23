@@ -151,9 +151,12 @@ export default {
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
-    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+    const tempDom = document.getElementById('canvasInfoTemp')
+    erd.listenTo(tempDom, element => {
       _this.$nextTick(() => {
         _this.restore()
+        //将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+        _this.mainHeight = tempDom.scrollHeight + 'px!important'
       })
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
