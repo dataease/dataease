@@ -27,6 +27,14 @@ export const assistList = [
     label: '矩形',
     icon: 'iconfont icon-juxing',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '10006',
+    component: 'de-tabs',
+    type: 'de-tabs',
+    label: '选项卡',
+    icon: 'iconfont icon-tabs',
+    defaultClass: 'text-filter'
   }
 ]
 
@@ -140,6 +148,30 @@ const list = [
       width: 400,
       height: 300,
       borderRadius: ''
+    }
+  },
+  {
+    id: '10006',
+    component: 'de-tabs',
+    label: '选项卡',
+    propValue: '',
+    icon: 'tabs',
+    type: 'de-tabs',
+    style: {
+      width: 200,
+      height: 200,
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: '#000000',
+      backgroundColor: '#ffffff',
+      borderRadius: 0
+    },
+    options: {
+      tabList: [{
+        title: 'Tab1',
+        name: '1',
+        content: null
+      }]
     }
   },
   {

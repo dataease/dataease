@@ -638,9 +638,9 @@ export default {
     showViewDetails(index) {
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
+
     resizeView(index, item) {
       if (item.type === 'view') {
-        // console.log('view:resizeView')
         this.$refs.wrapperChild[index].chartResize()
       }
     },

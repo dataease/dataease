@@ -62,7 +62,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
-  name: 'FilterGroup',
+  name: 'AssisComponent',
   data() {
     return {
       assistList,
