@@ -96,15 +96,12 @@
 
         <div
           id="canvasInfo"
-          :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
           @drop="handleDrop"
-          @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
-          @scroll="canvasScroll"
         >
-          <Editor v-if="!previewVisible" :out-style="outStyle" />
+          <Editor v-if="!previewVisible" :out-style="outStyle" @canvasScroll="canvasScroll" />
         </div>
       </de-main-container>
       <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
@@ -277,7 +274,8 @@ export default {
       adviceGroupId: null,
       scrollLeft: 0,
       scrollTop: 0,
-      timeMachine: null
+      timeMachine: null,
+      dropComponentInfo: null
     }
   },
 
@@ -292,7 +290,8 @@ export default {
       'canvasStyleData',
       'curComponentIndex',
       'componentData',
-      'linkageSettingStatus'
+      'linkageSettingStatus',
+      'dragComponentInfo'
     ])
   },
 
@@ -311,6 +310,7 @@ export default {
       this.init(newVal.id)
     },
     '$store.state.styleChangeTimes'() {
+      // console.log('styleChangeTimes' + this.$store.state.styleChangeTimes)
       if (this.$store.state.styleChangeTimes > 0) {
         this.destroyTimeMachine()
         this.recordStyleChange(this.$store.state.styleChangeTimes)
@@ -383,7 +383,7 @@ export default {
           //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           this.$store.commit('setCanvasStyle', panelStyle)
-          this.$store.commit('recordSnapshot')// 记录快照
+          this.$store.commit('recordSnapshot', 'init')// 记录快照
           // 刷新联动信息
           getPanelAllLinkageInfo(panelId).then(rsp => {
             this.$store.commit('setNowPanelTrackInfo', rsp.data)
@@ -440,6 +440,8 @@ export default {
       return data
     },
     handleDrop(e) {
+      // 记录拖拽信息
+      this.dropComponentInfo = deepCopy(this.dragComponentInfo)
       this.currentDropElement = e
       e.preventDefault()
       e.stopPropagation()
@@ -489,12 +491,18 @@ export default {
       }
 
       // position = absolution 或导致有偏移 这里中和一下偏移量
-      component.style.top = this.getPositionY(e.layerY)
-      component.style.left = this.getPositionX(e.layerX)
+      // component.style.top = this.getPositionY(e.layerY)
+      // component.style.left = this.getPositionX(e.layerX)
+      component.style.top = this.dropComponentInfo.shadowStyle.y
+      component.style.left = this.dropComponentInfo.shadowStyle.x
+      component.style.width = this.dropComponentInfo.shadowStyle.width
+      component.style.height = this.dropComponentInfo.shadowStyle.height
+
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'handleDrop')
       this.clearCurrentInfo()
+      // this.$store.commit('clearDragComponentInfo')
 
       // // 文字组件
       // if (component.type === 'v-text') {
@@ -506,11 +514,6 @@ export default {
     clearCurrentInfo() {
       this.currentWidget = null
       this.currentFilterCom = null
-    },
-
-    handleDragOver(e) {
-      e.preventDefault()
-      e.dataTransfer.dropEffect = 'copy'
     },
 
     handleMouseDown() {
@@ -545,7 +548,7 @@ export default {
 
       //   this.$store.commit('addComponent', { component })
       this.$store.commit('setComponentWithId', component)
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'sureFilter')
       this.cancelFilter()
     },
     reFreshComponent(component) {
@@ -593,6 +596,7 @@ export default {
       this.$refs.files.click()
     },
     handleFileChange(e) {
+      const _this = this
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
         toast('只能插入图片')
@@ -617,15 +621,15 @@ export default {
               propValue: fileResult,
               style: {
                 ...commonStyle,
-                top: this.getPositionY(this.currentDropElement.layerY),
-                left: this.getPositionX(this.currentDropElement.layerX),
-                width: img.width / scale,
-                height: img.height / scale
+                top: _this.dropComponentInfo.shadowStyle.y,
+                left: _this.dropComponentInfo.shadowStyle.x,
+                width: _this.dropComponentInfo.shadowStyle.width,
+                height: _this.dropComponentInfo.shadowStyle.height
               }
             }
           })
 
-          this.$store.commit('recordSnapshot')
+          this.$store.commit('recordSnapshot', 'handleFileChange')
         }
 
         img.src = fileResult
@@ -677,7 +681,7 @@ export default {
       component.style.left = 600
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot', 'newViewInfo')
       this.clearCurrentInfo()
       this.$store.commit('setCurComponent', { component: component, index: this.componentData.length - 1 })
 
@@ -691,6 +695,7 @@ export default {
       }
     },
     canvasScroll(event) {
+      console.log('testTop' + event.target.scrollTop)
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
     },
@@ -703,7 +708,7 @@ export default {
     recordStyleChange(index) {
       this.timeMachine = setTimeout(() => {
         if (index === this.$store.state.styleChangeTimes) {
-          this.$store.commit('recordSnapshot')
+          this.$store.commit('recordSnapshot', 'recordStyleChange')
           this.$store.state.styleChangeTimes = 0
         }
         this.destroyTimeMachine()
@@ -838,7 +843,7 @@ export default {
   }
 }
   .style-hidden{
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
 </style>

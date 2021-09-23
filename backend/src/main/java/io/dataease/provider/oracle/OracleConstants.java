@@ -17,7 +17,7 @@ public class OracleConstants extends SQLConstants {
 
     public static final String UNIX_TIMESTAMP = "UNIX_TIMESTAMP(%s)";
 
-    public static final String DATE_FORMAT = "DATE_FORMAT(%s,'%s')";
+    public static final String DATE_FORMAT = "to_timestamp(%s,'%s')";
 
     public static final String FROM_UNIXTIME = "FROM_UNIXTIME(%s,'%s')";
 

@@ -14,19 +14,25 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
-
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.util.PluginUtils;
+import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;
+import io.dataease.plugins.xpack.ldap.dto.response.ValidateResult;
+import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
+import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -35,10 +41,29 @@ public class AuthServer implements AuthApi {
     private AuthUserService authUserService;
 
 
+
+
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
         String username = loginDto.getUsername();
         String password = loginDto.getPassword();
+
+
+        String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, password);
+        // 增加ldap登录方式
+        Integer loginType = loginDto.getLoginType();
+        boolean isSupportLdap = authUserService.supportLdap();
+        if (loginType == 1 && isSupportLdap) {
+            LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
+            LdapValidateRequest request = LdapValidateRequest.builder().userName(username).password(pwd).build();
+            ValidateResult validateResult = ldapXpackService.login(request);
+            if (!validateResult.isSuccess()) {
+                DataEaseException.throwException(validateResult.getMsg());
+            }
+            username = validateResult.getUserName();
+        }
+        // 增加ldap登录方式
+
         SysUserEntity user = authUserService.getUserByName(username);
 
         if (ObjectUtils.isEmpty(user)) {
@@ -48,14 +73,19 @@ public class AuthServer implements AuthApi {
             DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
-        //私钥解密
-        String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, password);
-        //md5加密
-        pwd = CodingUtil.md5(pwd);
 
-        if (!StringUtils.equals(pwd, realPwd)) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+        // 普通登录需要验证密码
+        if (loginType == 0 || !isSupportLdap) {
+            //私钥解密
+
+            //md5加密
+            pwd = CodingUtil.md5(pwd);
+
+            if (!StringUtils.equals(pwd, realPwd)) {
+                DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            }
         }
+
         Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
@@ -85,6 +115,16 @@ public class AuthServer implements AuthApi {
     @Override
     public String logout() {
         String token = ServletUtils.getToken();
+        
+        if (isOpenOidc()) {
+            HttpServletRequest request = ServletUtils.request();
+            String idToken = request.getHeader("IdToken");
+            if (StringUtils.isNotBlank(idToken)) {
+                OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
+                oidcXpackService.logout(idToken);
+            }
+            
+        }
         if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
             return "success";
         }
@@ -107,6 +147,23 @@ public class AuthServer implements AuthApi {
         if (ObjectUtils.isEmpty(userEntity)) return false;
         return true;
     }
+
+    @Override
+    public boolean isOpenLdap() {
+        Boolean licValid = PluginUtils.licValid();
+        if(!licValid) return false;
+        boolean open = authUserService.supportLdap();
+        return open;
+    }
+
+    @Override
+    public boolean isOpenOidc() {
+        Boolean licValid = PluginUtils.licValid();
+        if(!licValid) return false;
+        return authUserService.supportOidc();
+    }
+
+    
 
     /*@Override
     public Boolean isLogin() {

@@ -58,7 +58,9 @@ const data = {
     // 和当前组件联动的目标组件
     targetLinkageInfo: [],
     // 当前仪表板联动 下钻 上卷等信息
-    nowPanelTrackInfo: {}
+    nowPanelTrackInfo: {},
+    // 拖拽的组件信息
+    dragComponentInfo: null
   },
   mutations: {
     ...animation.mutations,
@@ -79,10 +81,20 @@ const data = {
     },
 
     setCanvasStyle(state, style) {
+      if (style) {
+        style['selfAdaption'] = true
+      }
       state.canvasStyleData = style
     },
 
     setCurComponent(state, { component, index }) {
+      // 当前视图操作状态置空
+      if (component) {
+        component['optStatus'] = {
+          dragging: false,
+          resizing: false
+        }
+      }
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
@@ -244,6 +256,18 @@ const data = {
         }
       })
       // state.styleChangeTimes++
+    },
+    setDragComponentInfo(state, dragComponentInfo) {
+      dragComponentInfo['shadowStyle'] = {
+        x: 0,
+        y: 0,
+        height: 0,
+        width: 0
+      }
+      state.dragComponentInfo = dragComponentInfo
+    },
+    clearDragComponentInfo(state) {
+      state.dragComponentInfo = null
     }
   },
   modules: {

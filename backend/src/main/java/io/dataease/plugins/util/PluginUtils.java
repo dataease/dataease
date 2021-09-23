@@ -46,6 +46,16 @@ public class PluginUtils {
         return f2CLicenseResponse;
     }
 
+    public static Boolean licValid() {
+        try{
+            F2CLicenseResponse f2CLicenseResponse = PluginUtils.currentLic();
+            if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid) return false;
+        }catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
 
 
 

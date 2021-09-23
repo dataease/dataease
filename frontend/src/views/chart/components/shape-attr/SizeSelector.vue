@@ -94,10 +94,10 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.table_title_height')" class="form-item">
+        <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.table_item_height')" class="form-item">
+        <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
@@ -151,7 +151,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('chart.bubble_size')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="20" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="40" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
@@ -161,6 +161,93 @@
         </el-form-item>
         <el-form-item :label="$t('chart.height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.treemapHeight" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
+
+      <el-form v-show="chart.type && chart.type === 'chart-mix'" ref="sizeFormBar" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_bar') }}</el-divider>
+        <el-form-item :label="$t('chart.adapt')" class="form-item">
+          <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
+        </el-form-item>
+        <el-form-item :label="$t('chart.bar_width')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_line') }}</el-divider>
+        <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.line_type')" class="form-item">
+          <el-radio-group v-model="sizeForm.lineType" @change="changeBarSizeCase">
+            <el-radio-button label="solid">{{ $t('chart.line_type_solid') }}</el-radio-button>
+            <el-radio-button label="dashed">{{ $t('chart.line_type_dashed') }}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('chart.line_symbol')" class="form-item">
+          <el-select v-model="sizeForm.lineSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase">
+            <el-option
+              v-for="item in lineSymbolOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('chart.line_symbol_size')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.lineSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.line_smooth')" class="form-item">
+          <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase">{{ $t('chart.line_smooth') }}</el-checkbox>
+        </el-form-item>
+        <el-form-item :label="$t('chart.line_area')" class="form-item">
+          <el-checkbox v-model="sizeForm.lineArea" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
+        </el-form-item>
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_scatter') }}</el-divider>
+        <el-form-item :label="$t('chart.bubble_symbol')" class="form-item">
+          <el-select v-model="sizeForm.scatterSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase">
+            <el-option
+              v-for="item in lineSymbolOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('chart.bubble_size')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="40" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
+
+      <el-form v-show="chart.type && chart.type === 'liquid'" ref="sizeFormLine" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
+        <el-form-item :label="$t('chart.liquid_shape')" class="form-item">
+          <el-select v-model="sizeForm.liquidShape" :placeholder="$t('chart.liquid_shape')" @change="changeBarSizeCase">
+            <el-option
+              v-for="item in liquidShapeOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('chart.liquid_max')" class="form-item form-item-slider">
+          <el-input-number v-model="sizeForm.liquidMax" :min="1" size="mini" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.radar_size')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.liquidSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.liquid_outline_border')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.liquidOutlineBorder" show-input :show-input-controls="false" input-size="mini" :min="1" :max="20" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.liquid_outline_distance')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.liquidOutlineDistance" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.liquid_wave_length')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.liquidWaveLength" show-input :show-input-controls="false" input-size="mini" :min="10" :max="500" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.liquid_wave_count')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.liquidWaveCount" show-input :show-input-controls="false" input-size="mini" :min="2" :max="10" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
     </el-col>
@@ -195,6 +282,13 @@ export default {
         { name: this.$t('chart.line_symbol_pin'), value: 'pin' },
         { name: this.$t('chart.line_symbol_arrow'), value: 'arrow' }
       ],
+      liquidShapeOptions: [
+        { name: this.$t('chart.liquid_shape_circle'), value: 'circle' },
+        { name: this.$t('chart.liquid_shape_diamond'), value: 'diamond' },
+        { name: this.$t('chart.liquid_shape_triangle'), value: 'triangle' },
+        { name: this.$t('chart.liquid_shape_pin'), value: 'pin' },
+        { name: this.$t('chart.liquid_shape_rect'), value: 'rect' }
+      ],
       fontSize: []
     }
   },
@@ -224,6 +318,14 @@ export default {
           this.sizeForm.treemapWidth = this.sizeForm.treemapWidth ? this.sizeForm.treemapWidth : 80
           this.sizeForm.treemapHeight = this.sizeForm.treemapHeight ? this.sizeForm.treemapHeight : 80
           this.sizeForm.radarSize = this.sizeForm.radarSize ? this.sizeForm.radarSize : 80
+
+          this.sizeForm.liquidShape = this.sizeForm.liquidShape ? this.sizeForm.liquidShape : DEFAULT_SIZE.liquidShape
+          this.sizeForm.liquidMax = this.sizeForm.liquidMax ? this.sizeForm.liquidMax : DEFAULT_SIZE.liquidMax
+          this.sizeForm.liquidSize = this.sizeForm.liquidSize ? this.sizeForm.liquidSize : DEFAULT_SIZE.liquidSize
+          this.sizeForm.liquidOutlineBorder = this.sizeForm.liquidOutlineBorder ? this.sizeForm.liquidOutlineBorder : DEFAULT_SIZE.liquidOutlineBorder
+          this.sizeForm.liquidOutlineDistance = (this.sizeForm.liquidOutlineDistance || this.sizeForm.liquidOutlineDistance === 0) ? this.sizeForm.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance
+          this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
+          this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
         }
       }
     },
@@ -267,5 +369,14 @@ export default {
 
 .el-form-item{
   margin-bottom: 6px;
+}
+.el-divider--horizontal {
+  margin: 10px 0
+}
+.divider-style>>>.el-divider__text{
+  color: #606266;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 0 10px;
 }
 </style>

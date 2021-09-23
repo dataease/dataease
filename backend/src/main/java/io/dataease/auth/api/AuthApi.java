@@ -5,7 +5,6 @@ import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.api.dto.LoginDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -40,5 +39,14 @@ public interface AuthApi {
     @ApiOperation("验证账号")
     @PostMapping("/validateName")
     Boolean validateName(Map<String, String> nameDto);
+
+    @ApiOperation("是否开启ldap")
+    @PostMapping("/isOpenLdap")
+    boolean isOpenLdap();
+
+
+    @ApiOperation("是否开启oidc")
+    @PostMapping("/isOpenOidc")
+    boolean isOpenOidc();
 
 }

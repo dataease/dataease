@@ -18,7 +18,7 @@
     >
       <template #toolbar>
         <el-button :disabled="multipleSelection.length === 0" @click="markReaded">{{ $t('webmsg.mark_readed') }}</el-button>
-        <!-- <fu-table-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" :label="$t('user.create')" @click="create" /> -->
+        <el-button @click="allMarkReaded">{{ $t('webmsg.all_mark_readed') }}</el-button>
       </template>
       <el-table-column
         type="selection"
@@ -61,7 +61,7 @@
 
 import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
-import { query, updateStatus, batchRead } from '@/api/system/msg'
+import { query, updateStatus, batchRead, allRead } from '@/api/system/msg'
 import { msgTypes, getTypeName, loadMsgTypes } from '@/utils/webMsg'
 import bus from '@/utils/bus'
 import { addOrder, formatOrders } from '@/utils/index'
@@ -166,6 +166,13 @@ export default {
         this.search()
       })
     },
+    allMarkReaded() {
+      allRead().then(res => {
+        this.$success(this.$t('webmsg.mark_success'))
+        bus.$emit('refresh-top-notification')
+        this.search()
+      })
+    },
     markReaded() {
       if (this.multipleSelection.length === 0) {
         this.$warning(this.$t('webmsg.please_select'))
@@ -174,6 +181,7 @@ export default {
       const param = this.multipleSelection.map(item => item.msgId)
       batchRead(param).then(res => {
         this.$success(this.$t('webmsg.mark_success'))
+        bus.$emit('refresh-top-notification')
         this.search()
       })
     },
@@ -212,8 +220,8 @@ export default {
 
   >>>.el-radio-button__orig-radio:checked+.el-radio-button__inner {
     color: #fff;
-    background-color: #0a7be0;
-    border-color: #0a7be0;
+    /* background-color: #0a7be0;
+    border-color: #0a7be0; */
     -webkit-box-shadow: 0px 0 0 0 #0a7be0;
     box-shadow: 0px 0 0 0 #0a7be0;
   }

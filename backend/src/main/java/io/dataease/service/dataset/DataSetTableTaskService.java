@@ -191,6 +191,11 @@ public class DataSetTableTaskService {
             if(dataSetTaskDTOS.get(0).getNextExecTime() == null || dataSetTaskDTOS.get(0).getNextExecTime() <= 0){
                 datasetTableTask.setStatus(TaskStatus.Stopped.name());
                 update(datasetTableTask);
+                return;
+            }
+            if(dataSetTaskDTOS.get(0).getNextExecTime() > datasetTableTask.getEndTime()){
+                datasetTableTask.setStatus(TaskStatus.Stopped.name());
+                update(datasetTableTask);
             }
         }
     }

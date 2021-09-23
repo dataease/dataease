@@ -52,6 +52,11 @@ export default {
     refreshSaveStatus(state) {
       state.changeTimes = 0
       state.lastSaveSnapshotIndex = deepCopy(state.snapshotIndex)
+    },
+    recordStyleChange(state) {
+      if (state.curComponent) {
+        state.styleChangeTimes++
+      }
     }
   }
 }

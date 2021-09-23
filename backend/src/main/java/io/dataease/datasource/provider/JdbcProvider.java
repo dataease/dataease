@@ -7,6 +7,7 @@ import io.dataease.datasource.dto.*;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.beans.PropertyVetoException;
@@ -40,7 +41,7 @@ public class JdbcProvider extends DatasourceProvider {
         List<String[]> list = new LinkedList<>();
         Connection connection = null;
         try {
-            connection = getConnectionFromPool(dsr);
+            connection = getConnection(dsr);
             Statement stat = connection.createStatement();
             ResultSet rs = stat.executeQuery(dsr.getQuery());
             list = fetchResult(rs);
@@ -127,7 +128,7 @@ public class JdbcProvider extends DatasourceProvider {
             connection = getConnectionFromPool(datasourceRequest);
             Statement stat = connection.createStatement();
             rs = stat.executeQuery(datasourceRequest.getQuery());
-            return fetchResultField(rs);
+            return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
@@ -152,7 +153,7 @@ public class JdbcProvider extends DatasourceProvider {
             Statement stat = connection.createStatement();
             rs = stat.executeQuery(datasourceRequest.getQuery());
             dataList = fetchResult(rs);
-            fieldList = fetchResultField(rs);
+            fieldList = fetchResultField(rs, datasourceRequest);
             result.put("dataList", dataList);
             result.put("fieldList", fieldList);
             return result;
@@ -168,10 +169,11 @@ public class JdbcProvider extends DatasourceProvider {
         return new HashMap<>();
     }
 
-    private List<TableFiled> fetchResultField(ResultSet rs) throws Exception {
+    private List<TableFiled> fetchResultField(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
         List<TableFiled> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
+        QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
         for (int j = 0; j < columnCount; j++) {
             String f = metaData.getColumnName(j + 1);
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
@@ -180,7 +182,12 @@ public class JdbcProvider extends DatasourceProvider {
             field.setFieldName(l);
             field.setRemarks(l);
             field.setFieldType(t);
-            field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
+
+            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+                field.setFieldSize(qp.transFieldSize(t));
+            }else {
+                field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
+            }
             if(t.equalsIgnoreCase("LONG")){field.setFieldSize(65533);} //oracle LONG
             if(StringUtils.isNotEmpty(t) && t.toLowerCase().contains("date") && field.getFieldSize() < 50 ){
                 field.setFieldSize(50);
@@ -196,7 +203,7 @@ public class JdbcProvider extends DatasourceProvider {
         String queryStr = getTablesSql(datasourceRequest);
         Connection con = null;
         try {
-            con = getConnectionFromPool(datasourceRequest);
+            con = getConnection(datasourceRequest);
             Statement statement = con.createStatement();
             ResultSet resultSet = statement.executeQuery(queryStr);
             while (resultSet.next()) {
@@ -250,15 +257,20 @@ public class JdbcProvider extends DatasourceProvider {
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
-                String database = resultSet.getString("TABLE_CAT");
+                String database = null;
+                if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+                    database = resultSet.getString("TABLE_SCHEM");
+                }else {
+                    database = resultSet.getString("TABLE_CAT");
+                }
                 if(database != null){
                     if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                        TableFiled tableFiled = getTableFiled(resultSet);
+                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
                         list.add(tableFiled);
                     }
                 }else {
                     if (tableName.equals(datasourceRequest.getTable())) {
-                        TableFiled tableFiled = getTableFiled(resultSet);
+                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
                         list.add(tableFiled);
                     }
                 }
@@ -276,7 +288,7 @@ public class JdbcProvider extends DatasourceProvider {
         return list;
     }
 
-    private TableFiled getTableFiled(ResultSet resultSet) throws SQLException {
+    private TableFiled getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
         TableFiled tableFiled = new TableFiled();
         String colName = resultSet.getString("COLUMN_NAME");
         tableFiled.setFieldName(colName);
@@ -285,12 +297,18 @@ public class JdbcProvider extends DatasourceProvider {
             remarks = colName;
         }
         tableFiled.setRemarks(remarks);
-        tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
         tableFiled.setFieldType(dbType);
         if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
         if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
             tableFiled.setFieldSize(50);
+        }
+
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+            QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
+            tableFiled.setFieldSize(qp.transFieldSize(dbType));
+        }else {
+            tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
         }
         return tableFiled;
     }
@@ -436,6 +454,14 @@ public class JdbcProvider extends DatasourceProvider {
                 password = pgConfigration.getPassword();
                 driver = pgConfigration.getDriver();
                 jdbcurl = pgConfigration.getJdbc();
+                break;
+            case ck:
+                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
+                username = chConfigration.getUsername();
+                password = chConfigration.getPassword();
+                driver = chConfigration.getDriver();
+                jdbcurl = chConfigration.getJdbc();
+                break;
             default:
                 break;
         }
@@ -493,6 +519,14 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setJdbcUrl(pgConfigration.getJdbc());
                 jdbcDTO = pgConfigration;
                 break;
+            case ck:
+                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
+                dataSource.setUser(chConfigration.getUsername());
+                dataSource.setDriverClass(chConfigration.getDriver());
+                dataSource.setPassword(chConfigration.getPassword());
+                dataSource.setJdbcUrl(chConfigration.getJdbc());
+                jdbcDTO = chConfigration;
+                break;
             default:
                 break;
         }
@@ -515,7 +549,8 @@ public class JdbcProvider extends DatasourceProvider {
                 PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
                 return pgConfigration.getDataBase();
             default:
-                return null;
+                JdbcDTO jdbcDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcDTO.class);
+                return jdbcDTO.getDataBase();
         }
     }
 
@@ -528,6 +563,9 @@ public class JdbcProvider extends DatasourceProvider {
                 return "show tables;";
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                if(StringUtils.isEmpty(sqlServerConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'DS_SCHEMA' ;"
                         .replace("DATABASE", sqlServerConfigration.getDataBase())
                         .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
@@ -543,6 +581,9 @@ public class JdbcProvider extends DatasourceProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+            case ck:
+                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
+                return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfigration.getDataBase());
             default:
                 return "show tables;";
         }

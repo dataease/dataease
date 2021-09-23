@@ -6,7 +6,19 @@
 </template>
 
 <script>
-import { BASE_BAR, BASE_LINE, HORIZONTAL_BAR, BASE_PIE, BASE_FUNNEL, BASE_RADAR, BASE_GAUGE, BASE_MAP, BASE_SCATTER, BASE_TREEMAP } from '../chart/chart'
+import {
+  BASE_BAR,
+  BASE_LINE,
+  HORIZONTAL_BAR,
+  BASE_PIE,
+  BASE_FUNNEL,
+  BASE_RADAR,
+  BASE_GAUGE,
+  BASE_MAP,
+  BASE_SCATTER,
+  BASE_TREEMAP,
+  BASE_MIX
+} from '../chart/chart'
 import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
 import { baseLineOption, stackLineOption } from '../chart/line/line'
 import { basePieOption, rosePieOption } from '../chart/pie/pie'
@@ -16,6 +28,7 @@ import { baseRadarOption } from '../chart/radar/radar'
 import { baseGaugeOption } from '../chart/gauge/gauge'
 import { baseScatterOption } from '../chart/scatter/scatter'
 import { baseTreemapOption } from '../chart/treemap/treemap'
+import { baseMixOption } from '@/views/chart/chart/mix/mix'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import { uuid } from 'vue-uuid'
 import { geoJson } from '@/api/map/map'
@@ -139,7 +152,10 @@ export default {
         chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart)
       } else if (chart.type === 'treemap') {
         chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart)
+      } else if (chart.type === 'chart-mix') {
+        chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
       }
+      // console.log(JSON.stringify(chart_option))
 
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)

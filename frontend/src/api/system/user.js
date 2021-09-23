@@ -98,4 +98,29 @@ export function roleGrid(pageIndex, pageSize, data) {
   })
 }
 
-export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd, allRoles, roleGrid }
+export function ldapUsers(data) {
+  return request({
+    url: '/plugin/ldap/users',
+    method: 'post',
+    loading: true
+  })
+}
+
+export function saveLdapUser(data) {
+  return request({
+    url: '/api/user/sync',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function existLdapUsers() {
+  return request({
+    url: '/api/user/existLdapUsers',
+    method: 'post',
+    loading: false
+  })
+}
+
+export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers }

@@ -199,6 +199,7 @@ export default {
       query(currentPage, pageSize, param).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
+        this.count = this.paginationConfig.total
       }).catch(() => {
         const token = getToken()
         if (!token || token === 'null' || token === 'undefined') {

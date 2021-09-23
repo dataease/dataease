@@ -15,6 +15,7 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
+    "@antv/g2plot": "^2.3.32",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.21.1",
@@ -28,6 +29,7 @@
     "html2canvasde": "^v1.1.4-de",
     "js-cookie": "2.2.0",
     "jsencrypt": "^3.0.0-rc.1",
+    "jspdf": "^2.3.1",
     "lodash": "4.17.21",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
@@ -41,9 +43,10 @@
     "vue-axios": "3.2.4",
     "vue-clipboard2": "0.3.1",
     "vue-codemirror": "^4.0.6",
-    "vue-fullscreen": "^2.5.1",
+    "vue-fullscreen": "^2.5.2",
     "vue-i18n": "7.3.2",
     "vue-router": "3.0.6",
+    "vue-to-pdf": "^1.0.0",
     "vue-uuid": "2.0.2",
     "vuedraggable": "^2.24.3",
     "vuex": "3.1.0",

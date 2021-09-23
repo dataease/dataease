@@ -184,6 +184,11 @@ public class ChartViewService {
         }.getType());
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
+            List<ChartViewFieldDTO> yAxisExt = new Gson().fromJson(view.getYAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+            yAxis.addAll(yAxisExt);
+        }
         List<ChartViewFieldDTO> extStack = new Gson().fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
         List<ChartViewFieldDTO> extBubble = new Gson().fromJson(view.getExtBubble(), new TypeToken<List<ChartViewFieldDTO>>() {
@@ -203,9 +208,18 @@ public class ChartViewService {
             customFilter.addAll(collect);
         }
 
-        if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+        if (StringUtils.equalsIgnoreCase("text", view.getType())
+                || StringUtils.equalsIgnoreCase("gauge", view.getType())
+                || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
             xAxis = new ArrayList<>();
             if (CollectionUtils.isEmpty(yAxis)) {
+                ChartViewDTO dto = new ChartViewDTO();
+                BeanUtils.copyBean(dto, view);
+                return dto;
+            }
+        } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+            yAxis = new ArrayList<>();
+            if (CollectionUtils.isEmpty(xAxis)) {
                 ChartViewDTO dto = new ChartViewDTO();
                 BeanUtils.copyBean(dto, view);
                 return dto;
@@ -315,22 +329,26 @@ public class ChartViewService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, customFilter, extFilterList));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     datasourceRequest.setQuery(qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extStack, ds));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                     datasourceRequest.setQuery(qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extBubble, ds));
+                } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLTableInfo(dataTableInfoDTO.getTable(), xAxis, customFilter, extFilterList, ds));
                 } else {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, ds));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
-                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, customFilter, extFilterList));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpStack(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList, extStack));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpScatter(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList, extBubble));
+                } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(dataTableInfoDTO.getSql(), xAxis, customFilter, extFilterList, ds));
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList));
                 }
@@ -338,12 +356,14 @@ public class ChartViewService {
                 DataTableInfoDTO dt = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, list, ds);
-                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, customFilter, extFilterList));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, customFilter, extFilterList, extStack));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, customFilter, extFilterList, extBubble));
+                } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, customFilter, extFilterList, ds));
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, customFilter, extFilterList));
                 }
@@ -368,12 +388,14 @@ public class ChartViewService {
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType())) {
+            if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                 datasourceRequest.setQuery(qp.getSQLSummary(tableName, yAxis, customFilter, extFilterList));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, customFilter, extFilterList, extStack, ds));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, customFilter, extFilterList, extBubble, ds));
+            } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, customFilter, extFilterList, ds));
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList, ds));
             }
@@ -427,6 +449,8 @@ public class ChartViewService {
         } else if (StringUtils.containsIgnoreCase(view.getType(), "text")
                 || StringUtils.containsIgnoreCase(view.getType(), "gauge")) {
             mapChart = transNormalChartData(xAxis, yAxis, view, data, isDrill);
+        } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
+            mapChart = transMixChartData(xAxis, yAxis, view, data, isDrill);
         } else {
             mapChart = transChartData(xAxis, yAxis, view, data, isDrill);
         }
@@ -435,6 +459,9 @@ public class ChartViewService {
 
         map.putAll(mapChart);
         map.putAll(mapTableNormal);
+
+        List<DatasetTableField>  sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
+        map.put("sourceFields",sourceFields);
 
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
@@ -510,6 +537,67 @@ public class ChartViewService {
             Series series1 = new Series();
             series1.setName(y.getName());
             series1.setType(view.getType());
+            series1.setData(new ArrayList<>());
+            series.add(series1);
+        }
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] d = data.get(i1);
+
+            StringBuilder a = new StringBuilder();
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                AxisChartDataDTO axisChartDataDTO = new AxisChartDataDTO();
+
+                for (int j = 0; j < xAxis.size(); j++) {
+                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                    chartDimensionDTO.setId(xAxis.get(j).getId());
+                    chartDimensionDTO.setValue(d[j]);
+                    dimensionList.add(chartDimensionDTO);
+                }
+                axisChartDataDTO.setDimensionList(dimensionList);
+
+                int j = i - xAxis.size();
+                ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                chartQuotaDTO.setId(yAxis.get(j).getId());
+                quotaList.add(chartQuotaDTO);
+                axisChartDataDTO.setQuotaList(quotaList);
+                try {
+                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                } catch (Exception e) {
+                    axisChartDataDTO.setValue(new BigDecimal(0));
+                }
+                series.get(j).getData().add(axisChartDataDTO);
+            }
+            if (isDrill) {
+                a.append(d[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(d[i]);
+                    } else {
+                        a.append(d[i]).append("\n");
+                    }
+                }
+            }
+            x.add(a.toString());
+        }
+
+        map.put("x", x);
+        map.put("series", series);
+        return map;
+    }
+
+    // 组合图形
+    private Map<String, Object> transMixChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<String> x = new ArrayList<>();
+        List<Series> series = new ArrayList<>();
+        for (ChartViewFieldDTO y : yAxis) {
+            Series series1 = new Series();
+            series1.setName(y.getName());
+            series1.setType(y.getChartType());
             series1.setData(new ArrayList<>());
             series.add(series1);
         }

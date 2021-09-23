@@ -8,6 +8,11 @@ import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
+import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,6 +50,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public SysUserEntity getUserByName(String username) {
         return authMapper.findUserByName(username);
+    }
+
+    @Override
+    public SysUserEntity getUserBySub(String sub) {
+        return authMapper.findUserBySub(sub);
     }
 
     @Override
@@ -102,4 +113,23 @@ public class AuthUserServiceImpl implements AuthUserService {
         LogUtil.info("正在清除用户缓存【{}】",userId);
     }
 
+    @Override
+    public boolean supportLdap() {
+        Map<String, LdapXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LdapXpackService.class));
+        if(beansOfType.keySet().size() == 0) return false;
+        LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
+        if(ObjectUtils.isEmpty(ldapXpackService)) return false;
+        return ldapXpackService.isOpen();
+    }
+
+    @Override
+    public Boolean supportOidc() {
+        Map<String, OidcXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((OidcXpackService.class));
+        if(beansOfType.keySet().size() == 0) return false;
+        OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
+        if(ObjectUtils.isEmpty(oidcXpackService)) return false;
+        return oidcXpackService.isSuuportOIDC();
+    }
+
+    
 }

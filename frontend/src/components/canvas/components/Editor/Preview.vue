@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
+  <div id="canvasInfoTemp" ref="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
     <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
       {{ $t('panel.panelNull') }}
     </el-row>
@@ -110,12 +110,16 @@ export default {
           }
         }
       }
-      if (this.canvasStyleData.selfAdaption) {
-        style = {
-          overflow: 'hidden',
-          ...style
-        }
-      }
+      // if (this.canvasStyleData.selfAdaption) {
+      //   style = {
+      //     overflow: 'hidden',
+      //     ...style
+      //   }
+      // }
+      // style = {
+      //   overflow-x :'hidden',
+      //   ...style
+      // }
       return style
     },
     // 此处单独计算componentData的值 不放入全局mapState中
@@ -168,10 +172,13 @@ export default {
       const canvasWidth = document.getElementById('canvasInfoTemp').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
-      if (this.showType === 'width') {
-        this.scaleHeight = this.scaleWidth
-        this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
-      }
+
+      this.scaleHeight = this.scaleWidth
+      // this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
+      // if (this.showType === 'width') {
+      //   this.scaleHeight = this.scaleWidth
+      //   this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
+      // }
       this.handleScaleChange()
     },
     resetID(data) {
@@ -252,7 +259,7 @@ export default {
   color: #9ea6b2;
 }
 .gap_class{
-  padding:3px;
+  padding:5px;
 }
 .dialog-css>>>.el-dialog__title {
   font-size: 14px;

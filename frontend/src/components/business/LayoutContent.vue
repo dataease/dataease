@@ -39,11 +39,9 @@ export default {
 
 <style lang="scss">
 @import "~@/styles/mixin.scss";
-@import "~@/styles/variables.scss";
 
 .content-container {
   transition: 0.3s;
-  color: $--color-text-primary;
   background-color: #FFFFFF;
   overflow: auto;
   height: 100%;

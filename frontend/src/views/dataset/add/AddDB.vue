@@ -29,7 +29,7 @@
         <el-form-item class="form-item">
           <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
             <el-option :label="$t('dataset.direct_connect')" value="0" />
-            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning" />
+            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning || selectedDatasource.type==='es' || selectedDatasource.type==='ck'" />
           </el-select>
         </el-form-item>
 
@@ -86,7 +86,8 @@ export default {
       mode: '0',
       syncType: 'sync_now',
       tableData: [],
-      kettleRunning: false
+      kettleRunning: false,
+      selectedDatasource: {}
     }
   },
   watch: {
@@ -96,6 +97,11 @@ export default {
           this.tables = response.data
           this.tableData = JSON.parse(JSON.stringify(this.tables))
         })
+        for (let i = 0; i < this.options.length; i++) {
+          if (this.options[i].id === val) {
+            this.selectedDatasource = this.options[i]
+          }
+        }
       }
     },
     searchTable(val) {

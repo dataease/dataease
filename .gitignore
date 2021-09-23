@@ -52,6 +52,7 @@ pnpm-debug.log*
 *.classpath
 *.project
 .settings/
+.lh
 
 
 package-lock.json

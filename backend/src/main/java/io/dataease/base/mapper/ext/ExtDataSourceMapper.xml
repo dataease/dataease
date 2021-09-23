@@ -8,7 +8,7 @@
     </resultMap>
 
     <select id="query" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="BaseResultMapDTO">
-        select id , name , `desc` ,`type` , configuration ,create_time ,update_time,
+        select datasource.*,
         authInfo.privileges as `privileges`
          from (select GET_V_AUTH_MODEL_ID_P_USE (#{extendCondition}, 'link') cids) t,datasource
         left join (
@@ -55,7 +55,7 @@
     </select>
 
     <select id="queryUnion"  resultMap="BaseResultMapDTO">
-        select id , name , `desc` ,`type` , configuration ,create_time ,update_time, status,
+        select datasource.*,
         authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'link') cids) t,datasource
         left join (

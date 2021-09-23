@@ -17,18 +17,6 @@
         <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />
         <span>{{ $t('panel.matrix_design') }}</span>
       </div>
-
-      <div class="canvas-config" style="margin-right: 10px">
-        <el-switch v-model="canvasStyleData.selfAdaption" :width="35" name="selfAdaption" />
-        <span>{{ $t('panel.canvas_self_adaption') }} </span>
-      </div>
-
-      <div class="canvas-config" style="margin-right: 55px">
-        <span> {{ $t('panel.canvas_size') }} </span>
-        <input v-model="canvasStyleData.width" :disabled="canvasStyleData.selfAdaption">
-        <span>*</span>
-        <input v-model="canvasStyleData.height" :disabled="canvasStyleData.selfAdaption">
-      </div>
       <!--      <div class="canvas-config" style="margin-right: 10px">-->
       <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
       <!--        <input v-model="scale" @input="handleScaleChange"> %-->
@@ -214,12 +202,12 @@ export default {
 
     compose() {
       this.$store.commit('compose')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','compose')
     },
 
     decompose() {
       this.$store.commit('decompose')
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','decompose')
     },
 
     undo() {
@@ -267,7 +255,7 @@ export default {
             }
           })
 
-          this.$store.commit('recordSnapshot')
+          this.$store.commit('recordSnapshot','handleFileChange')
         }
 
         img.src = fileResult
@@ -306,7 +294,7 @@ export default {
     clearCanvas() {
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-      this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot','clearCanvas')
     },
 
     handlePreviewChange() {
@@ -383,7 +371,7 @@ export default {
     float: right;
     height: 35px;
     line-height: 35px;
-    min-width: 900px;
+    min-width: 500px;
     /*background: #fff;*/
     /*border-bottom: 1px solid #ddd;*/
 

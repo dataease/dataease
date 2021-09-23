@@ -13,6 +13,8 @@ public interface AuthUserService {
 
     SysUserEntity getUserByName(String username);
 
+    SysUserEntity getUserBySub(String sub);
+
     List<String> roles(Long userId);
 
     List<String> permissions(Long userId);
@@ -20,6 +22,10 @@ public interface AuthUserService {
     List<CurrentRoleDto> roleInfos(Long userId);
 
     void clearCache(Long userId);
+
+    boolean supportLdap();
+
+    Boolean supportOidc();
 
 
 

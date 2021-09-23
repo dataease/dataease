@@ -49,6 +49,14 @@
         <el-input v-model="innerOpacity" type="number" size="mini" min="0" max="100" step="10" @change="styleChange" />
       </div>
 
+      <el-tooltip :content="$t('panel.borderRadius')">
+        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-fangxing-" />
+      </el-tooltip>
+
+      <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-input v-model="styleInfo.borderRadius" type="number" size="mini" min="0" max="100" step="1" @change="styleChange" />
+      </div>
+
       <div style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <div style="width: 16px;height: 18px">
           <el-tooltip :content="$t('panel.color')">
@@ -173,7 +181,7 @@ export default {
         ps = x + 60
       }
       // 防止toolbar超出边界
-      const xGap = ps + 495 - this.canvasWidth
+      const xGap = ps + 565 - this.canvasWidth
       // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
       if (xGap > 0) {
         return ps - xGap
@@ -189,7 +197,7 @@ export default {
       }
     },
     styleChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('recordStyleChange')
     }
   }
 }
@@ -205,7 +213,7 @@ export default {
   .el-card-main {
     height: 34px;
     z-index: 10;
-    width: 550px;
+    width: 620px;
     position: absolute;
 
   }

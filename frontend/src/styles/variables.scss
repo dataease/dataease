@@ -3,7 +3,10 @@
 * So I modified the default color and you can modify it to your liking.
 **/
 
+
+
 /* theme color */
+
 $--color-primary: #0a7be0;
 $--color-success: #67C23A;
 $--color-warning: #E6A23C;
@@ -12,50 +15,49 @@ $--color-danger: #F56C6C;
 
 $--button-font-weight: 400;
 
-// $--color-text-regular: #1f2d3d;
-
 $--border-color-light: #dfe4ed;
 $--border-color-lighter: #e6ebf5;
 
 $--table-border: 1px solid #dfe6ec;
 
-/* icon font path, required */
 $--font-path: "~element-ui/lib/theme-chalk/fonts";
 
 @import "~element-ui/packages/theme-chalk/src/index";
 @import "~fit2cloud-ui/src/styles/common/variables";
-
+// topBar
+$topBarBg: #f1f3f8;
+$topBarMenuHovor: rgba(158,158,158,.2);
+$topBarMenuActive: $--color-primary;
+$topBarMenuText: #1e212a;
+$topBarMenuTextActive: #f4f4f5;
 // sidebar
-$menuText: #1e212a;
-$menuActiveText: #0a7be0;
-$topMenuActiveText: #f4f4f5;
-$subMenuActiveText: #f4f4f5; //https://github.com/ElemeFE/element/issues/12951
+$leftMenuBg: #ffffff;
+$leftMenuActive: #ebf4fd;
+$leftMenuHovor: rgba(158,158,158,.2);
+$leftMenuText: #1e212a;
+$leftMenuTextActive: $--color-primary;
 
-// $menuBg:#304156;
-$menuBg: #ffffff;
-// $menuHover:#263445;
-$menuHover: rgba(158, 158, 158, 0.2);
 
-$subMenuBg: #ffffff;
-// $subMenuHover:#001528;
-$subMenuHover: #0a7be0;
-$colorBg: rgba(10, 123, 224, .1);
-
+$colorBg: rgba(10, 123, 224, .1); 
 $sideBarWidth: 210px;
 $topBarHeight: 56px;
 $contentHeight: calc(100vh - 56px);
 
-// the :export directive is the magic sauce for webpack
-// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+
 :export {
   theme: $--color-primary;
-  menuText: $menuText;
-  menuActiveText: $menuActiveText;
-  topMenuActiveText: $topMenuActiveText;
-  subMenuActiveText: $subMenuActiveText;
-  menuBg: $menuBg;
-  menuHover: $menuHover;
-  subMenuBg: $subMenuBg;
-  subMenuHover: $subMenuHover;
+
   sideBarWidth: $sideBarWidth;
+
+
+  topBarBg: $topBarBg;
+  topBarMenuHovor: $topBarMenuHovor;
+  topBarMenuActive: $topBarMenuActive;
+  topBarMenuText: $topBarMenuText;
+  topBarMenuTextActive: $topBarMenuTextActive;
+  leftMenuBg: $leftMenuBg;
+  leftMenuActive: $leftMenuActive;
+  leftMenuHovor: $leftMenuHovor;
+  leftMenuText: $leftMenuText;
+  leftMenuTextActive: $leftMenuTextActive;
 }

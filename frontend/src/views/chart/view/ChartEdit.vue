@@ -77,7 +77,7 @@
                   @add="moveToQuota"
                 >
                   <transition-group>
-                    <span v-for="item in quotaData" :key="item.id" class="item-quota" :title="item.name">
+                    <span v-for="item in quotaData" v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))" :key="item.id" class="item-quota" :title="item.name">
                       <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
                       <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
                       <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
@@ -113,17 +113,21 @@
                 <span>{{ $t('chart.chart_type') }}</span>
                 <el-row>
                   <div class="chart-type">
-                    <!--这里要替换好看点的图标，UI标签可以重新定义-->
                     <el-radio-group
                       v-model="view.type"
                       style="width: 100%"
                       :disabled="!hasDataPermission('manage',param.privileges)"
-                      @change="save(true,'chart',true)"
+                      @change="save(true,'chart',true,true)"
                     >
                       <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="table-normal" label="table-normal">
                           <span :title="$t('chart.chart_table_normal')">
                             <svg-icon icon-class="table-normal" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="table-info" label="table-info">
+                          <span :title="$t('chart.chart_table_info')">
+                            <svg-icon icon-class="table-info" class="chart-icon" />
                           </span>
                         </el-radio>
                         <el-radio value="text" label="text">
@@ -141,13 +145,13 @@
                             <svg-icon icon-class="bar-stack" class="chart-icon" />
                           </span>
                         </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="bar-horizontal" label="bar-horizontal">
                           <span :title="$t('chart.chart_bar_horizontal')">
                             <svg-icon icon-class="bar-horizontal" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="bar-stack-horizontal" label="bar-stack-horizontal">
                           <span :title="$t('chart.chart_bar_stack_horizontal')">
                             <svg-icon icon-class="bar-stack-horizontal" class="chart-icon" />
@@ -168,16 +172,26 @@
                             <svg-icon icon-class="scatter" class="chart-icon" />
                           </span>
                         </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                        <el-radio value="chart-mix" label="chart-mix">
+                          <span :title="$t('chart.chart_mix')">
+                            <svg-icon icon-class="chart-mix" class="chart-icon" />
+                          </span>
+                        </el-radio>
                         <el-radio value="map" label="map">
                           <span :title="$t('chart.chart_map')">
                             <svg-icon icon-class="map" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="radar" label="radar">
                           <span :title="$t('chart.chart_radar')">
                             <svg-icon icon-class="radar" class="chart-icon" />
+                          </span>
+                        </el-radio>
+                        <el-radio value="liquid" label="liquid">
+                          <span :title="$t('chart.chart_liquid')">
+                            <svg-icon icon-class="liquid" class="chart-icon" />
                           </span>
                         </el-radio>
                         <el-radio value="gauge" label="gauge">
@@ -185,6 +199,8 @@
                             <svg-icon icon-class="gauge" class="chart-icon" />
                           </span>
                         </el-radio>
+                      </div>
+                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="pie" label="pie">
                           <span :title="$t('chart.chart_pie')">
                             <svg-icon icon-class="pie" class="chart-icon" />
@@ -200,18 +216,20 @@
                             <svg-icon icon-class="funnel" class="chart-icon" />
                           </span>
                         </el-radio>
-                      </div>
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="treemap" label="treemap">
                           <span :title="$t('chart.chart_treemap')">
                             <svg-icon icon-class="treemap" class="chart-icon" />
                           </span>
                         </el-radio>
                         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
                       </div>
+                      <!--                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">-->
+                      <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
+                      <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
+                      <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
+                      <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
+                      <!--                        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
+                      <!--                      </div>-->
                     </el-radio-group>
                   </div>
                 </el-row>
@@ -247,10 +265,10 @@
                       />
                     </span>
                   </el-row>
-                  <el-row v-if="view.type !=='text' && view.type !== 'gauge'" class="padding-lr">
+                  <el-row v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))">{{ $t('chart.drag_block_type_axis') }}</span>
+                      <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')">{{ $t('chart.drag_block_type_axis') }}</span>
                       <span v-else-if="view.type && view.type.includes('pie')">{{ $t('chart.drag_block_pie_label') }}</span>
                       <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
@@ -277,7 +295,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
-                  <el-row class="padding-lr" style="margin-top: 6px;">
+                  <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
                       <span v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))">{{ $t('chart.drag_block_value_axis') }}</span>
@@ -288,6 +306,8 @@
                       <span v-else-if="view.type && view.type.includes('text')">{{ $t('chart.drag_block_label_value') }}</span>
                       <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
                       <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
+                      <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
+                      <span v-else-if="view.type && view.type === 'liquid'">{{ $t('chart.drag_block_progress') }}</span>
                       /
                       <span>{{ $t('chart.quota') }}</span>
                     </span>
@@ -302,10 +322,34 @@
                       @update="save(true)"
                     >
                       <transition-group class="draggable-group">
-                        <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
+                        <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" :chart="chart" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
                       </transition-group>
                     </draggable>
                     <div v-if="!view.yaxis || view.yaxis.length === 0" class="drag-placeholder-style">
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
+                  <el-row v-if="view.type && view.type === 'chart-mix'" class="padding-lr" style="margin-top: 6px;">
+                    <span style="width: 80px;text-align: right;">
+                      <span>{{ $t('chart.drag_block_value_axis_ext') }}</span>
+                      /
+                      <span>{{ $t('chart.quota') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.yaxisExt"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      class="drag-block-style"
+                      @add="addYaxisExt"
+                      @update="save(true)"
+                    >
+                      <transition-group class="draggable-group">
+                        <quota-ext-item v-for="(item,index) in view.yaxisExt" :key="item.id" :param="param" :index="index" :item="item" :chart="chart" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
+                      </transition-group>
+                    </draggable>
+                    <div v-if="!view.yaxisExt || view.yaxisExt.length === 0" class="drag-placeholder-style">
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
@@ -386,7 +430,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
-                  <el-row v-if="view.type && view.type !== 'treemap' && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('radar') && !view.type.includes('gauge')" class="padding-lr" style="margin-top: 6px;">
+                  <el-row v-if="view.type && view.type !== 'treemap' && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('radar') && !view.type.includes('gauge') && view.type !== 'liquid'" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span>{{ $t('chart.drill') }}</span>
                       /
@@ -439,47 +483,36 @@
                   <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text')" name="label" :title="$t('chart.label')">
                     <label-selector :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text')" name="tooltip" :title="$t('chart.tooltip')">
+                  <el-collapse-item v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid'" name="tooltip" :title="$t('chart.tooltip')">
                     <tooltip-selector :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />
                   </el-collapse-item>
                 </el-collapse>
-                <!--              <el-row>-->
-                <!--                <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />-->
-                <!--                <size-selector v-show="chart.type !== 'map'" :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />-->
-                <!--                <label-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />-->
-                <!--                <tooltip-selector v-show="!view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onTooltipChange="onTooltipChange" />-->
-                <!--              </el-row>-->
               </el-row>
               <el-row>
                 <span class="padding-lr">{{ $t('chart.module_style') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
-                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))" name="xAxis" :title="$t('chart.xAxis')">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="xAxis" :title="$t('chart.xAxis')">
                     <x-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter'))" name="yAxis" :title="$t('chart.yAxis')">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="yAxis" :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')">
                     <y-axis-selector :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
+                  </el-collapse-item>
+                  <el-collapse-item v-show="view.type && view.type === 'chart-mix'" name="yAxisExt" :title="$t('chart.yAxis_ext')">
+                    <y-axis-ext-selector :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisExtForm" />
                   </el-collapse-item>
                   <el-collapse-item v-show="view.type && view.type.includes('radar')" name="split" :title="$t('chart.split')">
                     <split-selector :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />
                   </el-collapse-item>
-                  <el-collapse-item name="title" :title="$t('chart.title')">
+                  <el-collapse-item v-show="view.type" name="title" :title="$t('chart.title')">
                     <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && chart.type !== 'treemap'" name="legend" :title="$t('chart.legend')">
+                  <el-collapse-item v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && chart.type !== 'treemap' && view.type !== 'liquid'" name="legend" :title="$t('chart.legend')">
                     <legend-selector :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
                   </el-collapse-item>
                   <el-collapse-item name="background" :title="$t('chart.background')">
                     <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
                   </el-collapse-item>
                 </el-collapse>
-                <!--              <el-row>-->
-                <!--                <x-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />-->
-                <!--                <y-axis-selector v-show="view.type && (view.type.includes('bar') || view.type.includes('line'))" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />-->
-                <!--                <split-selector v-show="view.type && view.type.includes('radar')" :param="param" class="attr-selector" :chart="chart" @onChangeSplitForm="onChangeSplitForm" />-->
-                <!--                <title-selector :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
-                <!--                <legend-selector v-show="view.type && !view.type.includes('map') && !view.type.includes('table') && !view.type.includes('text')" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />-->
-                <!--                <background-color-selector :param="param" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />-->
-                <!--              </el-row>-->
               </el-row>
             </div>
           </el-row>
@@ -489,8 +522,9 @@
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
-            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text')" ref="dynamicChart" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
-            <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :chart="chart" class="table-class" />
+            <chart-component v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" ref="dynamicChart" :chart-id="chart.id" :chart="chart" class="chart-class" @onChartClick="chartClick" />
+            <chart-component-g2 v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'g2'" ref="dynamicChart" :chart-id="chart.id" :chart="chart" class="chart-class" />
+            <table-normal v-if="httpRequest.status && chart.type && chart.type.includes('table')" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
             <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :chart="chart" class="table-class" />
             <div v-if="!httpRequest.status" class="chart-error-class">
               <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
@@ -626,7 +660,8 @@ import {
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
-  DEFAULT_SPLIT
+  DEFAULT_SPLIT,
+  DEFAULT_YAXIS_EXT_STYLE
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -646,9 +681,15 @@ import LabelNormal from '../components/normal/LabelNormal'
 import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
 import { areaMapping } from '@/api/map/map'
+import QuotaExtItem from '@/views/chart/components/drag-item/QuotaExtItem'
+import YAxisExtSelector from '@/views/chart/components/component-style/YAxisExtSelector'
+import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 export default {
   name: 'ChartEdit',
   components: {
+    ChartComponentG2,
+    YAxisExtSelector,
+    QuotaExtItem,
     FilterItem,
     FieldEdit,
     SplitSelector,
@@ -693,6 +734,7 @@ export default {
       view: {
         xaxis: [],
         yaxis: [],
+        yaxisExt: [],
         extStack: [],
         drillFields: [],
         extBubble: [],
@@ -710,6 +752,7 @@ export default {
           legend: DEFAULT_LEGEND_STYLE,
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
+          yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
         },
@@ -826,7 +869,15 @@ export default {
         this.resetDatasetField()
       }
     },
-    save(getData, trigger, needRefreshGroup = false) {
+    save(getData, trigger, needRefreshGroup = false, switchType = false) {
+      if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.table_info_switch'),
+          type: 'warning'
+        })
+        this.view.xaxis = []
+      }
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -860,6 +911,9 @@ export default {
         view.yaxis = [view.yaxis[0]]
       }
       view.yaxis.forEach(function(ele) {
+        if (!ele.chartType) {
+          ele.chartType = 'bar'
+        }
         if (!ele.summary || ele.summary === '') {
           if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
             ele.summary = 'count'
@@ -874,7 +928,33 @@ export default {
           ele.filter = []
         }
       })
+      if (view.type === 'chart-mix') {
+        view.yaxisExt.forEach(function(ele) {
+          if (!ele.chartType) {
+            ele.chartType = 'bar'
+          }
+          if (!ele.summary || ele.summary === '') {
+            if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+              ele.summary = 'count'
+            } else {
+              ele.summary = 'sum'
+            }
+          }
+          if (!ele.sort || ele.sort === '') {
+            ele.sort = 'none'
+          }
+          if (!ele.filter) {
+            ele.filter = []
+          }
+        })
+      }
       view.extStack.forEach(function(ele) {
+        if (!ele.dateStyle || ele.dateStyle === '') {
+          ele.dateStyle = 'y_M_d'
+        }
+        if (!ele.datePattern || ele.datePattern === '') {
+          ele.datePattern = 'date_sub'
+        }
         if (!ele.sort || ele.sort === '') {
           ele.sort = 'none'
         }
@@ -920,6 +1000,7 @@ export default {
       })
       view.xaxis = JSON.stringify(view.xaxis)
       view.yaxis = JSON.stringify(view.yaxis)
+      view.yaxisExt = JSON.stringify(view.yaxisExt)
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
       view.customFilter = JSON.stringify(view.customFilter)
@@ -966,6 +1047,7 @@ export default {
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
@@ -982,6 +1064,8 @@ export default {
           }
           if (!response.data.drill) {
             this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+
+            this.resetDrill()
           }
           this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
         }).catch(err => {
@@ -1005,6 +1089,7 @@ export default {
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+          this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
@@ -1054,7 +1139,11 @@ export default {
     },
 
     quotaItemRemove(item) {
-      this.view.yaxis.splice(item.index, 1)
+      if (item.removeType === 'quota') {
+        this.view.yaxis.splice(item.index, 1)
+      } else if (item.removeType === 'quotaExt') {
+        this.view.yaxisExt.splice(item.index, 1)
+      }
       this.save(true)
     },
 
@@ -1096,6 +1185,11 @@ export default {
 
     onChangeYAxisForm(val) {
       this.view.customStyle.yAxis = val
+      this.save()
+    },
+
+    onChangeYAxisExtForm(val) {
+      this.view.customStyle.yAxisExt = val
       this.save()
     },
 
@@ -1152,7 +1246,11 @@ export default {
           return
         }
       }
-      this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
+      if (this.quotaItem.filterType === 'quota') {
+        this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
+      } else if (this.quotaItem.filterType === 'quotaExt') {
+        this.view.yaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
+      }
       this.save(true)
       this.closeQuotaFilter()
     },
@@ -1197,6 +1295,8 @@ export default {
             this.view.yaxis[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'dimension') {
             this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'quotaExt') {
+            this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
           }
           this.save(true)
           this.closeRename()
@@ -1307,7 +1407,9 @@ export default {
       if (this.view.type === 'map' && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
-      this.dragCheckType(this.view.xaxis, 'd')
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
+      }
       this.dragMoveDuplicate(this.view.xaxis, e)
       this.save(true)
     },
@@ -1317,6 +1419,14 @@ export default {
       }
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
+      this.save(true)
+    },
+    addYaxisExt(e) {
+      if (this.view.type === 'map' && this.view.yaxisExt.length > 1) {
+        this.view.yaxisExt = [this.view.yaxisExt[0]]
+      }
+      this.dragCheckType(this.view.yaxisExt, 'q')
+      this.dragMoveDuplicate(this.view.yaxisExt, e)
       this.save(true)
     },
     moveToDimension(e) {
@@ -1506,6 +1616,14 @@ export default {
           if (temp) return temp
         }
       }
+    },
+
+    renderComponent() {
+      if (this.chart.type === 'liquid') {
+        return 'g2'
+      } else {
+        return 'echarts'
+      }
     }
 
   }
@@ -1644,7 +1762,7 @@ export default {
   }
 
   .chart-type>>>.el-radio__input{
-    display: none;
+    display: none!important;
   }
 
   .el-radio{
@@ -1691,7 +1809,6 @@ export default {
   }
   .table-class{
     height: calc(100% - 20px);
-    margin: 10px;
   }
 
   .dialog-css>>>.el-dialog__title {

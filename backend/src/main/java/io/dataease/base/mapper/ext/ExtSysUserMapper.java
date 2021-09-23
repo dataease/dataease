@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ExtSysUserMapper {
     List<SysUserGridResponse> query(GridExample example);
+
+    List<String> ldapUserNames(Integer from);
 }

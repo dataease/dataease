@@ -305,6 +305,83 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                .build();
+        List<SQLObj> xFields = new ArrayList<>();
+        List<SQLObj> xWheres = new ArrayList<>();
+        List<SQLObj> xOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            for (int i = 0; i < xAxis.size(); i++) {
+                ChartViewFieldDTO x = xAxis.get(i);
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                }
+                String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                // 处理横轴字段
+                xFields.add(getXFields(x, originField, fieldAlias));
+                // 处理横轴过滤
+//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+                // 处理横轴排序
+                if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(x.getSort())
+                            .build());
+                }
+            }
+        }
+        // 处理视图中字段过滤
+        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        // 处理仪表板字段过滤
+        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // 构建sql所有参数
+        List<SQLObj> fields = new ArrayList<>();
+        fields.addAll(xFields);
+        List<SQLObj> wheres = new ArrayList<>();
+        wheres.addAll(xWheres);
+        if (customWheres != null) wheres.addAll(customWheres);
+        if (extWheres != null) wheres.addAll(extWheres);
+        List<SQLObj> groups = new ArrayList<>();
+        groups.addAll(xFields);
+        // 外层再次套sql
+        List<SQLObj> orders = new ArrayList<>();
+        orders.addAll(xOrders);
+
+        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        ST st_sql = stg.getInstanceOf("previewSql");
+        st_sql.add("isGroup", false);
+        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        String sql = st_sql.render();
+
+        ST st = stg.getInstanceOf("previewSql");
+        st.add("isGroup", false);
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+        return st.render();
+    }
+
+    @Override
+    public String getSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
+        return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, customFilter, extFilterRequestList, null);
+    }
+
+    @Override
     public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
         return getSQL("(" + sqlFix(sql) + ")", xAxis, yAxis, customFilter, extFilterRequestList, null);
     }
@@ -635,12 +712,17 @@ public class OracleQueryProvider extends QueryProvider {
             stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table );
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), "\"" + table + "\"");
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") DE_TMP ", fields, null);
+        String[] array = fields.stream().map(f -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
+            return stringBuilder.toString();
+        }).toArray(String[]::new);
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), " (" + sqlFix(sql) + ") DE_TMP ");
     }
 
     public String transMysqlFilterTerm(String term) {
@@ -701,9 +783,17 @@ public class OracleQueryProvider extends QueryProvider {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -716,7 +806,11 @@ public class OracleQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
+                if (field.getDeType() == 1) {
+                    whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                } else {
+                    whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -751,9 +845,17 @@ public class OracleQueryProvider extends QueryProvider {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
-            if (field.getDeType() == 1 && field.getDeExtractType() != 1) {
-                String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -767,7 +869,9 @@ public class OracleQueryProvider extends QueryProvider {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(OracleConstants.WHERE_BETWEEN, startTime, endTime);
+                    String st = String.format(OracleConstants.TO_DATE, "'" + startTime + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                    String et = String.format(OracleConstants.TO_DATE, "'" + endTime + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                    whereValue = st + " AND " + et;
                 } else {
                     whereValue = String.format(OracleConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
@@ -795,6 +899,12 @@ public class OracleQueryProvider extends QueryProvider {
             split = "-";
         } else if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
             split = "/";
+        } else {
+            split = "-";
+        }
+
+        if (StringUtils.isEmpty(dateStyle)) {
+            return OracleConstants.DEFAULT_DATE_FORMAT;
         }
 
         switch (dateStyle) {

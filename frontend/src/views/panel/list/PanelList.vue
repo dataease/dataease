@@ -1,6 +1,41 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col style="padding: 0 5px 0 5px;">
     <el-col>
+      <el-row style="margin-bottom: 10px">
+        <el-col :span="16">
+          <el-input
+            v-model="filterText"
+            size="mini"
+            :placeholder="$t('commons.search')"
+            prefix-icon="el-icon-search"
+            clearable
+          />
+        </el-col>
+        <el-col :span="8">
+          <el-dropdown>
+            <el-button size="mini" type="primary">
+              {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="searchTypeClick('all')">全部</el-dropdown-item>
+              <el-dropdown-item @click.native="searchTypeClick('folder')">目录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <!--          <el-select-->
+          <!--            v-model="searchType"-->
+          <!--            default-first-option-->
+          <!--            size="mini"-->
+          <!--          >-->
+          <!--            <el-option-->
+          <!--              v-for="item in searchTypeList"-->
+          <!--              :key="item.value"-->
+          <!--              :label="item.label"-->
+          <!--              :value="item.value"-->
+          <!--            />-->
+          <!--          </el-select>-->
+        </el-col>
+      </el-row>
       <el-row>
         <span class="header-title">{{ $t('panel.default_panel') }}</span>
         <div class="block">
@@ -11,6 +46,7 @@
             node-key="id"
             :highlight-current="activeTree==='system'"
             :expand-on-click-node="true"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node father">
@@ -59,6 +95,7 @@
             node-key="id"
             :highlight-current="activeTree==='self'"
             :expand-on-click-node="true"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
@@ -108,6 +145,12 @@
                       </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
                         {{ $t('panel.share') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-document-copy" :command="beforeClickMore('copy',data,node)">
+                        {{ $t('panel.copy') }}
+                      </el-dropdown-item>
+                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">
+                        {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
                         {{ $t('panel.create_public_links') }}
@@ -166,6 +209,16 @@
       <el-dialog v-dialogDrag :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
         <edit-panel v-if="editPanel.visible" :edit-panel-out="editPanel" @closeEditPanelDialog="closeEditPanelDialog" @newPanelSave="newPanelSave" />
       </el-dialog>
+
+      <!--移动-->
+      <el-dialog v-if="moveGroup" v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
+        <tree-selector :item="moveInfo" :t-data="tGroupData" @targetGroup="targetGroup" />
+        <div slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="closeMoveGroup()">{{ $t('dataset.cancel') }}</el-button>
+          <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{ $t('dataset.confirm') }}
+          </el-button>
+        </div>
+      </el-dialog>
     </el-col>
   </el-col>
 </template>
@@ -176,16 +229,18 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import { addGroup, delGroup, groupTree, defaultTree, findOne } from '@/api/panel/panel'
+import { addGroup, delGroup, groupTree, defaultTree, findOne, panelSave } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
+import TreeSelector from '@/components/TreeSelector'
+import { post } from '@/api/chart/chart'
 
 export default {
   name: 'PanelList',
-  components: { GrantAuth, LinkGenerate, EditPanel },
+  components: { GrantAuth, LinkGenerate, EditPanel, TreeSelector },
   data() {
     return {
       lastActiveNode: null, // 激活的节点 在这个节点下面动态放置子节点
@@ -270,6 +325,19 @@ export default {
         mode: [
           { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
         ]
+      },
+      moveGroup: false,
+      groupMoveConfirmDisabled: true,
+      moveDialogTitle: '',
+      moveInfo: {},
+      tGroup: {},
+      tGroupData: [], // 所有目录
+      searchPids: [], // 查询命中的pid
+      filterText: '',
+      searchType: 'all',
+      searchMap: {
+        all: this.$t('commons.all'),
+        folder: this.$t('commons.folder')
       }
     }
   },
@@ -287,6 +355,16 @@ export default {
       if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
+    },
+    filterText(val) {
+      this.searchPids = []
+      this.$refs.default_panel_tree.filter(val)
+      this.$refs.panel_list_tree.filter(val)
+    },
+    searchType(val) {
+      this.searchPids = []
+      this.$refs.default_panel_tree.filter(this.filterText)
+      this.$refs.panel_list_tree.filter(this.filterText)
     }
   },
   mounted() {
@@ -306,11 +384,16 @@ export default {
             this.lastActiveNodeData.name = panelInfo.name
             return
           }
-          if (!this.lastActiveNodeData.children) {
-            this.$set(this.lastActiveNodeData, 'children', [])
+          // 复制后的仪表板 放在父节点下面
+          if (this.editPanel.optType === 'copy') {
+            this.lastActiveNode.parent.data.children.push(panelInfo)
+          } else {
+            if (!this.lastActiveNodeData.children) {
+              this.$set(this.lastActiveNodeData, 'children', [])
+            }
+            this.lastActiveNodeData.children.push(panelInfo)
+            this.lastActiveNode.expanded = true
           }
-          this.lastActiveNodeData.children.push(panelInfo)
-          this.lastActiveNode.expanded = true
           this.activeNodeAndClick(panelInfo)
         } else {
           this.tree(this.groupForm)
@@ -367,6 +450,18 @@ export default {
             }
           }
           break
+        case 'copy':
+          this.editPanel = {
+            visible: true,
+            titlePre: this.$t('panel.copy'),
+            optType: 'copy',
+            panelInfo: {
+              id: param.data.id,
+              name: param.data.name,
+              optType: 'copy'
+            }
+          }
+          break
       }
       switch (param.type) {
         case 'folder':
@@ -388,11 +483,10 @@ export default {
 
     clickMore(param) {
       switch (param.optType) {
+        case 'copy':
         case 'toDefaultPanel':
         case 'rename':
           this.showEditPanel(param)
-          break
-        case 'move':
           break
         case 'delete':
           this.delete(param.data)
@@ -405,6 +499,9 @@ export default {
           break
         case 'link':
           this.link(param.data)
+          break
+        case 'move':
+          this.moveTo(param.data)
           break
       }
     },
@@ -628,6 +725,66 @@ export default {
           })
         })
       }
+    },
+    moveTo(data) {
+      const _this = this
+      this.moveInfo = data
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
+      const queryInfo = JSON.parse(JSON.stringify(this.groupForm))
+      queryInfo['nodeType'] = 'folder'
+      groupTree(queryInfo).then(res => {
+        if (data.nodeType === 'folder') {
+          _this.tGroupData = [
+            {
+              id: 'panel_list',
+              name: _this.$t('panel.panel_list'),
+              label: _this.$t('panel.panel_list'),
+              children: res.data
+            }
+          ]
+          // console.log('tGroupData=>' + JSON.stringify(_this.tGroupData))
+        } else {
+          _this.tGroupData = res.data
+        }
+        _this.moveGroup = true
+      })
+    },
+    closeMoveGroup() {
+      this.moveGroup = false
+      this.tGroup = {}
+    },
+    saveMoveGroup() {
+      this.moveInfo.pid = this.tGroup.id
+      this.moveInfo['optType'] = 'move'
+      panelSave(this.moveInfo).then(response => {
+        this.tree(this.groupForm)
+        this.closeMoveGroup()
+      })
+    },
+    targetGroup(val) {
+      this.tGroup = val
+      this.groupMoveConfirmDisabled = false
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      if (this.searchType === 'folder') {
+        if (data.nodeType === 'folder' && data.label.indexOf(value) !== -1) {
+          this.searchPids.push(data.id)
+          return true
+        }
+        if (this.searchPids.indexOf(data.pid) !== -1) {
+          if (data.nodeType === 'folder') {
+            this.searchPids.push(data.id)
+          }
+          return true
+        }
+      } else {
+        return data.label.indexOf(value) !== -1
+      }
+      return false
+    },
+    searchTypeClick(searchTypeInfo) {
+      this.searchType = searchTypeInfo
     }
   }
 }

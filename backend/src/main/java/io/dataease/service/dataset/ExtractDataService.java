@@ -312,6 +312,7 @@ public class ExtractDataService {
                     msg = true;
                     lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
+                    e.printStackTrace();
                     saveErrorLog(datasetTableId, taskId, e);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
@@ -456,7 +457,7 @@ public class ExtractDataService {
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
             Integer size = datasetTableField.getSize() * 3;
-            if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
+            if (datasetTableField.getSize() == 0 || datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
                 size = 65533;
             }
             switch (datasetTableField.getDeExtractType()) {
@@ -468,7 +469,7 @@ public class ExtractDataService {
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 2:
-                    Column_Fields = Column_Fields + "bigint(lenth)".replace("lenth", String.valueOf(size)) + ",`";
+                    Column_Fields = Column_Fields + "bigint" + ",`";
                     break;
                 case 3:
                     Column_Fields = Column_Fields + "DOUBLE" + ",`";
@@ -555,7 +556,7 @@ public class ExtractDataService {
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
         datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
             if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
                 return datasetTableTaskLogs.get(0);
@@ -616,7 +617,8 @@ public class ExtractDataService {
             Thread.sleep(1000);
         }
         if (!transStatus.getStatusDescription().equals("Finished")) {
-            DataEaseException.throwException((transStatus.getLoggingString()));
+            DataEaseException.throwException(transStatus.getLoggingString());
+            return;
         }
 
         executing = true;
@@ -635,11 +637,6 @@ public class ExtractDataService {
         } else {
             DataEaseException.throwException((jobStatus.getLoggingString()));
         }
-    }
-
-    private boolean isExitFile(String fileName) {
-        File file = new File(root_path + fileName);
-        return file.exists();
     }
 
     private SlaveServer getSlaveServer() {
@@ -768,7 +765,7 @@ public class ExtractDataService {
         switch (datasourceType) {
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
-                dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost(), mysqlConfigration.getDataBase(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
+                dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost().trim(), mysqlConfigration.getDataBase().trim(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
                 dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
@@ -777,7 +774,7 @@ public class ExtractDataService {
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfigration.class);
-                dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
+                dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost().trim(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
@@ -785,7 +782,7 @@ public class ExtractDataService {
                 break;
             case pg:
                 PgConfigration pgConfigration = new Gson().fromJson(datasource.getConfiguration(), PgConfigration.class);
-                dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfigration.getHost(), pgConfigration.getDataBase(), pgConfigration.getPort().toString(), pgConfigration.getUsername(), pgConfigration.getPassword());
+                dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfigration.getHost().trim(), pgConfigration.getDataBase(), pgConfigration.getPort().toString(), pgConfigration.getUsername(), pgConfigration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
@@ -797,13 +794,23 @@ public class ExtractDataService {
                     String database = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ORACLE_HOSTNAME)(PORT = ORACLE_PORT))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = ORACLE_SERVICE_NAME )))".replace("ORACLE_HOSTNAME", oracleConfigration.getHost()).replace("ORACLE_PORT", oracleConfigration.getPort().toString()).replace("ORACLE_SERVICE_NAME", oracleConfigration.getDataBase());
                     dataMeta = new DatabaseMeta("db", "ORACLE", "Native", "", database, "-1", oracleConfigration.getUsername(), oracleConfigration.getPassword());
                 } else {
-                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfigration.getHost(), oracleConfigration.getDataBase(), oracleConfigration.getPort().toString(), oracleConfigration.getUsername(), oracleConfigration.getPassword());
+                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfigration.getHost().trim(), oracleConfigration.getDataBase(), oracleConfigration.getPort().toString(), oracleConfigration.getUsername(), oracleConfigration.getPassword());
                 }
                 transMeta.addDatabase(dataMeta);
 
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
+                break;
+            case ck:
+                CHConfigration chConfigration = new Gson().fromJson(datasource.getConfiguration(), CHConfigration.class);
+                dataMeta = new DatabaseMeta("db", "ORACLE", "Native", chConfigration.getHost().trim(), chConfigration.getDataBase().trim(), chConfigration.getPort().toString(), chConfigration.getUsername(), chConfigration.getPassword());
+//                dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
+                dataMeta.setDatabaseType("Clickhouse");
+                transMeta.addDatabase(dataMeta);
+                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.ck);
                 break;
             case excel:
                 inputStep = excelInputStep(datasetTable.getInfo(), datasetTableFields);
@@ -1001,11 +1008,12 @@ public class ExtractDataService {
     }
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
-        String needToChangeColumnType = "";
+//        String needToChangeColumnType = "";
         String handleBinaryTypeCode = "";
+        String excelCompletion = "";
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            if(datasetTableField.getDeExtractType() == 5){
+            if(datasetTableField.getDeExtractType() == DeTypeConstants.DE_BINARY){
                 handleBinaryTypeCode = handleBinaryTypeCode + "\n" + this.handleBinaryType.replace("FEILD", datasetTableField.getDataeaseName());
             }
         }
@@ -1016,9 +1024,8 @@ public class ExtractDataService {
         fields.add(fieldInfo);
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
-        String tmp_code = code.replace("alterColumnTypeCode", needToChangeColumnType);
+        String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode);
 
-        tmp_code = tmp_code.replace("handleWraps", handleWraps);
         String Column_Fields = "";
         if (datasourceType.equals(DatasourceTypes.oracle)) {
             Column_Fields = String.join(",", datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList()));
@@ -1027,12 +1034,13 @@ public class ExtractDataService {
         }
 
         if (datasourceType.equals(DatasourceTypes.excel)) {
-            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields);
+            tmp_code = tmp_code.replace("handleExcelIntColumn", handleExcelIntColumn).replace("Column_Fields", Column_Fields)
+                    .replace("ExcelCompletion", excelCompletion);
         } else {
-            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields);
+            tmp_code = tmp_code.replace("handleExcelIntColumn", "").replace("Column_Fields", Column_Fields)
+                    .replace("ExcelCompletion", "");;
         }
 
-        tmp_code = tmp_code.replace("handleBinaryType", handleBinaryTypeCode);
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
         userDefinedJavaClassDef.setActive(true);
@@ -1121,15 +1129,15 @@ public class ExtractDataService {
             "     \t}";
 
 
-    private final static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
-            "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
-            "         get(Fields.Out, filed).setValue(r, 1);\n" +
-            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
-            "       }else{\n" +
-            "         get(Fields.Out, filed).setValue(r, 0);\n" +
-            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
-            "       }\n" +
-            "     }\n" ;
+//    private final static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
+//            "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
+//            "         get(Fields.Out, filed).setValue(r, 1);\n" +
+//            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+//            "       }else{\n" +
+//            "         get(Fields.Out, filed).setValue(r, 0);\n" +
+//            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+//            "       }\n" +
+//            "     }\n" ;
 
     private final static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
             "            try {\n" +
@@ -1144,8 +1152,9 @@ public class ExtractDataService {
             "            tmp = tmp.replaceAll(\"\\r\",\" \");\n" +
             "            tmp = tmp.replaceAll(\"\\n\",\" \");\n" +
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
-            "        } \n" +
-            "\t\tif(tmp == null){\n" +
+            "        } \n";
+
+    private final static String excelCompletion = "\t\tif(tmp == null){\n" +
             " \t\t\ttmp = \"\";\n" +
             "\t\t\tget(Fields.Out, filed).setValue(r, tmp);\n" +
             "\t\t}";
@@ -1180,7 +1189,7 @@ public class ExtractDataService {
             "    for (String filed : fileds) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
             "handleWraps \n" +
-            "alterColumnTypeCode \n" +
+            "ExcelCompletion \n" +
             "handleBinaryType \n" +
             "handleExcelIntColumn \n" +
             "        str = str + tmp;\n" +

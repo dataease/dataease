@@ -6,11 +6,14 @@
         <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
         <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
         <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
+        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
+        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
         <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
         <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-      <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
+      <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
@@ -20,15 +23,34 @@
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
             <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
+            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
+            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
             <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-          <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
+          <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>
+          <el-dropdown-item v-show="chart.type ==='chart-mix'">
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="switchChartType">
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-s-data" />
+                  <span>{{ $t('chart.chart_type') }}</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeSwitch('bar')">{{ $t('chart.chart_bar') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSwitch('line')">{{ $t('chart.chart_line') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSwitch('scatter')">{{ $t('chart.chart_scatter') }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item v-show="chart.type !== 'table-info'" :divided="chart.type === 'chart-mix'">
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="summary">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
@@ -65,7 +87,7 @@
           <!--              </el-dropdown-menu>-->
           <!--            </el-dropdown>-->
           <!--          </el-dropdown-item>-->
-          <el-dropdown-item divided>
+          <el-dropdown-item :divided="chart.type !== 'table-info'">
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
@@ -112,6 +134,10 @@ export default {
     index: {
       type: Number,
       required: true
+    },
+    chart: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -157,6 +183,17 @@ export default {
       }
     },
 
+    switchChartType(param) {
+      // console.log(param)
+      this.item.chartType = param.type
+      this.$emit('onQuotaItemChange', this.item)
+    },
+    beforeSwitch(type) {
+      return {
+        type: type
+      }
+    },
+
     quickCalc(param) {
 
     },
@@ -183,10 +220,12 @@ export default {
     },
     removeItem() {
       this.item.index = this.index
+      this.item.removeType = 'quota'
       this.$emit('onQuotaItemRemove', this.item)
     },
     editFilter() {
       this.item.index = this.index
+      this.item.filterType = 'quota'
       this.$emit('editItemFilter', this.item)
     }
   }
@@ -237,7 +276,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 80px;
+    width: 70px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
