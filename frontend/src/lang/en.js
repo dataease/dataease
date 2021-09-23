@@ -523,7 +523,7 @@ export default {
     input_url_placeholder: 'Please key url (like ldap://localhost:389)',
     input_ou_placeholder: 'Please key OU ',
     input_filter_placeholder: 'Please key filter',
-    input_mapping_placeholder: 'like：{"username":"uid","name":"sn","email":"mail"}',
+    input_mapping_placeholder: 'like：{"userName":"uid","nickName":"cn","email":"mail"}',
     test_connect: 'Test connect',
     edit: 'Edit',
     login_success: 'Login success',
