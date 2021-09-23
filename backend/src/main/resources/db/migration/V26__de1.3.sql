@@ -26,9 +26,9 @@ UPDATE `chart_view` SET `y_axis_ext` = '[]';
 
 
 ALTER TABLE `sys_user` ADD COLUMN `from` int(4) NOT NULL COMMENT '来源' AFTER `language`;
-
-INSERT INTO `sys_menu` VALUES (60, 1, 0, 1, '导入LDAP用户', 'system-user-import', 'system/user/imp-ldap', 11, NULL, 'user-ldap', b'0', b'0', b'1', 'user:import', NULL, NULL, NULL, NULL);
-
+-- ----------------------------
+-- INSERT INTO `sys_menu` VALUES (60, 1, 0, 1, '导入LDAP用户', 'system-user-import', 'system/user/imp-ldap', 11, NULL, 'user-ldap', b'0', b'0', b'1', 'user:import', NULL, NULL, NULL, NULL);
+-- ----------------------------
 BEGIN;
 INSERT INTO `system_parameter` VALUES ('ldap.url', NULL, 'text', 1);
 INSERT INTO `system_parameter` VALUES ('ldap.dn', NULL, 'text', 2);

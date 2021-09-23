@@ -525,7 +525,7 @@ export default {
     input_url_placeholder: '请输入LDAP地址 (如 ldap://localhost:389)',
     input_ou_placeholder: '输入用户OU (使用|分隔各OU)',
     input_filter_placeholder: '输入过滤器 [可能的选项是cn或uid或sAMAccountName={0}, 如：(uid={0})]',
-    input_mapping_placeholder: '如：{"username":"uid","name":"sn","email":"mail"}, username映射的选项可能是cn或uid或sAMAccountName',
+    input_mapping_placeholder: '如：{"userName":"uid","nickName":"cn","email":"mail"}, username映射的选项可能是cn或uid或sAMAccountName',
     test_connect: '测试连接',
     test_login: '测试登录',
     edit: '编辑',
