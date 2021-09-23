@@ -12,6 +12,7 @@
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />
+            <Panel-Refresh-Time class="attr-selector" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.module_style')" name="component">
@@ -41,6 +42,7 @@ import BackgroundSelector from './PanelStyle/BackgroundSelector'
 import PanelBackgroundColorSelector from './PanelStyle/PanelBackgroundColorSelector'
 import PanelColorSelector from './PanelStyle/PanelColorSelector'
 import ComponentGap from './PanelStyle/ComponentGap'
+import PanelRefreshTime from './PanelStyle/PanelRefreshTime'
 
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
@@ -52,7 +54,8 @@ export default {
     BackgroundSelector,
     ComponentGap,
     PanelColorSelector,
-    PanelBackgroundColorSelector
+    PanelBackgroundColorSelector,
+    PanelRefreshTime
   },
   data() {
     return {
@@ -135,7 +138,7 @@ export default {
       chart.customFilter = JSON.stringify(this.chart.customFilter)
       canvasStyleData.chart = chart
       this.$store.commit('setCanvasStyle', canvasStyleData)
-      this.$store.commit('recordSnapshot','save')
+      this.$store.commit('recordSnapshot', 'save')
     }
   }
 }

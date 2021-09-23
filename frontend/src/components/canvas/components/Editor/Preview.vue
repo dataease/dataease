@@ -139,6 +139,12 @@ export default {
         this.restore()
       },
       deep: true
+    },
+    canvasStyleData: {
+      handler(newVal, oldVla) {
+        this.canvasStyleDataInit()
+      },
+      deep: true
     }
   },
   mounted() {
@@ -150,21 +156,26 @@ export default {
         _this.restore()
       })
     })
-    // 数据刷新计时器
-    let refreshTime = 300000
-    if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
-      refreshTime = this.canvasStyleData.refreshTime * 1000
-    }
-    this.timer = setInterval(() => {
-      this.searchCount++
-    }, refreshTime)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     this.$store.commit('clearLinkageSettingInfo', false)
+    this.canvasStyleDataInit()
   },
   beforeDestroy() {
     clearInterval(this.timer)
   },
   methods: {
+    canvasStyleDataInit() {
+      // 数据刷新计时器
+      this.searchCount = 0
+      this.timer && clearInterval(this.timer)
+      let refreshTime = 300000
+      if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
+        refreshTime = this.canvasStyleData.refreshTime * 60000
+      }
+      this.timer = setInterval(() => {
+        this.searchCount++
+      }, refreshTime)
+    },
     changeStyleWithScale,
     getStyle,
     restore() {
