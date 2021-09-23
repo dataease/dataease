@@ -1207,6 +1207,8 @@ export default {
     gap: '有间隙',
     no_gap: '无间隙',
     component_gap: '组件间隙',
+    refresh_time: '刷新时间',
+    minute: '分钟',
     photo: '图片',
     default_panel: '默认仪表板',
     create_public_links: '创建公共链接',

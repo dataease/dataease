@@ -3,14 +3,17 @@
     <div style="width: 100%;">
       <el-popover
         placement="right"
-        width="250"
+        width="400"
         trigger="click"
       >
         <el-col>
-          <el-radio v-model="panel.gap" label="yes" @change="onChangePanelStyle">{{ $t('panel.gap') }} </el-radio>
-          <el-radio v-model="panel.gap" label="no" @change="onChangePanelStyle">{{ $t('panel.no_gap') }}</el-radio>
+          <el-form ref="colorForm" label-width="80px" size="mini">
+            <el-form-item :label="$t('panel.minute')" class="form-item form-item-slider">
+              <el-slider v-model="canvasStyleData.refreshTime" show-input :show-input-controls="false" input-size="mini" :min="1" :max="60" @change="onChangePanelStyle" />
+            </el-form-item>
+          </el-form>
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.component_gap') }} <i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.refresh_time') }} <i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>
@@ -18,33 +21,29 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
-import { DEFAULT_PANEL_STYLE } from '@/views/panel/panel'
-import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import {
+  CANVAS_STYLE
+} from '@/views/panel/panel'
 
 export default {
-  name: 'ComponentGap',
+  name: 'PanelRefreshTime',
   props: {
   },
-  data() {
-    return {
-      panel: null
+  computed: {
+    canvasStyleData() {
+      return this.$store.state.canvasStyleData
     }
   },
-  computed: mapState([
-    'canvasStyleData'
-  ]),
-
   created() {
     // 初始化赋值
-    this.panel = this.canvasStyleData.panel
+    if (!this.canvasStyleData.refreshTime) {
+      this.canvasStyleData['refreshTime'] = CANVAS_STYLE.refreshTime
+    }
   },
   methods: {
     onChangePanelStyle() {
-      const canvasStyleData = deepCopy(this.canvasStyleData)
-      canvasStyleData.panel = this.panel
-      this.$store.commit('setCanvasStyle', canvasStyleData)
-      this.$store.commit('recordSnapshot','onChangePanelStyle')
+      this.$store.state.styleChangeTimes++
     }
   }
 }

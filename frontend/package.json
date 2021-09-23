@@ -45,6 +45,7 @@
     "vue-codemirror": "^4.0.6",
     "vue-fullscreen": "^2.5.2",
     "vue-i18n": "7.3.2",
+    "vue-power-drag": "^0.2.0",
     "vue-router": "3.0.6",
     "vue-to-pdf": "^1.0.0",
     "vue-uuid": "2.0.2",
