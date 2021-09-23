@@ -1,37 +1,41 @@
 <template>
-  <div>
-    <el-tabs v-model="editableTabsValue" type="card" addable @edit="handleTabsEdit">
+  <div class="de-tabs-div">
+    <el-tabs v-model="activeTabName" type="card" class="de-tabs">
       <el-tab-pane
         v-for="(item, index) in tabList"
         :key="item.name+index"
+        :lazy="true"
         :name="item.name"
       >
+        <span slot="label">
+          <span>{{ item.title }}</span>
 
-        <el-dropdown slot="label" :disabled="!isEdit" class="de-tab-drop" trigger="click" @command="handleCommand">
-          <span class="el-dropdown-link">
+          <el-dropdown v-if="isEdit" slot="label" class="de-tab-drop" trigger="click" @command="handleCommand">
+            <span class="el-dropdown-link">
 
-            <span>{{ item.title }}</span>
-            <i v-if="isEdit" class="de-tab-i el-icon-arrow-down el-icon--right" />
-          </span>
+              <!-- <span>{{ item.title }}</span> -->
+              <i v-if="isEdit" class="de-tab-i el-icon-arrow-down el-icon--right" />
+            </span>
 
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item :command="beforeHandleCommond('editTitle', item)">
-              编辑标题
-            </el-dropdown-item>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="beforeHandleCommond('editTitle', item)">
+                编辑标题
+              </el-dropdown-item>
 
-            <el-dropdown-item :command="beforeHandleCommond('selectView', item)">
-              选择视图
-            </el-dropdown-item>
+              <el-dropdown-item :command="beforeHandleCommond('selectView', item)">
+                选择视图
+              </el-dropdown-item>
 
-            <el-dropdown-item :command="beforeHandleCommond('deleteCur', item)">
-              删除
-            </el-dropdown-item>
+              <el-dropdown-item v-if="tabList.length > 1" :command="beforeHandleCommond('deleteCur', item)">
+                删除
+              </el-dropdown-item>
 
-          </el-dropdown-menu>
-        </el-dropdown>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </span>
 
         <div class="de-tab-content">
-          <user-view v-if="item.viewInfo" :element="item.viewInfo" />
+          <user-view v-if="item.content" :ref="item.name" :element="item.content" :out-style="outStyle" />
         </div>
 
       </el-tab-pane>
@@ -82,7 +86,9 @@
 
 import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
+import bus from '@/utils/bus'
 import componentList from '@/components/canvas/custom-component/component-list'
+
 export default {
   name: 'DeTabls',
   components: { ViewSelect },
@@ -90,31 +96,37 @@ export default {
     element: {
       type: Object,
       default: null
+    },
+    isEdit: {
+      type: Boolean,
+      default: true
+    },
+    outStyle: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
     }
   },
   data() {
     return {
 
-      editableTabsValue: '1',
-      editableTabs: [{
-        title: 'Tab 1',
-        name: '1',
-        content: ''
-      }],
+      activeTabName: null,
+
       tabIndex: 1,
-      isEdit: true,
+      // isEdit: true,
       dialogVisible: false,
       textarea: '',
       curItem: null,
       viewDialogVisible: false,
-      curViewInfo: null,
-      tabList: [],
-      options: null
+      tabList: []
     }
   },
   created() {
-    this.options = this.element.options
-    this.tabList = this.options && this.options.tabList || this.editableTabs
+    bus.$on('add-new-tab', this.addNewTab)
+    this.tabList = this.element.options && this.element.options.tabList
+    this.activeTabName = this.tabList[0].name
   },
   methods: {
     beforeHandleCommond(item, param) {
@@ -135,6 +147,11 @@ export default {
           this.selectView(command.param)
           break
       }
+    },
+    selectView(param) {
+      this.activeTabName = param.name
+      this.curItem = param
+      this.viewDialogVisible = true
     },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
@@ -162,12 +179,20 @@ export default {
       component.id = newComponentId
       component.style.width = '100%'
       component.style.height = '100%'
-      this.curItem.viewInfo = component
+      this.curItem.content = component
       this.curItem.name = newComponentId
       this.viewDialogVisible = false
+      this.activeTabName = newComponentId
+      this.styleChange()
+      // this.setComponentInfo()
+    },
+
+    setComponentInfo() {
+      console.log('aaa')
     },
 
     editCurTitle(param) {
+      this.activeTabName = param.name
       this.curItem = param
       this.textarea = param.title
       this.dialogVisible = true
@@ -175,48 +200,57 @@ export default {
     sureCurTitle() {
       this.curItem.title = this.textarea
       this.dialogVisible = false
+      this.styleChange()
     },
     deleteCur(param) {
-
-    },
-    selectView(param) {
       this.curItem = param
-      this.viewDialogVisible = true
+      let len = this.element.options.tabList.length
+      while (len--) {
+        if (this.element.options.tabList[len].name === param.name) {
+          this.element.options.tabList.splice(len, 1)
+          this.tabList = this.element.options.tabList
+          const activIndex = (len - 1 + this.element.options.tabList.length) % this.element.options.tabList.length
+          this.activeTabName = this.element.options.tabList[activIndex].name
+        }
+      }
+      this.styleChange()
     },
 
-    handleTabsEdit(targetName, action) {
-      if (action === 'add') {
-        const newTabName = ++this.tabIndex + ''
-        this.editableTabs.push({
-          title: 'New Tab',
-          name: newTabName,
-          content: 'New Tab content'
-        })
-        this.editableTabsValue = newTabName
+    addNewTab() {
+      const curName = uuid.v1()
+      const tab = {
+        title: 'NewTab',
+        name: curName,
+        content: null
       }
-      if (action === 'remove') {
-        const tabs = this.editableTabs
-        let activeName = this.editableTabsValue
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              const nextTab = tabs[index + 1] || tabs[index - 1]
-              if (nextTab) {
-                activeName = nextTab.name
-              }
-            }
-          })
-        }
-
-        this.editableTabsValue = activeName
-        this.editableTabs = tabs.filter(tab => tab.name !== targetName)
-      }
+      this.element.options.tabList.push(tab)
+      this.tabList = this.element.options.tabList
+      this.styleChange()
+    },
+    styleChange() {
+      this.$store.state.styleChangeTimes++
+    },
+    chartResize() {
+      // this.$refs[this.activeTabName]
     }
+
   }
 }
 </script>
 
 <style lang="scss" scoped>
+  .de-tabs-div {
+    height: 100%;
+  }
+  .de-tabs {
+    height: 100%;
+    >>>div.el-tabs__content {
+        height: calc(100% - 55px);
+        .el-tab-pane {
+          height: 100%;
+        }
+    }
+  }
   .de-tab-i {
     transition: 0.3s;
     opacity: 0;
@@ -228,8 +262,8 @@ export default {
     transform:  translateY(0);
   }
   .de-tab-content {
-      width: 100%;
-      height: 100%;
+    width: 100%;
+    height: 100%;
   }
 
 </style>

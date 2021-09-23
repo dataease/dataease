@@ -162,6 +162,13 @@ const list = [
       borderColor: '#000000',
       backgroundColor: '#ffffff',
       borderRadius: 0
+    },
+    options: {
+      tabList: [{
+        title: 'Tab1',
+        name: '1',
+        content: null
+      }]
     }
   },
   {

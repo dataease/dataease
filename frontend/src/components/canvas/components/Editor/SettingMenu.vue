@@ -12,6 +12,7 @@
           <el-dropdown-item icon="el-icon-arrow-up" @click.native="upComponent">{{ $t('panel.upComponent') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-arrow-down" @click.native="downComponent">{{ $t('panel.downComponent') }}</el-dropdown-item>
           <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-link" @click.native="linkageSetting">{{ $t('panel.linkage_setting') }}</el-dropdown-item>
+          <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-link" @click.native="addTab">新增Tab</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -137,6 +138,9 @@ export default {
       getViewLinkageGather(requestInfo).then(rsp => {
         this.$store.commit('setLinkageInfo', rsp.data)
       })
+    },
+    addTab() {
+      bus.$emit('add-new-tab')
     }
   }
 }

@@ -630,7 +630,7 @@ export default {
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
     resizestop(index, item) {
-      if (item.type === 'view') {
+      if (item.type === 'view' || item.type === 'de-tabs') {
         this.$refs.wrapperChild[index].chartResize()
       }
     }
