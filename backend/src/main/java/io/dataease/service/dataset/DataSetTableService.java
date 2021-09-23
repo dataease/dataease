@@ -594,12 +594,8 @@ public class DataSetTableService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
             map.put("sql", datasourceRequest.getQuery());
-            System.out.println(datasourceRequest.getQuery());
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
-                for(int i=0;i< data.size(); i++){
-                    System.out.println(data.get(i)[2]);
-                }
             } catch (Exception e) {
                 e.printStackTrace();
                 DEException.throwException(e.getMessage());
