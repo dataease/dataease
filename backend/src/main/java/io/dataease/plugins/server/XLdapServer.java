@@ -30,7 +30,11 @@ public class XLdapServer {
     @PostMapping("/testConn")
     public void testConn() {
         LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
-        ldapXpackService.testConn();
+        try {
+            ldapXpackService.testConn();
+        }catch(Exception e) {
+            throw new RuntimeException(e);
+        } 
     }
 
     @PostMapping("/users")

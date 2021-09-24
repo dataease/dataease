@@ -14,20 +14,26 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
+import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.entity.XpackLdapUserEntity;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;
 import io.dataease.plugins.xpack.ldap.dto.response.ValidateResult;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+import io.dataease.service.sys.SysUserService;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +47,16 @@ public class AuthServer implements AuthApi {
     private AuthUserService authUserService;
 
 
+    @Autowired
+    private SysUserService sysUserService;
+
+
 
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
         String username = loginDto.getUsername();
         String password = loginDto.getPassword();
-
 
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, password);
         // 增加ldap登录方式
@@ -56,11 +65,22 @@ public class AuthServer implements AuthApi {
         if (loginType == 1 && isSupportLdap) {
             LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
             LdapValidateRequest request = LdapValidateRequest.builder().userName(username).password(pwd).build();
-            ValidateResult validateResult = ldapXpackService.login(request);
+            ValidateResult<XpackLdapUserEntity> validateResult = ldapXpackService.login(request);
             if (!validateResult.isSuccess()) {
                 DataEaseException.throwException(validateResult.getMsg());
             }
-            username = validateResult.getUserName();
+            XpackLdapUserEntity ldapUserEntity = validateResult.getData();
+            SysUserEntity user = authUserService.getUserByName(username);
+            if(ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getUserId())) {
+                LdapAddRequest ldapAddRequest = new LdapAddRequest();
+                ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>(){{add(ldapUserEntity);}});
+                ldapAddRequest.setEnabled(1L);
+                ldapAddRequest.setDeptId(1L);
+                ldapAddRequest.setRoleIds(new ArrayList<Long>(){{add(2L);}});
+                sysUserService.saveLdapUsers(ldapAddRequest);
+            }
+            
+            username = validateResult.getData().getUserName();
         }
         // 增加ldap登录方式
 
