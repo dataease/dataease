@@ -36,6 +36,7 @@ public class EsQueryProvider extends QueryProvider {
     @Override
     public Integer transFieldType(String field) {
         field = field.toLowerCase();
+        field = field.contains("date") ? "datetime" : field;
         switch (field) {
             case "keyword":
             case "text":
@@ -66,6 +67,7 @@ public class EsQueryProvider extends QueryProvider {
 
     public static Integer transFieldTypeSize(String field) {
         field = field.toLowerCase();
+        field = field.contains("date") ? "datetime" : field;
         switch (field) {
             case "null":
                 return 1;
