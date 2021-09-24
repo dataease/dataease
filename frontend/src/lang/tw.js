@@ -395,6 +395,10 @@ export default {
     cancel: '取 消',
     confirm: '確 定'
   },
+  detabs: {
+    eidttitle: '編輯標題',
+    selectview: '選擇視圖'
+  },
   example: {
     warning: '創建和編輯頁面是不能被 keep-alive 緩存的，因爲keep-alive 的 include 目前不支持根據路由來緩存，所以目前都是基于 component name 來進行緩存的。如果你想類似的實現緩存效果，可以使用 localStorage 等浏覽器緩存方案。或者不要使用 keep-alive 的 include，直接緩存所有頁面。詳情見'
   },

@@ -19,15 +19,15 @@
 
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :command="beforeHandleCommond('editTitle', item)">
-                编辑标题
+                {{ $t('detabs.eidttitle') }}
               </el-dropdown-item>
 
               <el-dropdown-item :command="beforeHandleCommond('selectView', item)">
-                选择视图
+                {{ $t('detabs.selectview') }}
               </el-dropdown-item>
 
               <el-dropdown-item v-if="tabList.length > 1" :command="beforeHandleCommond('deleteCur', item)">
-                删除
+                {{ $t('table.delete') }}
               </el-dropdown-item>
 
             </el-dropdown-menu>
@@ -42,7 +42,7 @@
     </el-tabs>
 
     <el-dialog
-      title="编辑标题"
+      :title="$t('detabs.eidttitle')"
       :append-to-body="true"
       :visible.sync="dialogVisible"
       width="30%"
@@ -52,29 +52,29 @@
         v-model="textarea"
         type="textarea"
         :rows="2"
-        placeholder="请输入内容"
+        :placeholder="$t('dataset.input_content')"
       />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="sureCurTitle">确 定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
-      title="选择视图"
+      :title="$t('detabs.selectview')"
       :append-to-body="true"
       :visible.sync="viewDialogVisible"
       width="20%"
       height="400px"
       center
     >
-      <div style="width: 100%;min-height: 250px; max-height: 400px;">
+      <div style="width: 100%;min-height: 250px; max-height: 300px; overflow-y: auto;">
         <view-select ref="viewSelect" :select-model="true" />
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="viewDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="sureViewSelector">确 定</el-button>
+        <el-button @click="viewDialogVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="sureViewSelector">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
