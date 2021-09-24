@@ -299,6 +299,33 @@ public class SysUserService {
         return null;
     }
 
+    public void validateExistUser(String userName, String email) {
+        SysUserExample example = new SysUserExample();
+        if (StringUtils.isNotBlank(userName)) {
+            example.createCriteria().andUsernameEqualTo(userName);
+            List<SysUser> users = sysUserMapper.selectByExample(example);
+            if(CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户ID【"+userName+"】已存在,请联系管理员");
+            }
+        }
+
+        /* if (StringUtils.isNotBlank(nickName)) {
+            example.createCriteria().andNickNameEqualTo(nickName);
+            List<SysUser> users = sysUserMapper.selectByExample(example);
+            if(CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户姓名【"+nickName+"】已存在,请联系管理员");
+            }
+        } */
+
+        if (StringUtils.isNotBlank(email)) {
+            example.createCriteria().andEmailEqualTo(email);
+            List<SysUser> users = sysUserMapper.selectByExample(example);
+            if(CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户邮箱【"+email+"】已存在,请联系管理员");
+            }
+        }
+    }
+
 
     public List<SysUser> users(List<Long> userIds) {
         return userIds.stream().map(sysUserMapper::selectByPrimaryKey).collect(Collectors.toList());
