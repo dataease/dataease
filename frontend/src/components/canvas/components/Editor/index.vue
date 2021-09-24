@@ -680,7 +680,8 @@ export default {
     position: relative;
     /*background: #fff;*/
     margin: auto;
-    overflow-x: hidden;
+    /*会影响设置组件不能出现在最高层*/
+    /*overflow-x: hidden;*/
     background-size:100% 100% !important;
     /*transform-style:preserve-3d;*/
     .lock {
