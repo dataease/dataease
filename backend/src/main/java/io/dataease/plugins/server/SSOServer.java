@@ -54,6 +54,7 @@ public class SSOServer {
         SSOUserInfo ssoUserInfo = oidcXpackService.requestUserInfo(config, ssoToken.getAccessToken());
         SysUserEntity sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
         if(null == sysUserEntity){
+            sysUserService.validateExistUser(ssoUserInfo.getUsername(), ssoUserInfo.getEmail());
             sysUserService.saveOIDCUser(ssoUserInfo);
             sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
         }
