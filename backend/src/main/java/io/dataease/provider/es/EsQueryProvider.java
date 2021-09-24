@@ -151,7 +151,7 @@ public class EsQueryProvider extends QueryProvider {
                         String cast = String.format(EsSqlLConstants.CAST, originField, "timestamp");
                         fieldName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, EsSqlLConstants.DEFAULT_DATE_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format(EsSqlLConstants.CAST, originField, "timestamp");
+                        fieldName = String.format(EsSqlLConstants.CAST, originField, "bigint");
                     } else {
                         fieldName = originField;
                     }

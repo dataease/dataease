@@ -49,11 +49,12 @@ public class EsProvider extends DatasourceProvider {
         List<String[]> list = new LinkedList<>();
         try {
             EsConfigDTO esConfigDTO = new Gson().fromJson(dsr.getDatasource().getConfiguration(), EsConfigDTO.class);
-
             HttpClientConfig httpClientConfig = new HttpClientConfig();
-            String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
-            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
-            httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
+            if(StringUtils.isNotEmpty(esConfigDTO.getUsername())){
+                String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
+                httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
+            }
             Requst requst = new Requst();
             requst.setQuery(dsr.getQuery());
             requst.setFetch_size(dsr.getFetchSize());
