@@ -62,16 +62,10 @@ public class ProviderFactory implements ApplicationContextAware {
     public static DDLProvider getDDLProvider(String type) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
-            case mysql:
-                return context.getBean("mysqlDDL", DDLProvider.class);
             case doris:
                 return context.getBean("dorisDDL", DDLProvider.class);
-            case oracle:
-                return context.getBean("oracleDDL", DDLProvider.class);
-            case sqlServer:
-                return context.getBean("mysqlDDL", DDLProvider.class);
             default:
-                return context.getBean("mysqlDDL", DDLProvider.class);
+                return context.getBean("dorisDDL", DDLProvider.class);
         }
     }
 
