@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.CodingUtil;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
@@ -43,21 +45,27 @@ public class SSOServer {
     public ModelAndView callBack(@RequestParam("code") String code, @RequestParam("state") String state) {
         ModelAndView modelAndView = new ModelAndView("redirect:/"); 
         HttpServletResponse response = ServletUtils.response();   
-
+        OidcXpackService oidcXpackService = null;
+        String idToken = null;
         try {
             Map<String, OidcXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((OidcXpackService.class));
             if(beansOfType.keySet().size() == 0) {
                 DEException.throwException("缺少oidc插件");
             }
-            OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
+            oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
             Boolean suuportOIDC = oidcXpackService.isSuuportOIDC();
             if (!suuportOIDC) {
                 DEException.throwException("未开启oidc");
             }
-            Map<String, String> config = config(oidcXpackService);
+            Map<String, String> config = config(oidcXpackService);            
             SSOToken ssoToken = oidcXpackService.requestSsoToken(config, code, state);
+            idToken = ssoToken.getIdToken();
+            Cookie cookie_id_token = new Cookie("IdToken", ssoToken.getIdToken());cookie_id_token.setPath("/");
+            response.addCookie(cookie_id_token);
             
             SSOUserInfo ssoUserInfo = oidcXpackService.requestUserInfo(config, ssoToken.getAccessToken());
+
+            
             SysUserEntity sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
             if(null == sysUserEntity){
                 sysUserService.validateExistUser(ssoUserInfo.getUsername(), ssoUserInfo.getEmail());
@@ -71,22 +79,29 @@ public class SSOServer {
             
             
             Cookie cookie_token = new Cookie("Authorization", token);cookie_token.setPath("/");
-            Cookie cookie_id_token = new Cookie("IdToken", ssoToken.getIdToken());cookie_id_token.setPath("/");
+           
             Cookie cookie_ac_token = new Cookie("AccessToken", ssoToken.getAccessToken());cookie_ac_token.setPath("/");
 
             response.addCookie(cookie_token);
-            response.addCookie(cookie_id_token);
+            
             response.addCookie(cookie_ac_token);
         }catch(Exception e) {
-            String msg;
+            
+            String msg = e.getMessage();
+            if (null != e.getCause()) {
+                msg = e.getCause().getMessage();
+            }
             try {
-                msg = URLEncoder.encode(e.getMessage(), "UTF-8");
+                msg = URLEncoder.encode(msg, "UTF-8");
+                LogUtil.error(e);
                 Cookie cookie_error = new Cookie("OidcError", msg);
                 cookie_error.setPath("/");
                 response.addCookie(cookie_error);
+                if (ObjectUtils.isNotEmpty(oidcXpackService) && ObjectUtils.isNotEmpty(idToken)) {
+                    oidcXpackService.logout(idToken);
+                }
                 return modelAndView;
             } catch (UnsupportedEncodingException e1) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             

@@ -316,7 +316,7 @@ public class SysUserService {
                 throw new RuntimeException("用户姓名【"+nickName+"】已存在,请联系管理员");
             }
         } */
-
+        example.clear();
         if (StringUtils.isNotBlank(email)) {
             example.createCriteria().andEmailEqualTo(email);
             List<SysUser> users = sysUserMapper.selectByExample(example);

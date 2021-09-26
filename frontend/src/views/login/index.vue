@@ -93,7 +93,7 @@ export default {
   },
   computed: {
     msg() {
-      return this.$store.state.user.loginMsg || Cookies.get('OidcError')
+      return this.$store.state.user.loginMsg
     }
   },
   watch: {
@@ -126,8 +126,18 @@ export default {
     }).catch(err => {
       console.error(err)
     })
+    let msg = Cookies.get('OidcError')
+    if (msg) {
+      msg = msg.replace('+', '')
+      this.$error(msg)
+    }
+    this.clearOidcMsg()
   },
   methods: {
+    clearOidcMsg() {
+      Cookies.remove('OidcError')
+      Cookies.remove('IdToken')
+    },
     showLoginImage() {
       this.uiInfo = getSysUI()
       if (this.uiInfo['ui.loginImage'] && this.uiInfo['ui.loginImage'].paramValue) {
@@ -138,7 +148,7 @@ export default {
       }
     },
     handleLogin() {
-      Cookies.remove('OidcError')
+      this.clearOidcMsg()
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -161,7 +171,7 @@ export default {
     },
     changeLoginType(val) {
       if (val !== 2) return
-      Cookies.remove('OidcError')
+      this.clearOidcMsg()
       this.$nextTick(() => {
 
       })
