@@ -1265,6 +1265,7 @@ export default {
     upComponent: '上移',
     downComponent: '下移',
     linkage_setting: '联动设置',
+    add_tab: '新增Tab',
     open_aided_design: '打开组件辅助设计',
     close_aided_design: '关闭组件辅助设计',
     open_style_design: '打开样式设计',
