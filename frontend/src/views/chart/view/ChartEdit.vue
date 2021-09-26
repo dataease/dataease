@@ -275,7 +275,8 @@
                       <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
                       <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
                       /
-                      <span>{{ $t('chart.dimension') }}</span>
+                      <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
+                      <span v-else-if="view.type && view.type === 'table-info'">{{ $t('chart.dimension_or_quota') }}</span>
                     </span>
                     <draggable
                       v-model="view.xaxis"

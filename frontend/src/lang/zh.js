@@ -928,7 +928,8 @@ export default {
     liquid_shape_diamond: '菱形',
     liquid_shape_triangle: '三角形',
     liquid_shape_pin: '气球',
-    liquid_shape_rect: '矩形'
+    liquid_shape_rect: '矩形',
+    dimension_or_quota: '维度或指标'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
