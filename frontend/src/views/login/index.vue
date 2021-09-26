@@ -138,6 +138,7 @@ export default {
       }
     },
     handleLogin() {
+      Cookies.remove('OidcError')
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -160,6 +161,7 @@ export default {
     },
     changeLoginType(val) {
       if (val !== 2) return
+      Cookies.remove('OidcError')
       this.$nextTick(() => {
 
       })
