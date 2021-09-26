@@ -156,7 +156,7 @@ export default {
         return 'PostgreSQL'
       } else if (type === 'es') {
         return 'Elasticsearch'
-      } else if (type === 'ch') {
+      } else if (type === 'ck') {
         return 'ClickHouse'
       }
     },

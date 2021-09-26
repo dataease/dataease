@@ -803,12 +803,29 @@ public class CKQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value);
+                if(field.getDeType() == DeTypeConstants.DE_TIME){
+                    whereValue = String.format(CKConstants.toDateTime, "'" + value + "'");
+                }else {
+                    whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value);
+                }
             }
-            list.add(SQLObj.builder()
-                    .whereField(whereName)
-                    .whereTermAndValue(whereTerm + whereValue)
-                    .build());
+            if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getTerm(), "null")){
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereTermAndValue("is null")
+                        .build());
+            }else if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")){
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereTermAndValue("is not null")
+                        .build());
+            }else {
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereTermAndValue(whereTerm + whereValue)
+                        .build());
+            }
+
         }
         return list;
     }
@@ -870,10 +887,23 @@ public class CKQueryProvider extends QueryProvider {
             } else {
                 whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value.get(0));
             }
-            list.add(SQLObj.builder()
-                    .whereField(whereName)
-                    .whereTermAndValue(whereTerm + whereValue)
-                    .build());
+
+            if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "null")){
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereTermAndValue("is null")
+                        .build());
+            }else if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "not_null")){
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereTermAndValue("is not null")
+                        .build());
+            }else {
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereTermAndValue(whereTerm + whereValue)
+                        .build());
+            }
         }
         return list;
     }
@@ -991,11 +1021,26 @@ public class CKQueryProvider extends QueryProvider {
                 } else {
                     whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
-                list.add(SQLObj.builder()
-                        .whereField(fieldAlias)
-                        .whereAlias(fieldAlias)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
+
+                if(y.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(f.getTerm(), "null")){
+                    list.add(SQLObj.builder()
+                            .whereField(fieldAlias)
+                            .whereAlias(fieldAlias)
+                            .whereTermAndValue("is null")
+                            .build());
+                }else if(y.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")){
+                    list.add(SQLObj.builder()
+                            .whereField(fieldAlias)
+                            .whereAlias(fieldAlias)
+                            .whereTermAndValue("is not null")
+                            .build());
+                }else {
+                    list.add(SQLObj.builder()
+                            .whereField(fieldAlias)
+                            .whereAlias(fieldAlias)
+                            .whereTermAndValue(whereTerm + whereValue)
+                            .build());
+                }
             });
         }
         return list;
