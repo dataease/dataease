@@ -65,9 +65,10 @@ public class DatasourceService {
         datasource.setUpdateTime(currentTimeMillis);
         datasource.setCreateTime(currentTimeMillis);
         datasource.setCreateBy(String.valueOf(AuthUtils.getUser().getUsername()));
+        checkAndUpdateDatasourceStatus(datasource);
         datasourceMapper.insertSelective(datasource);
         handleConnectionPool(datasource, "add");
-        checkAndUpdateDatasourceStatus(datasource);
+
         return datasource;
     }
 
@@ -129,9 +130,9 @@ public class DatasourceService {
         checkName(datasource);
         datasource.setCreateTime(null);
         datasource.setUpdateTime(System.currentTimeMillis());
+        checkAndUpdateDatasourceStatus(datasource);
         datasourceMapper.updateByPrimaryKeySelective(datasource);
         handleConnectionPool(datasource, "edit");
-        checkAndUpdateDatasourceStatus(datasource);
     }
 
     public ResultHolder validate(Datasource datasource) throws Exception {
@@ -256,10 +257,8 @@ public class DatasourceService {
             datasourceRequest.setDatasource(datasource);
             datasourceProvider.checkStatus(datasourceRequest);
             datasource.setStatus("Success");
-            datasourceMapper.updateByPrimaryKeySelective(datasource);
         } catch (Exception e) {
             datasource.setStatus("Error");
-            datasourceMapper.updateByPrimaryKeySelective(datasource);
         }
     }
 

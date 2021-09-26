@@ -24,6 +24,7 @@
       :out-style="config.style"
       :style="getComponentStyleDefault(config.style)"
       :prop-value="config.propValue"
+      :is-edit="false"
       :element="config"
       :search-count="searchCount"
     />

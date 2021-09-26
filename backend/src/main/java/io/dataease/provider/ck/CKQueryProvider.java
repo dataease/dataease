@@ -1,4 +1,4 @@
-package io.dataease.provider.ch;
+package io.dataease.provider.ck;
 
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
@@ -32,8 +32,8 @@ import static io.dataease.provider.SQLConstants.TABLE_ALIAS_PREFIX;
  * @Author gin
  * @Date 2021/5/17 2:43 下午
  */
-@Service("chQuery")
-public class CHQueryProvider extends QueryProvider {
+@Service("ckQuery")
+public class CKQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
 
@@ -81,6 +81,25 @@ public class CHQueryProvider extends QueryProvider {
     }
 
     @Override
+    public Integer transFieldSize(String field){
+        Integer type = transFieldType(field);
+        switch (type) {
+            case 0:
+                return 65533;
+            case 1:
+                return 60;
+            case 2:
+                return 0;
+            case 3:
+                return 0;
+            case 4:
+                return 0;
+            default:
+                return 65533;
+        }
+    }
+
+    @Override
     public String createSQLPreview(String sql, String orderBy) {
         return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY null " + " LIMIT 0,1000";
     }
@@ -88,7 +107,7 @@ public class CHQueryProvider extends QueryProvider {
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -100,9 +119,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(f.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
@@ -110,29 +129,29 @@ public class CHQueryProvider extends QueryProvider {
                 if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
                     if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         if(f.getType().equalsIgnoreCase("DATE")){
-                            fieldName = String.format(CHConstants.toInt32, String.format(CHConstants.toDateTime, originField)) + "*1000";
+                            fieldName = String.format(CKConstants.toInt32, String.format(CKConstants.toDateTime, originField)) + "*1000";
                         }else {
-                            fieldName = String.format(CHConstants.toInt32, originField) + "*1000";
+                            fieldName = String.format(CKConstants.toInt32, originField) + "*1000";
                         }
                     } else {
                         fieldName = originField;
                     }
                 } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format(CHConstants.toInt64, originField);
+                        fieldName = String.format(CKConstants.toInt64, originField);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(CHConstants.toFloat64, originField);
+                        fieldName = String.format(CKConstants.toFloat64, originField);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format(CHConstants.toDateTime, originField);
+                        fieldName = String.format(CKConstants.toDateTime, originField);
                     } else {
                         fieldName = originField;
                     }
                 } else {
                     if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        String cast = String.format(CHConstants.toFloat64, originField);
-                        fieldName = String.format(CHConstants.toDateTime, cast);
+                        String cast = String.format(CKConstants.toFloat64, originField);
+                        fieldName = String.format(CKConstants.toDateTime, cast);
                     } else if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format(CHConstants.toInt64, originField);
+                        fieldName = String.format(CKConstants.toInt64, originField);
                     } else {
                         fieldName = originField;
                     }
@@ -180,7 +199,7 @@ public class CHQueryProvider extends QueryProvider {
     @Override
     public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -194,9 +213,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -224,9 +243,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -274,7 +293,7 @@ public class CHQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(CHConstants.BRACKETS, sql))
+                .tableName(String.format(CKConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -286,7 +305,7 @@ public class CHQueryProvider extends QueryProvider {
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -300,9 +319,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -347,7 +366,7 @@ public class CHQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("previewSql");
         st.add("isGroup", false);
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(CHConstants.BRACKETS, sql))
+                .tableName(String.format(CKConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
@@ -369,7 +388,7 @@ public class CHQueryProvider extends QueryProvider {
     @Override
     public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -386,9 +405,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -416,9 +435,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -466,7 +485,7 @@ public class CHQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(CHConstants.BRACKETS, sql))
+                .tableName(String.format(CKConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -483,7 +502,7 @@ public class CHQueryProvider extends QueryProvider {
     @Override
     public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
@@ -497,9 +516,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -530,9 +549,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -580,7 +599,7 @@ public class CHQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(CHConstants.BRACKETS, sql))
+                .tableName(String.format(CKConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -603,7 +622,7 @@ public class CHQueryProvider extends QueryProvider {
     public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList) {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CHConstants.KEYWORD_TABLE, table))
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> yFields = new ArrayList<>();
@@ -617,9 +636,9 @@ public class CHQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -662,7 +681,7 @@ public class CHQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(CHConstants.BRACKETS, sql))
+                .tableName(String.format(CKConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
@@ -757,17 +776,17 @@ public class CHQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
             if (field.getDeType() == DeTypeConstants.DE_TIME) {
                 if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                    whereName = String.format(CHConstants.toDateTime, originName);
+                    whereName = String.format(CKConstants.toDateTime, originName);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == 4) {
-                    String cast = String.format(CHConstants.toFloat64, originName);
-                    whereName = String.format(CHConstants.toDateTime, cast);
+                    String cast = String.format(CKConstants.toFloat64, originName);
+                    whereName = String.format(CKConstants.toDateTime, cast);
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
@@ -776,7 +795,7 @@ public class CHQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue = CHConstants.WHERE_VALUE_NULL;
+                whereValue = CKConstants.WHERE_VALUE_NULL;
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
                 whereTerm = String.format(whereTerm, originName);
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
@@ -784,7 +803,7 @@ public class CHQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                whereValue = String.format(CHConstants.WHERE_VALUE_VALUE, value);
+                whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value);
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -814,18 +833,18 @@ public class CHQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                originName = String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                originName = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
             if (field.getDeType() == DeTypeConstants.DE_TIME) {
                 if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                    whereName = String.format(CHConstants.toDateTime, originName);
+                    whereName = String.format(CKConstants.toDateTime, originName);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == 4) {
-                    String cast = String.format(CHConstants.toFloat64, originName);
-                    whereName = String.format(CHConstants.toDateTime, cast);
+                    String cast = String.format(CKConstants.toFloat64, originName);
+                    whereName = String.format(CKConstants.toDateTime, cast);
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
@@ -844,12 +863,12 @@ public class CHQueryProvider extends QueryProvider {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(CHConstants.WHERE_BETWEEN, startTime, endTime);
+                    whereValue = String.format(CKConstants.WHERE_BETWEEN, startTime, endTime);
                 } else {
-                    whereValue = String.format(CHConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    whereValue = String.format(CKConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(CHConstants.WHERE_VALUE_VALUE, value.get(0));
+                whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value.get(0));
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -903,13 +922,13 @@ public class CHQueryProvider extends QueryProvider {
         if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
             if (x.getDeType() == DeTypeConstants.DE_INT || x.getDeType() == DeTypeConstants.DE_FLOAT) {
                 if(x.getType().equalsIgnoreCase("DATE")){
-                    fieldName = String.format(CHConstants.toInt32, String.format(CHConstants.toDateTime, originField)) + "*1000";
+                    fieldName = String.format(CKConstants.toInt32, String.format(CKConstants.toDateTime, originField)) + "*1000";
                 }else {
-                    fieldName = String.format(CHConstants.toInt32, originField) + "*1000";
+                    fieldName = String.format(CKConstants.toInt32, originField) + "*1000";
                 }
             } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(CHConstants.formatDateTime, originField, format);
+                fieldName = String.format(CKConstants.formatDateTime, originField, format);
             } else {
                 fieldName = originField;
             }
@@ -917,9 +936,9 @@ public class CHQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    fieldName = String.format(CHConstants.formatDateTime, String.format(CHConstants.toDateTime, originField), format);
+                    fieldName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, originField), format);
                 } else {
-                    fieldName = String.format(CHConstants.formatDateTime, String.format(CHConstants.toDateTime, String.format(CHConstants.toFloat64, originField)), format);
+                    fieldName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, String.format(CKConstants.toFloat64, originField)), format);
                 }
             } else {
                 fieldName = originField;
@@ -935,17 +954,17 @@ public class CHQueryProvider extends QueryProvider {
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-            fieldName = CHConstants.AGG_COUNT;
+            fieldName = CKConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(CHConstants.AGG_FIELD, y.getSummary(), originField);
+            fieldName = String.format(CKConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = y.getDeType() == 2? String.format(CHConstants.toInt64, originField) : String.format(CHConstants.toFloat64, originField);
-                String agg = String.format(CHConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(CHConstants.toDecimal, agg);
+                String cast = y.getDeType() == 2? String.format(CKConstants.toInt64, originField) : String.format(CKConstants.toFloat64, originField);
+                String agg = String.format(CKConstants.AGG_FIELD, y.getSummary(), cast);
+                fieldName = String.format(CKConstants.toDecimal, agg);
             } else {
-                String cast = y.getDeType() == 2 ? String.format(CHConstants.toInt64, originField) : String.format(CHConstants.toFloat64, originField);
-                fieldName = String.format(CHConstants.AGG_FIELD, y.getSummary(), cast);
+                String cast = y.getDeType() == 2 ? String.format(CKConstants.toInt64, originField) : String.format(CKConstants.toFloat64, originField);
+                fieldName = String.format(CKConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }
         return SQLObj.builder()
@@ -962,7 +981,7 @@ public class CHQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = CHConstants.WHERE_VALUE_NULL;
+                    whereValue = CKConstants.WHERE_VALUE_NULL;
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
                     whereTerm = String.format(whereTerm, originField);
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
@@ -970,7 +989,7 @@ public class CHQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    whereValue = String.format(CHConstants.WHERE_VALUE_VALUE, f.getValue());
+                    whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)
@@ -1001,7 +1020,7 @@ public class CHQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(CHConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
         }
         return originField;
     }

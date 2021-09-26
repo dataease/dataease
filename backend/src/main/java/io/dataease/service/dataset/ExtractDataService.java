@@ -312,6 +312,7 @@ public class ExtractDataService {
                     msg = true;
                     lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
+                    e.printStackTrace();
                     saveErrorLog(datasetTableId, taskId, e);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
@@ -456,7 +457,7 @@ public class ExtractDataService {
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields = Column_Fields + datasetTableField.getDataeaseName() + "` ";
             Integer size = datasetTableField.getSize() * 3;
-            if (datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
+            if (datasetTableField.getSize() == 0 || datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
                 size = 65533;
             }
             switch (datasetTableField.getDeExtractType()) {
@@ -468,7 +469,7 @@ public class ExtractDataService {
                     Column_Fields = Column_Fields + "varchar(lenth)".replace("lenth", String.valueOf(size)) + ",`";
                     break;
                 case 2:
-                    Column_Fields = Column_Fields + "bigint(lenth)".replace("lenth", String.valueOf(size)) + ",`";
+                    Column_Fields = Column_Fields + "bigint" + ",`";
                     break;
                 case 3:
                     Column_Fields = Column_Fields + "DOUBLE" + ",`";
@@ -616,7 +617,8 @@ public class ExtractDataService {
             Thread.sleep(1000);
         }
         if (!transStatus.getStatusDescription().equals("Finished")) {
-            DataEaseException.throwException((transStatus.getLoggingString()));
+            DataEaseException.throwException(transStatus.getLoggingString());
+            return;
         }
 
         executing = true;
@@ -635,11 +637,6 @@ public class ExtractDataService {
         } else {
             DataEaseException.throwException((jobStatus.getLoggingString()));
         }
-    }
-
-    private boolean isExitFile(String fileName) {
-        File file = new File(root_path + fileName);
-        return file.exists();
     }
 
     private SlaveServer getSlaveServer() {
@@ -804,6 +801,16 @@ public class ExtractDataService {
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
+                break;
+            case ck:
+                CHConfigration chConfigration = new Gson().fromJson(datasource.getConfiguration(), CHConfigration.class);
+                dataMeta = new DatabaseMeta("db", "ORACLE", "Native", chConfigration.getHost().trim(), chConfigration.getDataBase().trim(), chConfigration.getPort().toString(), chConfigration.getUsername(), chConfigration.getPassword());
+//                dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
+                dataMeta.setDatabaseType("Clickhouse");
+                transMeta.addDatabase(dataMeta);
+                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.ck);
                 break;
             case excel:
                 inputStep = excelInputStep(datasetTable.getInfo(), datasetTableFields);

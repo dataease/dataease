@@ -7,6 +7,7 @@ import io.dataease.datasource.dto.*;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.beans.PropertyVetoException;
@@ -127,7 +128,7 @@ public class JdbcProvider extends DatasourceProvider {
             connection = getConnectionFromPool(datasourceRequest);
             Statement stat = connection.createStatement();
             rs = stat.executeQuery(datasourceRequest.getQuery());
-            return fetchResultField(rs);
+            return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
@@ -152,7 +153,7 @@ public class JdbcProvider extends DatasourceProvider {
             Statement stat = connection.createStatement();
             rs = stat.executeQuery(datasourceRequest.getQuery());
             dataList = fetchResult(rs);
-            fieldList = fetchResultField(rs);
+            fieldList = fetchResultField(rs, datasourceRequest);
             result.put("dataList", dataList);
             result.put("fieldList", fieldList);
             return result;
@@ -168,7 +169,7 @@ public class JdbcProvider extends DatasourceProvider {
         return new HashMap<>();
     }
 
-    private List<TableFiled> fetchResultField(ResultSet rs) throws Exception {
+    private List<TableFiled> fetchResultField(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
         List<TableFiled> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -180,7 +181,13 @@ public class JdbcProvider extends DatasourceProvider {
             field.setFieldName(l);
             field.setRemarks(l);
             field.setFieldType(t);
-            field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
+
+            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+                QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
+                field.setFieldSize(qp.transFieldSize(t));
+            }else {
+                field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
+            }
             if(t.equalsIgnoreCase("LONG")){field.setFieldSize(65533);} //oracle LONG
             if(StringUtils.isNotEmpty(t) && t.toLowerCase().contains("date") && field.getFieldSize() < 50 ){
                 field.setFieldSize(50);
@@ -193,9 +200,9 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
-        String queryStr = getTablesSql(datasourceRequest);
         Connection con = null;
         try {
+            String queryStr = getTablesSql(datasourceRequest);
             con = getConnection(datasourceRequest);
             Statement statement = con.createStatement();
             ResultSet resultSet = statement.executeQuery(queryStr);
@@ -204,6 +211,20 @@ public class JdbcProvider extends DatasourceProvider {
             }
             resultSet.close();
             statement.close();
+
+            String queryView = getViewSql(datasourceRequest);
+            if(StringUtils.isNotEmpty(queryView)){
+                con = getConnection(datasourceRequest);
+                statement = con.createStatement();
+                resultSet = statement.executeQuery(queryView);
+                while (resultSet.next()) {
+                    tables.add(resultSet.getString(1));
+                }
+                resultSet.close();
+                statement.close();
+            }
+
+
             return tables;
         } catch (Exception e) {
             DataEaseException.throwException(e);
@@ -251,19 +272,19 @@ public class JdbcProvider extends DatasourceProvider {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database = null;
-                if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("ch")){
+                if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
                     database = resultSet.getString("TABLE_SCHEM");
                 }else {
                     database = resultSet.getString("TABLE_CAT");
                 }
                 if(database != null){
                     if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                        TableFiled tableFiled = getTableFiled(resultSet);
+                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
                         list.add(tableFiled);
                     }
                 }else {
                     if (tableName.equals(datasourceRequest.getTable())) {
-                        TableFiled tableFiled = getTableFiled(resultSet);
+                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
                         list.add(tableFiled);
                     }
                 }
@@ -281,7 +302,7 @@ public class JdbcProvider extends DatasourceProvider {
         return list;
     }
 
-    private TableFiled getTableFiled(ResultSet resultSet) throws SQLException {
+    private TableFiled getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
         TableFiled tableFiled = new TableFiled();
         String colName = resultSet.getString("COLUMN_NAME");
         tableFiled.setFieldName(colName);
@@ -290,12 +311,18 @@ public class JdbcProvider extends DatasourceProvider {
             remarks = colName;
         }
         tableFiled.setRemarks(remarks);
-        tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
         tableFiled.setFieldType(dbType);
         if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
         if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
             tableFiled.setFieldSize(50);
+        }
+
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+            QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
+            tableFiled.setFieldSize(qp.transFieldSize(dbType));
+        }else {
+            tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
         }
         return tableFiled;
     }
@@ -442,7 +469,7 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = pgConfigration.getDriver();
                 jdbcurl = pgConfigration.getJdbc();
                 break;
-            case ch:
+            case ck:
                 CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
                 username = chConfigration.getUsername();
                 password = chConfigration.getPassword();
@@ -506,7 +533,7 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setJdbcUrl(pgConfigration.getJdbc());
                 jdbcDTO = pgConfigration;
                 break;
-            case ch:
+            case ck:
                 CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
                 dataSource.setUser(chConfigration.getUsername());
                 dataSource.setDriverClass(chConfigration.getDriver());
@@ -567,12 +594,46 @@ public class JdbcProvider extends DatasourceProvider {
                 if(StringUtils.isEmpty(pgConfigration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
-            case ch:
+                return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+            case ck:
                 CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
                 return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfigration.getDataBase());
             default:
                 return "show tables;";
+        }
+    }
+
+    private String getViewSql(DatasourceRequest datasourceRequest) throws Exception {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType) {
+            case mysql:
+                return null;
+            case doris:
+                return null;
+            case sqlServer:
+                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
+                if(StringUtils.isEmpty(sqlServerConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
+                        .replace("DATABASE", sqlServerConfigration.getDataBase())
+                        .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
+            case oracle:
+                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
+                if(StringUtils.isEmpty(oracleConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "select VIEW_NAME  from all_views where owner='" + oracleConfigration.getSchema() + "'";
+            case pg:
+                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
+                if(StringUtils.isEmpty(pgConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+            case ck:
+                return null;
+            default:
+                return null;
         }
     }
 

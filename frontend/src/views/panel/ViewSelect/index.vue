@@ -2,7 +2,7 @@
   <el-col v-loading="loading">
     <el-row style="margin-top: 5px">
       <el-row style="margin-left: 5px;margin-right: 5px">
-        <el-col :span="16">
+        <el-col :span="selectModel ? 23 : 16">
           <el-input
             v-model="templateFilterText"
             :placeholder="$t('panel.filter_keywords')"
@@ -11,7 +11,7 @@
             prefix-icon="el-icon-search"
           />
         </el-col>
-        <el-col :span="7">
+        <el-col v-if="!selectModel" :span="7">
           <el-button type="primary" size="mini" style="float: right" @click="newChart">新建 </el-button>
         </el-col>
 
@@ -20,6 +20,7 @@
         <el-tree
           ref="templateTree"
           :default-expanded-keys="defaultExpandedKeys"
+          :show-checkbox="selectModel"
           :data="data"
           node-key="id"
           :props="defaultProps"
@@ -31,6 +32,11 @@
           :highlight-current="true"
           @node-drag-start="handleDragStart"
           @node-click="nodeClick"
+
+          @check="checkChanged"
+
+          @node-drag-end="dragEnd"
+
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
@@ -62,8 +68,16 @@
 
 <script>
 import { tree, findOne } from '@/api/panel/view'
+import componentList from '@/components/canvas/custom-component/component-list'
+import { deepCopy } from '@/components/canvas/utils/utils'
 export default {
   name: 'ViewSelect',
+  props: {
+    selectModel: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       templateFilterText: '',
@@ -105,19 +119,21 @@ export default {
       })
     },
     handleDragStart(node, ev) {
-      this.$store.commit('setDragComponentInfo', node)
+      this.$store.commit('setDragComponentInfo', this.viewComponentInfo())
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
         type: 'view',
         id: node.data.id
       }
-
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
     },
-
+    dragEnd() {
+      console.log('dragEnd')
+      this.$store.commit('clearDragComponentInfo')
+    },
     // 判断节点能否被拖拽
     allowDrag(draggingNode) {
-      if (draggingNode.data.type === 'scene') {
+      if (draggingNode.data.type === 'scene' || draggingNode.data.type === 'group') {
         return false
       } else {
         return true
@@ -128,6 +144,27 @@ export default {
     },
     newChart() {
       this.$emit('newChart')
+    },
+
+    checkChanged(node, status) {
+      this.$refs.templateTree.setCheckedNodes([])
+      if (status.checkedKeys && status.checkedKeys.length > 0) {
+        this.$refs.templateTree.setCheckedNodes([node])
+      }
+    },
+    getCurrentSelected() {
+      const nodes = this.$refs.templateTree.getCheckedNodes(true, false)
+      return nodes
+    },
+    viewComponentInfo() {
+      let component
+      // 用户视图设置 复制一个模板
+      componentList.forEach(componentTemp => {
+        if (componentTemp.type === 'view') {
+          component = deepCopy(componentTemp)
+        }
+      })
+      return component
     }
 
   }

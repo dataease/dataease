@@ -395,6 +395,10 @@ export default {
     cancel: '取 消',
     confirm: '確 定'
   },
+  detabs: {
+    eidttitle: '編輯標題',
+    selectview: '選擇視圖'
+  },
   example: {
     warning: '創建和編輯頁面是不能被 keep-alive 緩存的，因爲keep-alive 的 include 目前不支持根據路由來緩存，所以目前都是基于 component name 來進行緩存的。如果你想類似的實現緩存效果，可以使用 localStorage 等浏覽器緩存方案。或者不要使用 keep-alive 的 include，直接緩存所有頁面。詳情見'
   },
@@ -525,7 +529,7 @@ export default {
     input_url_placeholder: '請輸入LDAP地址 (如 ldap://localhost:389)',
     input_ou_placeholder: '輸入用戶OU (使用|分隔各OU)',
     input_filter_placeholder: '輸入過濾器 [可能的選項是cn或uid或sAMAccountName={0}, 如：(uid={0})]',
-    input_mapping_placeholder: '如：{"username":"uid","name":"sn","email":"mail"}, username映射的選項可能是cn或uid或sAMAccountName',
+    input_mapping_placeholder: '如：{"userName":"uid","nickName":"cn","email":"mail"}, username映射的選項可能是cn或uid或sAMAccountName',
     test_connect: '測試連接',
     test_login: '測試登錄',
     edit: '編輯',
@@ -924,7 +928,8 @@ export default {
     liquid_shape_diamond: '菱形',
     liquid_shape_triangle: '三角形',
     liquid_shape_pin: '氣球',
-    liquid_shape_rect: '矩形'
+    liquid_shape_rect: '矩形',
+    dimension_or_quota: '維度或指標'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1202,6 +1207,8 @@ export default {
     gap: '有間隙',
     no_gap: '無間隙',
     component_gap: '組件間隙',
+    refresh_time: '刷新时间',
+    minute: '分钟',
     photo: '圖片',
     default_panel: '默認儀表板',
     create_public_links: '創建公共鏈接',

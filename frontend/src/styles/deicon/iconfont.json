@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "15196968",
+      "name": "44.tabs",
+      "font_class": "tabs",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "23570269",
+      "name": "洗浴",
+      "font_class": "xiyu",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
       "icon_id": "23496077",
       "name": "线性图标-取消下钻",
       "font_class": "quxiaoshangzuan",

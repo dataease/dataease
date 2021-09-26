@@ -139,32 +139,46 @@ export default {
         this.restore()
       },
       deep: true
+    },
+    canvasStyleData: {
+      handler(newVal, oldVla) {
+        this.canvasStyleDataInit()
+      },
+      deep: true
     }
   },
   mounted() {
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
-    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+    const tempDom = document.getElementById('canvasInfoTemp')
+    erd.listenTo(tempDom, element => {
       _this.$nextTick(() => {
         _this.restore()
+        //将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+        _this.mainHeight = tempDom.scrollHeight + 'px!important'
       })
     })
-    // 数据刷新计时器
-    let refreshTime = 300000
-    if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
-      refreshTime = this.canvasStyleData.refreshTime * 1000
-    }
-    this.timer = setInterval(() => {
-      this.searchCount++
-    }, refreshTime)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     this.$store.commit('clearLinkageSettingInfo', false)
+    this.canvasStyleDataInit()
   },
   beforeDestroy() {
     clearInterval(this.timer)
   },
   methods: {
+    canvasStyleDataInit() {
+      // 数据刷新计时器
+      this.searchCount = 0
+      this.timer && clearInterval(this.timer)
+      let refreshTime = 300000
+      if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
+        refreshTime = this.canvasStyleData.refreshTime * 60000
+      }
+      this.timer = setInterval(() => {
+        this.searchCount++
+      }, refreshTime)
+    },
     changeStyleWithScale,
     getStyle,
     restore() {

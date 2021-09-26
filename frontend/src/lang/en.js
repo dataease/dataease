@@ -395,6 +395,10 @@ export default {
     cancel: 'Cancel',
     confirm: 'Confirm'
   },
+  detabs: {
+    eidttitle: 'Edit Title',
+    selectview: 'Select View'
+  },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
   },
@@ -523,7 +527,7 @@ export default {
     input_url_placeholder: 'Please key url (like ldap://localhost:389)',
     input_ou_placeholder: 'Please key OU ',
     input_filter_placeholder: 'Please key filter',
-    input_mapping_placeholder: 'like：{"username":"uid","name":"sn","email":"mail"}',
+    input_mapping_placeholder: 'like：{"userName":"uid","nickName":"cn","email":"mail"}',
     test_connect: 'Test connect',
     edit: 'Edit',
     login_success: 'Login success',
@@ -923,7 +927,8 @@ export default {
     liquid_shape_diamond: 'Diamond',
     liquid_shape_triangle: 'Triangle',
     liquid_shape_pin: 'Pin',
-    liquid_shape_rect: 'Rect'
+    liquid_shape_rect: 'Rect',
+    dimension_or_quota: 'Dimension Or Quota'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1199,6 +1204,8 @@ export default {
     gap: 'Gap',
     no_gap: 'No Gap',
     component_gap: 'Component Gap',
+    refresh_time: 'Refresh Time',
+    minute: 'minute',
     photo: 'Photo',
     default_panel: 'Default Dashboard',
     create_public_links: 'Create public links',
