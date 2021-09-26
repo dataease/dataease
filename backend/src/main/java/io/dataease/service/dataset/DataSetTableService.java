@@ -469,7 +469,6 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
-                System.out.println(datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
@@ -533,13 +532,20 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize, false));
                 map.put("sql", datasourceRequest.getQuery());
+                datasourceRequest.setPage(page);
+                datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
+                datasourceRequest.setPageSize(pageSize);
+                datasourceRequest.setRealSize(realSize);
+                datasourceRequest.setPreviewData(true);
                 try {
+                    datasourceRequest.setPageable(true);
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
                     DEException.throwException(e.getMessage());
                 }
                 try {
+                    datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
@@ -559,12 +565,8 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
-                System.out.println(datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
-                    for(int i=0;i< data.size(); i++){
-                        System.out.println(data.get(i)[2]);
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     DEException.throwException(e.getMessage());
@@ -620,13 +622,20 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize, false));
                 map.put("sql", datasourceRequest.getQuery());
+                datasourceRequest.setPage(page);
+                datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
+                datasourceRequest.setPageSize(pageSize);
+                datasourceRequest.setRealSize(realSize);
+                datasourceRequest.setPreviewData(true);
                 try {
+                    datasourceRequest.setPageable(true);
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     e.printStackTrace();
                     DEException.throwException(e.getMessage());
                 }
                 try {
+                    datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {

@@ -79,6 +79,7 @@ public class EsProvider extends DatasourceProvider {
                }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             DataEaseException.throwException(e);
         }
         return list;
@@ -115,7 +116,7 @@ public class EsProvider extends DatasourceProvider {
         List<TableFiled> tableFileds = new ArrayList<>();
         try {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
-            tableFileds = fetchResultField(response);
+            tableFileds = fetchResultField4Sql(response);
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
@@ -140,13 +141,31 @@ public class EsProvider extends DatasourceProvider {
         return fieldList;
     }
 
+    private List<TableFiled> fetchResultField4Sql(String response) throws Exception {
+        List<TableFiled> fieldList = new ArrayList<>();
+        EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
+        if(esReponse.getError() != null){
+            throw new Exception(esReponse.getError().getReason());
+        }
+
+        for (EsReponse.Column column : esReponse.getColumns()) {
+            TableFiled field = new TableFiled();
+            field.setFieldName(column.getName());
+            field.setRemarks(column.getName());
+            field.setFieldType(column.getType());
+            field.setFieldSize(EsQueryProvider.transFieldTypeSize(column.getType()));
+            fieldList.add(field);
+        }
+        return fieldList;
+    }
+
     @Override
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
         Map<String, List> result = new HashMap<>();
         try {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             result.put("dataList", fetchResult(response));
-            result.put("fieldList", fetchResultField(response));
+            result.put("fieldList", fetchResultField4Sql(response));
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }

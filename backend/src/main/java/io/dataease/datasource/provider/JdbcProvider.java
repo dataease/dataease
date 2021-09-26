@@ -45,6 +45,12 @@ public class JdbcProvider extends DatasourceProvider {
             Statement stat = connection.createStatement();
             ResultSet rs = stat.executeQuery(dsr.getQuery());
             list = fetchResult(rs);
+
+            if(dsr.isPageable() && dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())){
+                Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize(): list.size();
+                list = list.subList((dsr.getPage() - 1) * dsr.getPageSize(), realSize);
+            }
+
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
@@ -329,20 +335,22 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
-        String queryStr = getTablesSql(datasourceRequest);
         Connection con = null;
         try {
             con = getConnection(datasourceRequest);
-            Statement ps = con.createStatement();
-            ResultSet resultSet = ps.executeQuery(queryStr);
+            Statement statement = con.createStatement();
+            String queryStr = getTablesSql(datasourceRequest);
+            ResultSet resultSet = statement.executeQuery(queryStr);
             resultSet.close();
-            ps.close();
+            statement.close();
         } catch (Exception e) {
+            e.printStackTrace();
             DataEaseException.throwException(e.getMessage());
         } finally {
             if(con != null){con.close();}
         }
     }
+
 
 
     public Long count(DatasourceRequest datasourceRequest) throws Exception {
@@ -650,4 +658,5 @@ public class JdbcProvider extends DatasourceProvider {
                 return "show tables;";
         }
     }
+
 }

@@ -8,6 +8,7 @@ import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.datasource.dto.JdbcDTO;
+import io.dataease.datasource.dto.SqlServerConfigration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
@@ -150,22 +151,25 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
+        Integer size = (page-1)*pageSize + realSize;
+        return String.format("SELECT top %s * from ( %s ) AS DE_SQLSERVER_TMP ", size.toString(), createQuerySQL(table, fields, isGroup, ds));
+
     }
 
     @Override
     public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
+        Integer size = (page-1)*pageSize + realSize;
+        return String.format("SELECT top %s * from ( %s ) AS DE_SQLSERVER_TMP ", size.toString(), createQuerySQLAsTmp(sql, fields, isGroup));
     }
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit + " rows only";
+        return String.format("SELECT top %s * from %s ", limit.toString(), table);
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit + " rows only";
+        return String.format("SELECT top %s * from ( %s ) as DE_SQLSERVER_TMP ", limit.toString(), sqlFix(sql));
     }
 
     @Override

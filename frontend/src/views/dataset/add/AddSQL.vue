@@ -192,7 +192,7 @@ export default {
     },
     changeDatasource() {
       for (let i = 0; i < this.options.length; i++) {
-        if (this.options[i].id === this.form.dataSource) {
+        if (this.options[i].id === this.dataSource) {
           this.selectedDatasource = this.options[i]
         }
       }
