@@ -66,6 +66,7 @@ import { encrypt } from '@/utils/rsaEncrypt'
 import { ldapStatus, oidcStatus } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import Cookies from 'js-cookie'
 export default {
   name: 'Login',
   components: { PluginCom },
@@ -92,7 +93,7 @@ export default {
   },
   computed: {
     msg() {
-      return this.$store.state.user.loginMsg
+      return this.$store.state.user.loginMsg || Cookies.get('OidcError')
     }
   },
   watch: {
