@@ -927,7 +927,8 @@ export default {
     liquid_shape_diamond: 'Diamond',
     liquid_shape_triangle: 'Triangle',
     liquid_shape_pin: 'Pin',
-    liquid_shape_rect: 'Rect'
+    liquid_shape_rect: 'Rect',
+    dimension_or_quota: 'Dimension Or Quota'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
