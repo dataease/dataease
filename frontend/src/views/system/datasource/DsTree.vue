@@ -158,6 +158,10 @@ export default {
         return 'Elasticsearch'
       } else if (type === 'ck') {
         return 'ClickHouse'
+      } else if (type === 'mariadb') {
+        return 'MariaDB'
+      } else if (type === 'ds_doris') {
+        return 'Doris'
       }
     },
 

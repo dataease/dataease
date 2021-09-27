@@ -153,6 +153,8 @@ export default {
         { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
         { name: 'pg', label: 'PostgreSQL', type: 'jdbc' },
         { name: 'es', label: 'Elasticsearch', type: 'es' },
+        { name: 'mariadb', label: 'MariaDB', type: 'jdbc' },
+        { name: 'ds_doris', label: 'Doris', type: 'jdbc' },
         { name: 'ck', label: 'ClickHouse', type: 'jdbc' }
         ],
       schemas: [],

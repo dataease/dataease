@@ -763,6 +763,8 @@ public class ExtractDataService {
         String transName = null;
 
         switch (datasourceType) {
+            case ds_doris:
+            case mariadb:
             case mysql:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost().trim(), mysqlConfigration.getDataBase().trim(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());

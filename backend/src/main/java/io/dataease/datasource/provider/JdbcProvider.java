@@ -441,18 +441,14 @@ public class JdbcProvider extends DatasourceProvider {
         Properties props = new Properties();
         switch (datasourceType) {
             case mysql:
+            case mariadb:
+            case de_doris:
+            case ds_doris:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
                 username = mysqlConfigration.getUsername();
                 password = mysqlConfigration.getPassword();
                 driver = mysqlConfigration.getDriver();
                 jdbcurl = mysqlConfigration.getJdbc();
-                break;
-            case doris:
-                MysqlConfigration dorisConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
-                username = dorisConfigration.getUsername();
-                password = dorisConfigration.getPassword();
-                driver = dorisConfigration.getDriver();
-                jdbcurl = dorisConfigration.getJdbc();
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
@@ -502,20 +498,15 @@ public class JdbcProvider extends DatasourceProvider {
         JdbcDTO jdbcDTO = new JdbcDTO();
         switch (datasourceType) {
             case mysql:
+            case mariadb:
+            case de_doris:
+            case ds_doris:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
                 dataSource.setUser(mysqlConfigration.getUsername());
                 dataSource.setDriverClass(mysqlConfigration.getDriver());
                 dataSource.setPassword(mysqlConfigration.getPassword());
                 dataSource.setJdbcUrl(mysqlConfigration.getJdbc());
                 jdbcDTO = mysqlConfigration;
-                break;
-            case doris:
-                MysqlConfigration dorisConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
-                dataSource.setUser(dorisConfigration.getUsername());
-                dataSource.setDriverClass(dorisConfigration.getDriver());
-                dataSource.setPassword(dorisConfigration.getPassword());
-                dataSource.setJdbcUrl(dorisConfigration.getJdbc());
-                jdbcDTO = dorisConfigration;
                 break;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
@@ -559,11 +550,11 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
+            case de_doris:
+            case ds_doris:
+            case mariadb:
                 MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
                 return mysqlConfigration.getDataBase();
-            case doris:
-                MysqlConfigration dorisConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
-                return dorisConfigration.getDataBase();
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
                 return sqlServerConfigration.getDataBase();
@@ -580,8 +571,9 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
-                return "show tables;";
-            case doris:
+            case mariadb:
+            case de_doris:
+            case ds_doris:
                 return "show tables;";
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
@@ -615,8 +607,10 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
-                return null;
-            case doris:
+            case mariadb:
+            case de_doris:
+            case ds_doris:
+            case ck:
                 return null;
             case sqlServer:
                 SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
@@ -638,8 +632,6 @@ public class JdbcProvider extends DatasourceProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
-            case ck:
-                return null;
             default:
                 return null;
         }
