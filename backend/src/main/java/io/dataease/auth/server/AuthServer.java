@@ -70,12 +70,12 @@ public class AuthServer implements AuthApi {
                 DataEaseException.throwException(validateResult.getMsg());
             }
             XpackLdapUserEntity ldapUserEntity = validateResult.getData();
-            SysUserEntity user = authUserService.getUserByName(username);
+            SysUserEntity user = authUserService.getLdapUserByName(username);
             if(ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getUserId())) {
                 LdapAddRequest ldapAddRequest = new LdapAddRequest();
                 ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>(){{add(ldapUserEntity);}});
                 ldapAddRequest.setEnabled(1L);
-                ldapAddRequest.setDeptId(1L);
+                // ldapAddRequest.setDeptId(1L);
                 ldapAddRequest.setRoleIds(new ArrayList<Long>(){{add(2L);}});
                 sysUserService.validateExistUser(ldapUserEntity.getUserName(),  ldapUserEntity.getEmail());
                 sysUserService.saveLdapUsers(ldapAddRequest);

@@ -52,6 +52,12 @@ public class AuthUserServiceImpl implements AuthUserService {
         return authMapper.findUserByName(username);
     }
 
+
+    @Override
+    public SysUserEntity getLdapUserByName(String username) {
+        return authMapper.findLdapUserByName(username);
+    }
+
     @Override
     public SysUserEntity getUserBySub(String sub) {
         return authMapper.findUserBySub(sub);
