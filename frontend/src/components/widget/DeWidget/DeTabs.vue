@@ -46,12 +46,16 @@
       :append-to-body="true"
       :visible.sync="dialogVisible"
       width="30%"
+      :show-close="false"
+      :close-on-click-modal="false"
       center
     >
       <el-input
         v-model="textarea"
         type="textarea"
         :rows="2"
+        maxlength="10"
+        show-word-limit
         :placeholder="$t('dataset.input_content')"
       />
       <span slot="footer" class="dialog-footer">
@@ -66,6 +70,8 @@
       :visible.sync="viewDialogVisible"
       width="20%"
       height="400px"
+      :show-close="false"
+      :close-on-click-modal="false"
       center
     >
       <div style="width: 100%;min-height: 250px; max-height: 300px; overflow-y: auto;">
@@ -251,8 +257,8 @@ export default {
         }
     }
   }
-  .de-tab-i {
-    transition: 0.3s;
+  /* .de-tab-i {
+    transition: 0.1s;
     opacity: 0;
     transform:  translateY(100%);
   }
@@ -260,7 +266,7 @@ export default {
   .de-tab-drop:hover .de-tab-i {
     opacity: 1;
     transform:  translateY(0);
-  }
+  } */
   .de-tab-content {
     width: 100%;
     height: 100%;

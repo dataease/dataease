@@ -36,7 +36,6 @@
           @check="checkChanged"
 
           @node-drag-end="dragEnd"
-
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
@@ -84,7 +83,8 @@ export default {
       defaultExpandedKeys: [],
       defaultProps: {
         children: 'children',
-        label: 'name'
+        label: 'name',
+        disabled: 'disabled'
       },
       data: [],
       showdetail: false,
@@ -114,7 +114,11 @@ export default {
       const param = {}
       this.loading = true
       tree(param).then(res => {
-        this.data = res.data
+        const nodeDatas = res.data
+        if (this.selectModel) {
+          this.setParentDisable(nodeDatas)
+        }
+        this.data = nodeDatas
         this.loading = false
       })
     },
@@ -155,6 +159,16 @@ export default {
     getCurrentSelected() {
       const nodes = this.$refs.templateTree.getCheckedNodes(true, false)
       return nodes
+    },
+    setParentDisable(nodes) {
+      nodes.forEach(node => {
+        if (node.type === 'group') {
+          node.disabled = true
+        }
+        if (node.children && node.children.length > 0) {
+          this.setParentDisable(node.children)
+        }
+      })
     },
     viewComponentInfo() {
       let component
