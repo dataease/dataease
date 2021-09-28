@@ -234,7 +234,7 @@ public class ExcelXlsxReader extends DefaultHandler {
             return;
         }
         //t元素也包含字符串
-        if (isTElement) {//这个程序没经过
+        if (isTElement) {       //这个程序没经过
             //将单元格内容加入rowlist中，在这之前先去掉字符串前后的空白符
             String value = lastIndex.trim();
             if(curRow==1){
@@ -271,6 +271,9 @@ public class ExcelXlsxReader extends DefaultHandler {
                 for (int i = 0; i < len; i++) {
                     if(curCol < this.fields.size()){
                         cellList.add(curCol, "");
+                        if(curRow==1){
+                            addField("", curCol);
+                        }
                         curCol++;
                     }
                 }
@@ -413,12 +416,7 @@ public class ExcelXlsxReader extends DefaultHandler {
                 break;
         }
         if(curRow==1){
-            TableFiled tableFiled = new TableFiled();
-            tableFiled.setFieldType("TEXT");
-            tableFiled.setFieldSize(65533);
-            tableFiled.setFieldName(thisStr);
-            tableFiled.setRemarks(thisStr);
-            this.fields.add(tableFiled);
+            addField(thisStr, null);
         }else {
             if(CollectionUtils.isEmpty(this.getFields())){
                 throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
@@ -443,6 +441,18 @@ public class ExcelXlsxReader extends DefaultHandler {
         return thisStr;
     }
 
+    private void addField(String columeName, Integer index){
+        TableFiled tableFiled = new TableFiled();
+        tableFiled.setFieldType("TEXT");
+        tableFiled.setFieldSize(65533);
+        tableFiled.setFieldName(columeName);
+        tableFiled.setRemarks(columeName);
+        if(index != null){
+            this.fields.add(index, tableFiled);
+        }else {
+            this.fields.add(tableFiled);
+        }
+    }
     private String getType(String thisStr){
         if(totalRows==0){
             return "TEXT";
