@@ -227,6 +227,10 @@ public class EsProvider extends DatasourceProvider {
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
         String response = exexGetQuery(datasourceRequest);
+
+        if(JSONObject.parseObject(response).getJSONObject("error") != null){
+            throw new Exception(JSONObject.parseObject(response).getJSONObject("error").getString("reason"));
+        }
         String version =  JSONObject.parseObject(response).getJSONObject("version").getString("number");
         if(Integer.valueOf(version.substring(0,1)) < 6 ){
             throw new Exception(Translator.get("i18n_es_limit"));
