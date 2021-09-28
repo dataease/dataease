@@ -150,21 +150,22 @@ public class SqlserverQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
         Integer size = (page-1)*pageSize + realSize;
         return String.format("SELECT top %s * from ( %s ) AS DE_SQLSERVER_TMP ", size.toString(), createQuerySQL(table, fields, isGroup, ds));
 
     }
 
     @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        Integer size = (page-1)*pageSize + realSize;
-        return String.format("SELECT top %s * from ( %s ) AS DE_SQLSERVER_TMP ", size.toString(), createQuerySQLAsTmp(sql, fields, isGroup));
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        return String.format("SELECT top %s * from %s ", limit.toString(), schema + "." + table);
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return String.format("SELECT top %s * from %s ", limit.toString(), table);
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+        Integer size = (page-1)*pageSize + realSize;
+        return String.format("SELECT top %s * from ( %s ) AS DE_SQLSERVER_TMP ", size.toString(), createQuerySQLAsTmp(sql, fields, isGroup));
     }
 
     @Override

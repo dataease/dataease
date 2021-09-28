@@ -467,7 +467,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = dataTableInfoDTO.getTable();
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
+                datasourceRequest.setQuery(qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
@@ -501,7 +501,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
+                datasourceRequest.setQuery(qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -530,7 +530,7 @@ public class DataSetTableService {
 
                 String sql = dataTableInfoDTO.getSql();
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize, false));
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false));
                 map.put("sql", datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
@@ -563,7 +563,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
+                datasourceRequest.setQuery(qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -590,7 +590,7 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
             String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
+            datasourceRequest.setQuery(qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds));
             map.put("sql", datasourceRequest.getQuery());
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -620,7 +620,7 @@ public class DataSetTableService {
 
                 String sql = getCustomSQLDatasource(dt, list, ds);
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmpWithPage(sql, fields, page, pageSize, realSize, false));
+                datasourceRequest.setQuery(qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false));
                 map.put("sql", datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
@@ -649,7 +649,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-                datasourceRequest.setQuery(qp.createQuerySQLWithPage(table, fields, page, pageSize, realSize, false, ds));
+                datasourceRequest.setQuery(qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));

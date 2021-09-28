@@ -26,13 +26,13 @@ public abstract class QueryProvider {
 
     public abstract String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup);
 
-    public abstract String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds);
+    public abstract String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds);
+
+    public abstract String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup);
 
     public abstract String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds);
 
     public abstract String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup);
-
-    public abstract String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup);
 
     public abstract String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds);
 
@@ -75,7 +75,7 @@ public abstract class QueryProvider {
     public abstract String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields);
 
     public void setSchema(SQLObj tableObj, Datasource ds){
-        if(ds != null){
+        if(ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")){
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
             schema = String.format( PgConstants.KEYWORD_TABLE, schema);
             tableObj.setTableName(schema + "." + tableObj.getTableName());

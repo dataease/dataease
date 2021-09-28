@@ -1,10 +1,13 @@
 package io.dataease.provider.oracle;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
 import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
+import io.dataease.datasource.dto.JdbcDTO;
+import io.dataease.datasource.dto.OracleConfigration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
@@ -94,6 +97,8 @@ public class OracleQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
                 .build();
+
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = xFields(table, fields);
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
@@ -104,6 +109,13 @@ public class OracleQueryProvider extends QueryProvider {
         return st_sql.render();
     }
 
+    public void setSchema(SQLObj tableObj, Datasource ds){
+        if(ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")){
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+            schema = String.format( OracleConstants.KEYWORD_TABLE, schema);
+            tableObj.setTableName(schema + "." + tableObj.getTableName());
+        }
+    }
 
     private List<SQLObj> xFields(String table, List<DatasetTableField> fields) {
         SQLObj tableObj = SQLObj.builder()
@@ -174,16 +186,24 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
         List<SQLObj> xFields = xFields(table, fields);
 
         return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
-                sqlColumn(xFields), createQuerySQL(table, fields, isGroup, null), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+                sqlColumn(xFields), createQuerySQL(table, fields, isGroup, ds), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+    }
+
+    @Override
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+        List<SQLObj> xFields = xFields("(" + sqlFix(sql) + ")", fields);
+        return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
+                sqlColumn(xFields), createQuerySQLAsTmp(sql, fields, isGroup), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return String.format("SELECT %s.*  from %s  WHERE rownum <= %s ", table, table, limit.toString());
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        return String.format("SELECT *  from %s  WHERE rownum <= %s ", schema + "." + String.format(OracleConstants.KEYWORD_TABLE, table), limit.toString());
     }
 
     @Override
@@ -192,18 +212,12 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        List<SQLObj> xFields = xFields("(" + sqlFix(sql) + ")", fields);
-        return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
-                sqlColumn(xFields), createQuerySQLAsTmp(sql, fields, isGroup), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
-    }
-
-    @Override
     public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
                 .build();
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -310,6 +324,7 @@ public class OracleQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
                 .build();
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -392,6 +407,7 @@ public class OracleQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
                 .build();
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -506,6 +522,7 @@ public class OracleQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
                 .build();
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
@@ -712,7 +729,8 @@ public class OracleQueryProvider extends QueryProvider {
             stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), "\"" + table + "\"");
+        OracleConfigration oracleConfigration = new Gson().fromJson(ds.getConfiguration(), OracleConfigration.class);
+        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), oracleConfigration.getSchema() + ".\"" + table + "\"");
     }
 
     @Override

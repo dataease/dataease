@@ -167,23 +167,23 @@ public class PgQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, null) + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+        return createQuerySQL(table, fields, isGroup, ds) + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
+    }
+
+    @Override
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
     }
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, null) + " LIMIT " + limit + " offset 0";
+        return createQuerySQL(table, fields, isGroup, ds) + " LIMIT " + limit + " offset 0";
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
         return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + limit + " offset 0";
-    }
-
-    @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
     }
 
     @Override

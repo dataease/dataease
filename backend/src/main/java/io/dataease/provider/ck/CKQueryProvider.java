@@ -177,7 +177,7 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
         return createQuerySQL(table, fields, isGroup, null) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
 
@@ -192,7 +192,7 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
         return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
 
