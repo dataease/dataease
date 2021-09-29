@@ -1158,7 +1158,8 @@ export default {
     data_mode: '数据模式',
     direct: '直连模式',
     extract: '抽取模式',
-    all_compute_mode: '直连、抽取模式'
+    all_compute_mode: '直连、抽取模式',
+    extra_params: '额外的JDBC连接字符串'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

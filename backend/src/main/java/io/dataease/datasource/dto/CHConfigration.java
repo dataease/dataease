@@ -2,18 +2,28 @@ package io.dataease.datasource.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
 public class CHConfigration extends JdbcDTO {
 
     private String driver = "ru.yandex.clickhouse.ClickHouseDriver";
+    private String extraParams = "";
 
     public String getJdbc() {
-        // 连接参数先写死，后边要把编码、时区等参数放到数据源的设置中
-        return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE"
-                .replace("HOSTNAME", getHost().trim())
-                .replace("PORT", getPort().toString().trim())
-                .replace("DATABASE", getDataBase().trim());
+        if(StringUtils.isEmpty(extraParams.trim())){
+            return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE"
+                    .replace("HOSTNAME", getHost().trim())
+                    .replace("PORT", getPort().toString().trim())
+                    .replace("DATABASE", getDataBase().trim());
+        }else {
+            return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+                    .replace("HOSTNAME", getHost().trim())
+                    .replace("PORT", getPort().toString().trim())
+                    .replace("DATABASE", getDataBase().trim())
+                    .replace("EXTRA_PARAMS", getExtraParams().trim());
+        }
+
     }
 }

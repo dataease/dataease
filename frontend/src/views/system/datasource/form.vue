@@ -52,6 +52,10 @@
           <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password />
         </el-form-item>
 
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle'" :label="$t('datasource.extra_params')"  >
+          <el-input v-model="form.configuration.extraParams" autocomplete="off" />
+        </el-form-item>
+
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
           <el-input v-model="form.configuration.port" autocomplete="off" />
         </el-form-item>
@@ -155,14 +159,14 @@ export default {
         'configuration.connectTimeout': [{ required: true, message: this.$t('datasource.please_input_connect_timeout'), trigger: 'change' }]
       },
       allTypes: [
-        { name: 'mysql', label: 'MySQL', type: 'jdbc'},
-        { name: 'oracle', label: 'Oracle', type: 'jdbc' },
-        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
-        { name: 'pg', label: 'PostgreSQL', type: 'jdbc' },
+        { name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        { name: 'oracle', label: 'Oracle', type: 'jdbc'},
+        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
+        { name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: '' },
         { name: 'es', label: 'Elasticsearch', type: 'es' },
-        { name: 'mariadb', label: 'MariaDB', type: 'jdbc' },
-        { name: 'ds_doris', label: 'Doris', type: 'jdbc' },
-        { name: 'ck', label: 'ClickHouse', type: 'jdbc' }
+        { name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' }
         ],
       schemas: [],
       canEdit: false,
@@ -303,6 +307,7 @@ export default {
       for (let i = 0; i < this.allTypes.length; i++) {
         if (this.allTypes[i].name === this.form.type) {
           this.form.configuration.dataSourceType = this.allTypes[i].type
+          this.form.configuration.extraParams = this.allTypes[i].extraParams
         }
       }
     },

@@ -2,18 +2,27 @@ package io.dataease.datasource.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
 public class PgConfigration extends JdbcDTO {
 
     private String driver = "org.postgresql.Driver";
-
+    private String extraParams = "";
     public String getJdbc() {
-        // 连接参数先写死，后边要把编码、时区等参数放到数据源的设置中
-        return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
-                .replace("HOSTNAME", getHost().trim())
-                .replace("PORT", getPort().toString().trim())
-                .replace("DATABASE", getDataBase().trim());
+        if(StringUtils.isEmpty(extraParams.trim())){
+            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
+                    .replace("HOSTNAME", getHost().trim())
+                    .replace("PORT", getPort().toString().trim())
+                    .replace("DATABASE", getDataBase().trim());
+        }else {
+            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+                    .replace("HOSTNAME", getHost().trim())
+                    .replace("PORT", getPort().toString().trim())
+                    .replace("DATABASE", getDataBase().trim())
+                    .replace("EXTRA_PARAMS", getExtraParams().trim());
+
+        }
     }
 }

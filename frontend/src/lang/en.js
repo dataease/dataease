@@ -1150,7 +1150,8 @@ export default {
     please_input_acquire_increment: 'Please enter the growth number',
     please_input_connect_timeout: 'Please enter the connection timeout (seconds)',
     no_less_then_0: 'Parameters in advanced settings cannot be less than zero',
-    priority: 'Advanced setting'
+    priority: 'Advanced setting',
+    extra_params: 'Extra JDBC connection string'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
