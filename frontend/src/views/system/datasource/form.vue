@@ -39,12 +39,19 @@
           <el-radio v-model="form.configuration.connectionType" label="serviceName">{{ $t('datasource.oracle_service_name') }}</el-radio>
         </el-form-item>
 
-        <el-form-item :label="$t('datasource.user_name')"  >
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')"  prop="configuration.username">
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.password')"  >
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')"  prop="configuration.password">
           <el-input v-model="form.configuration.password" autocomplete="off" show-password />
         </el-form-item>
+        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.user_name')"  >
+          <el-input v-model="form.configuration.esUsername" autocomplete="off" />
+        </el-form-item>
+        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.password')"  >
+          <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password />
+        </el-form-item>
+
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
           <el-input v-model="form.configuration.port" autocomplete="off" />
         </el-form-item>
@@ -208,14 +215,6 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
-      if(this.form.type !== 'es' && !this.form.configuration.username){
-          this.$message.error(this.$t('datasource.please_input_user_name'))
-          return
-      }
-      if(this.form.type !== 'es' && !this.form.configuration.username){
-          this.$message.error(this.$t('datasource.please_input_password'))
-          return
-      }
       if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer')) {
         this.$message.error(this.$t('datasource.please_choose_schema'))
         return

@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 public class EsConfigDTO {
     private String url;
-    private String username;
-    private String password;
+    private String esUsername;
+    private String esPassword;
     private String version;
     private String uri;
     private String dataSourceType = "es";

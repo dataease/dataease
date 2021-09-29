@@ -50,8 +50,8 @@ public class EsProvider extends DatasourceProvider {
         try {
             EsConfigDTO esConfigDTO = new Gson().fromJson(dsr.getDatasource().getConfiguration(), EsConfigDTO.class);
             HttpClientConfig httpClientConfig = new HttpClientConfig();
-            if(StringUtils.isNotEmpty(esConfigDTO.getUsername())){
-                String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+            if(StringUtils.isNotEmpty(esConfigDTO.getEsUsername())){
+                String auth = esConfigDTO.getEsUsername() + ":" + esConfigDTO.getEsPassword();
                 byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
                 httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
             }
@@ -252,8 +252,8 @@ public class EsProvider extends DatasourceProvider {
         EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
         uri = esConfigDTO.getUri()+uri;
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        if(StringUtils.isNotEmpty(esConfigDTO.getUsername()) && StringUtils.isNotEmpty(esConfigDTO.getPassword())){
-            String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+        if(StringUtils.isNotEmpty(esConfigDTO.getEsUsername()) && StringUtils.isNotEmpty(esConfigDTO.getEsPassword())){
+            String auth = esConfigDTO.getEsUsername() + ":" + esConfigDTO.getEsPassword();
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
             httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
         }
@@ -269,8 +269,8 @@ public class EsProvider extends DatasourceProvider {
     private String exexGetQuery(DatasourceRequest datasourceRequest){
         EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        if(StringUtils.isNotEmpty(esConfigDTO.getUsername()) && StringUtils.isNotEmpty(esConfigDTO.getPassword())){
-            String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+        if(StringUtils.isNotEmpty(esConfigDTO.getEsUsername()) && StringUtils.isNotEmpty(esConfigDTO.getEsPassword())){
+            String auth = esConfigDTO.getEsUsername() + ":" + esConfigDTO.getEsPassword();
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
             httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
         }
