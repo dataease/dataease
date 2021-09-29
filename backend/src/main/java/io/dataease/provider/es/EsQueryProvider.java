@@ -105,7 +105,7 @@ public class EsQueryProvider extends QueryProvider {
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY null " + " LIMIT 1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp " + " LIMIT 1000";
     }
 
     @Override
@@ -645,7 +645,7 @@ public class EsQueryProvider extends QueryProvider {
             stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
     }
 
     @Override

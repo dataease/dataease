@@ -730,7 +730,7 @@ public class OracleQueryProvider extends QueryProvider {
             return stringBuilder.toString();
         }).toArray(String[]::new);
         OracleConfigration oracleConfigration = new Gson().fromJson(ds.getConfiguration(), OracleConfigration.class);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), oracleConfigration.getSchema() + ".\"" + table + "\"");
+        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), oracleConfigration.getSchema() + ".\"" + table + "\"");
     }
 
     @Override
@@ -740,7 +740,7 @@ public class OracleQueryProvider extends QueryProvider {
             stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), " (" + sqlFix(sql) + ") DE_TMP ");
+        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), " (" + sqlFix(sql) + ") DE_TMP ");
     }
 
     public String transMysqlFilterTerm(String term) {
