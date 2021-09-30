@@ -1100,7 +1100,10 @@ export default {
     no_merge: 'Dont Merge',
     merge_msg: 'If the fields in the data table are consistent, merge them into one data set?',
     merge_title: 'Merge data',
-    field_name_less_50: 'Field name can not more 50 chars.'
+    field_name_less_50: 'Field name can not more 50 chars.',
+    excel_info_1: '1、Merged cells cannot exist in the file；',
+    excel_info_2: '2、The first line of the file is the title line, which cannot be empty or date；',
+    excel_info_3: '3、The file size shall not exceed 500m。'
   },
   datasource: {
     datasource: 'Data Source',

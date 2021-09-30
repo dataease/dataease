@@ -5,6 +5,16 @@
         <span style="line-height: 26px;">
           {{ param.tableId?$t('dataset.edit_excel_table'):$t('dataset.add_excel_table') }}
         </span>
+        <span style="line-height: 26px;">
+          <el-tooltip class="item" effect="dark" content="Right Bottom 提示文字" placement="bottom">
+            <div slot="content">
+              {{$t('dataset.excel_info_1')}}<br/>
+              {{$t('dataset.excel_info_2')}}<br/>
+              {{$t('dataset.excel_info_3')}}
+            </div>
+            <i class="el-icon-info" style="cursor: pointer;"></i>
+          </el-tooltip>
+        </span>
         <el-row style="float: right">
           <el-button size="mini" @click="cancel">
             {{ $t('dataset.cancel') }}

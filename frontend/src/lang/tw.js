@@ -1101,7 +1101,10 @@ export default {
     no_merge: '不合並',
     merge_msg: '數據表中存在字段一致的情況，是否合並到一個數據集中?',
     merge_title: '合並數據',
-    field_name_less_50: '字段名不能超過50個字符'
+    field_name_less_50: '字段名不能超過50個字符',
+    excel_info_1: '1、文件終不能存在合併單元格；',
+    excel_info_2: '2、文件的第一行為標題行，不能為空，不能為日期；',
+    excel_info_3: '3、文件不超過500M。'
   },
   datasource: {
     datasource: '數據源',
