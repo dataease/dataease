@@ -13,6 +13,8 @@ import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
+import io.dataease.provider.mysql.MySQLConstants;
+import io.dataease.provider.oracle.OracleConstants;
 import io.dataease.provider.sqlserver.SqlServerSQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -718,6 +720,13 @@ public class PgQueryProvider extends QueryProvider {
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
         return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
+    }
+
+    @Override
+    public String convertTableToSql(String tableName, Datasource ds){
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        schema = String.format( PgConstants.KEYWORD_TABLE, schema);
+        return createSQLPreview("SELECT * FROM " + schema + "." + String.format(PgConstants.KEYWORD_TABLE, tableName), null);
     }
 
     public String transMysqlFilterTerm(String term) {

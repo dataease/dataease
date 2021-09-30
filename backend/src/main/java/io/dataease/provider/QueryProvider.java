@@ -81,4 +81,8 @@ public abstract class QueryProvider {
             tableObj.setTableName(schema + "." + tableObj.getTableName());
         }
     }
+
+    public String convertTableToSql(String tableName, Datasource ds){
+        return "select * from  tableName";
+    }
 }

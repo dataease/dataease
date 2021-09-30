@@ -267,46 +267,53 @@ public class JdbcProvider extends DatasourceProvider {
         return new ArrayList<>();
     }
 
-    @Override
-    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        List<TableFiled> list = new LinkedList<>();
-        Connection connection = null;
-        try {
-            connection = getConnectionFromPool(datasourceRequest);
-            DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
-            while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                String database = null;
-                if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
-                    database = resultSet.getString("TABLE_SCHEM");
-                }else {
-                    database = resultSet.getString("TABLE_CAT");
-                }
-                if(database != null){
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableFiled);
-                    }
-                }else {
-                    if (tableName.equals(datasourceRequest.getTable())) {
-                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableFiled);
-                    }
-                }
-            }
-            resultSet.close();
-        } catch (SQLException e) {
-            DataEaseException.throwException(e);
-        } catch (Exception e) {
-            DataEaseException.throwException(e);
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
-        }
-        return list;
-    }
+//    @Override
+//    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+//        List<TableFiled> list = new LinkedList<>();
+//        Connection connection = null;
+//        ResultSet resultSet = null;
+//        try {
+//            connection = getConnectionFromPool(datasourceRequest);
+//            DatabaseMetaData databaseMetaData = connection.getMetaData();
+//            resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
+//            while (resultSet.next()) {
+//                String tableName = resultSet.getString("TABLE_NAME");
+//                String database = null;
+//                if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+//                    database = resultSet.getString("TABLE_SCHEM");
+//                }else {
+//                    database = resultSet.getString("TABLE_CAT");
+//                }
+//                if(database != null){
+//                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+//                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
+//                        list.add(tableFiled);
+//                    }
+//                }else {
+//                    if (tableName.equals(datasourceRequest.getTable())) {
+//                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
+//                        list.add(tableFiled);
+//                    }
+//                }
+//            }
+//            resultSet.close();
+//
+//            Statement stat = connection.createStatement();
+//            resultSet = stat.executeQuery(datasourceRequest.getQuery());
+//            return fetchResultField(resultSet, datasourceRequest);
+//
+//
+//        } catch (SQLException e) {
+//            DataEaseException.throwException(e);
+//        } catch (Exception e) {
+//            DataEaseException.throwException(e);
+//        } finally {
+//            if(connection != null){
+//                connection.close();
+//            }
+//        }
+//        return list;
+//    }
 
     private TableFiled getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
         TableFiled tableFiled = new TableFiled();

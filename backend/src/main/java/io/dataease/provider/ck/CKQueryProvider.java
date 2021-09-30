@@ -724,6 +724,11 @@ public class CKQueryProvider extends QueryProvider {
         return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
     }
 
+    @Override
+    public String convertTableToSql(String tableName, Datasource ds){
+        return "SELECT * FROM " + String.format(CKConstants.KEYWORD_TABLE, tableName);
+    }
+
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":
