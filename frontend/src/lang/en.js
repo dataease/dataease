@@ -127,7 +127,8 @@ export default {
     tokenError: 'Token error, please login again',
     username_error: 'Please enter the correct ID',
     password_error: 'The password can not be less than 8 digits',
-    re_login: 'Login again'
+    re_login: 'Login again',
+    default_login: 'Normal'
   },
   commons: {
     search: 'Search',
@@ -1329,7 +1330,11 @@ export default {
     loginImage: 'Picture on the right side of the login page',
     loginTitle: 'Login page title',
     title: 'System name',
-    advice_size: 'Advice picture size'
+    advice_size: 'Advice picture size',
+
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    themeCustom: 'Custom'
   },
   auth: {
     authConfig: 'Auth Config',

@@ -9,44 +9,45 @@
     style="display: flex;align-items: center;"
     class="international"
   >
-    <div style="height: 30px;">
-      <div style="float: left;font-size:16px;font-weight:bold;">
-        <span>{{ $t('webmsg.web_msg') }}</span>
-      </div>
-      <div v-if="showSetting" style="float: right;">
-        <a href="#" style="text-detext-decoratext-decoration:none;cursor:point;" @click="msgSetting">消息规则</a>
-      </div>
+    <div>
+      <div style="height: 30px;">
+        <div style="float: left;font-size:16px;font-weight:bold;">
+          <span>{{ $t('webmsg.web_msg') }}</span>
+        </div>
+        <div v-if="showSetting" style="float: right;">
+          <a href="#" style="text-detext-decoratext-decoration:none;cursor:point;" @click="msgSetting">消息规则</a>
+        </div>
 
-    </div>
-    <el-divider class="msg-line-class" />
-    <el-table
-      class="de-msg-data-table"
-      :data="data"
-      :show-header="false"
-      :highlight-current-row="true"
-      style="width: 100%"
-    >
-      <el-table-column prop="content" :label="$t('commons.name')">
-        <template slot-scope="scope">
-          <div class="start-item">
-            <div class="filter-db-row star-item-content" @click="showDetail(scope.row)">
-              <!-- <svg-icon icon-class="panel" class="ds-icon-scene" /> -->
-              <div class="title-div"><span>【{{ getTypeName(scope.row.typeId) }}】&nbsp;&nbsp;{{ scope.row.content }}</span></div>
-              <div class="title-div"><span>{{ scope.row.createTime | timestampFormatDate }}</span></div>
-            </div>
+      </div>
+      <el-divider class="msg-line-class" />
+      <el-table
+        class="de-msg-data-table"
+        :data="data"
+        :show-header="false"
+        :highlight-current-row="true"
+        style="width: 100%"
+      >
+        <el-table-column prop="content" :label="$t('commons.name')">
+          <template slot-scope="scope">
+            <div class="start-item">
+              <div class="filter-db-row star-item-content" @click="showDetail(scope.row)">
+                <!-- <svg-icon icon-class="panel" class="ds-icon-scene" /> -->
+                <div class="title-div"><span>【{{ getTypeName(scope.row.typeId) }}】&nbsp;&nbsp;{{ scope.row.content }}</span></div>
+                <div class="title-div"><span>{{ scope.row.createTime | timestampFormatDate }}</span></div>
+              </div>
             <!-- <div class="star-item-close">
               <i class="el-icon-delete " @click="remove(scope.row)" />
             </div> -->
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div class="msg-foot-class" @click="showMore">
-      <el-row style="padding: 5px 0;margin-bottom: -5px;cursor:point;" @click="showMore">
-        <span>{{ $t('webmsg.show_more') }}</span>
-      </el-row>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="msg-foot-class" @click="showMore">
+        <el-row style="padding: 5px 0;margin-bottom: -5px;cursor:point;" @click="showMore">
+          <span>{{ $t('webmsg.show_more') }}</span>
+        </el-row>
+      </div>
     </div>
-
     <div slot="reference">
       <div>
         <svg-icon
@@ -233,7 +234,7 @@ export default {
     right: 178px;
     top: 8px;
     background: red;
-    color: #fff;
+    color: var(--TextActive);
     border-radius: 17px;
     padding: 4px 7px;
     font-size: 16px;

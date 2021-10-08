@@ -1,3 +1,17 @@
+
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+.defaultTheme {
+  @import './theme/default.scss';
+  @import "~element-ui/packages/theme-chalk/src/index";
+}
+.blackTheme {
+  @import './theme/dark.scss';
+  @import "~element-ui/packages/theme-chalk/src/index";
+}
+
+
+
 @import '~normalize.css/normalize.css';
 @import './variables.scss';
 @import './mixin.scss';
@@ -361,3 +375,156 @@ div:focus {
 .el-color-dropdown__link-btn {
   display: none!important;
 }
+
+.el-table {
+    background-color: var(--MainBG) !important;
+    tr {
+        background-color: var(--MainBG) !important;
+    }
+    th {
+        background-color: var(--MainBG) !important;
+    }
+}
+
+.blackTheme .el-input__inner {
+    background-color: var(--MainBG) !important;    
+}
+.blackTheme .el-input__inner:not(:focus) {
+    
+    // border: none !important;
+    border-color: var(--border-color-input) !important;
+}
+
+
+.el-pagination {
+    button:disabled {
+        background-color: var(--MainBG) !important;
+    }
+}
+
+.el-pager li {
+    background-color: var(--MainBG) !important;
+}
+
+.blackTheme .el-select-dropdown {
+    background-color: var(--MainBG) !important;
+}
+
+.fu-search-bar-button {
+    background-color: var(--Main) !important;
+}
+
+.fu-quick-search input {
+    background-color: var(--MainBG) !important;
+}
+
+.blackTheme .el-popover {
+    background-color: var(--MainBG);
+}
+
+.blackTheme .main-area-input {
+    input.el-input__inner {
+        background-color: var(--ContentBG) !important;
+    }
+    .el-input-group__append {
+        background-color: var(--ContentBG) !important;
+        border-color: var(--ContentBG) !important;
+    }    
+}
+
+.el-tree {
+    background-color: var(--MainBG) !important;
+}
+
+.el-tree-node__content:hover {
+    background-color: var(--ContentBG) !important;
+}
+
+.is-current > .el-tree-node__content {
+    background-color: var(--ContentBG) !important;
+}
+.blackTheme .el-collapse-item__header {
+    background-color: var(--ContentBG) !important;
+    color: var(--TextPrimary) !important;
+    border: none !important;
+}
+.blackTheme .el-collapse-item__wrap {
+    background-color: var(--ContentBG) !important;
+    border: none !important;
+}
+.blackTheme .content-container__header {
+    color: var(--TextPrimary);
+}
+.blackTheme .el-button--default {
+    background-color: var(--MainBG) !important;
+    color: var(--Main) !important;
+}
+.blackTheme .el-dialog {
+    background: var(--ContentBG) !important;
+    color: var(--TextPrimary) !important;
+}
+.blackTheme .el-dialog__title {
+    color: var(--TextPrimary) !important;
+}
+
+.blackTheme .title-text {
+    color: var(--TextPrimary) !important;
+}
+
+.blackTheme .el-tabs__item:not(.is-active) {
+    color: var(--TextPrimary) !important;
+}
+.blackTheme .el-tabs__item:hover{
+    color: var(--Main) !important;
+}
+
+.blackTheme .elx-table--main-wrapper {
+    
+    .body--wrapper {
+        background-color: var(--ContentBG) !important;
+    }
+}
+.blackTheme .elx-table {
+    color: var(--TextPrimary) !important;
+}
+
+.blackTheme .elx-body--column {
+    background-image: linear-gradient(var(--MainBorderColor), var(--MainBorderColor)), linear-gradient(var(--MainBorderColor), var(--MainBorderColor)) !important;
+}
+.blackTheme .elx-header--column {
+    background-image: linear-gradient(--MainBorderColor, --MainBorderColor), linear-gradient(--MainBorderColor, --MainBorderColor) !important;
+}
+.blackTheme tr.row--current {
+    background-color: var(--MainBG) !important;
+}
+.blackTheme tr.elx-body--row:hover {
+    background-color: var(--MainBG) !important;
+}
+
+.blackTheme .elx-table--header-border-line {
+    border-color: var(--MainBorderColor) !important;
+}
+
+.el-collapse-item__content {
+  padding-bottom: 0!important;
+}
+.el-collapse-item__header {
+  height: 34px !important;
+  line-height: 34px !important;
+  padding: 0 0 0 6px !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
+.blackTheme .el-submenu__title {
+    color: var(--TextPrimary) ;
+}
+
+/* .chart-radio-div {
+    label.el-radio {
+        span.el-radio__input {
+            display: none !important;
+        }
+    }
+} */
+

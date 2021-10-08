@@ -127,7 +127,8 @@ export default {
     tokenError: '登陆信息错误，请重新登录',
     username_error: '请输入正确的 ID',
     password_error: '密码不小于 8 位',
-    re_login: '重新登录'
+    re_login: '重新登录',
+    default_login: '普通登录'
   },
   commons: {
     search: '搜索',
@@ -1345,7 +1346,11 @@ export default {
 
     topMenuTextColor: '头部字体颜色',
 
-    topMenuTextActiveColor: '头部字体选中颜色'
+    topMenuTextActiveColor: '头部字体选中颜色',
+
+    themeLight: '浅色',
+    themeDark: '深色',
+    themeCustom: '自定义'
 
   },
   auth: {

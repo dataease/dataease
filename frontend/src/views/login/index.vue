@@ -17,7 +17,7 @@
             <div class="login-form">
               <el-form-item v-if="loginTypes.length > 1">
                 <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
-                  <el-radio :label="0" size="mini">普通登录</el-radio>
+                  <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
                   <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
                   <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
                 </el-radio-group>
@@ -146,7 +146,16 @@ export default {
       if (this.uiInfo['ui.loginLogo'] && this.uiInfo['ui.loginLogo'].paramValue) {
         this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
       }
+      if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
+        // this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
+        if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
+          document.body.className = 'blackTheme'
+        } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
+          document.body.className = ''
+        }
+      }
     },
+
     handleLogin() {
       this.clearOidcMsg()
       this.$refs.loginForm.validate(valid => {

@@ -39,11 +39,11 @@ export default {
 <style scoped>
 
   .ms-aside-container {
-    border: 1px solid #E6E6E6;
+    /* border: 1px solid #E6E6E6; */
     padding: 10px;
     border-radius: 2px;
     box-sizing: border-box;
-    background-color: #FFF;
+    background-color: var(--MainBG);
     height: calc(100vh - 56px);
     border-right: 0px;
     position: relative;

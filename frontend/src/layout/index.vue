@@ -80,6 +80,7 @@ export default {
     position: relative;
     height: 100%;
     // height: $contentHeight;
+    background-color: var(--MainBG);
     width: 100%;
     &.mobile.openSidebar{
       position: fixed;
@@ -123,6 +124,7 @@ export default {
         height: calc(100vh - 80px) !important;
         overflow-x: hidden !important;
         overflow-y: auto !important;
+        background-color: var(--MainBG) !important;
       }
   }
 </style>

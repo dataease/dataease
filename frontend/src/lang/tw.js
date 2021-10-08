@@ -127,7 +127,8 @@ export default {
     tokenError: '登陸信息錯誤，請重新登錄',
     username_error: '請輸入正確的 ID',
     password_error: '密碼不小于 8 位',
-    re_login: '重新登錄'
+    re_login: '重新登錄',
+    default_login: '普通登錄'
   },
   commons: {
     search: '搜索',
@@ -1340,7 +1341,11 @@ export default {
 
     topMenuTextColor: '頭部字體顔色',
 
-    topMenuTextActiveColor: '頭部字體選中顔色'
+    topMenuTextActiveColor: '頭部字體選中顔色',
+
+    themeLight: '淺色',
+    themeDark: '深色',
+    themeCustom: '自定義'
 
   },
   auth: {

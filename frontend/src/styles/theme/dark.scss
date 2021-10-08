@@ -1,0 +1,38 @@
+/* 改变主题色变量 */
+$--color-primary: #2681ff;
+$--color-success: #05AA65;
+$--color-warning: #FF9227;
+$--color-danger: #F64346;
+$--color-info: #BABEC5;
+
+
+$--color-text-primary: #F2F6FC;
+$--color-text-regular: #EBEEF5;
+$--color-text-secondary: #E4E7ED;
+$--color-text-placeholder: #DCDFE6;
+
+$--border-color-base: #2681ff;
+$--border-color-light: #2681ff;
+$--border-color-lighter: #2681ff;
+$--border-color-extra-light: #2681ff;
+
+$--color-white: #FFFFFF;
+$--color-black: #000000;
+
+$--background-color-base: #171b22;
+
+// 与CSS原生变量映射
+#app {
+  --Main:#2681ff;
+  --test:#FF9227;
+  --color-primary: #000;
+  --MainBG: #171b22;
+  --ContentBG: #303640;
+  --MainBorderColor: #2681ff;
+  --TextActive: #FFFFFF;
+  --TextPrimary: #F2F6FC;
+  --border-color-input: #303640;
+  --border-color-input-hovor: #303640;
+}
+
+

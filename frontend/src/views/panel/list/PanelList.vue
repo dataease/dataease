@@ -9,6 +9,7 @@
             :placeholder="$t('commons.search')"
             prefix-icon="el-icon-search"
             clearable
+            class="main-area-input"
           />
         </el-col>
         <el-col :span="8">
