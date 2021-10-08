@@ -60,6 +60,8 @@ import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import eventBus from '@/components/canvas/utils/eventBus'
+import { mapState } from 'vuex'
 
 export default {
   name: 'AssisComponent',
@@ -68,6 +70,11 @@ export default {
       assistList,
       pictureList
     }
+  },
+  computed: {
+    ...mapState([
+      'canvasStyleData'
+    ])
   },
 
   methods: {
@@ -79,6 +86,7 @@ export default {
         id: ev.target.dataset.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+      eventBus.$emit('startMoveIn')
     },
     goFile() {
       this.$refs.files.click()
@@ -133,6 +141,7 @@ export default {
           component = deepCopy(componentTemp)
         }
       })
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       return component
     },
     handleDragEnd(ev) {

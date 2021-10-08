@@ -70,7 +70,11 @@ const list = [
       verticalAlign: 'middle',
       backgroundColor: '#ffffff',
       borderRadius: 0
-    }
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 2
   },
   {
     id: '10002',
@@ -105,7 +109,11 @@ const list = [
       width: 300,
       height: 200,
       borderRadius: ''
-    }
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 6
   },
   {
     id: '10003-1',
@@ -128,14 +136,18 @@ const list = [
     icon: 'juxing',
     type: 'rect-shape',
     style: {
-      width: 400,
-      height: 300,
+      width: 300,
+      height: 200,
       borderStyle: 'solid',
       borderWidth: 0,
       borderColor: '#000000',
       backgroundColor: '#ffffff',
       borderRadius: 0
-    }
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 6
   },
   {
     id: '10005',
@@ -145,10 +157,15 @@ const list = [
     icon: 'juxing',
     type: 'view',
     style: {
-      width: 400,
-      height: 300,
+      width: 300,
+      height: 200,
       borderRadius: ''
-    }
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 6,
+    auxiliaryMatrix: true
   },
   {
     id: '10006',
@@ -172,7 +189,11 @@ const list = [
         name: '1',
         content: null
       }]
-    }
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 10
   },
   {
     id: '20001',
@@ -185,7 +206,11 @@ const list = [
       width: 400,
       height: 200,
       borderRadius: ''
-    }
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5
   }
 ]
 

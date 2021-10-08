@@ -104,11 +104,21 @@ const data = {
       state.curCanvasScale = curCanvasScale
     },
 
+    // setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
+    //   if (top || top === 0) curComponent.style.top = canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top
+    //   if (left || left === 0) curComponent.style.left = canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left
+    //   if (width || width === 0) curComponent.style.width = canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width
+    //   if (height || height === 0) curComponent.style.height = canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height
+    //   if (rotate || rotate === 0) curComponent.style.rotate = rotate
+    //   // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
+    // },
+
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      if (top || top === 0) curComponent.style.top = canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top
-      if (left || left === 0) curComponent.style.left = canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left
-      if (width || width === 0) curComponent.style.width = canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width
-      if (height || height === 0) curComponent.style.height = canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height
+      console.log('setShapeStyle:width=' + width + ';height=' + height)
+      if (top || top === 0) curComponent.style.top = top / curCanvasScale.scalePointHeight
+      if (left || left === 0) curComponent.style.left = left / curCanvasScale.scalePointWidth
+      if (width || width === 0) curComponent.style.width = width / curCanvasScale.scalePointWidth
+      if (height || height === 0) curComponent.style.height = height / curCanvasScale.scalePointHeight
       if (rotate || rotate === 0) curComponent.style.rotate = rotate
       // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
     },

@@ -96,7 +96,7 @@
 
         <div
           id="canvasInfo"
-          class="content this_canvas"
+          class="this_canvas"
           @drop="handleDrop"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
@@ -479,9 +479,21 @@ export default {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
 
         this.currentFilterCom = this.currentWidget.getDrawPanel()
-        this.currentFilterCom.style.top = this.getPositionY(e.layerY)
-        this.currentFilterCom.style.left = this.getPositionX(e.layerX)
+
+        if (this.canvasStyleData.auxiliaryMatrix) {
+          this.currentFilterCom.x = this.dropComponentInfo.x
+          this.currentFilterCom.y = this.dropComponentInfo.y
+          this.currentFilterCom.sizex = this.dropComponentInfo.sizex
+          this.currentFilterCom.sizey = this.dropComponentInfo.sizey
+
+          this.currentFilterCom.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+          this.currentFilterCom.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+          this.currentFilterCom.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
+          this.currentFilterCom.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+        }
         this.currentFilterCom.id = newComponentId
+        this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+
         if (this.currentWidget.filterDialog) {
           this.show = false
           this.openFilterDialog()
@@ -493,12 +505,27 @@ export default {
       // position = absolution 或导致有偏移 这里中和一下偏移量
       // component.style.top = this.getPositionY(e.layerY)
       // component.style.left = this.getPositionX(e.layerX)
-      component.style.top = this.dropComponentInfo.shadowStyle.y
-      component.style.left = this.dropComponentInfo.shadowStyle.x
-      component.style.width = this.dropComponentInfo.shadowStyle.width
-      component.style.height = this.dropComponentInfo.shadowStyle.height
+
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        component.x = this.dropComponentInfo.x
+        component.y = this.dropComponentInfo.y
+        component.sizex = this.dropComponentInfo.sizex
+        component.sizey = this.dropComponentInfo.sizey
+
+        component.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+        component.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+      } else {
+        component.style.top = this.dropComponentInfo.shadowStyle.y
+        component.style.left = this.dropComponentInfo.shadowStyle.x
+        component.style.width = this.dropComponentInfo.shadowStyle.width
+        component.style.height = this.dropComponentInfo.shadowStyle.height
+      }
 
       component.id = newComponentId
+      // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'handleDrop')
       this.clearCurrentInfo()
@@ -611,22 +638,35 @@ export default {
           const scaleHeight = img.height / 200
           let scale = scaleWith > scaleHeight ? scaleWith : scaleHeight
           scale = scale > 1 ? scale : 1
-          this.$store.commit('addComponent', {
-            component: {
-              ...commonAttr,
-              id: generateID(),
-              component: 'Picture',
-              label: '图片',
-              icon: '',
-              propValue: fileResult,
-              style: {
-                ...commonStyle,
-                top: _this.dropComponentInfo.shadowStyle.y,
-                left: _this.dropComponentInfo.shadowStyle.x,
-                width: _this.dropComponentInfo.shadowStyle.width,
-                height: _this.dropComponentInfo.shadowStyle.height
-              }
+          const component = {
+            ...commonAttr,
+            id: generateID(),
+            component: 'Picture',
+            label: '图片',
+            icon: '',
+            propValue: fileResult,
+            style: {
+              ...commonStyle
             }
+          }
+          component.auxiliaryMatrix = _this.canvasStyleData.auxiliaryMatrix
+          if (_this.canvasStyleData.auxiliaryMatrix) {
+            component.x = _this.dropComponentInfo.x
+            component.y = _this.dropComponentInfo.y
+            component.sizex = _this.dropComponentInfo.sizex
+            component.sizey = _this.dropComponentInfo.sizey
+            component.style.left = (_this.dropComponentInfo.x - 1) * _this.curCanvasScale.matrixStyleOriginWidth
+            component.style.top = (_this.dropComponentInfo.y - 1) * _this.curCanvasScale.matrixStyleOriginHeight
+            component.style.width = _this.dropComponentInfo.sizex * _this.curCanvasScale.matrixStyleOriginWidth
+            component.style.height = _this.dropComponentInfo.sizey * _this.curCanvasScale.matrixStyleOriginHeight
+          } else {
+            component.style.top = _this.dropComponentInfo.shadowStyle.y
+            component.style.left = _this.dropComponentInfo.shadowStyle.x
+            component.style.width = _this.dropComponentInfo.shadowStyle.width
+            component.style.height = _this.dropComponentInfo.shadowStyle.height
+          }
+          this.$store.commit('addComponent', {
+            component: component
           })
 
           this.$store.commit('recordSnapshot', 'handleFileChange')
@@ -784,7 +824,8 @@ export default {
 
 .this_canvas{
   height: calc(100vh - 91px);
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .el-main{
   height: calc(100vh - 91px);

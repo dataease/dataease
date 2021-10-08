@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1766500",
+      "name": "符号-数据矩阵",
+      "font_class": "shujujuzhen",
+      "unicode": "e69c",
+      "unicode_decimal": 59036
+    },
+    {
+      "icon_id": "5387898",
+      "name": "视图矩阵_o",
+      "font_class": "shitujuzhen_o",
+      "unicode": "eb85",
+      "unicode_decimal": 60293
+    },
+    {
+      "icon_id": "21505923",
+      "name": "悬浮",
+      "font_class": "xuanfu1",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "6331823",
+      "name": "右悬浮-选中",
+      "font_class": "youxuanfu-copy",
+      "unicode": "e6db",
+      "unicode_decimal": 59099
+    },
+    {
+      "icon_id": "10788831",
+      "name": "悬浮",
+      "font_class": "xuanfu",
+      "unicode": "e6f6",
+      "unicode_decimal": 59126
+    },
+    {
+      "icon_id": "14541134",
+      "name": "悬浮按钮",
+      "font_class": "xuanfuanniu",
+      "unicode": "e8e6",
+      "unicode_decimal": 59622
+    },
+    {
       "icon_id": "15196968",
       "name": "44.tabs",
       "font_class": "tabs",
