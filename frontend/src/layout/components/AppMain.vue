@@ -37,7 +37,7 @@ export default {
 
     .ms-main-container {
         height: 100%;
-        padding: 0;
+        padding: 0 !important;
     }
 </style>
 

@@ -257,6 +257,14 @@ export default {
             value: val
           })
         }
+
+        if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
+          if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
+            document.body.className = 'blackTheme'
+          } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
+            document.body.className = ''
+          }
+        }
         this.axiosFinished = true
       })
     },

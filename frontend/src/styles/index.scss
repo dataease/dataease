@@ -386,13 +386,29 @@ div:focus {
     }
 }
 
+.blackTheme .el-textarea__inner {
+    background-color: var(--MainBG) !important;    
+}
+.blackTheme .el-textarea__inner:not(:focus) {
+    
+    border-color: var(--border-color-input) !important;
+}
+
 .blackTheme .el-input__inner {
     background-color: var(--MainBG) !important;    
 }
 .blackTheme .el-input__inner:not(:focus) {
     
-    // border: none !important;
     border-color: var(--border-color-input) !important;
+}
+
+.blackTheme .el-input-number__decrease {
+    background-color: var(--MainBG) !important;
+    border: none !important;
+}
+.blackTheme .el-input-number__increase {
+    background-color: var(--MainBG) !important;
+    border: none !important;
 }
 
 

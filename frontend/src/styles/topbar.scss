@@ -25,7 +25,7 @@
   .el-menu {
     float: left;
     border: none !important;
-
+    background-color: var(--MainBG, #ffffff) !important;
     .nav-item {
       display: inline-block;
 
@@ -47,29 +47,7 @@
 
     }
   }
-/* .blackTheme .el-menu {
-    
-    .nav-item {
-      
 
-      .el-menu-item:not(.is-active) {
-
-        &:hover {
-          background-color: var(--ContentBG) !important;
-        }
-
-        &:focus {
-          background-color: var(--ContentBG) !important;
-        }
-
-      }
-      .blackTheme .el-menu-item.is-active {
-        background-color: var(--ContentBG) !important;
-        color: var(--TextActive) !important;
-      }
-
-    }
-} */
 
   .right-menu {
     float: right;
