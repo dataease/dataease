@@ -7,10 +7,10 @@
 
 /* theme color */
 
-$--color-primary: #0a7be0;
+/* $--color-primary: #0a7be0;
 $--color-success: #67C23A;
 $--color-warning: #E6A23C;
-$--color-danger: #F56C6C;
+$--color-danger: #F56C6C; */
 // $--color-info: #1E1E1E;
 
 $--button-font-weight: 400;
@@ -23,7 +23,6 @@ $--table-border: 1px solid #dfe6ec;
 $--font-path: "~element-ui/lib/theme-chalk/fonts";
 
 @import "~element-ui/packages/theme-chalk/src/index";
-@import "~fit2cloud-ui/src/styles/common/variables";
 // topBar
 $topBarBg: #f1f3f8;
 $topBarMenuHovor: rgba(158,158,158,.2);

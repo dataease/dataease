@@ -1,14 +1,11 @@
 .top-nav {
-  // margin-left: $sideBarWidth;
   width: 100%;
-  // background-color: #304156;
-  background-color: $topBarBg;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1001;
   overflow: hidden;
-  border-bottom: 1px solid #DCDFE6;
+  border-bottom: 1px solid $--color-primary;
 
   .log {
     padding: 0 16px;
@@ -16,9 +13,7 @@
     height: 56px;
     font-size: 24px;
     font-weight: bold;
-    // color: rgb(191, 203, 217);
-    // color: rgba(255, 255, 255, 0.87);
-    // color: $topBarBg;
+
     float: left;
 
     img {
@@ -30,29 +25,51 @@
   .el-menu {
     float: left;
     border: none !important;
-    background-color: $topBarBg;
 
     .nav-item {
       display: inline-block;
 
       .el-menu-item:not(.is-active) {
-        color: $topBarMenuText;
 
         &:hover {
-          background-color: $topBarMenuHovor !important;
+          background-color: var(--ContentBG, #ecf5ff) !important;
         }
 
         &:focus {
-          background-color: $topBarMenuHovor !important;
+          background-color: var(--ContentBG, #ecf5ff) !important;
         }
 
       }
+      .el-menu-item.is-active {
+        background-color: var(--ContentBG, #ecf5ff) ;
+        color: var(--TextActive) !important;
+      }
 
-      /* .is-active {
-        background-color: $topBarMenuActive !important;
-      } */
     }
   }
+/* .blackTheme .el-menu {
+    
+    .nav-item {
+      
+
+      .el-menu-item:not(.is-active) {
+
+        &:hover {
+          background-color: var(--ContentBG) !important;
+        }
+
+        &:focus {
+          background-color: var(--ContentBG) !important;
+        }
+
+      }
+      .blackTheme .el-menu-item.is-active {
+        background-color: var(--ContentBG) !important;
+        color: var(--TextActive) !important;
+      }
+
+    }
+} */
 
   .right-menu {
     float: right;
@@ -71,8 +88,7 @@
       padding: 10px 8px;
       height: 100%;
       font-size: 18px;
-      // color: #5a5e66;
-      // color: #606266;
+      
       vertical-align: text-bottom;
 
       &.hover-effect {

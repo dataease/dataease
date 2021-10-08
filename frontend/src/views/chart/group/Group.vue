@@ -18,6 +18,7 @@
               :placeholder="$t('chart.search')"
               prefix-icon="el-icon-search"
               clearable
+              class="main-area-input"
             />
           </el-form-item>
         </el-form>

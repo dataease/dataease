@@ -4,8 +4,8 @@
       <el-col style="width: 300px;">
         <el-form ref="form" :model="form" size="mini" class="row-style">
           <el-form-item>
-            <span style="width: 100px;">{{ $t('dataset.showRow') }}</span>
-            <el-input v-model="form.row">
+            <span class="title-text" style="width: 100px;">{{ $t('dataset.showRow') }}</span>
+            <el-input v-model="form.row" class="main-area-input">
               <el-button slot="append" size="mini" icon="el-icon-search" @click="reSearch" />
             </el-input>
           </el-form-item>

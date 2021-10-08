@@ -1,5 +1,6 @@
 <template>
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
+  <!-- <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa"> -->
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <de-main-container>
       <ds-main ref="dsMain" />
     </de-main-container>

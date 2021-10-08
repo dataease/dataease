@@ -10,7 +10,7 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="dataset" :data="table" :tab-status="tabStatus" />
-        <span slot="reference" style="line-height: 26px;cursor: pointer;">
+        <span slot="reference" class="title-text" style="line-height: 26px;cursor: pointer;">
           {{ table.name }}
         </span>
       </el-popover>

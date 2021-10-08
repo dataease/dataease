@@ -17,7 +17,18 @@ export default {
     right: 0px;
     top: 0;
     cursor: col-resize;
-    background-color: #E6E6E6;
+    background-color: #E6E6E6;;
+    border: 0px;
+  }
+
+  .blackTheme .drag-bar {
+    height: 100%;
+    width: 1px;
+    position: absolute;
+    right: 0px;
+    top: 0;
+    cursor: col-resize;
+    background-color: var(--MainBorderColor) !important;
     border: 0px;
   }
 
