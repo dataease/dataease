@@ -14,6 +14,12 @@
       <span :title="$t('panel.edit')">
         <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
+      <span :title="$t('panel.matrix')">
+        <i v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
+      </span>
+      <span :title="$t('panel.suspension')">
+        <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
+      </span>
       <span :title="$t('panel.details')">
         <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
       </span>
@@ -87,12 +93,30 @@ export default {
       'canvasStyleData',
       'linkageSettingStatus',
       'targetLinkageInfo',
-      'curLinkageView'
+      'curLinkageView',
+      'curCanvasScale'
     ])
   },
   methods: {
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    auxiliaryMatrixChange() {
+      if (this.curComponent.auxiliaryMatrix) {
+        this.curComponent.style.left = (this.curComponent.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+        this.curComponent.style.top = (this.curComponent.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+        this.curComponent.style.width = this.curComponent.sizex * this.curCanvasScale.matrixStyleOriginWidth
+        this.curComponent.style.height = this.curComponent.sizey * this.curCanvasScale.matrixStyleOriginHeight
+        this.curComponent.auxiliaryMatrix = false
+      } else {
+        this.curComponent.x = Math.round(this.curComponent.style.left / this.curCanvasScale.matrixStyleOriginWidth) + 1
+        this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
+        this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        this.curComponent.auxiliaryMatrix = true
+      }
+      this.$store.state.styleChangeTimes++
+      bus.$emit('auxiliaryMatrixChange')
     },
     edit() {
       // 编辑时临时保存 当前修改的画布

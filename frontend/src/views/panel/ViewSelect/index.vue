@@ -69,6 +69,9 @@
 import { tree, findOne } from '@/api/panel/view'
 import componentList from '@/components/canvas/custom-component/component-list'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import eventBus from '@/components/canvas/utils/eventBus'
+import { mapState } from 'vuex'
+
 export default {
   name: 'ViewSelect',
   props: {
@@ -91,6 +94,11 @@ export default {
       detailItem: null,
       loading: false
     }
+  },
+  computed: {
+    ...mapState([
+      'canvasStyleData'
+    ])
   },
   watch: {
     templateFilterText(val) {
@@ -130,6 +138,7 @@ export default {
         id: node.data.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+      eventBus.$emit('startMoveIn')
     },
     dragEnd() {
       console.log('dragEnd')
@@ -178,6 +187,7 @@ export default {
           component = deepCopy(componentTemp)
         }
       })
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       return component
     }
 

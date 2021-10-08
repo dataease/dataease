@@ -26,14 +26,14 @@ public class PanelViewLinkageController {
     @Resource
     private PanelViewLinkageService panelViewLinkageService;
 
-    @ApiOperation("获取仪表板视图联动信息")
+    @ApiOperation("获取仪表板所有视图联动信息")
     @PostMapping("/getViewLinkageGather")
     public Map getViewLinkageGather(@RequestBody PanelLinkageRequest request){
         return panelViewLinkageService.getViewLinkageGather(request);
     }
 
 
-    @ApiOperation("获取仪表板视图联动信息")
+    @ApiOperation("保存仪表板视图联动信息")
     @PostMapping("/saveLinkage")
     public void saveLinkage(@RequestBody PanelLinkageRequest request){
         panelViewLinkageService.saveLinkage(request);

@@ -173,15 +173,15 @@ export default {
     'hw': {
       handler(newVal, oldVla) {
         // console.log('hw:' + newVal + '---' + oldVla)
-        if (newVal !== oldVla) {
-          this.destroyTimeMachine()
-          this.changeIndex++
-          this.chartResize(this.changeIndex)
+        if (newVal !== oldVla && this.$refs[this.element.propValue.id]) {
+          if (this.chart.type === 'map') {
+            this.destroyTimeMachine()
+            this.changeIndex++
+            this.chartResize(this.changeIndex)
+          } else {
+            this.$refs[this.element.propValue.id].chartResize()
+          }
         }
-        //
-        // if (this.$refs[this.element.propValue.id]) {
-        //   this.$refs[this.element.propValue.id].chartResize()
-        // }
       },
       deep: true
     },

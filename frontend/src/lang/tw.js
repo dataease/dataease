@@ -1314,7 +1314,9 @@ export default {
     exit_un_march_linkage_field: '存在未匹配聯動關系的字段',
     details: '詳情',
     setting: '設置',
-    no_drill_field: '缺少關聯字段'
+    no_drill_field: '缺少關聯字段',
+    matrix: '矩阵分布',
+    suspension: '悬浮'
   },
   plugin: {
     local_install: '本地安裝',

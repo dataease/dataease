@@ -1311,7 +1311,9 @@ export default {
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
     setting: 'Setting',
-    no_drill_field: 'Miss relation field'
+    no_drill_field: 'Miss relation field',
+    matrix: 'matrix',
+    suspension: 'suspension'
   },
   plugin: {
     local_install: 'Local installation',

@@ -1,5 +1,7 @@
 <template>
-  <div style="z-index:-1" :style="styleInfo" />
+  <div style="z-index:-1" :style="styleInfo">
+    <!--    {{ curComponent }}-->
+  </div>
 </template>
 
 <script>
@@ -16,27 +18,42 @@ export default {
       let top = 0
       let width = 0
       let height = 0
+      // if (this.dragComponentInfo && !this.dragComponentInfo.auxiliaryMatrix) {
       if (this.dragComponentInfo) {
+        console.log('shadowDrag=')
         // 组件移入
-        left = this.dragComponentInfo.shadowStyle.x
-        top = this.dragComponentInfo.shadowStyle.y
-        width = this.dragComponentInfo.style.width
-        height = this.dragComponentInfo.style.height
+        if (this.dragComponentInfo.auxiliaryMatrix) {
+          left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleWidth
+          top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleHeight
+
+          width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleWidth
+          height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleHeight
+        } else {
+          left = this.dragComponentInfo.shadowStyle.x
+          top = this.dragComponentInfo.shadowStyle.y
+          width = this.dragComponentInfo.style.width
+          height = this.dragComponentInfo.style.height
+        }
+
         // console.log('left:' + left + 'top:' + top + 'width:' + width + 'height:' + height)
       } else {
-        left = this.curComponent.style.left * this.curCanvasScale.scaleWidth / 100
-        top = this.curComponent.style.top * this.curCanvasScale.scaleHeight / 100
-        width = this.curComponent.style.width * this.curCanvasScale.scaleWidth / 100
-        height = this.curComponent.style.height * this.curCanvasScale.scaleHeight / 100
+        // temp 临时测试
+        // left = this.curComponent.style.left * this.curCanvasScale.scaleWidth / 100
+        // top = this.curComponent.style.top * this.curCanvasScale.scaleHeight / 100
+        left = (this.curComponent.x - 1) * this.curCanvasScale.matrixStyleWidth
+        top = (this.curComponent.y - 1) * this.curCanvasScale.matrixStyleHeight
+
+        width = this.curComponent.style.width * this.curCanvasScale.scalePointWidth
+        height = this.curComponent.style.height * this.curCanvasScale.scalePointHeight
         // console.log('curComponent left:' + left + 'top:' + top + 'width:' + width + 'height:' + height)
       }
       // 当前默认为自适应
-      if (this.canvasStyleData.auxiliaryMatrix) {
-        left = Math.round(left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-        width = Math.round(width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-        top = Math.round(top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-        height = Math.round(height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-      }
+      // if (this.canvasStyleData.auxiliaryMatrix) {
+      //   left = Math.round(left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
+      //   width = Math.round(width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
+      //   top = Math.round(top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+      //   height = Math.round(height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+      // }
 
       // 防止阴影区超出边界
       const xGap = left + width - this.canvasWidth
@@ -82,10 +99,10 @@ export default {
       this.dragComponentInfo.shadowStyle.y = this.scaleH(y)
     },
     scaleH(h) {
-      return h * 100 / this.curCanvasScale.scaleHeight
+      return h / this.curCanvasScale.scalePointHeight
     },
     scaleW(w) {
-      return w * 100 / this.curCanvasScale.scaleWidth
+      return w / this.curCanvasScale.scalePointWidth
     }
   }
 

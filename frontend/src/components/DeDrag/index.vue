@@ -434,6 +434,7 @@ export default {
       }
     },
     style() {
+      // console.log('style-top:' + this.y + '--' + this.top)
       return {
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
@@ -482,7 +483,7 @@ export default {
           return 'auto'
         }
       }
-      if (this.canvasStyleData.auxiliaryMatrix) {
+      if (this.element.auxiliaryMatrix) {
         const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
         return width + 'px'
       } else {
@@ -496,7 +497,7 @@ export default {
           return 'auto'
         }
       }
-      if (this.canvasStyleData.auxiliaryMatrix) {
+      if (this.element.auxiliaryMatrix) {
         const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
         return height + 'px'
       } else {
@@ -594,13 +595,15 @@ export default {
       this.maxH = val
     },
     w(val) {
+      console.log('changeWidthCK：' + this.resizing)
+
       if (this.resizing || this.dragging) {
         return
       }
       if (this.parent) {
         this.bounds = this.calcResizeLimits()
       }
-      // console.log('changeWidth：' + val)
+      console.log('changeWidth：' + val)
       this.changeWidth(val)
     },
     h(val) {
@@ -696,6 +699,8 @@ export default {
       }
       // 阻止冒泡事件
       e.stopPropagation()
+      // 此处阻止冒泡 但是外层需要获取pageX pageY
+      this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
       this.$store.commit('setCurComponent', { component: this.element, index: this.index })
       eventsFor = events.mouse
       this.elementDown(e)
@@ -707,6 +712,8 @@ export default {
       }
       const target = e.target || e.srcElement
       if (this.$el.contains(target)) {
+        // 挤压式画布设计 drag start 通知
+        this.element.auxiliaryMatrix && this.$emit('onDragStart', e, this.element, this.index)
         if (this.onDragStart(e) === false) {
           return
         }
@@ -800,6 +807,7 @@ export default {
       if (e instanceof MouseEvent && e.which !== 1) {
         return false
       }
+      this.element.auxiliaryMatrix && this.$emit('onResizeStart', e, this.element, this.index)
       if (this.onResizeStart(handle, e) === false) {
         return false
       }
@@ -982,6 +990,10 @@ export default {
       this.bottom = bottom
       await this.snapCheck()
       this.$emit('dragging', this.left, this.top)
+      // 如果当前视图遵循矩阵设计则 进行位置挤压检查
+      if (this.element.auxiliaryMatrix) {
+        this.$emit('onDragging', e, this.element)
+      }
 
       // private 记录当前样式
       this.recordCurStyle()
@@ -1156,7 +1168,8 @@ export default {
       // console.log('width2:' + this.width)
       this.height = newH
 
-      this.$emit('resizing', this.left, this.top, this.width, this.height)
+      // this.$emit('resizing', this.left, this.top, this.width, this.height)
+      this.element.auxiliaryMatrix && this.$emit('onResizing', e, this.element)
 
       // private 记录当前组件样式
       this.recordCurStyle()
@@ -1179,7 +1192,7 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      // console.log('width3:' + this.width)
+      console.log('width3:' + this.width)
       this.height = height
     },
     changeHeight(val) {
@@ -1201,7 +1214,7 @@ export default {
       this.height = height
     },
     // 从控制柄松开
-    async handleUp(e) {
+    handleUp(e) {
       this.handle = null
       // 初始化辅助线数据
       const temArr = new Array(3).fill({ display: false, position: '', origin: '', lineLength: '' })
@@ -1215,7 +1228,8 @@ export default {
       this.lastMouseY = mouseY
       if (this.resizing) {
         this.resizing = false
-        await this.conflictCheck()
+        console.log('resizing2:' + this.resizing)
+        this.conflictCheck()
         this.$emit('refLineParams', refLine)
         // this.$emit('resizestop', this.left, this.top, this.width, this.height)
         // private
@@ -1223,7 +1237,7 @@ export default {
       }
       if (this.dragging) {
         this.dragging = false
-        await this.conflictCheck()
+        this.conflictCheck()
         this.$emit('refLineParams', refLine)
         this.$emit('dragstop', this.left, this.top)
       }
@@ -1235,8 +1249,9 @@ export default {
       // private 记录snapshot
 
       // 如果辅助设计 需要最后调整矩阵
-      if (this.canvasStyleData.auxiliaryMatrix) {
-        this.recordMatrixCurStyle()
+      if (this.element.auxiliaryMatrix) {
+        // this.recordMatrixCurStyle()
+        this.recordMatrixCurShadowStyle()
       }
       this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
       // 记录snapshot后 移动已记录设置为false
@@ -1246,6 +1261,9 @@ export default {
 
       // private 删除handle Up事件 防止重复recordSnapshot
       removeEvent(document.documentElement, eventsFor.stop, this.handleUp)
+
+      // 挤占式画布设计 handleUp
+      this.element.auxiliaryMatrix && this.$emit('onHandleUp', e)
     },
     // 新增方法 ↓↓↓
     // 设置属性
@@ -1550,10 +1568,37 @@ export default {
       this.$store.commit('setShapeStyle', style)
 
       // resize
+      self.$emit('resizeView')
+      // const self = this
+      // setTimeout(function() {
+      //   self.$emit('resizeView')
+      // }, 200)
+    },
+    // 记录当前样式 跟随阴影位置 矩阵处理
+    recordMatrixCurShadowStyle() {
+      console.log('recordMatrixCurShadowStyle')
+      // debugger
+      const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
+      const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight
+      const width = this.element.sizex * this.curCanvasScale.matrixStyleWidth
+      const height = this.element.sizey * this.curCanvasScale.matrixStyleHeight
+      const style = {
+        ...this.defaultStyle
+      }
+      style.left = left
+      style.top = top
+      style.width = width
+      style.height = height
+      style.rotate = this.rotate
+      // this.hasMove = true
+      this.$store.commit('setShapeStyle', style)
+
+      // resize
       const self = this
-      setTimeout(function() {
-        self.$emit('resizeView')
-      }, 200)
+      self.$emit('resizeView')
+      // setTimeout(function() {
+      //   self.$emit('resizeView')
+      // }, 200)
     },
     mountedFunction() {
       // private 冲突检测 和水平设计值保持一致
