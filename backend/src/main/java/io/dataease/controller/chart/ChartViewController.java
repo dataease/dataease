@@ -46,7 +46,7 @@ public class ChartViewController {
         return chartViewService.listAndGroup(chartViewRequest);
     }
 
-    @ApiOperation("详息")
+    @ApiOperation("详细信息")
     @PostMapping("/get/{id}")
     public ChartViewWithBLOBs get(@PathVariable String id) {
         return chartViewService.get(id);
