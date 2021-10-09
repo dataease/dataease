@@ -8,7 +8,7 @@ export function deleteSubject(id) {
   })
 }
 
-export function saveSubject(data) {
+export function saveOrUpdateSubject(data) {
   return request({
     url: '/panel/subject/update',
     method: 'post',
