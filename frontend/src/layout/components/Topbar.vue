@@ -22,7 +22,7 @@
       </div>
     </el-menu>
 
-    <div class="right-menu" style="color: var(--TextPrimary)">
+    <div class="right-menu" style="color: var(--TopTextColor)">
       <template>
 
         <notification class="right-menu-item hover-effect" />
@@ -35,7 +35,7 @@
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;">
-        <span class="el-dropdown-link" style="color: var(--TextPrimary);font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+        <span class="el-dropdown-link" style="color: var(--TopTextColor);font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
           {{ name }}
           <i class="el-icon-arrow-down el-icon--right" />
         </span>

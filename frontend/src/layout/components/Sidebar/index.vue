@@ -7,7 +7,7 @@
       :collapse="isCollapse"
       :unique-opened="false"
       :collapse-transition="false"
-      background-color="var(--MainBG)"
+
       mode="vertical"
     >
       <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
@@ -57,26 +57,4 @@ export default {
 
 <style lang="scss" scoped>
 
-/* .sidebar-container {
-    >>>li.el-menu-item.is-active {
-        background-color: var(--active-bg) !important;
-    }
-    >>>li.el-submenu.is-active:not(&:hover){
-         background-color: var(--active-bg) ;
-    }
-
-    >>>li.el-submenu__title {
-      &:hover {
-        background-color: var(--left-menu-hovor) !important;
-      }
-    }
-
-    >>>.el-submenu.is-active .el-submenu__title {
-      color: var(--theme) !important;
-    }
-
-    .is-active > .el-submenu__title {
-      color: var(--theme) !important;
-    }
-} */
 </style>
