@@ -939,7 +939,7 @@ export default {
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
-            background: `url(_${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
