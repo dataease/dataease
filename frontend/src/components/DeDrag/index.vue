@@ -595,7 +595,7 @@ export default {
       this.maxH = val
     },
     w(val) {
-      console.log('changeWidthCK：' + this.resizing)
+      // console.log('changeWidthCK：' + this.resizing)
 
       if (this.resizing || this.dragging) {
         return
@@ -603,7 +603,7 @@ export default {
       if (this.parent) {
         this.bounds = this.calcResizeLimits()
       }
-      console.log('changeWidth：' + val)
+      // console.log('changeWidth：' + val)
       this.changeWidth(val)
     },
     h(val) {
@@ -1192,7 +1192,7 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      console.log('width3:' + this.width)
+      // console.log('width3:' + this.width)
       this.height = height
     },
     changeHeight(val) {

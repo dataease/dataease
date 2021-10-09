@@ -97,6 +97,7 @@
         <div
           id="canvasInfo"
           class="this_canvas"
+          :style="customCanvasStyle"
           @drop="handleDrop"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
@@ -280,6 +281,26 @@ export default {
   },
 
   computed: {
+    customCanvasStyle() {
+      let style = {}
+
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            ...style
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color,
+            ...style
+          }
+        }
+      }
+      // console.log('customStyle=>' + JSON.stringify(style) + JSON.stringify(this.canvasStyleData))
+
+      return style
+    },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
@@ -826,6 +847,8 @@ export default {
   height: calc(100vh - 91px);
   overflow-x: hidden;
   overflow-y: auto;
+  background-size:100% 100% !important;
+
 }
 .el-main{
   height: calc(100vh - 91px);

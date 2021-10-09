@@ -1,7 +1,6 @@
 <template>
   <div
     id="editor"
-    ref="container"
     class="editor"
     :class="[
       {
@@ -9,15 +8,14 @@
         ['parent_transform']:!chartDetailsVisible
       }
     ]"
-    :style="customStyle"
     @dragover="handleDragOver"
     @mousedown="handleMouseDown"
     @scroll="canvasScroll"
   >
     <!-- 网格线 -->
-<!--        <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
+    <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
     <!--    positionBox:{{positionBoxInfo}}-->
-<!--        <PGrid :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />-->
+    <!--    <PGrid :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />-->
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -223,9 +221,11 @@ function debounce(func, time) {
 
 function scrollScreen(e) {
   if (e.clientY + 50 >= window.innerHeight) {
+    console.log('scrollScreen+')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() + 20)
   } else if (e.clientY <= 150) {
+    console.log('scrollScreen-')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() - 20)
   }
@@ -238,7 +238,7 @@ function scrollScreen(e) {
 function resetPositionBox() {
   // 根据当前容器的宽度来决定多少列
   itemMaxX = this.maxCell
-  const rows = 20 // 初始100行，后面根据需求会自动增加
+  const rows = this.matrixCount.y // 初始100行，后面根据需求会自动增加
   for (let i = 0; i < rows; i++) {
     const row = []
 
@@ -274,7 +274,7 @@ function addItemToPositionBox(item) {
 
 function fillPositionBox(maxY) {
   const pb = positionBox
-  maxY += 2
+  maxY += 1
   for (let j = 0; j < maxY; j++) {
     if (pb[j] === undefined) {
       const row = []
@@ -288,8 +288,8 @@ function fillPositionBox(maxY) {
   }
 
   itemMaxY = maxY
-
-  $(this.$el).css('height', ((itemMaxY + 2) * this.cellHeight) + 'px')
+  console.log('height:' + ((itemMaxY) * this.cellHeight) + 'px')
+  // $(this.$el).css('height', ((itemMaxY) * this.cellHeight) + 'px')
 }
 
 function removeItemFromPositionBox(item) {
@@ -312,10 +312,10 @@ function removeItemFromPositionBox(item) {
 function recalcCellWidth() {
   // const containerNode = this.$refs['container']
   // this.outStyle.width && this.outStyle.height
-  const containerWidth = this.outStyle.width
+  // const containerWidth = this.outStyle.width
 
-  const cells = Math.round(containerWidth / this.cellWidth)
-  this.maxCell = cells
+  // const cells = Math.round(containerWidth / this.cellWidth)
+  this.maxCell = this.matrixCount.x
 
   // if (containerWidth % this.cellWidth !=== 0) {
   //     this.cellWidth += containerWidth % this.cellWidth / cells;
@@ -1181,39 +1181,6 @@ export default {
       return result
     },
 
-    handleContextMenu(e) {
-      e.stopPropagation()
-      e.preventDefault()
-      let target = e.target
-      while (target instanceof SVGElement) {
-        target = target.parentNode
-      }
-      let top = 0
-      let left = 0
-      // 如果档期有计划的组件 坐标取当前组件的加上偏移量
-      if (this.curComponent && !target.className.includes('editor')) {
-        if (this.canvasStyleData.selfAdaption) {
-          top = this.curComponent.style.top * this.scaleHeight / 100 + e.offsetY
-          left = this.curComponent.style.left * this.scaleWidth / 100 + e.offsetX
-        } else {
-          top = this.curComponent.style.top + e.offsetY
-          left = this.curComponent.style.left + e.offsetX
-        }
-      } else {
-        // 计算菜单相对于编辑器的位移
-        top = e.offsetY
-        left = e.offsetX
-
-        while (!target.className.includes('editor')) {
-          left += target.offsetLeft
-          top += target.offsetTop
-          target = target.parentNode
-        }
-      }
-
-      this.$store.commit('showContextMenu', { top, left })
-    },
-
     getShapeStyle(style) {
       const result = {};
       ['width', 'left'].forEach(attr => {
@@ -1612,9 +1579,9 @@ export default {
 
       debounce((function(newX, oldX, newY, oldY) {
         return function() {
-          console.log('move1')
+          // console.log('move1')
           if (newX !== oldX || oldY !== newY) {
-            console.log('move2')
+            // console.log('move2')
             movePlayer.call(vm, moveItem, {
               x: newX,
               y: newY
@@ -1674,7 +1641,7 @@ export default {
      * @returns
      */
     getMaxCell() {
-      console.log('getMaxCell:')
+      // console.log('getMaxCell:')
 
       return this.maxCell
     },
@@ -1684,7 +1651,7 @@ export default {
      * @returns
      */
     getRenderState() {
-      console.log('getRenderState:')
+      // console.log('getRenderState:')
 
       return this.moveAnimate
     },
@@ -1708,7 +1675,7 @@ export default {
     startMoveIn() {
       const moveInItemInfo = this.$store.state.dragComponentInfo
       this.addItemBox(moveInItemInfo)
-      console.log('startMoveIn:')
+      // console.log('startMoveIn:')
       const vm = this
       // e.preventDefault();
       if (!this.infoBox) {
