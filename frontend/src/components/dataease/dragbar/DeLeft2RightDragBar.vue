@@ -28,7 +28,7 @@ export default {
     right: 0px;
     top: 0;
     cursor: col-resize;
-    background-color: var(--MainBorderColor) !important;
+    background-color: var(--SiderTextColor) !important;
     border: 0px;
   }
 
