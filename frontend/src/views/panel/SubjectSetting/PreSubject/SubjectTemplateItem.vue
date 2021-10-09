@@ -222,7 +222,7 @@ export default {
     },
     // 当输入框失去焦点时不显示输入框
     loseFocus() {
-      if (this.subjectItem.name && this.subjectItem.name.length > 0) {
+      if (this.subjectItem.name && this.subjectItem.name.length > 0 && this.subjectItem.name.length < 20) {
         const request = {
           id: this.subjectItem.id,
           name: this.subjectItem.name

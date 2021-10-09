@@ -1315,7 +1315,7 @@ export default {
     matrix: 'matrix',
     suspension: 'suspension',
     subject_no_edit: 'System Subject Can Not Edit',
-    subject_name_not_null: 'Subject Name Can Not Be Null'
+    subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts'
   },
   plugin: {
     local_install: 'Local installation',

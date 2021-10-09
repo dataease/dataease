@@ -4,14 +4,17 @@ import io.dataease.base.domain.PanelSubject;
 import io.dataease.base.domain.PanelSubjectExample;
 import io.dataease.base.mapper.PanelSubjectMapper;
 import io.dataease.controller.request.panel.PanelSubjectRequest;
+import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,16 +50,28 @@ public class PanelSubjectService {
         return result;
     }
 
-    public void update(PanelSubject request){
+
+    public synchronized void  update(PanelSubject request){
         if(StringUtils.isEmpty(request.getId())){
+            PanelSubjectExample example = new PanelSubjectExample();
+            example.createCriteria().andTypeEqualTo("self");
+            List<PanelSubject> subjectAll = panelSubjectMapper.selectByExample(example);
+            int count = CollectionUtils.isEmpty(subjectAll)?0:subjectAll.size();
             request.setId(UUID.randomUUID().toString());
             request.setCreateTime(System.currentTimeMillis());
             request.setType("self");
-            request.setName("个人主题");
+            request.setName("个人主题"+count);
             panelSubjectMapper.insertSelective(request);
         }else{
-            request.setUpdateTime(System.currentTimeMillis());
-            panelSubjectMapper.updateByPrimaryKeySelective(request);
+            PanelSubjectExample example = new PanelSubjectExample();
+            example.createCriteria().andNameEqualTo(request.getName()).andIdNotEqualTo(request.getId());
+            List<PanelSubject> subjectAll = panelSubjectMapper.selectByExample(example);
+            if(CollectionUtils.isEmpty(subjectAll)){
+                request.setUpdateTime(System.currentTimeMillis());
+                panelSubjectMapper.updateByPrimaryKeySelective(request);
+            }else{
+                DataEaseException.throwException("名称已经存在");
+            }
         }
     }
 

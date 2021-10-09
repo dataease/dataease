@@ -1323,7 +1323,7 @@ export default {
     matrix: '矩阵分布',
     suspension: '悬浮',
     subject_no_edit: '系统主题不能修改',
-    subject_name_not_null: '主题名称不能为空'
+    subject_name_not_null: '主题名称需要1~20字符'
   },
   plugin: {
     local_install: '本地安装',
