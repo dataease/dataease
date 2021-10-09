@@ -1446,7 +1446,7 @@ export default {
       this.infoBox.startY = e.pageY
     },
     onStartMove(e, item, index) {
-      console.log('onStartMove:' + index)
+      // console.log('onStartMove:' + index)
       const vm = this
       // e.preventDefault();
 

@@ -1576,7 +1576,7 @@ export default {
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
-      console.log('recordMatrixCurShadowStyle')
+      // console.log('recordMatrixCurShadowStyle')
       // debugger
       const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
       const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight

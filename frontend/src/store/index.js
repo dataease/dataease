@@ -114,7 +114,7 @@ const data = {
     // },
 
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      console.log('setShapeStyle:width=' + width + ';height=' + height)
+      // console.log('setShapeStyle:width=' + width + ';height=' + height)
       if (top || top === 0) curComponent.style.top = top / curCanvasScale.scalePointHeight
       if (left || left === 0) curComponent.style.left = left / curCanvasScale.scalePointWidth
       if (width || width === 0) curComponent.style.width = width / curCanvasScale.scalePointWidth
