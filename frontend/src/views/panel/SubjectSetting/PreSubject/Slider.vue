@@ -79,7 +79,7 @@
 
 <script>
 import SubjectTemplateItem from './SubjectTemplateItem'
-import { querySubjectWithGroup, saveSubject, deleteSubject } from '@/api/panel/panel'
+import { querySubjectWithGroup, saveOrUpdateSubject, deleteSubject } from '@/api/panel/panel'
 import { mapState } from 'vuex'
 
 export default {
@@ -142,7 +142,7 @@ export default {
         details: JSON.stringify(this.canvasStyleData)
       }
       this.slidersLoading = true
-      saveSubject(request).then(response => {
+      saveOrUpdateSubject(request).then(response => {
         this.$message({
           message: '保存成功',
           type: 'success',
