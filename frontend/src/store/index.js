@@ -94,6 +94,9 @@ const data = {
           dragging: false,
           resizing: false
         }
+        if (!component.auxiliaryMatrix) {
+          component['auxiliaryMatrix'] = false
+        }
       }
       state.styleChangeTimes = 0
       state.curComponent = component
