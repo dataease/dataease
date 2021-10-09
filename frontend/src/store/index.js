@@ -94,13 +94,11 @@ const data = {
           dragging: false,
           resizing: false
         }
-        if (!component.auxiliaryMatrix) {
-          component['auxiliaryMatrix'] = false
-        }
       }
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
+      console.log('setCurComponent:' + JSON.stringify(component))
     },
 
     setCurCanvasScale(state, curCanvasScale) {

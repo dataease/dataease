@@ -386,6 +386,7 @@ export default {
         componentDatas.forEach(item => {
           item.filters = (item.filters || [])
           item.linkageFilters = (item.linkageFilters || [])
+          item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
         })
         this.$store.commit('setComponentData', this.resetID(componentDatas))
         // this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
@@ -399,6 +400,7 @@ export default {
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])
             item.linkageFilters = (item.linkageFilters || [])
+            item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
           //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))

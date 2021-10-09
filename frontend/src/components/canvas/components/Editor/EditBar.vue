@@ -15,10 +15,10 @@
         <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
       <span :title="$t('panel.matrix')">
-        <i v-if="activeModel==='edit'&&auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
+        <i v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
       </span>
       <span :title="$t('panel.suspension')">
-        <i v-if="activeModel==='edit'&&!auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
+        <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
       <span :title="$t('panel.details')">
         <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
@@ -61,12 +61,15 @@ export default {
     return {
       componentType: null,
       linkageActiveStatus: false,
-      auxiliaryMatrix: false,
       editFilter: [
         'view',
         'custom'
-      ]
+      ],
+      timer: null
     }
+  },
+  mounted() {
+    this.createTimer()
   },
   computed: {
     existLinkage() {
@@ -85,9 +88,6 @@ export default {
     linkageInfo() {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
-    mounted() {
-      this.auxiliaryMatrix = this.$store.state.curComponent.auxiliaryMatrix
-    },
     ...mapState([
       'menuTop',
       'menuLeft',
@@ -101,7 +101,23 @@ export default {
       'curCanvasScale'
     ])
   },
+  beforeDestroy() {
+    this.destroyTimer()
+  },
   methods: {
+    createTimer() {
+      if (!this.timer) {
+        this.timer = setInterval(() => {
+          console.log('t=' + this.curComponent.auxiliaryMatrix)
+        }, 5000)
+      }
+    },
+    destroyTimer() {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
     showViewDetails() {
       this.$emit('showViewDetails')
     },
@@ -112,14 +128,12 @@ export default {
         this.curComponent.style.width = this.curComponent.sizex * this.curCanvasScale.matrixStyleOriginWidth
         this.curComponent.style.height = this.curComponent.sizey * this.curCanvasScale.matrixStyleOriginHeight
         this.curComponent.auxiliaryMatrix = false
-        this.auxiliaryMatrix = false
       } else {
         this.curComponent.x = Math.round(this.curComponent.style.left / this.curCanvasScale.matrixStyleOriginWidth) + 1
         this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
         this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
         this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
         this.curComponent.auxiliaryMatrix = true
-        this.auxiliaryMatrix = true
       }
       this.$store.state.styleChangeTimes++
       bus.$emit('auxiliaryMatrixChange')
