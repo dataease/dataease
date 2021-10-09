@@ -2,6 +2,7 @@
   <div v-if="editMode == 'edit'" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup">
     <!-- tabindex >= 0 使得双击时聚集该元素 -->
     <div
+      v-if="canEdit"
       ref="text"
       :contenteditable="canEdit"
       :class="{ canEdit }"
@@ -14,6 +15,7 @@
       @input="handleInput"
       v-html="element.propValue"
     />
+    <div v-if="!canEdit" :style="{ verticalAlign: element.style.verticalAlign }" @dblclick="setEdit" v-html="element.propValue" />
   </div>
   <div v-else class="v-text">
     <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="element.propValue" />
@@ -110,6 +112,10 @@ export default {
 
     setEdit() {
       this.canEdit = true
+      // // // 聚焦到单元格
+      // setTimeout(() => {
+      //   this.$refs['text'].focus()
+      // }, 500)
       // 全选
       this.selectText(this.$refs.text)
     },
