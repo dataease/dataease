@@ -53,7 +53,7 @@ public class PanelGroupController {
         panelGroupService.deleteCircle(id);
     }
 
-    @ApiOperation("详息")
+    @ApiOperation("详细信息")
     @GetMapping("/findOne/{id}")
     public PanelGroupWithBLOBs findOne(@PathVariable String id) throws Exception {
         return panelGroupService.findOne(id);

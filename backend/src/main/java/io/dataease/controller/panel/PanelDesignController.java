@@ -22,7 +22,7 @@ public class PanelDesignController {
     @Resource
     private PanelGroupService panelGroupService;
 
-    @ApiOperation("保存")
+    @ApiOperation("保存仪表板设计")
     @PostMapping("/saveDesign/{id}")
     public void deleteCircle(@PathVariable String id) {
         panelGroupService.deleteCircle(id);
