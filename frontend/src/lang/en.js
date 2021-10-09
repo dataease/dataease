@@ -1314,6 +1314,7 @@ export default {
     no_drill_field: 'Miss relation field',
     matrix: 'matrix',
     suspension: 'suspension',
+    new_element_distribution: 'New element Distribution',
     subject_no_edit: 'System Subject Can Not Edit',
     subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts'
   },

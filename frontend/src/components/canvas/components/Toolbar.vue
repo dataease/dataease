@@ -13,10 +13,10 @@
     </div>
     <div v-else class="toolbar">
 
-      <div class="canvas-config" style="margin-right: 10px">
-        <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />
-        <span>{{ $t('panel.matrix_design') }}</span>
-      </div>
+      <!--      <div class="canvas-config" style="margin-right: 10px">-->
+      <!--        <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />-->
+      <!--        <span>{{ $t('panel.matrix_design') }}</span>-->
+      <!--      </div>-->
       <!--      <div class="canvas-config" style="margin-right: 10px">-->
       <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
       <!--        <input v-model="scale" @input="handleScaleChange"> %-->
@@ -202,12 +202,12 @@ export default {
 
     compose() {
       this.$store.commit('compose')
-      this.$store.commit('recordSnapshot','compose')
+      this.$store.commit('recordSnapshot', 'compose')
     },
 
     decompose() {
       this.$store.commit('decompose')
-      this.$store.commit('recordSnapshot','decompose')
+      this.$store.commit('recordSnapshot', 'decompose')
     },
 
     undo() {
@@ -255,7 +255,7 @@ export default {
             }
           })
 
-          this.$store.commit('recordSnapshot','handleFileChange')
+          this.$store.commit('recordSnapshot', 'handleFileChange')
         }
 
         img.src = fileResult
@@ -294,7 +294,7 @@ export default {
     clearCanvas() {
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-      this.$store.commit('recordSnapshot','clearCanvas')
+      this.$store.commit('recordSnapshot', 'clearCanvas')
     },
 
     handlePreviewChange() {

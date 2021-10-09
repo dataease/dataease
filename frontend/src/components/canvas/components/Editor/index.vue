@@ -15,9 +15,9 @@
     @scroll="canvasScroll"
   >
     <!-- 网格线 -->
-    <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
+<!--        <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
     <!--    positionBox:{{positionBoxInfo}}-->
-    <!--    <PGrid :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />-->
+<!--        <PGrid :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />-->
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
