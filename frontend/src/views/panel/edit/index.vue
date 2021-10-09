@@ -773,6 +773,11 @@ export default {
   .de-header {
     height: 35px !important;
     border-bottom: 1px solid #E6E6E6;
+
+  }
+  .blackTheme .de-header {
+      background-color: var(--SiderBG) !important;
+      color: var(--TextActive);
   }
 
   .showLeftPanel {

@@ -5,8 +5,8 @@
   left: 0;
   z-index: 1001;
   overflow: hidden;
-  border-bottom: 1px solid $--color-primary;
-
+  border-bottom: 1px solid var(--TopBG, #E6E6E6);
+  background-color: var(--TopBG, #ffffff); 
   .log {
     padding: 0 16px;
     line-height: 56px;
@@ -25,24 +25,28 @@
   .el-menu {
     float: left;
     border: none !important;
-    background-color: var(--MainBG, #ffffff) !important;
+    background-color: var(--TopBG, #ffffff) !important;
     .nav-item {
       display: inline-block;
 
       .el-menu-item:not(.is-active) {
-
+        color: var(--TopTextColor);
+        opacity: 0.65;
         &:hover {
-          background-color: var(--ContentBG, #ecf5ff) !important;
+          background-color: var(--MenuHovorBG, #ecf5ff) !important;
+          opacity: 1;
         }
 
         &:focus {
-          background-color: var(--ContentBG, #ecf5ff) !important;
+          background-color: var(--MenuActiveBG, #ecf5ff) !important;
+          opacity: 1;
         }
 
       }
       .el-menu-item.is-active {
-        background-color: var(--ContentBG, #ecf5ff) ;
+        background-color: var(--MenuActiveBG, #ecf5ff) ;
         color: var(--TextActive) !important;
+        opacity: 1;
       }
 
     }

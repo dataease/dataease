@@ -62,7 +62,7 @@
       </el-row>
     </el-col>
     <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
-      <el-row style="height: 100%; background-color: var(--MainBG);" class="custom-position">
+      <el-row style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
         {{ $t('panel.select_panel_from_left') }}
       </el-row>
     </el-col>
@@ -306,9 +306,12 @@ export default {
 
   .panel-design-head {
     height: 40px;
-    background-color: white;
+    background-color: var(--SiderBG, white);
     padding: 0 10px;
     line-height: 40px;
+  }
+  .blackTheme .panel-design-head  {
+      color: var(--TextActive);
   }
 
   .panel-design-preview {

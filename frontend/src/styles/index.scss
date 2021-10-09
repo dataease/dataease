@@ -377,36 +377,40 @@ div:focus {
 }
 
 .el-table {
-    background-color: var(--MainBG) !important;
+    background-color: var(--TableBG) !important;
     tr {
-        background-color: var(--MainBG) !important;
+        background-color: var(--TableBG) !important;
     }
     th {
-        background-color: var(--MainBG) !important;
+        background-color: var(--TableBG) !important;
     }
 }
 
 .blackTheme .el-textarea__inner {
+    color: var(--TableColor) !important;  
     background-color: var(--MainBG) !important;    
 }
 .blackTheme .el-textarea__inner:not(:focus) {
-    
+    color: var(--TableColor) !important;  
     border-color: var(--border-color-input) !important;
 }
 
 .blackTheme .el-input__inner {
-    background-color: var(--MainBG) !important;    
+    background-color: var(--MainBG) !important;
+    color: var(--TableColor) !important;    
 }
 .blackTheme .el-input__inner:not(:focus) {
-    
+    color: var(--TableColor) !important;  
     border-color: var(--border-color-input) !important;
 }
 
 .blackTheme .el-input-number__decrease {
+    color: var(--TableColor) !important;  
     background-color: var(--MainBG) !important;
     border: none !important;
 }
 .blackTheme .el-input-number__increase {
+    color: var(--TableColor) !important;  
     background-color: var(--MainBG) !important;
     border: none !important;
 }
@@ -414,24 +418,41 @@ div:focus {
 
 .el-pagination {
     button:disabled {
+        color: var(--TableColor) !important;  
         background-color: var(--MainBG) !important;
     }
 }
 
 .el-pager li {
+    color: var(--TableColor) !important;  
     background-color: var(--MainBG) !important;
 }
 
-.blackTheme .el-select-dropdown {
+/* .blackTheme .el-select-dropdown {
     background-color: var(--MainBG) !important;
-}
+} */
 
 .fu-search-bar-button {
     background-color: var(--Main) !important;
 }
 
-.fu-quick-search input {
+.blackTheme .fu-quick-search input {
+    color: var(--TableColor) !important;  
     background-color: var(--MainBG) !important;
+}
+.blackTheme .vue-treeselect__single-value {
+    color: var(--TableColor) !important;  
+}
+.blackTheme .el-tag.el-tag--info {
+    background-color: var(--MainContentBG);
+    border-color: var(--TableBorderColor);
+    color: var(--TableColor) !important;  ;
+}
+
+.blackTheme .vue-treeselect__control {
+    background-color: var(--MainBG) !important;
+    color: var(--TableColor) !important;
+    border-color: var(--border-color-input) !important;
 }
 
 .blackTheme .el-popover {
@@ -440,6 +461,7 @@ div:focus {
 
 .blackTheme .main-area-input {
     input.el-input__inner {
+        color: var(--TableColor) !important;  
         background-color: var(--ContentBG) !important;
     }
     .el-input-group__append {
@@ -448,16 +470,16 @@ div:focus {
     }    
 }
 
-.el-tree {
-    background-color: var(--MainBG) !important;
+.blackTheme .el-tree {
+    background-color: var(--SiderBG) !important;
 }
 
-.el-tree-node__content:hover {
-    background-color: var(--ContentBG) !important;
+.blackTheme .el-tree-node__content:hover {
+    background-color: var(--SiderBG) !important;
 }
 
-.is-current > .el-tree-node__content {
-    background-color: var(--ContentBG) !important;
+.blackTheme .is-current > .el-tree-node__content {
+    background-color: var(--SiderBG) !important;
 }
 .blackTheme .el-collapse-item__header {
     background-color: var(--ContentBG) !important;
@@ -497,28 +519,28 @@ div:focus {
 .blackTheme .elx-table--main-wrapper {
     
     .body--wrapper {
-        background-color: var(--ContentBG) !important;
+        background-color: var(--TableBG) !important;
     }
 }
 .blackTheme .elx-table {
-    color: var(--TextPrimary) !important;
+    color: var(--TableColor) !important;
 }
 
 .blackTheme .elx-body--column {
-    background-image: linear-gradient(var(--MainBorderColor), var(--MainBorderColor)), linear-gradient(var(--MainBorderColor), var(--MainBorderColor)) !important;
+    background-image: linear-gradient(var(--TableBorderColor), var(--TableBorderColor)), linear-gradient(var(--TableBorderColor), var(--TableBorderColor)) !important;
 }
 .blackTheme .elx-header--column {
-    background-image: linear-gradient(--MainBorderColor, --MainBorderColor), linear-gradient(--MainBorderColor, --MainBorderColor) !important;
+    background-image: linear-gradient(--TableBorderColor, --TableBorderColor), linear-gradient(--TableBorderColor, --TableBorderColor) !important;
 }
 .blackTheme tr.row--current {
     background-color: var(--MainBG) !important;
 }
 .blackTheme tr.elx-body--row:hover {
-    background-color: var(--MainBG) !important;
+    background-color: var(--TableBG) !important;
 }
 
 .blackTheme .elx-table--header-border-line {
-    border-color: var(--MainBorderColor) !important;
+    border-color: var(--TableBorderColor) !important;
 }
 
 .el-collapse-item__content {

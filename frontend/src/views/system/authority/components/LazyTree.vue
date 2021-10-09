@@ -300,13 +300,21 @@ export default {
     border: 1px solid #e6e6e6;
     overflow-y: auto!important;
   }
-  .tree-head{
+  /* .tree-head{
     height: 30px;
     line-height: 30px;
     border-bottom: 1px solid #e6e6e6;
     background-color: #f7f8fa;
     font-size: 12px;
     color: #3d4d66 ;
+  } */
+  .tree-head{
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid var(--TableBorderColor, #e6e6e6);
+    background-color: var(--SiderBG, #f7f8fa);
+    font-size: 12px;
+    color: var(--TableColor, #3d4d66) ;
   }
 
   .auth-span{

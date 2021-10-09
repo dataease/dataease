@@ -14,7 +14,6 @@
 
   .sidebar-container {
     transition: width 0.28s;
-    // background-color: $--background-color-base;
     height: $contentHeight;
     position: fixed;
     font-size: 0px;
@@ -64,33 +63,71 @@
       border: none;
       height: 100%;
       width: 100% !important;
-
-     
+      background-color: var(--SiderBG, #ffffff);     
     }
 
-    .submenu-title-noDropdown,
-    .el-submenu__title {
+    
+
+    .submenu-title-noDropdown:not(.is-active), .el-submenu__title {
+      color: var(--SiderTextColor);
       &:hover {
-        // background-color: $leftMenuHovor !important;
-        background-color: var(--ContentBG) !important;
+        background-color: var(--MenuHovorBG) !important;
+        color: var(--TextActive);
+      }
+      &:focus {
+        background-color: var(--MenuActiveBG) !important;
+        color: var(--TextActive);
       }
     }
+    .submenu-title-noDropdown.is-active {
+        background-color: var(--MenuActiveBG) !important;
+        color: var(--TextActive);
+    }
 
-    /* .is-active > .el-submenu__title {
-      color: $leftMenuTextActive !important;
+    .is-active > .el-submenu__title {
+        background-color: var(--MenuActiveBG) !important;
+        color: var(--TextActive);
+    }
+
+    /* .nest-menu {
+        .el-menu-item:not(.is-active) {
+            min-width: $sideBarWidth !important;
+            background-color: var(--SiderBG) !important;
+            color: var(--SiderTextColor);
+            &:hover {
+              color: var(--TextActive) !important;
+            }
+            &:focus {
+              background-color: var(--SiderBG) !important;
+              color: var(--TextActive) !important;
+            }
+        }
+        
+        .el-menu-item.is-active {
+            color: var(--TextActive) !important;
+        }
     } */
 
     & .nest-menu .el-submenu > .el-submenu__title,
     & .el-submenu .el-menu-item {
       min-width: $sideBarWidth !important;
-      // background-color: $leftMenuBg !important;
-      background-color: var(--MainBG) !important;
-
+      background-color: var(--SiderBG) !important;
+      color: var(--SiderTextColor);
       &:hover {
-        // background-color: $leftMenuHovor !important;
-        background-color: var(--ContentBG) !important;
+        background-color: var(--MenuHovorBG) !important;
+        color: var(--TextActive) !important;
       }
     }
+
+    & .nest-menu .el-submenu > .el-submenu__title,
+    & .el-submenu .is-active.el-menu-item {
+      min-width: $sideBarWidth !important;
+      background-color: var(--SiderBG) !important;
+      color: var(--TextActive);
+      
+    }
+    
+
   }
 
   .hideSidebar {
@@ -147,6 +184,8 @@
     }
   }
 
+
+
   .el-menu--collapse .el-menu .el-submenu {
     min-width: $sideBarWidth !important;
   }
@@ -190,7 +229,7 @@
   .el-menu-item {
     &:hover {
       // background-color: $leftMenuHovor !important;
-      background-color: var(--ContentBG) !important;
+      background-color: var(--SiderBG) !important;
     }
   }
 

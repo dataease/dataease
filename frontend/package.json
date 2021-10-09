@@ -27,10 +27,11 @@
     "file-saver": "^2.0.5",
     "fit2cloud-ui": "1.5.0-beta.0",
     "html2canvasde": "^v1.1.4-de",
+    "jquery": "^3.1.1",
     "js-cookie": "2.2.0",
     "jsencrypt": "^3.0.0-rc.1",
     "jspdf": "^2.3.1",
-    "lodash": "4.17.21",
+    "lodash": "^4.17.4",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "screenfull": "4.2.0",
@@ -51,9 +52,7 @@
     "vuedraggable": "^2.24.3",
     "vuex": "3.1.0",
     "webpack": "^4.46.0",
-    "xlsx": "^0.17.0",
-    "lodash": "^4.17.4",
-    "jquery": "^3.1.1"
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0-0",
