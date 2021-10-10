@@ -21,7 +21,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem"  @amAddItem="amAddItem"/>
+    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" />
     <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       v-for="(handlei, indexi) in actualHandles"
@@ -1252,7 +1252,9 @@ export default {
       // 如果辅助设计 需要最后调整矩阵
       if (this.element.auxiliaryMatrix) {
         // this.recordMatrixCurStyle()
-        this.recordMatrixCurShadowStyle()
+        setTimeout(() => {
+          this.recordMatrixCurShadowStyle()
+        }, 50)
       }
       this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
       // 记录snapshot后 移动已记录设置为false
