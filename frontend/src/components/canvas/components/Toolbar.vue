@@ -13,10 +13,21 @@
     </div>
     <div v-else class="toolbar">
 
-      <!--      <div class="canvas-config" style="margin-right: 10px">-->
-      <!--        <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />-->
-      <!--        <span>{{ $t('panel.matrix_design') }}</span>-->
-      <!--      </div>-->
+      <!--      <el-tooltip :content="$t('panel.new_element_distribution')">-->
+      <!--        <el-switch-->
+      <!--          v-model="canvasStyleData.auxiliaryMatrix"-->
+      <!--          :width="35"-->
+      <!--          active-color="#13ce66"-->
+      <!--          inactive-color="#ff4949"-->
+      <!--          :active-text="$t('panel.matrix')"-->
+      <!--          :inactive-text="$t('panel.suspension')"-->
+      <!--        />-->
+      <!--      </el-tooltip>-->
+
+      <div class="canvas-config" style="margin-right: 10px">
+        <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />
+        <span>{{ $t('panel.matrix_design') }}</span>
+      </div>
       <!--      <div class="canvas-config" style="margin-right: 10px">-->
       <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
       <!--        <input v-model="scale" @input="handleScaleChange"> %-->
@@ -371,7 +382,7 @@ export default {
     float: right;
     height: 35px;
     line-height: 35px;
-    min-width: 400px;
+    min-width: 500px;
     /*background: #fff;*/
     /*border-bottom: 1px solid #ddd;*/
 

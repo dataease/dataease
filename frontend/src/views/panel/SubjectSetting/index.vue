@@ -9,18 +9,18 @@
     <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
       <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item :title="$t('panel.panel')" name="panel">
-          <el-row class="shape-item">
-            <span class="shape-item" style="margin-left: 10px">{{ $t('panel.new_element_distribution') }}:</span>
-            <!--            <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />-->
-            <el-radio-group v-model="canvasStyleData.auxiliaryMatrix" size="mini" name="auxiliaryMatrix" @change="styleChange">
-              <el-radio-button :label="true">
-                {{ $t('panel.matrix') }}<i class="icon iconfont icon-shujujuzhen" />
-              </el-radio-button>
-              <el-radio-button :label="false">
-                {{ $t('panel.suspension') }}<i class="icon iconfont icon-xuanfuanniu" />
-              </el-radio-button>
-            </el-radio-group>
-          </el-row>
+<!--          <el-row class="shape-item">-->
+<!--            <span class="shape-item" style="margin-left: 10px">{{ $t('panel.new_element_distribution') }}:</span>-->
+<!--            &lt;!&ndash;            <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />&ndash;&gt;-->
+<!--            <el-radio-group v-model="canvasStyleData.auxiliaryMatrix" size="mini" name="auxiliaryMatrix" @change="styleChange">-->
+<!--              <el-radio-button :label="true">-->
+<!--                {{ $t('panel.matrix') }}<i class="icon iconfont icon-shujujuzhen" />-->
+<!--              </el-radio-button>-->
+<!--              <el-radio-button :label="false">-->
+<!--                {{ $t('panel.suspension') }}<i class="icon iconfont icon-xuanfuanniu" />-->
+<!--              </el-radio-button>-->
+<!--            </el-radio-group>-->
+<!--          </el-row>-->
           <el-row style="background-color: #f7f8fa; margin: 5px">
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />

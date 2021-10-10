@@ -1007,7 +1007,7 @@ export default {
       handler(newVal, oldVla) {
         // console.log('newVal:' + JSON.stringify(newVal) + ';oldVla:' + JSON.stringify(oldVla))
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
-        if (this.lastComponentDataLength === 0 && newVal.length > 0) {
+        if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
           this.initMatrix()
         }
@@ -1676,23 +1676,25 @@ export default {
       })
     },
     startMoveIn() {
-      const moveInItemInfo = this.$store.state.dragComponentInfo
-      this.addItemBox(moveInItemInfo)
-      // console.log('startMoveIn:')
-      const vm = this
-      // e.preventDefault();
-      if (!this.infoBox) {
-        this.infoBox = {}
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        const moveInItemInfo = this.$store.state.dragComponentInfo
+        this.addItemBox(moveInItemInfo)
+        console.log('startMoveIn:')
+        const vm = this
+        // e.preventDefault();
+        if (!this.infoBox) {
+          this.infoBox = {}
+        }
+        const infoBox = this.infoBox
+
+        infoBox.moveItem = moveInItemInfo
+        infoBox.moveItemIndex = this.yourList.length - 1
+
+        infoBox.oldX = 1 // 实际对象原始X位置
+        infoBox.oldY = 1
+        infoBox.oldSizeX = moveInItemInfo.sizex
+        infoBox.oldSizeY = moveInItemInfo.sizey
       }
-      const infoBox = this.infoBox
-
-      infoBox.moveItem = moveInItemInfo
-      infoBox.moveItemIndex = this.yourList.length - 1
-
-      infoBox.oldX = 1 // 实际对象原始X位置
-      infoBox.oldY = 1
-      infoBox.oldSizeX = moveInItemInfo.sizex
-      infoBox.oldSizeY = moveInItemInfo.sizey
     }
   }
 }
