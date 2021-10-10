@@ -371,7 +371,7 @@ export default {
     float: right;
     height: 35px;
     line-height: 35px;
-    min-width: 500px;
+    min-width: 400px;
     /*background: #fff;*/
     /*border-bottom: 1px solid #ddd;*/
 
