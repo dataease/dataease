@@ -1,32 +1,34 @@
 <template>
-  <div id="canvasInfoTemp" ref="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
-    <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
-      {{ $t('panel.panelNull') }}
-    </el-row>
-    <canvas-opt-bar />
-    <ComponentWrapper
-      v-for="(item, index) in componentDataInfo"
-      :key="index"
-      :config="item"
-      :search-count="searchCount"
-      :in-screen="inScreen"
-    />
-    <!--视图详情-->
-    <el-dialog
-      :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
-      :visible.sync="chartDetailsVisible"
-      width="70%"
-      class="dialog-css"
-      :destroy-on-close="true"
-    >
-      <span style="position: absolute;right: 70px;top:15px">
-        <el-button size="mini" @click="exportExcel">
-          <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
-          {{ $t('chart.export_details') }}
-        </el-button>
-      </span>
-      <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
-    </el-dialog>
+  <div id="canvasInfoMain" ref="canvasInfoMain" class="main-class">
+    <div id="canvasInfoTemp" ref="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
+      <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
+        {{ $t('panel.panelNull') }}
+      </el-row>
+      <canvas-opt-bar />
+      <ComponentWrapper
+        v-for="(item, index) in componentDataInfo"
+        :key="index"
+        :config="item"
+        :search-count="searchCount"
+        :in-screen="inScreen"
+      />
+      <!--视图详情-->
+      <el-dialog
+        :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+        :visible.sync="chartDetailsVisible"
+        width="70%"
+        class="dialog-css"
+        :destroy-on-close="true"
+      >
+        <span style="position: absolute;right: 70px;top:15px">
+          <el-button size="mini" @click="exportExcel">
+            <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+            {{ $t('chart.export_details') }}
+          </el-button>
+        </span>
+        <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -155,7 +157,7 @@ export default {
     erd.listenTo(tempDom, element => {
       _this.$nextTick(() => {
         _this.restore()
-        //将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+        // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
         _this.mainHeight = tempDom.scrollHeight + 'px!important'
       })
     })
@@ -182,12 +184,14 @@ export default {
     changeStyleWithScale,
     getStyle,
     restore() {
-      const canvasHeight = document.getElementById('canvasInfoTemp').offsetHeight
-      const canvasWidth = document.getElementById('canvasInfoTemp').offsetWidth
+      const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
+      const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
 
-      this.scaleHeight = this.scaleWidth
+      console.log('scaleHeight:' + this.scaleHeight + ';ch:' + this.canvasStyleData.height)
+
+      // this.scaleHeight = this.scaleWidth
       // this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
       // if (this.showType === 'width') {
       //   this.scaleHeight = this.scaleWidth
@@ -262,6 +266,10 @@ export default {
             margin: auto;
         }
     }
+}
+.main-class {
+  width: 100%;
+  height: 100%;
 }
 .custom-position {
   flex: 1;
