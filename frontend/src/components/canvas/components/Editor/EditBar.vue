@@ -6,7 +6,7 @@
       <!--      <i v-if="linkageInfo.linkageActive" class="icon iconfont icon-edit" @click.stop="linkageEdit" />-->
     </div>
     <div v-else-if="!linkageSettingStatus">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;">
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem">
         <span slot="icon" :title="$t('panel.setting')">
           <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
         </span>
@@ -26,9 +26,9 @@
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
-<!--      <spa>-->
-<!--        {{ curComponent.x }}-{{ curComponent.y }}&#45;&#45;{{ curComponent.sizex }}-{{ curComponent.sizey }}-->
-<!--      </spa>-->
+      <!--      <spa>-->
+      <!--        {{ curComponent.x }}-{{ curComponent.y }}&#45;&#45;{{ curComponent.sizex }}-{{ curComponent.sizey }}-->
+      <!--      </spa>-->
     </div>
 
   </div>
@@ -131,12 +131,14 @@ export default {
         this.curComponent.style.width = this.curComponent.sizex * this.curCanvasScale.matrixStyleOriginWidth
         this.curComponent.style.height = this.curComponent.sizey * this.curCanvasScale.matrixStyleOriginHeight
         this.curComponent.auxiliaryMatrix = false
+        this.$emit('amRemoveItem')
       } else {
         this.curComponent.x = Math.round(this.curComponent.style.left / this.curCanvasScale.matrixStyleOriginWidth) + 1
         this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
         this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
         this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
         this.curComponent.auxiliaryMatrix = true
+        this.$emit('amAddItem')
       }
       this.$store.state.styleChangeTimes++
       bus.$emit('auxiliaryMatrixChange')
@@ -162,6 +164,9 @@ export default {
     },
     linkageEdit() {
 
+    },
+    amRemoveItem() {
+      this.$emit('amRemoveItem')
     },
     // 清除相同sourceViewId 的 联动条件
     clearLinkage() {

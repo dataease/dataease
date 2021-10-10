@@ -91,6 +91,7 @@ export default {
     },
 
     deleteComponent() {
+      this.$emit('amRemoveItem')
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
       this.$store.commit('recordSnapshot', 'deleteComponent')

@@ -709,7 +709,7 @@ export default {
   methods: {
     removeItem: removeItem,
     startResize(e, item, index) {
-      console.log('startResize:' + index)
+      // console.log('startResize:' + index)
       if (!this.resizable) return
       this.resizeStart.call(null, e, item, index)
 
@@ -737,7 +737,7 @@ export default {
       this.infoBox.startY = e.pageY
     },
     startMove(e, item, index) {
-      console.log('startMove:' + index)
+      // console.log('startMove:' + index)
       const vm = this
       // e.preventDefault();
 
@@ -790,7 +790,7 @@ export default {
         const resizeItem = _.get(infoBox, 'resizeItem')
 
         if (resizeItem) { // 调整大小时
-          console.log('resizeItem')
+          // console.log('resizeItem')
           vm.resizing.call(null, e, resizeItem, resizeItem._dragId)
 
           vm.$set(resizeItem, 'isPlayer', true)
@@ -831,7 +831,7 @@ export default {
             height: nowHeight
           })
         } else if (moveItem) {
-          console.log('moveItem')
+          // console.log('moveItem')
 
           scrollScreen(e)
           if (!vm.draggable) return
@@ -922,11 +922,11 @@ export default {
         left: (this.cellWidth * (item.x - 1) + this.baseMarginLeft) + 'px',
         top: (this.cellHeight * (item.y - 1) + this.baseMarginTop) + 'px'
       }
-      console.log('nowItemStyle:' + JSON.stringify(style))
+      // console.log('nowItemStyle:' + JSON.stringify(style))
       return style
     },
     getList() {
-      console.log('getList:')
+      // console.log('getList:')
 
       const returnList = _.sortBy(_.cloneDeep(this.yourList), 'y')
       const finalList = []
@@ -944,7 +944,7 @@ export default {
        * @returns
        */
     getMaxCell() {
-      console.log('getMaxCell:')
+      // console.log('getMaxCell:')
 
       return this.maxCell
     },
@@ -954,7 +954,7 @@ export default {
        * @returns
        */
     getRenderState() {
-      console.log('getRenderState:')
+      // console.log('getRenderState:')
 
       return this.moveAnimate
     },

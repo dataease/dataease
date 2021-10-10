@@ -51,6 +51,8 @@
       @onDragging="onDragging"
       @onResizing="onResizing"
       @elementMouseDown="containerMouseDown"
+      @amRemoveItem="removeItem(item._dragId)"
+      @amAddItme="addItemBox(item)"
     >
       <!--      <span style="position:relative;left: 0px;top:0px">-->
       <!--        item:x-{{ item.x }}y-{{ item.y }}top-{{ item.style.top }}-->
@@ -221,11 +223,11 @@ function debounce(func, time) {
 
 function scrollScreen(e) {
   if (e.clientY + 50 >= window.innerHeight) {
-    console.log('scrollScreen+')
+    // console.log('scrollScreen+')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() + 20)
   } else if (e.clientY <= 150) {
-    console.log('scrollScreen-')
+    // console.log('scrollScreen-')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() - 20)
   }
@@ -288,7 +290,7 @@ function fillPositionBox(maxY) {
   }
 
   itemMaxY = maxY
-  console.log('height:' + ((itemMaxY) * this.cellHeight) + 'px')
+  // console.log('height:' + ((itemMaxY) * this.cellHeight) + 'px')
   // $(this.$el).css('height', ((itemMaxY) * this.cellHeight) + 'px')
 }
 
@@ -1005,7 +1007,7 @@ export default {
       handler(newVal, oldVla) {
         // console.log('newVal:' + JSON.stringify(newVal) + ';oldVla:' + JSON.stringify(oldVla))
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
-        if (newVal.length !== this.lastComponentDataLength) {
+        if (this.lastComponentDataLength === 0 && newVal.length > 0) {
           this.lastComponentDataLength = newVal.length
           this.initMatrix()
         }
@@ -1656,6 +1658,7 @@ export default {
       return this.moveAnimate
     },
     addItem: addItem,
+    removeItem: removeItem,
     initMatrix: init,
     afterInitOk(func) {
       const timeid = setInterval(() => {

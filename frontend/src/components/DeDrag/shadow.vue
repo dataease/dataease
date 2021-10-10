@@ -1,5 +1,5 @@
 <template>
-  <div style="z-index:-1" :style="styleInfo">
+  <div class="main-shadow" style="z-index:-1" :style="styleInfo">
     <!--    {{ curComponent }}-->
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
       let height = 0
       // if (this.dragComponentInfo && !this.dragComponentInfo.auxiliaryMatrix) {
       if (this.dragComponentInfo) {
-        console.log('shadowDrag=')
+        // console.log('shadowDrag=')
         // 组件移入
         if (this.dragComponentInfo.auxiliaryMatrix) {
           left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleWidth
@@ -109,5 +109,8 @@ export default {
 }
 </script>
 <style scoped>
+  .main-shadow{
+    /*transition: 0.2s;*/
+  }
 
 </style>

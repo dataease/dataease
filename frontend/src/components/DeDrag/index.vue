@@ -21,7 +21,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem"  @amAddItem="amAddItem"/>
     <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       v-for="(handlei, indexi) in actualHandles"
@@ -596,7 +596,7 @@ export default {
       this.maxH = val
     },
     w(val) {
-      console.log('changeWidthCK：' + this.resizing)
+      // console.log('changeWidthCK：' + this.resizing)
 
       if (this.resizing || this.dragging) {
         return
@@ -1229,7 +1229,7 @@ export default {
       this.lastMouseY = mouseY
       if (this.resizing) {
         this.resizing = false
-        console.log('resizing2:' + this.resizing)
+        // console.log('resizing2:' + this.resizing)
         this.conflictCheck()
         this.$emit('refLineParams', refLine)
         // this.$emit('resizestop', this.left, this.top, this.width, this.height)
@@ -1672,6 +1672,12 @@ export default {
     },
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    amAddItem() {
+      this.$emit('amAddItem')
+    },
+    amRemoveItem() {
+      this.$emit('amRemoveItem')
     }
   }
 
