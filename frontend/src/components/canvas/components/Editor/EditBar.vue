@@ -39,6 +39,7 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   components: { SettingMenu, LinkageField },
@@ -126,10 +127,6 @@ export default {
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {
-        this.curComponent.style.left = (this.curComponent.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
-        this.curComponent.style.top = (this.curComponent.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
-        this.curComponent.style.width = this.curComponent.sizex * this.curCanvasScale.matrixStyleOriginWidth
-        this.curComponent.style.height = this.curComponent.sizey * this.curCanvasScale.matrixStyleOriginHeight
         this.curComponent.auxiliaryMatrix = false
         this.$emit('amRemoveItem')
       } else {
@@ -140,8 +137,28 @@ export default {
         this.curComponent.auxiliaryMatrix = true
         this.$emit('amAddItem')
       }
+      setTimeout(() => {
+        this.recordMatrixCurShadowStyle()
+      }, 50)
       this.$store.state.styleChangeTimes++
       bus.$emit('auxiliaryMatrixChange')
+    },
+    // 记录当前样式 跟随阴影位置 矩阵处理
+    recordMatrixCurShadowStyle() {
+      // debugger
+      const left = (this.curComponent.x - 1) * this.curCanvasScale.matrixStyleWidth
+      const top = (this.curComponent.y - 1) * this.curCanvasScale.matrixStyleHeight
+      const width = this.curComponent.sizex * this.curCanvasScale.matrixStyleWidth
+      const height = this.curComponent.sizey * this.curCanvasScale.matrixStyleHeight
+      const style = {
+        left: left,
+        top: top,
+        width: width,
+        height: height
+      }
+      this.$store.commit('setShapeStyle', style)
+      // resize
+      this.$emit('resizeView')
     },
     edit() {
       // 编辑时临时保存 当前修改的画布

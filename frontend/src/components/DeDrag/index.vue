@@ -21,7 +21,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" />
+    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" />
     <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       v-for="(handlei, indexi) in actualHandles"
@@ -1680,6 +1680,9 @@ export default {
     },
     amRemoveItem() {
       this.$emit('amRemoveItem')
+    },
+    resizeView() {
+      this.$emit('resizeView')
     }
   }
 
