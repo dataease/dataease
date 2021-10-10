@@ -27,8 +27,10 @@ export default {
       }
 
       const data = state.copyData.data
-      data.style.top += 20
-      data.style.left += 20
+      if (!state.curComponent.auxiliaryMatrix) {
+        data.style.top += 20
+        data.style.left += 20
+      }
 
       // if (isMouse) {
       //   data.style.top = state.menuTop

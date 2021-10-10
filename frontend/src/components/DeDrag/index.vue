@@ -11,7 +11,8 @@
         [classNameRotating]: rotating,
         [classNameRotatable]: rotatable,
         [classNameMouseOn]: mouseOn || active,
-        ['linkageSetting']:linkageActive
+        ['linkageSetting']:linkageActive,
+        ['positionChange']:!(dragging || resizing||rotating)
       },
       className
     ]"
@@ -595,7 +596,7 @@ export default {
       this.maxH = val
     },
     w(val) {
-      // console.log('changeWidthCK：' + this.resizing)
+      console.log('changeWidthCK：' + this.resizing)
 
       if (this.resizing || this.dragging) {
         return
@@ -1576,12 +1577,17 @@ export default {
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
-      // console.log('recordMatrixCurShadowStyle')
       // debugger
       const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
       const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight
       const width = this.element.sizex * this.curCanvasScale.matrixStyleWidth
       const height = this.element.sizey * this.curCanvasScale.matrixStyleHeight
+      // const t1 = Math.round(this.width / this.curCanvasScale.matrixStyleWidth)
+      // const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
+      // const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+      // const width = t1 * this.curCanvasScale.matrixStyleWidth
+      // const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+
       const style = {
         ...this.defaultStyle
       }
@@ -1591,6 +1597,8 @@ export default {
       style.height = height
       style.rotate = this.rotate
       // this.hasMove = true
+      // console.log('recordMatrixCurShadowStyle:t1:' + t1 + ';mw:' + this.curCanvasScale.matrixStyleWidth + ';width:' + width)
+
       this.$store.commit('setShapeStyle', style)
 
       // resize
@@ -1755,6 +1763,10 @@ export default {
 
 .linkageSetting{
   opacity: 0.5;
+}
+
+.positionChange{
+  transition: 0.2s
 }
 
 .gap_class{

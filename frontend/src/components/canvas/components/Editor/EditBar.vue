@@ -26,6 +26,9 @@
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
+<!--      <spa>-->
+<!--        {{ curComponent.x }}-{{ curComponent.y }}&#45;&#45;{{ curComponent.sizex }}-{{ curComponent.sizey }}-->
+<!--      </spa>-->
     </div>
 
   </div>
@@ -69,7 +72,7 @@ export default {
     }
   },
   mounted() {
-    this.createTimer()
+    // this.createTimer()
   },
   computed: {
     existLinkage() {
@@ -102,7 +105,7 @@ export default {
     ])
   },
   beforeDestroy() {
-    this.destroyTimer()
+    // this.destroyTimer()
   },
   methods: {
     createTimer() {
