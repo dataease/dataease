@@ -149,6 +149,8 @@ export default {
         return 'Oracle'
       }else if (type === 'pg') {
         return 'PostgreSQL'
+      }else if (type === 'redshift') {
+        return 'AWS Redshift'
       }
     },
 

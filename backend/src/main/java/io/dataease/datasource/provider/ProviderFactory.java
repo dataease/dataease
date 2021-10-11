@@ -30,6 +30,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("jdbc", DatasourceProvider.class);
             case pg:
                 return context.getBean("jdbc", DatasourceProvider.class);
+            case redshift:
+                return context.getBean("jdbc", DatasourceProvider.class);
             default:
                 return context.getBean("jdbc", DatasourceProvider.class);
         }
@@ -48,6 +50,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("pgQuery", QueryProvider.class);
             case oracle:
                 return context.getBean("oracleQuery", QueryProvider.class);
+            case redshift:
+                return context.getBean("redshiftQuery", QueryProvider.class);
             default:
                 return context.getBean("mysqlQuery", QueryProvider.class);
         }

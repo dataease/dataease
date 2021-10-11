@@ -436,6 +436,12 @@ public class JdbcProvider extends DatasourceProvider {
                 password = pgConfigration.getPassword();
                 driver = pgConfigration.getDriver();
                 jdbcurl = pgConfigration.getJdbc();
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                username = redshiftConfigration.getUsername();
+                password = redshiftConfigration.getPassword();
+                driver = redshiftConfigration.getDriver();
+                jdbcurl = redshiftConfigration.getJdbc();
             default:
                 break;
         }
@@ -493,6 +499,13 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setJdbcUrl(pgConfigration.getJdbc());
                 jdbcDTO = pgConfigration;
                 break;
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                dataSource.setUser(redshiftConfigration.getUsername());
+                dataSource.setDriverClass(redshiftConfigration.getDriver());
+                dataSource.setPassword(redshiftConfigration.getPassword());
+                dataSource.setJdbcUrl(redshiftConfigration.getJdbc());
+                jdbcDTO = redshiftConfigration;
             default:
                 break;
         }
@@ -514,6 +527,9 @@ public class JdbcProvider extends DatasourceProvider {
             case pg:
                 PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
                 return pgConfigration.getDataBase();
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                return redshiftConfigration.getDataBase();
             default:
                 return null;
         }
@@ -546,6 +562,13 @@ public class JdbcProvider extends DatasourceProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                if(StringUtils.isEmpty(redshiftConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());
+
             default:
                 return "show tables;";
         }
@@ -559,6 +582,8 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 return "select name from sys.schemas;";
             case pg:
+                return "SELECT nspname FROM pg_namespace;";
+            case redshift:
                 return "SELECT nspname FROM pg_namespace;";
             default:
                 return "show tables;";

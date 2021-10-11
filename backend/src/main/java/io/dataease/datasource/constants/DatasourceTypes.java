@@ -6,7 +6,8 @@ public enum DatasourceTypes {
     pg("pg", "pg", "org.postgresql.Driver", "\"", "\"", "\"", "\""),
     sqlServer("sqlServer", "sqlServer", "com.microsoft.sqlserver.jdbc.SQLServerDriver", "\"", "\"", "\"", "\""),
     doris("doris", "doris", "com.mysql.jdbc.Driver", "`", "`", "", ""),
-    oracle("oracle", "oracle", "oracle.jdbc.driver.OracleDriver", "\"", "\"", "\"", "\"");
+    oracle("oracle", "oracle", "oracle.jdbc.driver.OracleDriver", "\"", "\"", "\"", "\""),
+    redshift("redshift", "redshift", "org.postgresql.Driver", "\"", "\"", "\"", "\"");
 
     private String feature;
     private String desc;

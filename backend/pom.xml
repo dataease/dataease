@@ -151,6 +151,13 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.14</version>
         </dependency>
+        <!-- redshift jdbc -->
+        <dependency>
+            <groupId>com.amazon.redshift</groupId>
+            <artifactId>redshift-jdbc42</artifactId>
+            <version>2.1.0.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
