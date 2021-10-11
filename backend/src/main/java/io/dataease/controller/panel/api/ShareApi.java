@@ -23,7 +23,6 @@ import java.util.List;
 public interface ShareApi {
 
     @ApiIgnore
-    @ApiOperation("创建分享")
     @PostMapping("/")
     void share(PanelShareRequest request);
 
@@ -37,8 +36,8 @@ public interface ShareApi {
     List<PanelShare> queryWithResourceId(BaseGridRequest request);
 
 
-    @ApiOperation("优化创建分享")
+    @ApiOperation("创建分享")
     @PostMapping("/fineSave")
     void fineSave(PanelShareFineDto panelShareFineDto);
-    
+
 }

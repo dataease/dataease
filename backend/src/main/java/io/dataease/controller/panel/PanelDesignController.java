@@ -1,6 +1,7 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.commons.model.BaseRspModel;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,8 +25,9 @@ public class PanelDesignController {
 
     @ApiOperation("保存仪表板设计")
     @PostMapping("/saveDesign/{id}")
-    public void deleteCircle(@PathVariable String id) {
+    public BaseRspModel deleteCircle(@PathVariable String id) {
         panelGroupService.deleteCircle(id);
+        return new BaseRspModel();
     }
 
 

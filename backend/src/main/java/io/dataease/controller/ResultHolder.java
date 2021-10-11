@@ -1,5 +1,6 @@
 package io.dataease.controller;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import springfox.documentation.annotations.ApiIgnore;
@@ -27,10 +28,13 @@ public class ResultHolder {
     }
 
     // 请求是否成功
+    @ApiModelProperty("请求是否成功")
     private boolean success = false;
     // 描述信息
+    @ApiModelProperty("描述信息")
     private String message;
     // 返回数据
+    @ApiModelProperty("返回数据")
     private Object data = "";
 
     public boolean isSuccess() {
