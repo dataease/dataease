@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS `demo_recent_local_cases`;
 CREATE TABLE `demo_recent_local_cases` (
   `city`    varchar(50) NOT NULL DEFAULT '' COMMENT '城市',
   `province`    varchar(50) NOT NULL COMMENT '省市区',
@@ -18,7 +17,6 @@ INSERT INTO `demo_recent_local_cases` (`city`, `province`, `new_add`, `existing`
 INSERT INTO `demo_recent_local_cases` (`city`, `province`, `new_add`, `existing`, `risk`) VALUES ('德宏州', '云南', '0', '2', '全部低风险');
 
 
-DROP TABLE IF EXISTS `demo_vaccination`;
 CREATE TABLE `demo_vaccination` (
    `cumulative`    DECIMAL(10,2) NOT NULL   COMMENT '累计接种',
    `new_add`     DECIMAL(10,2) COMMENT '较上日新增',
@@ -29,7 +27,6 @@ DEFAULT CHARSET = utf8mb4;
 INSERT INTO `demo_vaccination` (`cumulative`, `new_add`, `vaccination_per_100_people`) VALUES (7.9, 1625.5, 55.17);
 
 
-DROP TABLE IF EXISTS `demo_domestic_epidemic`;
 CREATE TABLE `demo_domestic_epidemic` (
    `statistical_time`    varchar(50) NOT NULL DEFAULT '' COMMENT '统计时间',
    `cumulative_cure`     bigint(13) COMMENT '累计治愈',
@@ -42,50 +39,6 @@ CREATE TABLE `demo_domestic_epidemic` (
 DEFAULT CHARSET = utf8mb4;
 
 INSERT INTO `demo_domestic_epidemic` (`statistical_time`, `cumulative_cure`, `current_diagnosis`, `cumulative_diagnosis`, `asymptomatic_patient`, `input` , `cumulative_death`) VALUES ('2021-06-09 10:24:27 ', 99071, 10740, 114929, 361, 6173, 5154);
-
-
-DROP TABLE IF EXISTS `demo_new_trend_of_diagnosis`;
-CREATE TABLE `demo_new_trend_of_diagnosis` (
-       `date`    varchar(50) NOT NULL DEFAULT '' COMMENT '日期',
-       `new_diagnosis`    bigint(13) COMMENT '新增确诊',
-       `current_diagnosis`    bigint(13) COMMENT '现有确诊'
-)ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;
-
-
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-8', 22, 499);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-9', 13, 485);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5/10', 33, 505);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5/11', 28, 506);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5/12', 32, 512);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5/13', 35, 523);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5/14', 49, 542);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-15', 206, 727);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-16', 236, 935);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-17', 358, 1262);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-18', 258, 1497);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-19', 286, 1759);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-20', 317, 2097);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-21', 325, 2365);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-22', 743, 3098);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-23', 480, 3561);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-24', 612, 4143);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-25', 554, 4675);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-26', 655, 5036);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-27', 677, 5948);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-28', 570, 6480);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-29', 503, 6951);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-30', 381, 7303);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-5-31', 378, 7652);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-1', 362, 7983);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-2', 571, 8535);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-3', 610, 9110);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-4', 497, 9674);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-5', 541, 10049);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-6', 368, 10372);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-7', 233, 10552);
-INSERT INTO `demo_new_trend_of_diagnosis` (`date`, `new_diagnosis`, `current_diagnosis`) VALUES ('2021-6-8', 232, 10740);
-
 
 
 INSERT INTO  `datasource` (`id`, `name`, `desc`, `type`, `configuration`, `create_time`, `update_time`, `create_by`) VALUES ('76026997-94f9-4a35-96ca-151084638969', 'demo', 'demo', 'mysql', 'ROM9ccqPioJ1SCj70u/B+KCVPfwPyNbqgIgkguMQEbjrQLbGyQLfqnQdH64Nyb+LyW+vDZzSK0SJFxUGAwGxvUtKnmpwinKRZ9OcFiQB10Nq5r/DH4+2F9/dKBs2lQgrwNj5w6MyhRswSKzkfCw5fNndcN2ad990JjOQLYz2Y5M=', '1624247414781', '1624247414781', 'admin');

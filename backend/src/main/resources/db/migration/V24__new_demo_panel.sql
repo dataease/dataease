@@ -6,7 +6,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for demo_gdp_2021
 -- ----------------------------
-DROP TABLE IF EXISTS `demo_gdp_2021`;
 CREATE TABLE `demo_gdp_2021` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `2021GDP）` varchar(255) DEFAULT NULL,
@@ -25,7 +24,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for demo_gdp_by_city
 -- ----------------------------
-DROP TABLE IF EXISTS `demo_gdp_by_city`;
 CREATE TABLE `demo_gdp_by_city` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `province` varchar(255) DEFAULT NULL,
@@ -351,7 +349,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for demo_gdp_by_city_top10
 -- ----------------------------
-DROP TABLE IF EXISTS `demo_gdp_by_city_top10`;
 CREATE TABLE `demo_gdp_by_city_top10` (
   `id` int(11) NOT NULL DEFAULT '0',
   `province` varchar(255) DEFAULT NULL,
@@ -378,7 +375,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for demo_gdp_by_industry
 -- ----------------------------
-DROP TABLE IF EXISTS `demo_gdp_by_industry`;
 CREATE TABLE `demo_gdp_by_industry` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `industry` varchar(255) DEFAULT NULL,
@@ -398,7 +394,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for demo_gdp_district_top100
 -- ----------------------------
-DROP TABLE IF EXISTS `demo_gdp_district_top100`;
 CREATE TABLE `demo_gdp_district_top100` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `province` varchar(255) DEFAULT NULL,
@@ -431,7 +426,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for demo_gdp_history
 -- ----------------------------
-DROP TABLE IF EXISTS `demo_gdp_history`;
 CREATE TABLE `demo_gdp_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `year` varchar(255) DEFAULT NULL,

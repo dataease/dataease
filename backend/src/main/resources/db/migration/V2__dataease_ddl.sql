@@ -36,7 +36,6 @@ DEFAULT CHARSET = utf8mb4;
 )ENGINE = InnoDB
 DEFAULT CHARSET = utf8mb4;*/
 
-DROP TABLE IF EXISTS `datasource`;
 CREATE TABLE `datasource` (
   `id`          varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
   `name`     varchar(50) NOT NULL COMMENT '名称',
@@ -50,7 +49,6 @@ CREATE TABLE `datasource` (
 )ENGINE = InnoDB
 DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `dataset_group`;
 CREATE TABLE IF NOT EXISTS `dataset_group` (
     `id` varchar(50) NOT NULL COMMENT 'ID',
     `name` varchar(64) NOT NULL COMMENT '名称',
@@ -64,7 +62,6 @@ CREATE TABLE IF NOT EXISTS `dataset_group` (
 
 
 
-DROP TABLE IF EXISTS `sys_dept`;
 CREATE TABLE `sys_dept` (
   `dept_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `pid` bigint(20) DEFAULT NULL COMMENT '上级部门',
@@ -79,7 +76,6 @@ CREATE TABLE `sys_dept` (
   KEY `inx_pid` (`pid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='组织机构';
 
-DROP TABLE IF EXISTS `sys_menu`;
 CREATE TABLE `sys_menu` (
   `menu_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `pid` bigint(20) DEFAULT NULL COMMENT '上级菜单ID',
@@ -105,7 +101,6 @@ CREATE TABLE `sys_menu` (
   KEY `inx_pid` (`pid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统菜单';
 
-DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user` (
   `user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `dept_id` bigint(20) DEFAULT NULL COMMENT '部门名称',
@@ -132,7 +127,6 @@ CREATE TABLE `sys_user` (
   KEY `inx_enabled` (`enabled`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统用户';
 
-DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role` (
   `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(255) NOT NULL COMMENT '名称',
@@ -146,7 +140,6 @@ CREATE TABLE `sys_role` (
   KEY `role_name_index` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
 
-DROP TABLE IF EXISTS `sys_roles_menus`;
 CREATE TABLE `sys_roles_menus` (
   `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
@@ -154,7 +147,6 @@ CREATE TABLE `sys_roles_menus` (
   KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色菜单关联';
 
-DROP TABLE IF EXISTS `sys_users_roles`;
 CREATE TABLE `sys_users_roles` (
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
@@ -162,7 +154,6 @@ CREATE TABLE `sys_users_roles` (
   KEY `FKq4eq273l04bpu4efj0jd0jb98` (`role_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户角色关联';
 
-DROP TABLE IF EXISTS `my_plugin`;
 CREATE TABLE `my_plugin` (
   `plugin_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `name` varchar(255) DEFAULT NULL COMMENT '插件名称',
@@ -182,16 +173,7 @@ CREATE TABLE `my_plugin` (
   PRIMARY KEY (`plugin_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='插件表';
 
-DROP TABLE IF EXISTS `license`;
-CREATE TABLE `license` (
-   `id` varchar(50) NOT NULL,
-   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-   `license` longtext COMMENT 'license',
-   `f2c_license` longtext COMMENT 'F2C License',
-   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `dataset_table`;
 CREATE TABLE IF NOT EXISTS `dataset_table`
 (
     `id`             varchar(50) NOT NULL COMMENT 'ID',
@@ -207,7 +189,6 @@ CREATE TABLE IF NOT EXISTS `dataset_table`
     ) ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `dataset_table_field`;
 CREATE TABLE IF NOT EXISTS `dataset_table_field` (
    `id` varchar(50) NOT NULL COMMENT 'ID',
    `table_id` varchar(50) NOT NULL COMMENT '表ID',
@@ -226,7 +207,6 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field` (
    KEY `IDX_DE_TYPE` (`de_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `dataset_table_task`;
 CREATE TABLE IF NOT EXISTS `dataset_table_task`
 (
     `id`          varchar(50)  NOT NULL COMMENT 'ID',
@@ -244,7 +224,6 @@ CREATE TABLE IF NOT EXISTS `dataset_table_task`
     ) ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `dataset_table_task_log`;
 CREATE TABLE IF NOT EXISTS `dataset_table_task_log` (
   `id` varchar(50) NOT NULL COMMENT 'ID',
   `table_id` varchar(50) NOT NULL COMMENT '表ID',
@@ -259,7 +238,6 @@ CREATE TABLE IF NOT EXISTS `dataset_table_task_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- chart start
-DROP TABLE IF EXISTS `chart_group`;
 CREATE TABLE IF NOT EXISTS `chart_group`
 (
     `id`          varchar(50) NOT NULL COMMENT 'ID',
@@ -273,7 +251,6 @@ CREATE TABLE IF NOT EXISTS `chart_group`
     ) ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `chart_view`;
 CREATE TABLE `chart_view` (
   `id` varchar(50) NOT NULL COMMENT 'ID',
   `name` varchar(64) DEFAULT NULL COMMENT '名称',
@@ -297,7 +274,6 @@ CREATE TABLE `chart_view` (
 
 -- chart end
 
-DROP TABLE IF EXISTS `panel_design`;
 CREATE TABLE `panel_design` (
     `id` varchar(100) NOT NULL,
     `panel_id` varchar(100) DEFAULT NULL COMMENT 'panel id',
@@ -311,7 +287,6 @@ CREATE TABLE `panel_design` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='仪表板和组件的关联关系 组件分为普通视图和系统组件';
 
-DROP TABLE IF EXISTS `panel_group`;
 CREATE TABLE `panel_group` (
   `id` varchar(50) NOT NULL,
   `name` varchar(255) DEFAULT NULL COMMENT '名称',
@@ -331,7 +306,6 @@ CREATE TABLE `panel_group` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `panel_view`;
 CREATE TABLE `panel_view` (
   `id` varchar(50) NOT NULL,
   `panel_group_id` varchar(50) DEFAULT NULL COMMENT 'panel_group_id',
@@ -343,7 +317,6 @@ CREATE TABLE `panel_view` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `panel_store`;
 CREATE TABLE `panel_store` (
    `store_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
    `panel_group_id` varchar(50) NOT NULL COMMENT '仪表板ID',
@@ -354,24 +327,6 @@ CREATE TABLE `panel_store` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板收藏';
 
 
-DROP TABLE IF EXISTS `panel_template`;
-CREATE TABLE `panel_template` (
-  `id` varchar(50) NOT NULL,
-  `name` varchar(255) DEFAULT NULL COMMENT '名称',
-  `pid` varchar(255) DEFAULT NULL COMMENT '父级id',
-  `level` int(10) DEFAULT NULL COMMENT '层级',
-  `node_type` varchar(255) DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
-  `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
-  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
-  `snapshot` longtext COMMENT '缩略图',
-  `template_type` varchar(255) DEFAULT NULL COMMENT '仪表板类型 system 系统内置 self 用户自建 ',
-  `template_style` longtext COMMENT 'template 样式',
-  `template_data` longtext COMMENT 'template 数据',
-  `dynamic_data` longtext COMMENT '预存数据',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `panel_share`;
 CREATE TABLE `panel_share` (
        `share_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '分享ID',
        `panel_group_id` varchar(50) DEFAULT NULL COMMENT '仪表板ID',
@@ -384,7 +339,6 @@ CREATE TABLE `panel_share` (
        KEY `UK_share_type` (`type`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板分享';
 
-DROP TABLE IF EXISTS `panel_link`;
 CREATE TABLE `panel_link` (
       `resource_id` varchar(50) NOT NULL COMMENT '资源ID',
       `valid` tinyint(1) default 0 COMMENT '启用链接',
@@ -393,7 +347,6 @@ CREATE TABLE `panel_link` (
       PRIMARY KEY (`resource_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板链接';
 
-DROP TABLE IF EXISTS `panel_template`;
 CREATE TABLE `panel_template` (
       `id` varchar(50) NOT NULL,
       `name` varchar(255) DEFAULT NULL COMMENT '名称',
@@ -410,7 +363,6 @@ CREATE TABLE `panel_template` (
       PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `panel_subject`;
 CREATE TABLE `panel_subject` (
      `id` varchar(50) NOT NULL,
      `name` varchar(255) DEFAULT NULL COMMENT '主题名称',
@@ -423,7 +375,6 @@ CREATE TABLE `panel_subject` (
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `dataset_table_incremental_config`;
 CREATE TABLE IF NOT EXISTS `dataset_table_incremental_config`
 (
     `id`          varchar(50)  NOT NULL COMMENT 'ID',
@@ -434,7 +385,6 @@ CREATE TABLE IF NOT EXISTS `dataset_table_incremental_config`
     ) ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `dataset_table_union`;
 CREATE TABLE IF NOT EXISTS `dataset_table_union`
 (
     `id`                    varchar(50) NOT NULL COMMENT 'ID',
@@ -450,7 +400,6 @@ CREATE TABLE IF NOT EXISTS `dataset_table_union`
     ) ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `license`;
 CREATE TABLE `license` (
    `id` varchar(50) NOT NULL,
    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
@@ -460,7 +409,6 @@ CREATE TABLE `license` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-DROP TABLE IF EXISTS `plugin_sys_menu`;
 CREATE TABLE `plugin_sys_menu` (
   `menu_id` bigint(8) NOT NULL,
   `pid` bigint(8) DEFAULT NULL,

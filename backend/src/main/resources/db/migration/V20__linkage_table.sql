@@ -4,7 +4,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for panel_view_linkage
 -- ----------------------------
-DROP TABLE IF EXISTS `panel_view_linkage`;
 CREATE TABLE `panel_view_linkage` (
   `id` varchar(50) NOT NULL,
   `panel_id` varchar(50) DEFAULT NULL,
@@ -20,7 +19,6 @@ CREATE TABLE `panel_view_linkage` (
 -- ----------------------------
 -- Table structure for panel_view_linkage_field
 -- ----------------------------
-DROP TABLE IF EXISTS `panel_view_linkage_field`;
 CREATE TABLE `panel_view_linkage_field` (
   `id` varchar(50) NOT NULL,
   `linkage_id` varchar(50) DEFAULT NULL COMMENT '联动ID',
