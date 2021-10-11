@@ -27,7 +27,7 @@
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
               <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
             </div>
-            <div style="position: relative; margin: 18px auto 16px;">
+            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
               <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                 {{ $t('panel.view') }}
               </div>
@@ -42,7 +42,7 @@
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
                   <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
                 </div>
-                <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
+                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
                   <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                     {{ $t('panel.module') }}
                   </div>
@@ -59,7 +59,7 @@
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
                   <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
                 </div>
-                <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
+                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
                   <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                     {{ $t('panel.other_module') }}
                   </div>
@@ -844,7 +844,7 @@ export default {
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, .05);
   transition: all .25s cubic-bezier(.7, .3, .1, 1);
   transform: translate(100%);
-  background: #fff;
+  background: var(--SiderBG, #fff);
   z-index: 1003;
 }
 
@@ -884,16 +884,16 @@ export default {
   overflow-y: auto;
 }
 .button-show{
-    background-color: #ebf2fe!important;
+    background-color: var(--MainContentBG, #ebf2fe)!important;
 }
 
 .button-closed{
-  background-color: #ffffff!important;
+  background-color: var(--SiderBG, #ffffff)!important;
 }
 .style-aside{
   width: 250px;
   max-width:250px!important;
-  border: 1px solid #E6E6E6;
+  border: 1px solid var(--TableBorderColor, #E6E6E6);
   padding: 10px;
   transition: all 0.3s;
 
@@ -929,5 +929,8 @@ export default {
   .style-hidden{
     overflow-x: hidden;
   }
+.button-text {
+    color: var(--TextActive);
+}
 
 </style>

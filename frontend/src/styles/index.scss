@@ -1,10 +1,10 @@
 
 $--font-path: '~element-ui/lib/theme-chalk/fonts';
 
-.defaultTheme {
+/* .defaultTheme {
   @import './theme/default.scss';
   @import "~element-ui/packages/theme-chalk/src/index";
-}
+} */
 .blackTheme {
   @import './theme/dark.scss';
   @import "~element-ui/packages/theme-chalk/src/index";
@@ -360,12 +360,20 @@ div:focus {
   z-index: 10000 !important;
 }
 
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
   width: 10px;
   height: 10px;
   background: #d7d9e3;
   border-radius: 4px;
+} */
+
+::-webkit-scrollbar-thumb {
+  width: 10px;
+  height: 10px;
+  background: #38393a !important;
+  border-radius: 4px;
 }
+
 
 ::-webkit-scrollbar {
   width: 5px;
@@ -455,9 +463,9 @@ div:focus {
     border-color: var(--border-color-input) !important;
 }
 
-.blackTheme .el-popover {
+/* .blackTheme .el-popover {
     background-color: var(--MainBG);
-}
+} */
 
 .blackTheme .main-area-input {
     input.el-input__inner {
@@ -497,12 +505,13 @@ div:focus {
     background-color: var(--MainBG) !important;
     color: var(--Main) !important;
 }
-.blackTheme .el-dialog {
+/* .blackTheme .el-dialog {
     background: var(--ContentBG) !important;
     color: var(--TextPrimary) !important;
 }
+ */
 .blackTheme .el-dialog__title {
-    color: var(--TextPrimary) !important;
+    color: #ffffff !important;
 }
 
 .blackTheme .title-text {
@@ -557,12 +566,56 @@ div:focus {
 .blackTheme .el-submenu__title {
     color: var(--TextPrimary) ;
 }
+.blackTheme .el-drawer__body {
+    background-color: var(--MainContentBG);
+}
 
-/* .chart-radio-div {
-    label.el-radio {
-        span.el-radio__input {
-            display: none !important;
-        }
-    }
-} */
+.blackTheme .el-select-dropdown__item.hover {
+    background-color: #171B22 !important;
+}
+.blackTheme .el-select-dropdown__item:hover {
+    background-color: #171B22 !important;
+}
+
+.blackTheme .el-dropdown-menu__item:not(.is-disabled):hover {
+    background-color: #171B22 !important;
+}
+
+.blackTheme .el-dropdown-menu__item:focus {
+    background-color: #171B22 !important;
+}
+
+
+.blackTheme .el-dropdown-menu__item--divided:before {
+    background-color: #000000 !important;
+}
+
+
+.blackTheme .el-card__header {
+    border-color: var(--TableBorderColor) !important;
+}
+
+.blackTheme .CodeMirror {
+    background-color: #000000 ;
+    color: #ffffff;
+}
+.blackTheme .CodeMirror-code {
+    background-color: transparent;
+}
+
+.blackTheme .CodeMirror-gutters {
+    background-color: #000000 ;
+}
+
+.blackTheme .el-radio-button__inner {
+    background-color: var(--TableBG);
+    color: var(--TableColor);
+    border: var(--TableBorder);
+}
+
+.blackTheme .el-loading-mask {
+    background-color: rgb(135 131 131 / 70%);
+}
+
+
 
