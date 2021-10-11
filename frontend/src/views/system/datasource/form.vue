@@ -131,6 +131,7 @@ export default {
       form: {
         configuration: {
           initialPoolSize: 5,
+          extraParams: '',
           minPoolSize: 5,
           maxPoolSize: 50,
           maxIdleTime: 30,
@@ -192,6 +193,7 @@ export default {
       this.form.type = this.params.type
       this.form.configuration = {
         initialPoolSize: 5,
+        extraParams: '',
         minPoolSize: 5,
         maxPoolSize: 50,
         maxIdleTime: 30,
