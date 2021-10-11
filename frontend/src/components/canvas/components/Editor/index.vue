@@ -13,9 +13,9 @@
     @scroll="canvasScroll"
   >
     <!-- 网格线 -->
-    <!--    <Grid v-if="canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />-->
+    <Grid v-if="psDebug&&canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
     <!--    positionBox:{{positionBoxInfo}}-->
-<!--    <PGrid :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />-->
+    <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -120,7 +120,7 @@
     </de-drag>
     <!--拖拽阴影部分-->
     <!--    <drag-shadow v-if="(curComponent&&this.curComponent.optStatus.dragging)||dragComponentInfo" />-->
-    <drag-shadow v-if="(curComponent&&curComponent.auxiliaryMatrix)||(dragComponentInfo)" />
+    <drag-shadow v-if="(curComponent&&curComponent.auxiliaryMatrix&&(curComponent.optStatus.dragging||curComponent.optStatus.resizing))||(dragComponentInfo)" />
     <!-- 右击菜单 -->
     <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
@@ -853,6 +853,7 @@ export default {
   },
   data() {
     return {
+      psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
       start: { // 选中区域的起点
@@ -1025,7 +1026,6 @@ export default {
   mounted() {
     // 获取编辑器元素
     this.$store.commit('getEditor')
-
     const _this = this
     // bus.$on('auxiliaryMatrixChange', this.initMatrix)
     bus.$on('auxiliaryMatrixChange', () => {
@@ -1033,7 +1033,6 @@ export default {
         _this.initMatrix()
       })
     })
-
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
@@ -1041,11 +1040,15 @@ export default {
     //   this.deleteCondition(condition)
     // })
     eventBus.$on('startMoveIn', this.startMoveIn)
-
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
-    setInterval(() => {
-      _this.positionBoxInfoArray = positionBox
-    }, 500)
+    bus.$on('onRemoveLastItem', this.removeLastItem)
+
+    // 矩阵定位调试模式
+    if (this.psDebug) {
+      setInterval(() => {
+        _this.positionBoxInfoArray = positionBox
+      }, 500)
+    }
   },
   created() {
     // this.$store.dispatch('conditions/clear')
@@ -1674,6 +1677,10 @@ export default {
       this.$nextTick(function() {
         addItem.call(this, item, this.yourList.length - 1)
       })
+    },
+    removeLastItem() {
+      console.log('rlI:' + JSON.stringify(this.yourList))
+      this.removeItem(this.yourList.length - 1)
     },
     startMoveIn() {
       if (this.canvasStyleData.auxiliaryMatrix) {

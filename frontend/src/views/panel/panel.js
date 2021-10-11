@@ -7,7 +7,7 @@ export const DEFAULT_PANEL_STYLE = {
   color: '#ffffff',
   imageUrl: null,
   backgroundType: 'image',
-  gap: 'no'
+  gap: 'yes'
 }
 
 export const CANVAS_STYLE = {

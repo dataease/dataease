@@ -27,6 +27,7 @@ import { Condition } from '@/components/widget/bean/Condition'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
+import bus from '@/utils/bus'
 
 Vue.use(Vuex)
 
@@ -280,6 +281,10 @@ const data = {
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
+      // 如果当前没有拖拽的元素没有放置到画布 清理一下矩阵的占位符
+      if (state.dragComponentInfo.moveStatus !== 'drop') {
+        bus.$emit('onRemoveLastItem')
+      }
       state.dragComponentInfo = null
     }
   },

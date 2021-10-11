@@ -188,6 +188,7 @@ export default {
         }
       })
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+      component.moveStatus = 'start'
       return component
     }
 

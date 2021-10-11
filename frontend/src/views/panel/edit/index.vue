@@ -476,6 +476,7 @@ export default {
       return data
     },
     handleDrop(e) {
+      this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
       this.currentDropElement = e

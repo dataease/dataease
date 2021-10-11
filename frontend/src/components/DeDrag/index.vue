@@ -449,7 +449,7 @@ export default {
       return {
         width: this.computedWidth,
         height: this.computedHeight,
-        opacity: 0.4,
+        opacity: 0.2,
         background: 'gray'
       }
     },
@@ -1254,7 +1254,7 @@ export default {
         // this.recordMatrixCurStyle()
         setTimeout(() => {
           this.recordMatrixCurShadowStyle()
-        }, 50)
+        }, 100)
       }
       this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
       // 记录snapshot后 移动已记录设置为false

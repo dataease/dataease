@@ -64,10 +64,7 @@ export default {
       const style = {
         transform: `translate(${left}px, ${top}px) rotate(0deg)`,
         width: width + 'px',
-        height: height + 'px',
-        opacity: 0.4,
-        background: 'gray',
-        position: 'absolute'
+        height: height + 'px'
       }
       // console.log('style=>' + JSON.stringify(style))
       // 记录外部拖拽进入仪表板时阴影区域宽高
@@ -110,7 +107,10 @@ export default {
 </script>
 <style scoped>
   .main-shadow{
-    /*transition: 0.2s;*/
+    transition: 0.2s;
+    opacity: 0.4;
+    background: #409eff;
+    position: absolute;
   }
 
 </style>
