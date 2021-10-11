@@ -1157,6 +1157,7 @@ export default {
     please_input_acquire_increment: '請輸入增長數',
     please_input_connect_timeout: '請輸入連接超時(秒)',
     no_less_then_0: '高級設置中的參數不能小于零',
+    port_no_less_then_0: '端口不能小於零',
     priority: '高級設置',
     extra_params: '額外的JDBC連接字符串'
   },

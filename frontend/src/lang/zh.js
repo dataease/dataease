@@ -1158,6 +1158,7 @@ export default {
     please_input_acquire_increment: '请输入增长数',
     please_input_connect_timeout: '请输入连接超时(秒)',
     no_less_then_0: '高级设置中的参数不能小于零',
+    port_no_less_then_0: '端口不能小于零',
     priority: '高级设置',
     data_mode: '数据模式',
     direct: '直连模式',

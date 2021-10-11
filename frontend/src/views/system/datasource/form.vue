@@ -56,8 +56,8 @@
           <el-input v-model="form.configuration.extraParams" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
-          <el-input v-model="form.configuration.port" autocomplete="off" />
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port" >
+          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
         </el-form-item>
         <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'">
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
@@ -223,6 +223,10 @@ export default {
     save() {
       if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer')) {
         this.$message.error(this.$t('datasource.please_choose_schema'))
+        return
+      }
+      if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
+        this.$message.error(this.$t('datasource.port_no_less_then_0'))
         return
       }
       if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0 || this.form.configuration.maxIdleTime < 0 ||
