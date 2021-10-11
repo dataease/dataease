@@ -50,3 +50,7 @@ INSERT INTO `system_parameter` VALUES ('oidc.open', NULL, 'text', 9);
 COMMIT;
 
 ALTER TABLE `sys_user` ADD COLUMN `sub` varchar(255)  COMMENT 'oidc用户ID' AFTER `from`;
+
+CREATE INDEX dataset_table_task_log_index ON dataset_table_task_log (id,task_id,table_id);
+CREATE INDEX dataset_table_task_index ON dataset_table_task (id);
+CREATE INDEX dataset_table_index ON dataset_table (id);
