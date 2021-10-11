@@ -360,17 +360,12 @@ div:focus {
   z-index: 10000 !important;
 }
 
-/* ::-webkit-scrollbar-thumb {
-  width: 10px;
-  height: 10px;
-  background: #d7d9e3;
-  border-radius: 4px;
-} */
+
 
 ::-webkit-scrollbar-thumb {
   width: 10px;
   height: 10px;
-  background: #38393a !important;
+  background: #d7d9e3;
   border-radius: 4px;
 }
 
@@ -615,6 +610,10 @@ div:focus {
 
 .blackTheme .el-loading-mask {
     background-color: rgb(135 131 131 / 70%);
+}
+
+.blackTheme >>> ::-webkit-scrollbar-thumb {
+    background: #38393a !important;
 }
 
 
