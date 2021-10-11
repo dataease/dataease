@@ -71,42 +71,25 @@
     .submenu-title-noDropdown:not(.is-active), .el-submenu__title {
       color: var(--SiderTextColor);
       &:hover {
-        background-color: var(--MenuHovorBG) !important;
-        color: var(--TextActive);
+        background-color: var(--MenuHovorBG, #ecf5ff) !important;
+        color: var(--TextActive, #409EFF);
       }
       &:focus {
-        background-color: var(--MenuActiveBG) !important;
-        color: var(--TextActive);
+        background-color: var(--MenuActiveBG, #ecf5ff) !important;
+        color: var(--TextActive, #409EFF);
       }
     }
     .submenu-title-noDropdown.is-active {
-        background-color: var(--MenuActiveBG) !important;
-        color: var(--TextActive);
+        background-color: var(--MenuActiveBG, #ecf5ff) !important;
+        color: var(--TextActive, #409EFF);
     }
 
     .is-active > .el-submenu__title {
-        background-color: var(--MenuActiveBG) !important;
-        color: var(--TextActive);
+        background-color: var(--MenuActiveBG, #ecf5ff) !important;
+        color: var(--TextActive, #409EFF);
     }
 
-    /* .nest-menu {
-        .el-menu-item:not(.is-active) {
-            min-width: $sideBarWidth !important;
-            background-color: var(--SiderBG) !important;
-            color: var(--SiderTextColor);
-            &:hover {
-              color: var(--TextActive) !important;
-            }
-            &:focus {
-              background-color: var(--SiderBG) !important;
-              color: var(--TextActive) !important;
-            }
-        }
-        
-        .el-menu-item.is-active {
-            color: var(--TextActive) !important;
-        }
-    } */
+    
 
     & .nest-menu .el-submenu > .el-submenu__title,
     & .el-submenu .el-menu-item {
@@ -114,7 +97,7 @@
       background-color: var(--SiderBG) !important;
       color: var(--SiderTextColor);
       &:hover {
-        background-color: var(--MenuHovorBG) !important;
+        background-color: var(--MenuHovorBG, #ecf5ff) !important;
         color: var(--TextActive) !important;
       }
     }
@@ -123,7 +106,7 @@
     & .el-submenu .is-active.el-menu-item {
       min-width: $sideBarWidth !important;
       background-color: var(--SiderBG) !important;
-      color: var(--TextActive);
+      color: var(--TextActive, #409EFF);
       
     }
     
@@ -190,24 +173,7 @@
     min-width: $sideBarWidth !important;
   }
 
-  .mobile {
-    .main-container {
-      margin-left: 0px;
-    }
-
-    .sidebar-container {
-      transition: transform .28s;
-      width: $sideBarWidth !important;
-    }
-
-    &.hideSidebar {
-      .sidebar-container {
-        pointer-events: none;
-        transition-duration: 0.3s;
-        transform: translate3d(-$sideBarWidth, 0, 0);
-      }
-    }
-  }
+  
 
   .withoutAnimation {
 
