@@ -278,6 +278,10 @@ export default {
         this.$message.error(this.$t('datasource.please_choose_schema'))
         return
       }
+      if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
+        this.$message.error(this.$t('datasource.port_no_less_then_0'))
+        return
+      }
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
