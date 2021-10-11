@@ -1,7 +1,6 @@
 -- ----------------------------
 -- Table structure for user_key
 -- ----------------------------
-DROP TABLE IF EXISTS `user_key`;
 CREATE TABLE `user_key` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
