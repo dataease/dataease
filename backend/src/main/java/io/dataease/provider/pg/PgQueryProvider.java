@@ -7,14 +7,12 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.datasource.dto.JdbcDTO;
+import io.dataease.datasource.dto.JdbcConfiguration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
-import io.dataease.provider.mysql.MySQLConstants;
-import io.dataease.provider.oracle.OracleConstants;
 import io.dataease.provider.sqlserver.SqlServerSQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -709,7 +707,7 @@ public class PgQueryProvider extends QueryProvider {
             return stringBuilder.toString();
         }).toArray(String[]::new);
         if (ds != null) {
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
             return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), tableWithSchema);
         } else {
@@ -724,7 +722,7 @@ public class PgQueryProvider extends QueryProvider {
 
     @Override
     public String convertTableToSql(String tableName, Datasource ds){
-        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format( PgConstants.KEYWORD_TABLE, schema);
         return createSQLPreview("SELECT * FROM " + schema + "." + String.format(PgConstants.KEYWORD_TABLE, tableName), null);
     }

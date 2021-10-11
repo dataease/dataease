@@ -653,7 +653,7 @@ public class ExtractDataService {
         String jobName = null;
         String script = null;
         Datasource dorisDatasource = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
-        DorisConfigration dorisConfigration = new Gson().fromJson(dorisDatasource.getConfiguration(), DorisConfigration.class);
+        DorisConfiguration dorisConfiguration = new Gson().fromJson(dorisDatasource.getConfiguration(), DorisConfiguration.class);
         String columns = columnFeilds + ",dataease_uuid";
         String transName = null;
         switch (extractType) {
@@ -661,18 +661,18 @@ public class ExtractDataService {
                 transName = "trans_" + DorisTableUtils.dorisName(datasetTable.getId());
                 outFile = DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId()));
                 jobName = "job_" + DorisTableUtils.dorisName(datasetTable.getId());
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId())), root_path + outFile + "." + extention);
+                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTable.getId())), root_path + outFile + "." + extention);
                 break;
             case "incremental_add":
                 transName = "trans_add_" + DorisTableUtils.dorisName(datasetTable.getId());
                 outFile = DorisTableUtils.dorisAddName(datasetTable.getId());
                 jobName = "job_add_" + DorisTableUtils.dorisName(datasetTable.getId());
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
+                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
                 break;
             case "incremental_delete":
                 transName = "trans_delete_" + DorisTableUtils.dorisName(datasetTable.getId());
                 outFile = DorisTableUtils.dorisDeleteName(DorisTableUtils.dorisName(datasetTable.getId()));
-                script = String.format(shellScript, dorisConfigration.getUsername(), dorisConfigration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "DELETE", root_path + outFile + "." + extention, dorisConfigration.getHost(), dorisConfigration.getHttpPort(), dorisConfigration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
+                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), String.valueOf(System.currentTimeMillis()), separator, columns, "DELETE", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), DorisTableUtils.dorisName(datasetTable.getId()), root_path + outFile + "." + extention);
                 jobName = "job_delete_" + DorisTableUtils.dorisName(datasetTable.getId());
                 break;
             default:
@@ -766,8 +766,8 @@ public class ExtractDataService {
             case ds_doris:
             case mariadb:
             case mysql:
-                MysqlConfigration mysqlConfigration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfigration.class);
-                dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfigration.getHost().trim(), mysqlConfigration.getDataBase().trim(), mysqlConfigration.getPort().toString(), mysqlConfigration.getUsername(), mysqlConfigration.getPassword());
+                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
+                dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfiguration.getHost().trim(), mysqlConfiguration.getDataBase().trim(), mysqlConfiguration.getPort().toString(), mysqlConfiguration.getUsername(), mysqlConfiguration.getPassword());
                 dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
@@ -775,28 +775,28 @@ public class ExtractDataService {
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql);
                 break;
             case sqlServer:
-                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfigration.class);
-                dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfigration.getHost().trim(), sqlServerConfigration.getDataBase(), sqlServerConfigration.getPort().toString(), sqlServerConfigration.getUsername(), sqlServerConfigration.getPassword());
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfiguration.class);
+                dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfiguration.getHost().trim(), sqlServerConfiguration.getDataBase(), sqlServerConfiguration.getPort().toString(), sqlServerConfiguration.getUsername(), sqlServerConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer);
                 break;
             case pg:
-                PgConfigration pgConfigration = new Gson().fromJson(datasource.getConfiguration(), PgConfigration.class);
-                dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfigration.getHost().trim(), pgConfigration.getDataBase(), pgConfigration.getPort().toString(), pgConfigration.getUsername(), pgConfigration.getPassword());
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasource.getConfiguration(), PgConfiguration.class);
+                dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfiguration.getHost().trim(), pgConfiguration.getDataBase(), pgConfiguration.getPort().toString(), pgConfiguration.getUsername(), pgConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.pg);
                 break;
             case oracle:
-                OracleConfigration oracleConfigration = new Gson().fromJson(datasource.getConfiguration(), OracleConfigration.class);
-                if (oracleConfigration.getConnectionType().equalsIgnoreCase("serviceName")) {
-                    String database = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ORACLE_HOSTNAME)(PORT = ORACLE_PORT))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = ORACLE_SERVICE_NAME )))".replace("ORACLE_HOSTNAME", oracleConfigration.getHost()).replace("ORACLE_PORT", oracleConfigration.getPort().toString()).replace("ORACLE_SERVICE_NAME", oracleConfigration.getDataBase());
-                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", "", database, "-1", oracleConfigration.getUsername(), oracleConfigration.getPassword());
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasource.getConfiguration(), OracleConfiguration.class);
+                if (oracleConfiguration.getConnectionType().equalsIgnoreCase("serviceName")) {
+                    String database = "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ORACLE_HOSTNAME)(PORT = ORACLE_PORT))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = ORACLE_SERVICE_NAME )))".replace("ORACLE_HOSTNAME", oracleConfiguration.getHost()).replace("ORACLE_PORT", oracleConfiguration.getPort().toString()).replace("ORACLE_SERVICE_NAME", oracleConfiguration.getDataBase());
+                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", "", database, "-1", oracleConfiguration.getUsername(), oracleConfiguration.getPassword());
                 } else {
-                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfigration.getHost().trim(), oracleConfigration.getDataBase(), oracleConfigration.getPort().toString(), oracleConfigration.getUsername(), oracleConfigration.getPassword());
+                    dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfiguration.getHost().trim(), oracleConfiguration.getDataBase(), oracleConfiguration.getPort().toString(), oracleConfiguration.getUsername(), oracleConfiguration.getPassword());
                 }
                 transMeta.addDatabase(dataMeta);
 
@@ -805,8 +805,8 @@ public class ExtractDataService {
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle);
                 break;
             case ck:
-                CHConfigration chConfigration = new Gson().fromJson(datasource.getConfiguration(), CHConfigration.class);
-                dataMeta = new DatabaseMeta("db", "ORACLE", "Native", chConfigration.getHost().trim(), chConfigration.getDataBase().trim(), chConfigration.getPort().toString(), chConfigration.getUsername(), chConfigration.getPassword());
+                CHConfiguration chConfiguration = new Gson().fromJson(datasource.getConfiguration(), CHConfiguration.class);
+                dataMeta = new DatabaseMeta("db", "ORACLE", "Native", chConfiguration.getHost().trim(), chConfiguration.getDataBase().trim(), chConfiguration.getPort().toString(), chConfiguration.getUsername(), chConfiguration.getPassword());
 //                dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
                 dataMeta.setDatabaseType("Clickhouse");
                 transMeta.addDatabase(dataMeta);

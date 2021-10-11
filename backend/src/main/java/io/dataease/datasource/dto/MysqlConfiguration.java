@@ -4,20 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-
 @Getter
 @Setter
-public class SqlServerConfigration extends JdbcDTO {
-    private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private String extraParams = "";
-    public String getJdbc(){
+public class MysqlConfiguration extends JdbcConfiguration {
+
+    private String driver = "com.mysql.cj.jdbc.Driver";
+    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true";
+
+    public String getJdbc() {
         if(StringUtils.isEmpty(extraParams.trim())){
-            return "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
+            return "jdbc:mysql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }else {
-            return "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE;EXTRA_PARAMS"
+            return "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())

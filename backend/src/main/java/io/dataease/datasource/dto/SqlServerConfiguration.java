@@ -4,25 +4,24 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+
 @Getter
 @Setter
-public class PgConfigration extends JdbcDTO {
-
-    private String driver = "org.postgresql.Driver";
+public class SqlServerConfiguration extends JdbcConfiguration {
+    private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private String extraParams = "";
-    public String getJdbc() {
+    public String getJdbc(){
         if(StringUtils.isEmpty(extraParams.trim())){
-            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
+            return "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }else {
-            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            return "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE;EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
-
         }
     }
 }
