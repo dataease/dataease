@@ -173,7 +173,7 @@ export default {
         cursor: pointer;
 
         &:hover {
-          background-color: #f5f7fa;
+         background-color: var(--background-color-base, #f5f7fa);
         }
       }
     }

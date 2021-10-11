@@ -199,7 +199,7 @@ export default {
 }
 
 .login-background {
-  background-color: $--background-color-base;
+  background-color: var(--MainBG, $--background-color-base);
   height: 100vh;
   @include login-center;
 }
@@ -208,7 +208,7 @@ export default {
   min-width: 900px;
   width: 1280px;
   height: 520px;
-  background-color: #FFFFFF;
+  background-color: var(--MainContentBG, #FFFFFF);
   @media only screen and (max-width: 1280px) {
     width: 900px;
     height: 380px;

@@ -9,37 +9,37 @@
     <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
       <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item :title="$t('panel.panel')" name="panel">
-<!--          <el-row class="shape-item">-->
-<!--            <span class="shape-item" style="margin-left: 10px">{{ $t('panel.new_element_distribution') }}:</span>-->
-<!--            &lt;!&ndash;            <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />&ndash;&gt;-->
-<!--            <el-radio-group v-model="canvasStyleData.auxiliaryMatrix" size="mini" name="auxiliaryMatrix" @change="styleChange">-->
-<!--              <el-radio-button :label="true">-->
-<!--                {{ $t('panel.matrix') }}<i class="icon iconfont icon-shujujuzhen" />-->
-<!--              </el-radio-button>-->
-<!--              <el-radio-button :label="false">-->
-<!--                {{ $t('panel.suspension') }}<i class="icon iconfont icon-xuanfuanniu" />-->
-<!--              </el-radio-button>-->
-<!--            </el-radio-group>-->
-<!--          </el-row>-->
-          <el-row style="background-color: #f7f8fa; margin: 5px">
+          <!--          <el-row class="shape-item">-->
+          <!--            <span class="shape-item" style="margin-left: 10px">{{ $t('panel.new_element_distribution') }}:</span>-->
+          <!--            &lt;!&ndash;            <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />&ndash;&gt;-->
+          <!--            <el-radio-group v-model="canvasStyleData.auxiliaryMatrix" size="mini" name="auxiliaryMatrix" @change="styleChange">-->
+          <!--              <el-radio-button :label="true">-->
+          <!--                {{ $t('panel.matrix') }}<i class="icon iconfont icon-shujujuzhen" />-->
+          <!--              </el-radio-button>-->
+          <!--              <el-radio-button :label="false">-->
+          <!--                {{ $t('panel.suspension') }}<i class="icon iconfont icon-xuanfuanniu" />-->
+          <!--              </el-radio-button>-->
+          <!--            </el-radio-group>-->
+          <!--          </el-row>-->
+          <el-row class="selector-div">
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />
             <Panel-Refresh-Time class="attr-selector" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.module_style')" name="component">
-          <el-row style="background-color: #f7f8fa; margin: 5px">
+          <el-row class="selector-div">
             <!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
             <panel-background-color-selector v-if="chart" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
-          <el-row style="background-color: #f7f8fa; margin: 5px">
+          <el-row class="selector-div">
             <panel-color-selector :source-type="'panelEchart'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('panel.table')" name="table">
-          <el-row style="background-color: #f7f8fa; margin: 5px">
+          <el-row class="selector-div">
             <panel-color-selector index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
           </el-row>
         </el-collapse-item>
@@ -179,6 +179,13 @@ export default {
     display: flex;
     align-items: center;
     z-index: 10001;
+  }
+  .blackTheme .attr-selector{
+    background-color: var(--MainBG)
+  }
+  .selector-div {
+      background-color: var(--MainBG, #f7f8fa);
+      margin: 5px
   }
 
 </style>

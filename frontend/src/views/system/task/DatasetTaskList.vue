@@ -1,7 +1,7 @@
 <template>
   <el-col>
-    <el-row style="margin-top: 10px;" v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-      <complex-table :data="data" :columns="columns" local-key="datasetTask" :transCondition="transCondition" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
+    <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="margin-top: 10px;">
+      <complex-table :data="data" :columns="columns" local-key="datasetTask" :trans-condition="transCondition" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
         <template #toolbar>
           <el-button icon="el-icon-circle-plus-outline" @click="selectDataset">{{ $t('dataset.task.create') }}</el-button>
         </template>
@@ -34,7 +34,7 @@
         <el-table-column prop="lastExecStatus" :label="$t('dataset.task.last_exec_status')">
           <template slot-scope="scope">
             <span v-if="scope.row.lastExecStatus === 'Completed'" style="color: green">{{ $t('dataset.completed') }}</span>
-            <span v-if="scope.row.lastExecStatus === 'Underway'" style="color: blue">
+            <span v-if="scope.row.lastExecStatus === 'Underway'" class="blue-color">
               <i class="el-icon-loading" />
               {{ $t('dataset.underway') }}
             </span>
@@ -63,10 +63,10 @@
             <span v-if="scope.row.status === 'Stopped'" style="color: red">
               <div type="danger" style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
             </span>
-            <span v-if="scope.row.status === 'Pending'" style="color: blue">
+            <span v-if="scope.row.status === 'Pending'" class="blue-color">
               <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
             </span>
-            <span v-if="scope.row.status === 'Exec'" style="color: blue">
+            <span v-if="scope.row.status === 'Exec'" class="blue-color">
               <i class="el-icon-loading" />
               {{ $t('dataset.underway') }}
             </span>
@@ -79,7 +79,7 @@
 
     <el-dialog v-dialogDrag :title="update_task_dialog_title" :visible="update_task" :show-close="false" width="50%" class="dialog-css" append-to-body>
       <el-col>
-        <el-form :form="taskForm"  ref="taskForm" :model="taskForm" label-width="100px" size="mini" :rules="taskFormRules">
+        <el-form ref="taskForm" :form="taskForm" :model="taskForm" label-width="100px" size="mini" :rules="taskFormRules">
           <el-form-item :label="$t('dataset.task_name')" prop="name">
             <el-input v-model="taskForm.name" size="mini" style="width: 50%" :placeholder="$t('dataset.task_name')" />
           </el-form-item>
@@ -168,7 +168,7 @@
 
     <!--添加任务-选择数据集-->
     <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
-      <table-selector @getTable="getTable" privileges="manage" :mode="1" :customType=customType  showMode="datasetTask"/>
+      <table-selector privileges="manage" :mode="1" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>
@@ -264,7 +264,7 @@ export default {
         useComplexSearch: true,
         quickPlaceholder: this.$t('dataset.task.search_by_name'),
         components: [
-          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput'},
+          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput' },
           { field: 'dataset_table_task.id', label: this.$t('dataset.task_id'), component: 'FuComplexInput' },
           { field: 'dataset_table.name', label: this.$t('dataset.name'), component: 'DeComplexInput' },
           { field: 'dataset_table_task.status', label: this.$t('dataset.task.task_status'), component: 'FuComplexSelect',
@@ -416,17 +416,17 @@ export default {
       this.update_task = true
     },
     changeTaskStatus(task) {
-      let param = JSON.parse(JSON.stringify(task));
+      const param = JSON.parse(JSON.stringify(task))
       param.status = task.status === 'Underway' ? 'Pending' : 'Underway'
       post('/dataset/task/updateStatus', param).then(response => {
-        if(response.success){
+        if (response.success) {
           task.status = param.status
           this.$message({
             message: this.$t('dataset.task.change_success'),
             type: 'success',
             showClose: true
           })
-        }else {
+        } else {
           this.search(this.last_condition, false)
         }
       }).catch(() => {
@@ -558,13 +558,13 @@ export default {
       this.taskForm.cron = val
     },
     disableEdit(task) {
-      return task.rate === 'SIMPLE' || task.status === 'Stopped' || !hasDataPermission('manage',task.privileges)
+      return task.rate === 'SIMPLE' || task.status === 'Stopped' || !hasDataPermission('manage', task.privileges)
     },
     disableExec(task) {
-      return task.status === 'Stopped' || task.status === 'Pending' || task.rate === 'SIMPLE' || !hasDataPermission('manage',task.privileges)
+      return task.status === 'Stopped' || task.status === 'Pending' || task.rate === 'SIMPLE' || !hasDataPermission('manage', task.privileges)
     },
     disableDelete(task) {
-      return false;
+      return false
       // !hasDataPermission('manage',task.privileges)
     },
     deleteTask(task) {
@@ -649,7 +649,7 @@ export default {
             this.resetTaskForm()
             this.search(this.last_condition, true)
           })
-        }else {
+        } else {
           return false
         }
       })
@@ -713,5 +713,9 @@ export default {
 
 span{
   font-size: 12px;
+}
+
+.blue-color {
+    color: var(--Main);
 }
 </style>

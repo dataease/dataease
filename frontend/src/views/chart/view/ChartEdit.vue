@@ -1672,7 +1672,7 @@ export default {
 
   .blackTheme .item-dimension {
     border: solid 1px ;
-    border-color: var(--MainBorderColor);
+    border-color: var(--TableBorderColor);
     color: var(--TextPrimary);
     background-color: var(--MainBG);
   }
@@ -1710,7 +1710,7 @@ export default {
   .blackTheme .item-quota {
 
     border: solid 1px ;
-    border-color: var(--MainBorderColor);
+    border-color: var(--TableBorderColor);
     color: var(--TextPrimary);
     background-color: var(--MainBG);
 
@@ -1802,7 +1802,7 @@ export default {
   }
 
   .blackTheme .attr-style{
-    border-color: var(--MainBorderColor) !important;
+    border-color: var(--TableBorderColor) !important;
     color: var(--TextPrimary);
   }
 
@@ -1873,7 +1873,7 @@ export default {
   .blackTheme .field-height{
 
     border-top: 1px solid ;
-    border-color: var(--MainBorderColor) !important;
+    border-color: var(--TableBorderColor) !important;
   }
   .padding-tab{
     padding: 0;
@@ -1899,7 +1899,7 @@ export default {
   }
   .blackTheme .drag-block-style{
     border: 1px solid ;
-    border-color: var(--MainBorderColor);
+    border-color: var(--TableBorderColor);
     background-color: var(--ContentBG);
   }
 
@@ -1918,16 +1918,16 @@ export default {
   }
 
   .blackTheme .theme-border-class {
-    border-color: var(--MainBorderColor) !important;
+    border-color: var(--TableBorderColor) !important;
     color: var(--TextPrimary) !important;
     background-color: var(--ContentBG);
   }
   .blackTheme .padding-lr {
-    border-color: var(--MainBorderColor) !important;
+    border-color: var(--TableBorderColor) !important;
   }
   .blackTheme .theme-item-class {
       background-color: var(--MainBG) !important;
-      border-color: var(--MainBorderColor) !important;
+      border-color: var(--TableBorderColor) !important;
   }
 
 </style>
