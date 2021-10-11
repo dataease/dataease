@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
-public class CHConfigration extends JdbcDTO {
+public class CHConfiguration extends JdbcConfiguration {
 
     private String driver = "ru.yandex.clickhouse.ClickHouseDriver";
     private String extraParams = "";

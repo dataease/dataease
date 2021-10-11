@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JdbcDTO {
+public class JdbcConfiguration {
     private String host;
     private Integer port;
     private String username;

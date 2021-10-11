@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -48,17 +47,17 @@ public class EsProvider extends DatasourceProvider {
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
         try {
-            EsConfigDTO esConfigDTO = new Gson().fromJson(dsr.getDatasource().getConfiguration(), EsConfigDTO.class);
+            EsConfiguration esConfiguration = new Gson().fromJson(dsr.getDatasource().getConfiguration(), EsConfiguration.class);
             HttpClientConfig httpClientConfig = new HttpClientConfig();
-            if(StringUtils.isNotEmpty(esConfigDTO.getEsUsername())){
-                String auth = esConfigDTO.getEsUsername() + ":" + esConfigDTO.getEsPassword();
+            if(StringUtils.isNotEmpty(esConfiguration.getEsUsername())){
+                String auth = esConfiguration.getEsUsername() + ":" + esConfiguration.getEsPassword();
                 byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
                 httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
             }
             Requst requst = new Requst();
             requst.setQuery(dsr.getQuery());
             requst.setFetch_size(dsr.getFetchSize());
-            String url = esConfigDTO.getUrl().endsWith("/") ? esConfigDTO.getUrl() + esConfigDTO.getUri() + "?format=json" : esConfigDTO.getUrl() + "/" + esConfigDTO.getUri() + "?format=json";
+            String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + esConfiguration.getUri() + "?format=json" : esConfiguration.getUrl() + "/" + esConfiguration.getUri() + "?format=json";
             String  response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
             EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
 
@@ -225,7 +224,7 @@ public class EsProvider extends DatasourceProvider {
 
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
-        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
+        EsConfiguration esConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfiguration.class);
         String response = exexGetQuery(datasourceRequest);
 
         if(JSONObject.parseObject(response).getJSONObject("error") != null){
@@ -239,21 +238,21 @@ public class EsProvider extends DatasourceProvider {
             throw new Exception(Translator.get("i18n_es_limit"));
         }
         if(Integer.valueOf(version.substring(0,1)) == 6 ) {
-            esConfigDTO.setUri("_xpack/sql");
+            esConfiguration.setUri("_xpack/sql");
         }
         if(Integer.valueOf(version.substring(0,1)) == 7 ) {
-            esConfigDTO.setUri("_sql");
+            esConfiguration.setUri("_sql");
         }
-        datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfigDTO));
+        datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfiguration));
         getTables(datasourceRequest);
     }
 
     private String exexQuery(DatasourceRequest datasourceRequest, String sql, String uri){
-        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
-        uri = esConfigDTO.getUri()+uri;
+        EsConfiguration esConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfiguration.class);
+        uri = esConfiguration.getUri()+uri;
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        if(StringUtils.isNotEmpty(esConfigDTO.getEsUsername()) && StringUtils.isNotEmpty(esConfigDTO.getEsPassword())){
-            String auth = esConfigDTO.getEsUsername() + ":" + esConfigDTO.getEsPassword();
+        if(StringUtils.isNotEmpty(esConfiguration.getEsUsername()) && StringUtils.isNotEmpty(esConfiguration.getEsPassword())){
+            String auth = esConfiguration.getEsUsername() + ":" + esConfiguration.getEsPassword();
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
             httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
         }
@@ -261,21 +260,21 @@ public class EsProvider extends DatasourceProvider {
         Requst requst = new Requst();
         requst.setQuery(sql);
         requst.setFetch_size(datasourceRequest.getFetchSize());
-        String url = esConfigDTO.getUrl().endsWith("/") ? esConfigDTO.getUrl() + uri : esConfigDTO.getUrl() + "/" + uri;
+        String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + uri : esConfiguration.getUrl() + "/" + uri;
         String  response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
         return response;
     }
 
     private String exexGetQuery(DatasourceRequest datasourceRequest){
-        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
+        EsConfiguration esConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfiguration.class);
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        if(StringUtils.isNotEmpty(esConfigDTO.getEsUsername()) && StringUtils.isNotEmpty(esConfigDTO.getEsPassword())){
-            String auth = esConfigDTO.getEsUsername() + ":" + esConfigDTO.getEsPassword();
+        if(StringUtils.isNotEmpty(esConfiguration.getEsUsername()) && StringUtils.isNotEmpty(esConfiguration.getEsPassword())){
+            String auth = esConfiguration.getEsUsername() + ":" + esConfiguration.getEsPassword();
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
             httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
         }
 
-        String  response = HttpClientUtil.get(esConfigDTO.getUrl(), httpClientConfig);
+        String  response = HttpClientUtil.get(esConfiguration.getUrl(), httpClientConfig);
         return response;
     }
 

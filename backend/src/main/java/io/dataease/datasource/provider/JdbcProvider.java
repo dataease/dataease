@@ -420,12 +420,12 @@ public class JdbcProvider extends DatasourceProvider {
     private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
         ComboPooledDataSource dataSource;
         dataSource = new ComboPooledDataSource();
-        JdbcDTO jdbcDTO = setCredential(datasourceRequest, dataSource);
-        dataSource.setMaxIdleTime(jdbcDTO.getMaxIdleTime()); // 最大空闲时间
-        dataSource.setAcquireIncrement(jdbcDTO.getAcquireIncrement());// 增长数
-        dataSource.setInitialPoolSize(jdbcDTO.getInitialPoolSize());// 初始连接数
-        dataSource.setMinPoolSize(jdbcDTO.getMinPoolSize()); // 最小连接数
-        dataSource.setMaxPoolSize(jdbcDTO.getMaxPoolSize()); // 最大连接数
+        JdbcConfiguration jdbcConfiguration = setCredential(datasourceRequest, dataSource);
+        dataSource.setMaxIdleTime(jdbcConfiguration.getMaxIdleTime()); // 最大空闲时间
+        dataSource.setAcquireIncrement(jdbcConfiguration.getAcquireIncrement());// 增长数
+        dataSource.setInitialPoolSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
+        dataSource.setMinPoolSize(jdbcConfiguration.getMinPoolSize()); // 最小连接数
+        dataSource.setMaxPoolSize(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
         dataSource.setAcquireRetryAttempts(30);// 获取连接重试次数
         dataSource.setIdleConnectionTestPeriod(60); // 每60s检查数据库空闲连接
         dataSource.setMaxStatements(0); // c3p0全局的PreparedStatements缓存的大小
@@ -451,41 +451,41 @@ public class JdbcProvider extends DatasourceProvider {
             case mariadb:
             case de_doris:
             case ds_doris:
-                MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
-                username = mysqlConfigration.getUsername();
-                password = mysqlConfigration.getPassword();
-                driver = mysqlConfigration.getDriver();
-                jdbcurl = mysqlConfigration.getJdbc();
+                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
+                username = mysqlConfiguration.getUsername();
+                password = mysqlConfiguration.getPassword();
+                driver = mysqlConfiguration.getDriver();
+                jdbcurl = mysqlConfiguration.getJdbc();
                 break;
             case sqlServer:
-                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                username = sqlServerConfigration.getUsername();
-                password = sqlServerConfigration.getPassword();
-                driver = sqlServerConfigration.getDriver();
-                jdbcurl = sqlServerConfigration.getJdbc();
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
+                username = sqlServerConfiguration.getUsername();
+                password = sqlServerConfiguration.getPassword();
+                driver = sqlServerConfiguration.getDriver();
+                jdbcurl = sqlServerConfiguration.getJdbc();
                 break;
             case oracle:
-                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
-                username = oracleConfigration.getUsername();
-                password = oracleConfigration.getPassword();
-                driver = oracleConfigration.getDriver();
-                jdbcurl = oracleConfigration.getJdbc();
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                username = oracleConfiguration.getUsername();
+                password = oracleConfiguration.getPassword();
+                driver = oracleConfiguration.getDriver();
+                jdbcurl = oracleConfiguration.getJdbc();
                 props.put( "oracle.net.CONNECT_TIMEOUT" , "5000") ;
 //                props.put( "oracle.jdbc.ReadTimeout" , "5000" ) ;
                 break;
             case pg:
-                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
-                username = pgConfigration.getUsername();
-                password = pgConfigration.getPassword();
-                driver = pgConfigration.getDriver();
-                jdbcurl = pgConfigration.getJdbc();
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
+                username = pgConfiguration.getUsername();
+                password = pgConfiguration.getPassword();
+                driver = pgConfiguration.getDriver();
+                jdbcurl = pgConfiguration.getJdbc();
                 break;
             case ck:
-                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
-                username = chConfigration.getUsername();
-                password = chConfigration.getPassword();
-                driver = chConfigration.getDriver();
-                jdbcurl = chConfigration.getJdbc();
+                CHConfiguration chConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfiguration.class);
+                username = chConfiguration.getUsername();
+                password = chConfiguration.getPassword();
+                driver = chConfiguration.getDriver();
+                jdbcurl = chConfiguration.getJdbc();
                 break;
             default:
                 break;
@@ -500,57 +500,57 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
 
-    private JdbcDTO setCredential(DatasourceRequest datasourceRequest, ComboPooledDataSource dataSource) throws PropertyVetoException {
+    private JdbcConfiguration setCredential(DatasourceRequest datasourceRequest, ComboPooledDataSource dataSource) throws PropertyVetoException {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
-        JdbcDTO jdbcDTO = new JdbcDTO();
+        JdbcConfiguration jdbcConfiguration = new JdbcConfiguration();
         switch (datasourceType) {
             case mysql:
             case mariadb:
             case de_doris:
             case ds_doris:
-                MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
-                dataSource.setUser(mysqlConfigration.getUsername());
-                dataSource.setDriverClass(mysqlConfigration.getDriver());
-                dataSource.setPassword(mysqlConfigration.getPassword());
-                dataSource.setJdbcUrl(mysqlConfigration.getJdbc());
-                jdbcDTO = mysqlConfigration;
+                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
+                dataSource.setUser(mysqlConfiguration.getUsername());
+                dataSource.setDriverClass(mysqlConfiguration.getDriver());
+                dataSource.setPassword(mysqlConfiguration.getPassword());
+                dataSource.setJdbcUrl(mysqlConfiguration.getJdbc());
+                jdbcConfiguration = mysqlConfiguration;
                 break;
             case sqlServer:
-                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                dataSource.setUser(sqlServerConfigration.getUsername());
-                dataSource.setDriverClass(sqlServerConfigration.getDriver());
-                dataSource.setPassword(sqlServerConfigration.getPassword());
-                dataSource.setJdbcUrl(sqlServerConfigration.getJdbc());
-                jdbcDTO = sqlServerConfigration;
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
+                dataSource.setUser(sqlServerConfiguration.getUsername());
+                dataSource.setDriverClass(sqlServerConfiguration.getDriver());
+                dataSource.setPassword(sqlServerConfiguration.getPassword());
+                dataSource.setJdbcUrl(sqlServerConfiguration.getJdbc());
+                jdbcConfiguration = sqlServerConfiguration;
                 break;
             case oracle:
-                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
-                dataSource.setUser(oracleConfigration.getUsername());
-                dataSource.setDriverClass(oracleConfigration.getDriver());
-                dataSource.setPassword(oracleConfigration.getPassword());
-                dataSource.setJdbcUrl(oracleConfigration.getJdbc());
-                jdbcDTO = oracleConfigration;
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                dataSource.setUser(oracleConfiguration.getUsername());
+                dataSource.setDriverClass(oracleConfiguration.getDriver());
+                dataSource.setPassword(oracleConfiguration.getPassword());
+                dataSource.setJdbcUrl(oracleConfiguration.getJdbc());
+                jdbcConfiguration = oracleConfiguration;
                 break;
             case pg:
-                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
-                dataSource.setUser(pgConfigration.getUsername());
-                dataSource.setDriverClass(pgConfigration.getDriver());
-                dataSource.setPassword(pgConfigration.getPassword());
-                dataSource.setJdbcUrl(pgConfigration.getJdbc());
-                jdbcDTO = pgConfigration;
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
+                dataSource.setUser(pgConfiguration.getUsername());
+                dataSource.setDriverClass(pgConfiguration.getDriver());
+                dataSource.setPassword(pgConfiguration.getPassword());
+                dataSource.setJdbcUrl(pgConfiguration.getJdbc());
+                jdbcConfiguration = pgConfiguration;
                 break;
             case ck:
-                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
-                dataSource.setUser(chConfigration.getUsername());
-                dataSource.setDriverClass(chConfigration.getDriver());
-                dataSource.setPassword(chConfigration.getPassword());
-                dataSource.setJdbcUrl(chConfigration.getJdbc());
-                jdbcDTO = chConfigration;
+                CHConfiguration chConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfiguration.class);
+                dataSource.setUser(chConfiguration.getUsername());
+                dataSource.setDriverClass(chConfiguration.getDriver());
+                dataSource.setPassword(chConfiguration.getPassword());
+                dataSource.setJdbcUrl(chConfiguration.getJdbc());
+                jdbcConfiguration = chConfiguration;
                 break;
             default:
                 break;
         }
-        return jdbcDTO;
+        return jdbcConfiguration;
     }
 
     private String getDatabase(DatasourceRequest datasourceRequest) {
@@ -560,17 +560,17 @@ public class JdbcProvider extends DatasourceProvider {
             case de_doris:
             case ds_doris:
             case mariadb:
-                MysqlConfigration mysqlConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfigration.class);
-                return mysqlConfigration.getDataBase();
+                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
+                return mysqlConfiguration.getDataBase();
             case sqlServer:
-                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                return sqlServerConfigration.getDataBase();
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
+                return sqlServerConfiguration.getDataBase();
             case pg:
-                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
-                return pgConfigration.getDataBase();
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
+                return pgConfiguration.getDataBase();
             default:
-                JdbcDTO jdbcDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcDTO.class);
-                return jdbcDTO.getDataBase();
+                JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+                return jdbcConfiguration.getDataBase();
         }
     }
 
@@ -583,28 +583,28 @@ public class JdbcProvider extends DatasourceProvider {
             case ds_doris:
                 return "show tables;";
             case sqlServer:
-                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                if(StringUtils.isEmpty(sqlServerConfigration.getSchema())){
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
+                if(StringUtils.isEmpty(sqlServerConfiguration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'DS_SCHEMA' ;"
-                        .replace("DATABASE", sqlServerConfigration.getDataBase())
-                        .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
+                        .replace("DATABASE", sqlServerConfiguration.getDataBase())
+                        .replace("DS_SCHEMA", sqlServerConfiguration.getSchema());
             case oracle:
-                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
-                if(StringUtils.isEmpty(oracleConfigration.getSchema())){
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                if(StringUtils.isEmpty(oracleConfiguration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select table_name, owner from all_tables where owner='" + oracleConfigration.getSchema() + "'";
+                return "select table_name, owner from all_tables where owner='" + oracleConfiguration.getSchema() + "'";
             case pg:
-                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
-                if(StringUtils.isEmpty(pgConfigration.getSchema())){
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
+                if(StringUtils.isEmpty(pgConfiguration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+                return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", pgConfiguration.getSchema());
             case ck:
-                CHConfigration chConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfigration.class);
-                return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfigration.getDataBase());
+                CHConfiguration chConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfiguration.class);
+                return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfiguration.getDataBase());
             default:
                 return "show tables;";
         }
@@ -620,25 +620,25 @@ public class JdbcProvider extends DatasourceProvider {
             case ck:
                 return null;
             case sqlServer:
-                SqlServerConfigration sqlServerConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfigration.class);
-                if(StringUtils.isEmpty(sqlServerConfigration.getSchema())){
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
+                if(StringUtils.isEmpty(sqlServerConfiguration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
-                        .replace("DATABASE", sqlServerConfigration.getDataBase())
-                        .replace("DS_SCHEMA", sqlServerConfigration.getSchema());
+                        .replace("DATABASE", sqlServerConfiguration.getDataBase())
+                        .replace("DS_SCHEMA", sqlServerConfiguration.getSchema());
             case oracle:
-                OracleConfigration oracleConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfigration.class);
-                if(StringUtils.isEmpty(oracleConfigration.getSchema())){
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                if(StringUtils.isEmpty(oracleConfiguration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select VIEW_NAME  from all_views where owner='" + oracleConfigration.getSchema() + "'";
+                return "select VIEW_NAME  from all_views where owner='" + oracleConfiguration.getSchema() + "'";
             case pg:
-                PgConfigration pgConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfigration.class);
-                if(StringUtils.isEmpty(pgConfigration.getSchema())){
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
+                if(StringUtils.isEmpty(pgConfiguration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", pgConfigration.getSchema());
+                return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", pgConfiguration.getSchema());
             default:
                 return null;
         }

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.datasource.dto.JdbcDTO;
+import io.dataease.datasource.dto.JdbcConfiguration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
@@ -76,7 +76,7 @@ public abstract class QueryProvider {
 
     public void setSchema(SQLObj tableObj, Datasource ds){
         if(ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")){
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             schema = String.format( PgConstants.KEYWORD_TABLE, schema);
             tableObj.setTableName(schema + "." + tableObj.getTableName());
         }

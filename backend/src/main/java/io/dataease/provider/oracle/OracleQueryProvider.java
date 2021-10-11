@@ -6,14 +6,13 @@ import io.dataease.base.domain.DatasetTableFieldExample;
 import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.datasource.dto.JdbcDTO;
-import io.dataease.datasource.dto.OracleConfigration;
+import io.dataease.datasource.dto.JdbcConfiguration;
+import io.dataease.datasource.dto.OracleConfiguration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
-import io.dataease.provider.mysql.MySQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -112,7 +111,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     public void setSchema(SQLObj tableObj, Datasource ds){
         if(ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")){
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             schema = String.format( OracleConstants.KEYWORD_TABLE, schema);
             tableObj.setTableName(schema + "." + tableObj.getTableName());
         }
@@ -203,7 +202,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         return String.format("SELECT *  from %s  WHERE rownum <= %s ", schema + "." + String.format(OracleConstants.KEYWORD_TABLE, table), limit.toString());
     }
 
@@ -730,8 +729,8 @@ public class OracleQueryProvider extends QueryProvider {
             stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        OracleConfigration oracleConfigration = new Gson().fromJson(ds.getConfiguration(), OracleConfigration.class);
-        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), oracleConfigration.getSchema() + ".\"" + table + "\"");
+        OracleConfiguration oracleConfiguration = new Gson().fromJson(ds.getConfiguration(), OracleConfiguration.class);
+        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), oracleConfiguration.getSchema() + ".\"" + table + "\"");
     }
 
     @Override
@@ -746,7 +745,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public String convertTableToSql(String tableName, Datasource ds){
-        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format( OracleConstants.KEYWORD_TABLE, schema);
         return createSQLPreview("SELECT * FROM " + schema + "." + String.format(OracleConstants.KEYWORD_TABLE, tableName), null);
     }

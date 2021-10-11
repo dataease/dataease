@@ -7,15 +7,12 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.datasource.dto.JdbcDTO;
-import io.dataease.datasource.dto.SqlServerConfigration;
+import io.dataease.datasource.dto.JdbcConfiguration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
-import io.dataease.provider.oracle.OracleConstants;
-import io.dataease.provider.pg.PgConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -159,7 +156,7 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         return String.format("SELECT top %s * from %s ", limit.toString(), schema + "." + table);
     }
 
@@ -666,7 +663,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             return stringBuilder.toString();
         }).toArray(String[]::new);
         if (ds != null) {
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
             return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), tableWithSchema);
         } else {
@@ -681,7 +678,7 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String convertTableToSql(String tableName, Datasource ds){
-        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format( SqlServerSQLConstants.KEYWORD_TABLE, schema);
         return createSQLPreview("SELECT * FROM " + schema + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, tableName), null);
     }
