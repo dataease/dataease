@@ -1,6 +1,6 @@
 <template>
   <el-row style="display: flex;flex-direction: column;height: 100%">
-    <el-row style="height: 26px;">
+    <el-row style="height: 26px;" class="title-text">
       <span style="line-height: 26px;">
         {{ $t('dataset.add_db_table') }}
       </span>

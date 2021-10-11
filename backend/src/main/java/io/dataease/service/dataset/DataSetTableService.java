@@ -15,6 +15,7 @@ import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
+import io.dataease.controller.response.DataSetDetail;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.datasource.provider.DatasourceProvider;
@@ -382,13 +383,13 @@ public class DataSetTableService {
         return extDataSetTableMapper.searchOne(dataSetTableRequest);
     }
 
-    public List<TableFiled> getFields(DataSetTableRequest dataSetTableRequest) throws Exception {
-        Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+    public List<TableFiled> getFields(DatasetTable datasetTable) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        datasourceRequest.setQuery(qp.convertTableToSql(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getTable(), ds));
+        datasourceRequest.setQuery(qp.convertTableToSql(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable(), ds));
         return datasourceProvider.fetchResultField(datasourceRequest);
     }
 
@@ -966,7 +967,7 @@ public class DataSetTableService {
         List<TableFiled> fields = new ArrayList<>();
         long syncTime = System.currentTimeMillis();
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
-            fields = getFields(dataSetTableRequest);
+            fields = getFields(datasetTable);
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -1198,15 +1199,15 @@ public class DataSetTableService {
         }
     }
 
-    public Map<String, Object> getDatasetDetail(String id) {
-        Map<String, Object> map = new HashMap<>();
+    public DataSetDetail getDatasetDetail(String id) {
+        DataSetDetail dataSetDetail = new DataSetDetail();
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
-        map.put("table", table);
+        dataSetDetail.setTable(table);
         if (ObjectUtils.isNotEmpty(table)) {
             Datasource datasource = datasourceMapper.selectByPrimaryKey(table.getDataSourceId());
-            map.put("datasource", datasource);
+            dataSetDetail.setDatasource(datasource);
         }
-        return map;
+        return dataSetDetail;
     }
 
     public ExcelFileData excelSaveAndParse(MultipartFile file, String tableId, Integer editType) throws Exception {

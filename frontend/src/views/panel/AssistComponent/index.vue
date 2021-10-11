@@ -179,7 +179,7 @@ export default {
   .filter-header-text {
     font-size: 14px;
     max-width: 100%;
-    color: gray;
+    color: var(--TextPrimary, gray);
     text-align: left;
     white-space: pre;
     text-overflow: ellipsis;
@@ -217,7 +217,7 @@ export default {
         color: #3685f2;
     }
     .filter-widget-text {
-        color: #3d4d66;
+         color: var(--TextActive, #3d4d66);
     }
   }
   .time-filter:hover {
@@ -238,7 +238,7 @@ export default {
         color: #23beef;
     }
     .filter-widget-text {
-        color: #3d4d66;
+        color: var(--TextActive, #3d4d66);
     }
   }
   .text-filter:hover {
@@ -258,7 +258,7 @@ export default {
         color: #37b4aa;
     }
     .filter-widget-text {
-        color: #3d4d66;
+         color: var(--TextActive, #3d4d66);
     }
   }
   .tree-filter:hover {

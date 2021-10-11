@@ -34,7 +34,7 @@
         </div>
       </template>
 
-      <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;">
+      <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;" trigger="click">
         <span class="el-dropdown-link" style="color: var(--TopTextColor);font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
           {{ name }}
           <i class="el-icon-arrow-down el-icon--right" />

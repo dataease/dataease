@@ -5,12 +5,14 @@ import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableIncrementalConfig;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.response.DataSetDetail;
 import io.dataease.datasource.dto.TableFiled;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.ExcelFileData;
 import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,7 +56,7 @@ public class DataSetTableController {
     
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) throws Exception {
+    public void delete( @ApiParam(name = "id", value = "数据集ID", required = true)  @PathVariable String id) throws Exception {
         dataSetTableService.delete(id);
     }
 
@@ -72,7 +74,7 @@ public class DataSetTableController {
 
     @ApiOperation("详息")
     @PostMapping("get/{id}")
-    public DatasetTable get(@PathVariable String id) {
+    public DatasetTable get(@ApiParam(name = "id", value = "数据集ID", required = true) @PathVariable String id) {
         return dataSetTableService.get(id);
     }
 
@@ -84,8 +86,8 @@ public class DataSetTableController {
 
     @ApiOperation("查询原始字段")
     @PostMapping("getFields")
-    public List<TableFiled> getFields(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
-        return dataSetTableService.getFields(dataSetTableRequest);
+    public List<TableFiled> getFields(@RequestBody DatasetTable datasetTable) throws Exception {
+        return dataSetTableService.getFields(datasetTable);
     }
 
     @ApiOperation("查询生成字段")
@@ -126,11 +128,11 @@ public class DataSetTableController {
 
     @ApiOperation("数据集详息")
     @PostMapping("datasetDetail/{id}")
-    public Map<String, Object> datasetDetail(@PathVariable String id) {
+    public DataSetDetail datasetDetail(@PathVariable String id) {
         return dataSetTableService.getDatasetDetail(id);
     }
 
-    @ApiOperation("excel上传")
+//    @ApiOperation("excel上传")
     @PostMapping("excel/upload")
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId, @RequestParam("editType") Integer editType ) throws Exception {
         return dataSetTableService.excelSaveAndParse(file, tableId, editType);

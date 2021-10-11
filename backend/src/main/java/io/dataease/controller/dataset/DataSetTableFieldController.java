@@ -2,6 +2,7 @@ package io.dataease.controller.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.controller.response.DatasetTableField4Type;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.swagger.annotations.Api;
@@ -39,7 +40,7 @@ public class DataSetTableFieldController {
 
     @ApiOperation("分组查询表下属字段")
     @PostMapping("listByDQ/{tableId}")
-    public Map<String, List<DatasetTableField>> listByDQ(@PathVariable String tableId) {
+    public DatasetTableField4Type listByDQ(@PathVariable String tableId) {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
         datasetTableField.setGroupType("d");
@@ -47,10 +48,10 @@ public class DataSetTableFieldController {
         datasetTableField.setGroupType("q");
         List<DatasetTableField> quotaList = dataSetTableFieldsService.list(datasetTableField);
 
-        Map<String, List<DatasetTableField>> map = new HashMap<>();
-        map.put("dimensionList", dimensionList);
-        map.put("quotaList", quotaList);
-        return map;
+        DatasetTableField4Type datasetTableField4Type = new DatasetTableField4Type();
+        datasetTableField4Type.setDimensionList(dimensionList);
+        datasetTableField4Type.setQuotaList(quotaList);
+        return datasetTableField4Type;
     }
 
     @ApiOperation("批量更新")

@@ -262,7 +262,17 @@ export default {
   padding-top: 5px;
   :hover {
     cursor: pointer;
+
     background-color: #f4f4f5;
+  }
+}
+
+.blackTheme .msg-foot-class {
+  padding-top: 5px;
+  :hover {
+    cursor: pointer;
+
+    background-color: #171422;
   }
 }
 </style>

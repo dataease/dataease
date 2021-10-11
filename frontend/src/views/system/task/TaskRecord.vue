@@ -1,7 +1,7 @@
 <template>
   <el-col>
-    <el-row style="margin-top: 10px;" v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-      <complex-table :data="data" :columns="columns" local-key="datasetTaskRecord" :search-config="searchConfig" :transCondition="transCondition" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
+    <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="margin-top: 10px;">
+      <complex-table :data="data" :columns="columns" local-key="datasetTaskRecord" :search-config="searchConfig" :trans-condition="transCondition" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
         <el-table-column prop="name" :label="$t('dataset.task_name')">
           <template slot-scope="scope">
             <span>
@@ -24,7 +24,7 @@
         <el-table-column prop="status" :label="$t('dataset.status')">
           <template slot-scope="scope">
             <span v-if="scope.row.status === 'Completed'" style="color: green">{{ $t('dataset.completed') }}</span>
-            <span v-if="scope.row.status === 'Underway'" style="color: blue">
+            <span v-if="scope.row.status === 'Underway'" class="blue-color">
               <i class="el-icon-loading" />
               {{ $t('dataset.underway') }}
             </span>
@@ -56,7 +56,7 @@ import ComplexTable from '@/components/business/complex-table'
 import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { post } from '@/api/dataset/dataset'
-import {loadMenus} from "@/permission";
+import { loadMenus } from '@/permission'
 
 export default {
   name: 'TaskRecord',
@@ -127,9 +127,9 @@ export default {
     if (this.param !== null && this.param.taskId) {
       this.matchLogId = this.param.logId || this.matchLogId
       this.transCondition['dataset_table_task.id'] = {
-            operator: 'eq',
-            value: this.param.taskId
-        }
+        operator: 'eq',
+        value: this.param.taskId
+      }
     }
     this.createTimer()
   },
@@ -169,10 +169,10 @@ export default {
     select(selection) {
     },
     timerSearch(condition, showLoading = true) {
-      if(!this.lastRequestComplete){
-        return;
-      }else {
-        this.lastRequestComplete = false;
+      if (!this.lastRequestComplete) {
+        return
+      } else {
+        this.lastRequestComplete = false
       }
 
       this.last_condition = condition
@@ -183,9 +183,9 @@ export default {
       post('/dataset/taskLog/list/notexcel/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
-        this.lastRequestComplete = true;
+        this.lastRequestComplete = true
       }).catch(() => {
-        this.lastRequestComplete = true;
+        this.lastRequestComplete = true
       })
     },
     search(condition, showLoading = true) {
@@ -252,5 +252,8 @@ export default {
 
 span{
   font-size: 12px;
+}
+.blue-color {
+    color: var(--Main);
 }
 </style>

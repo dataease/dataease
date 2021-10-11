@@ -430,6 +430,13 @@ export default {
     text-overflow: ellipsis;
   }
 
+  .blackTheme .item-dimension {
+    border: solid 1px ;
+    border-color: #495865;
+    color: #F2F6FC;
+    background-color: var(--MainBG);
+  }
+
   .item-dimension + .item-dimension {
     margin-top: 2px;
   }
@@ -439,6 +446,12 @@ export default {
     background: #e8f4ff;
     border-color: #a3d3ff;
     cursor: pointer;
+  }
+
+  .blackTheme .item-dimension:hover {
+    /* color: var(--Main); */
+    background: var(--ContentBG);
+    /* cursor: pointer; */
   }
 
   .item-quota {
@@ -456,6 +469,15 @@ export default {
     text-overflow: ellipsis;
   }
 
+  .blackTheme .item-quota {
+
+    border: solid 1px ;
+    border-color: #495865;
+    color: #F2F6FC;
+    background-color: var(--MainBG);
+
+  }
+
   .item-quota + .item-quota {
     margin-top: 2px;
   }
@@ -466,6 +488,11 @@ export default {
     border-color: #b2d3a3;
     cursor: pointer;
   }
+
+  .blackTheme .item-quota:hover {
+    background: var(--ContentBG);
+  }
+
   span{
     font-size: 12px;
   }
@@ -478,10 +505,21 @@ export default {
     word-break: break-word;
     border: solid 1px #eee;
   }
+
+  .blackTheme .function-style {
+    border: solid 1px ;
+    border-color: #495865;
+    color: #F2F6FC;
+    background-color: var(--MainBG);
+  }
   .function-style:hover {
     background: #e8f4ff;
     border-color: #a3d3ff;
     cursor: pointer;
+  }
+  .blackTheme .function-style:hover {
+    color: #1890ff;
+    background: var(--ContentBG);
   }
   .function-height{
     height: calc(100% - 50px);
