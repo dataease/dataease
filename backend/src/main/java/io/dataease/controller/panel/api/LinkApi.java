@@ -21,7 +21,7 @@ import java.util.Map;
 public interface LinkApi {
 
 
-    @ApiOperation("重制密码")
+    @ApiOperation("重置密码")
     @PostMapping("/resetPwd")
     void replacePwd(PasswordRequest request);
 
@@ -29,7 +29,7 @@ public interface LinkApi {
     @PostMapping("/enablePwd")
     void enablePwd(EnablePwdRequest request);
 
-    @ApiOperation("切换开关")
+    @ApiOperation("启用/禁用链接分享")
     @PostMapping("/switchLink")
     void switchLink(LinkRequest request);
 

@@ -1,6 +1,7 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.commons.model.BaseRspModel;
 import io.dataease.controller.request.panel.PanelLinkageRequest;
 import io.dataease.dto.PanelViewLinkageDTO;
 import io.dataease.service.panel.PanelViewLinkageService;
@@ -35,8 +36,9 @@ public class PanelViewLinkageController {
 
     @ApiOperation("保存仪表板视图联动信息")
     @PostMapping("/saveLinkage")
-    public void saveLinkage(@RequestBody PanelLinkageRequest request){
+    public BaseRspModel saveLinkage(@RequestBody PanelLinkageRequest request){
         panelViewLinkageService.saveLinkage(request);
+        return new BaseRspModel();
     }
 
 
