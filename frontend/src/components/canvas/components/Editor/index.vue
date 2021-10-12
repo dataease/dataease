@@ -967,7 +967,8 @@ export default {
       'canvasStyleData',
       'editor',
       'linkageSettingStatus',
-      'curLinkageView'
+      'curLinkageView',
+      'snapshotIndex'
     ])
   },
   watch: {
@@ -1017,6 +1018,14 @@ export default {
     positionBox: {
       handler(newVal, oldVla) {
         // console.log('positionBox:' + JSON.stringify(positionBox))
+      },
+      deep: true
+    },
+    // 镜像索引有变化 刷新一下矩阵（撤销重做等）
+    snapshotIndex: {
+      handler(newVal, oldVla) {
+        console.log('snapshotIndexChange:' + newVal)
+        this.initMatrix()
       },
       deep: true
     }
