@@ -1254,11 +1254,15 @@ export default {
         // this.recordMatrixCurStyle()
         setTimeout(() => {
           this.recordMatrixCurShadowStyle()
+          this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
+          // 记录snapshot后 移动已记录设置为false
+          this.hasMove = false
         }, 100)
+      }else{
+        this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
+        // 记录snapshot后 移动已记录设置为false
+        this.hasMove = false
       }
-      this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
-      // 记录snapshot后 移动已记录设置为false
-      this.hasMove = false
 
       removeEvent(document.documentElement, eventsFor.move, this.move)
 
