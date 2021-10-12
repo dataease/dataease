@@ -43,7 +43,7 @@ export default {
     padding: 10px;
     border-radius: 2px;
     box-sizing: border-box;
-    background-color: var(--SiderBG);
+    background-color: var(--SiderBG, #FFF);
     height: calc(100vh - 56px);
     border-right: 0px;
     position: relative;

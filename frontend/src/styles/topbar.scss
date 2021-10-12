@@ -6,7 +6,7 @@
   z-index: 1001;
   overflow: hidden;
   border-bottom: 1px solid var(--TopBG, #E6E6E6);
-  background-color: var(--TopBG, #ffffff); 
+  background-color: var(--TopBG, #f1f3f8); 
   .log {
     padding: 0 16px;
     line-height: 56px;
@@ -25,27 +25,28 @@
   .el-menu {
     float: left;
     border: none !important;
-    background-color: var(--TopBG, #ffffff) !important;
+    background-color: var(--TopBG, #f1f3f8) !important;
     .nav-item {
       display: inline-block;
 
       .el-menu-item:not(.is-active) {
-        color: var(--TopTextColor);
+        color: var(--TopTextColor, #1e212a);
         opacity: 0.65;
         &:hover {
-          background-color: var(--MenuHovorBG, #ecf5ff) !important;
+          background-color: var(--MenuHovorBG, rgba(158,158,158,.2)) !important;
           opacity: 1;
         }
 
         &:focus {
-          background-color: var(--MenuActiveBG, #ecf5ff) !important;
+          background-color: var(--MenuActiveBG, $--color-primary) !important;
           opacity: 1;
+          color: var(--TopTextColor, #f4f4f5);
         }
 
       }
       .el-menu-item.is-active {
-        background-color: var(--MenuActiveBG, #ecf5ff) ;
-        color: var(--TextActive) !important;
+        background-color: var(--MenuActiveBG, $--color-primary) ;
+        color: var(--TextActive, #f4f4f5) !important;
         opacity: 1;
       }
 
