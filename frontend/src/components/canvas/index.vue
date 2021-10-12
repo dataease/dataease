@@ -55,7 +55,7 @@ export default {
   created() {
     this.restore()
     // 全局监听按键事件
-    listenGlobalKeyDown()
+    // listenGlobalKeyDown()
   },
   methods: {
     restore() {

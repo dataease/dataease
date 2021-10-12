@@ -296,7 +296,7 @@ function fillPositionBox(maxY) {
 function removeItemFromPositionBox(item) {
   const pb = positionBox
   // console.log('removeItem=>x:' + item.x + ';y:' + item.y + ';sizex:' + item.sizex + ';sizey:' + item.sizey)
-  if (item.x <= 0 || item.y <= 0) return
+  if (!item || item.x <= 0 || item.y <= 0) return
   for (let i = item.x - 1; i < item.x - 1 + item.sizex; i++) {
     for (let j = item.y - 1; j < item.y - 1 + item.sizey; j++) {
       if (pb[j][i]) {

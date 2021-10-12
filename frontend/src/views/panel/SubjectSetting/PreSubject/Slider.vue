@@ -12,7 +12,7 @@
       <el-col :span="20">
         <el-row id="slider">
           <div class="window">
-            <ul class="container" :style="containerStyle">
+            <ul v-if="!slidersLoading" class="container" :style="containerStyle">
               <li>
                 <div style="width:240px; height: 208px;overflow: hidden">
                   <subject-template-item
@@ -156,6 +156,7 @@ export default {
     querySubjectWithGroup() {
       this.slidersLoading = true
       querySubjectWithGroup({}).then(response => {
+        this.sliders = []
         this.sliders = response.data
         this.slidersLoading = false
       }).catch(() => {
