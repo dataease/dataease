@@ -8,7 +8,7 @@
       class="de-top-menu"
       mode="horizontal"
       :style="{'margin-left': '260px', 'position': 'absolute'}"
-      active-text-color="#409EFF"
+      active-text-color="#FFFFFF"
       :default-active="activeMenu"
       @select="handleSelect"
     >
