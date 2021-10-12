@@ -75,7 +75,7 @@
       center
     >
       <div style="width: 100%;min-height: 250px; max-height: 300px; overflow-y: auto;">
-        <view-select ref="viewSelect" :select-model="true" />
+        <view-select v-if="viewDialogVisible" ref="viewSelect" :select-model="true" />
       </div>
 
       <span slot="footer" class="dialog-footer">
@@ -161,6 +161,10 @@ export default {
     },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
+      if (!nodes || nodes.length === 0) {
+        this.viewDialogVisible = false
+        return
+      }
       const node = nodes[0]
 
       let component
