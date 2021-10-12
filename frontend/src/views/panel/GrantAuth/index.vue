@@ -2,7 +2,7 @@
   <div>
     <el-button v-show="!showSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSearchWidget" />
     <div v-show="showSearchInput" class="de-input">
-      <el-input v-model="key">
+      <el-input v-model="key" class="main-area-input">
         <el-button slot="append" icon="el-icon-close" @click="closeSearchWidget" />
       </el-input>
     </div>

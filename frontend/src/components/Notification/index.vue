@@ -234,7 +234,7 @@ export default {
     right: 178px;
     top: 8px;
     background: red;
-    color: var(--TextActive);
+    color: var(--TextActive, #fff);
     border-radius: 17px;
     padding: 4px 7px;
     font-size: 16px;
