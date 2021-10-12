@@ -1024,7 +1024,7 @@ export default {
     // 镜像索引有变化 刷新一下矩阵（撤销重做等）
     snapshotIndex: {
       handler(newVal, oldVla) {
-        console.log('snapshotIndexChange:' + newVal)
+        // console.log('snapshotIndexChange:' + newVal)
         this.initMatrix()
       },
       deep: true
