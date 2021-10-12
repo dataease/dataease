@@ -798,11 +798,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
   .header-title {
     font-size: 14px;
     flex: 1;
-    color: #606266;
+    color: var(--TextPrimary, #606266);
     font-weight: bold;
     display: block;
     height: 100%;

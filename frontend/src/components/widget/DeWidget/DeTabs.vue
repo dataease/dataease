@@ -34,7 +34,7 @@
           </el-dropdown>
         </span>
 
-        <div class="de-tab-content">
+        <div v-if="activeTabName === item.name" class="de-tab-content">
           <user-view v-if="item.content" :ref="item.name" :element="item.content" :out-style="outStyle" />
         </div>
 
@@ -75,7 +75,7 @@
       center
     >
       <div style="width: 100%;min-height: 250px; max-height: 300px; overflow-y: auto;">
-        <view-select ref="viewSelect" :select-model="true" />
+        <view-select v-if="viewDialogVisible" ref="viewSelect" :select-model="true" />
       </div>
 
       <span slot="footer" class="dialog-footer">
@@ -161,6 +161,10 @@ export default {
     },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
+      if (!nodes || nodes.length === 0) {
+        this.viewDialogVisible = false
+        return
+      }
       const node = nodes[0]
 
       let component
@@ -250,23 +254,8 @@ export default {
   }
   .de-tabs {
     height: 100%;
-    >>>div.el-tabs__content {
-        height: calc(100% - 55px);
-        .el-tab-pane {
-          height: 100%;
-        }
-    }
-  }
-  /* .de-tab-i {
-    transition: 0.1s;
-    opacity: 0;
-    transform:  translateY(100%);
   }
 
-  .de-tab-drop:hover .de-tab-i {
-    opacity: 1;
-    transform:  translateY(0);
-  } */
   .de-tab-content {
     width: 100%;
     height: 100%;

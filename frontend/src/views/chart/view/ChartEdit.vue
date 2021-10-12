@@ -613,7 +613,7 @@
       :fullscreen="true"
     >
       <field-edit :param="table" />
-      <div slot="title" class="dialog-footer">
+      <div slot="title" class="dialog-footer title-text">
         <span style="font-size: 14px;">
           {{ $t('dataset.field_manage') }}
           <span v-if="table">[{{ table.name }}]</span>

@@ -43,9 +43,6 @@ html {
   box-sizing: border-box;
 }
 
-#app {
-  //height: $contentHeight;
-}
 
 *,
 *:before,
@@ -148,6 +145,18 @@ div:focus {
   .el-dialog__body {
     padding: 0px !important;
     height: 100vh !important;
+  }
+}
+
+.de-tabs {
+  .el-tabs__header {
+    margin: 0 0 0 0 !important;
+  }
+  .el-tabs__content {
+    height: calc(100% - 55px) !important;
+    .el-tab-pane {
+        height: 100% !important;
+    }
   }
 }
 
@@ -418,6 +427,10 @@ div:focus {
     border: none !important;
 }
 
+.blackTheme .el-picker-panel__footer {
+    background-color: var(--MainBG) !important;
+}
+
 
 .el-pagination {
     button:disabled {
@@ -602,6 +615,10 @@ div:focus {
     background-color: #000000 ;
 }
 
+.blackTheme .CodeMirror-line {
+    background-color: #000000 !important;
+}
+
 .blackTheme .el-radio-button__inner {
     background-color: var(--TableBG);
     color: var(--TableColor);
@@ -614,6 +631,39 @@ div:focus {
 
 .blackTheme >>> ::-webkit-scrollbar-thumb {
     background: #38393a !important;
+}
+
+.blackTheme .el-message-box__content {
+    color:#F2F6FC;
+}
+
+.blackTheme .el-message-box__btns {
+    .el-button--default:not(.el-button--primary) {
+        background-color: #171b22 ;
+        color: #2681ff;
+    }
+    .el-button--primary {
+        color: #21333b;
+        background-color: #2681ff;
+        border-color: #2681ff;
+    }
+}
+
+.blackTheme .vue-treeselect__menu {
+    border: 1px solid var(--TableBorderColor, #cfcfcf);
+    background: var(--MainBG, #fff);
+}
+
+.blackTheme .vue-treeselect__option:not(.vue-treeselect__option--highlight) {
+    color: #606266;
+}
+.blackTheme .vue-treeselect__option--highlight {
+    color: #2681ff;
+    background-color: #000000;
+}
+
+.blackTheme .el-table__body tr.current-row > td {
+    background-color: #324f62;
 }
 
 
