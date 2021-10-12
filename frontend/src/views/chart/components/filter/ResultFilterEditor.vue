@@ -23,7 +23,7 @@
           </el-select>
         </el-col>
         <el-col :span="6">
-          <el-input v-show="!f.term.includes('null')" v-model="f.value" class="value-item" :placeholder="$t('chart.condition')" size="mini" clearable />
+          <el-input v-show="!f.term.includes('null') && !f.term.includes('empty')" v-model="f.value" class="value-item" :placeholder="$t('chart.condition')" size="mini" clearable />
         </el-col>
         <el-col :span="6">
           <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeFilter(index)" />
@@ -80,6 +80,16 @@ export default {
             value: 'not_null',
             label: this.$t('chart.filter_not_null')
           }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'empty',
+            label: this.$t('chart.filter_empty')
+          }, {
+            value: 'not_empty',
+            label: this.$t('chart.filter_not_empty')
+          }]
         }
       ],
       dateOptions: [
@@ -112,16 +122,6 @@ export default {
             value: 'ge',
             label: this.$t('chart.filter_ge')
           }]
-        },
-        {
-          label: '',
-          options: [{
-            value: 'null',
-            label: this.$t('chart.filter_null')
-          }, {
-            value: 'not_null',
-            label: this.$t('chart.filter_not_null')
-          }]
         }
       ],
       valueOptions: [
@@ -153,16 +153,6 @@ export default {
           }, {
             value: 'ge',
             label: this.$t('chart.filter_ge')
-          }]
-        },
-        {
-          label: '',
-          options: [{
-            value: 'null',
-            label: this.$t('chart.filter_null')
-          }, {
-            value: 'not_null',
-            label: this.$t('chart.filter_not_null')
           }]
         }
       ],

@@ -1201,7 +1201,7 @@ export default {
     saveDimensionFilter() {
       for (let i = 0; i < this.dimensionItem.filter.length; i++) {
         const f = this.dimensionItem.filter[i]
-        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+        if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
           this.$message({
             message: this.$t('chart.filter_value_can_null'),
             type: 'error',
@@ -1225,7 +1225,7 @@ export default {
     saveQuotaFilter() {
       for (let i = 0; i < this.quotaItem.filter.length; i++) {
         const f = this.quotaItem.filter[i]
-        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+        if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
           this.$message({
             message: this.$t('chart.filter_value_can_null'),
             type: 'error',
@@ -1258,7 +1258,7 @@ export default {
     saveResultFilter() {
       for (let i = 0; i < this.filterItem.filter.length; i++) {
         const f = this.filterItem.filter[i]
-        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+        if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
           this.$message({
             message: this.$t('chart.filter_value_can_null'),
             type: 'error',
