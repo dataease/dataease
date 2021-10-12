@@ -230,6 +230,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for demo_new_trend_of_diagnosis
 -- ----------------------------
+DROP TABLE IF EXISTS `demo_new_trend_of_diagnosis`;
 CREATE TABLE `demo_new_trend_of_diagnosis` (
                                                `date` varchar(50) NOT NULL DEFAULT '' COMMENT '日期',
                                                `new_diagnosis` bigint(13) DEFAULT NULL COMMENT '新增确诊',
