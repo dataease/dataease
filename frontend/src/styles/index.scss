@@ -427,6 +427,10 @@ div:focus {
     border: none !important;
 }
 
+.blackTheme .el-picker-panel__footer {
+    background-color: var(--MainBG) !important;
+}
+
 
 .el-pagination {
     button:disabled {
@@ -609,6 +613,10 @@ div:focus {
 
 .blackTheme .CodeMirror-gutters {
     background-color: #000000 ;
+}
+
+.blackTheme .CodeMirror-line {
+    background-color: #000000 !important;
 }
 
 .blackTheme .el-radio-button__inner {
