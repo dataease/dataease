@@ -166,7 +166,8 @@
                       group="dimension"
                       animation="300"
                       :move="onMove"
-                      style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                      class="theme-drag"
+                      style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;"
                       @end="end2"
                     >
                       <transition-group class="list-group" :data-value="$t('panel.drag_here')">
@@ -715,7 +716,7 @@ export default {
             padding: 8px;
             height: 100%;
             border-right: none;
-            border: 1px solid #E6E6E6;
+            border: 1px solid var(--TableBorderColor, #E6E6E6);;
             .field-content-text {
                 box-sizing: border-box;
                 overflow: hidden;
@@ -727,7 +728,7 @@ export default {
         .field-content-right {
             border-left: none;
             color: #9ea6b2;
-            border: 1px solid #E6E6E6;
+            border: 1px solid var(--TableBorderColor, #E6E6E6);
             width: 0%;
             max-width: 0%;
             position: relative;
@@ -764,7 +765,7 @@ export default {
   }
 
   .filter-dialog-tabs {
-      border: 1px solid #E6E6E6;
+      border: 1px solid var(--TableBorderColor, #E6E6E6);
       padding: 10px;
       height: 100%;
       >>> div.el-tabs__content {
@@ -865,6 +866,10 @@ export default {
   .list-group:empty:before,
   .list-group > div:empty:before {
     content: attr(data-value);
+  }
+
+  .blackTheme .theme-drag {
+      background-color: var(--MainBG, #fff);
   }
 
 </style>
