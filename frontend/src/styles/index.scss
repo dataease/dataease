@@ -43,9 +43,6 @@ html {
   box-sizing: border-box;
 }
 
-#app {
-  //height: $contentHeight;
-}
 
 *,
 *:before,
@@ -148,6 +145,18 @@ div:focus {
   .el-dialog__body {
     padding: 0px !important;
     height: 100vh !important;
+  }
+}
+
+.de-tabs {
+  .el-tabs__header {
+    margin: 0 0 0 0 !important;
+  }
+  .el-tabs__content {
+    height: calc(100% - 55px) !important;
+    .el-tab-pane {
+        height: 100% !important;
+    }
   }
 }
 
