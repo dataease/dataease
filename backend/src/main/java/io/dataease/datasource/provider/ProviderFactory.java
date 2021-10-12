@@ -22,14 +22,6 @@ public class ProviderFactory implements ApplicationContextAware {
     public static DatasourceProvider getProvider(String type) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
-            case mysql:
-                return context.getBean("jdbc", DatasourceProvider.class);
-            case doris:
-                return context.getBean("jdbc", DatasourceProvider.class);
-            case sqlServer:
-                return context.getBean("jdbc", DatasourceProvider.class);
-            case pg:
-                return context.getBean("jdbc", DatasourceProvider.class);
             case es:
                 return context.getBean("es", DatasourceProvider.class);
             default:
@@ -41,8 +33,10 @@ public class ProviderFactory implements ApplicationContextAware {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
+            case mariadb:
+            case ds_doris:
                 return context.getBean("mysqlQuery", QueryProvider.class);
-            case doris:
+            case de_doris:
                 return context.getBean("dorisQuery", QueryProvider.class);
             case sqlServer:
                 return context.getBean("sqlserverQuery", QueryProvider.class);
@@ -62,7 +56,7 @@ public class ProviderFactory implements ApplicationContextAware {
     public static DDLProvider getDDLProvider(String type) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
-            case doris:
+            case de_doris:
                 return context.getBean("dorisDDL", DDLProvider.class);
             default:
                 return context.getBean("dorisDDL", DDLProvider.class);

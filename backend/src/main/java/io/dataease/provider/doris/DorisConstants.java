@@ -2,16 +2,16 @@ package io.dataease.provider.doris;
 
 import io.dataease.provider.SQLConstants;
 
-import static io.dataease.datasource.constants.DatasourceTypes.doris;
+import static io.dataease.datasource.constants.DatasourceTypes.de_doris;
 
 /**
  * @Author gin
  * @Date 2021/7/8 7:22 下午
  */
 public class DorisConstants extends SQLConstants {
-    public static final String KEYWORD_TABLE = doris.getKeywordPrefix() + "%s" + doris.getKeywordSuffix();
+    public static final String KEYWORD_TABLE = de_doris.getKeywordPrefix() + "%s" + de_doris.getKeywordSuffix();
 
-    public static final String KEYWORD_FIX = "%s." + doris.getKeywordPrefix() + "%s" + doris.getKeywordSuffix();
+    public static final String KEYWORD_FIX = "%s." + de_doris.getKeywordPrefix() + "%s" + de_doris.getKeywordSuffix();
 
     public static final String UNIX_TIMESTAMP = "UNIX_TIMESTAMP(%s)";
 

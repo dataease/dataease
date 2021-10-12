@@ -31,6 +31,8 @@
 <script>
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import eventBus from '@/components/canvas/utils/eventBus'
+import { mapState } from 'vuex'
 export default {
   name: 'FilterGroup',
   data() {
@@ -66,6 +68,12 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState([
+      'canvasStyleData',
+      'curCanvasScale'
+    ])
+  },
   created() {
     for (const key in this.widgetSubjects) {
       const widgetNames = this.widgetSubjects[key]
@@ -82,13 +90,22 @@ export default {
   methods: {
     handleDragStart(ev) {
       // 记录拖拽信息
-      this.$store.commit('setDragComponentInfo', deepCopy(ApplicationContext.getService(ev.target.dataset.id).getDrawPanel()))
+      const dragComponentInfo = deepCopy(ApplicationContext.getService(ev.target.dataset.id).getDrawPanel())
+      // 设置矩阵标记点
+      dragComponentInfo.x = 1
+      dragComponentInfo.y = 1
+      dragComponentInfo.sizex = Math.round(dragComponentInfo.style.width / this.curCanvasScale.matrixStyleOriginWidth)
+      dragComponentInfo.sizey = Math.round(dragComponentInfo.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+      dragComponentInfo.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+      dragComponentInfo.moveStatus = 'start'
+      this.$store.commit('setDragComponentInfo', dragComponentInfo)
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
         type: 'other',
         id: ev.target.dataset.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+      eventBus.$emit('startMoveIn')
     },
     handleDragEnd(ev) {
       this.$store.commit('clearDragComponentInfo')
@@ -125,7 +142,7 @@ export default {
   .filter-header-text {
     font-size: 14px;
     max-width: 100%;
-    color: gray;
+    color: var(--TextPrimary, gray);
     text-align: left;
     white-space: pre;
     text-overflow: ellipsis;
@@ -163,7 +180,7 @@ export default {
         color: #3685f2;
     }
     .filter-widget-text {
-        color: #3d4d66;
+        color: var(--TextActive, #3d4d66);
     }
   }
   .time-filter:hover {
@@ -184,7 +201,7 @@ export default {
         color: #23beef;
     }
     .filter-widget-text {
-        color: #3d4d66;
+        color: var(--TextActive, #3d4d66);
     }
   }
   .text-filter:hover {
@@ -204,7 +221,7 @@ export default {
         color: #37b4aa;
     }
     .filter-widget-text {
-        color: #3d4d66;
+       color: var(--TextActive, #3d4d66);
     }
   }
   .tree-filter:hover {

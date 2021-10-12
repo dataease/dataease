@@ -13,7 +13,7 @@ export default {
   props: {
     drillFilters: {
       type: Array,
-      required: true
+      default: () => []
     }
   },
   data() {

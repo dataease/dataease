@@ -15,9 +15,8 @@ import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
-import io.dataease.datasource.dto.DBTableDTO;
-import io.dataease.datasource.dto.MysqlConfigration;
-import io.dataease.datasource.dto.OracleConfigration;
+import io.dataease.datasource.constants.DatasourceTypes;
+import io.dataease.datasource.dto.*;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -90,12 +89,32 @@ public class DatasourceService {
         request.setSort("update_time desc");
         List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.queryUnion(request);
         datasourceDTOS.forEach(datasourceDTO -> {
-            if(datasourceDTO.getType().equalsIgnoreCase("mysql")){
-                datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfigration.class)) );
-            };
-            if(datasourceDTO.getType().equalsIgnoreCase("oracle")){
-                datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), OracleConfigration.class)));
-            };
+            DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceDTO.getType());
+            try{
+                switch (datasourceType) {
+                    case mysql:
+                    case mariadb:
+                    case de_doris:
+                    case ds_doris:
+                        datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class)) );
+                        break;
+                    case sqlServer:
+                        datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), SqlServerConfiguration.class)) );
+                        break;
+                    case oracle:
+                        datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), OracleConfiguration.class)) );
+                        break;
+                    case pg:
+                        datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), PgConfiguration.class)) );
+                        break;
+                    case ck:
+                        datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), CHConfiguration.class)) );
+                        break;
+                    default:
+                        break;
+                }
+            }catch (Exception ignore){}
+
         });
         return datasourceDTOS;
     }

@@ -11,6 +11,7 @@ import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
+import io.dataease.provider.ck.CKConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -105,7 +106,7 @@ public class EsQueryProvider extends QueryProvider {
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp ORDER BY null " + " LIMIT 1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp " + " LIMIT 1000";
     }
 
     @Override
@@ -177,7 +178,7 @@ public class EsQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
         return createQuerySQL(table, fields, isGroup, null);
     }
 
@@ -192,7 +193,7 @@ public class EsQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
         return createQuerySQLAsTmp(sql, fields, isGroup);
     }
 
@@ -645,12 +646,17 @@ public class EsQueryProvider extends QueryProvider {
             stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
         return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
+    }
+
+    @Override
+    public String convertTableToSql(String tableName, Datasource ds){
+        return createSQLPreview("SELECT * FROM " + String.format(EsSqlLConstants.KEYWORD_TABLE, tableName), null);
     }
 
     public String transMysqlFilterTerm(String term) {
@@ -676,9 +682,13 @@ public class EsQueryProvider extends QueryProvider {
             case "not like":
                 return " NOT LIKE ";
             case "null":
-                return " IN ";
+                return " IS NULL ";
             case "not_null":
-                return " IS NOT NULL AND %s <> ''";
+                return " IS NOT NULL ";
+            case "empty":
+                return " = ";
+            case "not_empty":
+                return " <> ";
             case "between":
                 return " BETWEEN ";
             default:
@@ -724,9 +734,15 @@ public class EsQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue = EsSqlLConstants.WHERE_VALUE_NULL;
+//                whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-                whereTerm = String.format(whereTerm, originName);
+//                whereTerm = String.format(whereTerm, originName);
+                whereValue = "";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
+                whereValue = "''";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_empty")) {
+                whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
@@ -907,9 +923,15 @@ public class EsQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = EsSqlLConstants.WHERE_VALUE_NULL;
+//                    whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                    whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereTerm = String.format(whereTerm, originField);
+//                    whereTerm = String.format(whereTerm, originField);
+                    whereValue = "";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
+                    whereValue = "''";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
+                    whereValue = "''";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {

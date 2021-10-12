@@ -1,7 +1,8 @@
 <template>
   <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
     <!--    <span v-show="false">{{ vId }}</span>-->
-    <el-row style="height: 40px;background-color: white" class="padding-lr">
+    <!-- <el-row style="height: 40px;background-color: white" class="padding-lr"> -->
+    <el-row style="height: 40px;" class="padding-lr">
       <el-popover
         placement="right-start"
         width="400"
@@ -10,7 +11,7 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
-        <span slot="reference" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
+        <span slot="reference" class="title-text" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
       </el-popover>
       <span style="float: right;line-height: 40px;">
         <!--        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">-->
@@ -29,9 +30,9 @@
       <el-tabs type="card" :stretch="true" class="tab-header">
         <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 360px">
           <el-row class="view-panel">
-            <el-col
-              style="width: 180px;border-right: 1px solid #E6E6E6;"
-            >
+            <!-- <el-col style="width: 180px;border-right: 1px solid #E6E6E6;" > -->
+            <el-col class="theme-border-class" style="width: 180px;border-right: 1px solid #E6E6E6;">
+
               <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
                 <el-input
                   v-model="searchField"
@@ -39,6 +40,7 @@
                   :placeholder="$t('chart.search')"
                   prefix-icon="el-icon-search"
                   clearable
+                  class="main-area-input"
                 />
                 <el-button :title="$t('dataset.edit_field')" :disabled="!table || !hasDataPermission('manage',table.privileges)" icon="el-icon-setting" type="text" size="mini" style="float: right;width: 20px;margin-left: 4px;" @click="editField" />
                 <el-button :title="$t('chart.change_ds')" :disabled="!hasDataPermission('manage',param.privileges)" icon="el-icon-refresh" type="text" size="mini" style="float: right;width: 20px;margin-left: 4px;" @click="changeDs" />
@@ -92,25 +94,9 @@
             <el-col
               style="height: 100%;width: 180px;border-right: 1px solid #E6E6E6;"
             >
-              <!--        <div style="border-bottom: 1px solid #E6E6E6;overflow-y:hidden;height: 62px;" class="padding-lr">-->
-              <!--          <el-row>-->
-              <!--            <span>{{ $t('chart.title') }}</span>-->
-              <!--            <el-button style="float: right;padding: 0;margin: 8px 0 0 0;font-size: 12px;" type="text" @click="save">{{ $t('chart.confirm') }}</el-button>-->
-              <!--          </el-row>-->
-              <!--          <el-form>-->
-              <!--            <el-form-item class="form-item">-->
-              <!--              <el-input-->
-              <!--                v-model="view.title"-->
-              <!--                size="mini"-->
-              <!--                :placeholder="$t('chart.title')"-->
-              <!--                prefix-icon="el-icon-search"-->
-              <!--                clearable-->
-              <!--              />-->
-              <!--            </el-form-item>-->
-              <!--          </el-form>-->
-              <!--        </div>-->
-              <div style="height: 25vh;overflow:auto" class="padding-lr">
-                <span>{{ $t('chart.chart_type') }}</span>
+
+              <div style="height: 25vh;overflow:auto" class="padding-lr theme-border-class">
+                <span class="title-text">{{ $t('chart.chart_type') }}</span>
                 <el-row>
                   <div class="chart-type">
                     <el-radio-group
@@ -119,7 +105,7 @@
                       :disabled="!hasDataPermission('manage',param.privileges)"
                       @change="save(true,'chart',true,true)"
                     >
-                      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
+                      <div class="chart-radio-div" style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
                         <el-radio value="table-normal" label="table-normal">
                           <span :title="$t('chart.chart_table_normal')">
                             <svg-icon icon-class="table-normal" class="chart-icon" />
@@ -233,7 +219,7 @@
                     </el-radio-group>
                   </div>
                 </el-row>
-                <el-row style="color: #909399;">
+                <el-row class="title-text" style="color: #909399;">
                   <span>
                     <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge') || chart.type.includes('treemap'))">
                       Tips: {{ $t('chart.only_one_quota') }}
@@ -247,7 +233,7 @@
                   </span>
                 </el-row>
               </div>
-              <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style">
+              <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style theme-border-class">
                 <el-row style="height: 100%;">
                   <el-row v-if="view.type ==='map'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
@@ -419,6 +405,7 @@
                       group="drag"
                       animation="300"
                       :move="onMove"
+                      class="theme-item-class"
                       style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @add="addCustomFilter"
                       @update="save(true)"
@@ -462,9 +449,9 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 360px;">
           <el-row class="view-panel">
-            <div style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;" class="attr-style">
+            <div style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;" class="attr-style theme-border-class">
               <el-row class="padding-lr">
-                <span>{{ $t('chart.style_priority') }}</span>
+                <span class="title-text">{{ $t('chart.style_priority') }}</span>
                 <el-row>
                   <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
                     <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
@@ -1214,7 +1201,7 @@ export default {
     saveDimensionFilter() {
       for (let i = 0; i < this.dimensionItem.filter.length; i++) {
         const f = this.dimensionItem.filter[i]
-        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+        if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
           this.$message({
             message: this.$t('chart.filter_value_can_null'),
             type: 'error',
@@ -1238,7 +1225,7 @@ export default {
     saveQuotaFilter() {
       for (let i = 0; i < this.quotaItem.filter.length; i++) {
         const f = this.quotaItem.filter[i]
-        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+        if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
           this.$message({
             message: this.$t('chart.filter_value_can_null'),
             type: 'error',
@@ -1271,7 +1258,7 @@ export default {
     saveResultFilter() {
       for (let i = 0; i < this.filterItem.filter.length; i++) {
         const f = this.filterItem.filter[i]
-        if (!f.term.includes('null') && (!f.value || f.value === '')) {
+        if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
           this.$message({
             message: this.$t('chart.filter_value_can_null'),
             type: 'error',
@@ -1659,6 +1646,9 @@ export default {
     height: calc(100% - 40px);
     background-color: #f7f8fa;
   }
+  .blackTheme .view-panel {
+    background-color: var(--MainBG);
+  }
 
   .drag-list {
     height: calc(100% - 26px);
@@ -1680,6 +1670,13 @@ export default {
     text-overflow: ellipsis;
   }
 
+  .blackTheme .item-dimension {
+    border: solid 1px ;
+    border-color: var(--TableBorderColor);
+    color: var(--TextPrimary);
+    background-color: var(--MainBG);
+  }
+
   .item-dimension + .item-dimension {
     margin-top: 2px;
   }
@@ -1691,19 +1688,32 @@ export default {
     cursor: pointer;
   }
 
+  .blackTheme .item-dimension:hover {
+    color: var(--Main);
+    background: var(--ContentBG);
+    cursor: pointer;
+  }
+
   .item-quota {
     padding: 2px 10px;
     margin: 2px 2px 0 2px;
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
-    /*background-color: rgba(35,46,64,.05);*/
     background-color: white;
     display: block;
     word-break: break-all;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .blackTheme .item-quota {
+
+    border: solid 1px ;
+    border-color: var(--TableBorderColor);
+    color: var(--TextPrimary);
+    background-color: var(--MainBG);
+
   }
 
   .item-quota + .item-quota {
@@ -1715,6 +1725,10 @@ export default {
     background: #f0f9eb;
     border-color: #b2d3a3;
     cursor: pointer;
+  }
+
+  .blackTheme .item-quota:hover {
+    background: var(--ContentBG);
   }
 
   .el-form-item {
@@ -1730,9 +1744,18 @@ export default {
     background-color: #E8EAED;
   }
 
+  .blackTheme .tab-header>>>.el-tabs__item{
+    background-color: var(--MainBG);
+  }
+
   .tab-header>>>.is-active{
     background-color: #f7f8fa;
     border-bottom-color: #f7f8fa!important;
+  }
+
+  .blackTheme .tab-header>>>.is-active{
+    background-color: var(--ContentBG);
+    border-bottom-color: var(--ContentBG) !important;
   }
   .tab-header>>>.el-tabs__nav-scroll{
     padding-left: 0!important;
@@ -1763,7 +1786,7 @@ export default {
   }
 
   .chart-type>>>.el-radio__input{
-    display: none!important;
+    display: none !important;
   }
 
   .el-radio{
@@ -1778,6 +1801,11 @@ export default {
     height: calc(100vh - 56px - 25vh - 40px - 40px);
   }
 
+  .blackTheme .attr-style{
+    border-color: var(--TableBorderColor) !important;
+    color: var(--TextPrimary);
+  }
+
   .attr-selector{
     width:100%;
     height: 100%;
@@ -1788,15 +1816,9 @@ export default {
     background-color: white
   }
 
-  .style-collapse>>>.el-collapse-item__content {
-    padding-bottom: 0!important;
-  }
-  .style-collapse>>>.el-collapse-item__header {
-    height: 34px;
-    line-height: 34px;
-    padding: 0 0 0 6px;
-    font-size: 12px;
-    font-weight: 400;
+  .blackTheme .attr-selector{
+
+    background-color: var(--MainBG)
   }
 
   .disabled-none-cursor{
@@ -1830,6 +1852,7 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
+
   .chart-error-class{
     text-align: center;
     height: 100%;
@@ -1838,9 +1861,19 @@ export default {
     justify-content: center;
     background-color: #ece7e7;
   }
+  .blackTheme .chart-error-class{
+
+    background-color: var(--MainBG)
+  }
+
   .field-height{
     height: calc(50% - 20px);
     border-top: 1px solid #E6E6E6;
+  }
+  .blackTheme .field-height{
+
+    border-top: 1px solid ;
+    border-color: var(--TableBorderColor) !important;
   }
   .padding-tab{
     padding: 0;
@@ -1852,6 +1885,7 @@ export default {
           font-weight: normal !important;
       }
   }
+
   .drag-block-style{
     padding:2px 0 0 0;
     width:100%;
@@ -1863,6 +1897,12 @@ export default {
     align-items: center;
     background-color: white;
   }
+  .blackTheme .drag-block-style{
+    border: 1px solid ;
+    border-color: var(--TableBorderColor);
+    background-color: var(--ContentBG);
+  }
+
   .drag-placeholder-style{
     position: absolute;
     top: calc(50% - 2px);
@@ -1870,7 +1910,24 @@ export default {
     width: 100%;
     color: #CCCCCC;
   }
+  .blackTheme .drag-placeholder-style{
+    color: var(--TextPrimary);
+  }
   .drag-placeholder-style-span{
     padding-left: 16px;
   }
+
+  .blackTheme .theme-border-class {
+    border-color: var(--TableBorderColor) !important;
+    color: var(--TextPrimary) !important;
+    background-color: var(--ContentBG);
+  }
+  .blackTheme .padding-lr {
+    border-color: var(--TableBorderColor) !important;
+  }
+  .blackTheme .theme-item-class {
+      background-color: var(--MainBG) !important;
+      border-color: var(--TableBorderColor) !important;
+  }
+
 </style>

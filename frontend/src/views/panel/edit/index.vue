@@ -27,7 +27,7 @@
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
               <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
             </div>
-            <div style="position: relative; margin: 18px auto 16px;">
+            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
               <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                 {{ $t('panel.view') }}
               </div>
@@ -42,7 +42,7 @@
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
                   <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
                 </div>
-                <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
+                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
                   <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                     {{ $t('panel.module') }}
                   </div>
@@ -59,7 +59,7 @@
                 <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
                   <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
                 </div>
-                <div style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
+                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
                   <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
                     {{ $t('panel.other_module') }}
                   </div>
@@ -96,12 +96,15 @@
 
         <div
           id="canvasInfo"
+          :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
+          :style="customCanvasStyle"
           @drop="handleDrop"
+          @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor v-if="!previewVisible" :out-style="outStyle" @canvasScroll="canvasScroll" />
+          <Editor ref="canvasEditor" v-if="!previewVisible" :out-style="outStyle" @canvasScroll="canvasScroll" />
         </div>
       </de-main-container>
       <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
@@ -280,6 +283,26 @@ export default {
   },
 
   computed: {
+    customCanvasStyle() {
+      let style = {}
+
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            ...style
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color,
+            ...style
+          }
+        }
+      }
+      // console.log('customStyle=>' + JSON.stringify(style) + JSON.stringify(this.canvasStyleData))
+
+      return style
+    },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
@@ -365,10 +388,18 @@ export default {
         componentDatas.forEach(item => {
           item.filters = (item.filters || [])
           item.linkageFilters = (item.linkageFilters || [])
+          item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
+          item.x = (item.x || 1)
+          item.y = (item.y || 1)
+          item.sizex = (item.sizex || 5)
+          item.sizey = (item.sizey || 5)
         })
         this.$store.commit('setComponentData', this.resetID(componentDatas))
         // this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
-        this.$store.commit('setCanvasStyle', JSON.parse(canvasStyleDataTemp))
+        const temp = JSON.parse(canvasStyleDataTemp)
+        temp.refreshTime = (temp.refreshTime || 5)
+
+        this.$store.commit('setCanvasStyle', temp)
         // 清空临时画布数据
         this.$store.dispatch('panel/setComponentDataTemp', null)
         this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
@@ -378,10 +409,17 @@ export default {
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])
             item.linkageFilters = (item.linkageFilters || [])
+            item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
+            item.x = (item.x || 1)
+            item.y = (item.y || 1)
+            item.sizex = (item.sizex || 5)
+            item.sizey = (item.sizey || 5)
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
           //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
+          panelStyle.refreshTime = (panelStyle.refreshTime || 5)
+
           this.$store.commit('setCanvasStyle', panelStyle)
           this.$store.commit('recordSnapshot', 'init')// 记录快照
           // 刷新联动信息
@@ -440,6 +478,7 @@ export default {
       return data
     },
     handleDrop(e) {
+      this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)
       this.currentDropElement = e
@@ -479,9 +518,21 @@ export default {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
 
         this.currentFilterCom = this.currentWidget.getDrawPanel()
-        this.currentFilterCom.style.top = this.getPositionY(e.layerY)
-        this.currentFilterCom.style.left = this.getPositionX(e.layerX)
+
+        if (this.canvasStyleData.auxiliaryMatrix) {
+          this.currentFilterCom.x = this.dropComponentInfo.x
+          this.currentFilterCom.y = this.dropComponentInfo.y
+          this.currentFilterCom.sizex = this.dropComponentInfo.sizex
+          this.currentFilterCom.sizey = this.dropComponentInfo.sizey
+
+          this.currentFilterCom.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+          this.currentFilterCom.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+          this.currentFilterCom.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
+          this.currentFilterCom.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+        }
         this.currentFilterCom.id = newComponentId
+        this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+
         if (this.currentWidget.filterDialog) {
           this.show = false
           this.openFilterDialog()
@@ -493,12 +544,27 @@ export default {
       // position = absolution 或导致有偏移 这里中和一下偏移量
       // component.style.top = this.getPositionY(e.layerY)
       // component.style.left = this.getPositionX(e.layerX)
-      component.style.top = this.dropComponentInfo.shadowStyle.y
-      component.style.left = this.dropComponentInfo.shadowStyle.x
-      component.style.width = this.dropComponentInfo.shadowStyle.width
-      component.style.height = this.dropComponentInfo.shadowStyle.height
+
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        component.x = this.dropComponentInfo.x
+        component.y = this.dropComponentInfo.y
+        component.sizex = this.dropComponentInfo.sizex
+        component.sizey = this.dropComponentInfo.sizey
+
+        component.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+        component.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+      } else {
+        component.style.top = this.dropComponentInfo.shadowStyle.y
+        component.style.left = this.dropComponentInfo.shadowStyle.x
+        component.style.width = this.dropComponentInfo.shadowStyle.width
+        component.style.height = this.dropComponentInfo.shadowStyle.height
+      }
 
       component.id = newComponentId
+      // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'handleDrop')
       this.clearCurrentInfo()
@@ -541,6 +607,7 @@ export default {
       this.filterVisible = false
       this.currentWidget = null
       this.clearCurrentInfo()
+      bus.$emit('onRemoveLastItem')
     },
     sureFilter() {
       this.currentFilterCom.options.value = []
@@ -611,22 +678,35 @@ export default {
           const scaleHeight = img.height / 200
           let scale = scaleWith > scaleHeight ? scaleWith : scaleHeight
           scale = scale > 1 ? scale : 1
-          this.$store.commit('addComponent', {
-            component: {
-              ...commonAttr,
-              id: generateID(),
-              component: 'Picture',
-              label: '图片',
-              icon: '',
-              propValue: fileResult,
-              style: {
-                ...commonStyle,
-                top: _this.dropComponentInfo.shadowStyle.y,
-                left: _this.dropComponentInfo.shadowStyle.x,
-                width: _this.dropComponentInfo.shadowStyle.width,
-                height: _this.dropComponentInfo.shadowStyle.height
-              }
+          const component = {
+            ...commonAttr,
+            id: generateID(),
+            component: 'Picture',
+            label: '图片',
+            icon: '',
+            propValue: fileResult,
+            style: {
+              ...commonStyle
             }
+          }
+          component.auxiliaryMatrix = _this.canvasStyleData.auxiliaryMatrix
+          if (_this.canvasStyleData.auxiliaryMatrix) {
+            component.x = _this.dropComponentInfo.x
+            component.y = _this.dropComponentInfo.y
+            component.sizex = _this.dropComponentInfo.sizex
+            component.sizey = _this.dropComponentInfo.sizey
+            component.style.left = (_this.dropComponentInfo.x - 1) * _this.curCanvasScale.matrixStyleOriginWidth
+            component.style.top = (_this.dropComponentInfo.y - 1) * _this.curCanvasScale.matrixStyleOriginHeight
+            component.style.width = _this.dropComponentInfo.sizex * _this.curCanvasScale.matrixStyleOriginWidth
+            component.style.height = _this.dropComponentInfo.sizey * _this.curCanvasScale.matrixStyleOriginHeight
+          } else {
+            component.style.top = _this.dropComponentInfo.shadowStyle.y
+            component.style.left = _this.dropComponentInfo.shadowStyle.x
+            component.style.width = _this.dropComponentInfo.shadowStyle.width
+            component.style.height = _this.dropComponentInfo.shadowStyle.height
+          }
+          this.$store.commit('addComponent', {
+            component: component
           })
 
           this.$store.commit('recordSnapshot', 'handleFileChange')
@@ -713,6 +793,11 @@ export default {
         }
         this.destroyTimeMachine()
       }, 1000)
+    },
+    handleDragOver(e) {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'copy'
+      this.$refs.canvasEditor.handleDragOver(e)
     }
   }
 }
@@ -733,6 +818,11 @@ export default {
   .de-header {
     height: 35px !important;
     border-bottom: 1px solid #E6E6E6;
+
+  }
+  .blackTheme .de-header {
+      background-color: var(--SiderBG) !important;
+      color: var(--TextActive);
   }
 
   .showLeftPanel {
@@ -763,7 +853,7 @@ export default {
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, .05);
   transition: all .25s cubic-bezier(.7, .3, .1, 1);
   transform: translate(100%);
-  background: #fff;
+  background: var(--SiderBG, #fff);
   z-index: 1003;
 }
 
@@ -784,7 +874,10 @@ export default {
 
 .this_canvas{
   height: calc(100vh - 91px);
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-size:100% 100% !important;
+
 }
 .el-main{
   height: calc(100vh - 91px);
@@ -800,16 +893,16 @@ export default {
   overflow-y: auto;
 }
 .button-show{
-    background-color: #ebf2fe!important;
+    background-color: var(--MainContentBG, #ebf2fe)!important;
 }
 
 .button-closed{
-  background-color: #ffffff!important;
+  background-color: var(--SiderBG, #ffffff)!important;
 }
 .style-aside{
   width: 250px;
   max-width:250px!important;
-  border: 1px solid #E6E6E6;
+  border: 1px solid var(--TableBorderColor, #E6E6E6);
   padding: 10px;
   transition: all 0.3s;
 
@@ -845,5 +938,8 @@ export default {
   .style-hidden{
     overflow-x: hidden;
   }
+.button-text {
+    color: var(--TextActive);
+}
 
 </style>

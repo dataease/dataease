@@ -1,6 +1,7 @@
 package io.dataease.commons.utils;
 import com.google.gson.Gson;
 import io.dataease.datasource.dto.TableFiled;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -56,8 +57,9 @@ public class ExcelReaderUtil {
         } else if (fileName.endsWith(EXCEL07_EXTENSION)) {//处理excel2007文件
             ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
             excelXlsxReader.process(inputStream);
-            System.out.println(excelXlsxReader.totalSheets.size());
-            System.out.println(excelXlsxReader.totalSheets.get(0).getExcelLable());
+
+            System.out.println(excelXlsxReader.totalSheets.get(0).getFields().size());
+
             for (TableFiled field : excelXlsxReader.totalSheets.get(0).getFields()) {
                 System.out.println(new Gson().toJson(field));
             }
@@ -68,8 +70,10 @@ public class ExcelReaderUtil {
         }
     }
 
-    /* public static void main(String[] args) throws Exception {
-        String file ="Metersphere_case_DataEase功能用例.xlsx";
+     public static void main(String[] args) throws Exception {
+
+
+        String file ="各省市GDP-表格_加内容.xlsx";
         ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
-    } */
+    }
 }

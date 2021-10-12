@@ -184,7 +184,8 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
 }
 export const DEFAULT_BACKGROUND_COLOR = {
   color: '#ffffff',
-  alpha: 0
+  alpha: 100,
+  borderRadius: 5
 }
 export const DEFAULT_SPLIT = {
   name: {
@@ -605,7 +606,7 @@ export const BASE_GAUGE = {
 }
 
 export const BASE_CHART_STRING = {
-  stylePriority: 'panel',
+  stylePriority: 'view',
   xaxis: '[]',
   yaxis: '[]',
   show: true,

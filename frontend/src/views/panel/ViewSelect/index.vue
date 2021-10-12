@@ -36,7 +36,6 @@
           @check="checkChanged"
 
           @node-drag-end="dragEnd"
-
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
@@ -70,6 +69,9 @@
 import { tree, findOne } from '@/api/panel/view'
 import componentList from '@/components/canvas/custom-component/component-list'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import eventBus from '@/components/canvas/utils/eventBus'
+import { mapState } from 'vuex'
+
 export default {
   name: 'ViewSelect',
   props: {
@@ -84,13 +86,19 @@ export default {
       defaultExpandedKeys: [],
       defaultProps: {
         children: 'children',
-        label: 'name'
+        label: 'name',
+        disabled: 'disabled'
       },
       data: [],
       showdetail: false,
       detailItem: null,
       loading: false
     }
+  },
+  computed: {
+    ...mapState([
+      'canvasStyleData'
+    ])
   },
   watch: {
     templateFilterText(val) {
@@ -114,7 +122,11 @@ export default {
       const param = {}
       this.loading = true
       tree(param).then(res => {
-        this.data = res.data
+        const nodeDatas = res.data
+        if (this.selectModel) {
+          this.setParentDisable(nodeDatas)
+        }
+        this.data = nodeDatas
         this.loading = false
       })
     },
@@ -126,9 +138,10 @@ export default {
         id: node.data.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+      eventBus.$emit('startMoveIn')
     },
     dragEnd() {
-      console.log('dragEnd')
+      // console.log('dragEnd')
       this.$store.commit('clearDragComponentInfo')
     },
     // 判断节点能否被拖拽
@@ -156,6 +169,16 @@ export default {
       const nodes = this.$refs.templateTree.getCheckedNodes(true, false)
       return nodes
     },
+    setParentDisable(nodes) {
+      nodes.forEach(node => {
+        if (node.type === 'group') {
+          node.disabled = true
+        }
+        if (node.children && node.children.length > 0) {
+          this.setParentDisable(node.children)
+        }
+      })
+    },
     viewComponentInfo() {
       let component
       // 用户视图设置 复制一个模板
@@ -164,6 +187,8 @@ export default {
           component = deepCopy(componentTemp)
         }
       })
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+      component.moveStatus = 'start'
       return component
     }
 

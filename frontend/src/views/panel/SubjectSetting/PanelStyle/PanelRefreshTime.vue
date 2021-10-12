@@ -37,9 +37,9 @@ export default {
   },
   created() {
     // 初始化赋值
-    if (!this.canvasStyleData.refreshTime) {
-      this.canvasStyleData['refreshTime'] = CANVAS_STYLE.refreshTime
-    }
+    // if (!this.canvasStyleData.refreshTime) {
+    //   this.canvasStyleData['refreshTime'] = CANVAS_STYLE.refreshTime
+    // }
   },
   methods: {
     onChangePanelStyle() {

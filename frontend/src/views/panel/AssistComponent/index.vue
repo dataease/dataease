@@ -60,6 +60,8 @@ import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import eventBus from '@/components/canvas/utils/eventBus'
+import { mapState } from 'vuex'
 
 export default {
   name: 'AssisComponent',
@@ -68,6 +70,11 @@ export default {
       assistList,
       pictureList
     }
+  },
+  computed: {
+    ...mapState([
+      'canvasStyleData'
+    ])
   },
 
   methods: {
@@ -79,6 +86,7 @@ export default {
         id: ev.target.dataset.id
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
+      eventBus.$emit('startMoveIn')
     },
     goFile() {
       this.$refs.files.click()
@@ -133,6 +141,13 @@ export default {
           component = deepCopy(componentTemp)
         }
       })
+      // 图片移入是 不支持矩阵 暂时无法监听窗口取消事件
+      if (component.type !== 'picture-add') {
+        component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+      } else {
+        component.auxiliaryMatrix = false
+      }
+      component.moveStatus = 'start'
       return component
     },
     handleDragEnd(ev) {
@@ -170,7 +185,7 @@ export default {
   .filter-header-text {
     font-size: 14px;
     max-width: 100%;
-    color: gray;
+    color: var(--TextPrimary, gray);
     text-align: left;
     white-space: pre;
     text-overflow: ellipsis;
@@ -208,7 +223,7 @@ export default {
         color: #3685f2;
     }
     .filter-widget-text {
-        color: #3d4d66;
+         color: var(--TextActive, #3d4d66);
     }
   }
   .time-filter:hover {
@@ -229,7 +244,7 @@ export default {
         color: #23beef;
     }
     .filter-widget-text {
-        color: #3d4d66;
+        color: var(--TextActive, #3d4d66);
     }
   }
   .text-filter:hover {
@@ -249,7 +264,7 @@ export default {
         color: #37b4aa;
     }
     .filter-widget-text {
-        color: #3d4d66;
+         color: var(--TextActive, #3d4d66);
     }
   }
   .tree-filter:hover {

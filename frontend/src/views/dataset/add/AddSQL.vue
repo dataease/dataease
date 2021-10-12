@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row>
-      <el-row style="height: 26px;">
+      <el-row style="height: 26px;" class="title-text">
         <span style="line-height: 26px;">
           {{ param.tableId?$t('dataset.edit_sql'):$t('dataset.add_sql_table') }}
         </span>
@@ -145,7 +145,7 @@ export default {
         theme: 'solarized',
         hintOptions: { // 自定义提示选项
           completeSingle: false // 当匹配只有一项的时候是否自动补全
-        },
+        }
       },
       data: [],
       fields: [],
@@ -192,7 +192,7 @@ export default {
     },
     changeDatasource() {
       for (let i = 0; i < this.options.length; i++) {
-        if (this.options[i].id === this.form.dataSource) {
+        if (this.options[i].id === this.dataSource) {
           this.selectedDatasource = this.options[i]
         }
       }

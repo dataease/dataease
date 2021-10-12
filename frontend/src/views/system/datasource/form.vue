@@ -39,14 +39,25 @@
           <el-radio v-model="form.configuration.connectionType" label="serviceName">{{ $t('datasource.oracle_service_name') }}</el-radio>
         </el-form-item>
 
-        <el-form-item :label="$t('datasource.user_name')"  >
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')"  prop="configuration.username">
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('datasource.password')"  >
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')"  prop="configuration.password">
           <el-input v-model="form.configuration.password" autocomplete="off" show-password />
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port">
-          <el-input v-model="form.configuration.port" autocomplete="off" />
+        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.user_name')"  >
+          <el-input v-model="form.configuration.esUsername" autocomplete="off" />
+        </el-form-item>
+        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.password')"  >
+          <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password />
+        </el-form-item>
+
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle'" :label="$t('datasource.extra_params')"  >
+          <el-input v-model="form.configuration.extraParams" autocomplete="off" />
+        </el-form-item>
+
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port" >
+          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
         </el-form-item>
         <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'">
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
@@ -120,6 +131,7 @@ export default {
       form: {
         configuration: {
           initialPoolSize: 5,
+          extraParams: '',
           minPoolSize: 5,
           maxPoolSize: 50,
           maxIdleTime: 30,
@@ -148,12 +160,14 @@ export default {
         'configuration.connectTimeout': [{ required: true, message: this.$t('datasource.please_input_connect_timeout'), trigger: 'change' }]
       },
       allTypes: [
-        { name: 'mysql', label: 'MySQL', type: 'jdbc'},
-        { name: 'oracle', label: 'Oracle', type: 'jdbc' },
-        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
-        { name: 'pg', label: 'PostgreSQL', type: 'jdbc' },
+        { name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        { name: 'oracle', label: 'Oracle', type: 'jdbc'},
+        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
+        { name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: '' },
         { name: 'es', label: 'Elasticsearch', type: 'es' },
-        { name: 'ck', label: 'ClickHouse', type: 'jdbc' }
+        { name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' }
         ],
       schemas: [],
       canEdit: false,
@@ -179,6 +193,7 @@ export default {
       this.form.type = this.params.type
       this.form.configuration = {
         initialPoolSize: 5,
+        extraParams: '',
         minPoolSize: 5,
         maxPoolSize: 50,
         maxIdleTime: 30,
@@ -206,16 +221,12 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
-      if(this.form.type !== 'es' && !this.form.configuration.username){
-          this.$message.error(this.$t('datasource.please_input_user_name'))
-          return
-      }
-      if(this.form.type !== 'es' && !this.form.configuration.username){
-          this.$message.error(this.$t('datasource.please_input_password'))
-          return
-      }
       if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer')) {
         this.$message.error(this.$t('datasource.please_choose_schema'))
+        return
+      }
+      if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
+        this.$message.error(this.$t('datasource.port_no_less_then_0'))
         return
       }
       if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0 || this.form.configuration.maxIdleTime < 0 ||
@@ -267,6 +278,10 @@ export default {
         this.$message.error(this.$t('datasource.please_choose_schema'))
         return
       }
+      if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
+        this.$message.error(this.$t('datasource.port_no_less_then_0'))
+        return
+      }
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
@@ -302,6 +317,7 @@ export default {
       for (let i = 0; i < this.allTypes.length; i++) {
         if (this.allTypes[i].name === this.form.type) {
           this.form.configuration.dataSourceType = this.allTypes[i].type
+          this.form.configuration.extraParams = this.allTypes[i].extraParams
         }
       }
     },

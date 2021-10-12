@@ -5,6 +5,7 @@ import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
+import io.dataease.controller.response.ChartDetail;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.service.chart.ChartViewService;
 import io.swagger.annotations.Api;
@@ -46,7 +47,7 @@ public class ChartViewController {
         return chartViewService.listAndGroup(chartViewRequest);
     }
 
-    @ApiOperation("详息")
+    @ApiOperation("详细信息")
     @PostMapping("/get/{id}")
     public ChartViewWithBLOBs get(@PathVariable String id) {
         return chartViewService.get(id);
@@ -66,7 +67,7 @@ public class ChartViewController {
 
     @ApiOperation("视图详情")
     @PostMapping("chartDetail/{id}")
-    public Map<String, Object> chartDetail(@PathVariable String id) {
+    public ChartDetail chartDetail(@PathVariable String id) {
         return chartViewService.getChartDetail(id);
     }
 

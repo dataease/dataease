@@ -39,7 +39,7 @@ public class CommonConfig {
         datasource.setId("doris");
         datasource.setName("doris");
         datasource.setDesc("doris");
-        datasource.setType("doris");
+        datasource.setType("de_doris");
         datasource.setConfiguration(jsonObject.toJSONString());
         return datasource;
     }

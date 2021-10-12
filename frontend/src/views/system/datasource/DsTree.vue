@@ -18,6 +18,7 @@
               :placeholder="$t('chart.search')"
               prefix-icon="el-icon-search"
               clearable
+              class="main-area-input"
             />
           </el-form-item>
         </el-form>
@@ -156,8 +157,12 @@ export default {
         return 'PostgreSQL'
       } else if (type === 'es') {
         return 'Elasticsearch'
-      } else if (type === 'ch') {
+      } else if (type === 'ck') {
         return 'ClickHouse'
+      } else if (type === 'mariadb') {
+        return 'MariaDB'
+      } else if (type === 'ds_doris') {
+        return 'Doris'
       }
     },
 

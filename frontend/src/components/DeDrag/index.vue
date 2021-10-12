@@ -11,7 +11,8 @@
         [classNameRotating]: rotating,
         [classNameRotatable]: rotatable,
         [classNameMouseOn]: mouseOn || active,
-        ['linkageSetting']:linkageActive
+        ['linkageSetting']:linkageActive,
+        ['positionChange']:!(dragging || resizing||rotating)
       },
       className
     ]"
@@ -20,7 +21,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" />
     <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       v-for="(handlei, indexi) in actualHandles"
@@ -434,6 +435,7 @@ export default {
       }
     },
     style() {
+      // console.log('style-top:' + this.y + '--' + this.top)
       return {
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
@@ -447,7 +449,7 @@ export default {
       return {
         width: this.computedWidth,
         height: this.computedHeight,
-        opacity: 0.4,
+        opacity: 0.2,
         background: 'gray'
       }
     },
@@ -482,7 +484,7 @@ export default {
           return 'auto'
         }
       }
-      if (this.canvasStyleData.auxiliaryMatrix) {
+      if (this.element.auxiliaryMatrix) {
         const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
         return width + 'px'
       } else {
@@ -496,7 +498,7 @@ export default {
           return 'auto'
         }
       }
-      if (this.canvasStyleData.auxiliaryMatrix) {
+      if (this.element.auxiliaryMatrix) {
         const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
         return height + 'px'
       } else {
@@ -594,6 +596,8 @@ export default {
       this.maxH = val
     },
     w(val) {
+      // console.log('changeWidthCK：' + this.resizing)
+
       if (this.resizing || this.dragging) {
         return
       }
@@ -696,6 +700,8 @@ export default {
       }
       // 阻止冒泡事件
       e.stopPropagation()
+      // 此处阻止冒泡 但是外层需要获取pageX pageY
+      this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
       this.$store.commit('setCurComponent', { component: this.element, index: this.index })
       eventsFor = events.mouse
       this.elementDown(e)
@@ -707,6 +713,8 @@ export default {
       }
       const target = e.target || e.srcElement
       if (this.$el.contains(target)) {
+        // 挤压式画布设计 drag start 通知
+        this.element.auxiliaryMatrix && this.$emit('onDragStart', e, this.element, this.index)
         if (this.onDragStart(e) === false) {
           return
         }
@@ -800,6 +808,7 @@ export default {
       if (e instanceof MouseEvent && e.which !== 1) {
         return false
       }
+      this.element.auxiliaryMatrix && this.$emit('onResizeStart', e, this.element, this.index)
       if (this.onResizeStart(handle, e) === false) {
         return false
       }
@@ -982,6 +991,10 @@ export default {
       this.bottom = bottom
       await this.snapCheck()
       this.$emit('dragging', this.left, this.top)
+      // 如果当前视图遵循矩阵设计则 进行位置挤压检查
+      if (this.element.auxiliaryMatrix) {
+        this.$emit('onDragging', e, this.element)
+      }
 
       // private 记录当前样式
       this.recordCurStyle()
@@ -1156,7 +1169,8 @@ export default {
       // console.log('width2:' + this.width)
       this.height = newH
 
-      this.$emit('resizing', this.left, this.top, this.width, this.height)
+      // this.$emit('resizing', this.left, this.top, this.width, this.height)
+      this.element.auxiliaryMatrix && this.$emit('onResizing', e, this.element)
 
       // private 记录当前组件样式
       this.recordCurStyle()
@@ -1201,7 +1215,7 @@ export default {
       this.height = height
     },
     // 从控制柄松开
-    async handleUp(e) {
+    handleUp(e) {
       this.handle = null
       // 初始化辅助线数据
       const temArr = new Array(3).fill({ display: false, position: '', origin: '', lineLength: '' })
@@ -1215,7 +1229,8 @@ export default {
       this.lastMouseY = mouseY
       if (this.resizing) {
         this.resizing = false
-        await this.conflictCheck()
+        // console.log('resizing2:' + this.resizing)
+        this.conflictCheck()
         this.$emit('refLineParams', refLine)
         // this.$emit('resizestop', this.left, this.top, this.width, this.height)
         // private
@@ -1223,7 +1238,7 @@ export default {
       }
       if (this.dragging) {
         this.dragging = false
-        await this.conflictCheck()
+        this.conflictCheck()
         this.$emit('refLineParams', refLine)
         this.$emit('dragstop', this.left, this.top)
       }
@@ -1235,17 +1250,27 @@ export default {
       // private 记录snapshot
 
       // 如果辅助设计 需要最后调整矩阵
-      if (this.canvasStyleData.auxiliaryMatrix) {
-        this.recordMatrixCurStyle()
+      if (this.element.auxiliaryMatrix) {
+        // this.recordMatrixCurStyle()
+        setTimeout(() => {
+          this.recordMatrixCurShadowStyle()
+          this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
+          // 记录snapshot后 移动已记录设置为false
+          this.hasMove = false
+        }, 100)
+      }else{
+        this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
+        // 记录snapshot后 移动已记录设置为false
+        this.hasMove = false
       }
-      this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
-      // 记录snapshot后 移动已记录设置为false
-      this.hasMove = false
 
       removeEvent(document.documentElement, eventsFor.move, this.move)
 
       // private 删除handle Up事件 防止重复recordSnapshot
       removeEvent(document.documentElement, eventsFor.stop, this.handleUp)
+
+      // 挤占式画布设计 handleUp
+      this.element.auxiliaryMatrix && this.$emit('onHandleUp', e)
     },
     // 新增方法 ↓↓↓
     // 设置属性
@@ -1550,10 +1575,44 @@ export default {
       this.$store.commit('setShapeStyle', style)
 
       // resize
+      self.$emit('resizeView')
+      // const self = this
+      // setTimeout(function() {
+      //   self.$emit('resizeView')
+      // }, 200)
+    },
+    // 记录当前样式 跟随阴影位置 矩阵处理
+    recordMatrixCurShadowStyle() {
+      // debugger
+      const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
+      const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight
+      const width = this.element.sizex * this.curCanvasScale.matrixStyleWidth
+      const height = this.element.sizey * this.curCanvasScale.matrixStyleHeight
+      // const t1 = Math.round(this.width / this.curCanvasScale.matrixStyleWidth)
+      // const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
+      // const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+      // const width = t1 * this.curCanvasScale.matrixStyleWidth
+      // const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+
+      const style = {
+        ...this.defaultStyle
+      }
+      style.left = left
+      style.top = top
+      style.width = width
+      style.height = height
+      style.rotate = this.rotate
+      // this.hasMove = true
+      // console.log('recordMatrixCurShadowStyle:t1:' + t1 + ';mw:' + this.curCanvasScale.matrixStyleWidth + ';width:' + width)
+
+      this.$store.commit('setShapeStyle', style)
+
+      // resize
       const self = this
-      setTimeout(function() {
-        self.$emit('resizeView')
-      }, 200)
+      self.$emit('resizeView')
+      // setTimeout(function() {
+      //   self.$emit('resizeView')
+      // }, 200)
     },
     mountedFunction() {
       // private 冲突检测 和水平设计值保持一致
@@ -1619,6 +1678,15 @@ export default {
     },
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    amAddItem() {
+      this.$emit('amAddItem')
+    },
+    amRemoveItem() {
+      this.$emit('amRemoveItem')
+    },
+    resizeView() {
+      this.$emit('resizeView')
     }
   }
 
@@ -1710,6 +1778,10 @@ export default {
 
 .linkageSetting{
   opacity: 0.5;
+}
+
+.positionChange{
+  transition: 0.2s
 }
 
 .gap_class{

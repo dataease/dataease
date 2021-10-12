@@ -1,7 +1,6 @@
 -- ----------------------------
 -- Table structure for sys_msg
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_msg`;
 CREATE TABLE `sys_msg` (
   `msg_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '消息主键',
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
@@ -20,7 +19,6 @@ CREATE TABLE `sys_msg` (
 -- ----------------------------
 -- Table structure for sys_msg_channel
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_msg_channel`;
 CREATE TABLE `sys_msg_channel` (
   `msg_channel_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `channel_name` varchar(255) DEFAULT NULL COMMENT '渠道名称',
@@ -38,7 +36,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for sys_msg_type
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_msg_type`;
 CREATE TABLE `sys_msg_type` (
   `msg_type_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `pid` bigint(20) NOT NULL COMMENT '父类ID',
@@ -64,7 +61,6 @@ COMMIT;
 -- ----------------------------
 -- Table structure for sys_msg_setting
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_msg_setting`;
 CREATE TABLE `sys_msg_setting` (
   `msg_setting_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',

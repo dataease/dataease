@@ -127,7 +127,8 @@ export default {
     tokenError: 'Token error, please login again',
     username_error: 'Please enter the correct ID',
     password_error: 'The password can not be less than 8 digits',
-    re_login: 'Login again'
+    re_login: 'Login again',
+    default_login: 'Normal'
   },
   commons: {
     search: 'Search',
@@ -761,8 +762,10 @@ export default {
     filter_le: 'Less than or equal to',
     filter_gt: 'Greater than',
     filter_ge: 'Greater than or equal to',
-    filter_null: 'Empty',
-    filter_not_null: 'Not Empty',
+    filter_null: 'Null',
+    filter_not_null: 'Not Null',
+    filter_empty: 'Empty String',
+    filter_not_empty: 'Not Empty String',
     filter_include: 'Contain',
     filter_not_include: 'Not Contain',
     rose_type: 'Rose pattern',
@@ -1100,7 +1103,10 @@ export default {
     no_merge: 'Dont Merge',
     merge_msg: 'If the fields in the data table are consistent, merge them into one data set?',
     merge_title: 'Merge data',
-    field_name_less_50: 'Field name can not more 50 chars.'
+    field_name_less_50: 'Field name can not more 50 chars.',
+    excel_info_1: '1、Merged cells cannot exist in the file；',
+    excel_info_2: '2、The first line of the file is the title line, which cannot be empty or date；',
+    excel_info_3: '3、The file size shall not exceed 500m。'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1150,7 +1156,9 @@ export default {
     please_input_acquire_increment: 'Please enter the growth number',
     please_input_connect_timeout: 'Please enter the connection timeout (seconds)',
     no_less_then_0: 'Parameters in advanced settings cannot be less than zero',
-    priority: 'Advanced setting'
+    port_no_less_then_0: 'Port cannot be less than zero',
+    priority: 'Advanced setting',
+    extra_params: 'Extra JDBC connection string'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
@@ -1257,6 +1265,7 @@ export default {
     upComponent: 'Up One Level',
     downComponent: 'Down One Level',
     linkage_setting: 'Linkage Setting',
+    add_tab: 'Add Tab',
     open_aided_design: 'Open Component Aided Design',
     close_aided_design: 'Close Component Aided Design',
     open_style_design: 'Open Style Design',
@@ -1305,7 +1314,12 @@ export default {
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
     setting: 'Setting',
-    no_drill_field: 'Miss relation field'
+    no_drill_field: 'Miss relation field',
+    matrix: 'matrix',
+    suspension: 'suspension',
+    new_element_distribution: 'New element Distribution',
+    subject_no_edit: 'System Subject Can Not Edit',
+    subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts'
   },
   plugin: {
     local_install: 'Local installation',
@@ -1328,7 +1342,11 @@ export default {
     loginImage: 'Picture on the right side of the login page',
     loginTitle: 'Login page title',
     title: 'System name',
-    advice_size: 'Advice picture size'
+    advice_size: 'Advice picture size',
+
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    themeCustom: 'Custom'
   },
   auth: {
     authConfig: 'Auth Config',

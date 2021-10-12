@@ -127,7 +127,8 @@ export default {
     tokenError: '登陆信息错误，请重新登录',
     username_error: '请输入正确的 ID',
     password_error: '密码不小于 8 位',
-    re_login: '重新登录'
+    re_login: '重新登录',
+    default_login: '普通登录'
   },
   commons: {
     search: '搜索',
@@ -764,6 +765,8 @@ export default {
     filter_ge: '大于等于',
     filter_null: '为空',
     filter_not_null: '不为空',
+    filter_empty: '空字符串',
+    filter_not_empty: '非空字符串',
     filter_include: '包含',
     filter_not_include: '不包含',
     rose_type: '玫瑰图模式',
@@ -1101,7 +1104,10 @@ export default {
     no_merge: '不合并',
     merge_msg: '数据表中存在字段一致的情况，是否合并到一个数据集中?',
     merge_title: '合并数据',
-    field_name_less_50: '字段名不能超过50个字符'
+    field_name_less_50: '字段名不能超过50个字符',
+    excel_info_1: '1、文件中不能存在合并单元格；',
+    excel_info_2: '2、文件的第一行为标题行，不能为空，不能为日期型；',
+    excel_info_3: '3、Excel文件大小请确保在500M以内。'
   },
   datasource: {
     datasource: '数据源',
@@ -1154,11 +1160,13 @@ export default {
     please_input_acquire_increment: '请输入增长数',
     please_input_connect_timeout: '请输入连接超时(秒)',
     no_less_then_0: '高级设置中的参数不能小于零',
+    port_no_less_then_0: '端口不能小于零',
     priority: '高级设置',
     data_mode: '数据模式',
     direct: '直连模式',
     extract: '抽取模式',
-    all_compute_mode: '直连、抽取模式'
+    all_compute_mode: '直连、抽取模式',
+    extra_params: '额外的JDBC连接字符串'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
@@ -1265,6 +1273,7 @@ export default {
     upComponent: '上移',
     downComponent: '下移',
     linkage_setting: '联动设置',
+    add_tab: '新增Tab',
     open_aided_design: '打开组件辅助设计',
     close_aided_design: '关闭组件辅助设计',
     open_style_design: '打开样式设计',
@@ -1313,7 +1322,12 @@ export default {
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
     details: '详情',
     setting: '设置',
-    no_drill_field: '缺少关联字段'
+    no_drill_field: '缺少关联字段',
+    matrix: '矩阵',
+    suspension: '悬浮',
+    new_element_distribution: '新元素分布方式',
+    subject_no_edit: '系统主题不能修改',
+    subject_name_not_null: '主题名称需要1~20字符'
   },
   plugin: {
     local_install: '本地安装',
@@ -1344,7 +1358,11 @@ export default {
 
     topMenuTextColor: '头部字体颜色',
 
-    topMenuTextActiveColor: '头部字体选中颜色'
+    topMenuTextActiveColor: '头部字体选中颜色',
+
+    themeLight: '浅色',
+    themeDark: '深色',
+    themeCustom: '自定义'
 
   },
   auth: {

@@ -1,9 +1,19 @@
 <template>
   <el-col>
     <el-row>
-      <el-row style="height: 26px;">
+      <el-row style="height: 26px;" class="title-text">
         <span style="line-height: 26px;">
           {{ param.tableId?$t('dataset.edit_excel_table'):$t('dataset.add_excel_table') }}
+        </span>
+        <span style="line-height: 26px;">
+          <el-tooltip class="item" effect="dark" content="Right Bottom 提示文字" placement="bottom">
+            <div slot="content">
+              {{ $t('dataset.excel_info_1') }}<br>
+              {{ $t('dataset.excel_info_2') }}<br>
+              {{ $t('dataset.excel_info_3') }}
+            </div>
+            <i class="el-icon-info" style="cursor: pointer;" />
+          </el-tooltip>
         </span>
         <el-row style="float: right">
           <el-button size="mini" @click="cancel">
@@ -16,11 +26,10 @@
       </el-row>
       <el-divider />
 
-
       <el-row style="margin-top: 10px;">
 
         <el-container>
-          <el-aside width="200px"  >
+          <el-aside width="200px">
             <el-row>
               <el-col style="width: 200px;">
                 <el-form :inline="true" size="mini" class="row-style">
@@ -48,19 +57,18 @@
               </el-col>
             </el-row>
 
-
-            <el-tree ref="tree"
-                     :data="excelData"
-                     :default-expanded-keys=defaultExpandedKeys
-                     :default-checked-keys=defaultCheckedKeys
-                     node-key="id"
-                    :props="props"
-                    show-checkbox
-                    highlight-current
-                    @node-click="handleNodeClick"
-                    @check-change="handleCheckChange">
-            </el-tree>
-
+            <el-tree
+              ref="tree"
+              :data="excelData"
+              :default-expanded-keys="defaultExpandedKeys"
+              :default-checked-keys="defaultCheckedKeys"
+              node-key="id"
+              :props="props"
+              show-checkbox
+              highlight-current
+              @node-click="handleNodeClick"
+              @check-change="handleCheckChange"
+            />
 
           </el-aside>
 
@@ -69,13 +77,13 @@
               <el-row>
                 <el-col style="width: 500px;">
                   <el-form :inline="true" size="mini" class="row-style">
-                    <el-form-item class="form-item" :label="$t('dataset.name')" v-show="!param.tableId">
-                      <el-input  v-model="sheetObj.datasetName" :placeholder="$t('commons.name')" @change="changeDatasetName" />
+                    <el-form-item v-show="!param.tableId" class="form-item" :label="$t('dataset.name')">
+                      <el-input v-model="sheetObj.datasetName" :placeholder="$t('commons.name')" @change="changeDatasetName" />
                     </el-form-item>
                     <el-form-item>
                       <div>
                         <span>{{ $t('dataset.data_preview') }}</span>
-                        <span style="font-size: 12px;color: #3d4d66;">（{{ $t('dataset.preview_100_data') }}）</span>
+                        <span class="limit-length-data">（{{ $t('dataset.preview_100_data') }}）</span>
                       </div>
                     </el-form-item>
                   </el-form>
@@ -84,7 +92,7 @@
             </el-header>
             <el-main>
 
-              <div class="text item" >
+              <div class="text item">
                 <ux-grid
                   ref="plxTable"
                   size="mini"
@@ -102,7 +110,7 @@
                     :resizable="true"
                   >
                     <template slot="header" slot-scope="scope">
-                      <span  style="display: flex;align-items: center;">
+                      <span style="display: flex;align-items: center;">
                         <span style="display: inline-block;font-size: 12px;">
                           <div style="display: inline-block;">
                             <el-select v-model="field.fieldType" size="mini" style="display: inline-block;width: 120px;" @change="changeDatasetName">
@@ -126,9 +134,9 @@
                           {{ field.remarks }}
                         </span>
                       </span>
-<!--                      <span v-else style="font-size: 12px;">-->
-<!--                        {{ field.remarks }}-->
-<!--                      </span>-->
+                      <!--                      <span v-else style="font-size: 12px;">-->
+                      <!--                        {{ field.remarks }}-->
+                      <!--                      </span>-->
                     </template>
                   </ux-table-column>
                 </ux-grid>
@@ -166,7 +174,7 @@ export default {
   },
   data() {
     return {
-      sheetObj: {datasetName: " ", fields: []},
+      sheetObj: { datasetName: ' ', fields: [] },
       sheets: [],
       data: [],
       mode: '1',
@@ -210,20 +218,20 @@ export default {
   },
   methods: {
     handleCheckChange(data, checked, indeterminate) {
-      if(checked){
+      if (checked) {
         this.defaultCheckedKeys.push(data.id)
         this.handleNodeClick(data)
-      }else {
+      } else {
         var index = this.defaultCheckedKeys.findIndex(id => {
-          if ( id == data.id) {
-            return true;
+          if (id == data.id) {
+            return true
           }
         })
-        this.defaultCheckedKeys.splice(index,1)
+        this.defaultCheckedKeys.splice(index, 1)
       }
     },
     handleNodeClick(data) {
-      if(data.sheet){
+      if (data.sheet) {
         this.sheetObj = data
         this.fields = data.fields
         this.jsonArray = data.jsonArray
@@ -231,11 +239,11 @@ export default {
         this.$refs.plxTable.reloadData(datas)
       }
     },
-    changeDatasetName(){
-      for(var i=0;i<this.excelData.length;i++){
-        if(this.excelData[i].excelId==this.sheetObj.sheetExcelId){
-          for(var j=0;j<this.excelData[i].sheets.length;j++){
-            if(this.excelData[i].sheets[j].excelId==this.sheetObj.sheetId){
+    changeDatasetName() {
+      for (var i = 0; i < this.excelData.length; i++) {
+        if (this.excelData[i].excelId == this.sheetObj.sheetExcelId) {
+          for (var j = 0; j < this.excelData[i].sheets.length; j++) {
+            if (this.excelData[i].sheets[j].excelId == this.sheetObj.sheetId) {
               this.excelData[i].sheets[j] = this.sheetObj
             }
           }
@@ -277,19 +285,18 @@ export default {
       this.defaultExpandedKeys.push(response.data.id)
       this.defaultCheckedKeys.push(response.data.sheets[0].id)
       this.$nextTick(() => {
-        this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys);
-      });
+        this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys)
+      })
       this.fileList = fileList
     },
 
     save() {
-
-      var validate = true;
+      var validate = true
       var selectedSheet = []
       var sheetFileMd5 = []
       var selectNode = this.$refs.tree.getCheckedNodes()
-      for(var i=0;i<selectNode.length;i++){
-        if(selectNode[i].sheet){
+      for (var i = 0; i < selectNode.length; i++) {
+        if (selectNode[i].sheet) {
           if (!selectNode[i].datasetName || selectNode[i].datasetName === '') {
             validate = false
             this.$message({
@@ -312,12 +319,12 @@ export default {
           sheetFileMd5.push(selectNode[i].fieldsMd5)
         }
       }
-      if(selectedSheet.length == 0){
+      if (selectedSheet.length == 0) {
         this.$message.warning(this.$t('dataset.ple_select_excel'))
         return
       }
-      if(!validate){
-        return;
+      if (!validate) {
+        return
       }
 
       let table = {}
@@ -343,7 +350,7 @@ export default {
           editType: this.param.editType ? this.param.editType : 0
         }
       }
-      if(new Set(sheetFileMd5).size !== sheetFileMd5.length && !this.param.tableId){
+      if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !this.param.tableId) {
         this.$confirm(this.$t('dataset.merge_msg'), this.$t('dataset.merge_title'), {
           distinguishCancelAndClose: true,
           confirmButtonText: this.$t('dataset.merge'),
@@ -356,7 +363,7 @@ export default {
             this.cancel()
           })
         }).catch(action => {
-          if(action === 'close'){
+          if (action === 'close') {
             return
           }
           table.mergeSheet = false
@@ -364,8 +371,8 @@ export default {
             this.$emit('saveSuccess', table)
             this.cancel()
           })
-        });
-      }else {
+        })
+      } else {
         post('/dataset/table/update', table).then(response => {
           this.$emit('saveSuccess', table)
           this.cancel()
@@ -429,12 +436,17 @@ export default {
   }
 
   .el-header {
-    background-color: rgb(241, 243, 248);
-    color: #333;
+    background-color: var(--MainContentBG, rgb(241, 243, 248));
+    color: var(--TextActive, #333);
     line-height: 30px;
   }
 
   .el-main {
     padding: 0px
+  }
+
+  .limit-length-data {
+      font-size: 12px;
+      color: var(--TableColor, #3d4d66);
   }
 </style>

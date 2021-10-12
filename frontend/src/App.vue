@@ -6,6 +6,10 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+
+  beforeCreate() {
+    // document.body.className = 'blackTheme'
+  }
 }
 </script>

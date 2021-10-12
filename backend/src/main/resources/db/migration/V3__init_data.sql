@@ -98,36 +98,6 @@ INSERT INTO `panel_group`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`
 COMMIT;
 
 
-DROP function IF EXISTS GET_PANEL_GROUP_WITH_CHILDREN;
-DELIMITER $$
-CREATE  FUNCTION `GET_PANEL_GROUP_WITH_CHILDREN`(parentId varchar(8000)) RETURNS varchar(8000) CHARSET utf8
-    READS SQL DATA
-BEGIN
-
-DECLARE oTemp VARCHAR(8000);
-
-DECLARE oTempChild VARCHAR(8000);
-
-SET oTemp = '';
-
-SET oTempChild = CAST(parentId AS CHAR);
-
-WHILE oTempChild IS NOT NULL
-
-DO
-
-SET oTemp = CONCAT(oTemp,',',oTempChild);
-
-SELECT GROUP_CONCAT(id) INTO oTempChild FROM panel_group WHERE FIND_IN_SET(pid,oTempChild) > 0;
-
-END WHILE;
-
-RETURN oTemp;
-
-END $$
-DELIMITER ;
-
-
 
 INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('self', '用户模板', '', -1, 'folder', NULL, NULL, '', 'self', '', '', NULL);
 INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('system', '系统模板', '', -1, 'folder', NULL, NULL, NULL, 'system', NULL, NULL, NULL);

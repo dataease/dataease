@@ -1,17 +1,15 @@
 <template>
-  <div class="top-nav" :style="{backgroundColor: topMenuColor, '--active-bg-color': topMenuActiveColor}">
+  <div class="top-nav">
     <div v-loading="!axiosFinished" class="log">
       <svg-icon v-if="!logoUrl && axiosFinished" icon-class="DataEase" custom-class="top-nav-logo-icon" />
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
       class="de-top-menu"
-      :background-color="topMenuColor"
-      :text-color="topMenuTextColor"
-      :active-text-color="topMenuTextActiveColor"
-      :default-active="activeMenu"
       mode="horizontal"
       :style="{'margin-left': '260px', 'position': 'absolute'}"
+      active-text-color="#FFFFFF"
+      :default-active="activeMenu"
       @select="handleSelect"
     >
       <div v-for="item in permission_routes" :key="item.path" class="nav-item">
@@ -24,7 +22,7 @@
       </div>
     </el-menu>
 
-    <div class="right-menu" :style=" {color: topMenuTextColor}">
+    <div class="right-menu" style="color: var(--TopTextColor)">
       <template>
 
         <notification class="right-menu-item hover-effect" />
@@ -36,8 +34,8 @@
         </div>
       </template>
 
-      <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;">
-        <span :style=" {color: topMenuTextColor}" class="el-dropdown-link" style="font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+      <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;" trigger="click">
+        <span class="el-dropdown-link" style="color: var(--TopTextColor);font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
           {{ name }}
           <i class="el-icon-arrow-down el-icon--right" />
         </span>
@@ -259,6 +257,14 @@ export default {
             value: val
           })
         }
+
+        if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
+          if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
+            document.body.className = 'blackTheme'
+          } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
+            document.body.className = ''
+          }
+        }
         this.axiosFinished = true
       })
     },
@@ -302,9 +308,7 @@ export default {
   }
 
   .de-top-menu {
-      >>>li.is-active {
-          // background-color: #0a7be0 !important;
-          background-color: var(--active-bg-color) !important;
-      }
+      background-color: var(--MainBG);
+
   }
 </style>

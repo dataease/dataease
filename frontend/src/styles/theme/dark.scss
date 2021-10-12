@@ -1,0 +1,63 @@
+/* 改变主题色变量 */
+$--color-primary: #2681ff;
+$--color-success: #05AA65;
+$--color-warning: #FF9227;
+$--color-danger: #F64346;
+$--color-info: #BABEC5;
+
+
+$--color-text-primary: #F2F6FC;
+$--color-text-regular: #EBEEF5;
+$--color-text-secondary: #E4E7ED;
+$--color-text-placeholder: #DCDFE6;
+
+$--border-color-base: #495865;
+$--border-color-light: #495865;
+$--border-color-lighter: #495865;
+$--border-color-extra-light: #495865;
+
+$--color-white: #21333b;
+$--color-black: #FFFFFF;
+
+$--background-color-base: #171b22;
+
+
+
+// 与CSS原生变量映射
+#app {
+  --Main:#2681ff;
+  --test:#FF9227;
+  --color-primary: #000;
+  --MainBG: #171b22;
+  --ContentBG: #1b2a32;
+  --MainBorderColor: #2681ff;
+  --TextActive: #FFFFFF;
+  --TextPrimary: #F2F6FC;
+  --border-color-input: #303640;
+  --border-color-input-hovor: #303640;
+
+  --TopBG: #00364d;
+
+  --TopTextColor: #fafafa;
+
+
+  --MenuHovorBG: #28404d;
+  --MenuActiveBG: #324f62;
+
+  --SiderBG: #17242b;
+  --SiderTextColor: #acbac3;
+
+  --MainContentBG: #1b2a32;
+
+  --TableBG: #21333b;
+  --TableColor: #acbac3;
+  --TableBorder: .05rem solid #495865;
+  --TableBorderColor: #495865;
+
+  --background-color-base: #171b22;
+
+
+  
+}
+
+

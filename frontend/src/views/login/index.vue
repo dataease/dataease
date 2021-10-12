@@ -17,7 +17,7 @@
             <div class="login-form">
               <el-form-item v-if="loginTypes.length > 1">
                 <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
-                  <el-radio :label="0" size="mini">普通登录</el-radio>
+                  <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
                   <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
                   <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
                 </el-radio-group>
@@ -93,7 +93,7 @@ export default {
   },
   computed: {
     msg() {
-      return this.$store.state.user.loginMsg || Cookies.get('OidcError')
+      return this.$store.state.user.loginMsg
     }
   },
   watch: {
@@ -126,8 +126,18 @@ export default {
     }).catch(err => {
       console.error(err)
     })
+    let msg = Cookies.get('OidcError')
+    if (msg) {
+      msg = msg.replace('+', '')
+      this.$error(msg)
+    }
+    this.clearOidcMsg()
   },
   methods: {
+    clearOidcMsg() {
+      Cookies.remove('OidcError')
+      Cookies.remove('IdToken')
+    },
     showLoginImage() {
       this.uiInfo = getSysUI()
       if (this.uiInfo['ui.loginImage'] && this.uiInfo['ui.loginImage'].paramValue) {
@@ -136,9 +146,18 @@ export default {
       if (this.uiInfo['ui.loginLogo'] && this.uiInfo['ui.loginLogo'].paramValue) {
         this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
       }
+      if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
+        // this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
+        if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
+          document.body.className = 'blackTheme'
+        } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
+          document.body.className = ''
+        }
+      }
     },
+
     handleLogin() {
-      Cookies.remove('OidcError')
+      this.clearOidcMsg()
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -161,7 +180,7 @@ export default {
     },
     changeLoginType(val) {
       if (val !== 2) return
-      Cookies.remove('OidcError')
+      this.clearOidcMsg()
       this.$nextTick(() => {
 
       })
@@ -180,7 +199,7 @@ export default {
 }
 
 .login-background {
-  background-color: $--background-color-base;
+  background-color: var(--MainBG, $--background-color-base);
   height: 100vh;
   @include login-center;
 }
@@ -189,7 +208,7 @@ export default {
   min-width: 900px;
   width: 1280px;
   height: 520px;
-  background-color: #FFFFFF;
+  background-color: var(--MainContentBG, #FFFFFF);
   @media only screen and (max-width: 1280px) {
     width: 900px;
     height: 380px;

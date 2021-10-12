@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DorisConfigration extends MysqlConfigration {
+public class DorisConfiguration extends MysqlConfiguration {
 
     private Integer httpPort;
 }

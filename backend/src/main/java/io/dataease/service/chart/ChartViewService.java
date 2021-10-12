@@ -12,6 +12,8 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
+import io.dataease.controller.response.ChartDetail;
+import io.dataease.controller.response.DataSetDetail;
 import io.dataease.datasource.provider.DatasourceProvider;
 import io.dataease.datasource.provider.ProviderFactory;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -1055,15 +1057,16 @@ public class ChartViewService {
         }
     }
 
-    public Map<String, Object> getChartDetail(String id) {
-        Map<String, Object> map = new HashMap<>();
+    public ChartDetail getChartDetail(String id) {
+        ChartDetail chartDetail = new ChartDetail();
         ChartViewWithBLOBs chartViewWithBLOBs = chartViewMapper.selectByPrimaryKey(id);
-        map.put("chart", chartViewWithBLOBs);
+        chartDetail.setChart(chartViewWithBLOBs);
         if (ObjectUtils.isNotEmpty(chartViewWithBLOBs)) {
-            Map<String, Object> datasetDetail = dataSetTableService.getDatasetDetail(chartViewWithBLOBs.getTableId());
-            map.putAll(datasetDetail);
+            DataSetDetail datasetDetail = dataSetTableService.getDatasetDetail(chartViewWithBLOBs.getTableId());
+            chartDetail.setTable(datasetDetail.getTable());
+            chartDetail.setDatasource(datasetDetail.getDatasource());
         }
-        return map;
+        return chartDetail;
     }
 
     public List<ChartView> viewsByIds(List<String> viewIds) {

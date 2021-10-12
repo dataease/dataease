@@ -798,11 +798,11 @@ export default {
     // color: #fff;
   }
   .filter-db-row:hover {
-      background-color: #f5f7fa !important;
+      background-color: var(--background-color-base, #f5f7fa) !important;
       cursor: pointer;
   }
   .filter-db-row-checked:hover {
-      background-color: #f5f7fa !important;
+      background-color: var(--background-color-base, #f5f7fa) !important;
       color: inherit;
       cursor: pointer;
       i {

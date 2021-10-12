@@ -9,6 +9,7 @@
             :placeholder="$t('commons.search')"
             prefix-icon="el-icon-search"
             clearable
+            class="main-area-input"
           />
         </el-col>
         <el-col :span="8">
@@ -620,10 +621,17 @@ export default {
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])
             item.linkageFilters = (item.linkageFilters || [])
+            item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
+            item.x = (item.x || 1)
+            item.y = (item.y || 1)
+            item.sizex = (item.sizex || 5)
+            item.sizey = (item.sizey || 5)
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
           //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
+          temp.refreshTime = (temp.refreshTime || 5)
+
           this.$store.commit('setCanvasStyle', temp)
           this.$store.dispatch('panel/setPanelInfo', data)
 

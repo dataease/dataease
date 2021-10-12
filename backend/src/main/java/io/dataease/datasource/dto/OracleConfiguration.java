@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OracleConfigration extends JdbcDTO {
+public class OracleConfiguration extends JdbcConfiguration {
 
     private String driver = "oracle.jdbc.driver.OracleDriver";
     private String connectionType;

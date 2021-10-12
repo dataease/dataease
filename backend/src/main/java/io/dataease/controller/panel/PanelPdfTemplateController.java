@@ -4,6 +4,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.base.domain.PanelPdfTemplate;
 import io.dataease.service.panel.PanelPdfTemplateService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -25,6 +26,7 @@ public class PanelPdfTemplateController {
     private PanelPdfTemplateService panelPdfTemplateService;
 
     @GetMapping("queryAll")
+    @ApiOperation("查询所有仪表板模板")
     public List<PanelPdfTemplate> queryAll(){
         return panelPdfTemplateService.queryAll();
     }

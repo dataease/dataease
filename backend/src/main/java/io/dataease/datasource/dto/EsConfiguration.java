@@ -6,10 +6,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EsConfigDTO {
+public class EsConfiguration {
     private String url;
-    private String username;
-    private String password;
+    private String esUsername;
+    private String esPassword;
     private String version;
     private String uri;
     private String dataSourceType = "es";

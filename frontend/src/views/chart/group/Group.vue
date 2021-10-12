@@ -18,6 +18,7 @@
               :placeholder="$t('chart.search')"
               prefix-icon="el-icon-search"
               clearable
+              class="main-area-input"
             />
           </el-form-item>
         </el-form>
@@ -744,6 +745,7 @@ export default {
         background: DEFAULT_BACKGROUND_COLOR,
         split: DEFAULT_SPLIT
       })
+      view.stylePriority = 'view' // 默认样式优先级视图
       view.xaxis = JSON.stringify([])
       view.yaxis = JSON.stringify([])
       view.yaxisExt = JSON.stringify([])

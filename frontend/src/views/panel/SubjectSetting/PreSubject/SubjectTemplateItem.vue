@@ -46,9 +46,16 @@
       </div>
 
     </div>
-    <div style="position: absolute; left: 0px; right: 0px; bottom: 0px; height: 30px;">
+    <div style="position: absolute; left: 0px; right: 0px; bottom: 0px; height: 30px;" @dblclick="setEdit">
       <div style=" background-color:#f7f8fa;color:#3d4d66;font-size:12px;height: 30px; line-height: 30px; text-align: center; white-space: pre; text-overflow: ellipsis; margin-left: 1px; margin-right: 1px;">
-        <span style="margin-top: 8px">{{ subjectItem.name }}</span>
+        <el-input
+          v-if="canEdit"
+          ref="nameInput"
+          v-model="subjectItem.name"
+          size="mini"
+          @blur="loseFocus()"
+        />
+        <span v-if="!canEdit" style="margin-top: 8px">{{ subjectItem.name }}</span>
       </div>
     </div>
   </div>
@@ -58,6 +65,7 @@
 import { chartTransStr2Object } from '@/views/panel/panel'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
+import { saveOrUpdateSubject } from '@/api/panel/panel'
 
 export default {
   name: 'StyleTemplateItem',
@@ -72,7 +80,8 @@ export default {
       defaultSubject: {
 
       },
-      subjectItemDetails: null
+      subjectItemDetails: null,
+      canEdit: false
     }
   },
   computed: {
@@ -189,7 +198,7 @@ export default {
     },
     subjectChange() {
       this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
-      this.$store.commit('recordSnapshot','subjectChange')
+      this.$store.commit('recordSnapshot', 'subjectChange')
       bus.$emit('onSubjectChange')
     },
     templateEdit() {
@@ -197,6 +206,43 @@ export default {
     },
     handleDelete() {
       // console.log('handleDelete')
+    },
+    // 双击事件
+    setEdit() {
+      if (this.subjectItem.type === 'self') {
+        this.canEdit = true
+      } else {
+        this.$warning(this.$t('panel.subject_no_edit'))
+      }
+      // 将单元格变为输入框
+      // // 聚焦到单元格
+      setTimeout(() => {
+        this.$refs['nameInput'].focus()
+      }, 20)
+    },
+    // 当输入框失去焦点时不显示输入框
+    loseFocus() {
+      if (this.subjectItem.name && this.subjectItem.name.length > 0 && this.subjectItem.name.length < 20) {
+        const request = {
+          id: this.subjectItem.id,
+          name: this.subjectItem.name
+        }
+        saveOrUpdateSubject(request).then(response => {
+          this.$message({
+            message: '保存成功',
+            type: 'success',
+            showClose: true
+          })
+          this.canEdit = false
+        })
+      } else {
+        this.$warning(this.$t('panel.subject_name_not_null'))
+      }
+    },
+    selectChange(callback, editCell) {
+      if (!callback) {
+        editCell.edit = false
+      }
     }
   }
 }

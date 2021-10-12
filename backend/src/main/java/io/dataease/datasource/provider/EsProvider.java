@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -48,17 +47,17 @@ public class EsProvider extends DatasourceProvider {
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
         try {
-            EsConfigDTO esConfigDTO = new Gson().fromJson(dsr.getDatasource().getConfiguration(), EsConfigDTO.class);
+            EsConfiguration esConfiguration = new Gson().fromJson(dsr.getDatasource().getConfiguration(), EsConfiguration.class);
             HttpClientConfig httpClientConfig = new HttpClientConfig();
-            if(StringUtils.isNotEmpty(esConfigDTO.getUsername())){
-                String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+            if(StringUtils.isNotEmpty(esConfiguration.getEsUsername())){
+                String auth = esConfiguration.getEsUsername() + ":" + esConfiguration.getEsPassword();
                 byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
                 httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
             }
             Requst requst = new Requst();
             requst.setQuery(dsr.getQuery());
             requst.setFetch_size(dsr.getFetchSize());
-            String url = esConfigDTO.getUrl().endsWith("/") ? esConfigDTO.getUrl() + esConfigDTO.getUri() + "?format=json" : esConfigDTO.getUrl() + "/" + esConfigDTO.getUri() + "?format=json";
+            String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + esConfiguration.getUri() + "?format=json" : esConfiguration.getUrl() + "/" + esConfiguration.getUri() + "?format=json";
             String  response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
             EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
 
@@ -79,6 +78,7 @@ public class EsProvider extends DatasourceProvider {
                }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             DataEaseException.throwException(e);
         }
         return list;
@@ -115,7 +115,7 @@ public class EsProvider extends DatasourceProvider {
         List<TableFiled> tableFileds = new ArrayList<>();
         try {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
-            tableFileds = fetchResultField(response);
+            tableFileds = fetchResultField4Sql(response);
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
@@ -140,13 +140,31 @@ public class EsProvider extends DatasourceProvider {
         return fieldList;
     }
 
+    private List<TableFiled> fetchResultField4Sql(String response) throws Exception {
+        List<TableFiled> fieldList = new ArrayList<>();
+        EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
+        if(esReponse.getError() != null){
+            throw new Exception(esReponse.getError().getReason());
+        }
+
+        for (EsReponse.Column column : esReponse.getColumns()) {
+            TableFiled field = new TableFiled();
+            field.setFieldName(column.getName());
+            field.setRemarks(column.getName());
+            field.setFieldType(column.getType());
+            field.setFieldSize(EsQueryProvider.transFieldTypeSize(column.getType()));
+            fieldList.add(field);
+        }
+        return fieldList;
+    }
+
     @Override
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
         Map<String, List> result = new HashMap<>();
         try {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             result.put("dataList", fetchResult(response));
-            result.put("fieldList", fetchResultField(response));
+            result.put("fieldList", fetchResultField4Sql(response));
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
@@ -192,22 +210,26 @@ public class EsProvider extends DatasourceProvider {
         return new ArrayList<>();
     }
 
-    @Override
-    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        List<TableFiled> tableFileds = new ArrayList<>();
-        try {
-            String response = exexQuery(datasourceRequest, "desc " + datasourceRequest.getTable(), "?format=json");
-            tableFileds = fetchResultField(response);
-        } catch (Exception e) {
-            DataEaseException.throwException(e);
-        }
-        return tableFileds;
-    }
+//    @Override
+//    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+//        List<TableFiled> tableFileds = new ArrayList<>();
+//        try {
+//            String response = exexQuery(datasourceRequest, "desc " + datasourceRequest.getTable(), "?format=json");
+//            tableFileds = fetchResultField(response);
+//        } catch (Exception e) {
+//            DataEaseException.throwException(e);
+//        }
+//        return tableFileds;
+//    }
 
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
-        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
+        EsConfiguration esConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfiguration.class);
         String response = exexGetQuery(datasourceRequest);
+
+        if(JSONObject.parseObject(response).getJSONObject("error") != null){
+            throw new Exception(JSONObject.parseObject(response).getJSONObject("error").getString("reason"));
+        }
         String version =  JSONObject.parseObject(response).getJSONObject("version").getString("number");
         if(Integer.valueOf(version.substring(0,1)) < 6 ){
             throw new Exception(Translator.get("i18n_es_limit"));
@@ -216,21 +238,21 @@ public class EsProvider extends DatasourceProvider {
             throw new Exception(Translator.get("i18n_es_limit"));
         }
         if(Integer.valueOf(version.substring(0,1)) == 6 ) {
-            esConfigDTO.setUri("_xpack/sql");
+            esConfiguration.setUri("_xpack/sql");
         }
         if(Integer.valueOf(version.substring(0,1)) == 7 ) {
-            esConfigDTO.setUri("_sql");
+            esConfiguration.setUri("_sql");
         }
-        datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfigDTO));
+        datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfiguration));
         getTables(datasourceRequest);
     }
 
     private String exexQuery(DatasourceRequest datasourceRequest, String sql, String uri){
-        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
-        uri = esConfigDTO.getUri()+uri;
+        EsConfiguration esConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfiguration.class);
+        uri = esConfiguration.getUri()+uri;
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        if(StringUtils.isNotEmpty(esConfigDTO.getUsername()) && StringUtils.isNotEmpty(esConfigDTO.getPassword())){
-            String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+        if(StringUtils.isNotEmpty(esConfiguration.getEsUsername()) && StringUtils.isNotEmpty(esConfiguration.getEsPassword())){
+            String auth = esConfiguration.getEsUsername() + ":" + esConfiguration.getEsPassword();
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
             httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
         }
@@ -238,21 +260,21 @@ public class EsProvider extends DatasourceProvider {
         Requst requst = new Requst();
         requst.setQuery(sql);
         requst.setFetch_size(datasourceRequest.getFetchSize());
-        String url = esConfigDTO.getUrl().endsWith("/") ? esConfigDTO.getUrl() + uri : esConfigDTO.getUrl() + "/" + uri;
+        String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + uri : esConfiguration.getUrl() + "/" + uri;
         String  response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
         return response;
     }
 
     private String exexGetQuery(DatasourceRequest datasourceRequest){
-        EsConfigDTO esConfigDTO = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfigDTO.class);
+        EsConfiguration esConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), EsConfiguration.class);
         HttpClientConfig httpClientConfig = new HttpClientConfig();
-        if(StringUtils.isNotEmpty(esConfigDTO.getUsername()) && StringUtils.isNotEmpty(esConfigDTO.getPassword())){
-            String auth = esConfigDTO.getUsername() + ":" + esConfigDTO.getPassword();
+        if(StringUtils.isNotEmpty(esConfiguration.getEsUsername()) && StringUtils.isNotEmpty(esConfiguration.getEsPassword())){
+            String auth = esConfiguration.getEsUsername() + ":" + esConfiguration.getEsPassword();
             byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
             httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
         }
 
-        String  response = HttpClientUtil.get(esConfigDTO.getUrl(), httpClientConfig);
+        String  response = HttpClientUtil.get(esConfiguration.getUrl(), httpClientConfig);
         return response;
     }
 

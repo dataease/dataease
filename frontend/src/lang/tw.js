@@ -127,7 +127,8 @@ export default {
     tokenError: '登陸信息錯誤，請重新登錄',
     username_error: '請輸入正確的 ID',
     password_error: '密碼不小于 8 位',
-    re_login: '重新登錄'
+    re_login: '重新登錄',
+    default_login: '普通登錄'
   },
   commons: {
     search: '搜索',
@@ -762,8 +763,10 @@ export default {
     filter_le: '小于等于',
     filter_gt: '大于',
     filter_ge: '大于等于',
-    filter_null: '爲空',
-    filter_not_null: '不爲空',
+    filter_null: '為空',
+    filter_not_null: '不為空',
+    filter_empty: '空字符串',
+    filter_not_empty: '非空字符串',
     filter_include: '包含',
     filter_not_include: '不包含',
     rose_type: '玫瑰圖模式',
@@ -1101,7 +1104,10 @@ export default {
     no_merge: '不合並',
     merge_msg: '數據表中存在字段一致的情況，是否合並到一個數據集中?',
     merge_title: '合並數據',
-    field_name_less_50: '字段名不能超過50個字符'
+    field_name_less_50: '字段名不能超過50個字符',
+    excel_info_1: '1、文件終不能存在合併單元格；',
+    excel_info_2: '2、文件的第一行為標題行，不能為空，不能為日期；',
+    excel_info_3: '3、文件不超過500M。'
   },
   datasource: {
     datasource: '數據源',
@@ -1153,7 +1159,9 @@ export default {
     please_input_acquire_increment: '請輸入增長數',
     please_input_connect_timeout: '請輸入連接超時(秒)',
     no_less_then_0: '高級設置中的參數不能小于零',
-    priority: '高級設置'
+    port_no_less_then_0: '端口不能小於零',
+    priority: '高級設置',
+    extra_params: '額外的JDBC連接字符串'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
@@ -1260,6 +1268,7 @@ export default {
     upComponent: '上移',
     downComponent: '下移',
     linkage_setting: '聯動設置',
+    add_tab: '新增Tab',
     open_aided_design: '打開組件輔助設計',
     close_aided_design: '關閉組件輔助設計',
     open_style_design: '打開樣式設計',
@@ -1308,7 +1317,12 @@ export default {
     exit_un_march_linkage_field: '存在未匹配聯動關系的字段',
     details: '詳情',
     setting: '設置',
-    no_drill_field: '缺少關聯字段'
+    no_drill_field: '缺少關聯字段',
+    matrix: '矩阵',
+    suspension: '悬浮',
+    new_element_distribution: '新元素分布方式',
+    subject_no_edit: '系统主题不能修改',
+    subject_name_not_null: '主题名称需要1~20字符'
   },
   plugin: {
     local_install: '本地安裝',
@@ -1339,7 +1353,11 @@ export default {
 
     topMenuTextColor: '頭部字體顔色',
 
-    topMenuTextActiveColor: '頭部字體選中顔色'
+    topMenuTextActiveColor: '頭部字體選中顔色',
+
+    themeLight: '淺色',
+    themeDark: '深色',
+    themeCustom: '自定義'
 
   },
   auth: {

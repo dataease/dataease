@@ -15,9 +15,9 @@ public abstract class DatasourceProvider {
 
     abstract public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception;
 
-    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        return new ArrayList<>();
-    };
+//    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+//        return new ArrayList<>();
+//    };
 
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         getData(datasourceRequest);

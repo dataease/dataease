@@ -27,6 +27,7 @@ import { Condition } from '@/components/widget/bean/Condition'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
+import bus from '@/utils/bus'
 
 Vue.use(Vuex)
 
@@ -98,19 +99,32 @@ const data = {
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
+      // console.log('setCurComponent:' + JSON.stringify(component))
     },
 
     setCurCanvasScale(state, curCanvasScale) {
       state.curCanvasScale = curCanvasScale
     },
 
+    // setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
+    //   if (top || top === 0) curComponent.style.top = canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top
+    //   if (left || left === 0) curComponent.style.left = canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left
+    //   if (width || width === 0) curComponent.style.width = canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width
+    //   if (height || height === 0) curComponent.style.height = canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height
+    //   if (rotate || rotate === 0) curComponent.style.rotate = rotate
+    //   // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
+    // },
+
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      if (top || top === 0) curComponent.style.top = canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top
-      if (left || left === 0) curComponent.style.left = canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left
-      if (width || width === 0) curComponent.style.width = canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width
-      if (height || height === 0) curComponent.style.height = canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height
+      // console.log('cw:' + curComponent.style.width + ';w:' + width + ';sp:' + curCanvasScale.scalePointWidth)
+      const ow = curComponent.style.width
+      if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
+      if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001
+      if (width || width === 0) curComponent.style.width = (width / curCanvasScale.scalePointWidth + 0.0000001)
+      if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
       if (rotate || rotate === 0) curComponent.style.rotate = rotate
       // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
+      // console.log('setShapeStyle:curComponent' + 'w:' + curComponent.style.width + ';ow:' + ow)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -267,6 +281,10 @@ const data = {
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
+      // 如果当前没有拖拽的元素没有放置到画布 清理一下矩阵的占位符
+      if (state.dragComponentInfo.moveStatus !== 'drop') {
+        bus.$emit('onRemoveLastItem')
+      }
       state.dragComponentInfo = null
     }
   },

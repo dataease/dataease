@@ -30,6 +30,7 @@
               :placeholder="$t('dataset.search')"
               prefix-icon="el-icon-search"
               clearable
+              class="main-area-input"
             />
           </el-form-item>
         </el-form>
@@ -341,7 +342,7 @@
 </template>
 
 <script>
-import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning, alter} from '@/api/dataset/dataset'
+import { loadTable, getScene, addGroup, delGroup, addTable, delTable, post, isKettleRunning, alter } from '@/api/dataset/dataset'
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
 
@@ -420,9 +421,6 @@ export default {
   },
   computed: {
   },
-  created() {
-    this.kettleState()
-  },
   watch: {
     search(val) {
       this.$emit('switchComponent', { name: '' })
@@ -438,6 +436,9 @@ export default {
     saveStatus() {
       this.refreshNodeBy(this.saveStatus.sceneId)
     }
+  },
+  created() {
+    this.kettleState()
   },
   mounted() {
     this.treeNode(this.groupForm)

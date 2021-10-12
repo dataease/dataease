@@ -7,13 +7,12 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.datasource.dto.JdbcDTO;
+import io.dataease.datasource.dto.JdbcConfiguration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.QueryProvider;
 import io.dataease.provider.SQLConstants;
-import io.dataease.provider.oracle.OracleConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -149,23 +148,27 @@ public class SqlserverQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
-    }
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+        Integer size = (page - 1) * pageSize + realSize;
+        return String.format("SELECT top %s * from ( %s ) AS DE_SQLSERVER_TMP ", size.toString(), createQuerySQL(table, fields, isGroup, ds));
 
-    @Override
-    public String createQuerySQLAsTmpWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset " + (page - 1) * pageSize + " rows fetch next " + realSize + " rows only";
     }
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, ds) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit + " rows only";
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        return String.format("SELECT top %s * from %s ", limit.toString(), schema + "." + table);
+    }
+
+    @Override
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+        Integer size = (page - 1) * pageSize + realSize;
+        return String.format("SELECT top %s * from ( %s ) AS DE_SQLSERVER_TMP ", size.toString(), createQuerySQLAsTmp(sql, fields, isGroup));
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " ORDER BY \"" + fields.get(0).getOriginName() + "\" offset  0 rows fetch next " + limit + " rows only";
+        return String.format("SELECT top %s * from ( %s ) as DE_SQLSERVER_TMP ", limit.toString(), sqlFix(sql));
     }
 
     @Override
@@ -660,7 +663,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             return stringBuilder.toString();
         }).toArray(String[]::new);
         if (ds != null) {
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcDTO.class).getSchema();
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
             return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), tableWithSchema);
         } else {
@@ -671,6 +674,13 @@ public class SqlserverQueryProvider extends QueryProvider {
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
         return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
+    }
+
+    @Override
+    public String convertTableToSql(String tableName, Datasource ds) {
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema);
+        return createSQLPreview("SELECT * FROM " + schema + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, tableName), null);
     }
 
     public String transMysqlFilterTerm(String term) {
@@ -696,9 +706,13 @@ public class SqlserverQueryProvider extends QueryProvider {
             case "not like":
                 return " NOT LIKE ";
             case "null":
-                return " IN ";
+                return " IS NULL ";
             case "not_null":
-                return " IS NOT NULL AND %s <> ''";
+                return " IS NOT NULL ";
+            case "empty":
+                return " = ";
+            case "not_empty":
+                return " <> ";
             case "between":
                 return " BETWEEN ";
             default:
@@ -738,9 +752,15 @@ public class SqlserverQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue = SqlServerSQLConstants.WHERE_VALUE_NULL;
+//                whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-                whereTerm = String.format(whereTerm, originName);
+//                whereTerm = String.format(whereTerm, originName);
+                whereValue = "";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
+                whereValue = "''";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_empty")) {
+                whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
@@ -927,9 +947,15 @@ public class SqlserverQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = SqlServerSQLConstants.WHERE_VALUE_NULL;
+//                whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                    whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereTerm = String.format(whereTerm, originField);
+//                whereTerm = String.format(whereTerm, originName);
+                    whereValue = "";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
+                    whereValue = "''";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
+                    whereValue = "''";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
