@@ -682,9 +682,13 @@ public class EsQueryProvider extends QueryProvider {
             case "not like":
                 return " NOT LIKE ";
             case "null":
-                return " IN ";
+                return " IS NULL ";
             case "not_null":
-                return " IS NOT NULL AND %s <> ''";
+                return " IS NOT NULL ";
+            case "empty":
+                return " = ";
+            case "not_empty":
+                return " <> ";
             case "between":
                 return " BETWEEN ";
             default:
@@ -730,9 +734,15 @@ public class EsQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue = EsSqlLConstants.WHERE_VALUE_NULL;
+//                whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-                whereTerm = String.format(whereTerm, originName);
+//                whereTerm = String.format(whereTerm, originName);
+                whereValue = "";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
+                whereValue = "''";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_empty")) {
+                whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
@@ -913,9 +923,15 @@ public class EsQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = EsSqlLConstants.WHERE_VALUE_NULL;
+//                    whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                    whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereTerm = String.format(whereTerm, originField);
+//                    whereTerm = String.format(whereTerm, originField);
+                    whereValue = "";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
+                    whereValue = "''";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
+                    whereValue = "''";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {

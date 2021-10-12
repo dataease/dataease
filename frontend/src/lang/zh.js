@@ -765,6 +765,8 @@ export default {
     filter_ge: '大于等于',
     filter_null: '为空',
     filter_not_null: '不为空',
+    filter_empty: '空字符串',
+    filter_not_empty: '非空字符串',
     filter_include: '包含',
     filter_not_include: '不包含',
     rose_type: '玫瑰图模式',

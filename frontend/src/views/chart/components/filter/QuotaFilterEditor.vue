@@ -83,16 +83,6 @@ export default {
           value: 'ge',
           label: this.$t('chart.filter_ge')
         }]
-      },
-      {
-        label: '',
-        options: [{
-          value: 'null',
-          label: this.$t('chart.filter_null')
-        }, {
-          value: 'not_null',
-          label: this.$t('chart.filter_not_null')
-        }]
       }]
     }
   },
