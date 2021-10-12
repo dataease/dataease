@@ -161,6 +161,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for area_mapping
 -- ----------------------------
+DROP TABLE IF EXISTS `area_mapping`;
 CREATE TABLE `area_mapping`  (
   `id` bigint(20) NOT NULL COMMENT 'id',
   `province_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '省名称',

@@ -104,7 +104,7 @@
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor ref="canvasEditor" v-if="!previewVisible" :out-style="outStyle" @canvasScroll="canvasScroll" />
+          <Editor v-if="!previewVisible" ref="canvasEditor" :out-style="outStyle" @canvasScroll="canvasScroll" />
         </div>
       </de-main-container>
       <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
@@ -455,7 +455,9 @@ export default {
       const self = evt.target.closest('.el-drawer__wrapper')
       // 点击样式按钮 排除
       const stick = evt.target.closest('.el-icon-magic-stick')
-      if (!parent && !self && !stick) {
+      const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
+      const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
+      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen) {
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
