@@ -12,8 +12,8 @@
       </span>
     </div>
     <div v-else class="toolbar">
-
-      <!--      <el-tooltip :content="$t('panel.new_element_distribution')">-->
+      <!--      <div class="canvas-config" style="margin-right: 10px">-->
+      <!--        <span>{{ $t('panel.new_element_distribution') }}:</span>-->
       <!--        <el-switch-->
       <!--          v-model="canvasStyleData.auxiliaryMatrix"-->
       <!--          :width="35"-->
@@ -22,19 +22,33 @@
       <!--          :active-text="$t('panel.matrix')"-->
       <!--          :inactive-text="$t('panel.suspension')"-->
       <!--        />-->
-      <!--      </el-tooltip>-->
-
-      <div class="canvas-config" style="margin-right: 10px">
-        <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />
-        <span>{{ $t('panel.matrix_design') }}</span>
-      </div>
+      <!--      </div>-->
+      <!--      <div class="canvas-config" style="margin-right: 10px" @click.stop="auxiliaryMatrixChange">-->
+      <!--        <span>{{ $t('panel.new_element_distribution.matrix_design') }}:</span>-->
+      <!--        <span v-if="curComponent.auxiliaryMatrix">-->
+      <!--          <i class="icon iconfont icon-shujujuzhen" />-->
+      <!--          {{ $t('panel.matrix_design') }}-->
+      <!--        </span>-->
+      <!--        <span v-if="!curComponent.auxiliaryMatrix">-->
+      <!--          <i class="icon iconfont icon-xuanfuanniu" />-->
+      <!--          {{ $t('panel.suspension') }}-->
+      <!--        </span>-->
+      <!--      </div>-->
       <!--      <div class="canvas-config" style="margin-right: 10px">-->
       <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
       <!--        <input v-model="scale" @input="handleScaleChange"> %-->
       <!--      </div>-->
 
+      <el-tooltip v-if="!canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.suspension')">
+        <el-button class="icon iconfont-tb icon-xuanfuanniu" size="mini" circle @click="auxiliaryMatrixChange" />
+      </el-tooltip>
+      <el-tooltip v-if="canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.matrix')">
+        <el-button class="icon iconfont-tb icon-shujujuzhen" size="mini" circle @click="auxiliaryMatrixChange" />
+      </el-tooltip>
+
       <el-tooltip :content="$t('panel.style')">
-        <el-button :class="styleButtonActive?'button-show':'button-closed'" class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
+        <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
+        <!--        <el-button :class="styleButtonActive?'button-show':'button-closed'" class="el-icon-magic-stick" size="mini" circle @click="showPanel" />-->
       </el-tooltip>
 
       <!--      <el-tooltip v-if="!aidedButtonActive" :content="$t('panel.open_aided_design') ">-->
@@ -372,6 +386,9 @@ export default {
     },
     cancelLinkageSettingStatus() {
       this.$store.commit('clearLinkageSettingInfo')
+    },
+    auxiliaryMatrixChange() {
+      this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
     }
   }
 }
@@ -382,7 +399,7 @@ export default {
     float: right;
     height: 35px;
     line-height: 35px;
-    min-width: 500px;
+    min-width: 400px;
     /*background: #fff;*/
     /*border-bottom: 1px solid #ddd;*/
 
@@ -390,7 +407,6 @@ export default {
       display: inline-block;
       margin-left: 10px;
       font-size: 14px;
-      color: #606266;
 
       input {
         width: 50px;
@@ -398,7 +414,6 @@ export default {
         outline: none;
         padding: 0 5px;
         border: 1px solid #ddd;
-        color: #606266;
       }
 
       span {
@@ -413,7 +428,7 @@ export default {
       cursor: pointer;
       background: #FFF;
       border: 1px solid #DCDFE6;
-      color: #606266;
+      color: var(--TextPrimary, #606266);
       -webkit-appearance: none;
       text-align: center;
       box-sizing: border-box;
@@ -458,6 +473,14 @@ export default {
     height:14px;
     margin-top:-1px;
     margin-bottom: 2px;
+  }
+
+  .iconfont-tb {
+    font-family: "iconfont" !important;
+    font-size: 12px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
 </style>

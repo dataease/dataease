@@ -1682,7 +1682,7 @@ export default {
       }
     },
     startMoveIn() {
-      if (this.dragComponentInfo.auxiliaryMatrix) {
+      if (this.$store.state.dragComponentInfo.auxiliaryMatrix) {
         const moveInItemInfo = this.$store.state.dragComponentInfo
         this.addItemBox(moveInItemInfo)
         // console.log('startMoveIn:')
