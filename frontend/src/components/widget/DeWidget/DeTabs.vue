@@ -34,7 +34,7 @@
           </el-dropdown>
         </span>
 
-        <div class="de-tab-content">
+        <div v-if="activeTabName === item.name" class="de-tab-content">
           <user-view v-if="item.content" :ref="item.name" :element="item.content" :out-style="outStyle" />
         </div>
 
@@ -250,23 +250,8 @@ export default {
   }
   .de-tabs {
     height: 100%;
-    >>>div.el-tabs__content {
-        height: calc(100% - 55px);
-        .el-tab-pane {
-          height: 100%;
-        }
-    }
-  }
-  /* .de-tab-i {
-    transition: 0.1s;
-    opacity: 0;
-    transform:  translateY(100%);
   }
 
-  .de-tab-drop:hover .de-tab-i {
-    opacity: 1;
-    transform:  translateY(0);
-  } */
   .de-tab-content {
     width: 100%;
     height: 100%;
