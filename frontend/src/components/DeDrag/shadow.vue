@@ -47,13 +47,6 @@ export default {
         height = this.curComponent.style.height * this.curCanvasScale.scalePointHeight
         // console.log('curComponent left:' + left + 'top:' + top + 'width:' + width + 'height:' + height)
       }
-      // 当前默认为自适应
-      // if (this.canvasStyleData.auxiliaryMatrix) {
-      //   left = Math.round(left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-      //   width = Math.round(width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-      //   top = Math.round(top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-      //   height = Math.round(height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-      // }
 
       // 防止阴影区超出边界
       const xGap = left + width - this.canvasWidth
@@ -107,7 +100,6 @@ export default {
 </script>
 <style scoped>
   .main-shadow{
-    transition: 0.2s;
     opacity: 0.4;
     background: #409eff;
     position: absolute;

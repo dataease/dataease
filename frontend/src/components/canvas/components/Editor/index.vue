@@ -8,7 +8,6 @@
         ['parent_transform']:!chartDetailsVisible
       }
     ]"
-    @dragover="handleDragOver"
     @mousedown="handleMouseDown"
     @scroll="canvasScroll"
   >
@@ -1348,22 +1347,11 @@ export default {
       }
     },
     handleDragOver(e) {
+      // console.log('handleDragOver-Editor')
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
       this.dragComponentInfo.style.top = this.dragComponentInfo.shadowStyle.y / this.scalePointHeight
-
-      // console.log('handleDragOver=>layer:' + e.layerX + ':' + e.layerY + ';offSet=>' + e.offsetX + ':' + e.offsetY + ';page=' + e.pageX + ':' + e.pageY)
-      // console.log('e=>x=>' + JSON.stringify(e))
-      // 使用e.pageX 避免抖动的情况
-      // this.dragComponentInfo.x = this.dragComponentInfo.shadowStyle.x
-      // this.dragComponentInfo.y = this.dragComponentInfo.shadowStyle.y
-      // this.dragComponentInfo.x = Math.round(this.dragComponentInfo.shadowStyle.x / this.matrixStyle.width)
-      // this.dragComponentInfo.y = Math.round(this.dragComponentInfo.shadowStyle.y / this.matrixStyle.height)
-      // console.log('dragComponentInfo=>' + JSON.stringify(this.dragComponentInfo))
-      e.preventDefault()
-      e.dataTransfer.dropEffect = 'copy'
-
       if (this.canvasStyleData.auxiliaryMatrix) {
         this.onDragging(e, this.dragComponentInfo)
       }
@@ -1679,14 +1667,14 @@ export default {
       })
     },
     removeLastItem() {
-      console.log('rlI:' + JSON.stringify(this.yourList))
+      // console.log('rlI:' + JSON.stringify(this.yourList))
       this.removeItem(this.yourList.length - 1)
     },
     startMoveIn() {
       if (this.canvasStyleData.auxiliaryMatrix) {
         const moveInItemInfo = this.$store.state.dragComponentInfo
         this.addItemBox(moveInItemInfo)
-        console.log('startMoveIn:')
+        // console.log('startMoveIn:')
         const vm = this
         // e.preventDefault();
         if (!this.infoBox) {

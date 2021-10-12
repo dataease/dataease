@@ -141,7 +141,7 @@ export default {
       eventBus.$emit('startMoveIn')
     },
     dragEnd() {
-      console.log('dragEnd')
+      // console.log('dragEnd')
       this.$store.commit('clearDragComponentInfo')
     },
     // 判断节点能否被拖拽

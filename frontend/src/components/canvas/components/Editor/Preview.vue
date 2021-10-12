@@ -189,7 +189,7 @@ export default {
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
 
-      console.log('scaleHeight:' + this.scaleHeight + ';ch:' + this.canvasStyleData.height)
+      // console.log('scaleHeight:' + this.scaleHeight + ';ch:' + this.canvasStyleData.height)
 
       // this.scaleHeight = this.scaleWidth
       // this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'

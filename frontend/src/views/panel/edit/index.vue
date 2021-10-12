@@ -96,13 +96,14 @@
 
         <div
           id="canvasInfo"
-          class="this_canvas"
-          :style="customCanvasStyle"
+          :class="{'style-hidden':canvasStyleData.selfAdaption}"
+          class="content this_canvas"
           @drop="handleDrop"
+          @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor v-if="!previewVisible" :out-style="outStyle" @canvasScroll="canvasScroll" />
+          <Editor ref="canvasEditor" v-if="!previewVisible" :out-style="outStyle" @canvasScroll="canvasScroll" />
         </div>
       </de-main-container>
       <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
@@ -790,6 +791,11 @@ export default {
         }
         this.destroyTimeMachine()
       }, 1000)
+    },
+    handleDragOver(e) {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'copy'
+      this.$refs.canvasEditor.handleDragOver(e)
     }
   }
 }
