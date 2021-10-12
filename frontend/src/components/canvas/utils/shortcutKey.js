@@ -53,31 +53,31 @@ const unlockMap = {
 
 let isCtrlDown = false
 // 全局监听按键操作并执行相应命令
-export function listenGlobalKeyDown() {
-  window.onkeydown = (e) => {
-    const { curComponent } = store.state
-    if (e.keyCode === ctrlKey) {
-      isCtrlDown = true
-    } else if (e.keyCode === deleteKey && curComponent) {
-      store.commit('deleteComponent')
-      store.commit('recordSnapshot')
-    } else if (isCtrlDown) {
-      if (!curComponent || !curComponent.isLock) {
-        e.preventDefault()
-        unlockMap[e.keyCode] && unlockMap[e.keyCode]()
-      } else if (curComponent && curComponent.isLock) {
-        e.preventDefault()
-        lockMap[e.keyCode] && lockMap[e.keyCode]()
-      }
-    }
-  }
-
-  window.onkeyup = (e) => {
-    if (e.keyCode === ctrlKey) {
-      isCtrlDown = false
-    }
-  }
-}
+// export function listenGlobalKeyDown() {
+//   window.onkeydown = (e) => {
+//     const { curComponent } = store.state
+//     if (e.keyCode === ctrlKey) {
+//       isCtrlDown = true
+//     } else if (e.keyCode === deleteKey && curComponent) {
+//       store.commit('deleteComponent')
+//       store.commit('recordSnapshot')
+//     } else if (isCtrlDown) {
+//       if (!curComponent || !curComponent.isLock) {
+//         e.preventDefault()
+//         unlockMap[e.keyCode] && unlockMap[e.keyCode]()
+//       } else if (curComponent && curComponent.isLock) {
+//         e.preventDefault()
+//         lockMap[e.keyCode] && lockMap[e.keyCode]()
+//       }
+//     }
+//   }
+//
+//   window.onkeyup = (e) => {
+//     if (e.keyCode === ctrlKey) {
+//       isCtrlDown = false
+//     }
+//   }
+// }
 
 function copy() {
   store.commit('copy')
