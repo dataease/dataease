@@ -1352,7 +1352,7 @@ export default {
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
       this.dragComponentInfo.style.top = this.dragComponentInfo.shadowStyle.y / this.scalePointHeight
-      if (this.canvasStyleData.auxiliaryMatrix) {
+      if (this.dragComponentInfo.auxiliaryMatrix) {
         this.onDragging(e, this.dragComponentInfo)
       }
     },
@@ -1668,10 +1668,12 @@ export default {
     },
     removeLastItem() {
       // console.log('rlI:' + JSON.stringify(this.yourList))
-      this.removeItem(this.yourList.length - 1)
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        this.removeItem(this.yourList.length - 1)
+      }
     },
     startMoveIn() {
-      if (this.canvasStyleData.auxiliaryMatrix) {
+      if (this.dragComponentInfo.auxiliaryMatrix) {
         const moveInItemInfo = this.$store.state.dragComponentInfo
         this.addItemBox(moveInItemInfo)
         // console.log('startMoveIn:')

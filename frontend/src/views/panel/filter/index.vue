@@ -97,7 +97,7 @@ export default {
       dragComponentInfo.sizex = Math.round(dragComponentInfo.style.width / this.curCanvasScale.matrixStyleOriginWidth)
       dragComponentInfo.sizey = Math.round(dragComponentInfo.style.height / this.curCanvasScale.matrixStyleOriginHeight)
       dragComponentInfo.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
-
+      dragComponentInfo.moveStatus = 'start'
       this.$store.commit('setDragComponentInfo', dragComponentInfo)
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {

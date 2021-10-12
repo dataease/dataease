@@ -141,7 +141,13 @@ export default {
           component = deepCopy(componentTemp)
         }
       })
-      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+      // 图片移入是 不支持矩阵 暂时无法监听窗口取消事件
+      if (component.type !== 'picture-add') {
+        component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+      } else {
+        component.auxiliaryMatrix = false
+      }
+      component.moveStatus = 'start'
       return component
     },
     handleDragEnd(ev) {

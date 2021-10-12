@@ -607,6 +607,7 @@ export default {
       this.filterVisible = false
       this.currentWidget = null
       this.clearCurrentInfo()
+      bus.$emit('onRemoveLastItem')
     },
     sureFilter() {
       this.currentFilterCom.options.value = []
