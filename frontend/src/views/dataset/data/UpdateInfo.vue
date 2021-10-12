@@ -96,7 +96,7 @@
         append-to-body
       >
         <el-col>
-          <el-form :form="taskForm" :model="taskForm" label-width="100px" size="mini" ref="taskForm" :rules="taskFormRules">
+          <el-form ref="taskForm" :form="taskForm" :model="taskForm" label-width="100px" size="mini" :rules="taskFormRules">
             <el-form-item :label="$t('dataset.task_name')" prop="name">
               <el-input
                 v-model="taskForm.name"
@@ -143,12 +143,12 @@
 
             <el-form-item v-if="taskForm.rate === 'SIMPLE_CRON'" label="">
               <el-form :inline="true">
-                <el-form-item :label="$t('cron.every')" >
-                  <el-input v-model="taskForm.extraData.simple_cron_value" size="mini" type="number"  min="1" @change="onSimpleCronChange()" />
+                <el-form-item :label="$t('cron.every')">
+                  <el-input v-model="taskForm.extraData.simple_cron_value" size="mini" type="number" min="1" @change="onSimpleCronChange()" />
                 </el-form-item>
 
                 <el-form-item class="form-item">
-                  <el-select v-model="taskForm.extraData.simple_cron_type"  filterable size="mini" @change="onSimpleCronChange()" >
+                  <el-select v-model="taskForm.extraData.simple_cron_type" filterable size="mini" @change="onSimpleCronChange()">
                     <el-option :label="$t('cron.minute_default')" value="minute" />
                     <el-option :label="$t('cron.hour_default')" value="hour" />
                     <el-option :label="$t('cron.day_default')" value="day" />
@@ -189,7 +189,7 @@
           </el-form>
         </el-col>
         <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="closeTask">{{ $t('dataset.cancel') }}</el-button>
+          <el-button class="dialog_cancel_button" size="mini" @click="closeTask">{{ $t('dataset.cancel') }}</el-button>
           <el-button type="primary" size="mini" @click="saveTask(taskForm)">{{ $t('dataset.confirm') }}</el-button>
         </div>
       </el-dialog>
@@ -222,19 +222,19 @@
           </el-table-column>
           <el-table-column prop="status" :label="$t('dataset.task.task_status')">
             <template slot-scope="scope">
-            <span v-if="scope.row.status === 'Underway'" style="color: green">
-              <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
-            </span>
+              <span v-if="scope.row.status === 'Underway'" style="color: green">
+                <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
+              </span>
               <span v-if="scope.row.status === 'Stopped'" style="color: red">
-              <div type="danger" style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
-            </span>
+                <div type="danger" style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
+              </span>
               <span v-if="scope.row.status === 'Pending'" style="color: blue">
-              <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
-            </span>
+                <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
+              </span>
               <span v-if="scope.row.status === 'Exec'" style="color: blue">
-              <i class="el-icon-loading" />
-              {{ $t('dataset.underway') }}
-            </span>
+                <i class="el-icon-loading" />
+                {{ $t('dataset.underway') }}
+              </span>
             </template>
           </el-table-column>
           <el-table-column
@@ -432,7 +432,7 @@ export default {
   created() {
     this.timer = setInterval(() => {
       this.listTaskLog(false)
-    }, 5000);
+    }, 5000)
     this.taskTimer = setInterval(() => {
       this.listTask(false)
     }, 5000)
@@ -574,10 +574,9 @@ export default {
             this.listTask()
             this.listTaskLog()
           })
-        }else {
+        } else {
           return false
         }
-
       })
     },
     changeTaskStatus(task) {
@@ -617,27 +616,27 @@ export default {
     },
     onSimpleCronChange() {
       if (this.taskForm.extraData.simple_cron_type === 'minute') {
-        if(this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 59){
-          this.$message({message: this.$t('cron.minute_limit'), type: 'warning', showClose: true})
+        if (this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 59) {
+          this.$message({ message: this.$t('cron.minute_limit'), type: 'warning', showClose: true })
           this.taskForm.extraData.simple_cron_value = 59
         }
-        this.taskForm.cron = '0 0/'+ this.taskForm.extraData.simple_cron_value + ' * * * ? *'
+        this.taskForm.cron = '0 0/' + this.taskForm.extraData.simple_cron_value + ' * * * ? *'
         return
       }
       if (this.taskForm.extraData.simple_cron_type === 'hour') {
-        if(this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 23){
-          this.$message({message: this.$t('cron.hour_limit'), type: 'warning', showClose: true})
+        if (this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 23) {
+          this.$message({ message: this.$t('cron.hour_limit'), type: 'warning', showClose: true })
           this.taskForm.extraData.simple_cron_value = 23
         }
-        this.taskForm.cron = '0 0 0/'+ this.taskForm.extraData.simple_cron_value + ' * * ? *'
+        this.taskForm.cron = '0 0 0/' + this.taskForm.extraData.simple_cron_value + ' * * ? *'
         return
       }
       if (this.taskForm.extraData.simple_cron_type === 'day') {
-        if(this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 31){
-          this.$message({message: this.$t('cron.day_limit'), type: 'warning', showClose: true})
+        if (this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 31) {
+          this.$message({ message: this.$t('cron.day_limit'), type: 'warning', showClose: true })
           this.taskForm.extraData.simple_cron_value = 31
         }
-        this.taskForm.cron = '0 0 0 1/'+ this.taskForm.extraData.simple_cron_value + ' * ? *'
+        this.taskForm.cron = '0 0 0 1/' + this.taskForm.extraData.simple_cron_value + ' * ? *'
         return
       }
     },
@@ -647,16 +646,16 @@ export default {
         this.taskForm.endTime = ''
         this.taskForm.cron = ''
       }
-      if (this.taskForm.rate === 'SIMPLE_CRON'){
+      if (this.taskForm.rate === 'SIMPLE_CRON') {
         this.taskForm.cron = '0 0 0/1 *  * ? *'
       }
-      if (this.taskForm.rate === 'CRON'){
+      if (this.taskForm.rate === 'CRON') {
         this.taskForm.cron = '00 00 * ? * * *'
       }
     },
     listTaskLog(loading = true) {
-      const params = {"conditions":[{"field":"dataset_table_task_log.table_id","operator":"eq","value": this.table.id}],"orders":[]}
-      post('/dataset/taskLog/list/' +  this.table.type + '/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
+      const params = { 'conditions': [{ 'field': 'dataset_table_task_log.table_id', 'operator': 'eq', 'value': this.table.id }], 'orders': [] }
+      post('/dataset/taskLog/list/' + this.table.type + '/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
         this.taskLogData = response.data.listObject
         this.page.total = response.data.itemCount
       })
@@ -752,6 +751,11 @@ export default {
     white-space:pre-wrap;
     word-wrap : break-word ;
     overflow: hidden ;
+  }
+
+  .blackTheme .dialog_cancel_button {
+    background-color: #171b22 !important;
+    color: #2681ff !important;
   }
 
   .span{
