@@ -98,6 +98,7 @@
           id="canvasInfo"
           :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
+          :style="customCanvasStyle"
           @drop="handleDrop"
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
