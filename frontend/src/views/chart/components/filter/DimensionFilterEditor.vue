@@ -23,7 +23,7 @@
           </el-select>
         </el-col>
         <el-col :span="6">
-          <el-input v-show="!f.term.includes('null')" v-model="f.value" class="value-item" :placeholder="$t('chart.condition')" size="mini" clearable />
+          <el-input v-show="!f.term.includes('null') && !f.term.includes('empty')" v-model="f.value" class="value-item" :placeholder="$t('chart.condition')" size="mini" clearable />
         </el-col>
         <el-col :span="6">
           <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeFilter(index)" />
@@ -44,56 +44,48 @@ export default {
   },
   data() {
     return {
-      options: [{
-        label: '',
-        options: [{
-          value: 'eq',
-          label: this.$t('chart.filter_eq')
-        }, {
-          value: 'not_eq',
-          label: this.$t('chart.filter_not_eq')
-        }]
-      },
-      {
-        label: '',
-        options: [{
-          value: 'like',
-          label: this.$t('chart.filter_like')
-        }, {
-          value: 'not like',
-          label: this.$t('chart.filter_not_like')
-        }]
-      },
-      // {
-      //   label: '',
-      //   options: [{
-      //     value: 'lt',
-      //     label: this.$t('chart.filter_lt')
-      //   }, {
-      //     value: 'gt',
-      //     label: this.$t('chart.filter_gt')
-      //   }]
-      // },
-      // {
-      //   label: '',
-      //   options: [{
-      //     value: 'le',
-      //     label: this.$t('chart.filter_le')
-      //   }, {
-      //     value: 'ge',
-      //     label: this.$t('chart.filter_ge')
-      //   }]
-      // },
-      {
-        label: '',
-        options: [{
-          value: 'null',
-          label: this.$t('chart.filter_null')
-        }, {
-          value: 'not_null',
-          label: this.$t('chart.filter_not_null')
-        }]
-      }]
+      options: [
+        {
+          label: '',
+          options: [{
+            value: 'eq',
+            label: this.$t('chart.filter_eq')
+          }, {
+            value: 'not_eq',
+            label: this.$t('chart.filter_not_eq')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'like',
+            label: this.$t('chart.filter_like')
+          }, {
+            value: 'not like',
+            label: this.$t('chart.filter_not_like')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'null',
+            label: this.$t('chart.filter_null')
+          }, {
+            value: 'not_null',
+            label: this.$t('chart.filter_not_null')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'empty',
+            label: this.$t('chart.filter_empty')
+          }, {
+            value: 'not_empty',
+            label: this.$t('chart.filter_not_empty')
+          }]
+        }
+      ]
     }
   },
   mounted() {
@@ -113,7 +105,7 @@ export default {
 </script>
 
 <style scoped>
-.filter-item{
+.filter-item {
   width: 100%;
   border-radius: 4px;
   border: 1px solid #DCDFE6;
@@ -123,19 +115,22 @@ export default {
   justify-content: left;
   align-items: center;
 }
-.form-item>>>.el-form-item__label{
+
+.form-item >>> .el-form-item__label {
   font-size: 12px;
 }
-  span{
-    font-size: 12px;
-  }
 
-  .value-item>>>.el-input{
-    position: relative;
-    display: inline-block;
-    width: 80px!important;
-  }
-.el-select-dropdown__item{
+span {
+  font-size: 12px;
+}
+
+.value-item >>> .el-input {
+  position: relative;
+  display: inline-block;
+  width: 80px !important;
+}
+
+.el-select-dropdown__item {
   padding: 0 20px;
   font-size: 12px;
 }

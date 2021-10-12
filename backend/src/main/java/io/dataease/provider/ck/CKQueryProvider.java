@@ -39,10 +39,10 @@ public class CKQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
-        if(field.indexOf("ARRAY") > -1){
+        if (field.indexOf("ARRAY") > -1) {
             field = "ARRAY";
         }
-        if(field.indexOf("DATETIME64") > -1){
+        if (field.indexOf("DATETIME64") > -1) {
             field = "DATETIME64";
         }
         switch (field) {
@@ -81,7 +81,7 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     @Override
-    public Integer transFieldSize(String field){
+    public Integer transFieldSize(String field) {
         Integer type = transFieldType(field);
         switch (type) {
             case 0:
@@ -128,9 +128,9 @@ public class CKQueryProvider extends QueryProvider {
                 // 处理横轴字段
                 if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
                     if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        if(f.getType().equalsIgnoreCase("DATE")){
+                        if (f.getType().equalsIgnoreCase("DATE")) {
                             fieldName = String.format(CKConstants.toInt32, String.format(CKConstants.toDateTime, originField)) + "*1000";
-                        }else {
+                        } else {
                             fieldName = String.format(CKConstants.toInt32, originField) + "*1000";
                         }
                     } else {
@@ -725,7 +725,7 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String convertTableToSql(String tableName, Datasource ds){
+    public String convertTableToSql(String tableName, Datasource ds) {
         return "SELECT * FROM " + String.format(CKConstants.KEYWORD_TABLE, tableName);
     }
 
@@ -752,9 +752,13 @@ public class CKQueryProvider extends QueryProvider {
             case "not like":
                 return " NOT LIKE ";
             case "null":
-                return " IN ";
+                return " IS NULL ";
             case "not_null":
-                return " IS NOT NULL AND %s <> ''";
+                return " IS NOT NULL ";
+            case "empty":
+                return " = ";
+            case "not_empty":
+                return " <> ";
             case "between":
                 return " BETWEEN ";
             default:
@@ -800,31 +804,37 @@ public class CKQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue = CKConstants.WHERE_VALUE_NULL;
+//                whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-                whereTerm = String.format(whereTerm, originName);
+//                whereTerm = String.format(whereTerm, originName);
+                whereValue = "";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
+                whereValue = "''";
+            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_empty")) {
+                whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                if(field.getDeType() == DeTypeConstants.DE_TIME){
+                if (field.getDeType() == DeTypeConstants.DE_TIME) {
                     whereValue = String.format(CKConstants.toDateTime, "'" + value + "'");
-                }else {
+                } else {
                     whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value);
                 }
             }
-            if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getTerm(), "null")){
+            if (field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
                 list.add(SQLObj.builder()
                         .whereField(whereName)
                         .whereTermAndValue("is null")
                         .build());
-            }else if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")){
+            } else if (field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
                 list.add(SQLObj.builder()
                         .whereField(whereName)
                         .whereTermAndValue("is not null")
                         .build());
-            }else {
+            } else {
                 list.add(SQLObj.builder()
                         .whereField(whereName)
                         .whereTermAndValue(whereTerm + whereValue)
@@ -893,17 +903,17 @@ public class CKQueryProvider extends QueryProvider {
                 whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value.get(0));
             }
 
-            if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "null")){
+            if (field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "null")) {
                 list.add(SQLObj.builder()
                         .whereField(whereName)
                         .whereTermAndValue("is null")
                         .build());
-            }else if(field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "not_null")){
+            } else if (field.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "not_null")) {
                 list.add(SQLObj.builder()
                         .whereField(whereName)
                         .whereTermAndValue("is not null")
                         .build());
-            }else {
+            } else {
                 list.add(SQLObj.builder()
                         .whereField(whereName)
                         .whereTermAndValue(whereTerm + whereValue)
@@ -956,9 +966,9 @@ public class CKQueryProvider extends QueryProvider {
         String fieldName = "";
         if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
             if (x.getDeType() == DeTypeConstants.DE_INT || x.getDeType() == DeTypeConstants.DE_FLOAT) {
-                if(x.getType().equalsIgnoreCase("DATE")){
+                if (x.getType().equalsIgnoreCase("DATE")) {
                     fieldName = String.format(CKConstants.toInt32, String.format(CKConstants.toDateTime, originField)) + "*1000";
-                }else {
+                } else {
                     fieldName = String.format(CKConstants.toInt32, originField) + "*1000";
                 }
             } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
@@ -994,7 +1004,7 @@ public class CKQueryProvider extends QueryProvider {
             fieldName = String.format(CKConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = y.getDeType() == 2? String.format(CKConstants.toInt64, originField) : String.format(CKConstants.toFloat64, originField);
+                String cast = y.getDeType() == 2 ? String.format(CKConstants.toInt64, originField) : String.format(CKConstants.toFloat64, originField);
                 String agg = String.format(CKConstants.AGG_FIELD, y.getSummary(), cast);
                 fieldName = String.format(CKConstants.toDecimal, agg);
             } else {
@@ -1016,9 +1026,15 @@ public class CKQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = CKConstants.WHERE_VALUE_NULL;
+//                    whereValue = MySQLConstants.WHERE_VALUE_NULL;
+                    whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereTerm = String.format(whereTerm, originField);
+//                    whereTerm = String.format(whereTerm, originField);
+                    whereValue = "";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
+                    whereValue = "''";
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
+                    whereValue = "''";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
@@ -1027,19 +1043,19 @@ public class CKQueryProvider extends QueryProvider {
                     whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
 
-                if(y.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(f.getTerm(), "null")){
+                if (y.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
                     list.add(SQLObj.builder()
                             .whereField(fieldAlias)
                             .whereAlias(fieldAlias)
                             .whereTermAndValue("is null")
                             .build());
-                }else if(y.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")){
+                } else if (y.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
                     list.add(SQLObj.builder()
                             .whereField(fieldAlias)
                             .whereAlias(fieldAlias)
                             .whereTermAndValue("is not null")
                             .build());
-                }else {
+                } else {
                     list.add(SQLObj.builder()
                             .whereField(fieldAlias)
                             .whereAlias(fieldAlias)
