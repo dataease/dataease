@@ -95,6 +95,7 @@
         </el-drawer>
 
         <div
+          v-if="!previewVisible"
           id="canvasInfo"
           :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
@@ -103,8 +104,9 @@
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
+          @scroll="canvasScroll"
         >
-          <Editor v-if="!previewVisible" ref="canvasEditor" :out-style="outStyle" @canvasScroll="canvasScroll" />
+          <Editor ref="canvasEditor" :out-style="outStyle" />
         </div>
       </de-main-container>
       <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
@@ -160,7 +162,7 @@
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
 
     <!--矩形样式组件-->
-    <RectangleAttr v-if="curComponent&&curComponent.type==='rect-shape'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <RectangleAttr v-if="curComponent&&(curComponent.type==='rect-shape'||curComponent.type==='de-tabs')" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <TextAttr v-if="curComponent&&curComponent.type==='v-text'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <FilterTextAttr v-if="curComponent&&curComponent.type==='custom'&&curComponent.options.attrs.title" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <!--复用ChartGroup组件 不做显示-->
@@ -187,7 +189,7 @@ import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import componentList from '@/components/canvas/custom-component/component-list' // 左侧列表数据
-import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
+// import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
@@ -344,7 +346,7 @@ export default {
     this.init(this.$store.state.panel.panelInfo.id)
     // this.restore()
     // 全局监听按键事件
-    listenGlobalKeyDown()
+    // listenGlobalKeyDown()
 
     this.$store.commit('setCurComponent', { component: null, index: null })
     this.$store.commit('clearLinkageSettingInfo', false)
@@ -653,7 +655,8 @@ export default {
           const canvasHeight = document.getElementById('canvasInfo').offsetHeight
           const canvasWidth = document.getElementById('canvasInfo').offsetWidth
           this.outStyle.height = canvasHeight
-          this.outStyle.width = canvasWidth
+          // 临时处理 确保每次restore 有会更新
+          this.outStyle.width = canvasWidth + (Math.random() * 0.000001)
           // console.log(canvasHeight + '--' + canvasWidth)
         })
       }

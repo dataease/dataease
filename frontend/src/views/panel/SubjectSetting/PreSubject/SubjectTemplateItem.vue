@@ -47,7 +47,7 @@
 
     </div>
     <div style="position: absolute; left: 0px; right: 0px; bottom: 0px; height: 30px;" @dblclick="setEdit">
-      <div style=" background-color:#f7f8fa;color:#3d4d66;font-size:12px;height: 30px; line-height: 30px; text-align: center; white-space: pre; text-overflow: ellipsis; margin-left: 1px; margin-right: 1px;">
+      <div style=" background-color:#f7f8fa;color:#3d4d66;font-size:12px;height: 30px; line-height: 30px; text-align: center; white-space: pre; text-overflow: ellipsis; margin-left: 1px; margin-right: 1px;overflow: hidden">
         <el-input
           v-if="canEdit"
           ref="nameInput"
@@ -55,7 +55,7 @@
           size="mini"
           @blur="loseFocus()"
         />
-        <span v-if="!canEdit" style="margin-top: 8px">{{ subjectItem.name }}</span>
+        <span v-if="!canEdit" style="margin-top: 8px" :title="subjectItem.name">{{ subjectItem.name }}</span>
       </div>
     </div>
   </div>

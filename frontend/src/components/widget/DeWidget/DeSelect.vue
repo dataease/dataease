@@ -22,7 +22,7 @@
 </template>
 
 <script>
-
+import { fieldValues } from '@/api/dataset/dataset'
 export default {
 
   props: {
@@ -68,6 +68,11 @@ export default {
   },
   created() {
     this.options = this.element.options
+    if (this.options.attrs.fieldId) {
+      fieldValues(this.options.attrs.fieldId).then(res => {
+        this.options.attrs.datas = this.optionDatas(res.data)
+      })
+    }
 
     // this.setCondition()
   },
@@ -105,9 +110,19 @@ export default {
     },
     styleChange() {
       this.$store.commit('recordStyleChange')
+    },
+    optionDatas(datas) {
+      if (!datas) return null
+      return datas.filter(item => !!item).map(item => {
+        return {
+          id: item,
+          text: item
+        }
+      })
     }
 
   }
+
 }
 </script>
 
