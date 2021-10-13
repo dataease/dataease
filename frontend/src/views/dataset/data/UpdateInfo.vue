@@ -40,7 +40,7 @@
         <el-table-column prop="status" :label="$t('dataset.status')">
           <template slot-scope="scope">
             <span v-if="scope.row.status === 'Completed'" style="color: green">{{ $t('dataset.completed') }}</span>
-            <span v-if="scope.row.status === 'Underway'" style="color: blue">
+            <span v-if="scope.row.status === 'Underway'" class="blue-color">
               <i class="el-icon-loading" />
               {{ $t('dataset.underway') }}
             </span>
@@ -228,10 +228,10 @@
               <span v-if="scope.row.status === 'Stopped'" style="color: red">
                 <div type="danger" style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
               </span>
-              <span v-if="scope.row.status === 'Pending'" style="color: blue">
+              <span v-if="scope.row.status === 'Pending'" class="blue-color">
                 <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
               </span>
-              <span v-if="scope.row.status === 'Exec'" style="color: blue">
+              <span v-if="scope.row.status === 'Exec'" class="blue-color">
                 <i class="el-icon-loading" />
                 {{ $t('dataset.underway') }}
               </span>
@@ -452,7 +452,7 @@ export default {
     cellStyle({ row, column }) {
       // 状态列字体颜色
       if (row.status === 'Underway' && column === 'status') {
-        return 'color: blue'
+        return 'color: var(--Main, #0000ff)'
       } else if (row.status === 'Completed' && column === 'status') {
         return 'color: green'
       } else if (row.status === 'Error' && column === 'status') {
