@@ -38,13 +38,13 @@
               </el-tooltip>
             </span>
 
-            <span v-if="!hasStar && panelInfo" style="float: right;margin-right: 10px">
+            <span v-if="!hasStar && panelInfo && !isShare" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.store')">
                 <el-button class="el-icon-star-off" size="mini" circle @click="star" />
               </el-tooltip>
             </span>
 
-            <span v-if="hasStar && panelInfo" style="float: right;margin-right: 10px">
+            <span v-if="hasStar && panelInfo && !isShare" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('commons.cancel')">
                 <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
               </el-tooltip>
@@ -131,7 +131,8 @@ export default {
       hasStar: false,
       fullscreen: false,
       pdfExportShow: false,
-      snapshotInfo: ''
+      snapshotInfo: '',
+      isShare: false
     }
   },
   computed: {
@@ -162,6 +163,9 @@ export default {
     }
   },
   mounted() {
+    bus.$on('set-panel-is-share', () => {
+      this.isShare = true
+    })
     this.initPdfTemplate()
   },
   methods: {
