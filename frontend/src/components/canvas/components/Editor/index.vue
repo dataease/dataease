@@ -1480,14 +1480,31 @@ export default {
       nowX = nowX > 0 ? nowX : 1
       nowY = nowY > 0 ? nowY : 1
 
-      debounce((function(addSizex, addSizey) {
+      const oldX = infoBox.oldX
+      const oldY = infoBox.oldY
+      let newX = Math.round((item.style.left * this.scalePointWidth) / this.matrixStyle.width) + 1
+      let newY = Math.round((item.style.top * this.scalePointHeight) / this.matrixStyle.height) + 1
+      newX = newX > 0 ? newX : 1
+      newY = newY > 0 ? newY : 1
+      debounce((function(newX, oldX, newY, oldY, addSizex, addSizey) {
         return function() {
+          // console.log('move1')
+          if (newX !== oldX || oldY !== newY) {
+            // console.log('move2')
+            movePlayer.call(vm, resizeItem, {
+              x: newX,
+              y: newY
+            })
+
+            infoBox.oldX = newX
+            infoBox.oldY = newY
+          }
           resizePlayer.call(vm, resizeItem, {
             sizex: nowX,
             sizey: nowY
           })
         }
-      })(addSizex, addSizey), 10)
+      })(newX, oldX, newY, oldY, addSizex, addSizey), 10)
     },
     onDragging(e, item) {
       const infoBox = this.infoBox
