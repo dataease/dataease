@@ -35,10 +35,11 @@
       </template>
 
       <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;" trigger="click">
-        <span class="el-dropdown-link" style="color: var(--TopTextColor);font-size: 14px;max-width: 80px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
-          {{ name }}
-          <i class="el-icon-arrow-down el-icon--right" />
-        </span>
+        <div class="el-dropdown-link" style="display: flex;color: var(--TopTextColor);font-size: 14px; width:100%;">
+
+          <span style="max-width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ name }}</span>
+          <span><i class="el-icon-arrow-down el-icon--right" /></span>
+        </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/person-info/index">
             <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
