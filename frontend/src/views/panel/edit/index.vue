@@ -95,6 +95,7 @@
         </el-drawer>
 
         <div
+          v-if="!previewVisible"
           id="canvasInfo"
           :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
@@ -104,7 +105,7 @@
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor v-if="!previewVisible" ref="canvasEditor" :out-style="outStyle" @canvasScroll="canvasScroll" />
+          <Editor  ref="canvasEditor" :out-style="outStyle" @canvasScroll="canvasScroll" />
         </div>
       </de-main-container>
       <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
