@@ -491,11 +491,11 @@ div:focus {
 }
 
 .blackTheme .el-tree-node__content:hover {
-    background-color: var(--SiderBG) !important;
+    background-color: var(--MenuHovorBG) !important;
 }
 
 .blackTheme .is-current > .el-tree-node__content {
-    background-color: var(--SiderBG) !important;
+    background-color: var(--MenuActiveBG) !important;
 }
 .blackTheme .el-collapse-item__header {
     background-color: var(--ContentBG) !important;
@@ -533,30 +533,30 @@ div:focus {
     color: var(--Main) !important;
 }
 
-.blackTheme .elx-table--main-wrapper {
+.blackTheme:not(.in-panel) .elx-table--main-wrapper {
     
     .body--wrapper {
         background-color: var(--TableBG) !important;
     }
 }
-.blackTheme .elx-table {
+.blackTheme:not(.in-panel) .elx-table {
     color: var(--TableColor) !important;
 }
 
-.blackTheme .elx-body--column {
+.blackTheme:not(.in-panel) .elx-body--column {
     background-image: linear-gradient(var(--TableBorderColor), var(--TableBorderColor)), linear-gradient(var(--TableBorderColor), var(--TableBorderColor)) !important;
 }
-.blackTheme .elx-header--column {
+.blackTheme:not(.in-panel) .elx-header--column {
     background-image: linear-gradient(--TableBorderColor, --TableBorderColor), linear-gradient(--TableBorderColor, --TableBorderColor) !important;
 }
-.blackTheme tr.row--current {
+.blackTheme:not(.in-panel) tr.row--current {
     background-color: var(--MainBG) !important;
 }
-.blackTheme tr.elx-body--row:hover {
+.blackTheme:not(.in-panel) tr.elx-body--row:hover {
     background-color: var(--TableBG) !important;
 }
 
-.blackTheme .elx-table--header-border-line {
+.blackTheme:not(.in-panel) .elx-table--header-border-line {
     border-color: var(--TableBorderColor) !important;
 }
 
@@ -664,6 +664,10 @@ div:focus {
 
 .blackTheme .el-table__body tr.current-row > td {
     background-color: #324f62;
+}
+
+.blue-color {
+    color: var(--Main, #0000ff);
 }
 
 

@@ -715,7 +715,4 @@ span{
   font-size: 12px;
 }
 
-.blue-color {
-    color: var(--Main);
-}
 </style>
