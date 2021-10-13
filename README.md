@@ -24,6 +24,17 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 -   秒级响应：集成 Apache Doris，超大数据量下秒级查询返回延时；
 -   安全分享：支持多种数据分享方式，确保数据安全。
 
+### DataEase 已支持的数据源:
+
+- MySQL
+- Oracle
+- SQL Server
+- PostgreSQL
+- Elasticsearch
+- MariaDB
+- Doris
+- ClickHouse
+
 ## UI 展示
 
 ![de-ui](https://www.fit2cloud.com/dataease/images/screenshot/dataease-v1.gif)
