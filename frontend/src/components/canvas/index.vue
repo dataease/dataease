@@ -35,7 +35,7 @@ import Toolbar from '@/components/Toolbar'
 import { deepCopy } from '@/utils/utils'
 import { mapState } from 'vuex'
 import generateID from '@/utils/generateID'
-import { listenGlobalKeyDown } from '@/utils/shortcutKey'
+// import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 
 export default {
   // eslint-disable-next-line vue/no-unused-components
