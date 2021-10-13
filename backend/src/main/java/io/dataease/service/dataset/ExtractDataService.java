@@ -959,12 +959,12 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.pg.name())){
+        }else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.pg.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for(int i=0;i< datasetTableFields.size();i++){
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getDataeaseName());
-                if (datasetTableFields.get(i).getDeExtractType() == 1) {
+                if (datasetTableFields.get(i).getDeExtractType() == DeTypeConstants.DE_TIME) {
                     textFileField.setType("String");
                     textFileField.setFormat("yyyy-MM-dd HH:mm:ss");
                 } else {
@@ -984,7 +984,7 @@ public class ExtractDataService {
             for(int i=0;i< datasetTableFields.size();i++){
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getDataeaseName());
-                if (datasetTableFields.get(i).getDeExtractType() == 2) {
+                if (datasetTableFields.get(i).getDeExtractType() == DeTypeConstants.DE_INT) {
                     textFileField.setType("Integer");
                     textFileField.setFormat("0");
                 } else {
