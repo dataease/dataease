@@ -165,7 +165,7 @@ export default {
     },
     tableId: {
       type: String,
-      default: null
+      default: ''
     },
     editType: {
       type: Number,
