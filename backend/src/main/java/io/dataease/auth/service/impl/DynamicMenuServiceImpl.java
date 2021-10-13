@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -117,8 +119,10 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
 
     @Transactional
     public void syncPluginMenu() {
-        List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
         extPluginSysMenuMapper.deletePluginMenu();
+        List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
+        Set<PluginSysMenu> pluginSysMenuSet = new HashSet<>(pluginSysMenuList);
+        pluginSysMenuList = new ArrayList<>(pluginSysMenuSet);
         if(CollectionUtils.isNotEmpty(pluginSysMenuList)){
             extPluginSysMenuMapper.savePluginMenu(pluginSysMenuList);
         }
