@@ -21,6 +21,7 @@
 import { loadTree } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
 import { get } from '@/api/panel/panel'
+import bus from '@/utils/bus'
 export default {
   name: 'ShareTree',
   props: {
@@ -59,6 +60,7 @@ export default {
         this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
 
         this.$store.dispatch('panel/setPanelInfo', data)
+        bus.$emit('set-panel-is-share')
       })
     },
     resetID(data) {
