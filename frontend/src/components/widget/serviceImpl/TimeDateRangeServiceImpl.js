@@ -11,8 +11,8 @@ const dialogPanel = {
     attrs: {
       type: 'daterange',
       rangeSeparator: 'dedaterange.split_placeholder',
-      startPlaceholder: 'dedaterange.to_placeholder',
-      endPlaceholder: 'dedaterange.from_placeholder',
+      startPlaceholder: 'dedaterange.from_placeholder',
+      endPlaceholder: 'dedaterange.to_placeholder',
       viewIds: []
     },
     value: ''
