@@ -17,7 +17,7 @@
       </div>
     </div>
     <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
-    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'g2'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
+    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
     <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
     <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
     <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
@@ -269,7 +269,7 @@ export default {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
               this.resetDrill()
             }
-            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
+            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
             this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
             this.requestStatus = 'merging'
             this.mergeStyle()
@@ -443,11 +443,7 @@ export default {
     },
 
     renderComponent() {
-      if (this.chart.type === 'liquid') {
-        return 'g2'
-      } else {
-        return 'echarts'
-      }
+      return this.chart.render
     }
   }
 }

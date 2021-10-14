@@ -729,6 +729,7 @@ export default {
       view.sceneId = this.currGroup.id
       view.tableId = this.table.id
       view.type = 'bar'
+      view.render = 'antv'
       view.customAttr = JSON.stringify({
         color: DEFAULT_COLOR_CASE,
         tableColor: DEFAULT_COLOR_CASE,
