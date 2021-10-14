@@ -1,7 +1,10 @@
 <template>
-  <div style="display: flex;">
+  <div ref="chartContainer" style="padding: 0;width: 100%;height: 100%;overflow: hidden;" :style="bg_class">
     <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
-    <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
+    <span v-if="chart.type && antVRenderStatus" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
+      <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
+    </span>
+    <div :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}" />
   </div>
 </template>
 
@@ -10,6 +13,16 @@ import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { baseBarOptionAntV, hBaseBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
+import { baseAreaOptionAntV, baseLineOptionAntV } from '@/views/chart/chart/line/line_antv'
+import { basePieOptionAntV, basePieRoseOptionAntV } from '@/views/chart/chart/pie/pie_antv'
+import { baseScatterOptionAntV } from '@/views/chart/chart/scatter/scatter_antv'
+import { baseGaugeOptionAntV } from '@/views/chart/chart/gauge/gauge_antv'
+import { baseFunnelOptionAntV } from '@/views/chart/chart/funnel/funnel_antv'
+import { baseTreemapOptionAntV } from '@/views/chart/chart/treemap/treemap_antv'
+import { baseRadarOptionAntV } from '@/views/chart/chart/radar/radar_antv'
+import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 
 export default {
   name: 'ChartComponentG2',
@@ -45,21 +58,42 @@ export default {
         top: '0px'
       },
       pointParam: null,
-
       dynamicAreaCode: null,
-      borderRadius: '0px'
+      borderRadius: '0px',
+      chartHeight: '100%',
+      title_class: {
+        margin: '0 0',
+        width: '100%',
+        fontSize: '18px',
+        color: '#303133',
+        textAlign: 'left',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        background: hexColorToRGBA('#ffffff', 0)
+      },
+      title_show: true,
+      antVRenderStatus: false
     }
   },
 
   computed: {
     trackBarStyleTime() {
       return this.trackBarStyle
+    },
+    bg_class() {
+      return {
+        borderRadius: this.borderRadius
+      }
     }
   },
   watch: {
     chart: {
       handler(newVal, oldVla) {
-        this.preDraw()
+        this.initTitle()
+        this.calcHeightDelay()
+        new Promise((resolve) => { resolve() }).then(() => {
+          this.drawView()
+        })
       },
       deep: true
     },
@@ -72,38 +106,96 @@ export default {
   },
   methods: {
     preDraw() {
-      // 基于准备好的dom，初始化echarts实例
-      // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
+      this.initTitle()
+      this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
-        //	此dom为echarts图标展示dom
-        // this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
-        // if (!this.myChart) {
-        //   this.myChart = this.$echarts.init(document.getElementById(this.chartId))
-        // }
-        this.drawEcharts()
-
-        // this.myChart.off('click')
-        // this.myChart.on('click', function(param) {
-        //   that.pointParam = param
-        //   if (that.trackMenu.length < 2) { // 只有一个事件直接调用
-        //     that.trackClick(that.trackMenu[0])
-        //   } else { // 视图关联多个事件
-        //     that.trackBarStyle.left = param.event.offsetX + 'px'
-        //     that.trackBarStyle.top = (param.event.offsetY - 15) + 'px'
-        //     that.$refs.viewTrack.trackButtonClick()
-        //   }
-        // })
+        this.drawView()
       })
+      const that = this
+      window.onresize = function() {
+        that.calcHeightDelay()
+      }
     },
-    drawEcharts() {
+    drawView() {
       const chart = this.chart
       // type
-      if (chart.type === 'liquid') {
-        this.myChart = baseLiquid(this.myChart, this.chartId, chart)
+      // if (chart.data) {
+      this.antVRenderStatus = true
+      if (!chart.data || (!chart.data.datas && !chart.data.series)) {
+        chart.data = {
+          datas: [{}],
+          series: [
+            {
+              data: [0]
+            }
+          ]
+        }
       }
+      if (chart.type === 'bar') {
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
+      } else if (chart.type === 'bar-stack') {
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+      } else if (chart.type === 'bar-horizontal') {
+        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
+      } else if (chart.type === 'bar-stack-horizontal') {
+        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+      } else if (chart.type === 'line') {
+        this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'line-stack') {
+        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'scatter') {
+        this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'chart-mix') {
+        this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'radar') {
+        this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'gauge') {
+        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'pie') {
+        this.myChart = basePieOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'pie-rose') {
+        this.myChart = basePieRoseOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'funnel') {
+        this.myChart = baseFunnelOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'treemap') {
+        this.myChart = baseTreemapOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'liquid') {
+        this.myChart = baseLiquid(this.myChart, this.chartId, chart)
+      } else {
+        if (this.myChart) {
+          this.antVRenderStatus = false
+          this.myChart.destroy()
+        }
+      }
+
+      if (this.antVRenderStatus) {
+        this.myChart.render()
+      }
+      // } else {
+      //   if (this.myChart) {
+      //     this.antVRenderStatus = false
+      //     this.myChart.destroy()
+      //   }
+      // }
 
       this.setBackGroundBorder()
       // console.log(JSON.stringify(chart_option))
+    },
+
+    antVAction(param) {
+      console.log(param)
+      if (this.chart.type === 'treemap') {
+        this.pointParam = param.data.data
+      } else {
+        this.pointParam = param.data
+      }
+      if (this.trackMenu.length < 2) { // 只有一个事件直接调用
+        this.trackClick(this.trackMenu[0])
+      } else { // 视图关联多个事件
+        this.trackBarStyle.left = param.clientX + 'px'
+        this.trackBarStyle.top = (param.clientY - 15) + 'px'
+        this.$refs.viewTrack.trackButtonClick()
+      }
     },
 
     // myEcharts(option) {
@@ -124,9 +216,7 @@ export default {
       }
     },
     chartResize() {
-      // 指定图表的配置项和数据
-      // const chart = this.myChart
-      // chart.resize()
+      this.calcHeightDelay()
     },
     trackClick(trackAction) {
       const param = this.pointParam
@@ -152,11 +242,46 @@ export default {
         default:
           break
       }
+    },
+
+    initTitle() {
+      if (this.chart.customStyle) {
+        const customStyle = JSON.parse(this.chart.customStyle)
+        if (customStyle.text) {
+          this.title_show = customStyle.text.show
+          this.title_class.fontSize = customStyle.text.fontSize + 'px'
+          this.title_class.color = customStyle.text.color
+          this.title_class.textAlign = customStyle.text.hPosition
+          this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
+          this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
+        }
+        if (customStyle.background) {
+          this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+          this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
+        }
+      }
+    },
+
+    calcHeightRightNow() {
+      this.$nextTick(() => {
+        if (this.$refs.chartContainer) {
+          const currentHeight = this.$refs.chartContainer.offsetHeight
+          if (this.$refs.title) {
+            const titleHeight = this.$refs.title.offsetHeight
+            this.chartHeight = (currentHeight - titleHeight) + 'px'
+          }
+        }
+      })
+    },
+    calcHeightDelay() {
+      setTimeout(() => {
+        this.calcHeightRightNow()
+      }, 100)
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>
