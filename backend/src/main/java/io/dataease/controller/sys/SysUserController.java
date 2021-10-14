@@ -10,7 +10,6 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
 import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
@@ -130,11 +129,11 @@ public class SysUserController {
     }
 
 
-    @ApiOperation("同步用户")
+    /* @ApiOperation("同步用户")
     @PostMapping("/sync")
     public void importLdap(@RequestBody LdapAddRequest request) {
         sysUserService.saveLdapUsers(request);
-    }
+    } */
 
     @ApiOperation("已同步用户")
     @PostMapping("/existLdapUsers")

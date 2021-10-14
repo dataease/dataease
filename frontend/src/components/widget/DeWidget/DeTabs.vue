@@ -35,7 +35,7 @@
         </span>
 
         <div v-if="activeTabName === item.name" class="de-tab-content">
-          <user-view v-if="item.content" :ref="item.name" :element="item.content" :out-style="outStyle" />
+          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :element="item.content" :out-style="outStyle" />
         </div>
 
       </el-tab-pane>
