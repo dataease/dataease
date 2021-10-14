@@ -258,10 +258,15 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
+                <!-- <includes>
                     <include>**/*</include>
-                </includes>
+                </includes> -->
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>static/**/*.woff</exclude>
+                    <exclude>static/**/*.woff2</exclude>
+                    <exclude>static/**/*.ttf</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>
