@@ -26,14 +26,17 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ### DataEase 已支持的数据源:
 
+- Excel
 - MySQL
 - Oracle
 - SQL Server
 - PostgreSQL
 - Elasticsearch
 - MariaDB
-- Doris
+- Apache Doris
 - ClickHouse
+
+> 更多数据源支持持续增加中...
 
 ## UI 展示
 
