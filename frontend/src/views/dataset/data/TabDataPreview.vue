@@ -22,7 +22,7 @@
     >
       <ux-table-column
         v-for="field in fields"
-        :key="field.dataeaseName"
+        :key="field.id"
         min-width="200px"
         :field="field.dataeaseName"
         :resizable="true"

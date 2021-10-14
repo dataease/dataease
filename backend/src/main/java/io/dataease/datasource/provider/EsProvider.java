@@ -231,16 +231,17 @@ public class EsProvider extends DatasourceProvider {
             throw new Exception(JSONObject.parseObject(response).getJSONObject("error").getString("reason"));
         }
         String version =  JSONObject.parseObject(response).getJSONObject("version").getString("number");
-        if(Integer.valueOf(version.substring(0,1)) < 6 ){
+
+        if(Integer.valueOf(version.split("\\.")[0]) < 6 ){
             throw new Exception(Translator.get("i18n_es_limit"));
         }
-        if(Integer.valueOf(version.substring(2,3)) < 3 ){
+        if(Integer.valueOf(version.split("\\.")[1]) < 3 ){
             throw new Exception(Translator.get("i18n_es_limit"));
         }
-        if(Integer.valueOf(version.substring(0,1)) == 6 ) {
+        if(Integer.valueOf(version.split("\\.")[0]) == 6 ) {
             esConfiguration.setUri("_xpack/sql");
         }
-        if(Integer.valueOf(version.substring(0,1)) == 7 ) {
+        if(Integer.valueOf(version.split("\\.")[0]) == 7 ) {
             esConfiguration.setUri("_sql");
         }
         datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfiguration));

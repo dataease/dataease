@@ -1429,32 +1429,6 @@ export default {
       infoBox.moveItem = item
       infoBox.moveItemIndex = index
 
-      // infoBox.cloneItem = null
-      // infoBox.nowItemNode = null
-
-      // 通过.item 样式class 来获取最外层的de-drag 最外层的定位
-      // if (target.attr('class') && target.attr('class').indexOf('item') !== -1) {
-      //   infoBox.nowItemNode = target
-      //   // infoBox.cloneItem = target.clone()
-      // } else {
-      //   infoBox.nowItemNode = target.parents('.item')
-      //   // infoBox.cloneItem = infoBox.nowItemNode.clone()
-      // }
-      // infoBox.cloneItem.addClass('cloneNode')
-
-      // 使用deDrag 自己的shadow 进行阴影定位
-      // $(this.$el).append(infoBox.cloneItem)
-
-      // if (infoBox.cloneItem.position()) {
-      //   infoBox.orignX = infoBox.cloneItem.position().left // 克隆对象原始X位置
-      //   infoBox.orignY = infoBox.cloneItem.position().top
-      // } else {
-      //   infoBox.orignX = 0 // 克隆对象原始X位置
-      //   infoBox.orignY = 0
-      //   infoBox.startX = 0
-      //   infoBox.startY = 0
-      // }
-
       infoBox.orignX = 0 // 克隆对象原始X位置
       infoBox.orignY = 0
       infoBox.startX = 0
@@ -1464,8 +1438,6 @@ export default {
       infoBox.oldY = item.y
       infoBox.oldSizeX = item.sizex
       infoBox.oldSizeY = item.sizey
-      // infoBox.orignWidth = infoBox.cloneItem.prop('offsetWidth')
-      // infoBox.orignHeight = infoBox.cloneItem.prop('offsetHeight')
     },
     onMouseUp(e) {
       const vm = this
@@ -1498,41 +1470,41 @@ export default {
       const startY = infoBox.startY
       const oldSizeX = infoBox.oldSizeX
       const oldSizeY = infoBox.oldSizeY
-      // const orignWidth = infoBox.orignWidth
-      // const orignHeight = infoBox.orignHeight
-
       const moveXSize = e.pageX - startX // X方向移动的距离
       const moveYSize = e.pageY - startY // Y方向移动的距离
 
       const addSizex = (moveXSize) % vm.cellWidth > (vm.cellWidth / 4 * 1) ? parseInt(((moveXSize) / vm.cellWidth + 1)) : parseInt(((moveXSize) / vm.cellWidth))
       const addSizey = (moveYSize) % vm.cellHeight > (vm.cellHeight / 4 * 1) ? parseInt(((moveYSize) / vm.cellHeight + 1)) : parseInt(((moveYSize) / vm.cellHeight))
-      //
-      // const nowX = oldSizeX + addSizex > 0 ? oldSizeX + addSizex : 1
-      // const nowY = oldSizeY + addSizey > 0 ? oldSizeY + addSizey : 1
-
       let nowX = Math.round((item.style.width * this.scalePointWidth) / this.matrixStyle.width)
       let nowY = Math.round((item.style.height * this.scalePointHeight) / this.matrixStyle.height)
       nowX = nowX > 0 ? nowX : 1
       nowY = nowY > 0 ? nowY : 1
 
-      debounce((function(addSizex, addSizey) {
+      const oldX = infoBox.oldX
+      const oldY = infoBox.oldY
+      let newX = Math.round((item.style.left * this.scalePointWidth) / this.matrixStyle.width) + 1
+      let newY = Math.round((item.style.top * this.scalePointHeight) / this.matrixStyle.height) + 1
+      newX = newX > 0 ? newX : 1
+      newY = newY > 0 ? newY : 1
+      debounce((function(newX, oldX, newY, oldY, addSizex, addSizey) {
         return function() {
+          // console.log('move1')
+          if (newX !== oldX || oldY !== newY) {
+            // console.log('move2')
+            movePlayer.call(vm, resizeItem, {
+              x: newX,
+              y: newY
+            })
+
+            infoBox.oldX = newX
+            infoBox.oldY = newY
+          }
           resizePlayer.call(vm, resizeItem, {
             sizex: nowX,
             sizey: nowY
           })
         }
-      })(addSizex, addSizey), 10)
-
-      // let nowWidth = orignWidth + moveXSize
-      // nowWidth = nowWidth <= vm.baseWidth ? vm.baseWidth : nowWidth
-      // let nowHeight = orignHeight + moveYSize
-      // nowHeight = nowHeight <= vm.baseHeight ? vm.baseHeight : nowHeight
-      // // 克隆元素实时改变大小
-      // cloneItem.css({
-      //   width: nowWidth,
-      //   height: nowHeight
-      // })
+      })(newX, oldX, newY, oldY, addSizex, addSizey), 10)
     },
     onDragging(e, item) {
       const infoBox = this.infoBox
@@ -1545,40 +1517,12 @@ export default {
       vm.dragging.call(null, e, moveItem, moveItem._dragId)
 
       vm.$set(moveItem, 'isPlayer', true)
-      // this.$set(moveItem, "show", false);
-      // const nowItemIndex = infoBox.moveItemIndex
-      // const cloneItem = infoBox.cloneItem
-      // const startX = infoBox.startX
-      // const startY = infoBox.startY
-      // const orignX = infoBox.orignX
-      // const orignY = infoBox.orignY
       const oldX = infoBox.oldX
       const oldY = infoBox.oldY
-
-      // const moveXSize = e.pageX - startX // X方向移动的距离
-      // const moveYSize = e.pageY - startY // Y方向移动的距离
-      //
-      // const nowCloneItemX = orignX + moveXSize
-      // const nowCloneItemY = orignY + moveYSize
-
-      // temp 临时测试
-      // let newX = parseInt((nowCloneItemX + (cloneItem.width() / 12) - vm.baseMarginLeft) / vm.cellWidth + 1)
-      // let newY = parseInt((nowCloneItemY + (cloneItem.height() / 12) - vm.baseMarginTop) / vm.cellHeight + 1)
       let newX = Math.round((item.style.left * this.scalePointWidth) / this.matrixStyle.width) + 1
       let newY = Math.round((item.style.top * this.scalePointHeight) / this.matrixStyle.height) + 1
-      // if (this.dragComponentInfo) {
-      //   newX = Math.round(this.dragComponentInfo.x) + 1
-      //   newY = Math.round(this.dragComponentInfo.y) + 1
-      // } else {
-      //   newX = Math.round((item.style.left * this.scalePointWidth) / this.matrixStyle.width) + 1
-      //   newY = Math.round((item.style.top * this.scalePointHeight) / this.matrixStyle.height) + 1
-      // }
       newX = newX > 0 ? newX : 1
       newY = newY > 0 ? newY : 1
-
-      // console.log('infoBox==>' + JSON.stringify(this.infoBox))
-      // console.log('infoBox:startX' + startX + ';startY' + startY + 'orignX' + orignX + 'orignY' + orignY + 'oldX' + oldX + 'oldY' + oldY + 'new:newX=' + newX + ';newY=' + newY)
-
       debounce((function(newX, oldX, newY, oldY) {
         return function() {
           // console.log('move1')
@@ -1594,11 +1538,6 @@ export default {
           }
         }
       })(newX, oldX, newY, oldY), 10)
-
-      // cloneItem.css({
-      //   left: nowCloneItemX + 'px',
-      //   top: nowCloneItemY + 'px'
-      // })
     },
     endMove(e) {
 

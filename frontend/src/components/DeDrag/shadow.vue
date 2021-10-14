@@ -18,6 +18,7 @@ export default {
       let top = 0
       let width = 0
       let height = 0
+      let transition = 0
       // if (this.dragComponentInfo && !this.dragComponentInfo.auxiliaryMatrix) {
       if (this.dragComponentInfo) {
         // console.log('shadowDrag=')
@@ -28,6 +29,7 @@ export default {
 
           width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleWidth
           height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleHeight
+          transition = 0.1
         } else {
           left = this.dragComponentInfo.shadowStyle.x
           top = this.dragComponentInfo.shadowStyle.y
@@ -45,6 +47,9 @@ export default {
 
         width = this.curComponent.style.width * this.curCanvasScale.scalePointWidth
         height = this.curComponent.style.height * this.curCanvasScale.scalePointHeight
+        if (this.curComponent.optStatus.dragging) {
+          transition = 0.1
+        }
         // console.log('curComponent left:' + left + 'top:' + top + 'width:' + width + 'height:' + height)
       }
 
@@ -58,6 +63,9 @@ export default {
         transform: `translate(${left}px, ${top}px) rotate(0deg)`,
         width: width + 'px',
         height: height + 'px'
+      }
+      if (transition > 0) {
+        style.transition = transition + 's'
       }
       // console.log('style=>' + JSON.stringify(style))
       // 记录外部拖拽进入仪表板时阴影区域宽高
