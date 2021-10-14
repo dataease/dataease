@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3229030",
+      "name": "超链接",
+      "font_class": "chaolianjie",
+      "unicode": "e9b2",
+      "unicode_decimal": 59826
+    },
+    {
+      "icon_id": "23880814",
+      "name": "科学技术",
+      "font_class": "kexuejishu",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
       "icon_id": "1766500",
       "name": "符号-数据矩阵",
       "font_class": "shujujuzhen",

@@ -1,9 +1,6 @@
 package io.dataease.commons.utils;
 import com.google.gson.Gson;
 import io.dataease.datasource.dto.TableFiled;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -70,10 +67,10 @@ public class ExcelReaderUtil {
         }
     }
 
-     public static void main(String[] args) throws Exception {
+     /* public static void main(String[] args) throws Exception {
 
 
         String file ="各省市GDP-表格_加内容.xlsx";
         ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
-    }
+    } */
 }

@@ -1319,7 +1319,13 @@ export default {
     suspension: 'suspension',
     new_element_distribution: 'New element Distribution',
     subject_no_edit: 'System Subject Can Not Edit',
-    subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts'
+    subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts',
+    is_enable: 'Enable',
+    open_mode: 'Open Model',
+    new_window: 'New Window',
+    now_window: 'Now Window',
+    hyperLinks: 'hyperlinks',
+    link_open_tips: 'Open When Panel Not In Edit Status'
   },
   plugin: {
     local_install: 'Local installation',
