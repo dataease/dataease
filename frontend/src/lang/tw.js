@@ -1322,7 +1322,13 @@ export default {
     suspension: '悬浮',
     new_element_distribution: '当前元素移入分布方式',
     subject_no_edit: '系统主题不能修改',
-    subject_name_not_null: '主题名称需要1~20字符'
+    subject_name_not_null: '主题名称需要1~20字符',
+    is_enable: '是否启用',
+    open_mode: '打开方式',
+    new_window: '新窗口',
+    now_window: '当前窗口',
+    hyperLinks: '超链接',
+    link_open_tips: '仪表板非编辑状态可打开链接'
   },
   plugin: {
     local_install: '本地安裝',

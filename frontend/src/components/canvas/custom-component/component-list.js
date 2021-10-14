@@ -11,6 +11,13 @@ export const commonAttr = {
   isLock: false // 是否锁定组件
 }
 
+// 超链接配置
+export const HYPERLINKS = {
+  openMode: '_blank',
+  enable: false,
+  content: 'http://'
+}
+
 export const assistList = [
   {
     id: '10001',
@@ -71,6 +78,7 @@ const list = [
       backgroundColor: '#ffffff',
       borderRadius: 0
     },
+    hyperlinks: HYPERLINKS,
     x: 1,
     y: 1,
     sizex: 10,

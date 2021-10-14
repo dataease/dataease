@@ -1,6 +1,6 @@
 <template>
   <el-card class="el-card-main" :style="mainStyle">
-    <div style="position: relative;">
+    <div id="main-attr" style="position: relative;">
       <div style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-radio-group v-model="styleInfo.textAlign" size="mini" @change="styleChange">
           <el-radio-button
@@ -76,13 +76,23 @@
           <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
         </div>
       </div>
+
+      <div style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-tooltip content="超链接">
+          <Hyperlinks :link-info="this.curComponent.hyperlinks" />
+        </el-tooltip>
+      </div>
+
     </div>
   </el-card>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
+
 export default {
+  components: { Hyperlinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -96,6 +106,7 @@ export default {
   data() {
     return {
       innerOpacity: 0,
+      mainWidthOffset: 600,
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',
@@ -125,6 +136,8 @@ export default {
     if (this.styleInfo['opacity']) {
       this.innerOpacity = this.styleInfo['opacity'] * 100
     }
+    this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
+    // console.log('mainWidthOffset:' + this.mainWidthOffset)
   },
   computed: {
     letterDivColor() {
@@ -181,7 +194,7 @@ export default {
         ps = x + 60
       }
       // 防止toolbar超出边界
-      const xGap = ps + 565 - this.canvasWidth
+      const xGap = ps + this.mainWidthOffset - this.canvasWidth
       // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
       if (xGap > 0) {
         return ps - xGap
@@ -213,7 +226,6 @@ export default {
   .el-card-main {
     height: 34px;
     z-index: 10;
-    width: 620px;
     position: absolute;
 
   }
