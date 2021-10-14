@@ -417,7 +417,7 @@ public class JdbcProvider extends DatasourceProvider {
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 username = mysqlConfiguration.getUsername();
                 password = mysqlConfiguration.getPassword();
-                driver = mysqlConfiguration.getDriver();
+                driver = "com.mysql.jdbc.Driver";
                 jdbcurl = mysqlConfiguration.getJdbc();
                 break;
             case sqlServer:
