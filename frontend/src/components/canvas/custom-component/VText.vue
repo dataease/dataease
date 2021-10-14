@@ -58,7 +58,7 @@ export default {
   computed: {
     textInfo() {
       if (this.element && this.element.hyperlinks && this.element.hyperlinks.enable) {
-        return "<a target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
+        return "<a title='" + this.element.hyperlinks.content + "' target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
       } else {
         return this.element.propValue
       }
@@ -154,6 +154,7 @@ export default {
         width: 100%;
         height: 100%;
         outline: none;
+
     }
 
     .canEdit {
@@ -161,4 +162,9 @@ export default {
         height: 100%;
     }
 }
+::v-deep a:hover {
+  text-decoration: underline!important;
+  color: blue!important;
+}
+
 </style>
