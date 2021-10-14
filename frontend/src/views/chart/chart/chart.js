@@ -86,7 +86,7 @@ export const DEFAULT_LEGEND_STYLE = {
   hPosition: 'center',
   vPosition: 'bottom',
   orient: 'horizontal',
-  icon: 'rect',
+  icon: 'circle',
   textStyle: {
     color: '#333333',
     fontSize: '12'
@@ -119,7 +119,8 @@ export const DEFAULT_XAXIS_STYLE = {
     auto: true,
     min: null,
     max: null,
-    split: null
+    split: null,
+    splitCount: null
   }
 }
 export const DEFAULT_YAXIS_STYLE = {
@@ -149,7 +150,8 @@ export const DEFAULT_YAXIS_STYLE = {
     auto: true,
     min: null,
     max: null,
-    split: null
+    split: null,
+    splitCount: null
   }
 }
 export const DEFAULT_YAXIS_EXT_STYLE = {
@@ -179,7 +181,8 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     auto: true,
     min: null,
     max: null,
-    split: null
+    split: null,
+    splitCount: null
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {

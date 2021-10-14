@@ -17,6 +17,8 @@ public class ChartView implements Serializable {
     private String tableId;
     @ApiModelProperty("图表类型")
     private String type;
+    @ApiModelProperty("chart渲染方式")
+    private String render;
     @ApiModelProperty("标题")
     private String title;
     @ApiModelProperty("创建人")

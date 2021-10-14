@@ -454,6 +454,76 @@ public class ChartViewExample {
             return (Criteria) this;
         }
 
+        public Criteria andRenderIsNull() {
+            addCriterion("render is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderIsNotNull() {
+            addCriterion("render is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderEqualTo(String value) {
+            addCriterion("render =", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotEqualTo(String value) {
+            addCriterion("render <>", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderGreaterThan(String value) {
+            addCriterion("render >", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderGreaterThanOrEqualTo(String value) {
+            addCriterion("render >=", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderLessThan(String value) {
+            addCriterion("render <", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderLessThanOrEqualTo(String value) {
+            addCriterion("render <=", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderLike(String value) {
+            addCriterion("render like", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotLike(String value) {
+            addCriterion("render not like", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderIn(List<String> values) {
+            addCriterion("render in", values, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotIn(List<String> values) {
+            addCriterion("render not in", values, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderBetween(String value1, String value2) {
+            addCriterion("render between", value1, value2, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotBetween(String value1, String value2) {
+            addCriterion("render not between", value1, value2, "render");
+            return (Criteria) this;
+        }
+
         public Criteria andTitleIsNull() {
             addCriterion("title is null");
             return (Criteria) this;
