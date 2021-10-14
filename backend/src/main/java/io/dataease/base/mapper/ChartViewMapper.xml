@@ -7,6 +7,7 @@
     <result column="scene_id" jdbcType="VARCHAR" property="sceneId" />
     <result column="table_id" jdbcType="VARCHAR" property="tableId" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="render" jdbcType="VARCHAR" property="render" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
@@ -84,11 +85,11 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time, 
+    id, `name`, scene_id, table_id, `type`, render, title, create_by, create_time, update_time,
     style_priority
   </sql>
   <sql id="Blob_Column_List">
-    x_axis, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, custom_filter, 
+    x_axis, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, custom_filter,
     drill_fields, snapshot
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.ChartViewExample" resultMap="ResultMapWithBLOBs">
@@ -122,7 +123,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -140,20 +141,22 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
-    insert into chart_view (id, `name`, scene_id, 
-      table_id, `type`, title, 
-      create_by, create_time, update_time, 
-      style_priority, x_axis, y_axis, 
-      y_axis_ext, ext_stack, ext_bubble, 
-      custom_attr, custom_style, custom_filter, 
-      drill_fields, snapshot)
-    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
-      #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{stylePriority,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, 
-      #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, #{extBubble,jdbcType=LONGVARCHAR}, 
-      #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR}, 
-      #{drillFields,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR})
+    insert into chart_view (id, `name`, scene_id,
+      table_id, `type`, render,
+      title, create_by, create_time,
+      update_time, style_priority, x_axis,
+      y_axis, y_axis_ext, ext_stack,
+      ext_bubble, custom_attr, custom_style,
+      custom_filter, drill_fields, snapshot
+      )
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR},
+      #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{render,jdbcType=VARCHAR},
+      #{title,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT},
+      #{updateTime,jdbcType=BIGINT}, #{stylePriority,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR},
+      #{yAxis,jdbcType=LONGVARCHAR}, #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR},
+      #{extBubble,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR},
+      #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
     insert into chart_view
@@ -172,6 +175,9 @@
       </if>
       <if test="type != null">
         `type`,
+      </if>
+      <if test="render != null">
+        render,
       </if>
       <if test="title != null">
         title,
@@ -234,6 +240,9 @@
       </if>
       <if test="type != null">
         #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="render != null">
+        #{render,jdbcType=VARCHAR},
       </if>
       <if test="title != null">
         #{title,jdbcType=VARCHAR},
@@ -306,6 +315,9 @@
       <if test="record.type != null">
         `type` = #{record.type,jdbcType=VARCHAR},
       </if>
+      <if test="record.render != null">
+        render = #{record.render,jdbcType=VARCHAR},
+      </if>
       <if test="record.title != null">
         title = #{record.title,jdbcType=VARCHAR},
       </if>
@@ -363,6 +375,7 @@
       scene_id = #{record.sceneId,jdbcType=VARCHAR},
       table_id = #{record.tableId,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      render = #{record.render,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
@@ -389,6 +402,7 @@
       scene_id = #{record.sceneId,jdbcType=VARCHAR},
       table_id = #{record.tableId,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      render = #{record.render,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
@@ -412,6 +426,9 @@
       </if>
       <if test="type != null">
         `type` = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="render != null">
+        render = #{render,jdbcType=VARCHAR},
       </if>
       <if test="title != null">
         title = #{title,jdbcType=VARCHAR},
@@ -467,6 +484,7 @@
       scene_id = #{sceneId,jdbcType=VARCHAR},
       table_id = #{tableId,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      render = #{render,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
@@ -490,6 +508,7 @@
       scene_id = #{sceneId,jdbcType=VARCHAR},
       table_id = #{tableId,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      render = #{render,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},

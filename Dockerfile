@@ -8,6 +8,10 @@ RUN mkdir -p /opt/dataease/data/feature/full
 
 ADD mapFiles/* /opt/dataease/data/feature/full/
 
+RUN mkdir -p /opt/dataease/drivers
+
+ADD drivers/* /opt/dataease/drivers/
+
 ADD backend/target/backend-$IMAGE_TAG.jar /opt/apps
 
 ENV JAVA_APP_JAR=/opt/apps/backend-$IMAGE_TAG.jar

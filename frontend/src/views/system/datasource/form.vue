@@ -87,15 +87,6 @@
             <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
               <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
-            <el-form-item :label="$t('datasource.max_idle_time')" prop="configuration.maxIdleTime">
-              <el-input v-model="form.configuration.maxIdleTime" autocomplete="off" type="number" min="0" />
-            </el-form-item>
-            <el-form-item :label="$t('datasource.acquire_increment')" prop="configuration.acquireIncrement">
-              <el-input v-model="form.configuration.acquireIncrement" autocomplete="off" type="number" min="0" />
-            </el-form-item>
-            <el-form-item :label="$t('datasource.connect_timeout')" prop="configuration.connectTimeout">
-              <el-input v-model="form.configuration.connectTimeout" autocomplete="off" type="number" min="0" />
-            </el-form-item>
 
           </el-collapse-item>
         </el-collapse>
@@ -229,8 +220,7 @@ export default {
         this.$message.error(this.$t('datasource.port_no_less_then_0'))
         return
       }
-      if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0 || this.form.configuration.maxIdleTime < 0 ||
-        this.form.configuration.acquireIncrement < 0 || this.form.configuration.idleConnectionTestPeriod < 0 || this.form.configuration.connectTimeout < 0) {
+      if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0) {
         this.$message.error(this.$t('datasource.no_less_then_0'))
         return
       }

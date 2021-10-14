@@ -931,7 +931,8 @@ export default {
     liquid_shape_triangle: 'Triangle',
     liquid_shape_pin: 'Pin',
     liquid_shape_rect: 'Rect',
-    dimension_or_quota: 'Dimension Or Quota'
+    dimension_or_quota: 'Dimension Or Quota',
+    axis_value_split_count: 'Tick Count'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

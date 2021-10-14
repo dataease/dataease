@@ -1,7 +1,7 @@
 package io.dataease.datasource.provider;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.google.gson.Gson;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.*;
 import io.dataease.datasource.request.DatasourceRequest;
@@ -10,16 +10,41 @@ import io.dataease.i18n.Translator;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.*;
 import java.util.*;
 
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider {
 
-    private static Map<String, ComboPooledDataSource> jdbcConnection = new HashMap<>();
+    private static Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
+    private static Map<String, ExtendedJdbcClassLoader> extendedJdbcClassLoaderHashMap = new HashMap<>();
     private static int initPoolSize = 5;
     private static int maxConnections = 200;
+    private ExtendedJdbcClassLoader extendedJdbcClassLoader;
+    static private String FILE_PATH = "/opt/dataease/drivers";
+    @PostConstruct
+    public void init() throws Exception{
+        extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(FILE_PATH).toURI().toURL()});
+        File file = new File(FILE_PATH);
+        File[] array = file.listFiles();
+        Optional.ofNullable(array).ifPresent(files -> {
+            for (File tmp : array) {
+                if (tmp.getName().endsWith(".jar")) {
+                    try {
+                        extendedJdbcClassLoader.addFile(tmp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 
     /**
      * 增加缓存机制 key 由 'provider_sql_' dsr.datasource.id dsr.table dsr.query共4部分组成，命中则使用缓存直接返回不再执行sql逻辑
@@ -267,53 +292,6 @@ public class JdbcProvider extends DatasourceProvider {
         return new ArrayList<>();
     }
 
-//    @Override
-//    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-//        List<TableFiled> list = new LinkedList<>();
-//        Connection connection = null;
-//        ResultSet resultSet = null;
-//        try {
-//            connection = getConnectionFromPool(datasourceRequest);
-//            DatabaseMetaData databaseMetaData = connection.getMetaData();
-//            resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
-//            while (resultSet.next()) {
-//                String tableName = resultSet.getString("TABLE_NAME");
-//                String database = null;
-//                if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
-//                    database = resultSet.getString("TABLE_SCHEM");
-//                }else {
-//                    database = resultSet.getString("TABLE_CAT");
-//                }
-//                if(database != null){
-//                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-//                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
-//                        list.add(tableFiled);
-//                    }
-//                }else {
-//                    if (tableName.equals(datasourceRequest.getTable())) {
-//                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
-//                        list.add(tableFiled);
-//                    }
-//                }
-//            }
-//            resultSet.close();
-//
-//            Statement stat = connection.createStatement();
-//            resultSet = stat.executeQuery(datasourceRequest.getQuery());
-//            return fetchResultField(resultSet, datasourceRequest);
-//
-//
-//        } catch (SQLException e) {
-//            DataEaseException.throwException(e);
-//        } catch (Exception e) {
-//            DataEaseException.throwException(e);
-//        } finally {
-//            if(connection != null){
-//                connection.close();
-//            }
-//        }
-//        return list;
-//    }
 
     private TableFiled getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
         TableFiled tableFiled = new TableFiled();
@@ -358,8 +336,6 @@ public class JdbcProvider extends DatasourceProvider {
         }
     }
 
-
-
     public Long count(DatasourceRequest datasourceRequest) throws Exception {
         Connection con = null;
         try {
@@ -378,7 +354,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
-        ComboPooledDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+        DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
             handleDatasource(datasourceRequest, "add");
         }
@@ -389,7 +365,7 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception {
-        ComboPooledDataSource dataSource = null;
+        DruidDataSource dataSource = null;
         switch (type){
             case "add":
                 checkStatus(datasourceRequest);
@@ -418,28 +394,15 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
-        ComboPooledDataSource dataSource;
-        dataSource = new ComboPooledDataSource();
+        DruidDataSource dataSource = new DruidDataSource();
         JdbcConfiguration jdbcConfiguration = setCredential(datasourceRequest, dataSource);
-        dataSource.setMaxIdleTime(jdbcConfiguration.getMaxIdleTime()); // 最大空闲时间
-        dataSource.setAcquireIncrement(jdbcConfiguration.getAcquireIncrement());// 增长数
-        dataSource.setInitialPoolSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
-        dataSource.setMinPoolSize(jdbcConfiguration.getMinPoolSize()); // 最小连接数
-        dataSource.setMaxPoolSize(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
-        dataSource.setAcquireRetryAttempts(30);// 获取连接重试次数
-        dataSource.setIdleConnectionTestPeriod(60); // 每60s检查数据库空闲连接
-        dataSource.setMaxStatements(0); // c3p0全局的PreparedStatements缓存的大小
-        dataSource.setBreakAfterAcquireFailure(false);  // 获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试获取连接失败后该数据源将申明已断开并永久关闭。Default: false
-        dataSource.setTestConnectionOnCheckout(false); // 在每个connection 提交是校验有效性
-        dataSource.setTestConnectionOnCheckin(true); // 取得连接的同时将校验连接的有效性
-        dataSource.setCheckoutTimeout(60000); // 从连接池获取连接的超时时间，如设为0则无限期等待。单位毫秒，默认为0
-//        dataSource.setPreferredTestQuery("SELECT 1");
-        dataSource.setDebugUnreturnedConnectionStackTraces(true);
-        dataSource.setUnreturnedConnectionTimeout(3600);
+        dataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
+        dataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
+        dataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
         jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
     }
 
-    private static Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
+    private Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
         String username = null;
         String password = null;
         String driver = null;
@@ -471,7 +434,6 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = oracleConfiguration.getDriver();
                 jdbcurl = oracleConfiguration.getJdbc();
                 props.put( "oracle.net.CONNECT_TIMEOUT" , "5000") ;
-//                props.put( "oracle.jdbc.ReadTimeout" , "5000" ) ;
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
@@ -491,16 +453,18 @@ public class JdbcProvider extends DatasourceProvider {
                 break;
         }
 
-        Class.forName(driver);
+        Driver driverClass = (Driver) extendedJdbcClassLoader.loadClass(driver).newInstance();
         props.setProperty("user", username);
         if (StringUtils.isNotBlank(password)) {
             props.setProperty("password", password);
         }
-        return DriverManager.getConnection(jdbcurl, props);
+
+        Connection conn = driverClass.connect(jdbcurl, props);
+        return conn;
     }
 
 
-    private JdbcConfiguration setCredential(DatasourceRequest datasourceRequest, ComboPooledDataSource dataSource) throws PropertyVetoException {
+    private JdbcConfiguration setCredential(DatasourceRequest datasourceRequest, DruidDataSource dataSource) throws PropertyVetoException {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         JdbcConfiguration jdbcConfiguration = new JdbcConfiguration();
         switch (datasourceType) {
@@ -509,42 +473,42 @@ public class JdbcProvider extends DatasourceProvider {
             case de_doris:
             case ds_doris:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
-                dataSource.setUser(mysqlConfiguration.getUsername());
-                dataSource.setDriverClass(mysqlConfiguration.getDriver());
+                dataSource.setUsername(mysqlConfiguration.getUsername());
+                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
                 dataSource.setPassword(mysqlConfiguration.getPassword());
-                dataSource.setJdbcUrl(mysqlConfiguration.getJdbc());
+                dataSource.setUrl(mysqlConfiguration.getJdbc());
                 jdbcConfiguration = mysqlConfiguration;
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
-                dataSource.setUser(sqlServerConfiguration.getUsername());
-                dataSource.setDriverClass(sqlServerConfiguration.getDriver());
+                dataSource.setUsername(sqlServerConfiguration.getUsername());
+                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
                 dataSource.setPassword(sqlServerConfiguration.getPassword());
-                dataSource.setJdbcUrl(sqlServerConfiguration.getJdbc());
+                dataSource.setUrl(sqlServerConfiguration.getJdbc());
                 jdbcConfiguration = sqlServerConfiguration;
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
-                dataSource.setUser(oracleConfiguration.getUsername());
-                dataSource.setDriverClass(oracleConfiguration.getDriver());
+                dataSource.setUsername(oracleConfiguration.getUsername());
+                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
                 dataSource.setPassword(oracleConfiguration.getPassword());
-                dataSource.setJdbcUrl(oracleConfiguration.getJdbc());
+                dataSource.setUrl(oracleConfiguration.getJdbc());
                 jdbcConfiguration = oracleConfiguration;
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
-                dataSource.setUser(pgConfiguration.getUsername());
-                dataSource.setDriverClass(pgConfiguration.getDriver());
+                dataSource.setUsername(pgConfiguration.getUsername());
+                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
                 dataSource.setPassword(pgConfiguration.getPassword());
-                dataSource.setJdbcUrl(pgConfiguration.getJdbc());
+                dataSource.setUrl(pgConfiguration.getJdbc());
                 jdbcConfiguration = pgConfiguration;
                 break;
             case ck:
                 CHConfiguration chConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfiguration.class);
-                dataSource.setUser(chConfiguration.getUsername());
-                dataSource.setDriverClass(chConfiguration.getDriver());
+                dataSource.setUsername(chConfiguration.getUsername());
+                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
                 dataSource.setPassword(chConfiguration.getPassword());
-                dataSource.setJdbcUrl(chConfiguration.getJdbc());
+                dataSource.setUrl(chConfiguration.getJdbc());
                 jdbcConfiguration = chConfiguration;
                 break;
             default:

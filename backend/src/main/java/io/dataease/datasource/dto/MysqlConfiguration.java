@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 @Setter
 public class MysqlConfiguration extends JdbcConfiguration {
 
-    private String driver = "com.mysql.cj.jdbc.Driver";
+    private String driver = "com.mysql.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true";
 
     public String getJdbc() {

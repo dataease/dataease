@@ -2,7 +2,6 @@ package io.dataease.datasource.provider;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.datasource.dto.*;
@@ -24,9 +23,6 @@ import java.util.*;
 @Service("es")
 public class EsProvider extends DatasourceProvider {
 
-    private static Map<String, ComboPooledDataSource> jdbcConnection = new HashMap<>();
-    private static int initPoolSize = 5;
-    private static int maxConnections = 200;
 
     /**
      * 增加缓存机制 key 由 'provider_sql_' dsr.datasource.id dsr.table dsr.query共4部分组成，命中则使用缓存直接返回不再执行sql逻辑
