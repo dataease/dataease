@@ -211,7 +211,10 @@ export default {
   created() {
     this.refId = uuid.v1
     // this.filter.filter = this.$store.getters.conditions
-    this.getData(this.element.propValue.viewId)
+    if (this.element && this.element.propValue && this.element.propValue.viewId) {
+      this.getData(this.element.propValue.viewId)
+    }
+
     // this.initAreas()
   },
   mounted() {
