@@ -319,6 +319,7 @@ public class ExcelXlsxReader extends DefaultHandler {
         nextDataType = CellDataType.NUMBER; //cellType为空，则表示该单元格类型为数字
         formatIndex = -1;
         formatString = null;
+        isDateFormat = false;
         String cellType = attributes.getValue("t"); //单元格类型
         if ("b".equals(cellType)) { //处理布尔值
             nextDataType = CellDataType.BOOL;
