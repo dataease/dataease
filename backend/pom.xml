@@ -381,6 +381,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <?m2e execute onConfiguration?>
                         <id>main-class-placement</id>
                         <phase>generate-resources</phase>
                         <configuration>
