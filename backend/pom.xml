@@ -278,6 +278,16 @@
                     <exclude>static/**/*.ttf</exclude>
                 </excludes>
             </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>static/**/*.woff</include>
+                    <include>static/**/*.woff2</include>
+                    <include>static/**/*.ttf</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
 
@@ -381,6 +391,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <?m2e execute onConfiguration?>
                         <id>main-class-placement</id>
                         <phase>generate-resources</phase>
                         <configuration>
