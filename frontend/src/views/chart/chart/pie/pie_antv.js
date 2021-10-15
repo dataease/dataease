@@ -31,6 +31,17 @@ export function basePieOptionAntV(plot, container, chart, action) {
     pieStyle: {
       lineWidth: 0
     },
+    statistic: {
+      title: false,
+      content: {
+        style: {
+          whiteSpace: 'pre-wrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        },
+        content: ''
+      }
+    },
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -107,6 +118,17 @@ export function basePieRoseOptionAntV(plot, container, chart, action) {
     label: label,
     tooltip: tooltip,
     legend: legend,
+    statistic: {
+      title: false,
+      content: {
+        style: {
+          whiteSpace: 'pre-wrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        },
+        content: ''
+      }
+    },
     interactions: [
       {
         type: 'element-active', cfg: {
