@@ -716,8 +716,8 @@ export default {
       drillClickDimensionList: [],
       drillFilters: [],
       renderOptions: [
-        { name: '新版', value: 'antv' },
-        { name: '旧版', value: 'echarts' }
+        { name: 'AntV', value: 'antv' },
+        { name: 'ECharts', value: 'echarts' }
       ],
       drill: false
     }
