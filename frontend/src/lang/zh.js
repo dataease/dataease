@@ -1334,7 +1334,10 @@ export default {
     new_window: '新窗口',
     now_window: '当前窗口',
     hyperLinks: '超链接',
-    link_open_tips: '仪表板非编辑状态可打开链接'
+    link_open_tips: '仪表板非编辑状态可打开链接',
+    data_loading: '数据准备中...',
+    export_loading: '导出中...',
+    export_pdf: '导出PDF'
   },
   plugin: {
     local_install: '本地安装',

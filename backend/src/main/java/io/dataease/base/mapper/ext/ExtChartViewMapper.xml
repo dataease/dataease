@@ -99,7 +99,10 @@
             `update_time`,
             `snapshot`,
             `style_priority`,
-            `ext_stack`
+            `ext_stack`,
+            `ext_bubble`,
+            `y_axis_ext`,
+            `render`
         ) SELECT
         #{newChartId},
         GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
@@ -117,7 +120,10 @@
         `update_time`,
         `snapshot`,
         `style_priority`,
-        `ext_stack`
+        `ext_stack`,
+        `ext_bubble`,
+        `y_axis_ext`,
+        `render`
         FROM
             chart_view
         WHERE
