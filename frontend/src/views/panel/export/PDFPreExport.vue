@@ -1,5 +1,11 @@
 <template>
-  <el-row>
+  <el-row
+    v-loading="exportLoading"
+    style="height: 100%;width: 100%;"
+    :element-loading-text="$t('panel.export_loading')"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-row class="export_body_class">
       <div id="exportPdf" ref="exportPdf">
         <div class="export_body_inner_class" v-html="templateContentChange" />
@@ -7,7 +13,7 @@
     </el-row>
     <el-row class="root_class">
       <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" size="mini" @click="save()">导出PDF</el-button>
+      <el-button type="primary" size="mini" @click="save()">{{ $t('panel.export_pdf') }}</el-button>
     </el-row>
   </el-row>
 </template>
@@ -36,6 +42,7 @@ export default {
   },
   data() {
     return {
+      exportLoading: false,
       activeName: '',
       templateContentChange: '',
       time: '',
@@ -82,15 +89,20 @@ export default {
     },
     save() {
       const _this = this
-      html2canvas(document.getElementById('exportPdf')).then(function(canvas) {
-        const contentWidth = canvas.width
-        const contentHeight = canvas.height
-        const pageData = canvas.toDataURL('image/jpeg', 1.0)
-        const PDF = new JsPDF('l', 'px', [contentWidth, contentHeight])
-        PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
-        PDF.save(_this.panelName + '.pdf')
-      }
-      )
+      _this.exportLoading = true
+      setTimeout(() => {
+        html2canvas(document.getElementById('exportPdf')).then(function(canvas) {
+          _this.exportLoading = false
+          const contentWidth = canvas.width
+          const contentHeight = canvas.height
+          const pageData = canvas.toDataURL('image/jpeg', 1.0)
+          const PDF = new JsPDF('l', 'px', [contentWidth, contentHeight])
+          PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
+          PDF.save(_this.panelName + '.pdf')
+          _this.$emit('closePreExport')
+        }
+        )
+      }, 50)
     }
 
   }

@@ -1,5 +1,11 @@
 <template>
-  <el-row style="height: 100%;width: 100%;">
+  <el-row
+    v-loading="dataLoading"
+    style="height: 100%;width: 100%;"
+    :element-loading-text="$t('panel.data_loading')"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
       <el-row class="panel-design-head">
         <!--仪表板头部区域-->
@@ -132,7 +138,8 @@ export default {
       fullscreen: false,
       pdfExportShow: false,
       snapshotInfo: '',
-      isShare: false
+      isShare: false,
+      dataLoading: false
     }
   },
   computed: {
@@ -183,50 +190,62 @@ export default {
       window.open(url, '_blank')
     },
     saveToTemplate() {
-      this.templateSaveShow = true
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-        if (snapshot !== '') {
-          this.templateInfo = {
-            name: this.$store.state.panel.panelInfo.name,
-            snapshot: snapshot,
-            templateStyle: JSON.stringify(this.canvasStyleData),
-            templateData: JSON.stringify(this.componentData),
-            templateType: 'self',
-            nodeType: 'template',
-            level: 1,
-            pid: null,
-            dynamicData: ''
+      this.dataLoading = true
+      setTimeout(() => {
+        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          this.templateSaveShow = true
+          this.dataLoading = false
+          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
+          if (snapshot !== '') {
+            this.templateInfo = {
+              name: this.$store.state.panel.panelInfo.name,
+              snapshot: snapshot,
+              templateStyle: JSON.stringify(this.canvasStyleData),
+              templateData: JSON.stringify(this.componentData),
+              templateType: 'self',
+              nodeType: 'template',
+              level: 1,
+              pid: null,
+              dynamicData: ''
+            }
           }
-        }
-      })
+        })
+      }, 50)
     },
     downloadToTemplate() {
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-        if (snapshot !== '') {
-          this.templateInfo = {
-            name: this.$store.state.panel.panelInfo.name,
-            templateType: 'self',
-            snapshot: snapshot,
-            panelStyle: JSON.stringify(this.canvasStyleData),
-            panelData: JSON.stringify(this.componentData),
-            dynamicData: ''
+      this.dataLoading = true
+      setTimeout(() => {
+        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          this.dataLoading = false
+          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
+          if (snapshot !== '') {
+            this.templateInfo = {
+              name: this.$store.state.panel.panelInfo.name,
+              templateType: 'self',
+              snapshot: snapshot,
+              panelStyle: JSON.stringify(this.canvasStyleData),
+              panelData: JSON.stringify(this.componentData),
+              dynamicData: ''
+            }
+            const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
+            FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
           }
-          const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
-          FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
-        }
-      })
+        })
+      }, 50)
     },
 
     downloadAsPDF() {
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.2是图片质量
-        if (snapshot !== '') {
-          this.snapshotInfo = snapshot
-          this.pdfExportShow = true
-        }
-      })
+      this.dataLoading = true
+      setTimeout(() => {
+        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+          this.dataLoading = false
+          if (snapshot !== '') {
+            this.snapshotInfo = snapshot
+            this.pdfExportShow = true
+          }
+        })
+      }, 50)
     },
     refreshTemplateInfo() {
       this.templateInfo = {}
