@@ -98,7 +98,7 @@
                 <span>
                   <span class="theme-border-class">{{ $t('chart.chart_type') }}</span>
                   <span style="float: right;">
-                    <el-select v-model="view.render" class="render-select" style="width: 50px" size="mini" @change="save(true,'chart',true,true)">
+                    <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini" @change="save(true,'chart',true,true)">
                       <el-option
                         v-for="item in renderOptions"
                         :key="item.value"
