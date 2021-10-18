@@ -727,7 +727,7 @@ public class CKQueryProvider extends QueryProvider {
 
     @Override
     public String convertTableToSql(String tableName, Datasource ds) {
-        return "SELECT * FROM " + String.format(CKConstants.KEYWORD_TABLE, tableName);
+        return createSQLPreview("SELECT * FROM " + String.format(CKConstants.KEYWORD_TABLE, tableName), null);
     }
 
     public String transMysqlFilterTerm(String term) {
