@@ -39,6 +39,7 @@ public class CKQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
+        field = field.toUpperCase();
         if (field.indexOf("ARRAY") > -1) {
             field = "ARRAY";
         }
