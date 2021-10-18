@@ -23,12 +23,15 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class SysMsgService {
+
+    private static final long overDays = 30;
 
     @Resource
     private SysMsgMapper sysMsgMapper;
@@ -67,6 +70,8 @@ public class SysMsgService {
             criteria.andStatusEqualTo(msgRequest.getStatus());
         }
 
+        criteria.andCreateTimeGreaterThanOrEqualTo(overTime());
+
         example.setOrderByClause(orderClause);
         List<SysMsg> sysMsgs = sysMsgMapper.selectByExample(example);
         return sysMsgs;
@@ -100,6 +105,8 @@ public class SysMsgService {
             criteria.andStatusEqualTo(msgRequest.getStatus());
         }
 
+        criteria.andCreateTimeGreaterThanOrEqualTo(overTime());
+
         example.setOrderByClause(orderClause);
         List<MsgGridDto> msgGridDtos = extSysMsgMapper.queryGrid(example);
         return msgGridDtos;
@@ -109,6 +116,7 @@ public class SysMsgService {
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
         criteria.andUserIdEqualTo(userId).andStatusEqualTo(false);
+        criteria.andCreateTimeGreaterThanOrEqualTo(overTime());
         return sysMsgMapper.countByExample(example);
     }
 
@@ -319,5 +327,24 @@ public class SysMsgService {
         example.createCriteria().andUserIdEqualTo(AuthUtils.getUser().getUserId()).andStatusEqualTo(false);
         sysMsgMapper.updateByExampleSelective(record, example);
     }
+
+    
+    public Long overTime() {
+        Long currentTime = System.currentTimeMillis();
+
+        long oneDayTime = 24 * 60 * 60 * 1000;
+
+        long temp = overDays * oneDayTime;
+
+        return currentTime - (currentTime + 8 * 60 * 60 * 1000) % oneDayTime - temp;
+                 
+    }
+
+    /* public static void main(String[] args) {
+        
+        Long overTime = overTime();
+        System.out.println(overTime);
+        
+    } */
 
 }

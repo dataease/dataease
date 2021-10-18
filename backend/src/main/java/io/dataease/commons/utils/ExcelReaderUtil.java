@@ -69,10 +69,10 @@ public class ExcelReaderUtil {
         }
     }
 
-     public static void main(String[] args) throws Exception {
+     /* public static void main(String[] args) throws Exception {
 
 
         String file ="修改日期为mm-dd-yyyy.xlsx";
         ExcelReaderUtil.readExcel(file, new FileInputStream("/Users/taojinlong/Desktop/" + file));
-    }
+    } */
 }
