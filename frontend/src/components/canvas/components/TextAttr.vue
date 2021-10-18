@@ -17,7 +17,6 @@
         </el-radio-group>
       </div>
       <el-tooltip :content="$t('panel.fontSize')">
-
         <i style="float: left;margin-top: 3px;margin-left: 2px;" class="iconfont icon-font_size" />
       </el-tooltip>
 
@@ -123,6 +122,17 @@ export default {
           tooltip: this.$t('panel.text_align_right'),
           label: 'right'
         }
+      ],
+      'v-text': [
+        'textAlign',
+        'fontSize',
+        'fontWeight',
+        'letterSpacing',
+        'opacity',
+        'borderRadius',
+        'color',
+        'backgroundColor',
+        'hyperlinks'
       ] }
   },
   watch: {
@@ -140,6 +150,9 @@ export default {
     // console.log('mainWidthOffset:' + this.mainWidthOffset)
   },
   computed: {
+    attrShow(attr) {
+      return style
+    },
     letterDivColor() {
       const style = {
         height: '2px',

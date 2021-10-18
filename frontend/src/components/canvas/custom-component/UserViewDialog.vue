@@ -1,6 +1,6 @@
 <template>
   <de-container>
-    <de-aside-container v-if="!chart.type.includes('table')">
+    <de-aside-container v-if="!chart.type.includes('table')" :style="customStyle">
       <chart-component v-if="!chart.type.includes('text')" class="chart-class" :chart="chart" />
       <label-normal v-if="chart.type.includes('text')" :chart="chart" class="table-class" />
     </de-aside-container>
@@ -19,6 +19,7 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { export_json_to_excel } from '@/plugins/Export2Excel'
+import { mapState } from 'vuex'
 
 export default {
   name: 'UserView',
@@ -37,6 +38,32 @@ export default {
     return {
       refId: null
     }
+  },
+  computed: {
+    customStyle() {
+      let style = {
+      }
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            ...style
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color,
+            ...style
+          }
+        }
+      }
+      return style
+    },
+    ...mapState([
+      'isClickComponent',
+      'curComponent',
+      'componentData',
+      'canvasStyleData'
+    ])
   },
   methods: {
     exportExcel() {
