@@ -162,9 +162,9 @@
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
 
     <!--矩形样式组件-->
-    <RectangleAttr v-if="curComponent&&(curComponent.type==='rect-shape'||curComponent.type==='de-tabs')" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
-    <TextAttr v-if="curComponent && (curComponent.type==='v-text' || curComponent.type==='de-show-date')" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
-    <FilterTextAttr v-if="curComponent&&curComponent.type==='custom'&&curComponent.options.attrs.title" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <!--    <RectangleAttr v-if="curComponent&&(curComponent.type==='rect-shape'||curComponent.type==='de-tabs')" :scroll-left="scrollLeft" :scroll-top="scrollTop" />-->
+    <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <!--    <FilterTextAttr v-if="curComponent&&curComponent.type==='custom'&&curComponent.options.attrs.title" :scroll-left="scrollLeft" :scroll-top="scrollTop" />-->
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -280,11 +280,33 @@ export default {
       scrollLeft: 0,
       scrollTop: 0,
       timeMachine: null,
-      dropComponentInfo: null
+      dropComponentInfo: null,
+      // 需要展示属性设置的组件类型
+      showAttrComponent: [
+        'custom',
+        'v-text',
+        'picture-add',
+        'de-tabs',
+        'rect-shape',
+        'de-show-date'
+      ]
     }
   },
 
   computed: {
+    showAttr() {
+      // console.log('showAttr：' + JSON.stringify(this.curComponent))
+      if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
+        // 过滤组件有标题才显示
+        if (this.curComponent.type === 'custom' && !this.curComponent.options.attrs.title) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return false
+      }
+    },
     customCanvasStyle() {
       let style = {}
 
@@ -687,6 +709,7 @@ export default {
             ...commonAttr,
             id: generateID(),
             component: 'Picture',
+            type: 'picture-add',
             label: '图片',
             icon: '',
             propValue: fileResult,
