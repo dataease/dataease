@@ -345,6 +345,7 @@ public class ExcelXlsxReader extends DefaultHandler {
             { // 日期
                 isDateFormat = true;
             }
+
         }
 
     }
@@ -398,8 +399,12 @@ public class ExcelXlsxReader extends DefaultHandler {
                     thisStr = value;
                 }
                 thisStr = thisStr.replace("_", "").trim();
-                if(isDateFormat){
+
+                if(isDateFormat ){
                     type = "DATETIME";isDateFormat = false;
+                    if(formatString != null && formatString.contains("%")){
+                        type = getType(thisStr);
+                    }
                 }else {
                     type = getType(thisStr);
                 }

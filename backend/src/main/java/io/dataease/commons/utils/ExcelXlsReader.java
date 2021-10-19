@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
  **/
 public class ExcelXlsReader implements HSSFListener {
 
-    public ExcelReaderUtil excelReaderUtil = new ExcelReaderUtil();
-
     private int minColums = -1;
 
     private POIFSFileSystem fs;
