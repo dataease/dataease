@@ -21,16 +21,14 @@ import java.util.*;
 
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider {
-
     private static Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
-    private static Map<String, ExtendedJdbcClassLoader> extendedJdbcClassLoaderHashMap = new HashMap<>();
-    private static int initPoolSize = 5;
-    private static int maxConnections = 200;
-    private ExtendedJdbcClassLoader extendedJdbcClassLoader;
+    public ExtendedJdbcClassLoader extendedJdbcClassLoader;
     static private String FILE_PATH = "/opt/dataease/drivers";
+
     @PostConstruct
     public void init() throws Exception{
-        extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(FILE_PATH).toURI().toURL()});
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(FILE_PATH).toURI().toURL()}, classLoader);
         File file = new File(FILE_PATH);
         File[] array = file.listFiles();
         Optional.ofNullable(array).ifPresent(files -> {
@@ -64,13 +62,8 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
-        Connection connection = null;
-        try {
-            connection = getConnection(dsr);
-            Statement stat = connection.createStatement();
-            ResultSet rs = stat.executeQuery(dsr.getQuery());
+        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(dsr.getQuery())){
             list = fetchResult(rs);
-
             if(dsr.isPageable() && dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())){
                 Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize(): list.size();
                 list = list.subList((dsr.getPage() - 1) * dsr.getPageSize(), realSize);
@@ -80,49 +73,28 @@ public class JdbcProvider extends DatasourceProvider {
             DataEaseException.throwException(e);
         } catch (Exception e) {
             DataEaseException.throwException(e);
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
         }
         return list;
     }
 
     public void exec(DatasourceRequest datasourceRequest) throws Exception {
-        Connection connection = null;
-        try {
-            connection = getConnectionFromPool(datasourceRequest);
-            Statement stat = connection.createStatement();
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement()){
             Boolean result = stat.execute(datasourceRequest.getQuery());
-            stat.close();
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
             DataEaseException.throwException(e);
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
         }
     }
 
     @Override
     public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
-        ResultSet rs;
-        Connection connection = null;
-        try {
-            connection = getConnectionFromPool(datasourceRequest);
-            Statement stat = connection.createStatement();
-            rs = stat.executeQuery(datasourceRequest.getQuery());
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
             return fetchResult(rs);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
             DataEaseException.throwException(e);
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
         }
         return new ArrayList<>();
     }
@@ -153,36 +125,22 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
-        ResultSet rs;
-        Connection connection = null;
-        try {
-            connection = getConnectionFromPool(datasourceRequest);
-            Statement stat = connection.createStatement();
-            rs = stat.executeQuery(datasourceRequest.getQuery());
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
             return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
             DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
         }
         return new ArrayList<>();
     }
 
     @Override
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
-        ResultSet rs;
         Map<String, List> result = new HashMap<>();
-        Connection connection = null;
         List<String[]> dataList = new LinkedList<>();
         List<TableFiled> fieldList = new ArrayList<>();
-        try {
-            connection = getConnectionFromPool(datasourceRequest);
-            Statement stat = connection.createStatement();
-            rs = stat.executeQuery(datasourceRequest.getQuery());
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
             dataList = fetchResult(rs);
             fieldList = fetchResultField(rs, datasourceRequest);
             result.put("dataList", dataList);
@@ -192,10 +150,6 @@ public class JdbcProvider extends DatasourceProvider {
             DataEaseException.throwException(e);
         } catch (Exception e) {
             DataEaseException.throwException(e);
-        } finally {
-            if(connection != null){
-                connection.close();
-            }
         }
         return new HashMap<>();
     }
@@ -231,136 +185,50 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
-        Connection con = null;
-        try {
-            String queryStr = getTablesSql(datasourceRequest);
-            con = getConnection(datasourceRequest);
-            Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery(queryStr);
+        String queryStr = getTablesSql(datasourceRequest);
+        try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)){
             while (resultSet.next()) {
                 tables.add(resultSet.getString(1));
             }
-            resultSet.close();
-            statement.close();
-
-            String queryView = getViewSql(datasourceRequest);
-            if(StringUtils.isNotEmpty(queryView)){
-                con = getConnection(datasourceRequest);
-                statement = con.createStatement();
-                resultSet = statement.executeQuery(queryView);
-                while (resultSet.next()) {
-                    tables.add(resultSet.getString(1));
-                }
-                resultSet.close();
-                statement.close();
-            }
-
-
-            return tables;
         } catch (Exception e) {
             DataEaseException.throwException(e);
-        } finally {
-            if(con != null){
-                con.close();
-            }
         }
-        return new ArrayList<>();
+
+        String queryView = getViewSql(datasourceRequest);
+        try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)){
+            while (resultSet.next()) {
+                tables.add(resultSet.getString(1));
+            }
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
+        return tables;
     }
 
     @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest);
-        Connection con = null;
-        try {
-            con = getConnection(datasourceRequest);
-            Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery(queryStr);
+        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)){
             while (resultSet.next()) {
                 schemas.add(resultSet.getString(1));
             }
-            resultSet.close();
-            statement.close();
             return schemas;
         } catch (Exception e) {
             DataEaseException.throwException(e);
-        } finally {
-            if(con != null){
-                con.close();
-            }
         }
         return new ArrayList<>();
     }
 
-
-    private TableFiled getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
-        TableFiled tableFiled = new TableFiled();
-        String colName = resultSet.getString("COLUMN_NAME");
-        tableFiled.setFieldName(colName);
-        String remarks = resultSet.getString("REMARKS");
-        if (remarks == null || remarks.equals("")) {
-            remarks = colName;
-        }
-        tableFiled.setRemarks(remarks);
-        String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
-        tableFiled.setFieldType(dbType);
-        if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
-        if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
-            tableFiled.setFieldSize(50);
-        }
-
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
-            QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
-            tableFiled.setFieldSize(qp.transFieldSize(dbType));
-        }else {
-            tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
-        }
-        return tableFiled;
-    }
-
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
-        Connection con = null;
-        try {
-            con = getConnection(datasourceRequest);
-            Statement statement = con.createStatement();
-            String queryStr = getTablesSql(datasourceRequest);
-            ResultSet resultSet = statement.executeQuery(queryStr);
-            resultSet.close();
-            statement.close();
+        String queryStr = getTablesSql(datasourceRequest);
+        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)){
+
         } catch (Exception e) {
             e.printStackTrace();
             DataEaseException.throwException(e.getMessage());
-        } finally {
-            if(con != null){con.close();}
         }
-    }
-
-    public Long count(DatasourceRequest datasourceRequest) throws Exception {
-        Connection con = null;
-        try {
-            con = getConnectionFromPool(datasourceRequest);
-            Statement ps = con.createStatement();
-            ResultSet resultSet = ps.executeQuery(datasourceRequest.getQuery());
-            while (resultSet.next()) {
-                return resultSet.getLong(1);
-            }
-        } catch (Exception e) {
-            DataEaseException.throwException( e);
-        } finally {
-            con.close();
-        }
-        return 0L;
-    }
-
-    private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
-        DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
-        if (dataSource == null) {
-            handleDatasource(datasourceRequest, "add");
-        }
-        dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
-        Connection co = dataSource.getConnection();
-        return co;
     }
 
     @Override
@@ -393,13 +261,14 @@ public class JdbcProvider extends DatasourceProvider {
         }
     }
 
-    private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
-        DruidDataSource dataSource = new DruidDataSource();
-        JdbcConfiguration jdbcConfiguration = setCredential(datasourceRequest, dataSource);
-        dataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
-        dataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
-        dataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
-        jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
+    private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
+        DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+        if (dataSource == null) {
+            handleDatasource(datasourceRequest, "add");
+        }
+        dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+        Connection co = dataSource.getConnection();
+        return co;
     }
 
     private Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
@@ -463,6 +332,15 @@ public class JdbcProvider extends DatasourceProvider {
         return conn;
     }
 
+    private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
+        DruidDataSource dataSource = new DruidDataSource();
+        JdbcConfiguration jdbcConfiguration = setCredential(datasourceRequest, dataSource);
+        dataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
+        dataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
+        dataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
+        jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
+    }
+
 
     private JdbcConfiguration setCredential(DatasourceRequest datasourceRequest, DruidDataSource dataSource) throws PropertyVetoException {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
@@ -515,27 +393,6 @@ public class JdbcProvider extends DatasourceProvider {
                 break;
         }
         return jdbcConfiguration;
-    }
-
-    private String getDatabase(DatasourceRequest datasourceRequest) {
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
-        switch (datasourceType) {
-            case mysql:
-            case de_doris:
-            case ds_doris:
-            case mariadb:
-                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
-                return mysqlConfiguration.getDataBase();
-            case sqlServer:
-                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
-                return sqlServerConfiguration.getDataBase();
-            case pg:
-                PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
-                return pgConfiguration.getDataBase();
-            default:
-                JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
-                return jdbcConfiguration.getDataBase();
-        }
     }
 
     private String getTablesSql(DatasourceRequest datasourceRequest) throws Exception {

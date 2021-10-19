@@ -7,8 +7,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 public class ExtendedJdbcClassLoader extends URLClassLoader {
 
-    public ExtendedJdbcClassLoader(URL[] urls) {
-        super(urls);
+    public ExtendedJdbcClassLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
     }
 
     @Override
@@ -87,11 +87,5 @@ public class ExtendedJdbcClassLoader extends URLClassLoader {
             t.printStackTrace();
             throw new IOException("Error, could not add URL to system classloader");
         }
-    }
-
-    public static synchronized ExtendedJdbcClassLoader getExtJdbcClassLoader(String path) throws Exception{
-        File file = new File(path);
-        ExtendedJdbcClassLoader extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{file.toURI().toURL()});
-        return extendedJdbcClassLoader;
     }
 }
