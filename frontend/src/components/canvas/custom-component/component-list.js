@@ -1,7 +1,10 @@
 // 公共样式
 export const commonStyle = {
   rotate: 0,
-  opacity: 1
+  opacity: 1,
+  borderStyle: 'solid',
+  borderWidth: 0,
+  borderRadius: 0
 }
 
 export const commonAttr = {
@@ -143,6 +146,8 @@ const list = [
     type: 'Picture',
     propValue: require('@/components/canvas/assets/bg-kj-1.jpg'),
     style: {
+      borderStyle: 'solid',
+      borderWidth: 0,
       width: 600,
       height: 300,
       borderRadius: ''
@@ -198,7 +203,7 @@ const list = [
       width: 200,
       height: 200,
       borderStyle: 'solid',
-      borderWidth: 1,
+      borderWidth: 0,
       borderColor: '#000000',
       backgroundColor: '#ffffff',
       borderRadius: 0
