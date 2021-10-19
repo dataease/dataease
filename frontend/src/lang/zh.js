@@ -1543,5 +1543,22 @@ export default {
   deyear: {
     label: '年份',
     placeholder: '请选择年份'
+  },
+  deshowdate: {
+    label: '时间',
+    show_week: '显示星期',
+    show_date: '显示日期',
+    time_format: '时间格式',
+    date_format: '日期格式',
+    custom: '自定义格式',
+    open_mode: '展示风格',
+    m_default: '简单风格',
+    m_elec: '电子时钟',
+    m_simple: '简单表盘',
+    m_complex: '复杂表盘',
+    select_openMode: '请选择展示风格',
+    select_time_format: '请选择时间格式',
+    select_date_format: '请选择时间格式'
+
   }
 }

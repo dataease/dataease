@@ -23,6 +23,8 @@ import './utils/dialog'
 import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
 import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
 import '@/components/canvas/custom-component' // 注册自定义组件
+
+import '@/utils/DateUtil'
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
