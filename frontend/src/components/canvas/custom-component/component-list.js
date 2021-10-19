@@ -43,6 +43,7 @@ export const assistList = [
     icon: 'iconfont icon-tabs',
     defaultClass: 'text-filter'
   }
+
 ]
 
 export const pictureList = [
@@ -52,6 +53,17 @@ export const pictureList = [
     type: 'picture-add',
     label: '拖拽上传',
     icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter'
+  }
+]
+
+export const dateList = [
+  {
+    id: '30001',
+    component: 'de-show-date',
+    type: 'de-show-date',
+    label: '时间',
+    icon: 'iconfont icon-shijian',
     defaultClass: 'text-filter'
   }
 ]
@@ -202,6 +214,43 @@ const list = [
     y: 1,
     sizex: 10,
     sizey: 10
+  },
+  {
+    id: '30001',
+    component: 'de-show-date',
+    label: '时间',
+    propValue: '',
+    icon: 'shijian',
+    type: 'de-show-date',
+    style: {
+      width: 250,
+      height: 100,
+      fontSize: 22,
+
+      fontWeight: 400,
+      lineHeight: '',
+      letterSpacing: 0,
+      textAlign: 'center',
+      color: '#000000',
+      verticalAlign: 'middle',
+      backgroundColor: '#ffffff',
+
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: '#000000',
+      borderRadius: 0
+    },
+    formatInfo: {
+      openMode: '0',
+      showWeek: false,
+      showDate: true,
+      dateFormat: 'yyyy年-MM月-dd日',
+      timeFormat: 'hh:mm:ss'
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 2
   },
   {
     id: '20001',

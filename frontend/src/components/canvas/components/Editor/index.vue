@@ -1351,7 +1351,7 @@ export default {
     },
 
     resizeView(index, item) {
-      if (item.type === 'view') {
+      if (item.type === 'view' || item.type === 'de-show-date') {
         this.$refs.wrapperChild[index].chartResize()
       }
     },

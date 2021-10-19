@@ -77,8 +77,12 @@
       </div>
 
       <div style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-tooltip content="超链接">
-          <Hyperlinks :link-info="this.curComponent.hyperlinks" />
+        <el-tooltip v-if="curComponent.hyperlinks" content="超链接">
+          <Hyperlinks :link-info="curComponent.hyperlinks" />
+        </el-tooltip>
+
+        <el-tooltip v-if="curComponent.type === 'de-show-date'" content="日期格式">
+          <date-format :format-info="curComponent.formatInfo" />
         </el-tooltip>
       </div>
 
@@ -89,9 +93,10 @@
 <script>
 import { mapState } from 'vuex'
 import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
+import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 
 export default {
-  components: { Hyperlinks },
+  components: { Hyperlinks, DateFormat },
   props: {
     scrollLeft: {
       type: Number,

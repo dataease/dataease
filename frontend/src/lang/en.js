@@ -1522,5 +1522,22 @@ export default {
   deyear: {
     label: 'Year',
     placeholder: 'Please select year'
+  },
+  deshowdate: {
+    label: 'Time',
+    show_week: 'Show week',
+    show_date: 'Show date',
+    time_format: 'Time format',
+    date_format: 'Date format',
+    custom: 'Custom format',
+    open_mode: 'Time category',
+    m_default: 'Default',
+    m_elec: 'Electronic clock',
+    m_simple: 'Simple clock',
+    m_complex: 'Complex clock',
+    select_openMode: 'Please select time category',
+    select_time_format: 'Please select time format',
+    select_date_format: 'Please select date format'
+
   }
 }
