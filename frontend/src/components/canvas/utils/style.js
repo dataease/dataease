@@ -17,16 +17,22 @@ export function getStyle(style, filter = []) {
     if (!filter.includes(key)) {
       if (key !== 'rotate') {
         result[key] = style[key]
-
-        if (needUnit.includes(key)) {
-          result[key] += 'px'
+        if (key) {
+          if (key === 'backgroundColor') {
+            result[key] = colorRgb(style[key], style.opacity)
+          }
+          if (needUnit.includes(key)) {
+            result[key] += 'px'
+          }
         }
       } else {
         result.transform = key + '(' + style[key] + 'deg)'
       }
     }
   })
-
+  if (result.backgroundColor && (result.opacity || result.opacity === 0)) {
+    delete result.opacity
+  }
   return result
 }
 
@@ -52,4 +58,30 @@ export function getComponentRotatedStyle(style) {
   }
 
   return style
+}
+
+export function colorRgb(color, opacity) {
+  var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/
+  var sColor = color.toLowerCase()
+  if (sColor && reg.test(sColor)) {
+    if (sColor.length === 4) {
+      var sColorNew = '#'
+      for (var i = 1; i < 4; i += 1) {
+        sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1))
+      }
+      sColor = sColorNew
+    }
+    // 处理六位的颜色值
+    var sColorChange = []
+    for (var i = 1; i < 7; i += 2) {
+      sColorChange.push(parseInt('0x' + sColor.slice(i, i + 2)))
+    }
+    if (opacity || opacity === 0) {
+      return 'rgba(' + sColorChange.join(',') + ',' + opacity + ')'
+    } else {
+      return 'rgba(' + sColorChange.join(',') + ')'
+    }
+  } else {
+    return sColor
+  }
 }

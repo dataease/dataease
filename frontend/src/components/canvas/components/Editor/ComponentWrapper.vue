@@ -85,7 +85,7 @@ export default {
         result[attr] = style[attr] + 'px'
       })
       result['rotate'] = style['rotate']
-      result['opacity'] = style['opacity']
+      // result['opacity'] = style['opacity']
 
       return result
       // return style
@@ -93,6 +93,8 @@ export default {
 
     getComponentStyleDefault(style) {
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // console.log('styleInfo', JSON.stringify(styleInfo))
+      // return styleInfo
       // return style
     },
 
