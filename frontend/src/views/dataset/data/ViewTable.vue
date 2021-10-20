@@ -13,7 +13,7 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="dataset" :data="table" :tab-status="tabStatus" />
-        <svg-icon slot="reference" icon-class="more_v" style="cursor: pointer;" />
+        <svg-icon slot="reference" class="title-text" icon-class="more_v" style="cursor: pointer;" />
       </el-popover>
       <el-row v-if="hasDataPermission('manage',param.privileges)" style="float: right">
         <el-dropdown v-if="table.type ==='excel'" style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">
