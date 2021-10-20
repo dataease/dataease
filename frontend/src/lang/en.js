@@ -1180,6 +1180,8 @@ export default {
     passwd_protect: 'Password Protect',
     link: 'Link',
     link_share: 'Share Link',
+    over_time: 'Over time',
+    link_expire: 'Link is expire',
     link_share_desc: 'After opening the link, anyone can access the dashboard through this link.',
     share: 'Share',
     datalist: 'Chart List',

@@ -3,6 +3,7 @@
     <!--    <span v-show="false">{{ vId }}</span>-->
     <!-- <el-row style="height: 40px;background-color: white" class="padding-lr"> -->
     <el-row style="height: 40px;" class="padding-lr">
+      <span class="title-text" style="line-height: 40px;">{{ view.name }}</span>
       <el-popover
         placement="right-start"
         width="400"
@@ -11,7 +12,8 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
-        <span slot="reference" class="title-text" style="line-height: 40px;cursor: pointer;">{{ view.name }}</span>
+        <!--        <svg-icon slot="reference" class="title-text" icon-class="more_v" style="cursor: pointer;" />-->
+        <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;" />
       </el-popover>
       <span style="float: right;line-height: 40px;">
         <!--        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">-->
@@ -927,6 +929,7 @@ export default {
       view.extStack = JSON.stringify(view.extStack)
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
+      delete view.data
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         // this.getData(response.data.id)
@@ -1865,6 +1868,12 @@ export default {
   .blackTheme .theme-item-class {
       background-color: var(--MainBG) !important;
       border-color: var(--TableBorderColor) !important;
+  }
+  .icon-class{
+    color:#6c6c6c;
+  }
+  .blackTheme .icon-class{
+    color: #cccccc;
   }
 
 </style>

@@ -1183,6 +1183,8 @@ export default {
     passwd_protect: '密碼保護',
     link: '鏈接',
     link_share: '鏈接分享',
+    over_time: '有效期',
+    link_expire: '鏈接已過期！',
     link_share_desc: '開啓鏈接後，任何人可通過此鏈接訪問儀表板。',
     share: '分享',
     datalist: '視圖列表',
@@ -1535,6 +1537,23 @@ export default {
   deyear: {
     label: '年份',
     placeholder: '請選擇年份'
+  },
+  deshowdate: {
+    label: '時間',
+    show_week: '顯示星期',
+    show_date: '顯示日期',
+    time_format: '時間格式',
+    date_format: '日期格式',
+    custom: '自定義格式',
+    open_mode: '展示風格',
+    m_default: '簡單風格',
+    m_elec: '電子時鐘',
+    m_simple: '簡單錶盤',
+    m_complex: '複雜錶盤',
+    select_openMode: '請選擇展示風格',
+    select_time_format: '請選擇時間各式',
+    select_date_format: '請選擇日期格式'
+
   }
 }
 

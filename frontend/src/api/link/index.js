@@ -26,6 +26,14 @@ export function setPwd(data) {
   })
 }
 
+export function setOverTime(data) {
+  return request({
+    url: 'api/link/resetOverTime',
+    method: 'post',
+    data
+  })
+}
+
 export function switchValid(data) {
   return request({
     url: 'api/link/switchLink',

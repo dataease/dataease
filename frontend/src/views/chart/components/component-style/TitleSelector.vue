@@ -22,7 +22,7 @@
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="titleForm.color" class="color-picker-style" @change="changeTitleStyle" />
+            <el-color-picker v-model="titleForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeTitleStyle" />
           </el-form-item>
           <el-form-item v-show="chart.type && chart.type !== 'liquid'" :label="$t('chart.text_h_position')" class="form-item">
             <el-radio-group v-model="titleForm.hPosition" size="mini" @change="changeTitleStyle">
@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { DEFAULT_TITLE_STYLE } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
 
 export default {
   name: 'TitleSelector',
@@ -67,7 +67,8 @@ export default {
     return {
       titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE)),
       fontSize: [],
-      isSetting: false
+      isSetting: false,
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {

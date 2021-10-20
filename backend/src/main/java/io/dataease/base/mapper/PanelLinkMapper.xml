@@ -6,6 +6,7 @@
     <result column="valid" jdbcType="BIT" property="valid" />
     <result column="enable_pwd" jdbcType="BIT" property="enablePwd" />
     <result column="pwd" jdbcType="VARCHAR" property="pwd" />
+    <result column="over_time" jdbcType="BIGINT" property="overTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -66,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    resource_id, `valid`, enable_pwd, pwd
+    resource_id, `valid`, enable_pwd, pwd, over_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelLinkExample" resultMap="BaseResultMap">
     select
@@ -100,9 +101,9 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.PanelLink">
     insert into panel_link (resource_id, `valid`, enable_pwd, 
-      pwd)
+      pwd, over_time)
     values (#{resourceId,jdbcType=VARCHAR}, #{valid,jdbcType=BIT}, #{enablePwd,jdbcType=BIT}, 
-      #{pwd,jdbcType=VARCHAR})
+      #{pwd,jdbcType=VARCHAR}, #{overTime,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelLink">
     insert into panel_link
@@ -119,6 +120,9 @@
       <if test="pwd != null">
         pwd,
       </if>
+      <if test="overTime != null">
+        over_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="resourceId != null">
@@ -132,6 +136,9 @@
       </if>
       <if test="pwd != null">
         #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="overTime != null">
+        #{overTime,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -156,6 +163,9 @@
       <if test="record.pwd != null">
         pwd = #{record.pwd,jdbcType=VARCHAR},
       </if>
+      <if test="record.overTime != null">
+        over_time = #{record.overTime,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -166,7 +176,8 @@
     set resource_id = #{record.resourceId,jdbcType=VARCHAR},
       `valid` = #{record.valid,jdbcType=BIT},
       enable_pwd = #{record.enablePwd,jdbcType=BIT},
-      pwd = #{record.pwd,jdbcType=VARCHAR}
+      pwd = #{record.pwd,jdbcType=VARCHAR},
+      over_time = #{record.overTime,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -183,6 +194,9 @@
       <if test="pwd != null">
         pwd = #{pwd,jdbcType=VARCHAR},
       </if>
+      <if test="overTime != null">
+        over_time = #{overTime,jdbcType=BIGINT},
+      </if>
     </set>
     where resource_id = #{resourceId,jdbcType=VARCHAR}
   </update>
@@ -190,7 +204,8 @@
     update panel_link
     set `valid` = #{valid,jdbcType=BIT},
       enable_pwd = #{enablePwd,jdbcType=BIT},
-      pwd = #{pwd,jdbcType=VARCHAR}
+      pwd = #{pwd,jdbcType=VARCHAR},
+      over_time = #{overTime,jdbcType=BIGINT}
     where resource_id = #{resourceId,jdbcType=VARCHAR}
   </update>
 </mapper>

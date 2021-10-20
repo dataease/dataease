@@ -8,6 +8,7 @@ import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
+import io.dataease.controller.request.panel.link.OverTimeRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
 import io.dataease.controller.request.panel.link.ValidateRequest;
 import io.dataease.dto.panel.link.GenerateDto;
@@ -46,6 +47,14 @@ public class LinkServer implements LinkApi {
         panelLinkService.changeEnablePwd(request);
     }
 
+    
+
+    @Override
+    public void resetOverTime(@RequestBody OverTimeRequest request) {
+        panelLinkService.overTime(request);
+        
+    }
+
     @Override
     public void switchLink(@RequestBody LinkRequest request) {
         panelLinkService.changeValid(request);
@@ -74,6 +83,7 @@ public class LinkServer implements LinkApi {
         dto.setValid(one.getValid());
         dto.setEnablePwd(one.getEnablePwd());
         dto.setPassPwd(panelLinkService.validateHeads(one));
+        dto.setExpire(panelLinkService.isExpire(one));
         return dto;
     }
 

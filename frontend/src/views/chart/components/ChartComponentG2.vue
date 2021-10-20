@@ -22,7 +22,6 @@ import { baseGaugeOptionAntV } from '@/views/chart/chart/gauge/gauge_antv'
 import { baseFunnelOptionAntV } from '@/views/chart/chart/funnel/funnel_antv'
 import { baseTreemapOptionAntV } from '@/views/chart/chart/treemap/treemap_antv'
 import { baseRadarOptionAntV } from '@/views/chart/chart/radar/radar_antv'
-import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 
 export default {
   name: 'ChartComponentG2',
@@ -145,8 +144,6 @@ export default {
         this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'scatter') {
         this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
-      } else if (chart.type === 'chart-mix') {
-        this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'radar') {
         this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'gauge') {

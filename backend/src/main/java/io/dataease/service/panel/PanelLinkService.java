@@ -9,10 +9,12 @@ import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.domain.PanelLink;
 import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelLinkMapper;
+import io.dataease.base.mapper.ext.ExtPanelLinkMapper;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
+import io.dataease.controller.request.panel.link.OverTimeRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
 import io.dataease.dto.panel.link.GenerateDto;
 import org.apache.commons.lang3.ObjectUtils;
@@ -45,6 +47,9 @@ public class PanelLinkService {
     @Resource
     private PanelGroupMapper panelGroupMapper;
 
+    @Resource
+    private ExtPanelLinkMapper extPanelLinkMapper;
+
     public void changeValid(LinkRequest request){
         PanelLink po = new PanelLink();
         po.setResourceId(request.getResourceId());
@@ -64,6 +69,14 @@ public class PanelLinkService {
         po.setResourceId(request.getResourceId());
         po.setPwd(request.getPassword());
         mapper.updateByPrimaryKeySelective(po);
+    }
+
+    public void overTime(OverTimeRequest request) {
+        /* PanelLink po = new PanelLink();
+        po.setResourceId(request.getResourceId());
+        po.setOverTime(request.getOverTime());
+        mapper.updateByPrimaryKeySelective(po); */
+        extPanelLinkMapper.updateOverTime(request);
     }
 
     public PanelLink findOne(String resourceId){
@@ -123,6 +136,7 @@ public class PanelLinkService {
         result.setEnablePwd(linl.getEnablePwd());
         result.setPwd(linl.getPwd());
         result.setUri(baseUrl+buildLinkParam(linl.getResourceId()));
+        result.setOverTime(linl.getOverTime());
         return result;
     }
 
@@ -142,6 +156,14 @@ public class PanelLinkService {
         if (StringUtils.isEmpty(panelLink.getPwd())) return false;
         boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd()));
         return verify;
+    }
+
+    // 验证链接是否过期
+    public Boolean isExpire(PanelLink panelLink) {
+        if (ObjectUtils.isEmpty(panelLink.getOverTime())) {
+            return false;
+        }
+        return System.currentTimeMillis() > panelLink.getOverTime();        
     }
 
     public boolean validatePwd(PasswordRequest request) throws Exception {

@@ -16,7 +16,7 @@
             <el-input v-model="axisForm.name" size="mini" @blur="changeYAxisStyle" />
           </el-form-item>
           <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
-            <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" @change="changeYAxisStyle" />
+            <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeYAxisStyle" />
           </el-form-item>
           <el-form-item :label="$t('chart.axis_name_fontsize')" class="form-item">
             <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.axis_name_fontsize')" @change="changeYAxisStyle">
@@ -59,7 +59,7 @@
           </el-form-item>
           <span v-show="axisForm.splitLine.show">
             <el-form-item :label="$t('chart.axis_color')" class="form-item">
-              <el-color-picker v-model="axisForm.splitLine.lineStyle.color" class="el-color-picker" @change="changeYAxisStyle" />
+              <el-color-picker v-model="axisForm.splitLine.lineStyle.color" class="el-color-picker" :predefine="predefineColors" @change="changeYAxisStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_width')" class="form-item form-item-slider">
               <el-slider v-model="axisForm.splitLine.lineStyle.width" :min="1" :max="10" show-input :show-input-controls="false" input-size="mini" @change="changeYAxisStyle" />
@@ -78,7 +78,7 @@
           </el-form-item>
           <span v-show="axisForm.axisLabel.show">
             <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
-              <el-color-picker v-model="axisForm.axisLabel.color" class="el-color-picker" @change="changeYAxisStyle" />
+              <el-color-picker v-model="axisForm.axisLabel.color" class="el-color-picker" :predefine="predefineColors" @change="changeYAxisStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_rotate')" class="form-item form-item-slider">
               <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeYAxisStyle" />
@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import { DEFAULT_YAXIS_EXT_STYLE } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_YAXIS_EXT_STYLE } from '../../chart/chart'
 
 export default {
   name: 'YAxisExtSelector',
@@ -118,7 +118,8 @@ export default {
     return {
       axisForm: JSON.parse(JSON.stringify(DEFAULT_YAXIS_EXT_STYLE)),
       isSetting: false,
-      fontSize: []
+      fontSize: [],
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {

@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 public class ValidateDto {
 
+    @ApiModelProperty("是否过期")
+    private boolean expire;
+
     @ApiModelProperty("是否可用")
     private boolean valid;
     @ApiModelProperty("是否启用密码")

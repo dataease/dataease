@@ -6,7 +6,7 @@
           <el-checkbox v-model="splitForm.name.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <el-form-item :label="$t('chart.color')" class="form-item">
-          <el-color-picker v-model="splitForm.name.color" class="color-picker-style" @change="changeSplitStyle" />
+          <el-color-picker v-model="splitForm.name.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle" />
         </el-form-item>
         <el-form-item :label="$t('chart.text_fontsize')" class="form-item form-item-slider">
           <el-select v-model="splitForm.name.fontSize" :placeholder="$t('chart.text_fontsize')" @change="changeSplitStyle">
@@ -17,7 +17,7 @@
         <!--          <el-checkbox v-model="splitForm.axisLine.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>-->
         <!--        </el-form-item>-->
         <el-form-item :label="$t('chart.axis_color')" class="form-item">
-          <el-color-picker v-model="splitForm.axisLine.lineStyle.color" class="color-picker-style" @change="changeSplitStyle" />
+          <el-color-picker v-model="splitForm.axisLine.lineStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeSplitStyle" />
         </el-form-item>
         <!--        <el-form-item :label="$t('chart.axis_label')" class="form-item">-->
         <!--          <el-checkbox v-model="splitForm.axisLabel.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>-->
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { DEFAULT_SPLIT } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_SPLIT } from '../../chart/chart'
 
 export default {
   name: 'SplitSelectorAntV',
@@ -63,7 +63,8 @@ export default {
     return {
       splitForm: JSON.parse(JSON.stringify(DEFAULT_SPLIT)),
       isSetting: false,
-      fontSize: []
+      fontSize: [],
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {

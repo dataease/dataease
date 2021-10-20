@@ -363,6 +363,66 @@ public class PanelLinkExample {
             addCriterion("pwd not between", value1, value2, "pwd");
             return (Criteria) this;
         }
+
+        public Criteria andOverTimeIsNull() {
+            addCriterion("over_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeIsNotNull() {
+            addCriterion("over_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeEqualTo(Long value) {
+            addCriterion("over_time =", value, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeNotEqualTo(Long value) {
+            addCriterion("over_time <>", value, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeGreaterThan(Long value) {
+            addCriterion("over_time >", value, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeGreaterThanOrEqualTo(Long value) {
+            addCriterion("over_time >=", value, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeLessThan(Long value) {
+            addCriterion("over_time <", value, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeLessThanOrEqualTo(Long value) {
+            addCriterion("over_time <=", value, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeIn(List<Long> values) {
+            addCriterion("over_time in", values, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeNotIn(List<Long> values) {
+            addCriterion("over_time not in", values, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeBetween(Long value1, Long value2) {
+            addCriterion("over_time between", value1, value2, "overTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOverTimeNotBetween(Long value1, Long value2) {
+            addCriterion("over_time not between", value1, value2, "overTime");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
