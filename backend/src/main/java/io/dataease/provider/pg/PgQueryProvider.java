@@ -908,24 +908,24 @@ public class PgQueryProvider extends QueryProvider {
         }
 
         if (StringUtils.isEmpty(dateStyle)) {
-            return "'YYYY-MM-DD HH24:MI:SS'";
+            return "YYYY-MM-DD HH24:MI:SS";
         }
 
         switch (dateStyle) {
             case "y":
-                return "'YYYY'";
+                return "YYYY";
             case "y_M":
-                return "'YYYY" + split + "MM'";
+                return "YYYY" + split + "MM";
             case "y_M_d":
-                return "'YYYY" + split + "MM" + split + "DD'";
+                return "YYYY" + split + "MM" + split + "DD";
             case "H_m_s":
-                return "'HH24:MI:SS'";
+                return "HH24:MI:SS";
             case "y_M_d_H_m":
-                return "'YYYY" + split + "MM" + split + "DD" + " HH24:MI'";
+                return "YYYY" + split + "MM" + split + "DD" + " HH24:MI";
             case "y_M_d_H_m_s":
-                return "'YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS'";
+                return "YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS";
             default:
-                return "'YYYY-MM-DD HH24:MI:SS'";
+                return "YYYY-MM-DD HH24:MI:SS";
         }
     }
 
@@ -944,7 +944,7 @@ public class PgQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    fieldName = String.format(PgConstants.DATE_FORMAT, originField, format);
+                    fieldName = String.format(PgConstants.DATE_FORMAT, String.format(PgConstants.TO_DATE, originField, "YYYY-MM-DD HH24:MI:SS"), format);
                 } else {
                     String cast = String.format(PgConstants.CAST, originField, "bigint");
                     String from_unixtime = String.format(PgConstants.FROM_UNIXTIME, cast);
