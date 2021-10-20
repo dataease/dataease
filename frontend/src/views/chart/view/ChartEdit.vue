@@ -12,7 +12,7 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
-        <svg-icon slot="reference" icon-class="more_v" style="cursor: pointer;" />
+        <svg-icon class="title-text" slot="reference" icon-class="more_v" style="cursor: pointer;" />
       </el-popover>
       <span style="float: right;line-height: 40px;">
         <!--        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">-->
