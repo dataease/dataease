@@ -880,11 +880,14 @@ export default {
       // if (this.tDs && this.tDs.type === 'group') {
       //   return
       // }
-      this.dsForm.sceneId = this.tDs.id
+      const oldSceneId = this.dsForm.sceneId
+      const newSceneId = this.tDs.id
+      this.dsForm.sceneId = newSceneId
       post('/chart/view/save', this.dsForm).then(res => {
         this.closeMoveDs()
         // this.tableTree()
-        this.refreshNodeBy(this.dsForm.sceneId)
+        this.refreshNodeBy(oldSceneId)
+        this.refreshNodeBy(newSceneId)
       })
     },
     targetDs(val) {

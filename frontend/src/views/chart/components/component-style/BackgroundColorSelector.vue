@@ -3,7 +3,7 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini" :disabled="param && !hasDataPermission('manage',param.privileges)">
         <el-form-item :label="$t('chart.color')" class="form-item">
-          <el-color-picker v-model="colorForm.color" class="color-picker-style" @change="changeBackgroundStyle" />
+          <el-color-picker v-model="colorForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeBackgroundStyle" />
         </el-form-item>
         <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeBackgroundStyle" />
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { DEFAULT_BACKGROUND_COLOR } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_BACKGROUND_COLOR } from '../../chart/chart'
 
 export default {
   name: 'BackgroundColorSelector',
@@ -34,7 +34,8 @@ export default {
   },
   data() {
     return {
-      colorForm: JSON.parse(JSON.stringify(DEFAULT_BACKGROUND_COLOR))
+      colorForm: JSON.parse(JSON.stringify(DEFAULT_BACKGROUND_COLOR)),
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {

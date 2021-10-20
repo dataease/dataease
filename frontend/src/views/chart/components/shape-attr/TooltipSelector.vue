@@ -18,7 +18,7 @@
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" @change="changeTooltipAttr" />
+            <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr" />
           </el-form-item>
           <el-form-item class="form-item">
             <span slot="label">
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { DEFAULT_TOOLTIP } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_TOOLTIP } from '../../chart/chart'
 
 export default {
   name: 'TooltipSelector',
@@ -71,7 +71,8 @@ export default {
     return {
       tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP)),
       fontSize: [],
-      isSetting: false
+      isSetting: false,
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {
