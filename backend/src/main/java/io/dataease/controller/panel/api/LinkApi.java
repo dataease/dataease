@@ -6,6 +6,7 @@ import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
+import io.dataease.controller.request.panel.link.OverTimeRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
 import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.ValidateDto;
@@ -28,6 +29,10 @@ public interface LinkApi {
     @ApiOperation("启用密码")
     @PostMapping("/enablePwd")
     void enablePwd(EnablePwdRequest request);
+
+    @ApiOperation("过期时间")
+    @PostMapping("/resetOverTime")
+    void resetOverTime(OverTimeRequest request);
 
     @ApiOperation("启用/禁用链接分享")
     @PostMapping("/switchLink")
