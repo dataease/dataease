@@ -145,8 +145,6 @@ export default {
         this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'scatter') {
         this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
-      } else if (chart.type === 'chart-mix') {
-        this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'radar') {
         this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'gauge') {

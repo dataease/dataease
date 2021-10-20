@@ -28,7 +28,7 @@
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="legendForm.textStyle.color" class="color-picker-style" @change="changeLegendStyle" />
+            <el-color-picker v-model="legendForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeLegendStyle" />
           </el-form-item>
           <el-form-item :label="$t('chart.text_h_position')" class="form-item">
             <el-radio-group v-model="legendForm.hPosition" size="mini" @change="changeLegendStyle">
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { DEFAULT_LEGEND_STYLE } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_LEGEND_STYLE } from '../../chart/chart'
 
 export default {
   name: 'LegendSelector',
@@ -77,7 +77,8 @@ export default {
         { name: this.$t('chart.line_symbol_triangle'), value: 'triangle' },
         { name: this.$t('chart.line_symbol_diamond'), value: 'diamond' }
       ],
-      isSetting: false
+      isSetting: false,
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {

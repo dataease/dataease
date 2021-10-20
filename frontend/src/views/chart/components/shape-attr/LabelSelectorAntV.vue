@@ -15,7 +15,7 @@
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="labelForm.color" class="color-picker-style" @change="changeLabelAttr" />
+            <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
           </el-form-item>
           <el-form-item v-show="chart.type && chart.type !== 'liquid' && chart.type !== 'pie-rose'" :label="$t('chart.label_position')" class="form-item">
             <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
@@ -35,7 +35,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('chart.text_color')" class="form-item">
-          <el-color-picker v-model="labelForm.color" class="color-picker-style" @change="changeLabelAttr" />
+          <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item>
       </el-form>
     </el-col>
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { DEFAULT_LABEL } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
 
 export default {
   name: 'LabelSelectorAntV',
@@ -70,7 +70,8 @@ export default {
         { name: this.$t('chart.text_pos_bottom'), value: 'bottom' },
         { name: this.$t('chart.text_pos_left'), value: 'left' },
         { name: this.$t('chart.text_pos_right'), value: 'right' }
-      ]
+      ],
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {

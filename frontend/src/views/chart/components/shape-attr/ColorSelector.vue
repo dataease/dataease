@@ -36,7 +36,7 @@
                 <div style="display: flex;align-items: center;margin-top: 10px;">
                   <span class="color-label" />
                   <span>
-                    <el-color-picker v-model="customColor" class="color-picker-style" @change="switchColorCase" />
+                    <el-color-picker v-model="customColor" class="color-picker-style" :predefine="predefineColors" @change="switchColorCase" />
                   </span>
                 </div>
               </div>
@@ -47,21 +47,21 @@
           </el-form-item>
 
           <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
-            <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" @change="changeColorCase" />
+            <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <el-form-item v-show="(chart.type && chart.type.includes('text')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
-            <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" @change="changeColorCase" />
+            <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
         </div>
         <div v-if="sourceType==='view' || sourceType==='panelTable'">
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
-            <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" @change="changeColorCase" />
+            <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
-            <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" @change="changeColorCase" />
+            <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_font_color')" class="form-item">
-            <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" @change="changeColorCase" />
+            <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!--              暂时不支持该功能-->
           <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { DEFAULT_COLOR_CASE } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_COLOR_CASE } from '../../chart/chart'
 
 export default {
   name: 'ColorSelector',
@@ -183,7 +183,8 @@ export default {
       ],
       colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
       customColor: null,
-      colorIndex: 0
+      colorIndex: 0,
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {

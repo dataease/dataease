@@ -2,6 +2,9 @@
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
     <!--    <span v-show="false">{{ tableRefresh }}</span>-->
     <el-row style="height: 26px;">
+      <span class="title-text" style="line-height: 26px;">
+        {{ table.name }}
+      </span>
       <el-popover
         placement="right-start"
         width="400"
@@ -10,9 +13,7 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="dataset" :data="table" :tab-status="tabStatus" />
-        <span slot="reference" class="title-text" style="line-height: 26px;cursor: pointer;">
-          {{ table.name }}
-        </span>
+        <svg-icon slot="reference" icon-class="more_v" style="cursor: pointer;" />
       </el-popover>
       <el-row v-if="hasDataPermission('manage',param.privileges)" style="float: right">
         <el-dropdown v-if="table.type ==='excel'" style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">

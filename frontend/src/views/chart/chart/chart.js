@@ -853,3 +853,16 @@ export const BASE_MIX = {
     }
   ]
 }
+
+export const COLOR_PANEL = [
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  '#999999',
+  '#ffffff',
+  '#000000'
+]
