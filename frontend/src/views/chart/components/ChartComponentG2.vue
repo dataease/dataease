@@ -22,7 +22,6 @@ import { baseGaugeOptionAntV } from '@/views/chart/chart/gauge/gauge_antv'
 import { baseFunnelOptionAntV } from '@/views/chart/chart/funnel/funnel_antv'
 import { baseTreemapOptionAntV } from '@/views/chart/chart/treemap/treemap_antv'
 import { baseRadarOptionAntV } from '@/views/chart/chart/radar/radar_antv'
-import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 
 export default {
   name: 'ChartComponentG2',
