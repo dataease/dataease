@@ -9,7 +9,7 @@ import '@/components/canvas/custom-component' // 注册自定义组件
 import widgets from '@/components/widget'
 import * as echarts from 'echarts'
 import UmyUi from 'umy-ui'
-
+import '@/utils/DateUtil'
 Vue.use(UmyUi)
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false

@@ -1187,6 +1187,8 @@ export default {
     copy_short_link_passwd: '复制短链接及密码',
     passwd_protect: '密码保护',
     link: '链接',
+    over_time: '有效期',
+    link_expire: '链接已过期！',
     link_share: '链接分享',
     link_share_desc: '开启链接后，任何人可通过此链接访问仪表板。',
     share: '分享',
@@ -1558,7 +1560,7 @@ export default {
     m_complex: '复杂表盘',
     select_openMode: '请选择展示风格',
     select_time_format: '请选择时间格式',
-    select_date_format: '请选择时间格式'
+    select_date_format: '请选择日期格式'
 
   }
 }

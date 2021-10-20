@@ -14,4 +14,6 @@ public class GenerateDto {
     private String uri;
     @ApiModelProperty("密码")
     private String pwd;
+    @ApiModelProperty("有效期")
+    private Long overTime;
 }
