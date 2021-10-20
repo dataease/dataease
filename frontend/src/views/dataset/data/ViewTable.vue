@@ -13,7 +13,8 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="dataset" :data="table" :tab-status="tabStatus" />
-        <svg-icon slot="reference" class="title-text" icon-class="more_v" style="cursor: pointer;" />
+        <!--        <svg-icon slot="reference" class="title-text" icon-class="more_v" style="cursor: pointer;" />-->
+        <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;font-size: 14px;" />
       </el-popover>
       <el-row v-if="hasDataPermission('manage',param.privileges)" style="float: right">
         <el-dropdown v-if="table.type ==='excel'" style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">
@@ -226,5 +227,11 @@ export default {
 
   .form-item {
     margin-bottom: 6px;
+  }
+  .icon-class{
+    color:#6c6c6c;
+  }
+  .blackTheme .icon-class{
+    color: #cccccc;
   }
 </style>

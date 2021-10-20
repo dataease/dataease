@@ -12,7 +12,8 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
-        <svg-icon class="title-text" slot="reference" icon-class="more_v" style="cursor: pointer;" />
+        <!--        <svg-icon slot="reference" class="title-text" icon-class="more_v" style="cursor: pointer;" />-->
+        <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;" />
       </el-popover>
       <span style="float: right;line-height: 40px;">
         <!--        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">-->
@@ -1867,6 +1868,12 @@ export default {
   .blackTheme .theme-item-class {
       background-color: var(--MainBG) !important;
       border-color: var(--TableBorderColor) !important;
+  }
+  .icon-class{
+    color:#6c6c6c;
+  }
+  .blackTheme .icon-class{
+    color: #cccccc;
   }
 
 </style>
