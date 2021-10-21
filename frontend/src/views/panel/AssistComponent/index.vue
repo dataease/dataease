@@ -229,7 +229,7 @@ export default {
   }
 
   .filter-widget {
-    width: 100px;
+    width: 107px;
     height: 36px;
     position: relative;
     float: left;

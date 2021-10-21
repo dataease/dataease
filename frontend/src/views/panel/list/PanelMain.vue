@@ -3,15 +3,15 @@
     <de-aside-container style="padding: 0 10px;">
       <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
-          <span slot="label"><i class="el-icon-document" />{{ $t('panel.panel_list') }}</span>
+          <span slot="label"><i class="el-icon-document tablepanel-i" />{{ $t('panel.panel_list') }}</span>
           <panel-list v-if="activeName==='PanelList'" />
         </el-tab-pane>
         <el-tab-pane name="panels_star" :lazy="true">
-          <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.store') }}</span>
+          <span slot="label"><i class="el-icon-star-off tablepanel-i" />{{ $t('panel.store') }}</span>
           <enshrine v-if="activeName==='panels_star'" />
         </el-tab-pane>
         <el-tab-pane name="panels_share" :lazy="true">
-          <span slot="label"><i class="el-icon-share" />{{ $t('panel.share') }}</span>
+          <span slot="label"><i class="el-icon-share tablepanel-i" />{{ $t('panel.share') }}</span>
           <share-tree v-if="showShare" ref="share_tree" :msg-panel-ids="msgPanelIds" />
         </el-tab-pane>
       </el-tabs>
