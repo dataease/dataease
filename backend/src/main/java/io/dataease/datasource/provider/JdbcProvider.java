@@ -204,13 +204,16 @@ public class JdbcProvider extends DatasourceProvider {
         }
 
         String queryView = getViewSql(datasourceRequest);
-        try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)){
-            while (resultSet.next()) {
-                tables.add(resultSet.getString(1));
+        if(queryView != null){
+            try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)){
+                while (resultSet.next()) {
+                    tables.add(resultSet.getString(1));
+                }
+            } catch (Exception e) {
+                DataEaseException.throwException(e);
             }
-        } catch (Exception e) {
-            DataEaseException.throwException(e);
         }
+
         return tables;
     }
 
