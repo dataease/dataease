@@ -385,11 +385,11 @@
               <el-row>
                 <span class="padding-lr">{{ $t('chart.module_style') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
-                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="xAxis" :title="$t('chart.xAxis')">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')" name="xAxis" :title="$t('chart.xAxis')">
                     <x-axis-selector v-if="view.render && view.render === 'echarts'" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
                     <x-axis-selector-ant-v v-else-if="view.render && view.render === 'antv'" :param="param" class="attr-selector" :chart="chart" @onChangeXAxisForm="onChangeXAxisForm" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix')" name="yAxis" :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')">
+                  <el-collapse-item v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')" name="yAxis" :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')">
                     <y-axis-selector v-if="view.render && view.render === 'echarts'" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
                     <y-axis-selector-ant-v v-else-if="view.render && view.render === 'antv'" :param="param" class="attr-selector" :chart="chart" @onChangeYAxisForm="onChangeYAxisForm" />
                   </el-collapse-item>
