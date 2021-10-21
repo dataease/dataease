@@ -15,7 +15,7 @@ export const DEFAULT_SIZE = {
   barGap: 0.4,
   lineWidth: 1,
   lineType: 'solid',
-  lineSymbol: 'emptyCircle',
+  lineSymbol: 'circle',
   lineSymbolSize: 4,
   lineSmooth: false,
   lineArea: false,
