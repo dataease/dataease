@@ -64,3 +64,10 @@ export function oidcStatus() {
     method: 'post'
   })
 }
+
+export function pluginLoaded() {
+  return request({
+    url: '/api/auth/isPluginLoaded',
+    method: 'post'
+  })
+}

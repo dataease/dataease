@@ -2,6 +2,7 @@ package io.dataease.controller.sys;
 
 import io.dataease.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
+import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.service.FileService;
 import io.dataease.service.system.SystemParameterService;
@@ -27,6 +28,12 @@ public class SystemParameterController {
 
     @Resource
     private FileService fileService;
+
+
+    @GetMapping("/mail/info")
+    public MailInfo mailInfo() {
+        return systemParameterService.mailInfo(ParamConstants.Classify.MAIL.getValue());
+    }
 
     @PostMapping("/edit/email")
     public void editMail(@RequestBody List<SystemParameter> systemParameter) {
