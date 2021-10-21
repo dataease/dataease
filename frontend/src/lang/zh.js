@@ -933,7 +933,8 @@ export default {
     liquid_shape_pin: '气球',
     liquid_shape_rect: '矩形',
     dimension_or_quota: '维度或指标',
-    axis_value_split_count: '刻度数'
+    axis_value_split_count: '刻度数',
+    chart_waterfall: '瀑布图'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

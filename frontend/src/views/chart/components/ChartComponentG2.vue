@@ -22,6 +22,7 @@ import { baseGaugeOptionAntV } from '@/views/chart/chart/gauge/gauge_antv'
 import { baseFunnelOptionAntV } from '@/views/chart/chart/funnel/funnel_antv'
 import { baseTreemapOptionAntV } from '@/views/chart/chart/treemap/treemap_antv'
 import { baseRadarOptionAntV } from '@/views/chart/chart/radar/radar_antv'
+import { baseWaterfallOptionAntV } from '@/views/chart/chart/waterfall/waterfall'
 
 export default {
   name: 'ChartComponentG2',
@@ -158,6 +159,8 @@ export default {
         this.myChart = baseTreemapOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'liquid') {
         this.myChart = baseLiquid(this.myChart, this.chartId, chart)
+      } else if (chart.type === 'waterfall') {
+        this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false

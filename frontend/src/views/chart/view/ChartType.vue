@@ -66,6 +66,11 @@
         <!--            <svg-icon icon-class="map" class="chart-icon" />-->
         <!--          </span>-->
         <!--        </el-radio>-->
+        <el-radio value="waterfall" label="waterfall">
+          <span :title="$t('chart.chart_waterfall')">
+            <svg-icon icon-class="waterfall" class="chart-icon" />
+          </span>
+        </el-radio>
         <el-radio value="radar" label="radar">
           <span :title="$t('chart.chart_radar')">
             <svg-icon icon-class="radar" class="chart-icon" />
@@ -86,13 +91,13 @@
             <svg-icon icon-class="pie-rose" class="chart-icon" />
           </span>
         </el-radio>
+      </div>
+      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
         <el-radio value="funnel" label="funnel">
           <span :title="$t('chart.chart_funnel')">
             <svg-icon icon-class="funnel" class="chart-icon" />
           </span>
         </el-radio>
-      </div>
-      <div style="width: 100%;display: flex;display: -webkit-flex;justify-content: space-between;flex-direction: row;flex-wrap: wrap;">
         <el-radio value="treemap" label="treemap">
           <span :title="$t('chart.chart_treemap')">
             <svg-icon icon-class="treemap" class="chart-icon" />
@@ -103,7 +108,6 @@
             <svg-icon icon-class="liquid" class="chart-icon" />
           </span>
         </el-radio>
-        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
       </div>
