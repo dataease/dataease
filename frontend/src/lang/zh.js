@@ -934,7 +934,9 @@ export default {
     liquid_shape_rect: '矩形',
     dimension_or_quota: '维度或指标',
     axis_value_split_count: '刻度数',
-    chart_waterfall: '瀑布图'
+    chart_waterfall: '瀑布图',
+    pie_inner_radius_percent: '内径占比',
+    pie_outer_radius_size: '外径大小'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

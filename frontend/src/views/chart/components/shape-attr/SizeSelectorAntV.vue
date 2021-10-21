@@ -42,10 +42,10 @@
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.pie_inner_radius_percent')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.pie_outer_radius_size')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
 

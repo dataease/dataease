@@ -933,7 +933,9 @@ export default {
     liquid_shape_rect: 'Rect',
     dimension_or_quota: 'Dimension Or Quota',
     axis_value_split_count: 'Tick Count',
-    chart_waterfall: 'Waterfall'
+    chart_waterfall: 'Waterfall',
+    pie_inner_radius_percent: 'Inner Radius(%)',
+    pie_outer_radius_size: 'Outer Radius'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
