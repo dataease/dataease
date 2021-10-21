@@ -9,7 +9,8 @@ export function getStyle(style, filter = []) {
     'left',
     'borderWidth',
     'letterSpacing',
-    'borderRadius'
+    'borderRadius',
+    'margin'
   ]
 
   const result = {}

@@ -32,6 +32,12 @@ export default {
         return val
       }
       return ''
+    },
+    timeMargin() {
+      return this.element.style.time_margin
+    },
+    containerHeight() {
+      return 'calc(100% - ' + this.element.style.time_margin * 2 + 'px)'
     }
   },
   created() {

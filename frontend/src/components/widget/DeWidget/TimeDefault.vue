@@ -1,5 +1,9 @@
 <template>
-  <span>{{ nowDate }}</span>
+  <div style="display: flex;align-items: center;" :style="{ 'height': containerHeight, 'margin':timeMargin +'px'}">
+
+    <p style="width:100%;margin:auto;">{{ nowDate }}</p>
+
+  </div>
 </template>
 
 <script>
@@ -15,6 +19,14 @@ export default {
       nowDate: '', // 当前日期
       nowWeek: '',
       timer: null
+    }
+  },
+  computed: {
+    timeMargin() {
+      return this.element.style.time_margin
+    },
+    containerHeight() {
+      return 'calc(100% - ' + this.element.style.time_margin * 2 + 'px)'
     }
   },
   mounted() {

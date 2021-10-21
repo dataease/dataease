@@ -1297,6 +1297,8 @@ export default {
     fontWeight: '字体粗细',
     lineHeight: '行高',
     letterSpacing: '字间距',
+    padding: '内间距',
+    margin: '外间距',
     textAlign: '左右对齐',
     opacity: '不透明度',
     verticalAlign: '上下对齐',
