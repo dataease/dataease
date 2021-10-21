@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("es")
 public class EsProvider extends DatasourceProvider {
@@ -177,6 +178,7 @@ public class EsProvider extends DatasourceProvider {
         try {
             String response = exexQuery(datasourceRequest, "show tables", "?format=json");
             tables = fetchTables(response);
+            tables = tables.stream().filter(table -> !table.startsWith(".")).collect(Collectors.toList());
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
