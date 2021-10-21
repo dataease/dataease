@@ -310,7 +310,7 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        that.maxHeight = (currentHeight - 56 - 30 - 35 - 26 - 10) + 'px'
+        that.maxHeight = (currentHeight - 56 - 30 - 35 - 26 - 10 - 10) + 'px'
       }, 10)
     },
     initField() {
