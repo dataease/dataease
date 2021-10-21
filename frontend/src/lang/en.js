@@ -932,7 +932,8 @@ export default {
     liquid_shape_pin: 'Pin',
     liquid_shape_rect: 'Rect',
     dimension_or_quota: 'Dimension Or Quota',
-    axis_value_split_count: 'Tick Count'
+    axis_value_split_count: 'Tick Count',
+    chart_waterfall: 'Waterfall'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
