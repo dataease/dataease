@@ -1,0 +1,50 @@
+<template>
+  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+
+      <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
+        <email-setting />
+      </el-tab-pane>
+
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.display')" name="second">
+        <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="DisplaySetting" />
+      </el-tab-pane>
+
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.ldap')" name="third">
+        <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="LdapSetting" />
+      </el-tab-pane>
+
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.oidc')" name="fourth">
+        <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="SsoSetting" />
+      </el-tab-pane>
+
+    </el-tabs>
+  </layout-content>
+</template>
+<script>
+
+import EmailSetting from './EmailSetting'
+import LayoutContent from '@/components/business/LayoutContent'
+import PluginCom from '@/views/system/plugin/PluginCom'
+import { pluginLoaded } from '@/api/user'
+export default {
+
+  components: { EmailSetting, LayoutContent, PluginCom },
+  data() {
+    return {
+      activeName: 'first',
+      isPluginLoaded: false
+    }
+  },
+  beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+    })
+  },
+  methods: {
+    handleClick(tab, event) {
+      console.log(tab, event)
+    }
+  }
+}
+</script>
