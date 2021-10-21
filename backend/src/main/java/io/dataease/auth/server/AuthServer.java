@@ -184,6 +184,15 @@ public class AuthServer implements AuthApi {
         return authUserService.supportOidc();
     }
 
+    @Override
+    public boolean isPluginLoaded() {
+        Boolean licValid = PluginUtils.licValid();
+        if(!licValid) return false;
+        return authUserService.pluginLoaded();
+    }
+
+    
+    
     
 
     /*@Override

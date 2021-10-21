@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="result.loading">
+  <div>
     <!--邮件表单-->
     <el-form
       ref="formInline"
@@ -98,7 +98,7 @@
 
 <script>
 
-import { post, get } from '@/api/commonAjax'
+import { emailInfo, updateInfo, validate } from '@/api/system/email'
 
 export default {
   name: 'EmailSetting',
@@ -107,7 +107,6 @@ export default {
       formInline: {},
       input: '',
       visible: true,
-      result: {},
       showEdit: true,
       showSave: false,
       showCancel: false,
@@ -148,11 +147,10 @@ export default {
       this.$refs.input = 'password'
     },
     query() {
-      this.result = get('/system/mail/info', response => {
+      emailInfo().then(response => {
         this.formInline = response.data
         this.formInline.ssl = this.formInline.ssl === 'true'
         this.formInline.tls = this.formInline.tls === 'true'
-        // console.log(this.formInline)
         this.$nextTick(() => {
           this.$refs.formInline.clearValidate()
         })
@@ -179,7 +177,7 @@ export default {
       }
       this.$refs[formInline].validate((valid) => {
         if (valid) {
-          this.result = post('/system/testConnection', param, response => {
+          validate(param).then(response => {
             this.$success(this.$t('commons.connection_successful'))
           })
         } else {
@@ -211,7 +209,7 @@ export default {
 
       this.$refs[formInline].validate(valid => {
         if (valid) {
-          this.result = post('/system/edit/email', param, response => {
+          updateInfo(param).then(response => {
             const flag = response.success
             if (flag) {
               this.$success(this.$t('commons.save_success'))
@@ -220,7 +218,7 @@ export default {
             }
           })
         } else {
-          return false
+          // this.result = false
         }
       })
     },

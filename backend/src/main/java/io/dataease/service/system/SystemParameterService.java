@@ -1,6 +1,5 @@
 package io.dataease.service.system;
 
-import com.alibaba.fastjson.JSON;
 import io.dataease.base.domain.FileMetadata;
 import io.dataease.base.domain.SystemParameter;
 import io.dataease.base.domain.SystemParameterExample;
@@ -11,6 +10,7 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.service.FileService;
@@ -46,6 +46,34 @@ public class SystemParameterService {
     public String searchEmail() {
         return extSystemParameterMapper.email();
     }
+
+
+    public MailInfo mailInfo(String type) {
+        List<SystemParameter> paramList = this.getParamList(type);
+        MailInfo mailInfo = new MailInfo();
+        if (!CollectionUtils.isEmpty(paramList)) {
+            for (SystemParameter param : paramList) {
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.SERVER.getValue())) {
+                    mailInfo.setHost(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PORT.getValue())) {
+                    mailInfo.setPort(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.ACCOUNT.getValue())) {
+                    mailInfo.setAccount(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PASSWORD.getValue())) {
+                    String password = EncryptUtils.aesDecrypt(param.getParamValue()).toString();
+                    mailInfo.setPassword(password);
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.SSL.getValue())) {
+                    mailInfo.setSsl(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.TLS.getValue())) {
+                    mailInfo.setTls(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.RECIPIENTS.getValue())) {
+                    mailInfo.setRecipient(param.getParamValue());
+                }
+            }
+        }
+        return mailInfo;
+    }
+
 
     public String getSystemLanguage() {
         String result = StringUtils.EMPTY;
@@ -120,7 +148,7 @@ public class SystemParameterService {
             try {
                 helper = new MimeMessageHelper(mimeMessage, true);
                 helper.setFrom(javaMailSender.getUsername());
-                helper.setSubject("MeterSphere测试邮件 " );
+                helper.setSubject("DataEase测试邮件 " );
                 helper.setText("这是一封测试邮件，邮件发送成功", true);
                 helper.setTo(recipients);
                 javaMailSender.send(mimeMessage);
