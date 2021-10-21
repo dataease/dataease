@@ -898,7 +898,9 @@ export default {
         view.type.startsWith('funnel') ||
         view.type.startsWith('text') ||
         view.type.startsWith('gauge') ||
-        view.type === 'treemap') {
+        view.type === 'treemap' ||
+          view.type === 'liquid' ||
+          view.type === 'waterfall') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
