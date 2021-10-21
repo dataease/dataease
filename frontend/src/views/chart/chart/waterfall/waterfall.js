@@ -16,9 +16,14 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
   const label = getLabel(chart)
   const tooltip = getTooltip(chart)
   // style
-  const legend = getLegend(chart)
+  // const legend = getLegend(chart)
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
+  // fix yAxis
+  yAxis.min = yAxis.minLimit
+  yAxis.max = yAxis.maxLimit
+  delete yAxis.minLimit
+  delete yAxis.maxLimit
   // data
   const data = chart.data.datas
   // total
@@ -67,7 +72,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
           start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
           end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
         }
-      },
+      }
       // {
       //   type: 'active-region', cfg: {
       //     start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
