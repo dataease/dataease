@@ -24,6 +24,16 @@ export default {
       default: null
     }
   },
+  data() {
+    return {
+      // time_margin: 0
+    }
+  },
+  computed: {
+    timeMargin() {
+      return this.element.style.time_margin
+    }
+  },
 
   methods: {
     chartResize() {

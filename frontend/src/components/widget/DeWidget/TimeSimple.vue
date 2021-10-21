@@ -1,10 +1,16 @@
 <template>
-  <div style="height: 100%">
-    <div class="time-s-class" style="height: calc(100% - 100px);">
-      <canvas id="canvas" class="de-canvas" :width="element.style.width" :height="element.style.height - 100" />
+  <div :style="{ 'height': containerHeight}">
+    <div ref="canvasContainer" class="time-s-class" style="height: calc(100% - 50px);" :style="{'margin':timeMargin +'px'}">
+      <canvas
+        id="canvas"
+        class="de-canvas"
+        :width="canvas_width"
+        :height="canvas_height"
+      />
+      <!-- <canvas  id="canvas" class="de-canvas" :width="$refs.canvasContainer.clientWidth" :height="$refs.canvasContainer.clientHeight" /> -->
     </div>
-    <div style="height: 100px;">
-      <p id="fulltime" :style="{'fontSize': (parseInt(element.style.fontSize) * 2) + 'px', 'color':element.style.color}" style="width:100%;margin:auto;" />
+    <div style="height: 50px;display: flex;align-items: center;">
+      <p id="fulltime" :style="{'fontSize': (parseInt(element.style.fontSize) * 1) + 'px', 'color':element.style.color}" style="width:100%;margin:auto;" />
     </div>
   </div>
 </template>
@@ -25,12 +31,26 @@ export default {
       week: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
       canvas: null,
       draw: null,
-      timer: null
+      timer: null,
+      canvas_width: null,
+      canvas_height: null,
+      padding: 0
+
+    }
+  },
+  computed: {
+    timeMargin() {
+      return this.element.style.time_margin
+    },
+    containerHeight() {
+      return 'calc(100% - ' + this.element.style.time_margin * 2 + 'px)'
     }
   },
   mounted() {
     this.canvas = document.getElementById('canvas')
     this.draw = this.canvas.getContext('2d')
+    this.canvas_width = this.element.style.width
+    this.canvas_height = this.element.style.height
     this.currentTime()
   },
   beforeDestroy() {
@@ -51,9 +71,16 @@ export default {
       const showWeek = this.element.formatInfo.showWeek
       const showDate = this.element.formatInfo.showDate
 
-      const canvas_w = this.element.style.width
+      const canvas_w = this.$refs.canvasContainer.clientWidth || this.element.style.width
+      if (canvas_w !== this.canvas_width) {
+        this.canvas_width = canvas_w
+      }
 
-      const canvas_h = this.element.style.height - 100
+      const canvas_h = this.$refs.canvasContainer.clientHeight || (this.element.style.height - 50)
+
+      if (canvas_h !== this.canvas_height) {
+        this.canvas_height = canvas_h
+      }
 
       const side_length = Math.min(canvas_w, canvas_h)
 
@@ -112,8 +139,10 @@ export default {
 
         draw.beginPath()
 
-        draw.moveTo(0, side_length / 2 - 70)
-        draw.lineTo(0, side_length / 2 - 50)
+        draw.moveTo(0, side_length / 2 - 0)
+        /* draw.moveTo(0, side_length / 2 - 70)
+        draw.lineTo(0, side_length / 2 - 50) */
+        draw.lineTo(0, side_length / 2 - 20)
         draw.closePath()
         draw.stroke()
         draw.restore()
@@ -121,17 +150,16 @@ export default {
       // 分刻度
       for (let i = 0; i < 60; i++) {
         draw.save()
-        // draw.translate(250, 250)
-        draw.translate(this.element.style.width / 2, (this.element.style.height - 100) / 2)
+        draw.translate(canvas_w / 2, canvas_h / 2)
         draw.rotate(i * 6 * Math.PI / 180)
         draw.lineWidth = 2
         draw.strokeStyle = this.element.style.color
         draw.beginPath()
 
-        // draw.moveTo(0, 190)
-        draw.lineTo(0, side_length / 2 - 50)
-        // draw.lineTo(0, 180)
-        draw.lineTo(0, side_length / 2 - 60)
+        draw.moveTo(0, side_length / 2 - 0)
+        // draw.lineTo(0, side_length / 2 - 50)
+        // draw.lineTo(0, side_length / 2 - 60)
+        draw.lineTo(0, side_length / 2 - 10)
         draw.closePath()
         draw.stroke()
 
@@ -142,7 +170,7 @@ export default {
       draw.save()
       draw.strokeStyle = this.element.style.color
       // draw.translate(250, 250)
-      draw.translate(this.element.style.width / 2, (this.element.style.height - 100) / 2)
+      draw.translate(canvas_w / 2, canvas_h / 2)
       const hourzs = h + min / 60// 获取浮点类型的小时
       draw.rotate(hourzs * 30 * Math.PI / 180)
       draw.lineWidth = 6
@@ -155,7 +183,7 @@ export default {
       // 画分针
       draw.save()
       // draw.translate(250, 250)
-      draw.translate(this.element.style.width / 2, (this.element.style.height - 100) / 2)
+      draw.translate(canvas_w / 2, canvas_h / 2)
 
       draw.rotate(min * 6 * Math.PI / 180)
       draw.strokeStyle = this.element.style.color
@@ -169,7 +197,7 @@ export default {
       // 画秒针
       draw.save()
       // draw.translate(250, 250)
-      draw.translate(this.element.style.width / 2, (this.element.style.height - 100) / 2)
+      draw.translate(canvas_w / 2, canvas_h / 2)
       draw.rotate(s * 6 * Math.PI / 180)
       draw.strokeStyle = this.element.style.color
       draw.lineWidth = 1
@@ -186,7 +214,7 @@ export default {
       draw.lineWidth = 2
       draw.beginPath()
       // draw.arc(250, 250, 4, 0, 360, false)
-      draw.arc(this.element.style.width / 2, (this.element.style.height - 100) / 2, 4, 0, 360, false)
+      draw.arc(canvas_w / 2, canvas_h / 2, 4, 0, 360, false)
       draw.closePath()
       draw.fill()
     }

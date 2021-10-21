@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "924440",
+      "name": "margin",
+      "font_class": "margin",
+      "unicode": "e902",
+      "unicode_decimal": 59650
+    },
+    {
+      "icon_id": "924475",
+      "name": "padding",
+      "font_class": "padding",
+      "unicode": "e91b",
+      "unicode_decimal": 59675
+    },
+    {
       "icon_id": "11982148",
       "name": "tabs",
       "font_class": "tabs",
