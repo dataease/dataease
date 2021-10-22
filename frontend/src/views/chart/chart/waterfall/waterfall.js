@@ -16,7 +16,8 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
   const label = getLabel(chart)
   const tooltip = getTooltip(chart)
   // style
-  // const legend = getLegend(chart)
+  const legend = getLegend(chart)
+  legend.position = 'top'
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // fix yAxis
@@ -43,7 +44,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
     appendPadding: getPadding(chart),
     label: label,
     tooltip: tooltip,
-    legend: false,
+    legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
     risingFill: theme.styleSheet.paletteQualitative10[0],
