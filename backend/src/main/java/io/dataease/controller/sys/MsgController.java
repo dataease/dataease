@@ -42,8 +42,9 @@ public class MsgController {
             List<SysMsgType> sysMsgTypes = sysMsgService.queryMsgTypes();
             typeIds = sysMsgTypes.stream().filter(sysMsgType -> msgRequest.getType() == sysMsgType.getPid()).map(SysMsgType::getMsgTypeId).collect(Collectors.toList());
         }
+        Long overTime = sysMsgService.overTime();
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        Pager<List<MsgGridDto>> listPager = PageUtils.setPageInfo(page, sysMsgService.queryGrid(userId, msgRequest, typeIds));
+        Pager<List<MsgGridDto>> listPager = PageUtils.setPageInfo(page, sysMsgService.queryGrid(userId, msgRequest, typeIds, overTime));
         return listPager;
     }
 

@@ -55,7 +55,7 @@ public class SysMsgService {
     @Autowired
     private SystemParameterService systemParameterService;
 
-    public List<SysMsg> query(Long userId, MsgRequest msgRequest) {
+    /* public List<SysMsg> query(Long userId, MsgRequest msgRequest) {
         String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
@@ -81,8 +81,8 @@ public class SysMsgService {
         List<SysMsg> sysMsgs = sysMsgMapper.selectByExample(example);
         return sysMsgs;
     }
-
-    public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest, List<Long> typeIds) {
+ */
+    public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest, List<Long> typeIds, Long startTime) {
         String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
@@ -110,7 +110,8 @@ public class SysMsgService {
             criteria.andStatusEqualTo(msgRequest.getStatus());
         }
 
-        criteria.andCreateTimeGreaterThanOrEqualTo(overTime());
+        criteria.andCreateTimeGreaterThanOrEqualTo(startTime);
+        /* criteria.andCreateTimeGreaterThanOrEqualTo(overTime()); */
 
         example.setOrderByClause(orderClause);
         List<MsgGridDto> msgGridDtos = extSysMsgMapper.queryGrid(example);
@@ -349,11 +350,6 @@ public class SysMsgService {
                  
     }
 
-    /* public static void main(String[] args) {
-        
-        Long overTime = overTime();
-        System.out.println(overTime);
-        
-    } */
+    
 
 }
