@@ -12,11 +12,42 @@ import { getLinkToken, setLinkToken } from '@/utils/auth'
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
 const LinkTokenKey = Config.LinkTokenKey
+import Cookies from 'js-cookie'
 // create an axios instance
-const service = axios.create({
+
+const getTimeOut = () => {
+  let time = 10
+  const url = '/system/requestTimeOut'
+  const xhr = new XMLHttpRequest()
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      if (xhr.responseText) {
+        try {
+          const response = JSON.parse(xhr.responseText)
+          if (response.success) {
+            Cookies.set('request-time-out', response.data)
+            time = response.data
+          } else {
+            $error('系统异常，请联系管理员')
+          }
+        } catch (e) {
+          $error('系统异常，请联系管理员')
+        }
+      } else {
+        $error('网络异常，请联系网管')
+      }
+    }
+  }
+
+  xhr.open('get', url, false)
+  xhr.send()
+  return time
+}
+const time = getTimeOut()
+let service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 10000 // request timeout
+
+  timeout: time ? time * 1000 : 10000
 })
 
 // request interceptor
@@ -60,13 +91,36 @@ service.interceptors.request.use(
   }
 )
 
-// const defaultOptions = {
-//   confirmButtonText: i18n.t('login.re_login')
-// }
+service.setTimeOut = time => {
+  service = axios.create({
+    baseURL: process.env.VUE_APP_BASE_API,
+    timeout: time
+  })
+}
+
+// 请根据实际需求修改
+service.interceptors.response.use(response => {
+  response.config.loading && tryHideLoading(store.getters.currentPath)
+  checkAuth(response)
+  return response.data
+}, error => {
+  const config = error.response && error.response.config || error.config
+  const headers = error.response && error.response.headers || error.response || config.headers
+  config.loading && tryHideLoading(store.getters.currentPath)
+
+  let msg
+  if (error.response) {
+    checkAuth(error.response)
+    // checkPermission(error.response)
+    msg = error.response.data.message || error.response.data
+  } else {
+    msg = error.message
+  }
+  !config.hideMsg && (!headers['authentication-status']) && $error(msg)
+  return Promise.reject(error)
+})
 
 const checkAuth = response => {
-  // 请根据实际需求修改
-
   if (response.headers['authentication-status'] === 'login_expire') {
     const message = i18n.t('login.expires')
     // store.dispatch('user/setLoginMsg', message)
@@ -103,31 +157,5 @@ const checkAuth = response => {
     setLinkToken(linkToken)
     store.dispatch('user/setLinkToken', linkToken)
   }
-  // 许可状态改变 刷新页面
-//   if (response.headers['lic-status']) {
-//     location.reload()
-//   }
 }
-
-// 请根据实际需求修改
-service.interceptors.response.use(response => {
-  response.config.loading && tryHideLoading(store.getters.currentPath)
-  checkAuth(response)
-  return response.data
-}, error => {
-  const config = error.response && error.response.config || error.config
-  const headers = error.response && error.response.headers || error.response || config.headers
-  config.loading && tryHideLoading(store.getters.currentPath)
-
-  let msg
-  if (error.response) {
-    checkAuth(error.response)
-    // checkPermission(error.response)
-    msg = error.response.data.message || error.response.data
-  } else {
-    msg = error.message
-  }
-  !config.hideMsg && (!headers['authentication-status']) && $error(msg)
-  return Promise.reject(error)
-})
 export default service

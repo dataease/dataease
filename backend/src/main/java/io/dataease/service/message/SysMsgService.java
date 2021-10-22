@@ -16,14 +16,16 @@ import io.dataease.controller.sys.request.MsgSettingRequest;
 import io.dataease.controller.sys.response.MsgGridDto;
 import io.dataease.controller.sys.response.SettingTreeNode;
 import io.dataease.controller.sys.response.SubscribeNode;
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +33,7 @@ import java.util.stream.Collectors;
 @Service
 public class SysMsgService {
 
-    private static final long overDays = 30;
+    private static int overDays = 30;
 
     @Resource
     private SysMsgMapper sysMsgMapper;
@@ -49,6 +51,9 @@ public class SysMsgService {
 
     @Resource
     private SysMsgSettingMapper sysMsgSettingMapper;
+
+    @Autowired
+    private SystemParameterService systemParameterService;
 
     public List<SysMsg> query(Long userId, MsgRequest msgRequest) {
         String orderClause = " create_time desc";
@@ -330,6 +335,10 @@ public class SysMsgService {
 
     
     public Long overTime() {
+        String msgTimeOut = systemParameterService.basicInfo().getMsgTimeOut();
+        if(StringUtils.isNotBlank(msgTimeOut)) {
+            overDays = Integer.parseInt(msgTimeOut);
+        }
         Long currentTime = System.currentTimeMillis();
 
         long oneDayTime = 24 * 60 * 60 * 1000;

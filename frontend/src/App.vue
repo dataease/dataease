@@ -5,11 +5,12 @@
 </template>
 
 <script>
+
 export default {
   name: 'App',
 
   beforeCreate() {
-    // document.body.className = 'blackTheme'
+
   }
 }
 </script>

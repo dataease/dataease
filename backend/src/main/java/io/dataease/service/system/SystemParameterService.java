@@ -10,6 +10,7 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.i18n.Translator;
@@ -45,6 +46,24 @@ public class SystemParameterService {
 
     public String searchEmail() {
         return extSystemParameterMapper.email();
+    }
+
+    public BasicInfo basicInfo() {
+        List<SystemParameter> paramList = this.getParamList("basic");
+        BasicInfo result = new BasicInfo();
+        if (!CollectionUtils.isEmpty(paramList)) {
+            for (SystemParameter param : paramList) {
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
+                    /* result.setFrontTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
+                    result.setFrontTimeOut(param.getParamValue());
+                } 
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
+                    /* result.setMsgTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
+                    result.setMsgTimeOut(param.getParamValue());
+                } 
+            }
+        }
+        return result;
     }
 
 
@@ -89,6 +108,8 @@ public class SystemParameterService {
         return result;
     }
 
+
+
     public void editMail(List<SystemParameter> parameters) {
         List<SystemParameter> paramList = this.getParamList(ParamConstants.Classify.MAIL.getValue());
         boolean empty = paramList.size() <= 0;
@@ -101,6 +122,21 @@ public class SystemParameterService {
                     parameter.setParamValue(string);
                 }
             }
+            example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
+            if (systemParameterMapper.countByExample(example) > 0) {
+                systemParameterMapper.updateByPrimaryKey(parameter);
+            } else {
+                systemParameterMapper.insert(parameter);
+            }
+            example.clear();
+
+        });
+    }
+
+    public void editBasic(List<SystemParameter> parameters) {       
+        parameters.forEach(parameter -> {
+            SystemParameterExample example = new SystemParameterExample();
+            
             example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
             if (systemParameterMapper.countByExample(example) > 0) {
                 systemParameterMapper.updateByPrimaryKey(parameter);

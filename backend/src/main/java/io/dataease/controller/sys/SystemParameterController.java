@@ -2,10 +2,13 @@ package io.dataease.controller.sys;
 
 import io.dataease.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
+import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.service.FileService;
 import io.dataease.service.system.SystemParameterService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,9 +38,25 @@ public class SystemParameterController {
         return systemParameterService.mailInfo(ParamConstants.Classify.MAIL.getValue());
     }
 
+    @GetMapping("/basic/info")
+    public BasicInfo basicInfo() {
+        return systemParameterService.basicInfo();
+    }
+    
+    @GetMapping("/requestTimeOut")
+    public Integer RequestTimeOut() {
+        BasicInfo basicInfo = systemParameterService.basicInfo();
+        return StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10;
+    }
+
     @PostMapping("/edit/email")
     public void editMail(@RequestBody List<SystemParameter> systemParameter) {
         systemParameterService.editMail(systemParameter);
+    }
+
+    @PostMapping("/edit/basic")
+    public void editBasic(@RequestBody List<SystemParameter> systemParameter) {
+        systemParameterService.editBasic(systemParameter);
     }
 
     @PostMapping("/testConnection")
@@ -75,6 +94,8 @@ public class SystemParameterController {
     public void saveUIInfo (@RequestPart("request") Map<String,List<SystemParameterDTO>> systemParameterMap,@RequestPart(value = "files", required = false) List<MultipartFile> bodyFiles) throws IOException {
         systemParameterService.saveUIInfo(systemParameterMap,bodyFiles);
     }
+
+
 
 
 }
