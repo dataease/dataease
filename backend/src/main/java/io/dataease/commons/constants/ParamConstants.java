@@ -109,6 +109,18 @@ public interface ParamConstants {
         }
     }
 
+    enum BASIC implements ParamConstants {
+        FRONT_TIME_OUT("basic.frontTimeOut"),
+        MSG_TIME_OUT("basic.msgTimeOut");
+        private String value;
+        public String getValue() {
+            return this.value;
+        }
+        private BASIC(String value) {
+            this.value = value;
+        }
+    }
+
     enum BASE implements ParamConstants {
         URL("base.url");
 

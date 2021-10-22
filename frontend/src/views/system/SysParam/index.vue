@@ -2,6 +2,10 @@
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <el-tabs v-model="activeName" @tab-click="handleClick">
 
+      <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.basic_setting')" name="zero">
+        <basic-setting />
+      </el-tab-pane>
+
       <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
         <email-setting />
       </el-tab-pane>
@@ -22,17 +26,17 @@
   </layout-content>
 </template>
 <script>
-
+import BasicSetting from './BasicSetting'
 import EmailSetting from './EmailSetting'
 import LayoutContent from '@/components/business/LayoutContent'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { pluginLoaded } from '@/api/user'
 export default {
 
-  components: { EmailSetting, LayoutContent, PluginCom },
+  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom },
   data() {
     return {
-      activeName: 'first',
+      activeName: 'zero',
       isPluginLoaded: false
     }
   },

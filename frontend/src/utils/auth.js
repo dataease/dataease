@@ -48,3 +48,8 @@ export function getSysUI() {
   return json ? JSON.parse(json) : null
 }
 
+export function getTimeOut() {
+  const val = Cookies.get('request-time-out')
+  return val
+}
+
