@@ -48,6 +48,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("esQuery", QueryProvider.class);
             case ck:
                 return context.getBean("ckQuery", QueryProvider.class);
+            case mongo:
+                return context.getBean("mongoQuery", QueryProvider.class);
             default:
                 return context.getBean("mysqlQuery", QueryProvider.class);
         }

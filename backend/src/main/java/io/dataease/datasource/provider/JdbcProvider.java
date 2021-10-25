@@ -11,11 +11,8 @@ import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
@@ -28,9 +25,6 @@ public class JdbcProvider extends DatasourceProvider {
     private static Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
     public ExtendedJdbcClassLoader extendedJdbcClassLoader;
     static private String FILE_PATH = "/opt/dataease/drivers";
-
-//    @Resource
-//    private WallFilter wallFilter;
 
     @PostConstruct
     public void init() throws Exception{
