@@ -16,6 +16,7 @@ const privateKey = 'MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEA0vfvyTdGJkdb
 
 // 加密
 export function encrypt(txt) {
+  let publicKey = localStorage.getItem("publicKey");
   const encryptor = new JSEncrypt()
   encryptor.setPublicKey(publicKey) // 设置公钥
   return encryptor.encrypt(txt) // 对需要加密的数据进行加密
@@ -27,4 +28,5 @@ export function decrypt(txt) {
   encryptor.setPrivateKey(privateKey)
   return encryptor.decrypt(txt)
 }
+
 

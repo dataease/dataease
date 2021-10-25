@@ -10,10 +10,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
-import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.CodingUtil;
-import io.dataease.commons.utils.LogUtil;
-import io.dataease.commons.utils.ServletUtils;
+import io.dataease.commons.utils.*;
 import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
@@ -55,10 +52,9 @@ public class AuthServer implements AuthApi {
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
-        String username = loginDto.getUsername();
-        String password = loginDto.getPassword();
+        String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());;
+        String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
 
-        String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, password);
         // 增加ldap登录方式
         Integer loginType = loginDto.getLoginType();
         boolean isSupportLdap = authUserService.supportLdap();
@@ -191,8 +187,11 @@ public class AuthServer implements AuthApi {
         return authUserService.pluginLoaded();
     }
 
-    
-    
+
+    @Override
+    public String getPublicKey() {
+        return RsaProperties.publicKey;
+    }
     
 
     /*@Override

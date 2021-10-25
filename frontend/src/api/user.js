@@ -71,3 +71,10 @@ export function pluginLoaded() {
     method: 'post'
   })
 }
+
+export function getPublicKey() {
+  return request({
+    url: '/api/auth/getPublicKey',
+    method: 'get'
+  })
+}

@@ -63,10 +63,11 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import Cookies from 'js-cookie'
+import store from "@/store";
 export default {
   name: 'Login',
   components: { PluginCom },
@@ -116,6 +117,12 @@ export default {
         this.loginTypes.push(2)
       }
     })
+    getPublicKey().then(res => {
+      if (res.success && res.data) {
+        // 保存公钥
+        localStorage.setItem('publicKey', res.data)
+      }
+    })
   },
   created() {
     this.$store.dispatch('user/getUI').then(() => {
@@ -162,11 +169,12 @@ export default {
         if (valid) {
           this.loading = true
           const user = {
-            username: this.loginForm.username,
-            password: this.loginForm.password,
+            username: encrypt(this.loginForm.username),
+            password: encrypt(this.loginForm.password),
             loginType: this.loginForm.loginType
           }
-          user.password = encrypt(user.password)
+          let publicKey = localStorage.getItem("publicKey");
+          console.log(publicKey)
           this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false

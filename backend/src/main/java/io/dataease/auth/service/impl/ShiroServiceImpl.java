@@ -60,6 +60,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/api/auth/validateName", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenLdap", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenOidc", ANON);
+        filterChainDefinitionMap.put("/api/auth/getPublicKey", ANON);
         filterChainDefinitionMap.put("/api/pluginCommon/component/*", ANON);
         filterChainDefinitionMap.put("/plugin/oidc/authInfo", ANON);
         filterChainDefinitionMap.put("/sso/callBack*", ANON);
