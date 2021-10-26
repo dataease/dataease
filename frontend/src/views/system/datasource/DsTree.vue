@@ -165,6 +165,8 @@ export default {
         return 'Doris'
       } else if (type === 'mongo') {
         return 'MongoDB'
+      }else if (type === 'redshift') {
+        return 'AWS Redshift'
       }
     },
 
