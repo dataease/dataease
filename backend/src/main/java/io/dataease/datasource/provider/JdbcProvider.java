@@ -19,12 +19,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider {
     private static Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
     public ExtendedJdbcClassLoader extendedJdbcClassLoader;
     static private String FILE_PATH = "/opt/dataease/drivers";
+    private static final String REG_WITH_SQL_FRAGMENT = "((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT";
+    public static final Pattern WITH_SQL_FRAGMENT = Pattern.compile(REG_WITH_SQL_FRAGMENT);
 
     @PostConstruct
     public void init() throws Exception{
@@ -63,7 +67,7 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
-        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(dsr.getQuery())){
+        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()) )){
 
             list = fetchResult(rs);
 
@@ -92,7 +96,7 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
             return fetchResult(rs);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -128,7 +132,7 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
             return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -143,7 +147,7 @@ public class JdbcProvider extends DatasourceProvider {
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList = new LinkedList<>();
         List<TableFiled> fieldList = new ArrayList<>();
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
             dataList = fetchResult(rs);
             fieldList = fetchResultField(rs, datasourceRequest);
             result.put("dataList", dataList);
@@ -372,18 +376,21 @@ public class JdbcProvider extends DatasourceProvider {
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 dataSource.setUrl(mysqlConfiguration.getJdbc());
                 dataSource.setDriverClassName(mysqlConfiguration.getDriver());
+                dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = mysqlConfiguration;
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
                 dataSource.setDriverClassName(sqlServerConfiguration.getDriver());
                 dataSource.setUrl(sqlServerConfiguration.getJdbc());
+                dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = sqlServerConfiguration;
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
                 dataSource.setDriverClassName(oracleConfiguration.getDriver());
                 dataSource.setUrl(oracleConfiguration.getJdbc());
+                dataSource.setValidationQuery("select 1 from dual");
                 jdbcConfiguration = oracleConfiguration;
                 break;
             case pg:
@@ -407,6 +414,7 @@ public class JdbcProvider extends DatasourceProvider {
             default:
                 break;
         }
+
         dataSource.setUsername(jdbcConfiguration.getUsername());
         dataSource.setDriverClassLoader(extendedJdbcClassLoader);
         dataSource.setPassword(jdbcConfiguration.getPassword());
@@ -496,6 +504,25 @@ public class JdbcProvider extends DatasourceProvider {
             default:
                 return "show tables;";
         }
+    }
+
+    private static String rebuildSqlWithFragment(String sql) {
+        if (!sql.toLowerCase().startsWith("with")) {
+            Matcher matcher = WITH_SQL_FRAGMENT.matcher(sql);
+            if (matcher.find()) {
+                String withFragment = matcher.group();
+                if (!com.alibaba.druid.util.StringUtils.isEmpty(withFragment)) {
+                    if (withFragment.length() > 6) {
+                        int lastSelectIndex = withFragment.length() - 6;
+                        sql = sql.replace(withFragment, withFragment.substring(lastSelectIndex));
+                        withFragment = withFragment.substring(0, lastSelectIndex);
+                    }
+                    sql = withFragment + " " + sql;
+                    sql = sql.replaceAll(" " + "{2,}", " ");
+                }
+            }
+        }
+        return sql;
     }
 
 }
