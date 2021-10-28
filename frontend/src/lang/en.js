@@ -940,7 +940,9 @@ export default {
     axis_value_split_count: 'Tick Count',
     chart_waterfall: 'Waterfall',
     pie_inner_radius_percent: 'Inner Radius(%)',
-    pie_outer_radius_size: 'Outer Radius'
+    pie_outer_radius_size: 'Outer Radius',
+    table_page_size: 'Page Size',
+    table_page_size_unit: 'Item/Page'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
