@@ -218,6 +218,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import FilterTextAttr from '@/components/canvas/components/FilterTextAttr'
+import {queryPanelJumpInfo} from "@/api/panel/linkJump";
 
 export default {
   name: 'PanelEdit',
@@ -449,6 +450,10 @@ export default {
           // 刷新联动信息
           getPanelAllLinkageInfo(panelId).then(rsp => {
             this.$store.commit('setNowPanelTrackInfo', rsp.data)
+          })
+          // 刷新跳转信息
+          queryPanelJumpInfo(panelId).then(rsp => {
+            this.$store.commit('setNowPanelJumpInfo', rsp.data)
           })
         })
       }

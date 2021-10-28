@@ -6,7 +6,7 @@
       <!--      <i v-if="linkageInfo.linkageActive" class="icon iconfont icon-edit" @click.stop="linkageEdit" />-->
     </div>
     <div v-else-if="!linkageSettingStatus">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem">
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet">
         <span slot="icon" :title="$t('panel.setting')">
           <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
         </span>
@@ -199,6 +199,9 @@ export default {
           }
         }
       })
+    },
+    linkJumpSet() {
+      this.$emit('linkJumpSet')
     }
   }
 }

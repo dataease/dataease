@@ -21,7 +21,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="active||linkageSettingStatus" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" />
+    <edit-bar v-if="curComponent&&(active||linkageSettingStatus)" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
     <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       v-for="(handlei, indexi) in actualHandles"
@@ -1258,7 +1258,7 @@ export default {
           // 记录snapshot后 移动已记录设置为false
           this.hasMove = false
         }, 100)
-      }else{
+      } else {
         this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
         // 记录snapshot后 移动已记录设置为false
         this.hasMove = false
@@ -1687,6 +1687,10 @@ export default {
     },
     resizeView() {
       this.$emit('resizeView')
+    },
+    // 跳转设置
+    linkJumpSet() {
+      this.$emit('linkJumpSet')
     }
   }
 

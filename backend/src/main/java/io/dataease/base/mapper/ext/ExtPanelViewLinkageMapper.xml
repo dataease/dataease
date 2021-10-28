@@ -62,6 +62,18 @@
     from dataset_table_field where table_id = #{table_id}
     </select>
 
+    <select id="queryTableFieldWithViewId" resultMap="TableFieldMap">
+        select
+       dataset_table_field.id,
+       dataset_table_field.table_id,
+       dataset_table_field.origin_name,
+       dataset_table_field.`name`,
+       dataset_table_field.de_type
+        from dataset_table_field
+		left join chart_view on dataset_table_field.table_id= chart_view.table_id
+		where chart_view.id = #{viewId}
+    </select>
+
 
     <delete id="deleteViewLinkage">
         delete from panel_view_linkage where   panel_view_linkage.panel_id = #{panelId}

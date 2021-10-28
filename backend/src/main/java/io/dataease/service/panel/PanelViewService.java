@@ -7,7 +7,9 @@ import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.panel.PanelViewDto;
+import io.dataease.dto.panel.PanelViewTableDTO;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import io.dataease.dto.panel.po.PanelViewPo;
 import org.apache.commons.collections.CollectionUtils;
@@ -93,5 +95,11 @@ public class PanelViewService {
                 extPanelViewMapper.savePanelView(panelViewInsertDTOList);
             }
         }
+    }
+
+    public List<PanelViewTableDTO> detailList(String panelId){
+
+
+       return extPanelViewMapper.getPanelViewDetails(panelId);
     }
 }

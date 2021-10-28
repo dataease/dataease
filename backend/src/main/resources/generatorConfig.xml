@@ -65,7 +65,9 @@
         <!--要生成的数据库表 -->
 
 
-        <table tableName="panel_link"/>
+        <table tableName="panel_link_jump"/>
+        <table tableName="panel_link_jump_info"/>
+        <table tableName="panel_link_jump_target_view_info"/>
 
 <!--        <table tableName="sys_dict_item"/>-->
 <!--        <table tableName="dataset_table_field"/>-->

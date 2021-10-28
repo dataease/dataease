@@ -56,6 +56,7 @@ public class PanelGroupService {
     @Resource
     private PanelViewService panelViewService;
 
+
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);

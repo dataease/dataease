@@ -8,7 +8,7 @@ import Preview from './Preview'
 import { uuid } from 'vue-uuid'
 import { findOne } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-
+import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
   components: { Preview },
@@ -30,6 +30,28 @@ export default {
         getPanelAllLinkageInfo(this.panelId).then(rsp => {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
         })
+        // 刷新跳转信息
+        queryPanelJumpInfo(data.id).then(rsp => {
+          this.$store.commit('setNowPanelJumpInfo', rsp.data)
+        })
+
+        // 如果含有跳转参数 进行触发
+        const tempParam = localStorage.getItem('jumpInfoParam')
+        if (tempParam) {
+          localStorage.removeItem('jumpInfoParam')
+          const jumpParam = JSON.parse(tempParam)
+          const jumpRequestParam = {
+            sourcePanelId: jumpParam.sourcePanelId,
+            sourceViewId: jumpParam.sourceViewId,
+            sourceFieldId: jumpParam.sourceFieldId,
+            targetPanelId: this.panelId
+          }
+          // 刷新跳转目标仪表板联动信息
+          queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
+            this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
+            this.$store.commit('addViewTrackFilter', jumpParam)
+          })
+        }
         this.$store.dispatch('panel/setPanelInfo', data)
       })
     },

@@ -9,6 +9,7 @@ import { loadResource } from '@/api/link'
 import { uuid } from 'vue-uuid'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import {queryPanelJumpInfo} from "@/api/panel/linkJump";
 
 export default {
   name: 'LinkView',
@@ -38,6 +39,10 @@ export default {
         this.$store.commit('setComponentData', this.resetID(JSON.parse(res.data.panelData)))
         // this.$store.commit('setComponentData', JSON.parse(res.data.panelData))
         this.$store.commit('setCanvasStyle', JSON.parse(res.data.panelStyle))
+        // 刷新跳转信息
+        queryPanelJumpInfo(this.resourceId).then(rsp => {
+          this.$store.commit('setNowPanelJumpInfo', rsp.data)
+        })
         this.show = true
       })
     },

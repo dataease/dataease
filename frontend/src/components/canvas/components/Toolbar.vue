@@ -120,6 +120,7 @@ import bus from '@/utils/bus'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
+import {queryPanelJumpInfo} from "@/api/panel/linkJump";
 
 export default {
   name: 'Toolbar',
@@ -379,6 +380,10 @@ export default {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
         })
         this.cancelLinkageSettingStatus()
+        // 刷新跳转信息
+        queryPanelJumpInfo(this.$store.state.panel.panelInfo.id).then(rsp => {
+          this.$store.commit('setNowPanelJumpInfo', rsp.data)
+        })
       })
     },
     cancelLinkage() {

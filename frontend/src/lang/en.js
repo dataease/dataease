@@ -1313,6 +1313,7 @@ export default {
     save_and_close: 'Save',
     drill: 'drill',
     linkage: 'linkage',
+    jump: 'Jump',
     cancel_linkage: 'Cancel Linkage',
     remove_all_linkage: 'Remove All Linkage',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',

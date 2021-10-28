@@ -22,7 +22,8 @@ export default {
     return {
       i18n_map: {
         drill: this.$t('panel.drill'),
-        linkage: this.$t('panel.linkage')
+        linkage: this.$t('panel.linkage'),
+        jump: this.$t('panel.jump')
       }
     }
   },

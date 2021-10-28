@@ -227,7 +227,8 @@ export default {
         }
         return
       }
-      const linkageParam = {
+      const jumpParam = {
+        option: 'jump',
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
         quotaList: this.pointParam.data.quotaList
@@ -238,6 +239,9 @@ export default {
           break
         case 'linkage':
           this.$store.commit('addViewTrackFilter', linkageParam)
+          break
+        case 'jump':
+          this.$emit('onJumpClick', jumpParam)
           break
         default:
           break

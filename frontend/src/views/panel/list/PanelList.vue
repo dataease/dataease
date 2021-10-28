@@ -232,6 +232,7 @@ import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
 import { addGroup, delGroup, groupTree, defaultTree, findOne, panelSave } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
@@ -638,6 +639,11 @@ export default {
           // 刷新联动信息
           getPanelAllLinkageInfo(data.id).then(rsp => {
             this.$store.commit('setNowPanelTrackInfo', rsp.data)
+          })
+
+          // 刷新跳转信息
+          queryPanelJumpInfo(data.id).then(rsp => {
+            this.$store.commit('setNowPanelJumpInfo', rsp.data)
           })
         })
       }

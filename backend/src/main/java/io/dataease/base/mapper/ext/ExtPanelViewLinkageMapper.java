@@ -16,6 +16,8 @@ public interface ExtPanelViewLinkageMapper {
 
     List<DatasetTableField> queryTableField(@Param("table_id") String tableId);
 
+    List<DatasetTableField> queryTableFieldWithViewId(@Param("viewId") String viewId);
+
     void deleteViewLinkage(@Param("panelId") String panelId,@Param("sourceViewId") String sourceViewId);
 
     void deleteViewLinkageField(@Param("panelId") String panelId,@Param("sourceViewId") String sourceViewId);

@@ -5,7 +5,7 @@
     :class="[
       {
         ['edit']: isEdit ,
-        ['parent_transform']:!chartDetailsVisible
+        ['parent_transform']:!dialogVisible
       }
     ]"
     @mousedown="handleMouseDown"
@@ -52,6 +52,7 @@
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItme="addItemBox(item)"
+      @linkJumpSet="linkJumpSet(item)"
     >
       <!--      <span style="position:relative;left: 0px;top:0px">-->
       <!--        item:x-{{ item.x }}y-{{ item.y }}top-{{ item.style.top }}-->
@@ -152,6 +153,7 @@
       width="70%"
       class="dialog-css"
       :destroy-on-close="true"
+      :show-close="true"
     >
       <span style="position: absolute;right: 70px;top:15px">
         <el-button size="mini" @click="exportExcel">
@@ -160,6 +162,17 @@
         </el-button>
       </span>
       <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="linkJumpSetVisible"
+      width="60%"
+      class="dialog-css"
+      :show-close="true"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <LinkJumpSet v-if="linkJumpSetVisible" :view-id="linkJumpSetViewId" @closeJumpSetDialog="closeJumpSetDialog" />
     </el-dialog>
   </div>
 </template>
@@ -185,6 +198,7 @@ import DeOutWidget from '@/components/dataease/DeOutWidget'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import DragShadow from '@/components/DeDrag/shadow'
 import bus from '@/utils/bus'
+import LinkJumpSet from '@/views/panel/LinkJumpSet'
 
 // 挤占式画布
 import _ from 'lodash'
@@ -801,7 +815,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -920,11 +934,15 @@ export default {
       maxCell: 0,
       lastComponentDataLength: 0,
       positionBoxInfoArray: [],
-      yourList: []
-
+      yourList: [],
+      linkJumpSetVisible: false,
+      linkJumpSetViewId: null
     }
   },
   computed: {
+    dialogVisible() {
+      return this.chartDetailsVisible || this.linkJumpSetVisible
+    },
     // 挤占式画布设计
     // positionBoxInfo() {
     //   return getoPsitionBox()
@@ -1640,6 +1658,13 @@ export default {
         infoBox.oldSizeX = moveInItemInfo.sizex
         infoBox.oldSizeY = moveInItemInfo.sizey
       }
+    },
+    linkJumpSet(item) {
+      this.linkJumpSetViewId = item.propValue.viewId
+      this.linkJumpSetVisible = true
+    },
+    closeJumpSetDialog() {
+      this.linkJumpSetVisible = false
     }
   }
 }

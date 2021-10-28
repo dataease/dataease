@@ -16,8 +16,8 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
-    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
+    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" @onJumpClick="jumpClick" />
+    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" @onJumpClick="jumpClick" />
     <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
     <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
     <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
@@ -45,6 +45,7 @@ import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
+import { Base64 } from 'js-base64'
 export default {
   name: 'UserView',
   components: { ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
@@ -99,6 +100,9 @@ export default {
     }
   },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     filter() {
       const filter = {}
       filter.filter = this.element.filters
@@ -121,12 +125,21 @@ export default {
     trackMenu() {
       const trackMenuInfo = []
       let linkageCount = 0
+      let jumpCount = 0
       this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
         }
       })
+      this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
+        const sourceInfo = this.chart.id + '#' + item.id
+        // console.log('nowPanelJumpInfo=>' + JSON.stringify(this.nowPanelJumpInfo))
+        if (this.nowPanelJumpInfo[sourceInfo]) {
+          jumpCount++
+        }
+      })
+      jumpCount && trackMenuInfo.push('jump')
       linkageCount && trackMenuInfo.push('linkage')
       this.drillFields.length && trackMenuInfo.push('drill')
       // console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
@@ -140,7 +153,8 @@ export default {
     },
     ...mapState([
       'canvasStyleData',
-      'nowPanelTrackInfo'
+      'nowPanelTrackInfo',
+      'nowPanelJumpInfo'
     ])
   },
 
@@ -322,6 +336,42 @@ export default {
           showClose: true
         })
       }
+    },
+
+    jumpClick(param) {
+      const dimension = param.dimensionList[0]
+
+      param.sourcePanelId = this.panelInfo.id
+      param.sourceViewId = param.viewId
+      param.sourceFieldId = dimension.id
+      const sourceInfo = param.viewId + '#' + dimension.id
+      const jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+      if (jumpInfo) {
+        // 内部仪表板跳转
+        if (jumpInfo.linkType === 'inner') {
+          if (jumpInfo.targetPanelId) {
+            const url = '#/preview/' + jumpInfo.targetPanelId
+            localStorage.setItem('jumpInfoParam', JSON.stringify(param))
+            window.open(url, '_blank')
+          } else {
+            this.$message({
+              type: 'warn',
+              message: '未指定跳转仪表板',
+              showClose: true
+            })
+          }
+        } else {
+          const url = jumpInfo.content
+          window.open(url, '_blank')
+        }
+      } else {
+        this.$message({
+          type: 'warn',
+          message: '未获取跳转信息',
+          showClose: true
+        })
+      }
+      // console.log('param=>' + JSON.stringify(param))
     },
 
     resetDrill() {

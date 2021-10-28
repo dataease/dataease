@@ -6,7 +6,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="config === curComponent" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="curComponent && config === curComponent" :element="config" @showViewDetails="showViewDetails" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"

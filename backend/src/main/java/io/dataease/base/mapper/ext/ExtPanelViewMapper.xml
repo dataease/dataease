@@ -9,7 +9,42 @@
         <result column="type" property="type" />
     </resultMap>
 
+    <resultMap extends="io.dataease.base.mapper.ChartViewMapper.BaseResultMap" id="PanelViewDetailsMap" type="io.dataease.dto.panel.PanelViewTableDTO">
+        <result column="panel_id" property="panelId" />
+        <collection property="tableFields" ofType="io.dataease.base.domain.DatasetTableField">
+            <result column="field_id" jdbcType="VARCHAR" property="id"/>
+            <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
+            <result column="field_name" jdbcType="VARCHAR" property="name"/>
+            <result column="field_type" jdbcType="VARCHAR" property="type"/>
+            <result column="de_type" jdbcType="VARCHAR" property="deType"/>
+        </collection>
+    </resultMap>
 
+    <select id="getPanelViewDetails"  resultMap="PanelViewDetailsMap">
+       	SELECT
+            chart_view.id,
+            chart_view.`name`,
+            chart_view.scene_id,
+            chart_view.table_id,
+            chart_view.`type`,
+            chart_view.render,
+            chart_view.title,
+            chart_view.create_by,
+            chart_view.create_time,
+            chart_view.update_time,
+            chart_view.style_priority,
+            panel_view.panel_id,
+            dataset_table_field.id as 'field_id',
+            dataset_table_field.origin_name,
+            dataset_table_field.`name` as 'field_name',
+            dataset_table_field.type as 'field_type',
+            dataset_table_field.de_type
+        FROM
+            panel_view
+            LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
+            left join dataset_table_field on chart_view.table_id = dataset_table_field.table_id
+            where panel_view.panel_id =#{panelId}
+    </select>
 
     <select id="groups"  resultMap="treeNodeMap">
         select id, ifnull(pid,0) as pid,  name, `type`

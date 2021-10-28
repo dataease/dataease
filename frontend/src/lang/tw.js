@@ -1316,6 +1316,7 @@ export default {
     save: '保存',
     drill: '下鑽',
     linkage: '聯動',
+    jump: '跳转',
     cancel_linkage: '取消聯動',
     remove_all_linkage: '清除所有聯動',
     exit_un_march_linkage_field: '存在未匹配聯動關系的字段',
