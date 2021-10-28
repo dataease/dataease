@@ -40,6 +40,11 @@ BEGIN;
 INSERT INTO `sys_menu` VALUES (6, 1, 0, 1, '系统参数', 'system-param', 'system/SysParam/index', 6, 'sys-tools', 'system-param', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, NULL);
 COMMIT;
 
+
+ALTER TABLE `chart_view`
+MODIFY COLUMN `name` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名称' AFTER `id`,
+MODIFY COLUMN `title` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'EChart标题' AFTER `result_mode`;
+
 ALTER TABLE `chart_view` ADD COLUMN `result_count` int(10)  COMMENT '展示结果' AFTER `render`;
 ALTER TABLE `chart_view` ADD COLUMN `result_mode` varchar(50)  COMMENT '展示模式' AFTER `result_count`;
 UPDATE `chart_view` SET `result_count` = 1000;
