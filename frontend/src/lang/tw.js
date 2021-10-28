@@ -941,7 +941,9 @@ export default {
     axis_value_split_count: '刻度數',
     chart_waterfall: '瀑布圖',
     pie_inner_radius_percent: '內徑占比',
-    pie_outer_radius_size: '外徑大小'
+    pie_outer_radius_size: '外徑大小',
+    table_page_size: '分頁',
+    table_page_size_unit: '條/頁'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

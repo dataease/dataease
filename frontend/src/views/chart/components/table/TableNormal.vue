@@ -42,7 +42,7 @@
           :page-sizes="[10,20,50,100]"
           :page-size="currentPage.pageSize"
           :pager-count="5"
-          layout="sizes, prev, pager, next"
+          layout="prev, pager, next"
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
@@ -163,6 +163,8 @@ export default {
       let datas = []
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
+        const attr = JSON.parse(this.chart.customAttr)
+        this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 10)
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
         if (this.chart.type === 'table-info') {
           // 计算分页
