@@ -5,6 +5,9 @@ import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.api.dto.LoginDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.GetMapping;
+import springfox.documentation.annotations.ApiIgnore;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -48,5 +51,13 @@ public interface AuthApi {
     @ApiOperation("是否开启oidc")
     @PostMapping("/isOpenOidc")
     boolean isOpenOidc();
+
+    @ApiIgnore
+    @PostMapping("/isPluginLoaded")
+    boolean isPluginLoaded();
+
+    @ApiIgnore
+    @GetMapping("/getPublicKey")
+    String getPublicKey();
 
 }

@@ -163,6 +163,8 @@ export default {
         return 'MariaDB'
       } else if (type === 'ds_doris') {
         return 'Doris'
+      } else if (type === 'mongo') {
+        return 'MongoDB'
       }
     },
 

@@ -1,7 +1,8 @@
 <template>
   <de-container>
     <de-aside-container v-if="!chart.type.includes('table')" :style="customStyle">
-      <chart-component v-if="!chart.type.includes('text')" class="chart-class" :chart="chart" />
+      <chart-component v-if="!chart.type.includes('text') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+      <chart-component-g2 v-if="!chart.type.includes('text') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <label-normal v-if="chart.type.includes('text')" :chart="chart" class="table-class" />
     </de-aside-container>
     <de-main-container>
@@ -20,10 +21,11 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { export_json_to_excel } from '@/plugins/Export2Excel'
 import { mapState } from 'vuex'
+import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 
 export default {
   name: 'UserView',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal },
   props: {
     chart: {
       type: Object,
@@ -72,6 +74,10 @@ export default {
       const excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.chart.name
       export_json_to_excel(excelHeader, excelData, excelName)
+    },
+
+    renderComponent() {
+      return this.chart.render
     }
   }
 }

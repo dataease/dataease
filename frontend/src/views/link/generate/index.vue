@@ -31,6 +31,7 @@
           value-format="timestamp"
           :picker-options="pickerOptions"
           default-time="23:59:59"
+          popper-class="link-date-picker-class"
           @change="resetOverTime"
         />
       </el-form-item>
@@ -241,4 +242,5 @@ export default {
         margin: 15px 0px 5px;
         text-align: right;
     }
+
 </style>

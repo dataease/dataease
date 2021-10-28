@@ -42,10 +42,10 @@
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.pie_inner_radius_percent')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.pie_outer_radius_size')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
 
@@ -96,6 +96,16 @@
         </el-form-item>
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
+          <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
+            <el-option
+              v-for="item in pageSizeOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
 
@@ -282,6 +292,12 @@ export default {
         { name: this.$t('chart.liquid_shape_pin'), value: 'pin' },
         { name: this.$t('chart.liquid_shape_rect'), value: 'rect' }
       ],
+      pageSizeOptions: [
+        { name: '10' + this.$t('chart.table_page_size_unit'), value: '10' },
+        { name: '20' + this.$t('chart.table_page_size_unit'), value: '20' },
+        { name: '50' + this.$t('chart.table_page_size_unit'), value: '50' },
+        { name: '100' + this.$t('chart.table_page_size_unit'), value: '100' }
+      ],
       fontSize: []
     }
   },
@@ -319,6 +335,8 @@ export default {
           this.sizeForm.liquidOutlineDistance = (this.sizeForm.liquidOutlineDistance || this.sizeForm.liquidOutlineDistance === 0) ? this.sizeForm.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
+
+          this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
         }
       }
     },

@@ -158,7 +158,8 @@ export default {
         { name: 'es', label: 'Elasticsearch', type: 'es' },
         { name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
         { name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
-        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' }
+        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' },
+        { name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: '' }
         ],
       schemas: [],
       canEdit: false,

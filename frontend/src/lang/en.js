@@ -606,6 +606,11 @@ export default {
     mailbox_service_settings: 'Mail Settings',
     test_connection: 'Test connection',
     SMTP_host: 'SMTP Host',
+    basic_setting: 'Basic setting',
+    front_time_out: 'Request timeOut(unit: second, Attention: Refresh browser takes effect after saving)',
+    msg_time_out: 'Message retention time(unit: day)',
+    empty_front: 'If empty then default value is 10s',
+    empty_msg: 'If empty then default value is 30 days',
     SMTP_port: 'SMTP Port',
     SMTP_account: 'SMTP Account',
     SMTP_password: 'SMTP Password',
@@ -933,7 +938,11 @@ export default {
     liquid_shape_rect: 'Rect',
     dimension_or_quota: 'Dimension Or Quota',
     axis_value_split_count: 'Tick Count',
-    chart_waterfall: 'Waterfall'
+    chart_waterfall: 'Waterfall',
+    pie_inner_radius_percent: 'Inner Radius(%)',
+    pie_outer_radius_size: 'Outer Radius',
+    table_page_size: 'Page Size',
+    table_page_size_unit: 'Item/Page'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

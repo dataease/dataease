@@ -243,7 +243,9 @@ const list = [
       borderStyle: 'solid',
       borderWidth: 1,
       borderColor: '#000000',
-      borderRadius: 0
+      borderRadius: 0,
+      /* margin: 10, */
+      time_margin: 10
     },
     formatInfo: {
       openMode: '0',

@@ -3,7 +3,7 @@
     <de-aside-container>
       <el-tabs v-model="currentTemplateType" @tab-click="handleClick">
         <el-tab-pane name="system">
-          <span slot="label"><i class="el-icon-document" /> {{ $t('panel.sys_template') }}</span>
+          <span slot="label"><i class="el-icon-document tablepanel-i" /> {{ $t('panel.sys_template') }}</span>
           <template-list
             v-if="currentTemplateType==='system'"
             :template-type="currentTemplateType"
@@ -16,7 +16,7 @@
           />
         </el-tab-pane>
         <el-tab-pane name="self">
-          <span slot="label"><i class="el-icon-star-off" />{{ $t('panel.user_template') }}</span>
+          <span slot="label"><i class="el-icon-star-off tablepanel-i" />{{ $t('panel.user_template') }}</span>
           <!--v-if 重新渲染 强制刷新首行高亮属性-->
           <template-list
             v-if="currentTemplateType==='self'"

@@ -670,5 +670,12 @@ div:focus {
     color: var(--Main, #0000ff);
 }
 
+.link-date-picker-class > .el-picker-panel__footer > .el-button--text:first-child{
+  display: none;
+}
+
+.tablepanel-i {
+  margin-right: 4px;
+}
 
 

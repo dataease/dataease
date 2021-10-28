@@ -608,6 +608,13 @@ export default {
     mailbox_service_settings: '邮件设置',
     test_connection: '测试连接',
     SMTP_host: 'SMTP主机',
+    basic_setting: '基础设置',
+    front_time_out: '请求超时时间(单位:秒, 注意:保存后刷新浏览器生效)',
+    msg_time_out: '消息保留时间(单位:天)',
+    empty_front: '为空则默认取10秒',
+    empty_msg: '为空则默认取30天',
+    front_error: '请填写0-100正整数',
+    msg_error: '请填写正整数',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP账户',
     SMTP_password: 'SMTP密码',
@@ -934,7 +941,11 @@ export default {
     liquid_shape_rect: '矩形',
     dimension_or_quota: '维度或指标',
     axis_value_split_count: '刻度数',
-    chart_waterfall: '瀑布图'
+    chart_waterfall: '瀑布图',
+    pie_inner_radius_percent: '内径占比',
+    pie_outer_radius_size: '外径大小',
+    table_page_size: '分页',
+    table_page_size_unit: '条/页'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1297,6 +1308,8 @@ export default {
     fontWeight: '字体粗细',
     lineHeight: '行高',
     letterSpacing: '字间距',
+    padding: '内间距',
+    margin: '外间距',
     textAlign: '左右对齐',
     opacity: '不透明度',
     verticalAlign: '上下对齐',
@@ -1497,7 +1510,8 @@ export default {
     i18n_msg_type_dataset_sync_faild: '数据集同步失败',
     i18n_msg_type_ds_invalid: '数据源失效',
     i18n_msg_type_all: '全部类型',
-    channel_inner_msg: '站内消息'
+    channel_inner_msg: '站内消息',
+    channel_email_msg: '邮件'
   },
   denumberrange: {
     label: '数值区间',

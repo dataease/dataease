@@ -9,6 +9,7 @@ public enum DatasourceTypes {
     sqlServer("sqlServer", "sqlServer", "com.microsoft.sqlserver.jdbc.SQLServerDriver", "\"", "\"", "\"", "\""),
     de_doris("de_doris", "de_doris", "com.mysql.jdbc.Driver", "`", "`", "", ""),
     oracle("oracle", "oracle", "oracle.jdbc.driver.OracleDriver", "\"", "\"", "\"", "\""),
+    mongo("mongo", "mongodb", "com.mongodb.jdbc.MongoDriver", "`", "`", "\"", "\""),
     ck("ch", "ch", "ru.yandex.clickhouse.ClickHouseDriver", "`", "`", "'", "'"),
     es("es", "es", "", "\"", "\"", "\"", "\"");
 

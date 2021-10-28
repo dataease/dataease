@@ -35,3 +35,7 @@ CREATE TABLE `panel_link_jump_target_view_info` (
   `target_field_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`target_id`) USING BTREE
 ) ENGINE=InnoDB ;
+
+BEGIN;
+INSERT INTO `sys_menu` VALUES (6, 1, 0, 1, '系统参数', 'system-param', 'system/SysParam/index', 6, 'sys-tools', 'system-param', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, NULL);
+COMMIT;

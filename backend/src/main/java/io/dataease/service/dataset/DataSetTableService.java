@@ -1037,6 +1037,7 @@ public class DataSetTableService {
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
+                System.out.println(new Gson().toJson(filed));
                 DatasetTableField datasetTableField = DatasetTableField.builder().build();
                 datasetTableField.setTableId(datasetTable.getId());
                 datasetTableField.setOriginName(filed.getFieldName());

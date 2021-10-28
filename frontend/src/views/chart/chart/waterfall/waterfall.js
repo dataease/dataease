@@ -43,7 +43,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
     appendPadding: getPadding(chart),
     label: label,
     tooltip: tooltip,
-    legend: false,
+    legend: {},
     xAxis: xAxis,
     yAxis: yAxis,
     risingFill: theme.styleSheet.paletteQualitative10[0],

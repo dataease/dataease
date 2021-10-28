@@ -36,6 +36,13 @@ export function baseLineOption(chart_option, chart) {
           type: customAttr.size.lineType
         }
         y.smooth = customAttr.size.lineSmooth
+        if (customAttr.size.lineArea) {
+          y.areaStyle = {
+            opacity: 0.6
+          }
+        } else {
+          delete y.areaStyle
+        }
       }
       // label
       if (customAttr.label) {

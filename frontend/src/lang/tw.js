@@ -608,6 +608,11 @@ export default {
     mailbox_service_settings: '郵件設置',
     test_connection: '測試連接',
     SMTP_host: 'SMTP主機',
+    basic_setting: '基礎設置',
+    front_time_out: '請求超時時間(單位:秒, 注意:保存後刷新瀏覽器生效)',
+    msg_time_out: '消息保留時間(單位:天)',
+    empty_front: '為空則默認取值10秒',
+    empty_msg: '為空則默認取值30天',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP賬戶',
     SMTP_password: 'SMTP密碼',
@@ -934,7 +939,11 @@ export default {
     liquid_shape_rect: '矩形',
     dimension_or_quota: '維度或指標',
     axis_value_split_count: '刻度數',
-    chart_waterfall: '瀑布圖'
+    chart_waterfall: '瀑布圖',
+    pie_inner_radius_percent: '內徑占比',
+    pie_outer_radius_size: '外徑大小',
+    table_page_size: '分頁',
+    table_page_size_unit: '條/頁'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

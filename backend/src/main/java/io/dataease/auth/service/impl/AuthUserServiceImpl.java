@@ -8,6 +8,7 @@ import io.dataease.base.mapper.ext.AuthMapper;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.plugins.common.service.PluginCommonService;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
@@ -136,6 +137,17 @@ public class AuthUserServiceImpl implements AuthUserService {
         if(ObjectUtils.isEmpty(oidcXpackService)) return false;
         return oidcXpackService.isSuuportOIDC();
     }
+
+    @Override
+    public Boolean pluginLoaded() {
+        Map<String, PluginCommonService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((PluginCommonService.class));
+        if(beansOfType.keySet().size() == 0) return false;
+        PluginCommonService pluginCommonService = SpringContextUtil.getBean(PluginCommonService.class);
+        if(ObjectUtils.isEmpty(pluginCommonService)) return false;
+        return pluginCommonService.isPluginLoaded();
+    }
+
+    
 
     
 }

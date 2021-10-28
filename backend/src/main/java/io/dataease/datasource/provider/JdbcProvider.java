@@ -1,6 +1,8 @@
 package io.dataease.datasource.provider;
 
+import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.wall.WallFilter;
 import com.google.gson.Gson;
 import io.dataease.datasource.constants.DatasourceTypes;
 import io.dataease.datasource.dto.*;
@@ -10,7 +12,6 @@ import io.dataease.i18n.Translator;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -18,12 +19,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider {
     private static Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
     public ExtendedJdbcClassLoader extendedJdbcClassLoader;
     static private String FILE_PATH = "/opt/dataease/drivers";
+    private static final String REG_WITH_SQL_FRAGMENT = "((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT";
+    public static final Pattern WITH_SQL_FRAGMENT = Pattern.compile(REG_WITH_SQL_FRAGMENT);
 
     @PostConstruct
     public void init() throws Exception{
@@ -62,8 +67,10 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
-        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(dsr.getQuery())){
+        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()) )){
+
             list = fetchResult(rs);
+
             if(dsr.isPageable() && dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())){
                 Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize(): list.size();
                 list = list.subList((dsr.getPage() - 1) * dsr.getPageSize(), realSize);
@@ -89,7 +96,7 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
             return fetchResult(rs);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -125,7 +132,7 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
             return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -140,7 +147,7 @@ public class JdbcProvider extends DatasourceProvider {
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList = new LinkedList<>();
         List<TableFiled> fieldList = new ArrayList<>();
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
             dataList = fetchResult(rs);
             fieldList = fetchResultField(rs, datasourceRequest);
             result.put("dataList", dataList);
@@ -195,13 +202,16 @@ public class JdbcProvider extends DatasourceProvider {
         }
 
         String queryView = getViewSql(datasourceRequest);
-        try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)){
-            while (resultSet.next()) {
-                tables.add(resultSet.getString(1));
+        if(queryView != null){
+            try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)){
+                while (resultSet.next()) {
+                    tables.add(resultSet.getString(1));
+                }
+            } catch (Exception e) {
+                DataEaseException.throwException(e);
             }
-        } catch (Exception e) {
-            DataEaseException.throwException(e);
         }
+
         return tables;
     }
 
@@ -318,6 +328,13 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = chConfiguration.getDriver();
                 jdbcurl = chConfiguration.getJdbc();
                 break;
+            case mongo:
+                MongodbConfiguration mongodbConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MongodbConfiguration.class);
+                username = mongodbConfiguration.getUsername();
+                password = mongodbConfiguration.getPassword();
+                driver = mongodbConfiguration.getDriver();
+                jdbcurl = mongodbConfiguration.getJdbc();
+                break;
             default:
                 break;
         }
@@ -332,13 +349,19 @@ public class JdbcProvider extends DatasourceProvider {
         return conn;
     }
 
-    private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException {
-        DruidDataSource dataSource = new DruidDataSource();
-        JdbcConfiguration jdbcConfiguration = setCredential(datasourceRequest, dataSource);
-        dataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
-        dataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
-        dataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
-        jdbcConnection.put(datasourceRequest.getDatasource().getId(), dataSource);
+    private void addToPool(DatasourceRequest datasourceRequest) throws PropertyVetoException, SQLException {
+        DruidDataSource druidDataSource = new DruidDataSource();
+        JdbcConfiguration jdbcConfiguration = setCredential(datasourceRequest, druidDataSource);
+        druidDataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
+        druidDataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
+        druidDataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
+        if(datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name())){
+            WallFilter wallFilter = new WallFilter();
+            wallFilter.setDbType(DatasourceTypes.mysql.name());
+            druidDataSource.setProxyFilters(Arrays.asList(new Filter[]{wallFilter}));
+        }
+        druidDataSource.init();
+        jdbcConnection.put(datasourceRequest.getDatasource().getId(), druidDataSource);
     }
 
 
@@ -351,47 +374,51 @@ public class JdbcProvider extends DatasourceProvider {
             case de_doris:
             case ds_doris:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
-                dataSource.setUsername(mysqlConfiguration.getUsername());
-                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
-                dataSource.setPassword(mysqlConfiguration.getPassword());
                 dataSource.setUrl(mysqlConfiguration.getJdbc());
+                dataSource.setDriverClassName(mysqlConfiguration.getDriver());
+                dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = mysqlConfiguration;
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
-                dataSource.setUsername(sqlServerConfiguration.getUsername());
-                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
-                dataSource.setPassword(sqlServerConfiguration.getPassword());
+                dataSource.setDriverClassName(sqlServerConfiguration.getDriver());
                 dataSource.setUrl(sqlServerConfiguration.getJdbc());
+                dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = sqlServerConfiguration;
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
-                dataSource.setUsername(oracleConfiguration.getUsername());
-                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
-                dataSource.setPassword(oracleConfiguration.getPassword());
+                dataSource.setDriverClassName(oracleConfiguration.getDriver());
                 dataSource.setUrl(oracleConfiguration.getJdbc());
+                dataSource.setValidationQuery("select 1 from dual");
                 jdbcConfiguration = oracleConfiguration;
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
-                dataSource.setUsername(pgConfiguration.getUsername());
-                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
-                dataSource.setPassword(pgConfiguration.getPassword());
+                dataSource.setDriverClassName(pgConfiguration.getDriver());
                 dataSource.setUrl(pgConfiguration.getJdbc());
                 jdbcConfiguration = pgConfiguration;
                 break;
             case ck:
                 CHConfiguration chConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfiguration.class);
-                dataSource.setUsername(chConfiguration.getUsername());
-                dataSource.setDriverClassLoader(extendedJdbcClassLoader);
-                dataSource.setPassword(chConfiguration.getPassword());
+                dataSource.setDriverClassName(chConfiguration.getDriver());
                 dataSource.setUrl(chConfiguration.getJdbc());
                 jdbcConfiguration = chConfiguration;
+                break;
+            case mongo:
+                MongodbConfiguration mongodbConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MongodbConfiguration.class);
+                dataSource.setDriverClassName(mongodbConfiguration.getDriver());
+                dataSource.setUrl(mongodbConfiguration.getJdbc());
+                jdbcConfiguration = mongodbConfiguration;
                 break;
             default:
                 break;
         }
+
+        dataSource.setUsername(jdbcConfiguration.getUsername());
+        dataSource.setDriverClassLoader(extendedJdbcClassLoader);
+        dataSource.setPassword(jdbcConfiguration.getPassword());
+
         return jdbcConfiguration;
     }
 
@@ -477,6 +504,25 @@ public class JdbcProvider extends DatasourceProvider {
             default:
                 return "show tables;";
         }
+    }
+
+    private static String rebuildSqlWithFragment(String sql) {
+        if (!sql.toLowerCase().startsWith("with")) {
+            Matcher matcher = WITH_SQL_FRAGMENT.matcher(sql);
+            if (matcher.find()) {
+                String withFragment = matcher.group();
+                if (!com.alibaba.druid.util.StringUtils.isEmpty(withFragment)) {
+                    if (withFragment.length() > 6) {
+                        int lastSelectIndex = withFragment.length() - 6;
+                        sql = sql.replace(withFragment, withFragment.substring(lastSelectIndex));
+                        withFragment = withFragment.substring(0, lastSelectIndex);
+                    }
+                    sql = withFragment + " " + sql;
+                    sql = sql.replaceAll(" " + "{2,}", " ");
+                }
+            }
+        }
+        return sql;
     }
 
 }

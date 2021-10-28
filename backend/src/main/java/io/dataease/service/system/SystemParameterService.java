@@ -1,6 +1,5 @@
 package io.dataease.service.system;
 
-import com.alibaba.fastjson.JSON;
 import io.dataease.base.domain.FileMetadata;
 import io.dataease.base.domain.SystemParameter;
 import io.dataease.base.domain.SystemParameterExample;
@@ -11,6 +10,8 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.controller.sys.response.BasicInfo;
+import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.service.FileService;
@@ -47,6 +48,52 @@ public class SystemParameterService {
         return extSystemParameterMapper.email();
     }
 
+    public BasicInfo basicInfo() {
+        List<SystemParameter> paramList = this.getParamList("basic");
+        BasicInfo result = new BasicInfo();
+        if (!CollectionUtils.isEmpty(paramList)) {
+            for (SystemParameter param : paramList) {
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
+                    /* result.setFrontTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
+                    result.setFrontTimeOut(param.getParamValue());
+                } 
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
+                    /* result.setMsgTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
+                    result.setMsgTimeOut(param.getParamValue());
+                } 
+            }
+        }
+        return result;
+    }
+
+
+    public MailInfo mailInfo(String type) {
+        List<SystemParameter> paramList = this.getParamList(type);
+        MailInfo mailInfo = new MailInfo();
+        if (!CollectionUtils.isEmpty(paramList)) {
+            for (SystemParameter param : paramList) {
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.SERVER.getValue())) {
+                    mailInfo.setHost(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PORT.getValue())) {
+                    mailInfo.setPort(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.ACCOUNT.getValue())) {
+                    mailInfo.setAccount(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PASSWORD.getValue())) {
+                    String password = EncryptUtils.aesDecrypt(param.getParamValue()).toString();
+                    mailInfo.setPassword(password);
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.SSL.getValue())) {
+                    mailInfo.setSsl(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.TLS.getValue())) {
+                    mailInfo.setTls(param.getParamValue());
+                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.RECIPIENTS.getValue())) {
+                    mailInfo.setRecipient(param.getParamValue());
+                }
+            }
+        }
+        return mailInfo;
+    }
+
+
     public String getSystemLanguage() {
         String result = StringUtils.EMPTY;
         SystemParameterExample example = new SystemParameterExample();
@@ -61,6 +108,8 @@ public class SystemParameterService {
         return result;
     }
 
+
+
     public void editMail(List<SystemParameter> parameters) {
         List<SystemParameter> paramList = this.getParamList(ParamConstants.Classify.MAIL.getValue());
         boolean empty = paramList.size() <= 0;
@@ -73,6 +122,21 @@ public class SystemParameterService {
                     parameter.setParamValue(string);
                 }
             }
+            example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
+            if (systemParameterMapper.countByExample(example) > 0) {
+                systemParameterMapper.updateByPrimaryKey(parameter);
+            } else {
+                systemParameterMapper.insert(parameter);
+            }
+            example.clear();
+
+        });
+    }
+
+    public void editBasic(List<SystemParameter> parameters) {       
+        parameters.forEach(parameter -> {
+            SystemParameterExample example = new SystemParameterExample();
+            
             example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
             if (systemParameterMapper.countByExample(example) > 0) {
                 systemParameterMapper.updateByPrimaryKey(parameter);
@@ -120,7 +184,7 @@ public class SystemParameterService {
             try {
                 helper = new MimeMessageHelper(mimeMessage, true);
                 helper.setFrom(javaMailSender.getUsername());
-                helper.setSubject("MeterSphere测试邮件 " );
+                helper.setSubject("DataEase测试邮件 " );
                 helper.setText("这是一封测试邮件，邮件发送成功", true);
                 helper.setTo(recipients);
                 javaMailSender.send(mimeMessage);
