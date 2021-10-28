@@ -90,7 +90,7 @@
             order by ${sort}
         </if>
         <if test="sort == null">
-            order by panel_group.create_time desc
+            order by panel_group.name asc,panel_group.create_time desc
         </if>
     </select>
 
@@ -165,12 +165,7 @@
                 and panel_group.level = #{level}
             </if>
         </where>
-        <if test="sort != null">
-            order by ${sort}
-        </if>
-        <if test="sort == null">
-            order by panel_group.create_time desc
-        </if>
+        order by panel_group.name asc,panel_group.create_time desc
     </select>
 
     <delete id="deleteCircle">
