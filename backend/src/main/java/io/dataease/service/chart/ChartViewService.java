@@ -435,8 +435,9 @@ public class ChartViewService {
                 }
             }
         }
-        if (StringUtils.containsIgnoreCase(view.getType(), "pie") && data.size() > 1000) {
-            data = data.subList(0, 1000);
+        // 返回数据量判定
+        if (StringUtils.equalsIgnoreCase("custom", view.getResultMode()) && data.size() > view.getResultCount()) {
+            data = data.subList(0, view.getResultCount());
         }
 
         Map<String, Object> map = new TreeMap<>();

@@ -39,3 +39,8 @@ CREATE TABLE `panel_link_jump_target_view_info` (
 BEGIN;
 INSERT INTO `sys_menu` VALUES (6, 1, 0, 1, '系统参数', 'system-param', 'system/SysParam/index', 6, 'sys-tools', 'system-param', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, NULL);
 COMMIT;
+
+ALTER TABLE `chart_view` ADD COLUMN `result_count` int(10)  COMMENT '展示结果' AFTER `render`;
+ALTER TABLE `chart_view` ADD COLUMN `result_mode` varchar(50)  COMMENT '展示模式' AFTER `result_count`;
+UPDATE `chart_view` SET `result_count` = 1000;
+UPDATE `chart_view` SET `result_mode` = 'custom';

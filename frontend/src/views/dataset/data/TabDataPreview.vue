@@ -139,7 +139,12 @@ export default {
       }, 10)
     },
     reSearch() {
-      if (!this.form.row || this.form.row === '' || this.form.row.length > 4 || isNaN(Number(this.form.row)) || String(this.form.row).includes('.')) {
+      if (!this.form.row ||
+          this.form.row === '' ||
+          this.form.row.length > 4 ||
+          isNaN(Number(this.form.row)) ||
+          String(this.form.row).includes('.') ||
+          parseInt(this.form.row) < 1) {
         this.$message({
           message: this.$t('dataset.pls_input_less_5'),
           type: 'error',

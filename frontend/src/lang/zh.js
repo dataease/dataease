@@ -945,7 +945,9 @@ export default {
     pie_inner_radius_percent: '内径占比',
     pie_outer_radius_size: '外径大小',
     table_page_size: '分页',
-    table_page_size_unit: '条/页'
+    table_page_size_unit: '条/页',
+    result_count: '结果展示',
+    result_mode_all: '全部'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
