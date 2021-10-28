@@ -283,10 +283,11 @@ export default {
       const that = this
       const means = [] // 合计
       columns.forEach((column, columnIndex) => {
-        if (columnIndex === 0) {
+        const x = JSON.parse(that.chart.xaxis)
+        if (columnIndex === 0 && x.length > 0) {
           means.push('合计')
         } else {
-          if (columnIndex >= that.chart.data.fields.length - that.chart.data.series.length) {
+          if (columnIndex >= x.length) {
             const values = data.map(item => Number(item[column.property]))
             // 合计
             if (!values.every(value => isNaN(value))) {
