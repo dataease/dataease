@@ -942,7 +942,9 @@ export default {
     pie_inner_radius_percent: 'Inner Radius(%)',
     pie_outer_radius_size: 'Outer Radius',
     table_page_size: 'Page Size',
-    table_page_size_unit: 'Item/Page'
+    table_page_size_unit: 'Item/Page',
+    result_count: 'Result',
+    result_mode_all: 'ALL'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

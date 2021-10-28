@@ -68,6 +68,7 @@
         <table tableName="panel_link_jump"/>
         <table tableName="panel_link_jump_info"/>
         <table tableName="panel_link_jump_target_view_info"/>
+        <table tableName="chart_view"/>
 
 <!--        <table tableName="sys_dict_item"/>-->
 <!--        <table tableName="dataset_table_field"/>-->
