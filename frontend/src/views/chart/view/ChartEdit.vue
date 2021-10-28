@@ -138,6 +138,19 @@
               </div>
               <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style theme-border-class">
                 <el-row style="height: 100%;">
+                  <el-row class="padding-lr">
+                    <span style="width: 80px;text-align: right;">
+                      {{ $t('chart.result_count') }}
+                    </span>
+                    <el-row>
+                      <el-radio-group v-model="view.resultMode" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
+                        <el-radio label="all"><span>{{ $t('chart.result_mode_all') }}</span></el-radio>
+                        <el-radio label="custom">
+                          <el-input v-model="view.resultCount" class="result-count" size="mini" @change="save" />
+                        </el-radio>
+                      </el-radio-group>
+                    </el-row>
+                  </el-row>
                   <el-row v-if="view.type ==='map'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span>{{ $t('chart.map_range') }}</span>
@@ -796,6 +809,19 @@ export default {
       }
     },
     save(getData, trigger, needRefreshGroup = false, switchType = false) {
+      if (!this.view.resultCount ||
+          this.view.resultCount === '' ||
+          this.view.resultCount.length > 4 ||
+          isNaN(Number(this.view.resultCount)) ||
+          String(this.view.resultCount).includes('.') ||
+          parseInt(this.view.resultCount) < 1) {
+        this.$message({
+          message: this.$t('dataset.pls_input_less_5'),
+          type: 'error',
+          showClose: true
+        })
+        return
+      }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
           showClose: true,
@@ -1876,6 +1902,9 @@ export default {
   }
   .blackTheme .icon-class{
     color: #cccccc;
+  }
+  .result-count{
+    width:80px;
   }
 
 </style>

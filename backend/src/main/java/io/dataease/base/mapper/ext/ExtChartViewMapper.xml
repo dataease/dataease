@@ -102,7 +102,9 @@
             `ext_stack`,
             `ext_bubble`,
             `y_axis_ext`,
-            `render`
+            `render`,
+            `result_count`,
+            `result_mode`
         ) SELECT
         #{newChartId},
         GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
@@ -123,7 +125,9 @@
         `ext_stack`,
         `ext_bubble`,
         `y_axis_ext`,
-        `render`
+        `render`,
+        `result_count`,
+        `result_mode`
         FROM
             chart_view
         WHERE
