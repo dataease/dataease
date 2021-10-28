@@ -730,6 +730,8 @@ export default {
       view.tableId = this.table.id
       view.type = 'bar'
       view.render = 'antv'
+      view.resultMode = 'custom'
+      view.resultCount = 1000
       view.customAttr = JSON.stringify({
         color: DEFAULT_COLOR_CASE,
         tableColor: DEFAULT_COLOR_CASE,
