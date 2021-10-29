@@ -1129,7 +1129,7 @@ public class DataSetTableService {
 
     private void checkColumes(DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(datasetTableIncrementalConfig.getTableId());
-        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(datasetTable.getId());
+        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(datasetTable.getId()).stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
         datasetTableFields.sort((o1, o2) -> {
             if (o1.getColumnIndex() == null) {
                 return -1;

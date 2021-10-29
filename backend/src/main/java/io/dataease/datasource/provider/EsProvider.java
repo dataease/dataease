@@ -193,10 +193,10 @@ public class EsProvider extends DatasourceProvider {
         }
 
         for (String[] row : esReponse.getRows()) {
-           if(row.length == 3 && row[1].equalsIgnoreCase("TABLE") && row[2].equalsIgnoreCase("INDEX")){
+           if(row.length == 3 && row[1].contains("TABLE") && row[2].equalsIgnoreCase("INDEX")){
                tables.add(row[0]);
            }
-            if(row.length == 2 && row[1].equalsIgnoreCase("BASE TABLE")){
+            if(row.length == 2 && row[1].contains("TABLE")){
                 tables.add(row[0]);
             }
         }
