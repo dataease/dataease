@@ -192,8 +192,8 @@ export default {
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])
       } else { // 视图关联多个事件
-        this.trackBarStyle.left = param.clientX + 'px'
-        this.trackBarStyle.top = (param.clientY - 15) + 'px'
+        this.trackBarStyle.left = param.x + 'px'
+        this.trackBarStyle.top = (param.y - 15) + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
     },
