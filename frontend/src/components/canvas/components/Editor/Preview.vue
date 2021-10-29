@@ -175,7 +175,7 @@ export default {
       this.timer && clearInterval(this.timer)
       let refreshTime = 300000
       if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
-        refreshTime = this.canvasStyleData.refreshTime * 60000
+        refreshTime = this.canvasStyleData.refreshTime * 1000
       }
       this.timer = setInterval(() => {
         this.searchCount++
