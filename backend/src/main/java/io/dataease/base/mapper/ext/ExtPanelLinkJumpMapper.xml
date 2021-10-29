@@ -26,7 +26,7 @@
     </resultMap>
 
     <select id="getLinkJumpInfo" resultMap="LinkJumpInfoMap">
-       SELECT
+        SELECT
             dataset_table_field.id AS 'source_field_id',
             dataset_table_field.NAME AS 'source_field_name',
             panel_link_jump_info.id,
@@ -41,14 +41,14 @@
         FROM
             chart_view
             LEFT JOIN dataset_table_field ON chart_view.table_id = dataset_table_field.table_id
-            left join panel_link_jump on 	chart_view.id = panel_link_jump.source_view_id
-            left join panel_link_jump_info on panel_link_jump.id = panel_link_jump_info.link_jump_id and  dataset_table_field.id = panel_link_jump_info.source_field_id
+            LEFT JOIN panel_link_jump ON chart_view.id = panel_link_jump.source_view_id and panel_link_jump.id = #{id}
+            LEFT JOIN panel_link_jump_info ON panel_link_jump.id = panel_link_jump_info.link_jump_id
+            AND dataset_table_field.id = panel_link_jump_info.source_field_id
             LEFT JOIN panel_link_jump_target_view_info ON panel_link_jump_info.id = panel_link_jump_target_view_info.link_jump_info_id
-            AND panel_link_jump_info.link_jump_id = #{id}
         WHERE
             chart_view.id =#{source_view_id}
-        order by ifnull( panel_link_jump_info.checked, 0 ) desc
-
+        ORDER BY
+            ifnull( panel_link_jump_info.checked, 0 ) DESC
     </select>
 
     <select id="queryWithPanelId" resultMap="BaseResultMapDTO">
