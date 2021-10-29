@@ -31,7 +31,7 @@ export default {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
         })
         // 刷新跳转信息
-        queryPanelJumpInfo(data.id).then(rsp => {
+        queryPanelJumpInfo(this.panelId).then(rsp => {
           this.$store.commit('setNowPanelJumpInfo', rsp.data)
         })
 
