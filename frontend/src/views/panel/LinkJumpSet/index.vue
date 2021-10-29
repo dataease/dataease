@@ -285,7 +285,7 @@ export default {
       if (!this.linkJumpInfo.content) {
         this.linkJumpInfo.content = 'http://'
       }
-      if (this.linkJumpInfo.linkType === 'inner' && this.linkJumpInfo.targetPanelId) {
+      if (this.linkJumpInfo.targetPanelId) {
         this.getPanelViewList(this.linkJumpInfo.targetPanelId)
       }
     },
@@ -302,7 +302,7 @@ export default {
       })
     },
     panelNodeClick(data, node) {
-      console.log('panelNodeClick:' + JSON.stringify(data))
+      // console.log('panelNodeClick:' + JSON.stringify(data))
       this.linkJumpInfo.targetViewInfoList = []
       this.getPanelViewList(data.id)
     },
