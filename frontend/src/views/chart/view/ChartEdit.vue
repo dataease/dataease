@@ -143,7 +143,7 @@
                       {{ $t('chart.result_count') }}
                     </span>
                     <el-row>
-                      <el-radio-group v-model="view.resultMode" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
+                      <el-radio-group v-model="view.resultMode" class="radio-span" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
                         <el-radio label="all"><span>{{ $t('chart.result_mode_all') }}</span></el-radio>
                         <el-radio label="custom">
                           <el-input v-model="view.resultCount" class="result-count" size="mini" @change="save" />
@@ -369,7 +369,7 @@
               <el-row class="padding-lr">
                 <span class="title-text">{{ $t('chart.style_priority') }}</span>
                 <el-row>
-                  <el-radio-group v-model="view.stylePriority" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
+                  <el-radio-group v-model="view.stylePriority" class="radio-span" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
                     <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
                     <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
                   </el-radio-group>
@@ -1905,6 +1905,9 @@ export default {
   }
   .result-count{
     width:80px;
+  }
+  .radio-span>>>.el-radio__label{
+    margin-left: 4px;
   }
 
 </style>
