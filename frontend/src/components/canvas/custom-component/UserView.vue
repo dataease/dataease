@@ -211,7 +211,7 @@ export default {
     },
     // 监听外部计时器变化
     searchCount: function(val1) {
-      if (val1 > 0) {
+      if (val1 > 0 && this.requestStatus !== 'waiting') {
         this.getData(this.element.propValue.viewId)
       }
     },

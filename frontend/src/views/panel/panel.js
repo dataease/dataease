@@ -20,7 +20,7 @@ export const CANVAS_STYLE = {
   auxiliaryMatrix: true,
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,
-  refreshTime: 5 // 仪表板刷新时间 默认五分钟
+  refreshTime: 300 // 仪表板刷新时间 默认300秒
 }
 
 export const DEFAULT_COMMON_CANVAS_STYLE_STRING = {

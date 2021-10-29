@@ -422,7 +422,7 @@ export default {
         this.$store.commit('setComponentData', this.resetID(componentDatas))
         // this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
         const temp = JSON.parse(canvasStyleDataTemp)
-        temp.refreshTime = (temp.refreshTime || 5)
+        temp.refreshTime = (temp.refreshTime || 300)
 
         this.$store.commit('setCanvasStyle', temp)
         // 清空临时画布数据
@@ -443,7 +443,7 @@ export default {
           this.$store.commit('setComponentData', this.resetID(componentDatas))
           //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
-          panelStyle.refreshTime = (panelStyle.refreshTime || 5)
+          panelStyle.refreshTime = (panelStyle.refreshTime || 300)
 
           this.$store.commit('setCanvasStyle', panelStyle)
           this.$store.commit('recordSnapshot', 'init')// 记录快照
