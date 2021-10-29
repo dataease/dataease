@@ -352,7 +352,7 @@ export default {
           if (jumpInfo.targetPanelId) {
             const url = '#/preview/' + jumpInfo.targetPanelId
             localStorage.setItem('jumpInfoParam', JSON.stringify(param))
-            window.open(url, '_blank')
+            window.open(url, jumpInfo.jumpType)
           } else {
             this.$message({
               type: 'warn',
@@ -362,7 +362,7 @@ export default {
           }
         } else {
           const url = jumpInfo.content
-          window.open(url, '_blank')
+          window.open(url, jumpInfo.jumpType)
         }
       } else {
         this.$message({
