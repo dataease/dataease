@@ -47,6 +47,8 @@
             AND panel_link_jump_info.link_jump_id = #{id}
         WHERE
             chart_view.id =#{source_view_id}
+        order by ifnull( panel_link_jump_info.checked, 0 ) desc
+
     </select>
 
     <select id="queryWithPanelId" resultMap="BaseResultMapDTO">

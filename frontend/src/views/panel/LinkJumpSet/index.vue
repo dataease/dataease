@@ -1,15 +1,15 @@
 <template>
   <el-row v-if="linkJump" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="height: 430px">
     <el-row>
-      <span style="font-weight:600;margin-right: 20px">跳转设置</span>
-      <el-checkbox v-model="linkJump.checked">启用跳转</el-checkbox>
+      <span style="font-weight:600;margin-right: 20px">{{ $t('panel.jump_set') }}</span>
+      <el-checkbox v-model="linkJump.checked">{{ $t('panel.enable_jump') }}</el-checkbox>
     </el-row>
     <el-row v-loading="loading">
       <el-row class="preview">
         <el-col :span="8" style="height:100%;overflow-y: auto">
           <el-row class="tree-head">
-            <span style="float: left;margin-left: 30px">字段名称</span>
-            <span style="float: right;margin-right: 10px">启用字段</span>
+            <span style="float: left;margin-left: 30px">{{ $t('panel.column_name') }}</span>
+            <span style="float: right;margin-right: 10px">{{ $t('panel.enable_column') }}</span>
           </el-row>
           <el-tree
             ref="linkJumpInfoTree"
@@ -35,34 +35,35 @@
         </el-col>
         <el-col :span="16" class="preview-show">
           <el-row v-if="linkJumpInfo">
-            <!--            <el-row style="margin-top: 10px">-->
-            <!--              <el-col :span="4" class="custom-position">-->
-            <!--                打开方式：-->
-            <!--              </el-col>-->
-            <!--              <el-col :span="10">-->
-            <!--                <el-radio-group v-model="linkJumpInfo.jumpType" size="mini">-->
-            <!--                  <el-radio label="self">当前页面</el-radio>-->
-            <!--                  <el-radio label="_blank">新开页面</el-radio>-->
-            <!--                </el-radio-group>-->
-            <!--              </el-col>-->
-            <!--            </el-row>-->
             <el-row style="margin-top: 10px">
-              <el-col :span="4">
-                链接类型：
+              <el-col :span="4" style="margin-left: 20px">
+                {{ $t('panel.open_model') }}：
+              </el-col>
+              <el-col :span="10">
+                <el-radio-group v-model="linkJumpInfo.jumpType" size="mini">
+                  <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
+                  <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
+                </el-radio-group>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top: 10px">
+              <el-col :span="4" style="margin-left: 20px">
+                {{ $t('panel.link_type') }}：
               </el-col>
               <el-col :span="10">
                 <el-radio-group v-model="linkJumpInfo.linkType" size="mini">
-                  <el-radio label="outer">外部链接</el-radio>
-                  <el-radio label="inner">仪表板</el-radio>
+                  <el-radio label="outer">{{ $t('panel.link_outer') }}</el-radio>
+                  <el-radio label="inner">{{ $t('panel.link_panel') }}</el-radio>
                 </el-radio-group>
               </el-col>
-              <el-col v-if="linkJumpInfo.linkType==='inner'" :span="10">
+              <el-col v-if="linkJumpInfo.linkType==='inner'" :span="9">
                 <treeselect
                   v-model="linkJumpInfo.targetPanelId"
                   :options="panelList"
                   :disable-branch-nodes="true"
                   :normalizer="normalizer"
-                  :placeholder="'选择关联的仪表板'"
+                  :placeholder="$t('panel.select_jump_panel')"
+                  style="margin-right: 10px"
                   @select="panelNodeClick"
                 />
               </el-col>
@@ -70,17 +71,17 @@
             <el-row v-if="linkJumpInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
               <el-row style="margin-top: 10px">
                 <el-col :span="11">
-                  <div class="ellip">联动视图</div>
+                  <div class="ellip">{{ $t('panel.link_view') }}</div>
                 </el-col>
                 <el-col :span="11">
-                  <div class="ellip">联动视图字段</div>
+                  <div class="ellip">{{ $t('panel.link_view_field') }}</div>
                 </el-col>
               </el-row>
               <el-row style="height: 180px;overflow-y: auto">
                 <el-row v-for="(targetViewInfo,index) in linkJumpInfo.targetViewInfoList" :key="index">
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetViewId" size="mini" placeholder="请选择" @change="viewInfoOnChange(targetViewInfo)">
+                      <el-select v-model="targetViewInfo.targetViewId" style="width: 100%" size="mini" :placeholder="$t('panel.please_select')" @change="viewInfoOnChange(targetViewInfo)">
                         <el-option
                           v-for="item in currentLinkPanelViewArray"
                           :key="item.id"
@@ -94,7 +95,7 @@
                   </el-col>
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetFieldId" size="mini" placeholder="请选择">
+                      <el-select v-model="targetViewInfo.targetFieldId" style="width: 100%" size="mini" :placeholder="$t('panel.please_select')">
                         <el-option
                           v-for="viewField in viewIdFieldArrayMap[targetViewInfo.targetViewId]"
                           :key="viewField.id"
@@ -121,7 +122,7 @@
               </el-row>
 
               <el-row class="bottom">
-                <el-button size="mini" type="success" icon="el-icon-plus" round @click="addLinkJumpField">追加跳转联动依赖字段</el-button>
+                <el-button size="mini" type="success" icon="el-icon-plus" round @click="addLinkJumpField">{{ $t('panel.add_jump_field') }}</el-button>
               </el-row>
 
               <!--    <el-button slot="reference">T</el-button>-->
@@ -132,12 +133,12 @@
                 v-model="linkJumpInfo.content"
                 :autosize="{ minRows: 14}"
                 type="textarea"
-                placeholder="请输入跳转连接"
+                :placeholder="$t('panel.input_jump_link')"
               />
             </el-row>
           </el-row>
           <el-row v-else style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
-            请选择维度...
+            {{ $t('panel.select_dimension') }}
           </el-row>
         </el-col>
       </el-row>
@@ -244,10 +245,10 @@ export default {
           this.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
         })
         const firstNode = this.linkJumpInfoArray[0]
-        // this.$nextTick(() => {
-        //   this.$refs.linkJumpInfoTree.setCurrentKey(firstNode.sourceFieldId)
-        //   this.nodeClick(firstNode)
-        // })
+        this.$nextTick(() => {
+          this.$refs.linkJumpInfoTree.setCurrentKey(firstNode.sourceFieldId)
+          this.nodeClick(firstNode)
+        })
       })
       // 获取当前视图的字段信息
       // getTableFieldWithViewId(this.viewId).then(rsp => {
@@ -279,7 +280,7 @@ export default {
         this.linkJumpInfo.linkType = 'inner'
       }
       if (!this.linkJumpInfo.jumpType) {
-        this.linkJumpInfo.jumpType = '_self'
+        this.linkJumpInfo.jumpType = '_blank'
       }
       if (!this.linkJumpInfo.content) {
         this.linkJumpInfo.content = 'http://'
@@ -375,7 +376,7 @@ export default {
 .ellip{
   /*width: 100%;*/
   margin-left: 10px;
-  margin-right: 25px;
+  margin-right: 10px;
   overflow: hidden;/*超出部分隐藏*/
   white-space: nowrap;/*不换行*/
   text-overflow:ellipsis;/*超出部分文字以...显示*/
@@ -447,5 +448,8 @@ export default {
   font-size: 12px;
   color: var(--TableColor, #3d4d66) ;
 }
+/deep/ .vue-treeselect__placeholder{
+    line-height:28px
+  }
 
 </style>
