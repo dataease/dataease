@@ -80,7 +80,7 @@ export default {
     position: relative;
     height: 100%;
     // height: $contentHeight;
-    background-color: var(--MainContentBG);
+    background-color: var(--ContentBG);
     width: 100%;
     &.mobile.openSidebar{
       position: fixed;

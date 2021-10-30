@@ -68,7 +68,7 @@
       </el-row>
     </el-col>
     <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
-      <el-row style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
+      <el-row style="height: 100%; background-color: var(--ContentBG);" class="custom-position">
         {{ $t('panel.select_panel_from_left') }}
       </el-row>
     </el-col>

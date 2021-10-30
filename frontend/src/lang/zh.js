@@ -176,6 +176,7 @@ export default {
     annotation: '注释',
     clear: '清空',
     save: '保存',
+    otherSave: '另存为',
     update: '更新',
     save_success: '保存成功',
     delete_success: '删除成功',
@@ -341,7 +342,8 @@ export default {
       ok: '确认',
       cancel: '取消'
     },
-    ukey_title: 'API Keys'
+    ukey_title: 'API Keys',
+    thumbnail: '缩略图'
   },
   documentation: {
     documentation: '文档',
@@ -433,7 +435,7 @@ export default {
   },
   settings: {
     title: '系统布局配置',
-    theme: '主题色',
+    theme: '主题',
     tagsView: '开启 Tags-View',
     fixedHeader: '固定 Header',
     sidebarLogo: '侧边栏 Logo'
@@ -441,7 +443,8 @@ export default {
   sysParams: {
     display: '显示设置',
     ldap: 'LDAP设置',
-    oidc: 'OIDC设置'
+    oidc: 'OIDC设置',
+    theme: '主题设置'
   },
   license: {
     i18n_no_license_record: '没有 License 记录',
