@@ -921,7 +921,7 @@ export default {
   overflow-y: auto;
 }
 .button-show{
-    background-color: var(--MainContentBG, #ebf2fe)!important;
+    background-color: var(--ContentBG, #ebf2fe)!important;
 }
 
 .button-closed{

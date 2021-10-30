@@ -1,14 +1,11 @@
 
-$--font-path: '~element-ui/lib/theme-chalk/fonts';
+/* $--font-path: '~element-ui/lib/theme-chalk/fonts'; */
 
-/* .defaultTheme {
-  @import './theme/default.scss';
-  @import "~element-ui/packages/theme-chalk/src/index";
-} */
-.blackTheme {
+
+/* .blackTheme {
   @import './theme/dark.scss';
   @import "~element-ui/packages/theme-chalk/src/index";
-}
+} */
 
 
 
@@ -460,7 +457,7 @@ div:focus {
     color: var(--TableColor) !important;  
 }
 .blackTheme .el-tag.el-tag--info {
-    background-color: var(--MainContentBG);
+    background-color: var(--ContentBG);
     border-color: var(--TableBorderColor);
     color: var(--TableColor) !important;  ;
 }
@@ -575,7 +572,7 @@ div:focus {
     color: var(--TextPrimary) ;
 }
 .blackTheme .el-drawer__body {
-    background-color: var(--MainContentBG);
+    background-color: var(--ContentBG);
 }
 
 .blackTheme .el-select-dropdown__item.hover {

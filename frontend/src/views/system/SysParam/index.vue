@@ -6,19 +6,23 @@
         <basic-setting />
       </el-tab-pane>
 
-      <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
+      <!-- <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
         <email-setting />
-      </el-tab-pane>
+      </el-tab-pane> -->
 
       <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.display')" name="second">
         <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="DisplaySetting" />
       </el-tab-pane>
 
-      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.ldap')" name="third">
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.theme')" name="third">
+        <plugin-com v-if="isPluginLoaded" ref="ThemeSetting" component-name="ThemeSetting" />
+      </el-tab-pane>
+
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.ldap')" name="fourth">
         <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="LdapSetting" />
       </el-tab-pane>
 
-      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.oidc')" name="fourth">
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.oidc')" name="five">
         <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="SsoSetting" />
       </el-tab-pane>
 
