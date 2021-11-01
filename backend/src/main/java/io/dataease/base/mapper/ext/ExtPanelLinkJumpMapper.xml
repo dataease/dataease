@@ -114,6 +114,38 @@
             AND lj.source_view_id = #{viewId}
 	</delete>
 
+
+
+    <delete id="deleteJumpTargetViewInfoWithPanel" >
+       DELETE ljtv
+        FROM
+            panel_link_jump_target_view_info ljtv,
+            panel_link_jump_info lji,
+            panel_link_jump lj
+        WHERE
+            ljtv.link_jump_info_id = lji.id
+            AND lji.link_jump_id = lj.id
+            AND (lj.source_panel_id = #{panelId} or lji.target_panel_id = #{panelId})
+	</delete>
+
+    <delete id="deleteJumpInfoWithPanel" >
+        DELETE lji
+        FROM
+            panel_link_jump_info lji,
+            panel_link_jump lj
+        WHERE
+            lji.link_jump_id = lj.id
+            AND (lj.source_panel_id = #{panelId} or  lji.target_panel_id = #{panelId})
+	</delete>
+
+    <delete id="deleteJumpWithPanel" >
+        DELETE lj
+        FROM
+            panel_link_jump lj
+        WHERE
+            lj.source_panel_id = #{panelId}
+	</delete>
+
     <select id="getTargetPanelJumpInfo" resultMap="AllJumpMap">
       SELECT DISTINCT
             concat( lj.source_view_id, '#', lji.source_field_id ) AS 'sourceInfo',
