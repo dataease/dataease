@@ -20,4 +20,7 @@ public interface ExtPanelGroupMapper {
     PanelGroupDTO panelGroup(String id);
 
 
+    void copyPanelView(@Param("pid") String panelId);
+
+
 }
