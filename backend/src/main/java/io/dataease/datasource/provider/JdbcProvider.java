@@ -335,6 +335,12 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = mongodbConfiguration.getDriver();
                 jdbcurl = mongodbConfiguration.getJdbc();
                 break;
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                username = redshiftConfigration.getUsername();
+                password = redshiftConfigration.getPassword();
+                driver = redshiftConfigration.getDriver();
+                jdbcurl = redshiftConfigration.getJdbc();
             default:
                 break;
         }
@@ -411,6 +417,12 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setUrl(mongodbConfiguration.getJdbc());
                 jdbcConfiguration = mongodbConfiguration;
                 break;
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                dataSource.setPassword(redshiftConfigration.getPassword());
+                dataSource.setDriverClassName(redshiftConfigration.getDriver());
+                dataSource.setUrl(redshiftConfigration.getJdbc());
+                jdbcConfiguration = redshiftConfigration;
             default:
                 break;
         }
@@ -512,6 +524,8 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 return "select name from sys.schemas;";
             case pg:
+                return "SELECT nspname FROM pg_namespace;";
+            case redshift:
                 return "SELECT nspname FROM pg_namespace;";
             default:
                 return "show tables;";
