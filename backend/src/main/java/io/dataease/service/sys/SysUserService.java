@@ -143,7 +143,7 @@ public class SysUserService {
         List<XpackLdapUserEntity> users = request.getUsers();
         List<SysUser> sysUsers = users.stream().map(user -> {
             SysUser sysUser = BeanUtils.copyBean(new SysUser(), user);
-            sysUser.setUsername(user.getUserName());
+            sysUser.setUsername(user.getUsername());
             sysUser.setDeptId(request.getDeptId());
             sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
             sysUser.setCreateTime(now);
