@@ -17,6 +17,11 @@ public interface ExtPanelLinkJumpMapper {
 
     void deleteJump(@Param("panelId") String panelId,@Param("viewId") String viewId);
 
+    void deleteJumpTargetViewInfoWithPanel(@Param("panelId") String panelId);
+
+    void deleteJumpInfoWithPanel(@Param("panelId") String panelId);
+
+    void deleteJumpWithPanel(@Param("panelId") String panelId);
 
     List<PanelLinkJumpDTO> getTargetPanelJumpInfo(@Param("request")PanelLinkJumpBaseRequest request);
 }
