@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form v-show="chart.type && (chart.type.includes('bar') || chart.type === 'waterfall')" ref="sizeFormBar" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && (chart.type.includes('bar'))" ref="sizeFormBar" :disabled="param && !hasDataPermission('manage',param.privileges)" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.adapt')" class="form-item">
           <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
         </el-form-item>
