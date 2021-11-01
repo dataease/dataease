@@ -70,7 +70,7 @@ export default {
         ],
         msgTimeOut: [
           {
-            pattern: '^[0-9]*$',
+            pattern: '^([1-9]|[1-9]\\d|365)$',
             message: this.$t('system_parameter_setting.msg_error'),
             trigger: 'blur'
           }
@@ -101,10 +101,6 @@ export default {
       this.show = false
     },
     save(formInline) {
-      this.showEdit = true
-      this.showCancel = false
-      this.showSave = false
-      this.show = true
       const param = [
         { paramKey: 'basic.frontTimeOut', paramValue: this.formInline.frontTimeOut, type: 'text', sort: 1 },
         { paramKey: 'basic.msgTimeOut', paramValue: this.formInline.msgTimeOut, type: 'text', sort: 2 }
@@ -117,6 +113,10 @@ export default {
             const flag = response.success
             if (flag) {
               this.$success(this.$t('commons.save_success'))
+              this.showEdit = true
+              this.showCancel = false
+              this.showSave = false
+              this.show = true
               window.location.reload()
             } else {
               this.$message.error(this.$t('commons.save_failed'))
