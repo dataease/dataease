@@ -9,7 +9,7 @@ import { loadResource } from '@/api/link'
 import { uuid } from 'vue-uuid'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-import {queryPanelJumpInfo} from "@/api/panel/linkJump";
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
   name: 'LinkView',
