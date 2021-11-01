@@ -611,6 +611,8 @@ export default {
     msg_time_out: 'Message retention time(unit: day)',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
+    front_error: 'Valid ranger [0 - 100]',
+    msg_error: 'Valid ranger [1 - 365]',
     SMTP_port: 'SMTP Port',
     SMTP_account: 'SMTP Account',
     SMTP_password: 'SMTP Password',
