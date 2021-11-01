@@ -27,12 +27,12 @@
       </el-table-column>
 
       <el-table-column :show-overflow-tooltip="true" prop="email" :label="$t('commons.email')" />
-      <el-table-column :show-overflow-tooltip="true" prop="dept" sortable="custom" :label="$t('commons.organization')">
+      <el-table-column v-if="isPluginLoaded" :show-overflow-tooltip="true" prop="dept" sortable="custom" :label="$t('commons.organization')">
         <template slot-scope="scope">
           <div>{{ scope.row.dept && scope.row.dept.deptName }}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="roles" :label="$t('commons.role')">
+      <el-table-column v-if="isPluginLoaded" prop="roles" :label="$t('commons.role')">
         <template slot-scope="scope">
           <div v-if="scope.row.roles && scope.row.roles.length <= 2">
             <div v-for="role in scope.row.roles" :key="role.roleId">{{ role.roleName }}</div>
@@ -174,7 +174,7 @@ import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { ldapStatus } from '@/api/user'
+import { ldapStatus, pluginLoaded } from '@/api/user'
 import { userLists, addUser, editUser, delUser, editPassword, editStatus, allRoles } from '@/api/system/user'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 
@@ -306,7 +306,8 @@ export default {
       },
       orderConditions: [],
       last_condition: null,
-      openLdap: false
+      openLdap: false,
+      isPluginLoaded: false
     }
   },
   mounted() {
@@ -316,6 +317,9 @@ export default {
   beforeCreate() {
     ldapStatus().then(res => {
       this.openLdap = res.success && res.data
+    })
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
     })
   },
   methods: {
