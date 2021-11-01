@@ -26,7 +26,7 @@
               <span @click.stop>
                 <div>
                   <span class="auth-span">
-                    <el-checkbox v-model="data.checked" />
+                    <el-checkbox v-model="data.checked" @change="sourceFieldCheckedChange(data)"/>
                   </span>
                 </div>
               </span>
@@ -323,6 +323,12 @@ export default {
     },
     viewInfoOnChange(targetViewInfo) {
       targetViewInfo.targetFieldId = null
+    },
+    sourceFieldCheckedChange(data) {
+      this.$nextTick(() => {
+        this.$refs.linkJumpInfoTree.setCurrentKey(data.sourceFieldId)
+        this.nodeClick(data)
+      })
     }
   }
 }
@@ -452,4 +458,7 @@ export default {
     line-height:28px
   }
 
+/deep/ .el-tree--highlight-current .el-tree-node.is-current >.el-tree-node__content {
+  background-color: #8dbbef !important;
+}
 </style>
