@@ -144,6 +144,7 @@ public class SysUserService {
         List<SysUser> sysUsers = users.stream().map(user -> {
             SysUser sysUser = BeanUtils.copyBean(new SysUser(), user);
             sysUser.setUsername(user.getUsername());
+            sysUser.setNickName(user.getNickname());
             sysUser.setDeptId(request.getDeptId());
             sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
             sysUser.setCreateTime(now);
