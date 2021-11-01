@@ -43,14 +43,15 @@ COMMIT;
 
 ALTER TABLE `chart_view`
 MODIFY COLUMN `name` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名称' AFTER `id`,
-MODIFY COLUMN `title` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'EChart标题' AFTER `result_mode`;
+MODIFY COLUMN `title` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'EChart标题' AFTER `name`;
 
 ALTER TABLE `chart_view` ADD COLUMN `result_count` int(10)  COMMENT '展示结果' AFTER `render`;
 ALTER TABLE `chart_view` ADD COLUMN `result_mode` varchar(50)  COMMENT '展示模式' AFTER `result_count`;
 UPDATE `chart_view` SET `result_count` = 1000;
 UPDATE `chart_view` SET `result_mode` = 'custom';
 
-
+ALTER TABLE `dataset_table`
+    MODIFY COLUMN `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
 
 -- ----------------------------
 -- Table structure for sys_theme

@@ -73,7 +73,7 @@ public class AuthServer implements AuthApi {
                 ldapAddRequest.setEnabled(1L);
                 // ldapAddRequest.setDeptId(1L);
                 ldapAddRequest.setRoleIds(new ArrayList<Long>(){{add(2L);}});
-                sysUserService.validateExistUser(ldapUserEntity.getUsername(),  ldapUserEntity.getEmail());
+                sysUserService.validateExistUser(ldapUserEntity.getUsername(), ldapUserEntity.getNickname(), ldapUserEntity.getEmail());
                 sysUserService.saveLdapUsers(ldapAddRequest);
             }
             

@@ -32,7 +32,7 @@
           <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item :label="$t('commons.organization')" prop="deptId">
+      <el-form-item v-show="isPluginLoaded" :label="$t('commons.organization')" prop="deptId">
         <treeselect
           ref="deptTreeSelect"
           v-model="form.deptId"
@@ -43,7 +43,7 @@
           @open="filterData"
         />
       </el-form-item>
-      <el-form-item :label="$t('commons.role')" prop="roleIds">
+      <el-form-item v-show="isPluginLoaded" :label="$t('commons.role')" prop="roleIds">
         <el-select
           ref="roleSelect"
           v-model="form.roleIds"
@@ -76,6 +76,7 @@ import LayoutContent from '@/components/business/LayoutContent'
 import { PHONE_REGEX } from '@/utils/validate'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 import { addUser, editUser, allRoles } from '@/api/system/user'
+import { pluginLoaded } from '@/api/user'
 export default {
 
   components: { LayoutContent },
@@ -155,7 +156,8 @@ export default {
       roles: [],
       roleDatas: [],
       userRoles: [],
-      formType: 'add'
+      formType: 'add',
+      isPluginLoaded: false
     }
   },
 
@@ -173,6 +175,11 @@ export default {
   },
   destroyed() {
     this.unBindKey()
+  },
+  beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+    })
   },
   methods: {
     entryKey(event) {
