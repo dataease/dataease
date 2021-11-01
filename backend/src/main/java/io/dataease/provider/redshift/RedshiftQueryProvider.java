@@ -177,7 +177,7 @@ public class RedshiftQueryProvider extends QueryProvider {
 
     @Override
     public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
-        return null;
+        return createQuerySQL(table, fields, isGroup, ds) + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
     }
 
     @Override
@@ -661,6 +661,13 @@ public class RedshiftQueryProvider extends QueryProvider {
         return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
     }
 
+    @Override
+    public String convertTableToSql(String tableName, Datasource ds){
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format( RedshiftConstants.KEYWORD_TABLE, schema);
+        return createSQLPreview("SELECT * FROM " + schema + "." + String.format(RedshiftConstants.KEYWORD_TABLE, tableName), null);
+    }
+
     public String transMysqlFilterTerm(String term) {
         switch (term) {
             case "eq":
@@ -831,19 +838,19 @@ public class RedshiftQueryProvider extends QueryProvider {
 
         switch (dateStyle) {
             case "y":
-                return "'YYYY'";
+                return "'YYYY";
             case "y_M":
-                return "'YYYY" + split + "MM'";
+                return "YYYY" + split + "MM";
             case "y_M_d":
-                return "'YYYY" + split + "MM" + split + "DD'";
+                return "YYYY" + split + "MM" + split + "DD";
             case "H_m_s":
-                return "'HH24:MI:SS'";
+                return "HH24:MI:SS'";
             case "y_M_d_H_m":
-                return "'YYYY" + split + "MM" + split + "DD" + " HH24:MI'";
+                return "YYYY" + split + "MM" + split + "DD" + " HH24:MI";
             case "y_M_d_H_m_s":
-                return "'YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS'";
+                return "YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS";
             default:
-                return "'YYYY-MM-DD HH24:MI:SS'";
+                return "YYYY-MM-DD HH24:MI:SS";
         }
     }
 

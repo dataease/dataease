@@ -150,7 +150,6 @@ export default {
         'configuration.acquireIncrement': [{ required: true, message: this.$t('datasource.please_input_acquire_increment'), trigger: 'change' }],
         'configuration.connectTimeout': [{ required: true, message: this.$t('datasource.please_input_connect_timeout'), trigger: 'change' }]
       },
-<<<<<<< HEAD
       allTypes: [
         { name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
         { name: 'oracle', label: 'Oracle', type: 'jdbc'},
@@ -160,15 +159,9 @@ export default {
         { name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
         { name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
         { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' },
+        { name: 'redshift', label: 'AWS Redshift', type: 'jdbc' },
         { name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: '' }
         ],
-=======
-      allTypes: [{ name: 'mysql', label: 'MySQL', type: 'jdbc' },
-                { name: 'oracle', label: 'Oracle', type: 'jdbc' },
-                { name: 'sqlServer', label: 'SQL Server', type: 'jdbc' },
-                { name: 'pg', label: 'PostgreSQL', type: 'jdbc' },
-                { name: 'redshift', label: 'AWS Redshift', type: 'jdbc' }],
->>>>>>> 1fd0fa65ec9293502290e8efe942f4b9a60a8eee
       schemas: [],
       canEdit: false,
       originConfiguration: {}

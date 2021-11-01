@@ -467,7 +467,10 @@ public class JdbcProvider extends DatasourceProvider {
                 return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfiguration.getDataBase());
             case redshift:
                 RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
-                return redshiftConfigration.getDataBase();
+                if(StringUtils.isEmpty(redshiftConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());
             default:
                 return "show tables;";
         }
@@ -507,7 +510,7 @@ public class JdbcProvider extends DatasourceProvider {
                 if(StringUtils.isEmpty(redshiftConfigration.getSchema())){
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "SELECT tablename FROM  pg_tables WHERE  tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' AND schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());
+                return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());
             default:
                 return null;
         }

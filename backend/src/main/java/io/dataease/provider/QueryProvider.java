@@ -83,6 +83,6 @@ public abstract class QueryProvider {
     }
 
     public String convertTableToSql(String tableName, Datasource ds){
-        return "select * from  tableName";
+        return "select * from  TABLE_NAME".replace("TABLE_NAME", tableName);
     }
 }
