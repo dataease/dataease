@@ -50,7 +50,8 @@ ALTER TABLE `chart_view` ADD COLUMN `result_mode` varchar(50)  COMMENT '展示�
 UPDATE `chart_view` SET `result_count` = 1000;
 UPDATE `chart_view` SET `result_mode` = 'custom';
 
-
+ALTER TABLE `dataset_table`
+    MODIFY COLUMN `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
 
 -- ----------------------------
 -- Table structure for sys_theme
