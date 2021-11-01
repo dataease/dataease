@@ -1,7 +1,7 @@
 package io.dataease.controller.request.dataset;
 
 import io.dataease.base.domain.DatasetTable;
-import io.dataease.datasource.dto.TableFiled;
+import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

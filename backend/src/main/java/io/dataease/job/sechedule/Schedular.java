@@ -1,7 +1,7 @@
 package io.dataease.job.sechedule;
 
 import com.fit2cloud.quartz.anno.QuartzScheduled;
-import io.dataease.datasource.service.DatasourceService;
+import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.dataset.DataSetTableService;
 import org.springframework.stereotype.Component;
 

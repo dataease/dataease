@@ -1,5 +1,5 @@
 package io.dataease.commons.utils;
-import io.dataease.datasource.dto.TableFiled;
+import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
