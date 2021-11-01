@@ -60,7 +60,6 @@
 <script>
 
 import { loadGenerate, setPwd, switchValid, switchEnablePwd, shortUrl, setOverTime } from '@/api/link'
-import { encrypt, decrypt } from '@/utils/rsaEncrypt'
 export default {
 
   name: 'LinkGenerate',
@@ -120,7 +119,8 @@ export default {
         this.form.enablePwd = enablePwd
         this.form.uri = uri ? (this.origin + uri) : uri
         // 返回的密码是共钥加密后的 所以展示需要私钥解密一波
-        pwd && (this.form.pwd = decrypt(pwd))
+        pwd && (this.form.pwd = pwd)
+        /* pwd && (this.form.pwd = decrypt(pwd)) */
         /* overTime && (this.form.overTime = overTime) */
         overTime && (this.$set(this.form, 'overTime', overTime))
         this.requestShort()
@@ -143,7 +143,8 @@ export default {
       const newPwd = this.createPwd()
       const param = {
         resourceId: this.resourceId,
-        password: encrypt(newPwd)
+        password: newPwd
+        /* password: encrypt(newPwd) */
       }
       setPwd(param).then(res => {
         this.form.pwd = newPwd

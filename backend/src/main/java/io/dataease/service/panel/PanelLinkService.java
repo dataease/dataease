@@ -116,18 +116,19 @@ public class PanelLinkService {
     }
 
     private String buildLinkParam(String resourceId){
-        Map<String,Object> map = new HashMap<>();
+       /*  Map<String,Object> map = new HashMap<>();
         map.put("resourceId", resourceId);
         map.put("time", System.currentTimeMillis());
         map.put("salt", salt);
         Gson gson = new Gson();
-        String encrypt = encrypt(gson.toJson(map));
-        String s = null;
+        String encrypt = encrypt(gson.toJson(map)); */
+        String encrypt = encrypt(resourceId);
+        /* String s = null;
         try {
             s = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, encrypt);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } */
         return encrypt;
     }
     private GenerateDto convertDto(PanelLink linl){
@@ -154,7 +155,8 @@ public class PanelLinkService {
             return false;
         }
         if (StringUtils.isEmpty(panelLink.getPwd())) return false;
-        boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd()));
+        boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), panelLink.getPwd());
+        /* boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd())); */
         return verify;
     }
 
@@ -167,10 +169,12 @@ public class PanelLinkService {
     }
 
     public boolean validatePwd(PasswordRequest request) throws Exception {
-        String password = decryptParam(request.getPassword());
+        String password = request.getPassword();
+        /* String password = decryptParam(request.getPassword()); */
         String resourceId = request.getResourceId();
         PanelLink one = findOne(resourceId);
-        String pwd = decryptParam(one.getPwd());
+        String pwd = one.getPwd();
+        /* String pwd = decryptParam(one.getPwd()); */
         boolean pass = StringUtils.equals(pwd, password);
         if (pass){
             String token = JWTUtils.signLink(resourceId, password);
