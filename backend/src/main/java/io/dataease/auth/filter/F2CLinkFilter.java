@@ -39,7 +39,8 @@ public class F2CLinkFilter extends AnonymousFilter {
                 panelLink.setPwd("dataease");
                 pwd = panelLink.getPwd();
             }else {
-                pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, panelLink.getPwd());
+                /* pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, panelLink.getPwd()); */
+                pwd = panelLink.getPwd();
             }
             return JWTUtils.verifyLink(link_token, id, pwd);
         }catch (Exception e) {

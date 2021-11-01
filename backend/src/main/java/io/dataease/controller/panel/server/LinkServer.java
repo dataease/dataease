@@ -1,7 +1,6 @@
 package io.dataease.controller.panel.server;
 
 
-import com.google.gson.Gson;
 import io.dataease.base.domain.PanelLink;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.panel.api.LinkApi;
@@ -10,7 +9,6 @@ import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
 import io.dataease.controller.request.panel.link.OverTimeRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
-import io.dataease.controller.request.panel.link.ValidateRequest;
 import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.ValidateDto;
 import io.dataease.service.chart.ChartViewService;
@@ -69,11 +67,12 @@ public class LinkServer implements LinkApi {
     public ValidateDto validate(@RequestBody Map<String, String> param)  throws Exception{
         String link = param.get("link");
         String json = panelLinkService.decryptParam(link);
-        Gson gson = new Gson();
+         /* Gson gson = new Gson();
 
-        ValidateRequest request = gson.fromJson(json, ValidateRequest.class);
+        ValidateRequest request = gson.fromJson(json, ValidateRequest.class); */
         ValidateDto dto = new ValidateDto();
-        String resourceId = request.getResourceId();
+        String resourceId = json;
+       /*  String resourceId = request.getResourceId(); */
         PanelLink one = panelLinkService.findOne(resourceId);
         dto.setResourceId(resourceId);
         if (ObjectUtils.isEmpty(one)){
