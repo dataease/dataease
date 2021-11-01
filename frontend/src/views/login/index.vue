@@ -1,5 +1,5 @@
 <template>
-  <div class="login-background" :v-show="themeLoaded">
+  <div v-show="contentShow" class="login-background">
     <div class="login-container">
       <el-row v-loading="loading" type="flex">
         <el-col :span="12">
@@ -64,12 +64,11 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { initTheme } from '@/utils/ThemeUtil'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import Cookies from 'js-cookie'
-import store from "@/store";
 export default {
   name: 'Login',
   components: { PluginCom },
@@ -92,7 +91,8 @@ export default {
       loginLogoUrl: null,
       axiosFinished: false,
       loginTypes: [0],
-      themeLoaded: false
+      isPluginLoaded: false,
+      contentShow: false
     }
   },
   computed: {
@@ -109,8 +109,14 @@ export default {
     }
   },
   beforeCreate() {
-    initTheme()
-    this.themeLoaded = true
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+      this.isPluginLoaded && initTheme()
+      this.contentShow = true
+    }).catch(() => {
+      this.contentShow = true
+    })
+
     ldapStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(1)
@@ -183,7 +189,7 @@ export default {
             password: encrypt(this.loginForm.password),
             loginType: this.loginForm.loginType
           }
-          let publicKey = localStorage.getItem("publicKey");
+          const publicKey = localStorage.getItem('publicKey')
           console.log(publicKey)
           this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({ path: this.redirect || '/' })
