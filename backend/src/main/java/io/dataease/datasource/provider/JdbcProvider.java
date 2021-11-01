@@ -453,6 +453,12 @@ public class JdbcProvider extends DatasourceProvider {
             case ck:
                 CHConfiguration chConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfiguration.class);
                 return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfiguration.getDataBase());
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                if(StringUtils.isEmpty(redshiftConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());
             default:
                 return "show tables;";
         }
@@ -487,6 +493,12 @@ public class JdbcProvider extends DatasourceProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", pgConfiguration.getSchema());
+            case redshift:
+                RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
+                if(StringUtils.isEmpty(redshiftConfigration.getSchema())){
+                    throw new Exception(Translator.get("i18n_schema_is_empty"));
+                }
+                return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());
             default:
                 return null;
         }
