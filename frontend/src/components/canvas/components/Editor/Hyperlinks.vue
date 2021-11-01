@@ -61,6 +61,7 @@ export default {
   methods: {
     onSubmit() {
       this.curComponent.hyperlinks = deepCopy(this.linkInfo)
+      this.$store.state.styleChangeTimes++
       this.popoverClose()
     },
     onClose() {
