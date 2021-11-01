@@ -1109,7 +1109,8 @@ public class ExtractDataService {
         HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
         clientBuilder.setConnectionTimeout(1);
         clientBuilder.setCredentials(user, passwd);
-        try (CloseableHttpClient httpClient = clientBuilder.build()){
+        try {
+            CloseableHttpClient httpClient = clientBuilder.build();
             HttpResponse httpResponse = httpClient.execute(getMethod);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != -1 && statusCode < 400) {
