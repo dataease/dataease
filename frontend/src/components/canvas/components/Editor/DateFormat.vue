@@ -14,6 +14,7 @@
             v-model="formatInfo.openMode"
             :placeholder="$t('deshowdate.select_openMode')"
             style="width: 100%;"
+            @change="modelChange"
           >
             <el-option
               v-for="item in modelOptions"
@@ -130,6 +131,15 @@ export default {
     },
     popoverClose() {
       this.$refs.popover.showPopper = false
+    },
+    modelChange(val) {
+      if (val === '0') {
+        this.curComponent.style.height = 100
+      } else if (val === '1') {
+        this.curComponent.style.height = 150
+      } else {
+        this.curComponent.style.height = 300
+      }
     }
   }
 }
