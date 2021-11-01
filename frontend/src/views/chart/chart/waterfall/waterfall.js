@@ -20,10 +20,12 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // fix yAxis
-  yAxis.min = yAxis.minLimit
-  yAxis.max = yAxis.maxLimit
-  delete yAxis.minLimit
-  delete yAxis.maxLimit
+  if (yAxis) {
+    yAxis.min = yAxis.minLimit
+    yAxis.max = yAxis.maxLimit
+    delete yAxis.minLimit
+    delete yAxis.maxLimit
+  }
   // data
   const data = chart.data.datas
   // total

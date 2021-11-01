@@ -409,7 +409,9 @@ export default {
       sql: '',
       incrementalConfig: {},
       cronEdit: false,
-      lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn'
+      lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn',
+      taskLastRequestComplete: true,
+      taskLogLastRequestComplete: true
     }
   },
   computed: {
@@ -430,16 +432,27 @@ export default {
     this.calHeight()
   },
   created() {
-    this.timer = setInterval(() => {
+    this.taskLogTimer = setInterval(() => {
+      if (!this.taskLogLastRequestComplete) {
+        return
+      } else {
+        this.taskLogLastRequestComplete = false
+      }
       this.listTaskLog(false)
-    }, 5000)
+    }, 10000)
+
     this.taskTimer = setInterval(() => {
+      if (!this.taskLastRequestComplete) {
+        return
+      } else {
+        this.taskLastRequestComplete = false
+      }
       this.listTask(false)
-    }, 5000)
+    }, 10000)
   },
   beforeDestroy() {
-    clearInterval(this.timer)
     clearInterval(this.taskTimer)
+    clearInterval(this.taskLogTimer)
   },
   methods: {
     calHeight() {
@@ -516,6 +529,9 @@ export default {
     listTask(loading = true) {
       post('/dataset/task/list', { tableId: this.table.id }, loading).then(response => {
         this.taskData = response.data
+        this.taskLastRequestComplete = true
+      }).catch(() => {
+        this.taskLastRequestComplete = true
       })
     },
     getIncrementalConfig() {
@@ -658,6 +674,9 @@ export default {
       post('/dataset/taskLog/list/' + this.table.type + '/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
         this.taskLogData = response.data.listObject
         this.page.total = response.data.itemCount
+        this.taskLogLastRequestComplete = true
+      }).catch(() => {
+        this.taskLogLastRequestComplete = true
       })
     },
     handleSizeChange(val) {
