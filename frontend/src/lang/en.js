@@ -953,7 +953,8 @@ export default {
     table_page_size: 'Page Size',
     table_page_size_unit: 'Item/Page',
     result_count: 'Result',
-    result_mode_all: 'ALL'
+    result_mode_all: 'ALL',
+    splitCount_less_100: 'Split Count must less 100'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

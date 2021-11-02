@@ -15,6 +15,13 @@ export function listDatasource() {
     method: 'get'
   })
 }
+export function listDatasourceByType(type) {
+  return request({
+    url: '/datasource/list/' + type,
+    loading: true,
+    method: 'get'
+  })
+}
 export function addDs(data) {
   return request({
     url: 'datasource/add/',

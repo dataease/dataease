@@ -2,13 +2,12 @@ package io.dataease.service.dataset;
 
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.DatasetTableFunctionMapper;
-import io.dataease.datasource.service.DatasourceService;
+import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Author gin
