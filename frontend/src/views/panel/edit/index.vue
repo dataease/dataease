@@ -218,7 +218,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import FilterTextAttr from '@/components/canvas/components/FilterTextAttr'
-import {queryPanelJumpInfo} from "@/api/panel/linkJump";
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
   name: 'PanelEdit',
@@ -560,6 +560,11 @@ export default {
           this.currentFilterCom.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
           this.currentFilterCom.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
           this.currentFilterCom.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+        } else {
+          this.currentFilterCom.style.left = this.dragComponentInfo.shadowStyle.x
+          this.currentFilterCom.style.top = this.dragComponentInfo.shadowStyle.y
+          this.currentFilterCom.style.width = this.dragComponentInfo.style.width
+          this.currentFilterCom.style.height = this.dragComponentInfo.style.height
         }
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
