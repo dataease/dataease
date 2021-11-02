@@ -176,6 +176,7 @@
                       <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
                       <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
                       <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
+                      <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_label') }}</span>
                       /
                       <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                       <span v-else-if="view.type && view.type === 'table-info'">{{ $t('chart.dimension_or_quota') }}</span>
@@ -211,6 +212,7 @@
                       <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
                       <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
                       <span v-else-if="view.type && view.type === 'liquid'">{{ $t('chart.drag_block_progress') }}</span>
+                      <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_size') }}</span>
                       /
                       <span>{{ $t('chart.quota') }}</span>
                     </span>
@@ -334,7 +336,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
-                  <el-row v-if="view.type && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'waterfall'" class="padding-lr" style="margin-top: 6px;">
+                  <el-row v-if="view.type && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud'" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span>{{ $t('chart.drill') }}</span>
                       /
@@ -381,7 +383,7 @@
                   <el-collapse-item name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="chart.type !== 'map' && chart.type !== 'waterfall'" name="size" :title="$t('chart.size')">
+                  <el-collapse-item v-show="chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud'" name="size" :title="$t('chart.size')">
                     <size-selector v-if="view.render && view.render === 'echarts'" :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
                     <size-selector-ant-v v-else-if="view.render && view.render === 'antv'" :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
                   </el-collapse-item>
