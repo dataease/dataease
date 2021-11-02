@@ -958,7 +958,7 @@ export default {
     chart_word_cloud: '詞雲',
     drag_block_word_cloud_label: '詞標簽',
     drag_block_word_cloud_size: '詞大小',
-    splitCount_less_100: '刻度數不能超過100'
+    splitCount_less_100: '刻度數範圍0-100'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
