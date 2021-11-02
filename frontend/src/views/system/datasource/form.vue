@@ -59,14 +59,14 @@
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port" >
           <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
         </el-form-item>
-        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'">
+        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'">
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
             {{ $t('datasource.get_schema') }}
           </el-button>
         </el-form-item>
 
-        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'" :label="$t('datasource.schema')">
-          <el-select v-model="form.configuration.schema" filterable :placeholder="$t('datasource.please_choose_schema')" class="select-width">
+        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'" :label="$t('datasource.schema')">
+          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width">
             <el-option
               v-for="item in schemas"
               :key="item"

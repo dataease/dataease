@@ -613,6 +613,8 @@ export default {
     msg_time_out: '消息保留時間(單位:天)',
     empty_front: '為空則默認取值10秒',
     empty_msg: '為空則默認取值30天',
+    front_error: '請填寫0-100正整數',
+    msg_error: '請填寫1-365正整數',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP賬戶',
     SMTP_password: 'SMTP密碼',
