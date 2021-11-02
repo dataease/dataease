@@ -676,3 +676,11 @@ div:focus {
 }
 
 
+.el-color-svpanel__black {
+  background: linear-gradient(to top, #000, rgba(0,0,0,0)) !important;
+}
+
+.el-color-svpanel__white {
+  background: linear-gradient(to right, #fff, rgba(255,255,255,0)) !important;
+}
+
