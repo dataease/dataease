@@ -51,7 +51,7 @@
       @onResizing="onResizing"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
-      @amAddItme="addItemBox(item)"
+      @amAddItem="addItemBox(item)"
       @linkJumpSet="linkJumpSet(item)"
     >
       <!--      <span style="position:relative;left: 0px;top:0px">-->
@@ -338,6 +338,7 @@ function recalcCellWidth() {
 }
 
 function init() {
+  console.log('init')
   this.cellWidth = this.baseWidth + this.baseMarginLeft
   this.cellHeight = this.baseHeight + this.baseMarginTop
   this.yourList = this.getList()
@@ -357,7 +358,6 @@ function init() {
   recalcCellWidth.call(this)
 
   resetPositionBox.call(this)
-
   let i = 0
   // console.log('initList:' + JSON.stringify(vm.yourList))
   const timeid = setInterval(function() {
@@ -376,6 +376,7 @@ function init() {
 }
 
 function resizePlayer(item, newSize) {
+  // console.log('resizePlayer')
   const vm = this
   removeItemFromPositionBox(item)
 
@@ -424,6 +425,7 @@ function resizePlayer(item, newSize) {
  * @param {any} position
  */
 function checkItemPosition(item, position) {
+  // console.log('checkItemPosition-info' + JSON.stringify(item))
   position = position || {}
   position.x = position.x || item.x
   position.y = position.y || item.y
@@ -469,6 +471,7 @@ function checkItemPosition(item, position) {
  * @param {any} position
  */
 function movePlayer(item, position) {
+  // console.log('movePlayer')
   const vm = this
   removeItemFromPositionBox(item)
 
@@ -483,7 +486,7 @@ function movePlayer(item, position) {
 
   item.x = position.x
   item.y = position.y
-
+  // console.log('checkItemPosition3')
   checkItemPosition.call(this, item, position)
 
   emptyTargetCell.call(this, item)
@@ -520,11 +523,13 @@ function removeItem(index) {
 }
 
 function addItem(item, index) {
+  // console.log('addItem')
   if (index < 0) {
     index = this.yourList.length
   }
   item._dragId = index
 
+  // console.log('checkItemPosition4')
   checkItemPosition.call(this, item, {
     x: item.x,
     y: item.y
@@ -652,6 +657,7 @@ function changeItemCoord(item) {
  * @param {any} item
  */
 function emptyTargetCell(item) {
+  // console.log('emptyTargetCell')
   const vm = this
   const belowItems = findBelowItems(item)
 
@@ -708,6 +714,7 @@ function moveItemDown(item, size) {
     y: item.y + size
   }
   setPlayerPosition.call(this, item, targetPosition)
+  // console.log('checkItemPosition1')
   checkItemPosition.call(this, item, targetPosition)
 
   addItemToPositionBox.call(this, item)
@@ -1458,6 +1465,7 @@ export default {
       infoBox.oldSizeY = item.sizey
     },
     onMouseUp(e) {
+      // console.log('onMouseUp')
       const vm = this
       if (_.isEmpty(vm.infoBox)) return
       if (vm.infoBox.cloneItem) {
@@ -1626,6 +1634,7 @@ export default {
       }, 100)
     },
     addItemBox(item) {
+      // console.log('addItemBox:' + JSON.stringify(item))
       this.yourList.push(item)
 
       this.$nextTick(function() {
