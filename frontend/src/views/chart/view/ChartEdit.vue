@@ -418,7 +418,7 @@
                     <title-selector v-if="view.render && view.render === 'echarts'" :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
                     <title-selector-ant-v v-else-if="view.render && view.render === 'antv'" :param="param" class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
                   </el-collapse-item>
-                  <el-collapse-item v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall'" name="legend" :title="$t('chart.legend')">
+                  <el-collapse-item v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge'" name="legend" :title="$t('chart.legend')">
                     <legend-selector v-if="view.render && view.render === 'echarts'" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
                     <legend-selector-ant-v v-else-if="view.render && view.render === 'antv'" :param="param" class="attr-selector" :chart="chart" @onLegendChange="onLegendChange" />
                   </el-collapse-item>
