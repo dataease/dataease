@@ -103,16 +103,17 @@
             <svg-icon icon-class="treemap" class="chart-icon" />
           </span>
         </el-radio>
-        <el-radio value="word-cloud" label="word-cloud">
-          <span :title="$t('chart.chart_word_cloud')">
-            <svg-icon icon-class="word-cloud" class="chart-icon" />
-          </span>
-        </el-radio>
+<!--        <el-radio value="word-cloud" label="word-cloud">-->
+<!--          <span :title="$t('chart.chart_word_cloud')">-->
+<!--            <svg-icon icon-class="word-cloud" class="chart-icon" />-->
+<!--          </span>-->
+<!--        </el-radio>-->
         <el-radio value="liquid" label="liquid">
           <span :title="$t('chart.chart_liquid')">
             <svg-icon icon-class="liquid" class="chart-icon" />
           </span>
         </el-radio>
+        <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
         <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
       </div>
     </div>
