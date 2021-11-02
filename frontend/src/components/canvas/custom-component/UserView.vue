@@ -339,14 +339,20 @@ export default {
     },
 
     jumpClick(param) {
-      const dimension = param.dimensionList[0]
-
-      param.sourcePanelId = this.panelInfo.id
-      param.sourceViewId = param.viewId
-      param.sourceFieldId = dimension.id
-      const sourceInfo = param.viewId + '#' + dimension.id
-      const jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+      let dimension, jumpInfo, sourceInfo
+      // 倒序取最后一个能匹配的
+      for (let i = param.dimensionList.length - 1; i >= 0; i--) {
+        dimension = param.dimensionList[i]
+        sourceInfo = param.viewId + '#' + dimension.id
+        jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+        if (jumpInfo) {
+          break
+        }
+      }
       if (jumpInfo) {
+        param.sourcePanelId = this.panelInfo.id
+        param.sourceViewId = param.viewId
+        param.sourceFieldId = dimension.id
         // 内部仪表板跳转
         if (jumpInfo.linkType === 'inner') {
           if (jumpInfo.targetPanelId) {
