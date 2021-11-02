@@ -960,7 +960,8 @@ export default {
     result_mode_all: '全部',
     chart_word_cloud: '词云',
     drag_block_word_cloud_label: '词标签',
-    drag_block_word_cloud_size: '词大小'
+    drag_block_word_cloud_size: '词大小',
+    splitCount_less_100: '刻度数不能超过100'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

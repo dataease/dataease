@@ -956,7 +956,8 @@ export default {
     result_mode_all: 'ALL',
     chart_word_cloud: 'Word Cloud',
     drag_block_word_cloud_label: 'Word Label',
-    drag_block_word_cloud_size: 'Word Size'
+    drag_block_word_cloud_size: 'Word Size',
+    splitCount_less_100: 'Split Count must less 100'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
