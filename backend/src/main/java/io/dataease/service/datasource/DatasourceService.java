@@ -57,7 +57,7 @@ public class DatasourceService {
     @Resource
     private CommonThreadPool commonThreadPool;
 
-    public Datasource addDatasource(Datasource datasource) {
+    public Datasource addDatasource(Datasource datasource) throws Exception{
         checkName(datasource);
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());

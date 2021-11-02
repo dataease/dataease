@@ -1,10 +1,10 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <de-aside-container style="padding: 0 0;">
-      <ds-tree ref="dsTree" @switch-main="switchMain" />
+      <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain" />
     </de-aside-container>
     <de-main-container>
-      <component :is="component" v-if="!!component" :params="param" @refresh-left-tree="refreshTree" @switch-component="switchMain" />
+      <component :is="component" v-if="!!component" :params="param"  @refresh-type="refreshType" @switch-component="switchMain" />
     </de-main-container>
   </de-container>
 </template>
@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       component: DataHome,
+      datasource: {},
       param: null
     }
   },
@@ -53,8 +54,9 @@ export default {
         }
       })
     },
-    refreshTree() {
-      this.$refs.dsTree && this.$refs.dsTree.queryTreeDatas()
+    refreshType(datasource) {
+      this.datasource = datasource;
+      this.$refs.dsTree && this.$refs.dsTree.refreshType(datasource)
     },
     msg2Current(sourceParam) {
       this.$refs.dsTree && this.$refs.dsTree.markInvalid(sourceParam)

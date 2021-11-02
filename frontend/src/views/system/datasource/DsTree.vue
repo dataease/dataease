@@ -87,10 +87,16 @@
   </el-col>
 </template>
 <script>
-import { listDatasource, delDs } from '@/api/system/datasource'
+import { listDatasource, listDatasourceByType, delDs } from '@/api/system/datasource'
 
 export default {
   name: 'DsTree',
+  props: {
+    datasource: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       expandedArray: [],
@@ -106,7 +112,6 @@ export default {
   },
   mounted() {
     this.queryTreeDatas()
-    // console.log('permis:' + JSON.stringify(this.$store.getters.permissions))
   },
   methods: {
     filterNode(value, data) {
@@ -124,6 +129,19 @@ export default {
       listDatasource().then(res => {
         this.tData = this.buildTree(res.data)
       })
+    },
+    refreshType(datasource) {
+      let typeData = []
+      listDatasourceByType(datasource.type).then(res => {
+        typeData = this.buildTree(res.data)
+        for (let index = 0; index < this.tData.length; index++) {
+          if(typeData[0].id === this.tData[index].id){
+            this.tData[index].children = typeData[0].children
+          }
+        }
+      })
+
+
     },
     buildTree(array) {
       const types = {}
@@ -212,7 +230,7 @@ export default {
       }).then(() => {
         delDs(datasource.id).then(res => {
           this.$success(this.$t('commons.delete_success'))
-          this.queryTreeDatas()
+          this.refreshType(datasource)
         })
       }).catch(() => {
         this.$message({

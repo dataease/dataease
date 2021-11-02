@@ -20,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(tags = "数据源：数据源管理")
 @ApiSupport(order = 30)
@@ -32,7 +33,7 @@ public class DatasourceController {
 
     @ApiOperation("新增数据源")
     @PostMapping("/add")
-    public Datasource addDatasource(@RequestBody Datasource datasource) {
+    public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception{
         return datasourceService.addDatasource(datasource);
     }
 
@@ -55,6 +56,12 @@ public class DatasourceController {
         DatasourceUnionRequest request = new DatasourceUnionRequest();
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         return datasourceService.getDatasourceList(request);
+    }
+
+    @ApiOperation("查询当前用户数据源")
+    @GetMapping("/list/{type}")
+    public List<DatasourceDTO> getDatasourceListByType(@PathVariable String type) throws Exception {
+        return getDatasourceList().stream().filter(datasourceDTO -> datasourceDTO.getType().equalsIgnoreCase(type)).collect(Collectors.toList());
     }
 
     @ApiIgnore
