@@ -423,7 +423,14 @@ export default {
   theme: {
     change: 'Change Theme',
     documentation: 'Theme documentation',
-    tips: 'Tips: It is different from the theme-pick on the navbar is two different skinning methods, each with different application scenarios. Refer to the documentation for details.'
+    tips: 'Tips: It is different from the theme-pick on the navbar is two different skinning methods, each with different application scenarios. Refer to the documentation for details.',
+    base: 'Base color',
+    font: 'Font color',
+    border: 'Border color',
+    background: 'Background color',
+    custom: 'Custom color',
+    otherSave: 'Theme Save as',
+    info: 'Theme info'
   },
   tagsView: {
     refresh: 'Refresh',
@@ -946,7 +953,10 @@ export default {
     table_page_size: 'Page Size',
     table_page_size_unit: 'Item/Page',
     result_count: 'Result',
-    result_mode_all: 'ALL'
+    result_mode_all: 'ALL',
+    chart_word_cloud: 'Word Cloud',
+    drag_block_word_cloud_label: 'Word Label',
+    drag_block_word_cloud_size: 'Word Size'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

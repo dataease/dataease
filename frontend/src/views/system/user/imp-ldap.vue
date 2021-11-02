@@ -238,7 +238,7 @@ export default {
         ldapUsers().then(res => {
           if (res && res.data) {
             this.users = res.data.map(item => {
-              if (this.exitsUsers.some(existUser => existUser === item.userName)) {
+              if (this.exitsUsers.some(existUser => existUser.username === item.userName)) {
                 item.disabled = true
               }
               return item

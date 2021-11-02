@@ -423,7 +423,14 @@ export default {
   theme: {
     change: '換膚',
     documentation: '換膚文檔',
-    tips: 'Tips: 它區別于 navbar 上的 theme-pick, 是兩種不同的換膚方法，各自有不同的應用場景，具體請參考文檔。'
+    tips: 'Tips: 它區別于 navbar 上的 theme-pick, 是兩種不同的換膚方法，各自有不同的應用場景，具體請參考文檔。',
+    base: '基礎配色',
+    font: '字體顏色',
+    border: '邊框顏色',
+    background: '背景顏色',
+    custom: '自定義顏色',
+    otherSave: '主題另存為',
+    info: '主題信息'
   },
   tagsView: {
     refresh: '刷新',
@@ -947,7 +954,10 @@ export default {
     table_page_size: '分頁',
     table_page_size_unit: '條/頁',
     result_count: '結果展示',
-    result_mode_all: '全部'
+    result_mode_all: '全部',
+    chart_word_cloud: '詞雲',
+    drag_block_word_cloud_label: '詞標簽',
+    drag_block_word_cloud_size: '詞大小'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

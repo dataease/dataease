@@ -1,5 +1,6 @@
 package io.dataease.controller.sys.request;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
+@ApiModel("消息条件")
 public class MsgRequest implements Serializable {
 
     private static final long serialVersionUID = 1920091635946508658L;

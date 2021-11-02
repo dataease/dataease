@@ -425,7 +425,14 @@ export default {
   theme: {
     change: '换肤',
     documentation: '换肤文档',
-    tips: 'Tips: 它区别于 navbar 上的 theme-pick, 是两种不同的换肤方法，各自有不同的应用场景，具体请参考文档。'
+    tips: 'Tips: 它区别于 navbar 上的 theme-pick, 是两种不同的换肤方法，各自有不同的应用场景，具体请参考文档。',
+    base: '基础配色',
+    font: '字体颜色',
+    border: '边框颜色',
+    background: '背景颜色',
+    custom: '自定义颜色',
+    otherSave: '主题另存为',
+    info: '主题信息'
   },
   tagsView: {
     refresh: '刷新',
@@ -950,7 +957,10 @@ export default {
     table_page_size: '分页',
     table_page_size_unit: '条/页',
     result_count: '结果展示',
-    result_mode_all: '全部'
+    result_mode_all: '全部',
+    chart_word_cloud: '词云',
+    drag_block_word_cloud_label: '词标签',
+    drag_block_word_cloud_size: '词大小'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

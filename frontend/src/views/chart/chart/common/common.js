@@ -51,7 +51,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.legend.orient = customStyle.legend.orient
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
-      if (chart.type === 'treemap') {
+      if (chart.type === 'treemap' || chart.type === 'gauge') {
         chart_option.legend.show = false
       }
     }

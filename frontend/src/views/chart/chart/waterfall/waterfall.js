@@ -103,5 +103,8 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
   }
   plot = new Waterfall(container, options)
 
+  plot.off('interval:click')
+  plot.on('interval:click', action)
+
   return plot
 }
