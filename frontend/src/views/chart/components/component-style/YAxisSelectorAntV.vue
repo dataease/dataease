@@ -171,7 +171,7 @@ export default {
       if (!this.axisForm.show) {
         this.isSetting = false
       }
-      if (this.axisForm.axisValue.splitCount && parseInt(this.axisForm.axisValue.splitCount) > 100) {
+      if (this.axisForm.axisValue.splitCount && (parseInt(this.axisForm.axisValue.splitCount) > 100 || parseInt(this.axisForm.axisValue.splitCount) < 0)) {
         this.$message({
           message: this.$t('chart.splitCount_less_100'),
           type: 'error'
