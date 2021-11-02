@@ -187,10 +187,10 @@ export default {
           }.bind(this)
         })
       }
-      const param = {
+      /* const param = {
         userId: this.user.userId
-      }
-      unReadCount(param).then(res => {
+      } */
+      unReadCount().then(res => {
         this.count = res.data
       })
     },
