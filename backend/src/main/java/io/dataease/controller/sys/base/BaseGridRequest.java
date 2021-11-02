@@ -1,6 +1,7 @@
 package io.dataease.controller.sys.base;
 
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -8,9 +9,11 @@ import java.io.Serializable;
 import java.util.List;
 
 
+
+@ApiModel("查询条件")
 public class BaseGridRequest implements Serializable {
 
-    @ApiModelProperty("查询条件")
+    @ApiModelProperty("条件集合")
     private List<ConditionEntity> conditions;
 
     public List<ConditionEntity> getConditions() {
