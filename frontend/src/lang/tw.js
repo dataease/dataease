@@ -947,7 +947,10 @@ export default {
     table_page_size: '分頁',
     table_page_size_unit: '條/頁',
     result_count: '結果展示',
-    result_mode_all: '全部'
+    result_mode_all: '全部',
+    chart_word_cloud: '詞雲',
+    drag_block_word_cloud_label: '詞標簽',
+    drag_block_word_cloud_size: '詞大小'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

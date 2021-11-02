@@ -946,7 +946,10 @@ export default {
     table_page_size: 'Page Size',
     table_page_size_unit: 'Item/Page',
     result_count: 'Result',
-    result_mode_all: 'ALL'
+    result_mode_all: 'ALL',
+    chart_word_cloud: 'Word Cloud',
+    drag_block_word_cloud_label: 'Word Label',
+    drag_block_word_cloud_size: 'Word Size'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
