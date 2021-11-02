@@ -813,7 +813,7 @@ export default {
       }
     },
     canvasScroll(event) {
-      console.log('testTop' + event.target.scrollTop)
+      // console.log('testTop' + event.target.scrollTop)
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
     },
