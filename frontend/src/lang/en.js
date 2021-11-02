@@ -423,7 +423,14 @@ export default {
   theme: {
     change: 'Change Theme',
     documentation: 'Theme documentation',
-    tips: 'Tips: It is different from the theme-pick on the navbar is two different skinning methods, each with different application scenarios. Refer to the documentation for details.'
+    tips: 'Tips: It is different from the theme-pick on the navbar is two different skinning methods, each with different application scenarios. Refer to the documentation for details.',
+    base: 'Base color',
+    font: 'Font color',
+    border: 'Border color',
+    background: 'Background color',
+    custom: 'Custom color',
+    otherSave: 'Theme Save as',
+    info: 'Theme info'
   },
   tagsView: {
     refresh: 'Refresh',
