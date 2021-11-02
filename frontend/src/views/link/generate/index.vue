@@ -120,6 +120,10 @@ export default {
         this.form.uri = uri ? (this.origin + uri) : uri
         // 返回的密码是共钥加密后的 所以展示需要私钥解密一波
         pwd && (this.form.pwd = pwd)
+
+        if (pwd && pwd.length > 0 && pwd.length > this.pwdNums) {
+          this.resetPwd()
+        }
         /* pwd && (this.form.pwd = decrypt(pwd)) */
         /* overTime && (this.form.overTime = overTime) */
         overTime && (this.$set(this.form, 'overTime', overTime))
