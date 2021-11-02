@@ -235,14 +235,14 @@ export default {
             $confirm(this.$t('datasource.edit_datasource_msg'), () => {
               method(form).then(res => {
                 this.$success(this.$t('commons.save_success'))
-                this.refreshTree()
+                this.refreshType(form)
                 this.backToList()
               })
             })
           } else {
             method(form).then(res => {
               this.$success(this.$t('commons.save_success'))
-              this.refreshTree()
+              this.refreshType(form)
               this.backToList()
             })
           }
@@ -315,10 +315,9 @@ export default {
     },
     backToList() {
       this.$emit('switch-component', { })
-      // this.$router.push({ name: 'datasource' })
     },
-    refreshTree() {
-      this.$emit('refresh-left-tree')
+    refreshType(form) {
+      this.$emit('refresh-type', form)
     }
   }
 }

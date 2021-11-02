@@ -331,7 +331,10 @@ public class ExcelXlsReader implements HSSFListener {
                     totalSheets.add(excelSheetData);
                 }else {
                     List<String> tmp = new ArrayList<>(cellList);
-                    totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    if(totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().size() < 100){
+                        totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    }
+
                     totalRows++;
                 }
             }
