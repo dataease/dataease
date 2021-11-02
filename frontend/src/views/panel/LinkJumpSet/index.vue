@@ -26,7 +26,7 @@
               <span @click.stop>
                 <div>
                   <span class="auth-span">
-                    <el-checkbox v-model="data.checked" @change="sourceFieldCheckedChange(data)"/>
+                    <el-checkbox v-model="data.checked" @change="sourceFieldCheckedChange(data)" />
                   </span>
                 </div>
               </span>
@@ -88,7 +88,10 @@
                           :label="item.name"
                           :value="item.id"
                         >
-                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+                          <span style="float: left">
+                            <svg-icon :icon-class="item.type" style="width: 14px;height: 14px" />
+                          </span>
+                          <span style="float: left; font-size: 12px"> {{ item.name }}</span>
                         </el-option>
                       </el-select>
                     </div>
@@ -108,7 +111,7 @@
                             <svg-icon v-if="viewField.deType === 2 || viewField.value === 3" icon-class="field_value" class="field-icon-value" />
                             <svg-icon v-if="viewField.deType === 5" icon-class="field_location" class="field-icon-location" />
                           </span>
-                          <span style="float: left; color: #8492a6; font-size: 12px">{{ viewField.name }}</span>
+                          <span style="float: left;font-size: 12px">{{ viewField.name }}</span>
                         </el-option>
                       </el-select>
                     </div>
