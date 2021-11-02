@@ -140,14 +140,14 @@ public class DorisQueryProvider extends QueryProvider {
         st_sql.add("isGroup", isGroup);
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
-//        if ((fields.size() > 0)) {
-//            xOrders.add(SQLObj.builder()
-//                    .orderDirection("asc")
-//                    .orderField(fields.get(0).getDataeaseName())
-//                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, "0"))
-//                    .build());
-//            st_sql.add("orders", xOrders);
-//        }
+        if ((fields.size() > 0)) {
+            xOrders.add(SQLObj.builder()
+                    .orderDirection("asc")
+                    .orderField(fields.get(0).getDataeaseName())
+                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, "0"))
+                    .build());
+            st_sql.add("orders", xOrders);
+        }
         return st_sql.render();
     }
 
