@@ -58,6 +58,9 @@ export default {
           }
         }
       }
+      if (!style.background) {
+        style.background = '#FFFFFF'
+      }
       return style
     },
     ...mapState([
