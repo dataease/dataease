@@ -864,6 +864,6 @@ export const COLOR_PANEL = [
   '#1e90ff',
   '#c71585',
   '#999999',
-  '#ffffff',
+  '#00008b',
   '#000000'
 ]

@@ -114,7 +114,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'curComponent'
+      'curComponent',
+      'curCanvasScale'
     ])
   },
   created() {
@@ -135,10 +136,13 @@ export default {
     modelChange(val) {
       if (val === '0') {
         this.curComponent.style.height = 100
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
       } else if (val === '1') {
         this.curComponent.style.height = 150
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
       } else {
         this.curComponent.style.height = 300
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
       }
     }
   }

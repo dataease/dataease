@@ -2,10 +2,12 @@ package io.dataease.base.domain;
 
 import java.io.Serializable;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
+@ApiModel("订阅信息")
 public class SysMsgSetting implements Serializable {
     @ApiModelProperty(hidden = true)
     private Long msgSettingId;

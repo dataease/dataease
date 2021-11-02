@@ -347,6 +347,11 @@ export default {
         this.innerOpacity = this.styleInfo['opacity'] * 100
       }
       this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
+      if (this.curComponent.type === 'v-text') {
+        this.mainWidthOffset = 600
+      } else if (this.curComponent.type === 'de-show-date') {
+        this.mainWidthOffset = 600
+      }
       // console.log('mainWidthOffset:' + this.mainWidthOffset)
     },
     attrShow(attr) {

@@ -425,7 +425,14 @@ export default {
   theme: {
     change: '换肤',
     documentation: '换肤文档',
-    tips: 'Tips: 它区别于 navbar 上的 theme-pick, 是两种不同的换肤方法，各自有不同的应用场景，具体请参考文档。'
+    tips: 'Tips: 它区别于 navbar 上的 theme-pick, 是两种不同的换肤方法，各自有不同的应用场景，具体请参考文档。',
+    base: '基础配色',
+    font: '字体颜色',
+    border: '边框颜色',
+    background: '背景颜色',
+    custom: '自定义颜色',
+    otherSave: '主题另存为',
+    info: '主题信息'
   },
   tagsView: {
     refresh: '刷新',
@@ -1253,7 +1260,7 @@ export default {
     export_to_pdf: '导出为PDF',
     preview: '预览',
     fullscreen_preview: '全屏预览',
-    ta: '新Tab页预览',
+    new_tab_preview: '新Tab页预览',
     select_panel_from_left: '请从左侧选择仪表板',
     template_nale: '模板名称',
     template: '模板',
