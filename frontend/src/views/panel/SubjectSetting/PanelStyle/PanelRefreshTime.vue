@@ -7,8 +7,17 @@
         trigger="click"
       >
         <el-col>
-          <el-form ref="colorForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('panel.second')" class="form-item form-item-slider">
+          <el-form ref="colorForm" label-width="110px" size="mini">
+            <el-form-item :label="'视图加载提示'" class="form-item form-item-slider">
+              <el-checkbox v-model="canvasStyleData.refreshViewLoading" @change="onChangePanelStyle" />
+            </el-form-item>
+            <el-form-item :label="'刷新时间单位'" class="form-item form-item-slider">
+              <el-radio-group v-model="canvasStyleData.refreshUnit" @change="onChangePanelStyle">
+                <el-radio label="second">秒</el-radio>
+                <el-radio label="minute">分</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item :label="'刷新时间频率'" class="form-item form-item-slider">
               <el-slider v-model="canvasStyleData.refreshTime" show-input :show-input-controls="false" input-size="mini" :min="1" :max="3600" @change="onChangePanelStyle" />
             </el-form-item>
           </el-form>
