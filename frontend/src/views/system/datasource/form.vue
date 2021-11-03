@@ -285,7 +285,7 @@ export default {
               } else {
                 this.$error(this.$t(res.message))
               }
-              this.refreshTree()
+              this.refreshType(data)
             }).catch(res => {
               this.$error(res.message)
             })
