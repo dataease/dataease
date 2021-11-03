@@ -270,6 +270,7 @@ export default {
         targetUnionRelation: ''
       }
       this.targetTable = {}
+      this.targetFieldOption = []
     },
 
     edit(item) {
