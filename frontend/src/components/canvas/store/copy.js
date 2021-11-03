@@ -3,6 +3,7 @@ import toast from '@/components/canvas/utils/toast'
 import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { chartCopy } from '@/api/chart/chart'
+import { uuid } from 'vue-uuid'
 
 export default {
   state: {
@@ -46,11 +47,14 @@ export default {
       if (data.type === 'view') {
         chartCopy(data.propValue.viewId).then(res => {
           const newView = deepCopy(data)
+          newView.id = uuid.v1()
           newView.propValue.viewId = res.data
           store.commit('addComponent', { component: newView })
         })
       } else {
-        store.commit('addComponent', { component: deepCopy(data) })
+        const newCop = deepCopy(data)
+        newCop.id = uuid.v1()
+        store.commit('addComponent', { component: newCop })
       }
       if (state.isCut) {
         state.copyData = null

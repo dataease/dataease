@@ -954,7 +954,8 @@ export default {
     table_page_size: '分頁',
     table_page_size_unit: '條/頁',
     result_count: '結果展示',
-    result_mode_all: '全部'
+    result_mode_all: '全部',
+    splitCount_less_100: '刻度數範圍0-100'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
