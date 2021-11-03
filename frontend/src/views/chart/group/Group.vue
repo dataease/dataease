@@ -267,7 +267,7 @@
       class="dialog-css"
     >
       <el-row style="width: 800px;">
-        <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">
+        <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item" @submit.native.prevent>
           <el-col :span="12">
             <el-form-item :label="$t('chart.view_name')">
               <el-input v-model="chartName" style="height: 34px" size="mini" />
