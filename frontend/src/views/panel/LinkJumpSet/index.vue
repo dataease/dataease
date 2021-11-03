@@ -65,6 +65,7 @@
                   :placeholder="$t('panel.select_jump_panel')"
                   style="margin-right: 10px"
                   @select="panelNodeClick"
+                  @input="inputVal"
                 />
               </el-col>
             </el-row>
@@ -308,6 +309,13 @@ export default {
       // console.log('panelNodeClick:' + JSON.stringify(data))
       this.linkJumpInfo.targetViewInfoList = []
       this.getPanelViewList(data.id)
+    },
+    inputVal(value) {
+      if (!value) {
+        this.linkJumpInfo.targetViewInfoList = []
+        this.viewIdFieldArrayMap = {}
+        this.currentLinkPanelViewArray = []
+      }
     },
     addLinkJumpField() {
       this.linkJumpInfo.targetViewInfoList.push({
