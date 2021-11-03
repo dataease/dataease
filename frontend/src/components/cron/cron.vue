@@ -126,9 +126,9 @@ export default {
         })
       }
       const v = `${this.sVal} ${this.mVal} ${this.hVal} ${this.dVal} ${this.monthVal} ${this.weekVal} ${this.yearVal}`
-      if (v !== this.value) {
-        this.$emit('input', v)
-      }
+      // if (v !== this.value) {
+      this.$emit('input', v)
+      // }
       return v
     }
   },
