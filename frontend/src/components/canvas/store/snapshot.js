@@ -45,7 +45,7 @@ export default {
       }
     },
     refreshSnapshot(state) {
-      console.log('refreshSnapshot')
+      // console.log('refreshSnapshot')
       // 刷新快照
       state.snapshotData = []
       state.snapshotStyleData = []
