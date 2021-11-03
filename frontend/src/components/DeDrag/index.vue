@@ -1603,7 +1603,7 @@ export default {
       style.height = height
       style.rotate = this.rotate
       // this.hasMove = true
-      console.log('recordMatrixCurShadowStyle:t1:' + JSON.stringify(style))
+      // console.log('recordMatrixCurShadowStyle:t1:' + JSON.stringify(style))
 
       this.$store.commit('setShapeStyle', style)
 
