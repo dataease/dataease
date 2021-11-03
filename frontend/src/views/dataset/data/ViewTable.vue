@@ -53,7 +53,7 @@
       <el-tab-pane :label="$t('dataset.field_manage')" name="fieldEdit">
         <field-edit :param="param" />
       </el-tab-pane>
-      <el-tab-pane v-if="table.type !== 'custom'" :label="$t('dataset.join_view')" name="joinView">
+      <el-tab-pane v-if="table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
