@@ -1059,6 +1059,7 @@ export default {
   },
 
   mounted() {
+    this.changeScale()
     // 获取编辑器元素
     this.$store.commit('getEditor')
     const _this = this
