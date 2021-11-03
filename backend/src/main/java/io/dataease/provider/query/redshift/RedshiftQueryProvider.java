@@ -183,7 +183,7 @@ public class RedshiftQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQL(sql, fields, isGroup, null) + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
+        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + realSize + " offset " + (page - 1) * pageSize;
     }
 
     @Override
