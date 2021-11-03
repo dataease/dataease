@@ -1245,6 +1245,7 @@ export default {
     component_gap: '組件間隙',
     refresh_time: '刷新时间',
     minute: '分钟',
+    second: '秒',
     photo: '圖片',
     default_panel: '默認儀表板',
     create_public_links: '創建公共鏈接',

@@ -8,8 +8,8 @@
       >
         <el-col>
           <el-form ref="colorForm" label-width="80px" size="mini">
-            <el-form-item :label="$t('panel.minute')" class="form-item form-item-slider">
-              <el-slider v-model="canvasStyleData.refreshTime" show-input :show-input-controls="false" input-size="mini" :min="1" :max="60" @change="onChangePanelStyle" />
+            <el-form-item :label="$t('panel.second')" class="form-item form-item-slider">
+              <el-slider v-model="canvasStyleData.refreshTime" show-input :show-input-controls="false" input-size="mini" :min="1" :max="3600" @change="onChangePanelStyle" />
             </el-form-item>
           </el-form>
         </el-col>
