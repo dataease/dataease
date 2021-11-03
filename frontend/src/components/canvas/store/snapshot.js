@@ -8,13 +8,15 @@ export default {
     snapshotIndex: -1, // 快照索引
     changeTimes: -1, // 修改次数
     lastSaveSnapshotIndex: 0, // 最后保存是snapshotIndex的索引
-    styleChangeTimes: 0 // 组件样式修改次数
+    styleChangeTimes: 0, // 组件样式修改次数
+    doSnapshotIndex: -1 // snapshot undo redo 时的索引记录
   },
   mutations: {
     undo(state) {
       store.commit('setCurComponent', { component: null, index: null })
       if (state.snapshotIndex > 0) {
         state.snapshotIndex--
+        state.doSnapshotIndex = state.snapshotIndex
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
         store.commit('setCanvasStyle', deepCopy(state.snapshotStyleData[state.snapshotIndex]))
       }
@@ -24,6 +26,7 @@ export default {
       store.commit('setCurComponent', { component: null, index: null })
       if (state.snapshotIndex < state.snapshotData.length - 1) {
         state.snapshotIndex++
+        state.doSnapshotIndex = state.snapshotIndex
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
         store.commit('setCanvasStyle', deepCopy(state.snapshotStyleData[state.snapshotIndex]))
       }
@@ -42,6 +45,7 @@ export default {
       }
     },
     refreshSnapshot(state) {
+      console.log('refreshSnapshot')
       // 刷新快照
       state.snapshotData = []
       state.snapshotStyleData = []
