@@ -1,6 +1,6 @@
 <template>
   <div
-    v-loading="requestStatus==='waiting'"
+    v-loading="canvasStyleData.refreshViewLoading&&requestStatus==='waiting'"
     :class="[
       {
         ['active']: active
