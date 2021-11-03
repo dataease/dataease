@@ -3,7 +3,7 @@
     <de-main-container>
       <panel-main v-show="componentName==='PanelMain'" ref="panel_main" />
       <chart-edit v-if="componentName==='ChartEdit'" :param="param" />
-      <panel-edit v-if="componentName==='PanelEdit'" />
+      <panel-edit v-if="editShow&&componentName==='PanelEdit'" />
       <!--      <component :is="component" :param="param" />-->
     </de-main-container>
   </de-container>
@@ -24,7 +24,8 @@ export default {
     return {
       component: PanelMain,
       componentName: 'PanelMain',
-      param: {}
+      param: {},
+      editShow: true
     }
   },
   watch: {
@@ -42,6 +43,17 @@ export default {
       this.param = c.param
       this.componentName = c.name
       this.$store.dispatch('panel/setMainActiveName', c.name)
+      if (this.componentName === 'PanelEdit') {
+        setTimeout(() => {
+          this.editShow = false
+          this.$nextTick(() => {
+            this.editShow = true
+          })
+        }, 500)
+      } else {
+        this.editShow = true
+      }
+
       // switch (c.name) {
       //   case 'PanelEdit':
       //     this.component = PanelEdit
