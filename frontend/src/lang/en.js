@@ -1239,6 +1239,7 @@ export default {
     component_gap: 'Component Gap',
     refresh_time: 'Refresh Time',
     minute: 'minute',
+    second: 'second',
     photo: 'Photo',
     default_panel: 'Default Dashboard',
     create_public_links: 'Create public links',

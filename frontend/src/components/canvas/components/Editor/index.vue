@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="editShow"
     id="editor"
     class="editor"
     :class="[
@@ -338,7 +339,7 @@ function recalcCellWidth() {
 }
 
 function init() {
-  console.log('init')
+  // console.log('init-cellWidth')
   this.cellWidth = this.baseWidth + this.baseMarginLeft
   this.cellHeight = this.baseHeight + this.baseMarginTop
   this.yourList = this.getList()
@@ -943,7 +944,8 @@ export default {
       positionBoxInfoArray: [],
       yourList: [],
       linkJumpSetVisible: false,
-      linkJumpSetViewId: null
+      linkJumpSetViewId: null,
+      editShow: false
     }
   },
   computed: {
@@ -993,7 +995,7 @@ export default {
       'editor',
       'linkageSettingStatus',
       'curLinkageView',
-      'snapshotIndex'
+      'doSnapshotIndex'
     ])
   },
   watch: {
@@ -1035,6 +1037,7 @@ export default {
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
+          // console.log('.initMatrix2')
           this.initMatrix()
         }
       },
@@ -1047,9 +1050,10 @@ export default {
       deep: true
     },
     // 镜像索引有变化 刷新一下矩阵（撤销重做等）
-    snapshotIndex: {
+    doSnapshotIndex: {
       handler(newVal, oldVla) {
         // console.log('snapshotIndexChange:' + newVal)
+        // console.log('.initMatrix3')
         this.initMatrix()
       },
       deep: true
@@ -1057,15 +1061,20 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
+      this.changeScale()
+      this.editShow = true
+    }, 500)
+    // this.changeScale()
     // 获取编辑器元素
     this.$store.commit('getEditor')
     const _this = this
     // bus.$on('auxiliaryMatrixChange', this.initMatrix)
-    bus.$on('auxiliaryMatrixChange', () => {
-      _this.$nextTick(() => {
-        _this.initMatrix()
-      })
-    })
+    // bus.$on('auxiliaryMatrixChange', () => {
+    //   _this.$nextTick(() => {
+    //     _this.initMatrix()
+    //   })
+    // })
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
@@ -1300,6 +1309,7 @@ export default {
         this.baseHeight = this.matrixStyle.height
         this.cellWidth = this.matrixStyle.width
         this.cellHeight = this.matrixStyle.height
+        // console.log('.initMatrix1')
         this.initMatrix()
 
         this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
