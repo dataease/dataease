@@ -13,7 +13,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 ### DataEase 的功能：
 
 -   图表展示：支持 PC 端、移动端及大屏;
--   图表制作：支持丰富的图表类型(基于 Apache ECharts 实现)、支持拖拉拽方式快速制作仪表板;
+-   图表制作：支持丰富的图表类型(Apache ECharts / AntV)、支持拖拉拽方式快速制作仪表板;
 -   数据引擎：支持直连模式、本地模式(基于 Apache Doris / Kettle 实现);
 -   数据连接：支持关系型数据库、Excel 等文件、Hadoop 等大数据平台、NoSQL 等各种数据源。
 
@@ -35,6 +35,8 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 - MariaDB
 - Apache Doris
 - ClickHouse
+- MongoDB
+- Amazon Redshift
 
 > 更多数据源支持持续增加中...
 
@@ -73,7 +75,7 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 ## 技术栈
 
 -   后端：[Spring Boot](https://spring.io/projects/spring-boot)
--   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)、[Apache ECharts](https://github.com/apache/echarts)
+-   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)、[Apache ECharts](https://github.com/apache/echarts)、[AntV](https://antv.vision/zh)
 -   中间件：[MySQL](https://www.mysql.com/)
 -   数据处理：[Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)
 -   基础设施：[Docker](https://www.docker.com/)
