@@ -727,7 +727,7 @@ public class RedshiftQueryProvider extends QueryProvider {
             }
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(PgConstants.TO_DATE, originName, PgConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(PgConstants.CAST, originName, "timestamp");
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(PgConstants.CAST, originName, "bigint");
@@ -785,7 +785,7 @@ public class RedshiftQueryProvider extends QueryProvider {
 
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(PgConstants.TO_DATE, originName, PgConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(PgConstants.CAST, originName, "timestamp");
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(PgConstants.CAST, originName, "bigint");
