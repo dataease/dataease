@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="editShow"
     id="editor"
     class="editor"
     :class="[
@@ -943,7 +944,8 @@ export default {
       positionBoxInfoArray: [],
       yourList: [],
       linkJumpSetVisible: false,
-      linkJumpSetViewId: null
+      linkJumpSetViewId: null,
+      editShow: false
     }
   },
   computed: {
@@ -1059,6 +1061,11 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
+      this.changeScale()
+      this.editShow = true
+    }, 500)
+    // this.changeScale()
     // 获取编辑器元素
     this.$store.commit('getEditor')
     const _this = this

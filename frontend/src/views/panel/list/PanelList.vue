@@ -632,6 +632,8 @@ export default {
           //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
           temp.refreshTime = (temp.refreshTime || 5)
+          temp.refreshViewLoading = (temp.refreshViewLoading || false)
+          temp.refreshUnit = (temp.refreshUnit || 'minute')
 
           this.$store.commit('setCanvasStyle', temp)
           this.$store.dispatch('panel/setPanelInfo', data)
