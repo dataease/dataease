@@ -141,8 +141,10 @@ export default {
         this.curComponent.style.height = 150
         this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
       } else {
-        this.curComponent.style.height = 300
+        // this.curComponent.style.width = this.curComponent.style.width / 2
+        this.curComponent.style.height = this.curComponent.style.width + 50
         this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        // this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
       }
     }
   }
