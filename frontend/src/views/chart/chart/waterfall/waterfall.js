@@ -43,7 +43,25 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
     appendPadding: getPadding(chart),
     label: label,
     tooltip: tooltip,
-    legend: {},
+    legend: {
+      items: [
+        { name: '增加', marker: {
+          style: {
+            fill: theme.styleSheet.paletteQualitative10[0]
+          }
+        }},
+        { name: '减少', marker: {
+          style: {
+            fill: theme.styleSheet.paletteQualitative10[1]
+          }
+        }},
+        { name: '合计', marker: {
+          style: {
+            fill: theme.styleSheet.paletteQualitative10[2]
+          }
+        }}
+      ]
+    },
     xAxis: xAxis,
     yAxis: yAxis,
     risingFill: theme.styleSheet.paletteQualitative10[0],
