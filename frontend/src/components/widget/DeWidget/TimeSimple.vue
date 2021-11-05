@@ -176,7 +176,8 @@ export default {
       draw.lineWidth = 6
       draw.beginPath()
       draw.moveTo(0, 0)
-      draw.lineTo(0, -(side_length / 2 - 60) / 3)
+      /* draw.lineTo(0, -(side_length / 2 - 60) / 3) */
+      draw.lineTo(0, -(side_length / 2) * 0.5)
       draw.closePath()
       draw.stroke()
       draw.restore()
@@ -190,7 +191,8 @@ export default {
       draw.lineWidth = 3
       draw.beginPath()
       draw.moveTo(0, 0)
-      draw.lineTo(0, -(side_length / 2 - 60) * 3 / 5)
+      draw.lineTo(0, -(side_length / 2) * 0.7)
+      /* draw.lineTo(0, -(side_length / 2 - 60) * 3 / 5) */
       draw.closePath()
       draw.stroke()
       draw.restore()
@@ -203,8 +205,8 @@ export default {
       draw.lineWidth = 1
       draw.beginPath()
       draw.moveTo(0, 15)
-      // draw.lineTo(0, -180)
-      draw.lineTo(0, -(side_length / 2 - 60))
+      draw.lineTo(0, -(side_length / 2) * 0.9)
+      /* draw.lineTo(0, -(side_length / 2 - 60)) */
       draw.closePath()
       draw.stroke()
       draw.restore()
