@@ -57,6 +57,9 @@ public class F2CRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
 
         if (auth instanceof ASKToken) {
+            if (!authUserService.pluginLoaded()) {
+                throw new AuthenticationException("lic error");
+            }
 
             Object accessKey = auth.getPrincipal();
             Object signature = auth.getCredentials();
