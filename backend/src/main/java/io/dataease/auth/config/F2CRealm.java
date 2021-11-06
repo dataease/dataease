@@ -58,7 +58,7 @@ public class F2CRealm extends AuthorizingRealm {
 
         if (auth instanceof ASKToken) {
             if (!authUserService.pluginLoaded()) {
-                throw new AuthenticationException("lic error");
+                throw new AuthenticationException("license error");
             }
 
             Object accessKey = auth.getPrincipal();
@@ -76,7 +76,7 @@ public class F2CRealm extends AuthorizingRealm {
             CacheUtils.get("lic_info", "lic");
         }catch (Exception e) {
             LogUtil.error(e);
-            throw new AuthenticationException("lic error");
+            throw new AuthenticationException("license error");
         }
 
         TokenInfo tokenInfo = null;
