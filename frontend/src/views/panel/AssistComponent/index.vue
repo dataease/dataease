@@ -27,7 +27,7 @@
     <div class="widget-subject">
       <div class="filter-header">
         <div class="filter-header-text">
-          <span>图片</span>
+          <span>多媒体</span>
         </div>
       </div>
 

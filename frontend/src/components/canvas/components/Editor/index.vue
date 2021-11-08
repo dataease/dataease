@@ -55,9 +55,6 @@
       @amAddItem="addItemBox(item)"
       @linkJumpSet="linkJumpSet(item)"
     >
-      <!--      <span style="position:relative;left: 0px;top:0px">-->
-      <!--        item:x-{{ item.x }}y-{{ item.y }}top-{{ item.style.top }}-->
-      <!--      </span>-->
       <component
         :is="item.component"
         v-if="item.type==='v-text'"
@@ -72,17 +69,6 @@
         :active="item === curComponent"
         @input="handleInput"
       />
-      <!-- <out-widget
-        :is="item.component"
-        v-else-if="item.type==='custom'"
-        :id="'component' + item.id"
-        class="component"
-        :style="getComponentStyleDefault(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :out-style="getShapeStyleInt(item.style)"
-        :active="item === curComponent"
-      /> -->
       <de-out-widget
         v-else-if="item.type==='custom'"
         :id="'component' + item.id"
@@ -117,6 +103,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
     </de-drag>
     <!--拖拽阴影部分-->

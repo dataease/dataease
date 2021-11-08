@@ -21,6 +21,19 @@ export const HYPERLINKS = {
   content: 'http://'
 }
 
+// 视频信息配置
+export const VIDEOLINKS = {
+  autoplay: true,
+  muted: true,
+  loop: true,
+  language: 'zh',
+  controlBar: {
+    fullscreenToggle: false
+  },
+  sources: [{
+  }]
+}
+
 export const assistList = [
   {
     id: '10001',
@@ -56,6 +69,14 @@ export const pictureList = [
     type: 'picture-add',
     label: '拖拽上传',
     icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '20002',
+    component: 'video',
+    type: 'video',
+    label: '视频',
+    icon: 'iconfont icon-video',
     defaultClass: 'text-filter'
   }
 ]
@@ -271,6 +292,24 @@ const list = [
       height: 200,
       borderRadius: ''
     },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5
+  },
+  {
+    id: '20002',
+    component: 'de-video',
+    type: 'de-video',
+    label: '',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    style: {
+      width: 400,
+      height: 200,
+      borderRadius: ''
+    },
+    videoLinks: VIDEOLINKS,
     x: 1,
     y: 1,
     sizex: 10,

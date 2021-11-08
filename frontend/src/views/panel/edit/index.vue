@@ -289,7 +289,8 @@ export default {
         'picture-add',
         'de-tabs',
         'rect-shape',
-        'de-show-date'
+        'de-show-date',
+        'de-video'
       ]
     }
   },
@@ -551,15 +552,12 @@ export default {
         })
       } else {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
-
         this.currentFilterCom = this.currentWidget.getDrawPanel()
-
         if (this.canvasStyleData.auxiliaryMatrix) {
           this.currentFilterCom.x = this.dropComponentInfo.x
           this.currentFilterCom.y = this.dropComponentInfo.y
           this.currentFilterCom.sizex = this.dropComponentInfo.sizex
           this.currentFilterCom.sizey = this.dropComponentInfo.sizey
-
           this.currentFilterCom.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
           this.currentFilterCom.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
           this.currentFilterCom.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
@@ -608,14 +606,6 @@ export default {
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'handleDrop')
       this.clearCurrentInfo()
-      // this.$store.commit('clearDragComponentInfo')
-
-      // // 文字组件
-      // if (component.type === 'v-text') {
-      //   this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
-      //   this.styleDialogVisible = true
-      //   this.show = false
-      // }
     },
     clearCurrentInfo() {
       this.currentWidget = null
