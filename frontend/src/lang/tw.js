@@ -958,7 +958,19 @@ export default {
     chart_word_cloud: '詞雲',
     drag_block_word_cloud_label: '詞標簽',
     drag_block_word_cloud_size: '詞大小',
-    splitCount_less_100: '刻度數範圍0-100'
+    splitCount_less_100: '刻度數範圍0-100',
+    change_chart_type: '更改類型',
+    chart_type_table: '表格',
+    chart_type_quota: '指標',
+    chart_type_trend: '趨勢',
+    chart_type_compare: '比較',
+    chart_type_distribute: '分布',
+    chart_type_relation: '關系',
+    chart_type_space: '空間位置',
+    preview: '上一步',
+    next: '下一步',
+    select_dataset: '選擇數據集',
+    select_chart_type: '選擇圖表類型'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

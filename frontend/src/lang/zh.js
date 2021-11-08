@@ -961,7 +961,19 @@ export default {
     chart_word_cloud: '词云',
     drag_block_word_cloud_label: '词标签',
     drag_block_word_cloud_size: '词大小',
-    splitCount_less_100: '刻度数范围0-100'
+    splitCount_less_100: '刻度数范围0-100',
+    change_chart_type: '更改类型',
+    chart_type_table: '表格',
+    chart_type_quota: '指标',
+    chart_type_trend: '趋势',
+    chart_type_compare: '比较',
+    chart_type_distribute: '分布',
+    chart_type_relation: '关系',
+    chart_type_space: '空间位置',
+    preview: '上一步',
+    next: '下一步',
+    select_dataset: '选择数据集',
+    select_chart_type: '选择图表类型'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

@@ -96,46 +96,110 @@
             <el-col
               style="height: 100%;width: 180px;border-right: 1px solid #E6E6E6;"
             >
-              <div style="height: 25vh;overflow:auto" class="padding-lr">
-                <span>
-                  <span class="theme-border-class">{{ $t('chart.chart_type') }}</span>
-                  <span style="float: right;">
-                    <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini" @change="save(true,'chart',true,true)">
-                      <el-option
-                        v-for="item in renderOptions"
-                        :key="item.value"
-                        :value="item.value"
-                        :label="item.name"
-                      />
-                    </el-select>
-                  </span>
-                </span>
-                <el-row>
-                  <div>
-                    <el-radio-group
-                      v-model="view.type"
-                      style="width: 100%"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      @change="save(true,'chart',true,true)"
-                    >
-                      <chart-type :chart="view" />
-                    </el-radio-group>
-                  </div>
-                </el-row>
-                <el-row class="title-text" style="color: #909399;">
-                  <span>
-                    <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge') || chart.type.includes('treemap'))">
-                      Tips: {{ $t('chart.only_one_quota') }}
+              <div style="height: 60px;overflow:auto" class="padding-lr theme-border-class">
+                <span class="theme-border-class">
+                  <span>{{ $t('chart.chart_type') }}</span>
+                  <el-row style="padding: 4px 0 4px 10px;">
+                    <span>
+                      <svg-icon :icon-class="view.type" class="chart-icon" />
                     </span>
-                    <!--              <span v-show="chart.type && (chart.type.includes('text'))">-->
-                    <!--                Tips: {{ $t('chart.only_one_result') }}-->
-                    <!--              </span>-->
-                    <!--              <span v-show="chart.type && chart.type.includes('gauge')">-->
-                    <!--                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}-->
-                    <!--              </span>-->
-                  </span>
-                </el-row>
+                    <span style="float: right;">
+                      <el-popover
+                        placement="bottom-end"
+                        width="400"
+                        trigger="click"
+                        :append-to-body="true"
+                      >
+                        <div class="padding-lr">
+                          <span>
+                            <span class="theme-border-class">{{ $t('chart.chart_type') }}</span>
+                            <span style="float: right;">
+                              <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini" @change="save(true,'chart',true,true)">
+                                <el-option
+                                  v-for="item in renderOptions"
+                                  :key="item.value"
+                                  :value="item.value"
+                                  :label="item.name"
+                                />
+                              </el-select>
+                            </span>
+                          </span>
+                          <el-row>
+                            <div>
+                              <el-radio-group
+                                v-model="view.type"
+                                style="width: 100%"
+                                :disabled="!hasDataPermission('manage',param.privileges)"
+                                @change="save(true,'chart',true,true)"
+                              >
+                                <chart-type :chart="view" style="height: 480px" />
+                              </el-radio-group>
+                            </div>
+                          </el-row>
+                          <!--                          <el-row class="title-text" style="color: #909399;">-->
+                          <!--                            <span>-->
+                          <!--                              <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge') || chart.type.includes('treemap'))">-->
+                          <!--                                Tips: {{ $t('chart.only_one_quota') }}-->
+                          <!--                              </span>-->
+                          <!--                              &lt;!&ndash;              <span v-show="chart.type && (chart.type.includes('text'))">&ndash;&gt;-->
+                          <!--                              &lt;!&ndash;                Tips: {{ $t('chart.only_one_result') }}&ndash;&gt;-->
+                          <!--                              &lt;!&ndash;              </span>&ndash;&gt;-->
+                          <!--                              &lt;!&ndash;              <span v-show="chart.type && chart.type.includes('gauge')">&ndash;&gt;-->
+                          <!--                              &lt;!&ndash;                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}&ndash;&gt;-->
+                          <!--                              &lt;!&ndash;              </span>&ndash;&gt;-->
+                          <!--                            </span>-->
+                          <!--                          </el-row>-->
+                        </div>
+                        <el-button slot="reference" size="mini" style="padding: 6px;">
+                          {{ $t('chart.change_chart_type') }}
+                          <i class="el-icon-caret-bottom" />
+                        </el-button>
+                      </el-popover>
+                    </span>
+                  </el-row>
+                </span>
               </div>
+
+              <!--              <div style="height: 25vh;overflow:auto" class="padding-lr">-->
+              <!--                <span>-->
+              <!--                  <span class="theme-border-class">{{ $t('chart.chart_type') }}</span>-->
+              <!--                  <span style="float: right;">-->
+              <!--                    <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini" @change="save(true,'chart',true,true)">-->
+              <!--                      <el-option-->
+              <!--                        v-for="item in renderOptions"-->
+              <!--                        :key="item.value"-->
+              <!--                        :value="item.value"-->
+              <!--                        :label="item.name"-->
+              <!--                      />-->
+              <!--                    </el-select>-->
+              <!--                  </span>-->
+              <!--                </span>-->
+              <!--                <el-row>-->
+              <!--                  <div>-->
+              <!--                    <el-radio-group-->
+              <!--                      v-model="view.type"-->
+              <!--                      style="width: 100%"-->
+              <!--                      :disabled="!hasDataPermission('manage',param.privileges)"-->
+              <!--                      @change="save(true,'chart',true,true)"-->
+              <!--                    >-->
+              <!--                      <chart-type :chart="view" />-->
+              <!--                    </el-radio-group>-->
+              <!--                  </div>-->
+              <!--                </el-row>-->
+              <!--                <el-row class="title-text" style="color: #909399;">-->
+              <!--                  <span>-->
+              <!--                    <span v-show="chart.type && (chart.type.includes('pie') || chart.type.includes('funnel') || chart.type.includes('text') || chart.type.includes('gauge') || chart.type.includes('treemap'))">-->
+              <!--                      Tips: {{ $t('chart.only_one_quota') }}-->
+              <!--                    </span>-->
+              <!--                    &lt;!&ndash;              <span v-show="chart.type && (chart.type.includes('text'))">&ndash;&gt;-->
+              <!--                    &lt;!&ndash;                Tips: {{ $t('chart.only_one_result') }}&ndash;&gt;-->
+              <!--                    &lt;!&ndash;              </span>&ndash;&gt;-->
+              <!--                    &lt;!&ndash;              <span v-show="chart.type && chart.type.includes('gauge')">&ndash;&gt;-->
+              <!--                    &lt;!&ndash;                Tips: {{ $t('chart.only_one_quota') }},{{ $t('chart.only_one_result') }}&ndash;&gt;-->
+              <!--                    &lt;!&ndash;              </span>&ndash;&gt;-->
+              <!--                  </span>-->
+              <!--                </el-row>-->
+              <!--              </div>-->
               <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style theme-border-class">
                 <el-row style="height: 100%;">
                   <el-row class="padding-lr">
@@ -1761,7 +1825,7 @@ export default {
   }
 
   .attr-style{
-    height: calc(100vh - 56px - 25vh - 40px - 40px);
+    height: calc(100vh - 56px - 60px - 40px - 40px);
   }
 
   .blackTheme .attr-style{

@@ -957,7 +957,19 @@ export default {
     chart_word_cloud: 'Word Cloud',
     drag_block_word_cloud_label: 'Word Label',
     drag_block_word_cloud_size: 'Word Size',
-    splitCount_less_100: 'Split Count Range 0-100'
+    splitCount_less_100: 'Split Count Range 0-100',
+    change_chart_type: 'Change Type',
+    chart_type_table: 'Table',
+    chart_type_quota: 'Quota',
+    chart_type_trend: 'Trend',
+    chart_type_compare: 'Compare',
+    chart_type_distribute: 'Distribute',
+    chart_type_relation: 'Relation',
+    chart_type_space: 'Space',
+    preview: 'Preview',
+    next: 'Next',
+    select_dataset: 'Select Dataset',
+    select_chart_type: 'Select Chart Type'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

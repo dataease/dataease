@@ -137,112 +137,6 @@
       </el-dialog>
     </el-col>
 
-    <!--scene-->
-    <!--    <el-col v-if="sceneMode">-->
-    <!--      <el-row class="title-css scene-title">-->
-    <!--        <span class="title-text scene-title-name" :title="currGroup.name">-->
-    <!--          {{ currGroup.name }}-->
-    <!--        </span>-->
-    <!--        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">-->
-    <!--          &lt;!&ndash;          {{ $t('chart.back') }}&ndash;&gt;-->
-    <!--        </el-button>-->
-    <!--      </el-row>-->
-    <!--      <el-divider />-->
-    <!--      <el-row>-->
-    <!--        <el-button type="primary" size="mini" plain @click="selectTable">-->
-    <!--          {{ $t('chart.add_chart') }}-->
-    <!--        </el-button>-->
-    <!--      </el-row>-->
-    <!--      <el-row>-->
-    <!--        <el-form>-->
-    <!--          <el-form-item class="form-item">-->
-    <!--            <el-input-->
-    <!--              v-model="search"-->
-    <!--              size="mini"-->
-    <!--              :placeholder="$t('chart.search')"-->
-    <!--              prefix-icon="el-icon-search"-->
-    <!--              clearable-->
-    <!--            />-->
-    <!--          </el-form-item>-->
-    <!--        </el-form>-->
-    <!--      </el-row>-->
-    <!--      <span v-show="false">{{ sceneData }}</span>-->
-    <!--      <el-tree-->
-    <!--        :data="chartData"-->
-    <!--        node-key="id"-->
-    <!--        :expand-on-click-node="true"-->
-    <!--        class="tree-list"-->
-    <!--        highlight-current-->
-    <!--        @node-click="sceneClick"-->
-    <!--      >-->
-    <!--        <span slot-scope="{ node, data }" class="custom-tree-node-list father">-->
-    <!--          <span style="display: flex;flex: 1;width: 0;">-->
-    <!--            <span><svg-icon :icon-class="data.type" /></span>-->
-    <!--            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>-->
-    <!--          </span>-->
-    <!--          <span v-if="hasDataPermission('manage',data.privileges)" class="child">-->
-    <!--            <span style="margin-left: 12px;" @click.stop>-->
-    <!--              <el-dropdown trigger="click" size="small" @command="clickMore">-->
-    <!--                <span class="el-dropdown-link">-->
-    <!--                  <el-button-->
-    <!--                    icon="el-icon-more"-->
-    <!--                    type="text"-->
-    <!--                    size="small"-->
-    <!--                  />-->
-    <!--                </span>-->
-    <!--                <el-dropdown-menu slot="dropdown">-->
-    <!--                  &lt;!&ndash;                  <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">&ndash;&gt;-->
-    <!--                  &lt;!&ndash;                    {{ $t('chart.rename') }}&ndash;&gt;-->
-    <!--                  &lt;!&ndash;                  </el-dropdown-item>&ndash;&gt;-->
-    <!--                  <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">-->
-    <!--                    {{ $t('chart.delete') }}-->
-    <!--                  </el-dropdown-item>-->
-    <!--                </el-dropdown-menu>-->
-    <!--              </el-dropdown>-->
-    <!--            </span>-->
-    <!--          </span>-->
-    <!--        </span>-->
-    <!--      </el-tree>-->
-
-    <!--      &lt;!&ndash;rename chart&ndash;&gt;-->
-    <!--      <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">-->
-    <!--        <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keyup.enter.native="saveTable(tableForm)">-->
-    <!--          <el-form-item :label="$t('commons.name')" prop="name">-->
-    <!--            <el-input v-model="tableForm.name" />-->
-    <!--          </el-form-item>-->
-    <!--        </el-form>-->
-    <!--        <div slot="footer" class="dialog-footer">-->
-    <!--          <el-button size="mini" @click="closeTable()">{{ $t('chart.cancel') }}</el-button>-->
-    <!--          <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('chart.confirm') }}</el-button>-->
-    <!--        </div>-->
-    <!--      </el-dialog>-->
-
-    <!--      &lt;!&ndash;添加视图-选择数据集&ndash;&gt;-->
-    <!--      &lt;!&ndash;      <el-dialog&ndash;&gt;-->
-    <!--      &lt;!&ndash;        v-dialogDrag&ndash;&gt;-->
-    <!--      &lt;!&ndash;        :title="$t('chart.add_chart')"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        :visible="selectTableFlag"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        :show-close="false"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        width="70%"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        class="dialog-css"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        :destroy-on-close="true"&ndash;&gt;-->
-    <!--      &lt;!&ndash;      >&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <el-row style="width: 400px;">&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item">&ndash;&gt;-->
-    <!--      &lt;!&ndash;            <el-form-item :label="$t('chart.view_name')">&ndash;&gt;-->
-    <!--      &lt;!&ndash;              <el-input v-model="chartName" size="mini" />&ndash;&gt;-->
-    <!--      &lt;!&ndash;            </el-form-item>&ndash;&gt;-->
-    <!--      &lt;!&ndash;          </el-form>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        </el-row>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <table-selector @getTable="getTable" />&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <div slot="footer" class="dialog-footer">&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <el-button type="primary" size="mini" :disabled="!table.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        </div>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      </el-dialog>&ndash;&gt;-->
-
-    <!--    </el-col>-->
-
     <!--rename chart-->
     <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
       <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
@@ -263,7 +157,7 @@
       :title="$t('chart.add_chart')"
       :visible="selectTableFlag"
       :show-close="false"
-      width="70%"
+      width="1000px"
       class="dialog-css"
     >
       <el-row style="width: 800px;">
@@ -285,10 +179,49 @@
           </el-col>
         </el-form>
       </el-row>
-      <table-selector @getTable="getTable" />
+
+      <el-steps :active="createActive" align-center>
+        <el-step :title="$t('chart.select_dataset')" />
+        <el-step :title="$t('chart.select_chart_type')" />
+      </el-steps>
+
+      <table-selector v-show="createActive === 1" @getTable="getTable" />
+      <el-row v-show="createActive === 2" style="padding: 0 20px;">
+        <el-row class="chart-box">
+          <span>
+            <span class="theme-border-class" style="font-size: 12px">{{ $t('chart.chart_type') }}</span>
+            <span style="float: right;">
+              <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini">
+                <el-option
+                  v-for="item in renderOptions"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.name"
+                />
+              </el-select>
+            </span>
+          </span>
+          <el-row>
+            <div>
+              <el-radio-group
+                v-model="view.type"
+                style="width: 100%"
+              >
+                <chart-type :chart="view" style="height: 350px;" />
+              </el-radio-group>
+            </div>
+          </el-row>
+        </el-row>
+        <el-row class="chart-box" style="text-align: center;">
+          <svg-icon :icon-class="view.type" class="chart-icon" />
+        </el-row>
+      </el-row>
+
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table.id || !currGroup.id" @click="createChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button v-if="createActive === 2" type="primary" size="mini" @click="createPreview">{{ $t('chart.preview') }}</el-button>
+        <el-button v-if="createActive === 1" type="primary" size="mini" :disabled="!table.id || !currGroup.id" @click="createNext">{{ $t('chart.next') }}</el-button>
+        <el-button v-if="createActive === 2" type="primary" size="mini" :disabled="!table.id || !currGroup.id || !view.type" @click="createChart">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -319,6 +252,7 @@ import { post, chartGroupTree } from '@/api/chart/chart'
 import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
 import ChartMoveSelector from '../components/TreeSelector/ChartMoveSelector'
+import ChartType from '@/views/chart/view/ChartType'
 import {
   DEFAULT_COLOR_CASE,
   DEFAULT_LABEL,
@@ -335,7 +269,7 @@ import {
 
 export default {
   name: 'Group',
-  components: { TableSelector, GroupMoveSelector, ChartMoveSelector },
+  components: { ChartType, TableSelector, GroupMoveSelector, ChartMoveSelector },
   props: {
     saveStatus: {
       type: Object,
@@ -416,7 +350,16 @@ export default {
       dsMoveConfirmDisabled: true,
       moveDialogTitle: '',
       isTreeSearch: false,
-      chartGroupTreeAvailable: []
+      chartGroupTreeAvailable: [],
+      createActive: 1,
+      view: {
+        render: 'antv',
+        type: 'table-normal'
+      },
+      renderOptions: [
+        { name: 'AntV', value: 'antv' },
+        { name: 'ECharts', value: 'echarts' }
+      ]
     }
   },
   computed: {
@@ -702,8 +645,13 @@ export default {
     },
 
     closeCreateChart() {
+      this.createActive = 1
       this.selectTableFlag = false
       this.table = {}
+      this.view = {
+        render: 'antv',
+        type: 'table-normal'
+      }
     },
 
     createChart() {
@@ -728,8 +676,8 @@ export default {
       view.title = this.chartName
       view.sceneId = this.currGroup.id
       view.tableId = this.table.id
-      view.type = 'bar'
-      view.render = 'antv'
+      view.type = this.view.type
+      view.render = this.view.render
       view.resultMode = 'custom'
       view.resultCount = 1000
       view.customAttr = JSON.stringify({
@@ -977,6 +925,17 @@ export default {
       if (node.children === null || node.children === 'null') {
         delete node.children
       }
+    },
+
+    createPreview() {
+      if (this.createActive > 1) {
+        this.createActive--
+      }
+    },
+    createNext() {
+      if (this.createActive < 2) {
+        this.createActive++
+      }
     }
   }
 }
@@ -1079,5 +1038,29 @@ export default {
   /deep/ .vue-treeselect__single-value{
     color:#606266;
     line-height: 28px!important;
+  }
+
+  .render-select>>>.el-input__suffix{
+    width: 20px;
+  }
+  .render-select>>>.el-input__inner{
+    padding-right: 10px;
+    padding-left: 6px;
+  }
+  .dialog-css>>>.el-step__title{
+    font-weight: 400;
+    font-size: 12px;
+  }
+  .chart-icon{
+    width: 200px;
+    height: 200px;
+  }
+  .chart-box{
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    width:50%;
+    float:left;
+    height: 380px;
   }
 </style>
