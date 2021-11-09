@@ -42,6 +42,7 @@
     "tinymce": "^5.8.2",
     "umy-ui": "^1.1.6",
     "vcolorpicker": "^1.1.0",
+    "videojs-flash": "^2.2.1",
     "vue": "2.6.10",
     "vue-axios": "3.2.4",
     "vue-clipboard2": "0.3.1",

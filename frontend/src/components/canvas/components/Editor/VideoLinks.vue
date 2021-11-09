@@ -2,25 +2,32 @@
 
   <el-popover
     ref="popover"
-    width="340"
+    width="400"
     trigger="click"
   >
     <el-row>
       <el-form ref="form" size="mini" label-width="70px">
-        <el-form-item :label="'自动播放'">
-          <el-switch v-model="linkInfoTemp.autoplay" size="mini" />
-          <span v-show="linkInfoTemp.autoplay" style="color: #909399; font-size: 8px;margin-left: 3px">
-            <!--            Tips:{{ $t('panel.link_open_tips') }}-->
+        <!--        <el-form-item :label="$t('panel.video_type')">-->
+        <!--          <el-radio-group v-model="linkInfoTemp.videoType">-->
+        <!--            <el-radio :label="'web'">{{$t('panel.online_video')}}</el-radio>-->
+        <!--&lt;!&ndash;            <el-radio :label="'hls'">HLS 直播</el-radio>&ndash;&gt;-->
+        <!--            <el-radio :label="'rtmp'">{{$t('panel.streaming_media')}}</el-radio>-->
+        <!--          </el-radio-group>-->
+        <!--        </el-form-item>-->
+        <el-form-item :label="$t('panel.auto_play')">
+          <el-switch v-model="linkInfoTemp[linkInfoTemp.videoType].autoplay" size="mini" />
+          <span style="color: #909399; font-size: 8px;margin-left: 3px">
+            Tips:{{ $t('panel.video_tips') }}
           </span>
         </el-form-item>
-        <el-form-item :label="$t('panel.open_mode')">
-          <el-radio-group v-model="linkInfoTemp.loop">
-            <el-radio :label="false">播放一次</el-radio>
-            <el-radio :label="true">循环播放</el-radio>
+        <el-form-item v-if="linkInfoTemp.videoType==='web'" :label="$t('panel.play_frequency')">
+          <el-radio-group v-model="linkInfoTemp[linkInfoTemp.videoType].loop">
+            <el-radio :label="false">{{ $t('panel.play_once') }}</el-radio>
+            <el-radio :label="true">{{ $t('panel.play_circle') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('panel.hyperLinks')">
-          <el-input v-model="linkInfoTemp.sources[0].src" />
+        <el-form-item :label="$t('panel.video_links')">
+          <el-input v-model="linkInfoTemp[linkInfoTemp.videoType].sources[0].src" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>

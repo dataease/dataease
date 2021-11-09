@@ -1,6 +1,6 @@
 <template>
   <el-row ref="mainPlayer">
-    <div v-if="this.element.videoLinks.sources[0].src" class="player">
+    <div v-if="this.element.videoLinks[this.element.videoLinks.videoType].sources[0].src" class="player">
       <video-player
         ref="videoPlayer"
         class="vjs-custom-skin"
@@ -20,7 +20,7 @@
       />
     </div>
     <div v-else class="info-class">
-      请点击添加配置视频信息...
+      {{ $t('panel.video_add_tips') }}
     </div>
   </el-row>
 </template>
@@ -29,6 +29,7 @@
 // custom skin css
 import '@/custom-theme.css'
 import { mapState } from 'vuex'
+// import SWF_URL from 'videojs-swf/dist/video-js.swf'
 
 export default {
   props: {
@@ -65,13 +66,15 @@ export default {
       return this.$refs.videoPlayer.player
     },
     playerOptions() {
-      const videoLinks = this.element.videoLinks
+      const videoPlayerOptions = this.element.videoLinks[this.element.videoLinks.videoType]
       let playHeight = this.h
       if (this.canvasStyleData.panel.gap) {
         playHeight = this.h - (this.componentGap * 2)
       }
-      videoLinks.height = playHeight
-      return videoLinks
+      videoPlayerOptions.height = playHeight
+
+      console.log('videoPlayerOptions:' + JSON.stringify(videoPlayerOptions))
+      return videoPlayerOptions
     },
     ...mapState([
       'componentGap',

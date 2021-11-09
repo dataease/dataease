@@ -23,15 +23,31 @@ export const HYPERLINKS = {
 
 // 视频信息配置
 export const VIDEOLINKS = {
-  autoplay: true,
-  muted: true,
-  loop: true,
-  language: 'zh',
-  controlBar: {
-    fullscreenToggle: false
+  videoType: 'web',
+  web: {
+    autoplay: true,
+    muted: true,
+    loop: true,
+    controlBar: {
+      fullscreenToggle: false
+    },
+    sources: [{
+    }]
   },
-  sources: [{
-  }]
+  rtmp: {
+    sources: [{
+      type: 'rtmp/mp4'
+    }],
+    techOrder: ['flash'],
+    autoplay: false,
+    controls: true,
+    flash: {
+      hls: {
+        withCredentials: false
+      }
+    }
+  }
+
 }
 
 export const assistList = [

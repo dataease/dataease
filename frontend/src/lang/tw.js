@@ -1388,7 +1388,17 @@ export default {
     add_jump_field: '追加跳转联动依赖字段',
     input_jump_link: '请输入跳转连接',
     select_dimension: '请选择维度...',
-    please_select: '请选择'
+    please_select: '请选择',
+    video_type: '视频类型',
+    online_video: '在线视频',
+    streaming_media: '流媒体',
+    auto_play: '自动播放',
+    video_tips: '非HTTPS链接，可能导致无法播放',
+    play_frequency: '播放频率',
+    play_once: '播放一次',
+    play_circle: '循环播放',
+    video_links: '视频链接',
+    video_add_tips: '请点击添加配置视频信息...'
   },
   plugin: {
     local_install: '本地安裝',

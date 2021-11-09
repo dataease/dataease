@@ -1385,7 +1385,17 @@ export default {
     add_jump_field: 'Add Jump Field',
     input_jump_link: 'Input Jump Link',
     select_dimension: 'Select Dimension...',
-    please_select: 'Please Select'
+    please_select: 'Please Select',
+    video_type: 'Video Type',
+    online_video: 'Online Video',
+    streaming_media: 'Streaming Media',
+    auto_play: 'Auto Play',
+    video_tips: 'Video Tips',
+    play_frequency: 'Play Frequency',
+    play_once: 'Once',
+    play_circle: 'Circle',
+    video_links: 'Video Links',
+    video_add_tips: 'Please Add Video Info...'
   },
   plugin: {
     local_install: 'Local installation',
