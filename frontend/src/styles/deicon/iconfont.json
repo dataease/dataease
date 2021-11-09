@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5994030",
+      "name": "video",
+      "font_class": "video",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "18545906",
+      "name": "悬浮按钮发动态",
+      "font_class": "xuanfuanniufadongtai",
+      "unicode": "e6e8",
+      "unicode_decimal": 59112
+    },
+    {
+      "icon_id": "21285292",
+      "name": "吸附选择",
+      "font_class": "xifuxuanze",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
       "icon_id": "924440",
       "name": "margin",
       "font_class": "margin",

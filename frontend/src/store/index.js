@@ -66,7 +66,10 @@ const data = {
     nowPanelJumpInfoTargetPanel: {}, // 当前仪表板的跳转信息(只包括仪表板)
 
     // 拖拽的组件信息
-    dragComponentInfo: null
+    dragComponentInfo: null,
+
+    // 仪表板组件间隙大小 px
+    componentGap: 5
   },
   mutations: {
     ...animation.mutations,

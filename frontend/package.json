@@ -51,6 +51,7 @@
     "vue-router": "3.0.6",
     "vue-to-pdf": "^1.0.0",
     "vue-uuid": "2.0.2",
+    "vue-video-player": "^5.0.2",
     "vuedraggable": "^2.24.3",
     "vuex": "3.1.0",
     "webpack": "^4.46.0",

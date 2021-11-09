@@ -27,6 +27,7 @@
       :is-edit="false"
       :element="config"
       :search-count="searchCount"
+      :h="config.style.height"
     />
   </div>
 </template>
@@ -76,6 +77,29 @@ export default {
   methods: {
     getStyle,
 
+    getShapeStyleIntDeDrag(style, prop) {
+      if (prop === 'rotate') {
+        return style['rotate']
+      }
+      if (prop === 'width') {
+        return this.format(style['width'], this.scaleWidth)
+      }
+      if (prop === 'left') {
+        return this.format(style['left'], this.scaleWidth)
+      }
+      if (prop === 'height') {
+        return this.format(style['height'], this.scaleHeight)
+      }
+      if (prop === 'top') {
+        const top = this.format(style['top'], this.scaleHeight)
+        // console.log('top:' + top)
+        return top
+      }
+    },
+    format(value, scale) {
+      // 自适应画布区域 返回原值
+      return value * scale / 100
+    },
     getOutStyleDefault(style) {
       const result = {};
       ['width', 'left'].forEach(attr => {

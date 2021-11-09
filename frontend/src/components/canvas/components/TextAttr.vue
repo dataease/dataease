@@ -136,6 +136,11 @@
           <Hyperlinks :link-info="curComponent.hyperlinks" />
         </el-tooltip>
       </div>
+      <div v-if="attrShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-tooltip content="视频信息">
+          <VideoLinks :link-info="curComponent.videoLinks" />
+        </el-tooltip>
+      </div>
 
       <div v-if="attrShow('date-format')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="日期格式">
@@ -150,10 +155,11 @@
 <script>
 import { mapState } from 'vuex'
 import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
+import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 
 export default {
-  components: { Hyperlinks, DateFormat },
+  components: { Hyperlinks, DateFormat, VideoLinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -273,6 +279,11 @@ export default {
         'color',
         'backgroundColor',
         'hyperlinks'
+      ],
+      // 文本组件显示的属性
+      'de-video': [
+        'opacity',
+        'videoLinks'
       ]
     }
   },
