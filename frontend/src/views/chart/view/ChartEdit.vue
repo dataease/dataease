@@ -150,7 +150,7 @@
                           <!--                            </span>-->
                           <!--                          </el-row>-->
                         </div>
-                        <el-button slot="reference" size="mini" style="padding: 6px;">
+                        <el-button slot="reference" size="mini" style="padding: 6px;" :disabled="!hasDataPermission('manage',param.privileges)">
                           {{ $t('chart.change_chart_type') }}
                           <i class="el-icon-caret-bottom" />
                         </el-button>
@@ -210,7 +210,7 @@
                       <el-radio-group v-model="view.resultMode" class="radio-span" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
                         <el-radio label="all"><span>{{ $t('chart.result_mode_all') }}</span></el-radio>
                         <el-radio label="custom">
-                          <el-input v-model="view.resultCount" class="result-count" size="mini" @change="save" />
+                          <el-input v-model="view.resultCount" class="result-count" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @change="save" />
                         </el-radio>
                       </el-radio-group>
                     </el-row>
