@@ -224,7 +224,7 @@ const list = [
       borderRadius: ''
     },
     x: 1,
-    y: 1,
+    y: 36,
     sizex: 10,
     sizey: 6,
     auxiliaryMatrix: true
