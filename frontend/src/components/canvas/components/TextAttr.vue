@@ -247,7 +247,8 @@ export default {
         'borderWidth',
         'borderRadius',
         'opacity',
-        'borderColor'
+        'borderColor',
+        'backgroundColor'
       ],
       // 时间组件显示的属性
       'de-show-date': [
