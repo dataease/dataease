@@ -1145,7 +1145,10 @@ export default {
     field_name_less_50: '字段名不能超過50個字符',
     excel_info_1: '1、文件終不能存在合併單元格；',
     excel_info_2: '2、文件的第一行為標題行，不能為空，不能為日期；',
-    excel_info_3: '3、文件不超過500M。'
+    excel_info_3: '3、文件不超過500M。',
+    sync_field: '同步字段',
+    confirm_sync_field: '確認同步',
+    confirm_sync_field_tips: '同步字段可能會導致已編輯字段發生變更，請確認'
   },
   datasource: {
     datasource: '數據源',
