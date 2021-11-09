@@ -10,11 +10,13 @@ import java.util.Map;
 
 public interface ExtPanelShareMapper {
 
-    int batchInsert(@Param("shares") List<PanelShare> shares);
+    int batchInsert(@Param("shares") List<PanelShare> shares, @Param("userName") String userName);
 
     int batchDelete(@Param("shareIds") List<Long> shareIds);
 
     List<PanelSharePo> query(Map<String, Object> param);
+
+    List<PanelSharePo> queryOut(String userName);
 
     List<PanelShare> queryWithResource(GridExample example);
 
