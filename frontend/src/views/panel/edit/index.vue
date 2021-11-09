@@ -798,9 +798,19 @@ export default {
         }
       })
 
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       // position = absolution 或导致有偏移 这里中和一下偏移量
-      component.style.top = 0
-      component.style.left = 600
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        component.style.left = (component.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.top = (component.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+        component.style.width = component.sizex * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.height = component.sizey * this.curCanvasScale.matrixStyleOriginHeight
+      } else {
+        component.style.left = 0
+        component.style.top = 0
+        component.x = 1
+        component.y = 1
+      }
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'newViewInfo')
