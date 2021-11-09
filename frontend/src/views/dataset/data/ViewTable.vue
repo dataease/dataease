@@ -51,7 +51,7 @@
         <tab-data-preview :param="param" :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
       <el-tab-pane :label="$t('dataset.field_manage')" name="fieldEdit">
-        <field-edit :param="param" />
+        <field-edit :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />

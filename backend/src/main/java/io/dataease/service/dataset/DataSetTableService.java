@@ -1080,7 +1080,7 @@ public class DataSetTableService {
             }
             // delete 数据库中多余的字段
             DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
-            datasetTableFieldExample.createCriteria().andTableIdEqualTo(datasetTable.getId()).andOriginNameNotIn(originNameList);
+            datasetTableFieldExample.createCriteria().andTableIdEqualTo(datasetTable.getId()).andExtFieldEqualTo(0).andOriginNameNotIn(originNameList);
             datasetTableFieldMapper.deleteByExample(datasetTableFieldExample);
         }
     }

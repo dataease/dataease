@@ -15,6 +15,7 @@
       <el-form :inline="true">
         <el-form-item class="form-item">
           <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
+          <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel' && table.type !== 'custom'" size="mini" :loading="isSyncField" @click="syncField">{{ $t('dataset.sync_field') }}</el-button>
         </el-form-item>
         <el-form-item class="form-item" style="float: right;margin-right: 0;">
           <el-input
@@ -266,6 +267,10 @@ export default {
     param: {
       type: Object,
       required: true
+    },
+    table: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -287,7 +292,8 @@ export default {
       fieldActiveNames: ['d', 'q'],
       searchField: '',
       editCalcField: false,
-      currEditField: {}
+      currEditField: {},
+      isSyncField: false
     }
   },
   watch: {
@@ -385,6 +391,23 @@ export default {
             showClose: true
           })
           this.initField()
+        })
+      }).catch(() => {
+      })
+    },
+
+    syncField() {
+      this.$confirm(this.$t('dataset.confirm_sync_field_tips'), this.$t('dataset.confirm_sync_field'), {
+        confirmButtonText: this.$t('chart.confirm'),
+        cancelButtonText: this.$t('chart.cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.isSyncField = true
+        post('/dataset/table/syncField/' + this.param.id, null).then(response => {
+          setTimeout(() => {
+            this.isSyncField = false
+            this.initField()
+          }, 500)
         })
       }).catch(() => {
       })

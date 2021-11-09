@@ -1144,7 +1144,10 @@ export default {
     field_name_less_50: 'Field name can not more 50 chars.',
     excel_info_1: '1、Merged cells cannot exist in the file；',
     excel_info_2: '2、The first line of the file is the title line, which cannot be empty or date；',
-    excel_info_3: '3、The file size shall not exceed 500m。'
+    excel_info_3: '3、The file size shall not exceed 500m。',
+    sync_field: 'Sync Field',
+    confirm_sync_field: 'Confirm Sync',
+    confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm'
   },
   datasource: {
     datasource: 'Data Source',
