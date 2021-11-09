@@ -115,7 +115,7 @@ public class ShareService {
         }
 
         if (CollectionUtils.isNotEmpty(addShares)){
-            extPanelShareMapper.batchInsert(addShares);
+            extPanelShareMapper.batchInsert(addShares, AuthUtils.getUser().getUsername());
         }
 
         // 以上是业务代码
@@ -241,7 +241,7 @@ public class ShareService {
             })
         ).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(shares)){
-            extPanelShareMapper.batchInsert(shares);
+            extPanelShareMapper.batchInsert(shares, AuthUtils.getUser().getUsername());
         }
 
         // 下面是发送提醒消息逻辑
@@ -287,6 +287,15 @@ public class ShareService {
         mapper.deleteByExample(example);
     }
 
+    public List<PanelSharePo> shareOut() {
+        return null;
+    }
+
+    public List<PanelSharePo> queryShareOut() {
+        String username = AuthUtils.getUser().getUsername();
+        List<PanelSharePo> panelSharePos = extPanelShareMapper.queryOut(username);
+        return panelSharePos;
+    }
 
     public List<PanelShareDto> queryTree(BaseGridRequest request){
         CurrentUserDto user = AuthUtils.getUser();

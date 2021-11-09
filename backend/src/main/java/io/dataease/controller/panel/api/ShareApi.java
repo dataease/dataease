@@ -6,6 +6,7 @@ import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
+import io.dataease.dto.panel.PanelSharePo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,13 +23,18 @@ import java.util.List;
 @RequestMapping("/api/share")
 public interface ShareApi {
 
-    @ApiIgnore
+    /*@ApiIgnore
     @PostMapping("/")
-    void share(PanelShareRequest request);
+    void share(PanelShareRequest request);*/
 
-    @ApiOperation("查询分享")
+    @ApiOperation("查询分享给我")
     @PostMapping("/treeList")
     List<PanelShareDto> treeList(BaseGridRequest request);
+
+    @ApiOperation("查询我分享的")
+    @PostMapping("/shareOut")
+    List<PanelSharePo> shareOut();
+
 
 
     @ApiOperation("根据资源查询分享")

@@ -25,7 +25,8 @@
 <script>
 import { userLists } from '@/api/system/user'
 import { formatCondition } from '@/utils/index'
-import { saveShare, loadShares } from '@/api/panel/share'
+import { loadShares } from '@/api/panel/share'
+/* import { saveShare, loadShares } from '@/api/panel/share' */
 export default {
   name: 'GrantUser',
   props: {
@@ -92,7 +93,7 @@ export default {
       }
     },
 
-    save(msg) {
+    /*  save(msg) {
       const rows = this.$refs.table.store.states.selection
       const request = this.buildRequest(rows)
       saveShare(request).then(response => {
@@ -102,7 +103,7 @@ export default {
         this.$error(err.message)
         return false
       })
-    },
+    }, */
 
     cancel() {
       console.log('user cancel')

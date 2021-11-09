@@ -6,6 +6,7 @@ import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
+import io.dataease.dto.panel.PanelSharePo;
 import io.dataease.service.panel.ShareService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,16 +19,20 @@ public class ShareServer implements ShareApi {
 
     @Resource
     private ShareService shareService;
-    @Override
+    /*@Override
     public void share(@RequestBody PanelShareRequest request) {
         shareService.save(request);
-    }
+    }*/
 
     @Override
     public List<PanelShareDto> treeList(@RequestBody BaseGridRequest request) {
         return shareService.queryTree(request);
     }
 
+    @Override
+    public List<PanelSharePo> shareOut() {
+        return shareService.queryShareOut();
+    }
 
     @Override
     public List<PanelShare> queryWithResourceId(@RequestBody BaseGridRequest request) {
