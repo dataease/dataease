@@ -1659,4 +1659,10 @@ public class DataSetTableService {
             return true;
         }
     }
+
+    public DatasetTable syncDatasetTableField(String id) throws Exception {
+        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(id);
+        saveTableField(datasetTable);
+        return datasetTable;
+    }
 }
