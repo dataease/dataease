@@ -1096,6 +1096,7 @@ export default {
       const view = JSON.parse(JSON.stringify(this.view))
       view.customAttr = JSON.stringify(this.view.customAttr)
       view.customStyle = JSON.stringify(this.view.customStyle)
+      view.data = JSON.parse(JSON.stringify(this.data))
       this.chart = view
     },
 
