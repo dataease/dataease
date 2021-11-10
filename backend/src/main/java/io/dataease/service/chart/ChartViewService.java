@@ -179,6 +179,10 @@ public class ChartViewService {
 
     public ChartViewDTO getData(String id, ChartExtRequest requestList) throws Exception {
         ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
+        return calcData(view, requestList);
+    }
+
+    public ChartViewDTO calcData(ChartViewWithBLOBs view, ChartExtRequest requestList) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
@@ -424,7 +428,7 @@ public class ChartViewService {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {
-                    data = cacheViewData(datasourceProvider, datasourceRequest, id);
+                    data = cacheViewData(datasourceProvider, datasourceRequest, view.getId());
                 } catch (Exception e) {
                     LogUtil.error(e);
                 } finally {

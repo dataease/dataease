@@ -969,7 +969,8 @@ export default {
     preview: 'Preview',
     next: 'Next',
     select_dataset: 'Select Dataset',
-    select_chart_type: 'Select Chart Type'
+    select_chart_type: 'Select Chart Type',
+    recover: 'Reset'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
