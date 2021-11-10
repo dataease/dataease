@@ -75,9 +75,9 @@ public class ChartViewService {
             chartView.setUpdateTime(timestamp);
             chartViewMapper.insertSelective(chartView);
         }
-        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
-            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
-        });
+//        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
+//            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
+//        });
         return getOneWithPermission(chartView.getId());
     }
 
@@ -179,10 +179,15 @@ public class ChartViewService {
 
     public ChartViewDTO getData(String id, ChartExtRequest requestList) throws Exception {
         ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
-        return calcData(view, requestList);
+        return calcData(view, requestList, false);
     }
 
-    public ChartViewDTO calcData(ChartViewWithBLOBs view, ChartExtRequest requestList) throws Exception {
+    public ChartViewDTO calcData(ChartViewWithBLOBs view, ChartExtRequest requestList, boolean clearCache) throws Exception {
+        if (clearCache) {
+            Optional.ofNullable(view.getId()).ifPresent(id -> {
+                CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
+            });
+        }
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
