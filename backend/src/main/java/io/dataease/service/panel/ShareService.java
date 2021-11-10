@@ -15,9 +15,11 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.panel.PanelShareFineDto;
+import io.dataease.controller.request.panel.PanelShareRemoveRequest;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
+import io.dataease.dto.panel.PanelShareOutDTO;
 import io.dataease.dto.panel.PanelSharePo;
 import io.dataease.service.message.DeMsgutil;
 import lombok.Data;
@@ -345,5 +347,13 @@ public class ShareService {
         return extPanelShareMapper.queryWithResource(example);
     }
 
+    public List<PanelShareOutDTO> queryTargets(String panelId) {
+        return extPanelShareMapper.queryTargets(panelId);
+    }
+
+
+    public void removeShares(PanelShareRemoveRequest removeRequest) {
+        extPanelShareMapper.removeShares(removeRequest);
+    }
 
 }

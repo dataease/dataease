@@ -647,6 +647,8 @@ export default {
           queryPanelJumpInfo(data.id).then(rsp => {
             this.$store.commit('setNowPanelJumpInfo', rsp.data)
           })
+
+          bus.$emit('set-panel-show-type', 0)
         })
       }
       if (node.expanded) {

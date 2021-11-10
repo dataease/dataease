@@ -1,11 +1,17 @@
 <template>
   <el-col style="padding: 0 5px 0 5px;">
     <el-row>
-      <span class="header-title">分享给我</span>
+      <span class="header-title">{{ $t('panel.share_in') }}</span>
       <div class="block" style="margin-top:8px;">
-        <el-tree :data="datas" :props="defaultProps" node-key="name" :default-expanded-keys="expandNodes" @node-click="handleNodeClick">
-          <span slot-scope="{ data }" class="custom-tree-node">
-            <span :class="!!data.msgNode ? 'msg-node-class': ''">
+        <el-tree :data="datas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expanded-keys="expandNodes" @node-click="handleNodeClick">
+          <span slot-scope="{ data }" class="custom-tree-node father">
+            <span style="display: flex; flex: 1 1 0%; width: 0px;" :class="!!data.msgNode ? 'msg-node-class': ''">
+              <span v-if="!!data.id">
+                <svg-icon icon-class="panel" class="ds-icon-scene" />
+              </span>
+              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+            </span>
+            <!--  <span :class="!!data.msgNode ? 'msg-node-class': ''">
               <span v-if="!!data.id">
                 <el-button
                   icon="el-icon-picture-outline"
@@ -13,27 +19,36 @@
                 />
               </span>
               <span style="margin-left: 6px">{{ data.name }}</span>
-            </span>
+            </span> -->
           </span>
         </el-tree>
       </div>
     </el-row>
 
     <el-row>
-      <span class="header-title">我分享的</span>
+      <span class="header-title">{{ $t('panel.share_out') }}</span>
       <div class="block" style="margin-top:8px;">
-        <el-tree :data="outDatas" :props="defaultProps" node-key="name" :default-expand-all="true" @node-click="handleNodeClick">
-          <span slot-scope="{ data }" class="custom-tree-node">
-            <span>
+        <el-tree :data="outDatas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expand-all="true" @node-click="viewMyShare">
+          <span slot-scope="{ data }" class="custom-tree-node father">
+            <span style="display: flex; flex: 1 1 0%; width: 0px;">
               <span v-if="!!data.id">
+                <svg-icon icon-class="panel" class="ds-icon-scene" />
+              </span>
+              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+            </span>
+
+            <span class="child">
+              <span class="el-dropdown-link">
                 <el-button
-                  icon="el-icon-picture-outline"
+                  icon="el-icon-delete"
                   type="text"
+                  size="small"
+                  @click="removeCurrent(data)"
                 />
               </span>
-              <span style="margin-left: 6px">{{ data.name }}</span>
             </span>
           </span>
+
         </el-tree>
       </div>
     </el-row>
@@ -41,7 +56,7 @@
 </template>
 
 <script>
-import { loadTree, loadShareOutTree } from '@/api/panel/share'
+import { loadTree, loadShareOutTree, removeShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
 import { get } from '@/api/panel/panel'
 import bus from '@/utils/bus'
@@ -90,7 +105,16 @@ export default {
         this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
 
         this.$store.dispatch('panel/setPanelInfo', data)
-        bus.$emit('set-panel-is-share')
+        bus.$emit('set-panel-show-type', 1)
+      })
+    },
+    viewMyShare(data) {
+      get('panel/group/findOne/' + data.id).then(response => {
+        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
+
+        this.$store.dispatch('panel/setPanelInfo', data)
+        bus.$emit('set-panel-show-type', 2)
       })
     },
     resetID(data) {
@@ -119,6 +143,30 @@ export default {
           })
         }
       })
+    },
+    removeCurrent(node) {
+      console.log(node)
+      const param = {
+        panelId: node.id
+      }
+
+      this.$confirm(this.$t('panel.remove_share_confirm'), '', {
+        confirmButtonText: this.$t('commons.confirm'),
+        cancelButtonText: this.$t('commons.cancel'),
+        type: 'warning'
+      }).then(() => {
+        removeShares(param).then(res => {
+          this.initOutData().then(res => {
+            this.outDatas = res.data
+          })
+          this.$success(this.$t('commons.delete_success'))
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: this.$t('commons.delete_cancelled')
+        })
+      })
     }
 
   }
@@ -141,4 +189,29 @@ export default {
     color: red;
   }
 }
+ .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right:8px;
+  }
+
+  .custom-tree-node-list {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding:0 8px;
+  }
+  .father .child {
+    /*display: none;*/
+    visibility: hidden;
+  }
+  .father:hover .child {
+    /*display: inline;*/
+    visibility: visible;
+  }
 </style>
