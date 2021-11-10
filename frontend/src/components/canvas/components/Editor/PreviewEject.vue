@@ -1,6 +1,6 @@
 <template>
-  <div class="bg">
-    <Preview />
+  <div v-loading="dataLoading" class="bg">
+    <Preview v-show="!dataLoading" />
   </div>
 </template>
 <script>
@@ -12,14 +12,21 @@ import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJu
 
 export default {
   components: { Preview },
+  data() {
+    return {
+      dataLoading: false
+    }
+  },
   mounted() {
     this.restore()
   },
   methods: {
     restore() {
+      this.dataLoading = true
       this.panelId = this.$route.path.split('/')[2]
       // 加载视图数据
       findOne(this.panelId).then(response => {
+        this.dataLoading = false
         this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
         this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
         const data = {
