@@ -970,7 +970,8 @@ export default {
     preview: '上一步',
     next: '下一步',
     select_dataset: '選擇數據集',
-    select_chart_type: '選擇圖表類型'
+    select_chart_type: '選擇圖表類型',
+    recover: '重置'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
