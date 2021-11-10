@@ -1094,8 +1094,15 @@ export default {
       this.hasEdit = true
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
+      view.xaxis = JSON.stringify(this.view.xaxis)
+      view.yaxis = JSON.stringify(this.view.yaxis)
+      view.yaxisExt = JSON.stringify(this.view.yaxisExt)
+      view.extStack = JSON.stringify(this.view.extStack)
+      view.drillFields = JSON.stringify(this.view.drillFields)
+      view.extBubble = JSON.stringify(this.view.extBubble)
       view.customAttr = JSON.stringify(this.view.customAttr)
       view.customStyle = JSON.stringify(this.view.customStyle)
+      view.customFilter = JSON.stringify(this.view.customFilter)
       view.data = JSON.parse(JSON.stringify(this.data))
       this.chart = view
     },

@@ -75,9 +75,14 @@ public class ChartViewService {
             chartView.setUpdateTime(timestamp);
             chartViewMapper.insertSelective(chartView);
         }
-//        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
-//            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
-//        });
+        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
+            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
+        });
+        try {
+            calcData(chartView, new ChartExtRequest(), true);
+        } catch (Exception e) {
+
+        }
         return getOneWithPermission(chartView.getId());
     }
 
@@ -179,15 +184,10 @@ public class ChartViewService {
 
     public ChartViewDTO getData(String id, ChartExtRequest requestList) throws Exception {
         ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
-        return calcData(view, requestList, false);
+        return calcData(view, requestList, true);
     }
 
-    public ChartViewDTO calcData(ChartViewWithBLOBs view, ChartExtRequest requestList, boolean clearCache) throws Exception {
-        if (clearCache) {
-            Optional.ofNullable(view.getId()).ifPresent(id -> {
-                CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
-            });
-        }
+    public ChartViewDTO calcData(ChartViewWithBLOBs view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
@@ -427,7 +427,7 @@ public class ChartViewService {
                 data = (List<String[]>) cache;
             }*/
             // 仪表板有参数不实用缓存
-            if (CollectionUtils.isNotEmpty(requestList.getFilter())
+            if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
                     || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
                     || CollectionUtils.isNotEmpty(requestList.getDrill())) {
                 data = datasourceProvider.getData(datasourceRequest);
