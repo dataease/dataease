@@ -105,6 +105,6 @@ public class ChartViewController {
     @ApiOperation("计算结果")
     @PostMapping("/calcData")
     public ChartViewDTO calcData(@RequestBody ChartCalRequest request) throws Exception {
-        return chartViewService.calcData(request.getView(), request.getRequestList());
+        return chartViewService.calcData(request.getView(), request.getRequestList(), true);
     }
 }
