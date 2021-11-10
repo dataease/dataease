@@ -34,7 +34,7 @@
         </el-tooltip>
       </div>
 
-      <div v-if="attrShow('borderWidth')" style="width: 55px;float: left;margin-top: 2px;margin-left: 2px;">
+      <div v-if="attrShow('borderWidth')" style="width: 60px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-tooltip content="边框宽度">
           <el-select v-model="styleInfo.borderWidth" size="mini" placeholder="" @change="styleChange">
             <el-option
