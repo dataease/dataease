@@ -188,7 +188,7 @@ public class DataSetTableService {
             if (datasetTable.getEditType() == 0) {
                 List<String> newFields = sheet.getFields().stream().map(TableFiled::getRemarks).collect(Collectors.toList());
                 if (!oldFields.equals(newFields)) {
-                    DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
+                    DataEaseException.throwException(Translator.get("i18n_excel_colume_inconsistent"));
                 }
                 oldFields = newFields;
             }
