@@ -1103,7 +1103,7 @@ export default {
       view.customAttr = JSON.stringify(this.view.customAttr)
       view.customStyle = JSON.stringify(this.view.customStyle)
       view.customFilter = JSON.stringify(this.view.customFilter)
-      view.data = JSON.parse(JSON.stringify(this.data))
+      view.data = this.data
       this.chart = view
     },
 
