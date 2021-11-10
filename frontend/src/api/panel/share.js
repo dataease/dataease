@@ -9,6 +9,23 @@ import request from '@/utils/request'
   })
 } */
 
+export function shareTargets(panelId) {
+  return request({
+    url: '/api/share/queryTargets/' + panelId,
+    method: 'post',
+    loading: true
+  })
+}
+
+export function removeShares(data) {
+  return request({
+    url: '/api/share/removeShares/',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function loadShares(data) {
   return request({
     url: '/api/share/queryWithResourceId',
