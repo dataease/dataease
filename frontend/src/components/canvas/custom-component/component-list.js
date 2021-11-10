@@ -268,7 +268,6 @@ const list = [
       width: 250,
       height: 100,
       fontSize: 22,
-
       fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
@@ -276,13 +275,11 @@ const list = [
       color: '#000000',
       verticalAlign: 'middle',
       backgroundColor: '#ffffff',
-
       borderStyle: 'solid',
-      borderWidth: 1,
       borderColor: '#000000',
       borderRadius: 0,
       /* margin: 10, */
-      time_margin: 10
+      time_margin: 0
     },
     formatInfo: {
       openMode: '0',
