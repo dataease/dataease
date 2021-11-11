@@ -407,6 +407,21 @@ export default {
           setTimeout(() => {
             this.isSyncField = false
             this.initField()
+            // tips
+            let msg = ''
+            let type = ''
+            if (response.data.mode === 0) {
+              msg = this.$t('dataset.sync_success')
+              type = 'success'
+            } else {
+              msg = this.$t('dataset.sync_success_1')
+              type = 'warning'
+            }
+            this.$message({
+              type: type,
+              message: msg,
+              showClose: true
+            })
           }, 500)
         })
       }).catch(() => {

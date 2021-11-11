@@ -1152,7 +1152,9 @@ export default {
     excel_info_3: '3、Excel文件大小请确保在500M以内。',
     sync_field: '同步字段',
     confirm_sync_field: '确认同步',
-    confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认'
+    confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认',
+    sync_success: '同步成功',
+    sync_success_1: '同步成功，请对当前数据集重新执行数据同步操作'
   },
   datasource: {
     datasource: '数据源',
