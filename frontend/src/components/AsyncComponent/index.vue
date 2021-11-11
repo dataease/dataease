@@ -45,8 +45,10 @@ export default {
         } else {
           res = await window.SyncComponentCache[this.url]
         }
-        const Fn = Function
-        this.mode = new Fn(`return ${res.data || res}`)()
+        if (res && res.data) {
+          const Fn = Function
+          this.mode = new Fn(`return ${res.data || res}`)()
+        }
       }
     }
   },

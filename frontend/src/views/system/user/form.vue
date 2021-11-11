@@ -1,6 +1,6 @@
 <template>
   <layout-content :header="formType=='add' ? $t('user.create') : $t('user.modify')" back-name="system-user">
-    <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
+    <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="80px" label-position="right">
       <el-form-item label="ID" prop="username">
         <el-input v-model="form.username" :disabled="formType !== 'add'" />
       </el-form-item>
