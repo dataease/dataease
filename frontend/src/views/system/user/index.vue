@@ -1,6 +1,7 @@
 <template>
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <complex-table
+      v-if="canLoadDom"
       :data="data"
       :columns="columns"
       local-key="userGrid"
@@ -174,7 +175,8 @@ import { PHONE_REGEX } from '@/utils/validate'
 import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { ldapStatus, pluginLoaded } from '@/api/user'
+import { pluginLoaded } from '@/api/user'
+/* import { ldapStatus, pluginLoaded } from '@/api/user' */
 import { userLists, addUser, editUser, delUser, editPassword, editStatus, allRoles } from '@/api/system/user'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 
@@ -214,11 +216,14 @@ export default {
               { label: this.$t('commons.disable'), value: '0' }
             ],
             multiple: false
-          },
-          { field: 'd.name', label: this.$t('commons.organization'), component: 'DeComplexInput' },
-          { field: 'r.name', label: this.$t('commons.role'), component: 'DeComplexInput' }
+          }
+
         ]
       },
+      extraFilterComponents: [
+        { field: 'd.name', label: this.$t('commons.organization'), component: 'DeComplexInput' },
+        { field: 'r.name', label: this.$t('commons.role'), component: 'DeComplexInput' }
+      ],
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
@@ -307,7 +312,8 @@ export default {
       orderConditions: [],
       last_condition: null,
       openLdap: false,
-      isPluginLoaded: false
+      isPluginLoaded: false,
+      canLoadDom: false
     }
   },
   mounted() {
@@ -315,13 +321,17 @@ export default {
     this.search()
   },
   beforeCreate() {
-    ldapStatus().then(res => {
-      this.openLdap = res.success && res.data
-    })
     pluginLoaded().then(res => {
       this.isPluginLoaded = res.success && res.data
+      if (this.isPluginLoaded) {
+        this.searchConfig.components.push(...this.extraFilterComponents)
+      }
+      this.canLoadDom = true
+    }).catch(e => {
+      this.canLoadDom = true
     })
   },
+
   methods: {
     sortChange({ column, prop, order }) {
       this.orderConditions = []
