@@ -114,7 +114,7 @@
                           <span>
                             <span class="theme-border-class">{{ $t('chart.chart_type') }}</span>
                             <span style="float: right;">
-                              <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini" @change="calcData(true,'chart',true,true)">
+                              <el-select v-model="view.render" class="render-select" style="width: 100px" size="mini" @change="calcData(true,'chart',true,true)">
                                 <el-option
                                   v-for="item in renderOptions"
                                   :key="item.value"
@@ -2011,13 +2011,6 @@ export default {
   }
   .drag-placeholder-style-span{
     padding-left: 16px;
-  }
-  .render-select>>>.el-input__suffix{
-    width: 20px;
-  }
-  .render-select>>>.el-input__inner{
-    padding-right: 10px;
-    padding-left: 6px;
   }
 
   .blackTheme .theme-border-class {
