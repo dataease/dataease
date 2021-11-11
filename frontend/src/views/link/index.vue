@@ -31,6 +31,7 @@ export default {
   methods: {
 
     loadInit() {
+      debugger
       this.link = getQueryVariable(this.PARAMKEY)
       validate({ link: this.link }).then(res => {
         const { resourceId, valid, enablePwd, passPwd, expire } = res.data
