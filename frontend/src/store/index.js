@@ -67,9 +67,18 @@ const data = {
 
     // 拖拽的组件信息
     dragComponentInfo: null,
-
     // 仪表板组件间隙大小 px
-    componentGap: 5
+    componentGap: 5,
+    // 移动端布局状态
+    mobileLayoutStatus: false,
+    pcMatrixCount: {
+      x: 36,
+      y: 18
+    },
+    mobileMatrixCount: {
+      x: 6,
+      y: 12
+    }
   },
   mutations: {
     ...animation.mutations,
@@ -305,6 +314,9 @@ const data = {
         bus.$emit('onRemoveLastItem')
       }
       state.dragComponentInfo = null
+    },
+    setMobileLayoutStatus(state, status) {
+     state.mobileLayoutStatus = state
     }
   },
   modules: {

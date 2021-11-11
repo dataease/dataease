@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!--    linkageActiveStatus:{{ linkageActiveStatus }}-->
     <div v-if="linkageSettingStatus" class="toolbar">
       <span style="float: right;">
         <el-button size="mini" @click="saveLinkage">
@@ -12,32 +11,9 @@
       </span>
     </div>
     <div v-else class="toolbar">
-      <!--      <div class="canvas-config" style="margin-right: 10px">-->
-      <!--        <span>{{ $t('panel.new_element_distribution') }}:</span>-->
-      <!--        <el-switch-->
-      <!--          v-model="canvasStyleData.auxiliaryMatrix"-->
-      <!--          :width="35"-->
-      <!--          active-color="#13ce66"-->
-      <!--          inactive-color="#ff4949"-->
-      <!--          :active-text="$t('panel.matrix')"-->
-      <!--          :inactive-text="$t('panel.suspension')"-->
-      <!--        />-->
-      <!--      </div>-->
-      <!--      <div class="canvas-config" style="margin-right: 10px" @click.stop="auxiliaryMatrixChange">-->
-      <!--        <span>{{ $t('panel.new_element_distribution.matrix_design') }}:</span>-->
-      <!--        <span v-if="curComponent.auxiliaryMatrix">-->
-      <!--          <i class="icon iconfont icon-shujujuzhen" />-->
-      <!--          {{ $t('panel.matrix_design') }}-->
-      <!--        </span>-->
-      <!--        <span v-if="!curComponent.auxiliaryMatrix">-->
-      <!--          <i class="icon iconfont icon-xuanfuanniu" />-->
-      <!--          {{ $t('panel.suspension') }}-->
-      <!--        </span>-->
-      <!--      </div>-->
-      <!--      <div class="canvas-config" style="margin-right: 10px">-->
-      <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
-      <!--        <input v-model="scale" @input="handleScaleChange"> %-->
-      <!--      </div>-->
+      <el-tooltip :content="'移动端布局'">
+        <el-button class="icon iconfont-tb icon-yidongduan" size="mini" circle @click="openMobileLayout" />
+      </el-tooltip>
 
       <el-tooltip v-if="!canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.suspension')">
         <el-button class="icon iconfont-tb icon-xuanfuanniu" size="mini" circle @click="auxiliaryMatrixChange" />
@@ -45,33 +21,18 @@
       <el-tooltip v-if="canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.matrix')">
         <el-button class="icon iconfont-tb icon-shujujuzhen" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
-
       <el-tooltip :content="$t('panel.style')">
         <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
-        <!--        <el-button :class="styleButtonActive?'button-show':'button-closed'" class="el-icon-magic-stick" size="mini" circle @click="showPanel" />-->
       </el-tooltip>
-
-      <!--      <el-tooltip v-if="!aidedButtonActive" :content="$t('panel.open_aided_design') ">-->
-      <!--        <el-button class="el-icon-help button-closed" size="mini" circle @click="changeAidedDesign" />-->
-      <!--      </el-tooltip>-->
-
-      <!--      <el-tooltip v-if="aidedButtonActive" :content="$t('panel.close_aided_design') ">-->
-      <!--        <el-button class="el-icon-help button-show" size="mini" circle @click="changeAidedDesign" />-->
-      <!--      </el-tooltip>-->
-
       <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.redo') ">
         <el-button class="el-icon-refresh-left" size="mini" circle @click="redo" />
       </el-tooltip>
-      <!--      <el-tooltip :content="$t('panel.insert_picture') ">-->
-      <!--        <el-button class="el-icon-upload" size="mini" circle @click="goFile" />-->
-      <!--      </el-tooltip>-->
       <el-tooltip :content="$t('panel.clean_canvas')">
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>
-      <!--      <input id="input" ref="files" type="file" hidden @change="handleFileChange">-->
       <el-tooltip :content="$t('panel.fullscreen_preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
@@ -120,7 +81,7 @@ import bus from '@/utils/bus'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
-import {queryPanelJumpInfo} from "@/api/panel/linkJump";
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
   name: 'Toolbar',
@@ -155,7 +116,8 @@ export default {
     'lastSaveSnapshotIndex',
     'linkageSettingStatus',
     'curLinkageView',
-    'targetLinkageInfo'
+    'targetLinkageInfo',
+    'mobileLayoutStatus'
   ]),
 
   created() {
@@ -394,6 +356,9 @@ export default {
     },
     auxiliaryMatrixChange() {
       this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
+    },
+    openMobileLayout() {
+      this.$store.commit('setMobileLayoutStatus', true)
     }
   }
 }

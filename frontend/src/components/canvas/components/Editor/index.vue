@@ -857,6 +857,16 @@ export default {
       required: false,
       type: Function,
       default: function() {}
+    },
+    matrixCount: {
+      required: false,
+      type: Object,
+      default: () => {
+        return {
+          x: 36,
+          y: 18
+        }
+      }
     }
   },
   data() {
@@ -899,11 +909,6 @@ export default {
         height: 20,
         originWidth: 80, // 原始尺寸
         originHeight: 20
-      },
-      // 矩阵数量 默认 128 * 72
-      matrixCount: {
-        x: 36,
-        y: 18
       },
       customStyleHistory: null,
       showDrag: true,

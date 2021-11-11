@@ -94,8 +94,9 @@
           <assist-component v-show=" show &&showIndex===3" />
         </el-drawer>
 
+        <!--PC端画布区域-->
         <div
-          v-if="!previewVisible"
+          v-if="!previewVisible&&!mobileLayoutStatus"
           id="canvasInfo"
           :class="{'style-hidden':canvasStyleData.selfAdaption}"
           class="content this_canvas"
@@ -108,12 +109,15 @@
         >
           <Editor ref="canvasEditor" :out-style="outStyle" />
         </div>
-      </de-main-container>
-      <!--      <de-aside-container v-if="aidedButtonActive" :class="aidedButtonActive ? 'show' : 'hidden'" class="style-aside">-->
-      <!--        <AttrListExtend v-if="curComponent" />-->
-      <!--        <p v-else class="placeholder">{{ $t('panel.select_component') }}</p>-->
-      <!--      </de-aside-container>-->
 
+        <!--移动端画布区域-->
+        <div
+          v-if="mobileLayoutStatus"
+          class="content this_canvas"
+        >
+          <Editor class="mobile-canvas" :matrix-count="mobileMatrixCount" :out-style="outStyle" />
+        </div>
+      </de-main-container>
     </de-container>
 
     <el-dialog
@@ -340,7 +344,9 @@ export default {
       'curComponentIndex',
       'componentData',
       'linkageSettingStatus',
-      'dragComponentInfo'
+      'dragComponentInfo',
+      'mobileLayoutStatus',
+      'mobileMatrixCount'
     ])
   },
 
@@ -983,5 +989,10 @@ export default {
 .button-text {
     color: var(--TextActive);
 }
+  .mobile-canvas{
+    width: 300px;
+    height: 600px;
+    background-color: lightgray;
+  }
 
 </style>
