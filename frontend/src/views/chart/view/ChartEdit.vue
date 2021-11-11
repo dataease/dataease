@@ -1880,20 +1880,9 @@ export default {
     height: calc(100% - 6px);
   }
 
-  .chart-type{
-    padding: 4px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-
   .chart-icon{
     width: 20px;
     height: 20px;
-  }
-
-  .chart-type>>>.el-radio__input{
-    display: none !important;
   }
 
   .el-radio{
