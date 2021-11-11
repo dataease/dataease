@@ -61,6 +61,11 @@
                 <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
               </el-tooltip>
             </span>
+            <span v-if="hasDataPermission('edit',panelInfo.privileges)&&activeTab==='PanelList'" style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('commons.edit')">
+                <el-button class="el-icon-edit" size="mini" circle @click="editPanel" />
+              </el-tooltip>
+            </span>
           </el-col>
         </div>
       </el-row>
@@ -301,6 +306,9 @@ export default {
     },
     closePreExport() {
       this.pdfExportShow = false
+    },
+    editPanel() {
+      this.$emit('editPanel')
     }
 
   }
