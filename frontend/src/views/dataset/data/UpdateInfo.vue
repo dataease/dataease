@@ -225,8 +225,8 @@
               <span v-if="scope.row.status === 'Underway'" style="color: green">
                 <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
               </span>
-              <span v-if="scope.row.status === 'Stopped'" style="color: red">
-                <div type="danger" style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
+              <span v-if="scope.row.status === 'Stopped'">
+                <div style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
               </span>
               <span v-if="scope.row.status === 'Pending'" class="blue-color">
                 <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
