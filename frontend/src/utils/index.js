@@ -1,4 +1,5 @@
 
+import Cookies from 'js-cookie'
 export function timeSection(date, type) {
   if (!date) {
     return null
@@ -265,7 +266,11 @@ export function formatQuickCondition(param, quickField) {
 }
 
 export function getQueryVariable(variable) {
-  const query = window.location.search.substring(1)
+  debugger
+  let query = window.location.search.substring(1)
+  if (!query) {
+    query = Cookies.get(variable)
+  }
   const vars = query.split('&')
   for (var i = 0; i < vars.length; i++) {
     const pair = vars[i].split('=')

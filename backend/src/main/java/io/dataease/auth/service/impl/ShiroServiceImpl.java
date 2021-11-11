@@ -41,6 +41,8 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/link/**", ANON);
         filterChainDefinitionMap.put("/index.html", ANON);
         filterChainDefinitionMap.put("/link.html", ANON);
+        filterChainDefinitionMap.put("/xggznb/**", ANON);
+
 
         //获取主题信息
         filterChainDefinitionMap.put("/plugin/theme/themes", ANON);
