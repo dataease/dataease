@@ -1149,7 +1149,9 @@ export default {
     excel_info_3: '3、文件不超過500M。',
     sync_field: '同步字段',
     confirm_sync_field: '確認同步',
-    confirm_sync_field_tips: '同步字段可能會導致已編輯字段發生變更，請確認'
+    confirm_sync_field_tips: '同步字段可能會導致已編輯字段發生變更，請確認',
+    sync_success: '同步成功',
+    sync_success_1: '同步成功，請對當前數據集重新執行數據同步操作'
   },
   datasource: {
     datasource: '數據源',

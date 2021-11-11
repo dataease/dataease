@@ -1148,7 +1148,9 @@ export default {
     excel_info_3: '3、The file size shall not exceed 500m。',
     sync_field: 'Sync Field',
     confirm_sync_field: 'Confirm Sync',
-    confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm'
+    confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm',
+    sync_success: 'Success',
+    sync_success_1: 'Success，please sync data again'
   },
   datasource: {
     datasource: 'Data Source',
