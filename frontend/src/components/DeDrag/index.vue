@@ -3,14 +3,12 @@
     :style="style"
     :class="[
       {
-        [classNameActive]: enabled ,
         [classNameDragging]: dragging,
         [classNameResizing]: resizing,
         [classNameDraggable]: draggable,
         [classNameResizable]: resizable,
         [classNameRotating]: rotating,
         [classNameRotatable]: rotatable,
-        [classNameMouseOn]: mouseOn || active,
         ['linkageSetting']:linkageActive,
         ['positionChange']:!(dragging || resizing||rotating)
       },
@@ -21,19 +19,28 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="curComponent&&(active||linkageSettingStatus)" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
-    <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
-      v-for="(handlei, indexi) in actualHandles"
-      :key="indexi"
-      :class="[classNameHandle, classNameHandle + '-' + handlei]"
-      :style="handleStyle(handlei, indexi)"
-      @mousedown.stop.prevent="handleDown(handlei, $event)"
-      @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
+      :class="[
+        {
+          [classNameActive]: enabled ,
+          [classNameMouseOn]: mouseOn || active
+        },
+        className
+      ]"
+      :style="mainSlotStyle"
     >
-      <slot :name="handlei" />
-    </div>
-    <div :style="mainSlotStyle" :class="{'gap_class':canvasStyleData.panel.gap==='yes'}">
+      <edit-bar v-if="curComponent&&(active||linkageSettingStatus)" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
+      <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
+      <div
+        v-for="(handlei, indexi) in actualHandles"
+        :key="indexi"
+        :class="[classNameHandle, classNameHandle + '-' + handlei]"
+        :style="handleStyle(handlei, indexi)"
+        @mousedown.stop.prevent="handleDown(handlei, $event)"
+        @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
+      >
+        <slot :name="handlei" />
+      </div>
       <slot />
     </div>
   </div>
@@ -437,6 +444,7 @@ export default {
     style() {
       // console.log('style-top:' + this.y + '--' + this.top)
       return {
+        padding: (this.canvasStyleData.panel.gap === 'yes' ? this.componentGap : 0) + 'px',
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
         height: this.computedHeight,
@@ -479,6 +487,7 @@ export default {
 
     //  根据left right 算出元素的宽度
     computedMainSlotWidth() {
+      const gap = (this.canvasStyleData.panel.gap === 'yes' ? this.componentGap : 0) * 2
       if (this.w === 'auto') {
         if (!this.widthTouched) {
           return 'auto'
@@ -486,13 +495,14 @@ export default {
       }
       if (this.element.auxiliaryMatrix) {
         const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-        return width + 'px'
+        return (width - gap) + 'px'
       } else {
-        return this.width + 'px'
+        return (this.width - gap) + 'px'
       }
     },
     // 根据top bottom 算出元素的宽度
     computedMainSlotHeight() {
+      const gap = (this.canvasStyleData.panel.gap === 'yes' ? this.componentGap : 0) * 2
       if (this.h === 'auto') {
         if (!this.heightTouched) {
           return 'auto'
@@ -500,9 +510,9 @@ export default {
       }
       if (this.element.auxiliaryMatrix) {
         const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-        return height + 'px'
+        return (height - gap) + 'px'
       } else {
-        return this.height + 'px'
+        return (this.height - gap) + 'px'
       }
     },
 
@@ -522,7 +532,8 @@ export default {
       'editor',
       'curCanvasScale',
       'canvasStyleData',
-      'linkageSettingStatus'
+      'linkageSettingStatus',
+      'componentGap'
     ])
   },
   watch: {
@@ -1790,6 +1801,11 @@ export default {
 
 .gap_class{
   padding:5px;
+}
+
+.de-drag-active{
+  outline: 1px solid #70c0ff;
+  user-select: none;
 }
 
 /*.mouseOn >>> .icon-shezhi{*/
