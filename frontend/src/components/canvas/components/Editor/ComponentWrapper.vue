@@ -1,7 +1,6 @@
 <template>
   <div
     :style="getOutStyleDefault(config.style)"
-    :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     class="component"
     @click="handleClick"
     @mousedown="elementMouseDown"
@@ -66,9 +65,13 @@ export default {
     }
   },
   computed: {
+    curGap() {
+      return this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix ? this.componentGap : 0
+    },
     ...mapState([
       'canvasStyleData',
-      'curComponent'
+      'curComponent',
+      'componentGap'
     ])
   },
   mounted() {
@@ -101,7 +104,9 @@ export default {
       return value * scale / 100
     },
     getOutStyleDefault(style) {
-      const result = {};
+      const result = {
+        padding: this.curGap + 'px'
+      };
       ['width', 'left'].forEach(attr => {
         result[attr] = style[attr] + 'px'
       });

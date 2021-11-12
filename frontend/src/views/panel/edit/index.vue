@@ -310,7 +310,9 @@ export default {
       }
     },
     customCanvasStyle() {
-      let style = {}
+      let style = {
+        padding: this.componentGap + 'px'
+      }
 
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -340,7 +342,8 @@ export default {
       'curComponentIndex',
       'componentData',
       'linkageSettingStatus',
-      'dragComponentInfo'
+      'dragComponentInfo',
+      'componentGap'
     ])
   },
 
@@ -680,9 +683,9 @@ export default {
         this.$nextTick(() => {
           const canvasHeight = document.getElementById('canvasInfo').offsetHeight
           const canvasWidth = document.getElementById('canvasInfo').offsetWidth
-          this.outStyle.height = canvasHeight
+          this.outStyle.height = canvasHeight - (this.componentGap * 2)
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = canvasWidth + (Math.random() * 0.000001)
+          this.outStyle.width = canvasWidth - (this.componentGap * 2) + (Math.random() * 0.000001)
           // console.log(canvasHeight + '--' + canvasWidth)
         })
       }
@@ -919,7 +922,6 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   background-size:100% 100% !important;
-
 }
 .el-main{
   height: calc(100vh - 91px);

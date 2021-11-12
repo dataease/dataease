@@ -342,7 +342,7 @@ export default {
     min-height: 400px;
     height: 100%;
     min-width: 500px;
-    overflow-y: auto;
+    overflow-y: hidden;
     border-top: 1px solid #E6E6E6;
   }
 
