@@ -982,7 +982,8 @@ export default {
       'editor',
       'linkageSettingStatus',
       'curLinkageView',
-      'doSnapshotIndex'
+      'doSnapshotIndex',
+      'componentGap'
     ])
   },
   watch: {

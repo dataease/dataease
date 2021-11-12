@@ -444,7 +444,7 @@ export default {
     style() {
       // console.log('style-top:' + this.y + '--' + this.top)
       return {
-        padding: (this.canvasStyleData.panel.gap === 'yes' ? this.componentGap : 0) + 'px',
+        padding: this.curGap + 'px',
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
         height: this.computedHeight,
@@ -487,7 +487,6 @@ export default {
 
     //  根据left right 算出元素的宽度
     computedMainSlotWidth() {
-      const gap = (this.canvasStyleData.panel.gap === 'yes' ? this.componentGap : 0) * 2
       if (this.w === 'auto') {
         if (!this.widthTouched) {
           return 'auto'
@@ -495,14 +494,13 @@ export default {
       }
       if (this.element.auxiliaryMatrix) {
         const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-        return (width - gap) + 'px'
+        return (width - this.curGap * 2) + 'px'
       } else {
-        return (this.width - gap) + 'px'
+        return (this.width - this.curGap * 2) + 'px'
       }
     },
     // 根据top bottom 算出元素的宽度
     computedMainSlotHeight() {
-      const gap = (this.canvasStyleData.panel.gap === 'yes' ? this.componentGap : 0) * 2
       if (this.h === 'auto') {
         if (!this.heightTouched) {
           return 'auto'
@@ -510,9 +508,9 @@ export default {
       }
       if (this.element.auxiliaryMatrix) {
         const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-        return (height - gap) + 'px'
+        return (height - this.curGap * 2) + 'px'
       } else {
-        return (this.height - gap) + 'px'
+        return (this.height - this.curGap * 2) + 'px'
       }
     },
 
@@ -527,6 +525,9 @@ export default {
     },
     curComponent() {
       return this.$store.state.curComponent
+    },
+    curGap() {
+      return this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix ? this.componentGap : 0
     },
     ...mapState([
       'editor',
