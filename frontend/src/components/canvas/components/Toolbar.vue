@@ -12,33 +12,6 @@
       </span>
     </div>
     <div v-else class="toolbar">
-      <!--      <div class="canvas-config" style="margin-right: 10px">-->
-      <!--        <span>{{ $t('panel.new_element_distribution') }}:</span>-->
-      <!--        <el-switch-->
-      <!--          v-model="canvasStyleData.auxiliaryMatrix"-->
-      <!--          :width="35"-->
-      <!--          active-color="#13ce66"-->
-      <!--          inactive-color="#ff4949"-->
-      <!--          :active-text="$t('panel.matrix')"-->
-      <!--          :inactive-text="$t('panel.suspension')"-->
-      <!--        />-->
-      <!--      </div>-->
-      <!--      <div class="canvas-config" style="margin-right: 10px" @click.stop="auxiliaryMatrixChange">-->
-      <!--        <span>{{ $t('panel.new_element_distribution.matrix_design') }}:</span>-->
-      <!--        <span v-if="curComponent.auxiliaryMatrix">-->
-      <!--          <i class="icon iconfont icon-shujujuzhen" />-->
-      <!--          {{ $t('panel.matrix_design') }}-->
-      <!--        </span>-->
-      <!--        <span v-if="!curComponent.auxiliaryMatrix">-->
-      <!--          <i class="icon iconfont icon-xuanfuanniu" />-->
-      <!--          {{ $t('panel.suspension') }}-->
-      <!--        </span>-->
-      <!--      </div>-->
-      <!--      <div class="canvas-config" style="margin-right: 10px">-->
-      <!--        <span> {{ $t('panel.canvas_scale') }} </span>-->
-      <!--        <input v-model="scale" @input="handleScaleChange"> %-->
-      <!--      </div>-->
-
       <el-tooltip v-if="!canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.suspension')">
         <el-button class="icon iconfont-tb icon-xuanfuanniu" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
@@ -65,13 +38,9 @@
       <el-tooltip :content="$t('panel.redo') ">
         <el-button class="el-icon-refresh-left" size="mini" circle @click="redo" />
       </el-tooltip>
-      <!--      <el-tooltip :content="$t('panel.insert_picture') ">-->
-      <!--        <el-button class="el-icon-upload" size="mini" circle @click="goFile" />-->
-      <!--      </el-tooltip>-->
       <el-tooltip :content="$t('panel.clean_canvas')">
         <el-button class="el-icon-document-delete" size="mini" circle @click="clearCanvas" />
       </el-tooltip>
-      <!--      <input id="input" ref="files" type="file" hidden @change="handleFileChange">-->
       <el-tooltip :content="$t('panel.fullscreen_preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
