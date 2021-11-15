@@ -4,7 +4,6 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.base.domain.PanelShare;
 import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRemoveRequest;
-import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelShareOutDTO;
@@ -15,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -27,9 +25,7 @@ import java.util.List;
 @RequestMapping("/api/share")
 public interface ShareApi {
 
-    /*@ApiIgnore
-    @PostMapping("/")
-    void share(PanelShareRequest request);*/
+
 
     @ApiOperation("查询分享给我")
     @PostMapping("/treeList")

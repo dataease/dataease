@@ -209,17 +209,7 @@ public class EsProvider extends DatasourceProvider {
         return new ArrayList<>();
     }
 
-//    @Override
-//    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-//        List<TableFiled> tableFileds = new ArrayList<>();
-//        try {
-//            String response = exexQuery(datasourceRequest, "desc " + datasourceRequest.getTable(), "?format=json");
-//            tableFileds = fetchResultField(response);
-//        } catch (Exception e) {
-//            DataEaseException.throwException(e);
-//        }
-//        return tableFileds;
-//    }
+
 
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {

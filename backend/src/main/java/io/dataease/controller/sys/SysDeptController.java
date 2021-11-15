@@ -56,34 +56,7 @@ public class SysDeptController extends ResultHolder {
         return nodeResponses;
     }
 
-    /*@ApiOperation("查询部门")
-    @PostMapping("/root")
-    public ResultHolder rootData(){
-        List<SysDept> root = deptService.nodesByPid(null);
-        return success(root);
-    }*/
 
-    /*@ApiOperation("新增部门")
-    @PostMapping("/create")
-    public void create(@RequestBody DeptCreateRequest dept){
-        deptService.add(dept);
-    }
-
-    @ApiOperation("删除部门")
-    @PostMapping("/delete")
-    public void delete(@RequestBody List<DeptDeleteRequest> requests){
-        deptService.batchDelete(requests);
-    }
-    @ApiOperation("更新部门")
-    @PostMapping("/update")
-    public void update(@RequestBody DeptCreateRequest dept){
-        deptService.update(dept);
-    }
-    @ApiOperation("更新状态")
-    @PostMapping("/updateStatus")
-    public void updateStatus(@RequestBody DeptStatusRequest request){
-        deptService.updateStatus(request);
-    }*/
 
     @PostMapping("/nodesByDeptId/{deptId}")
     public List<DeptTreeNode> nodesByDeptId(@PathVariable("deptId") Long deptId){

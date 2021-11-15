@@ -47,15 +47,5 @@ public class XUserKeysServer {
         ukeyXpackService.switchStatus(id);
     }
 
-    /*@GetMapping("active/{id}")
-    public void activeUserKey(@PathVariable Long id) {
-        UkeyXpackService ukeyXpackService = SpringContextUtil.getBean(UkeyXpackService.class);
-        ukeyXpackService.activeUserKey(id);
-    }
 
-    @GetMapping("disable/{id}")
-    public void disabledUserKey(@PathVariable Long id) {
-        UkeyXpackService ukeyXpackService = SpringContextUtil.getBean(UkeyXpackService.class);
-        ukeyXpackService.disableUserKey(id);
-    }*/
 }
