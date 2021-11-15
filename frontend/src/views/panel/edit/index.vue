@@ -850,14 +850,14 @@ export default {
 
 <style scoped>
   .ms-aside-container {
-    height: calc(100vh - 91px);
+    height: calc(100vh - 35px);
     max-width: 60px;
     border: none;
     width: 60px;
   }
 
   .ms-main-container {
-    height: calc(100vh - 91px);
+    height: calc(100vh - 35px);
   }
 
   .de-header {
@@ -891,7 +891,7 @@ export default {
 .leftPanel {
   width: 100%;
   max-width: 300px;
-  height: calc(100vh - 91px);
+  height: calc(100vh - 35px);
   position: fixed;
   top: 91px;
   left: 60px;
@@ -918,13 +918,13 @@ export default {
 }
 
 .this_canvas{
-  height: calc(100vh - 91px);
+  height: calc(100vh - 35px);
   overflow-x: hidden;
   overflow-y: auto;
   background-size:100% 100% !important;
 }
 .el-main{
-  height: calc(100vh - 91px);
+  height: calc(100vh - 35px);
   padding: 0!important;
   overflow: auto;
   position: relative;
