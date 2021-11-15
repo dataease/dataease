@@ -1507,7 +1507,7 @@ export default {
       this.calcData(true)
     },
     addYaxis(e) {
-      if ((this.view.type === 'map' || this.view.type === 'waterfall') && this.view.yaxis.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud') && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
       this.dragCheckType(this.view.yaxis, 'q')
