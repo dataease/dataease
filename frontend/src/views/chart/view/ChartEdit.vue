@@ -1497,7 +1497,7 @@ export default {
       }
     },
     addXaxis(e) {
-      if (this.view.type === 'map' && this.view.xaxis.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
       if (this.view.type !== 'table-info') {
