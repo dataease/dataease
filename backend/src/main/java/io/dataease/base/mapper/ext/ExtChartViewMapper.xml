@@ -136,6 +136,21 @@
             id = #{oldChartId}
     </insert>
 
+    <select id="searchAdviceSceneId" resultType="String">
+        SELECT DISTINCT
+            ( scene_id )
+        FROM
+            ( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{userId}, 'chart' ) cids ) t,
+            panel_view
+            LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
+            LEFT JOIN chart_group ON chart_view.scene_id = chart_group.id
+        WHERE
+            FIND_IN_SET( chart_view.scene_id, cids )  and panel_view.panel_id =#{panelId}
+        ORDER BY
+            chart_group.create_time DESC
+            LIMIT 1
+    </select>
+
     <select id="checkSameDataSet" resultType="int">
        select count(DISTINCT table_id)  from chart_view where id = #{viewIdSource} or id = #{viewIdTarget}
     </select>
