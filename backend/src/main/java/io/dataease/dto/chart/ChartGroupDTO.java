@@ -16,4 +16,8 @@ public class ChartGroupDTO extends DatasetGroup implements ITreeBase<ChartGroupD
     private List<ChartGroupDTO> children;
     @ApiModelProperty("权限")
     private String privileges;
+    @ApiModelProperty("节点类型")
+    public String getNodeType(){
+        return super.getType();
+    };
 }

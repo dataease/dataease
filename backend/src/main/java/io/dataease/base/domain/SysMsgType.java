@@ -2,10 +2,12 @@ package io.dataease.base.domain;
 
 import java.io.Serializable;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
+@ApiModel("消息类型")
 public class SysMsgType implements Serializable {
 
     @ApiModelProperty("消息类型ID")
@@ -17,10 +19,10 @@ public class SysMsgType implements Serializable {
     @ApiModelProperty("消息类型名称")
     private String typeName;
 
-    @ApiModelProperty(hidden = true)
+    @ApiModelProperty("回调路由")
     private String router;
 
-    @ApiModelProperty(hidden = true)
+    @ApiModelProperty("回调函数")
     private String callback;
 
     private static final long serialVersionUID = 1L;

@@ -1,15 +1,11 @@
 package io.dataease.controller.panel.server;
 
 
-import com.google.gson.Gson;
 import io.dataease.base.domain.PanelLink;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
-import io.dataease.controller.request.panel.link.EnablePwdRequest;
-import io.dataease.controller.request.panel.link.LinkRequest;
-import io.dataease.controller.request.panel.link.PasswordRequest;
-import io.dataease.controller.request.panel.link.ValidateRequest;
+import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.ValidateDto;
 import io.dataease.service.chart.ChartViewService;
@@ -46,6 +42,14 @@ public class LinkServer implements LinkApi {
         panelLinkService.changeEnablePwd(request);
     }
 
+    
+
+    @Override
+    public void resetOverTime(@RequestBody OverTimeRequest request) {
+        panelLinkService.overTime(request);
+        
+    }
+
     @Override
     public void switchLink(@RequestBody LinkRequest request) {
         panelLinkService.changeValid(request);
@@ -57,14 +61,13 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
-    public ValidateDto validate(@RequestBody Map<String, String> param)  throws Exception{
-        String link = param.get("link");
+    public ValidateDto validate(@RequestBody LinkValidateRequest request)  throws Exception{
+        String link = request.getLink();
         String json = panelLinkService.decryptParam(link);
-        Gson gson = new Gson();
 
-        ValidateRequest request = gson.fromJson(json, ValidateRequest.class);
         ValidateDto dto = new ValidateDto();
-        String resourceId = request.getResourceId();
+        String resourceId = json;
+       /*  String resourceId = request.getResourceId(); */
         PanelLink one = panelLinkService.findOne(resourceId);
         dto.setResourceId(resourceId);
         if (ObjectUtils.isEmpty(one)){
@@ -74,6 +77,7 @@ public class LinkServer implements LinkApi {
         dto.setValid(one.getValid());
         dto.setEnablePwd(one.getEnablePwd());
         dto.setPassPwd(panelLinkService.validateHeads(one));
+        dto.setExpire(panelLinkService.isExpire(one));
         return dto;
     }
 
@@ -92,9 +96,15 @@ public class LinkServer implements LinkApi {
         return chartViewService.getData(viewId, requestList);
     }
 
-    @Override
+    /*@Override
     public ResultHolder shortUrl(Map<String,String> param) {
         String url = param.get("url");
         return panelLinkService.getShortUrl(url);
+    }*/
+
+    @Override
+    public String shortUrl(Map<String,String> param) {
+        String resourceId = param.get("resourceId");
+        return panelLinkService.getShortUrl(resourceId);
     }
 }

@@ -1,7 +1,19 @@
 <template>
-  <el-row style="height: 100%;width: 100%;">
+  <el-row
+    v-loading="dataLoading"
+    style="height: 100%;width: 100%;"
+    :element-loading-text="$t('panel.data_loading')"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
-      <el-row class="panel-design-head">
+
+      <el-row v-if="showType === 2" class="panel-design-head panel-share-head">
+        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+          <share-head />
+        </div>
+      </el-row>
+      <el-row v-else class="panel-design-head">
         <!--仪表板头部区域-->
         <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
           <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
@@ -11,6 +23,12 @@
             <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
+            <span v-if="hasDataPermission('edit',panelInfo.privileges)&&activeTab==='PanelList'" style="float: right;margin-right: 10px">
+              <el-button size="mini" type="primary" @click="editPanel">
+                {{ $t('commons.edit') }}
+              </el-button>
+            </span>
+
             <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.save_to_panel')">
                 <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
@@ -38,17 +56,18 @@
               </el-tooltip>
             </span>
 
-            <span v-if="!hasStar && panelInfo && !isShare" style="float: right;margin-right: 10px">
+            <span v-if="!hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.store')">
                 <el-button class="el-icon-star-off" size="mini" circle @click="star" />
               </el-tooltip>
             </span>
 
-            <span v-if="hasStar && panelInfo && !isShare" style="float: right;margin-right: 10px">
+            <span v-if="hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('commons.cancel')">
                 <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
               </el-tooltip>
             </span>
+
           </el-col>
         </div>
       </el-row>
@@ -62,7 +81,7 @@
       </el-row>
     </el-col>
     <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
-      <el-row style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
+      <el-row style="height: 100%; background-color: var(--ContentBG);" class="custom-position">
         {{ $t('panel.select_panel_from_left') }}
       </el-row>
     </el-col>
@@ -109,10 +128,11 @@ import FileSaver from 'file-saver'
 import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
+import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 
 export default {
   name: 'PanelViewShow',
-  components: { Preview, SaveToTemplate, PDFPreExport },
+  components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
   props: {
     activeTab: {
       type: String,
@@ -132,7 +152,8 @@ export default {
       fullscreen: false,
       pdfExportShow: false,
       snapshotInfo: '',
-      isShare: false
+      showType: 0,
+      dataLoading: false
     }
   },
   computed: {
@@ -148,6 +169,7 @@ export default {
     panelInfo(newVal, oldVla) {
       // 刷新 进行重新渲染
       this.showMain = false
+
       this.$nextTick(() => {
         this.showMain = true
         this.initHasStar()
@@ -163,9 +185,10 @@ export default {
     }
   },
   mounted() {
-    bus.$on('set-panel-is-share', () => {
-      this.isShare = true
+    bus.$on('set-panel-show-type', type => {
+      this.showType = type || 0
     })
+
     this.initPdfTemplate()
   },
   methods: {
@@ -183,50 +206,62 @@ export default {
       window.open(url, '_blank')
     },
     saveToTemplate() {
-      this.templateSaveShow = true
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-        if (snapshot !== '') {
-          this.templateInfo = {
-            name: this.$store.state.panel.panelInfo.name,
-            snapshot: snapshot,
-            templateStyle: JSON.stringify(this.canvasStyleData),
-            templateData: JSON.stringify(this.componentData),
-            templateType: 'self',
-            nodeType: 'template',
-            level: 1,
-            pid: null,
-            dynamicData: ''
+      this.dataLoading = true
+      setTimeout(() => {
+        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          this.templateSaveShow = true
+          this.dataLoading = false
+          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
+          if (snapshot !== '') {
+            this.templateInfo = {
+              name: this.$store.state.panel.panelInfo.name,
+              snapshot: snapshot,
+              templateStyle: JSON.stringify(this.canvasStyleData),
+              templateData: JSON.stringify(this.componentData),
+              templateType: 'self',
+              nodeType: 'template',
+              level: 1,
+              pid: null,
+              dynamicData: ''
+            }
           }
-        }
-      })
+        })
+      }, 50)
     },
     downloadToTemplate() {
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-        if (snapshot !== '') {
-          this.templateInfo = {
-            name: this.$store.state.panel.panelInfo.name,
-            templateType: 'self',
-            snapshot: snapshot,
-            panelStyle: JSON.stringify(this.canvasStyleData),
-            panelData: JSON.stringify(this.componentData),
-            dynamicData: ''
+      this.dataLoading = true
+      setTimeout(() => {
+        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          this.dataLoading = false
+          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
+          if (snapshot !== '') {
+            this.templateInfo = {
+              name: this.$store.state.panel.panelInfo.name,
+              templateType: 'self',
+              snapshot: snapshot,
+              panelStyle: JSON.stringify(this.canvasStyleData),
+              panelData: JSON.stringify(this.componentData),
+              dynamicData: ''
+            }
+            const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
+            FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
           }
-          const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
-          FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
-        }
-      })
+        })
+      }, 50)
     },
 
     downloadAsPDF() {
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.2是图片质量
-        if (snapshot !== '') {
-          this.snapshotInfo = snapshot
-          this.pdfExportShow = true
-        }
-      })
+      this.dataLoading = true
+      setTimeout(() => {
+        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+          this.dataLoading = false
+          if (snapshot !== '') {
+            this.snapshotInfo = snapshot
+            this.pdfExportShow = true
+          }
+        })
+      }, 50)
     },
     refreshTemplateInfo() {
       this.templateInfo = {}
@@ -273,6 +308,9 @@ export default {
     },
     closePreExport() {
       this.pdfExportShow = false
+    },
+    editPanel() {
+      this.$emit('editPanel')
     }
 
   }
@@ -304,7 +342,7 @@ export default {
     min-height: 400px;
     height: 100%;
     min-width: 500px;
-    overflow-y: auto;
+    overflow-y: hidden;
     border-top: 1px solid #E6E6E6;
   }
 
@@ -313,6 +351,9 @@ export default {
     background-color: var(--SiderBG, white);
     padding: 0 10px;
     line-height: 40px;
+  }
+  .panel-share-head {
+      height: auto !important;
   }
   .blackTheme .panel-design-head  {
       color: var(--TextActive);

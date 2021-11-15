@@ -16,8 +16,11 @@ import io.dataease.controller.sys.request.MsgSettingRequest;
 import io.dataease.controller.sys.response.MsgGridDto;
 import io.dataease.controller.sys.response.SettingTreeNode;
 import io.dataease.controller.sys.response.SubscribeNode;
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class SysMsgService {
+
+    private static int overDays = 30;
 
     @Resource
     private SysMsgMapper sysMsgMapper;
@@ -47,7 +52,10 @@ public class SysMsgService {
     @Resource
     private SysMsgSettingMapper sysMsgSettingMapper;
 
-    public List<SysMsg> query(Long userId, MsgRequest msgRequest) {
+    @Autowired
+    private SystemParameterService systemParameterService;
+
+    /* public List<SysMsg> query(Long userId, MsgRequest msgRequest) {
         String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
@@ -67,12 +75,14 @@ public class SysMsgService {
             criteria.andStatusEqualTo(msgRequest.getStatus());
         }
 
+        criteria.andCreateTimeGreaterThanOrEqualTo(overTime());
+
         example.setOrderByClause(orderClause);
         List<SysMsg> sysMsgs = sysMsgMapper.selectByExample(example);
         return sysMsgs;
     }
-
-    public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest, List<Long> typeIds) {
+ */
+    public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest, List<Long> typeIds, Long startTime) {
         String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
@@ -100,6 +110,9 @@ public class SysMsgService {
             criteria.andStatusEqualTo(msgRequest.getStatus());
         }
 
+        criteria.andCreateTimeGreaterThanOrEqualTo(startTime);
+        /* criteria.andCreateTimeGreaterThanOrEqualTo(overTime()); */
+
         example.setOrderByClause(orderClause);
         List<MsgGridDto> msgGridDtos = extSysMsgMapper.queryGrid(example);
         return msgGridDtos;
@@ -109,6 +122,7 @@ public class SysMsgService {
         SysMsgExample example = new SysMsgExample();
         SysMsgExample.Criteria criteria = example.createCriteria();
         criteria.andUserIdEqualTo(userId).andStatusEqualTo(false);
+        criteria.andCreateTimeGreaterThanOrEqualTo(overTime());
         return sysMsgMapper.countByExample(example);
     }
 
@@ -319,5 +333,23 @@ public class SysMsgService {
         example.createCriteria().andUserIdEqualTo(AuthUtils.getUser().getUserId()).andStatusEqualTo(false);
         sysMsgMapper.updateByExampleSelective(record, example);
     }
+
+    
+    public Long overTime() {
+        String msgTimeOut = systemParameterService.basicInfo().getMsgTimeOut();
+        if(StringUtils.isNotBlank(msgTimeOut)) {
+            overDays = Integer.parseInt(msgTimeOut);
+        }
+        Long currentTime = System.currentTimeMillis();
+
+        long oneDayTime = 24 * 60 * 60 * 1000;
+
+        long temp = overDays * oneDayTime;
+
+        return currentTime - (currentTime + 8 * 60 * 60 * 1000) % oneDayTime - temp;
+                 
+    }
+
+    
 
 }

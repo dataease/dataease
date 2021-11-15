@@ -1,7 +1,10 @@
 // 公共样式
 export const commonStyle = {
   rotate: 0,
-  opacity: 1
+  opacity: 1,
+  borderStyle: 'solid',
+  borderWidth: 0,
+  borderRadius: 0
 }
 
 export const commonAttr = {
@@ -9,6 +12,42 @@ export const commonAttr = {
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false // 是否锁定组件
+}
+
+// 超链接配置
+export const HYPERLINKS = {
+  openMode: '_blank',
+  enable: false,
+  content: 'http://'
+}
+
+// 视频信息配置
+export const VIDEOLINKS = {
+  videoType: 'web',
+  web: {
+    autoplay: true,
+    muted: true,
+    loop: true,
+    controlBar: {
+      fullscreenToggle: false
+    },
+    sources: [{
+    }]
+  },
+  rtmp: {
+    sources: [{
+      type: 'rtmp/mp4'
+    }],
+    techOrder: ['flash'],
+    autoplay: false,
+    controls: true,
+    flash: {
+      hls: {
+        withCredentials: false
+      }
+    }
+  }
+
 }
 
 export const assistList = [
@@ -36,6 +75,7 @@ export const assistList = [
     icon: 'iconfont icon-tabs',
     defaultClass: 'text-filter'
   }
+
 ]
 
 export const pictureList = [
@@ -45,6 +85,25 @@ export const pictureList = [
     type: 'picture-add',
     label: '拖拽上传',
     icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '20002',
+    component: 'video',
+    type: 'video',
+    label: '视频',
+    icon: 'iconfont icon-video',
+    defaultClass: 'text-filter'
+  }
+]
+
+export const dateList = [
+  {
+    id: '30001',
+    component: 'de-show-date',
+    type: 'de-show-date',
+    label: '时间',
+    icon: 'iconfont icon-shijian',
     defaultClass: 'text-filter'
   }
 ]
@@ -71,6 +130,7 @@ const list = [
       backgroundColor: '#ffffff',
       borderRadius: 0
     },
+    hyperlinks: HYPERLINKS,
     x: 1,
     y: 1,
     sizex: 10,
@@ -123,6 +183,8 @@ const list = [
     type: 'Picture',
     propValue: require('@/components/canvas/assets/bg-kj-1.jpg'),
     style: {
+      borderStyle: 'solid',
+      borderWidth: 0,
       width: 600,
       height: 300,
       borderRadius: ''
@@ -162,7 +224,7 @@ const list = [
       borderRadius: ''
     },
     x: 1,
-    y: 1,
+    y: 36,
     sizex: 10,
     sizey: 6,
     auxiliaryMatrix: true
@@ -178,7 +240,7 @@ const list = [
       width: 200,
       height: 200,
       borderStyle: 'solid',
-      borderWidth: 1,
+      borderWidth: 0,
       borderColor: '#000000',
       backgroundColor: '#ffffff',
       borderRadius: 0
@@ -196,6 +258,42 @@ const list = [
     sizey: 10
   },
   {
+    id: '30001',
+    component: 'de-show-date',
+    label: '时间',
+    propValue: '',
+    icon: 'shijian',
+    type: 'de-show-date',
+    style: {
+      width: 250,
+      height: 100,
+      fontSize: 22,
+      fontWeight: 400,
+      lineHeight: '',
+      letterSpacing: 0,
+      textAlign: 'center',
+      color: '#000000',
+      verticalAlign: 'middle',
+      backgroundColor: '#ffffff',
+      borderStyle: 'solid',
+      borderColor: '#000000',
+      borderRadius: 0,
+      /* margin: 10, */
+      time_margin: 0
+    },
+    formatInfo: {
+      openMode: '0',
+      showWeek: false,
+      showDate: true,
+      dateFormat: 'yyyy年-MM月-dd日',
+      timeFormat: 'hh:mm:ss'
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 2
+  },
+  {
     id: '20001',
     component: 'picture-add',
     type: 'picture-add',
@@ -207,6 +305,24 @@ const list = [
       height: 200,
       borderRadius: ''
     },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5
+  },
+  {
+    id: '20002',
+    component: 'de-video',
+    type: 'de-video',
+    label: '',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    style: {
+      width: 400,
+      height: 200,
+      borderRadius: ''
+    },
+    videoLinks: VIDEOLINKS,
     x: 1,
     y: 1,
     sizex: 10,

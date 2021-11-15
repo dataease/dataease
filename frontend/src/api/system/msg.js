@@ -9,12 +9,12 @@ export function query(pageIndex, pageSize, data) {
   })
 }
 
-export function unReadCount(data) {
+export function unReadCount() {
   return request({
     url: '/api/sys_msg/unReadCount',
     method: 'post',
-    loading: false,
-    data
+    loading: false
+    // data
   })
 }
 

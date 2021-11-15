@@ -2,7 +2,7 @@
   <div>
     <el-form ref="createOrganization" inline :model="form" size="small" label-width="80px">
 
-      <el-form-item :label="$t('panel.link_share')">
+      <el-form-item ref="form" :label="$t('panel.link_share')">
         <el-switch
           v-model="valid"
           style="width: 370px;"
@@ -22,6 +22,20 @@
         />
       </el-form-item>
 
+      <el-form-item v-if="valid" :label="$t('panel.over_time')">
+        <el-date-picker
+          v-model="form.overTime"
+          type="datetime"
+          placeholder="选择日期时间"
+          align="right"
+          value-format="timestamp"
+          :picker-options="pickerOptions"
+          default-time="23:59:59"
+          popper-class="link-date-picker-class"
+          @change="resetOverTime"
+        />
+      </el-form-item>
+
       <el-form-item v-if="valid" label=" ">
         <el-checkbox v-model="form.enablePwd" @change="resetEnablePwd">{{ $t('panel.passwd_protect') }}  </el-checkbox>
 
@@ -32,8 +46,6 @@
       <div v-if="valid" class="auth-root-class">
         <span slot="footer">
 
-          <el-button v-if="newUrl && !form.enablePwd" v-clipboard:copy="newUrl" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_short_link') }}</el-button>
-          <el-button v-if="newUrl && form.enablePwd" v-clipboard:copy="newUrl + ' Password: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_short_link_passwd') }}</el-button>
           <el-button v-if="!form.enablePwd" v-clipboard:copy="form.uri" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link') }}</el-button>
           <el-button v-if="form.enablePwd" v-clipboard:copy="form.uri + ' Password: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link_passwd') }}</el-button>
 
@@ -45,8 +57,7 @@
 </template>
 <script>
 
-import { loadGenerate, setPwd, switchValid, switchEnablePwd, shortUrl } from '@/api/link'
-import { encrypt, decrypt } from '@/utils/rsaEncrypt'
+import { loadGenerate, setPwd, switchValid, switchEnablePwd, shortUrl, setOverTime } from '@/api/link'
 export default {
 
   name: 'LinkGenerate',
@@ -64,8 +75,28 @@ export default {
       pwdNums: 4,
       valid: false,
       form: {},
-      newUrl: null,
-      defaultForm: { enablePwd: false, pwd: null, uri: null }
+      defaultForm: { enablePwd: false, pwd: null, uri: null },
+      pickerOptions: {
+        disabledDate: time => {
+          return time < (Date.now() - 8.64e7)
+        },
+        shortcuts: [{
+          text: '一天',
+          onClick: function(picker) {
+            picker.$emit('pick', this.limitDate('day'))
+          }.bind(this)
+        }, {
+          text: '一周',
+          onClick: (picker) => {
+            picker.$emit('pick', this.limitDate('week'))
+          }
+        }, {
+          text: '一月',
+          onClick: (picker) => {
+            picker.$emit('pick', this.limitDate('month'))
+          }
+        }]
+      }
     }
   },
   computed: {
@@ -80,12 +111,19 @@ export default {
   methods: {
     currentGenerate() {
       loadGenerate(this.resourceId).then(res => {
-        const { valid, enablePwd, pwd, uri } = res.data
+        const { valid, enablePwd, pwd, uri, overTime } = res.data
         this.valid = valid
         this.form.enablePwd = enablePwd
         this.form.uri = uri ? (this.origin + uri) : uri
         // 返回的密码是共钥加密后的 所以展示需要私钥解密一波
-        pwd && (this.form.pwd = decrypt(pwd))
+        pwd && (this.form.pwd = pwd)
+
+        if (pwd && pwd.length > 0 && pwd.length > this.pwdNums) {
+          this.resetPwd()
+        }
+        /* pwd && (this.form.pwd = decrypt(pwd)) */
+        /* overTime && (this.form.overTime = overTime) */
+        overTime && (this.$set(this.form, 'overTime', overTime))
         this.requestShort()
       })
     },
@@ -106,7 +144,8 @@ export default {
       const newPwd = this.createPwd()
       const param = {
         resourceId: this.resourceId,
-        password: encrypt(newPwd)
+        password: newPwd
+        /* password: encrypt(newPwd) */
       }
       setPwd(param).then(res => {
         this.form.pwd = newPwd
@@ -122,13 +161,21 @@ export default {
         value && !this.form.pwd && this.resetPwd()
       })
     },
+    resetOverTime(value) {
+      const param = {
+        resourceId: this.resourceId,
+        overTime: value
+      }
+      setOverTime(param).then(res => {
+        // this.form.overTime = value
+        this.$forceUpdate()
+      })
+    },
 
     onCopy(e) {
-    //   alert('You just copied: ' + e.text)
       this.$success(this.$t('commons.copy_success'))
     },
     onError(e) {
-    //   alert('Failed to copy texts')
     },
     onChange(value) {
       const param = {
@@ -142,16 +189,39 @@ export default {
     requestShort() {
       const url = this.form.uri
       if (!url) return
-      //   if (this.origin.includes('localhost') || this.origin.includes('127.0.0.1')) {
-      //     console.log('本地无法生成短链接')
-      //     this.$warning('本地无法生成短链接')
-      //     return
-      //   }
-      shortUrl({ url }).then(res => {
+
+      shortUrl({ resourceId: this.resourceId }).then(res => {
         if (res.success) {
-          this.newUrl = res.data
+          this.form.uri = this.origin + res.data
         }
       })
+    },
+
+    limitDate(type) {
+      const now = new Date()
+      const nowTime = now.getTime()
+      const oneDay = 24 * 60 * 60 * 1000
+
+      if (type === 'day') {
+        const tom = new Date(nowTime + oneDay)
+        return new Date(tom.format('yyyy-MM-dd') + ' 23:59:59')
+      }
+      if (type === 'week') {
+        const tom = new Date(nowTime + oneDay * 7)
+        return new Date(tom.format('yyyy-MM-dd') + ' 23:59:59')
+      }
+      if (type === 'month') {
+        const result = new Date()
+        const curMonth = now.getMonth() + 1
+        if (curMonth === 12) {
+          result.setYear(now.getYear() + 1)
+          result.setMonth(0)
+        } else {
+          result.setMonth(curMonth)
+        }
+        return new Date(result.format('yyyy-MM-dd') + ' 23:59:59')
+      }
+      return null
     }
   }
 }
@@ -168,4 +238,5 @@ export default {
         margin: 15px 0px 5px;
         text-align: right;
     }
+
 </style>

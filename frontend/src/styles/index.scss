@@ -1,14 +1,11 @@
 
-$--font-path: '~element-ui/lib/theme-chalk/fonts';
+/* $--font-path: '~element-ui/lib/theme-chalk/fonts'; */
 
-/* .defaultTheme {
-  @import './theme/default.scss';
-  @import "~element-ui/packages/theme-chalk/src/index";
-} */
-.blackTheme {
+
+/* .blackTheme {
   @import './theme/dark.scss';
   @import "~element-ui/packages/theme-chalk/src/index";
-}
+} */
 
 
 
@@ -399,30 +396,30 @@ div:focus {
 }
 
 .blackTheme .el-textarea__inner {
-    color: var(--TableColor) !important;  
-    background-color: var(--MainBG) !important;    
+    color: var(--TableColor) !important;
+    background-color: var(--MainBG) !important;
 }
 .blackTheme .el-textarea__inner:not(:focus) {
-    color: var(--TableColor) !important;  
+    color: var(--TableColor) !important;
     border-color: var(--border-color-input) !important;
 }
 
 .blackTheme .el-input__inner {
     background-color: var(--MainBG) !important;
-    color: var(--TableColor) !important;    
+    color: var(--TableColor) !important;
 }
 .blackTheme .el-input__inner:not(:focus) {
-    color: var(--TableColor) !important;  
+    color: var(--TableColor) !important;
     border-color: var(--border-color-input) !important;
 }
 
 .blackTheme .el-input-number__decrease {
-    color: var(--TableColor) !important;  
+    color: var(--TableColor) !important;
     background-color: var(--MainBG) !important;
     border: none !important;
 }
 .blackTheme .el-input-number__increase {
-    color: var(--TableColor) !important;  
+    color: var(--TableColor) !important;
     background-color: var(--MainBG) !important;
     border: none !important;
 }
@@ -434,15 +431,15 @@ div:focus {
 
 .el-pagination {
     button:disabled {
-        color: var(--TableColor) !important;  
+        color: var(--TableColor) !important;
         background-color: var(--MainBG) !important;
     }
 }
 
-.el-pager li {
-    color: var(--TableColor) !important;  
+/* .blackTheme .el-pager li {
+    color: var(--TableColor) !important;
     background-color: var(--MainBG) !important;
-}
+} */
 
 /* .blackTheme .el-select-dropdown {
     background-color: var(--MainBG) !important;
@@ -453,14 +450,14 @@ div:focus {
 }
 
 .blackTheme .fu-quick-search input {
-    color: var(--TableColor) !important;  
+    color: var(--TableColor) !important;
     background-color: var(--MainBG) !important;
 }
 .blackTheme .vue-treeselect__single-value {
-    color: var(--TableColor) !important;  
+    color: var(--TableColor) !important;
 }
 .blackTheme .el-tag.el-tag--info {
-    background-color: var(--MainContentBG);
+    background-color: var(--ContentBG);
     border-color: var(--TableBorderColor);
     color: var(--TableColor) !important;  ;
 }
@@ -477,13 +474,13 @@ div:focus {
 
 .blackTheme .main-area-input {
     input.el-input__inner {
-        color: var(--TableColor) !important;  
+        color: var(--TableColor) !important;
         background-color: var(--ContentBG) !important;
     }
     .el-input-group__append {
         background-color: var(--ContentBG) !important;
         border-color: var(--ContentBG) !important;
-    }    
+    }
 }
 
 .blackTheme .el-tree {
@@ -534,7 +531,7 @@ div:focus {
 }
 
 .blackTheme:not(.in-panel) .elx-table--main-wrapper {
-    
+
     .body--wrapper {
         background-color: var(--TableBG) !important;
     }
@@ -575,7 +572,7 @@ div:focus {
     color: var(--TextPrimary) ;
 }
 .blackTheme .el-drawer__body {
-    background-color: var(--MainContentBG);
+    background-color: var(--ContentBG);
 }
 
 .blackTheme .el-select-dropdown__item.hover {
@@ -670,5 +667,29 @@ div:focus {
     color: var(--Main, #0000ff);
 }
 
+.link-date-picker-class > .el-picker-panel__footer > .el-button--text:first-child{
+  display: none;
+}
+
+.tablepanel-i {
+  margin-right: 4px;
+}
+
+
+.el-color-svpanel__black {
+  background: linear-gradient(to top, #000, rgba(0,0,0,0)) !important;
+}
+
+.el-color-svpanel__white {
+  background: linear-gradient(to right, #fff, rgba(255,255,255,0)) !important;
+}
+
+.chart-type .el-radio__input{
+  display: none!important;
+}
+
+.chart-type .el-radio__label{
+  padding-left: 0!important;
+}
 
 

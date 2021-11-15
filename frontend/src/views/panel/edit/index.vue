@@ -162,9 +162,9 @@
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
 
     <!--矩形样式组件-->
-    <RectangleAttr v-if="curComponent&&(curComponent.type==='rect-shape'||curComponent.type==='de-tabs')" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
-    <TextAttr v-if="curComponent&&curComponent.type==='v-text'" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
-    <FilterTextAttr v-if="curComponent&&curComponent.type==='custom'&&curComponent.options.attrs.title" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <!--    <RectangleAttr v-if="curComponent&&(curComponent.type==='rect-shape'||curComponent.type==='de-tabs')" :scroll-left="scrollLeft" :scroll-top="scrollTop" />-->
+    <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <!--    <FilterTextAttr v-if="curComponent&&curComponent.type==='custom'&&curComponent.options.attrs.title" :scroll-left="scrollLeft" :scroll-top="scrollTop" />-->
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -218,6 +218,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import FilterTextAttr from '@/components/canvas/components/FilterTextAttr'
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
   name: 'PanelEdit',
@@ -280,13 +281,38 @@ export default {
       scrollLeft: 0,
       scrollTop: 0,
       timeMachine: null,
-      dropComponentInfo: null
+      dropComponentInfo: null,
+      // 需要展示属性设置的组件类型
+      showAttrComponent: [
+        'custom',
+        'v-text',
+        'picture-add',
+        'de-tabs',
+        'rect-shape',
+        'de-show-date',
+        'de-video'
+      ]
     }
   },
 
   computed: {
+    showAttr() {
+      // console.log('showAttr：' + JSON.stringify(this.curComponent))
+      if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
+        // 过滤组件有标题才显示
+        if (this.curComponent.type === 'custom' && !this.curComponent.options.attrs.title) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return false
+      }
+    },
     customCanvasStyle() {
-      let style = {}
+      let style = {
+        padding: this.componentGap + 'px'
+      }
 
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -316,7 +342,8 @@ export default {
       'curComponentIndex',
       'componentData',
       'linkageSettingStatus',
-      'dragComponentInfo'
+      'dragComponentInfo',
+      'componentGap'
     ])
   },
 
@@ -400,6 +427,8 @@ export default {
         // this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
         const temp = JSON.parse(canvasStyleDataTemp)
         temp.refreshTime = (temp.refreshTime || 5)
+        temp.refreshViewLoading = (temp.refreshViewLoading || false)
+        temp.refreshUnit = (temp.refreshUnit || 'minute')
 
         this.$store.commit('setCanvasStyle', temp)
         // 清空临时画布数据
@@ -421,12 +450,18 @@ export default {
           //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
           const panelStyle = JSON.parse(response.data.panelStyle)
           panelStyle.refreshTime = (panelStyle.refreshTime || 5)
+          panelStyle.refreshViewLoading = (panelStyle.refreshViewLoading || false)
+          panelStyle.refreshUnit = (panelStyle.refreshUnit || 'minute')
 
           this.$store.commit('setCanvasStyle', panelStyle)
           this.$store.commit('recordSnapshot', 'init')// 记录快照
           // 刷新联动信息
           getPanelAllLinkageInfo(panelId).then(rsp => {
             this.$store.commit('setNowPanelTrackInfo', rsp.data)
+          })
+          // 刷新跳转信息
+          queryPanelJumpInfo(panelId).then(rsp => {
+            this.$store.commit('setNowPanelJumpInfo', rsp.data)
           })
         })
       }
@@ -520,19 +555,21 @@ export default {
         })
       } else {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
-
         this.currentFilterCom = this.currentWidget.getDrawPanel()
-
         if (this.canvasStyleData.auxiliaryMatrix) {
           this.currentFilterCom.x = this.dropComponentInfo.x
           this.currentFilterCom.y = this.dropComponentInfo.y
           this.currentFilterCom.sizex = this.dropComponentInfo.sizex
           this.currentFilterCom.sizey = this.dropComponentInfo.sizey
-
           this.currentFilterCom.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
           this.currentFilterCom.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
           this.currentFilterCom.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
           this.currentFilterCom.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+        } else {
+          this.currentFilterCom.style.left = this.dragComponentInfo.shadowStyle.x
+          this.currentFilterCom.style.top = this.dragComponentInfo.shadowStyle.y
+          this.currentFilterCom.style.width = this.dragComponentInfo.style.width
+          this.currentFilterCom.style.height = this.dragComponentInfo.style.height
         }
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
@@ -572,14 +609,6 @@ export default {
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'handleDrop')
       this.clearCurrentInfo()
-      // this.$store.commit('clearDragComponentInfo')
-
-      // // 文字组件
-      // if (component.type === 'v-text') {
-      //   this.$store.commit('setCurComponent', { component: component, index: this.componentData.length })
-      //   this.styleDialogVisible = true
-      //   this.show = false
-      // }
     },
     clearCurrentInfo() {
       this.currentWidget = null
@@ -654,9 +683,9 @@ export default {
         this.$nextTick(() => {
           const canvasHeight = document.getElementById('canvasInfo').offsetHeight
           const canvasWidth = document.getElementById('canvasInfo').offsetWidth
-          this.outStyle.height = canvasHeight
+          this.outStyle.height = canvasHeight - (this.componentGap * 2)
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = canvasWidth + (Math.random() * 0.000001)
+          this.outStyle.width = canvasWidth - (this.componentGap * 2) + (Math.random() * 0.000001)
           // console.log(canvasHeight + '--' + canvasWidth)
         })
       }
@@ -687,6 +716,7 @@ export default {
             ...commonAttr,
             id: generateID(),
             component: 'Picture',
+            type: 'picture-add',
             label: '图片',
             icon: '',
             propValue: fileResult,
@@ -761,9 +791,19 @@ export default {
         }
       })
 
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       // position = absolution 或导致有偏移 这里中和一下偏移量
-      component.style.top = 0
-      component.style.left = 600
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        component.style.left = (component.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.top = (component.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+        component.style.width = component.sizex * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.height = component.sizey * this.curCanvasScale.matrixStyleOriginHeight
+      } else {
+        component.style.left = 0
+        component.style.top = 0
+        component.x = 1
+        component.y = 1
+      }
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'newViewInfo')
@@ -780,7 +820,7 @@ export default {
       }
     },
     canvasScroll(event) {
-      console.log('testTop' + event.target.scrollTop)
+      // console.log('testTop' + event.target.scrollTop)
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
     },
@@ -882,7 +922,6 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   background-size:100% 100% !important;
-
 }
 .el-main{
   height: calc(100vh - 91px);
@@ -898,7 +937,7 @@ export default {
   overflow-y: auto;
 }
 .button-show{
-    background-color: var(--MainContentBG, #ebf2fe)!important;
+    background-color: var(--ContentBG, #ebf2fe)!important;
 }
 
 .button-closed{

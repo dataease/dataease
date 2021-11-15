@@ -1,12 +1,14 @@
 package io.dataease.controller.sys.request;
 
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
+@ApiModel("更新密码参数")
 public class SysUserPwdRequest implements Serializable {
 
     @ApiModelProperty(value = "用户ID", required = true)

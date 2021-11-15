@@ -9,8 +9,8 @@ import io.dataease.base.domain.SysRole;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.controller.response.ExistLdapUser;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
 import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
@@ -19,13 +19,17 @@ import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.service.sys.SysRoleService;
 import io.dataease.service.sys.SysUserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @Api(tags = "系统：用户管理")
@@ -41,6 +45,11 @@ public class SysUserController {
 
     @ApiOperation("查询用户")
     @PostMapping("/userGrid/{goPage}/{pageSize}")
+    @ApiImplicitParams({
+        @ApiImplicitParam(paramType="path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+        @ApiImplicitParam(paramType="path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+        @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+    })
     public Pager<List<SysUserGridResponse>> userGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, sysUserService.query(request));
@@ -64,6 +73,7 @@ public class SysUserController {
 
     @ApiOperation("删除用户")
     @PostMapping("/delete/{userId}")
+    @ApiImplicitParam(paramType = "path", value = "用户ID", name = "userId", required = true, dataType = "Integer")
     public void delete(@PathVariable("userId") Long userId){
         sysUserService.delete(userId);
     }
@@ -104,6 +114,7 @@ public class SysUserController {
 
     @ApiOperation("设置语言")
     @PostMapping("/setLanguage/{language}")
+    @ApiImplicitParam(paramType="path", name = "language", value = "语言(zh_CN, zh_TW, en_US)", required = true, dataType = "String")
     public void setLanguage(@PathVariable String language) {
         CurrentUserDto user = AuthUtils.getUser();
         Optional.ofNullable(language).ifPresent(currentLanguage -> {
@@ -123,6 +134,11 @@ public class SysUserController {
 
     @ApiOperation("查询角色")
     @PostMapping("/roleGrid/{goPage}/{pageSize}")
+    @ApiImplicitParams({
+        @ApiImplicitParam(paramType="path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+        @ApiImplicitParam(paramType="path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+        @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+    })
     public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         Pager<List<SysRole>> listPager = PageUtils.setPageInfo(page, sysRoleService.query(request));
@@ -130,16 +146,21 @@ public class SysUserController {
     }
 
 
-    @ApiOperation("同步用户")
+    /* @ApiOperation("同步用户")
     @PostMapping("/sync")
     public void importLdap(@RequestBody LdapAddRequest request) {
         sysUserService.saveLdapUsers(request);
-    }
+    } */
 
     @ApiOperation("已同步用户")
     @PostMapping("/existLdapUsers")
-    public List<String> getExistLdapUsers() {
-        return sysUserService.ldapUserNames();
+    public List<ExistLdapUser> getExistLdapUsers() {
+        List<String> userNames = sysUserService.ldapUserNames();
+        return userNames.stream().map(name -> {
+            ExistLdapUser ldapUser = new ExistLdapUser();
+            ldapUser.setUsername(name);
+            return ldapUser;
+        }).collect(Collectors.toList());
     }
 
 }

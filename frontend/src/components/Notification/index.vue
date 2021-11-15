@@ -49,15 +49,18 @@
       </div>
     </div>
     <div slot="reference">
-      <div>
+      <el-badge :value="count || paginationConfig.total" :hidden="!count && !paginationConfig.total" :max="99" class="item">
+        <svg-icon class-name="notification" icon-class="notification" />
+      </el-badge>
+      <!-- <div>
         <svg-icon
           class-name="notification"
           icon-class="notification"
         />
         <span v-if="count || paginationConfig.total" class="msg-number">{{ count || paginationConfig.total }}</span>
       </div>
-    </div>
-  </el-popover>
+    </div> -->
+    </div></el-popover>
 </template>
 
 <script>
@@ -184,10 +187,10 @@ export default {
           }.bind(this)
         })
       }
-      const param = {
+      /* const param = {
         userId: this.user.userId
-      }
-      unReadCount(param).then(res => {
+      } */
+      unReadCount().then(res => {
         this.count = res.data
       })
     },
@@ -274,5 +277,10 @@ export default {
 
     background-color: #171422;
   }
+}
+
+.item {
+  margin-top: 0px;
+  margin-right: 5px;
 }
 </style>

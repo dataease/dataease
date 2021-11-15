@@ -87,6 +87,7 @@ public class SysUserService {
     public int save(SysUserCreateRequest request) {
         checkUsername(request);
         checkEmail(request);
+        checkNickName(request);
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setCreateTime(now);
@@ -143,7 +144,8 @@ public class SysUserService {
         List<XpackLdapUserEntity> users = request.getUsers();
         List<SysUser> sysUsers = users.stream().map(user -> {
             SysUser sysUser = BeanUtils.copyBean(new SysUser(), user);
-            sysUser.setUsername(user.getUserName());
+            sysUser.setUsername(user.getUsername());
+            sysUser.setNickName(user.getNickname());
             sysUser.setDeptId(request.getDeptId());
             sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
             sysUser.setCreateTime(now);
@@ -182,6 +184,7 @@ public class SysUserService {
     public int update(SysUserCreateRequest request) {
         checkUsername(request);
         checkEmail(request);
+        checkNickName(request);
         if (StringUtils.isEmpty(request.getPassword())) {
             request.setPassword(null);
         }
@@ -299,7 +302,7 @@ public class SysUserService {
         return null;
     }
 
-    public void validateExistUser(String userName, String email) {
+    public void validateExistUser(String userName, String nickName, String email) {
         SysUserExample example = new SysUserExample();
         if (StringUtils.isNotBlank(userName)) {
             example.createCriteria().andUsernameEqualTo(userName);
@@ -309,13 +312,13 @@ public class SysUserService {
             }
         }
 
-        /* if (StringUtils.isNotBlank(nickName)) {
+        if (StringUtils.isNotBlank(nickName)) {
             example.createCriteria().andNickNameEqualTo(nickName);
             List<SysUser> users = sysUserMapper.selectByExample(example);
             if(CollectionUtils.isNotEmpty(users)) {
                 throw new RuntimeException("用户姓名【"+nickName+"】已存在,请联系管理员");
             }
-        } */
+        }
         example.clear();
         if (StringUtils.isNotBlank(email)) {
             example.createCriteria().andEmailEqualTo(email);
@@ -362,6 +365,19 @@ public class SysUserService {
         List<SysUser> sysUsers = sysUserMapper.selectByExample(sysUserExample);
         if (CollectionUtils.isNotEmpty(sysUsers)) {
             throw new RuntimeException(Translator.get("i18n_email_exists"));
+        }
+    }
+
+    private void checkNickName(SysUserCreateRequest request) {
+        SysUserExample sysUserExample = new SysUserExample();
+        SysUserExample.Criteria criteria = sysUserExample.createCriteria();
+        if (request.getUserId() != null) {
+            criteria.andUserIdNotEqualTo(request.getUserId());
+        }
+        criteria.andNickNameEqualTo(request.getNickName());
+        List<SysUser> sysUsers = sysUserMapper.selectByExample(sysUserExample);
+        if (CollectionUtils.isNotEmpty(sysUsers)) {
+            throw new RuntimeException(Translator.get("i18n_nickname_exists"));
         }
     }
 

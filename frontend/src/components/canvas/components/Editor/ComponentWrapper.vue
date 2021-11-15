@@ -1,12 +1,11 @@
 <template>
   <div
     :style="getOutStyleDefault(config.style)"
-    :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     class="component"
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="config === curComponent" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="curComponent && config === curComponent" :element="config" @showViewDetails="showViewDetails" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -27,6 +26,7 @@
       :is-edit="false"
       :element="config"
       :search-count="searchCount"
+      :h="config.style.height"
     />
   </div>
 </template>
@@ -65,9 +65,13 @@ export default {
     }
   },
   computed: {
+    curGap() {
+      return this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix ? this.componentGap : 0
+    },
     ...mapState([
       'canvasStyleData',
-      'curComponent'
+      'curComponent',
+      'componentGap'
     ])
   },
   mounted() {
@@ -76,8 +80,33 @@ export default {
   methods: {
     getStyle,
 
+    getShapeStyleIntDeDrag(style, prop) {
+      if (prop === 'rotate') {
+        return style['rotate']
+      }
+      if (prop === 'width') {
+        return this.format(style['width'], this.scaleWidth)
+      }
+      if (prop === 'left') {
+        return this.format(style['left'], this.scaleWidth)
+      }
+      if (prop === 'height') {
+        return this.format(style['height'], this.scaleHeight)
+      }
+      if (prop === 'top') {
+        const top = this.format(style['top'], this.scaleHeight)
+        // console.log('top:' + top)
+        return top
+      }
+    },
+    format(value, scale) {
+      // 自适应画布区域 返回原值
+      return value * scale / 100
+    },
     getOutStyleDefault(style) {
-      const result = {};
+      const result = {
+        padding: this.curGap + 'px'
+      };
       ['width', 'left'].forEach(attr => {
         result[attr] = style[attr] + 'px'
       });
@@ -85,7 +114,7 @@ export default {
         result[attr] = style[attr] + 'px'
       })
       result['rotate'] = style['rotate']
-      result['opacity'] = style['opacity']
+      // result['opacity'] = style['opacity']
 
       return result
       // return style
@@ -93,6 +122,8 @@ export default {
 
     getComponentStyleDefault(style) {
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // console.log('styleInfo', JSON.stringify(styleInfo))
+      // return styleInfo
       // return style
     },
 

@@ -176,6 +176,7 @@ export default {
     annotation: '注释',
     clear: '清空',
     save: '保存',
+    otherSave: '另存为',
     update: '更新',
     save_success: '保存成功',
     delete_success: '删除成功',
@@ -341,7 +342,8 @@ export default {
       ok: '确认',
       cancel: '取消'
     },
-    ukey_title: 'API Keys'
+    ukey_title: 'API Keys',
+    thumbnail: '缩略图'
   },
   documentation: {
     documentation: '文档',
@@ -423,7 +425,14 @@ export default {
   theme: {
     change: '换肤',
     documentation: '换肤文档',
-    tips: 'Tips: 它区别于 navbar 上的 theme-pick, 是两种不同的换肤方法，各自有不同的应用场景，具体请参考文档。'
+    tips: 'Tips: 它区别于 navbar 上的 theme-pick, 是两种不同的换肤方法，各自有不同的应用场景，具体请参考文档。',
+    base: '基础配色',
+    font: '字体颜色',
+    border: '边框颜色',
+    background: '背景颜色',
+    custom: '自定义颜色',
+    otherSave: '主题另存为',
+    info: '主题信息'
   },
   tagsView: {
     refresh: '刷新',
@@ -433,7 +442,7 @@ export default {
   },
   settings: {
     title: '系统布局配置',
-    theme: '主题色',
+    theme: '主题',
     tagsView: '开启 Tags-View',
     fixedHeader: '固定 Header',
     sidebarLogo: '侧边栏 Logo'
@@ -441,7 +450,8 @@ export default {
   sysParams: {
     display: '显示设置',
     ldap: 'LDAP设置',
-    oidc: 'OIDC设置'
+    oidc: 'OIDC设置',
+    theme: '主题设置'
   },
   license: {
     i18n_no_license_record: '没有 License 记录',
@@ -608,6 +618,13 @@ export default {
     mailbox_service_settings: '邮件设置',
     test_connection: '测试连接',
     SMTP_host: 'SMTP主机',
+    basic_setting: '基础设置',
+    front_time_out: '请求超时时间(单位:秒, 注意:保存后刷新浏览器生效)',
+    msg_time_out: '消息保留时间(单位:天)',
+    empty_front: '为空则默认取10秒',
+    empty_msg: '为空则默认取30天',
+    front_error: '请填写0-100正整数',
+    msg_error: '请填写1-365正整数',
     SMTP_port: 'SMTP端口',
     SMTP_account: 'SMTP账户',
     SMTP_password: 'SMTP密码',
@@ -932,7 +949,32 @@ export default {
     liquid_shape_triangle: '三角形',
     liquid_shape_pin: '气球',
     liquid_shape_rect: '矩形',
-    dimension_or_quota: '维度或指标'
+    dimension_or_quota: '维度或指标',
+    axis_value_split_count: '刻度数',
+    chart_waterfall: '瀑布图',
+    pie_inner_radius_percent: '内径占比',
+    pie_outer_radius_size: '外径大小',
+    table_page_size: '分页',
+    table_page_size_unit: '条/页',
+    result_count: '结果展示',
+    result_mode_all: '全部',
+    chart_word_cloud: '词云',
+    drag_block_word_cloud_label: '词标签',
+    drag_block_word_cloud_size: '词大小',
+    splitCount_less_100: '刻度数范围0-100',
+    change_chart_type: '更改类型',
+    chart_type_table: '表格',
+    chart_type_quota: '指标',
+    chart_type_trend: '趋势',
+    chart_type_compare: '比较',
+    chart_type_distribute: '分布',
+    chart_type_relation: '关系',
+    chart_type_space: '空间位置',
+    preview: '上一步',
+    next: '下一步',
+    select_dataset: '选择数据集',
+    select_chart_type: '选择图表类型',
+    recover: '重置'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1107,7 +1149,12 @@ export default {
     field_name_less_50: '字段名不能超过50个字符',
     excel_info_1: '1、文件中不能存在合并单元格；',
     excel_info_2: '2、文件的第一行为标题行，不能为空，不能为日期型；',
-    excel_info_3: '3、Excel文件大小请确保在500M以内。'
+    excel_info_3: '3、Excel文件大小请确保在500M以内。',
+    sync_field: '同步字段',
+    confirm_sync_field: '确认同步',
+    confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认',
+    sync_success: '同步成功',
+    sync_success_1: '同步成功，请对当前数据集重新执行数据同步操作'
   },
   datasource: {
     datasource: '数据源',
@@ -1186,9 +1233,20 @@ export default {
     copy_short_link_passwd: '复制短链接及密码',
     passwd_protect: '密码保护',
     link: '链接',
+    over_time: '有效期',
+    link_expire: '链接已过期！',
     link_share: '链接分享',
     link_share_desc: '开启链接后，任何人可通过此链接访问仪表板。',
     share: '分享',
+    remove_share_confirm: '确认取消当前仪表板所有分享？',
+    share_in: '分享给我',
+    share_out: '我分享的',
+    who_share: '分享人',
+    when_share: '分享时间',
+    share_to: '分享对象',
+    org: '组织',
+    role: '角色',
+    user: '用户',
     datalist: '视图列表',
     group: '目录',
     panel: '仪表板',
@@ -1222,6 +1280,7 @@ export default {
     component_gap: '组件间隙',
     refresh_time: '刷新时间',
     minute: '分钟',
+    second: '秒',
     photo: '图片',
     default_panel: '默认仪表板',
     create_public_links: '创建公共链接',
@@ -1293,6 +1352,8 @@ export default {
     fontWeight: '字体粗细',
     lineHeight: '行高',
     letterSpacing: '字间距',
+    padding: '内间距',
+    margin: '外间距',
     textAlign: '左右对齐',
     opacity: '不透明度',
     verticalAlign: '上下对齐',
@@ -1317,6 +1378,7 @@ export default {
     save: '保存',
     drill: '下钻',
     linkage: '联动',
+    jump: '跳转',
     cancel_linkage: '取消联动',
     remove_all_linkage: '清除所有联动',
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
@@ -1327,7 +1389,40 @@ export default {
     suspension: '悬浮',
     new_element_distribution: '当前元素移入分布方式',
     subject_no_edit: '系统主题不能修改',
-    subject_name_not_null: '主题名称需要1~20字符'
+    subject_name_not_null: '主题名称需要1~20字符',
+    is_enable: '是否启用',
+    open_mode: '打开方式',
+    new_window: '新开页面',
+    now_window: '当前页面',
+    hyperLinks: '超链接',
+    link_open_tips: '仪表板非编辑状态可打开链接',
+    data_loading: '数据准备中...',
+    export_loading: '导出中...',
+    export_pdf: '导出PDF',
+    jump_set: '跳转设置',
+    enable_jump: '启用跳转',
+    column_name: '字段名称',
+    enable_column: '启用字段',
+    open_model: '打开方式',
+    link_type: '链接类型',
+    link_outer: '外部链接',
+    link_panel: '仪表板',
+    select_jump_panel: '选择关联的仪表板',
+    link_view: '联动视图',
+    link_view_field: '联动视图字段',
+    add_jump_field: '追加跳转联动依赖字段',
+    input_jump_link: '请输入跳转连接',
+    select_dimension: '请选择维度...',
+    video_type: '视频类型',
+    online_video: '在线视频',
+    streaming_media: '流媒体',
+    auto_play: '自动播放',
+    video_tips: '非HTTPS链接，可能导致无法播放',
+    play_frequency: '播放频率',
+    play_once: '播放一次',
+    play_circle: '循环播放',
+    video_links: '视频链接',
+    video_add_tips: '请点击添加配置视频信息...'
   },
   plugin: {
     local_install: '本地安装',
@@ -1483,7 +1578,8 @@ export default {
     i18n_msg_type_dataset_sync_faild: '数据集同步失败',
     i18n_msg_type_ds_invalid: '数据源失效',
     i18n_msg_type_all: '全部类型',
-    channel_inner_msg: '站内消息'
+    channel_inner_msg: '站内消息',
+    channel_email_msg: '邮件'
   },
   denumberrange: {
     label: '数值区间',
@@ -1533,5 +1629,22 @@ export default {
   deyear: {
     label: '年份',
     placeholder: '请选择年份'
+  },
+  deshowdate: {
+    label: '时间',
+    show_week: '显示星期',
+    show_date: '显示日期',
+    time_format: '时间格式',
+    date_format: '日期格式',
+    custom: '自定义格式',
+    open_mode: '展示风格',
+    m_default: '简单风格',
+    m_elec: '电子时钟',
+    m_simple: '简单表盘',
+    m_complex: '复杂表盘',
+    select_openMode: '请选择展示风格',
+    select_time_format: '请选择时间格式',
+    select_date_format: '请选择日期格式'
+
   }
 }

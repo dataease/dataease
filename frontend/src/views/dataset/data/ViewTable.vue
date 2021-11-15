@@ -2,6 +2,9 @@
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
     <!--    <span v-show="false">{{ tableRefresh }}</span>-->
     <el-row style="height: 26px;">
+      <span class="title-text" style="line-height: 26px;">
+        {{ table.name }}
+      </span>
       <el-popover
         placement="right-start"
         width="400"
@@ -10,9 +13,8 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="dataset" :data="table" :tab-status="tabStatus" />
-        <span slot="reference" class="title-text" style="line-height: 26px;cursor: pointer;">
-          {{ table.name }}
-        </span>
+        <!--        <svg-icon slot="reference" class="title-text" icon-class="more_v" style="cursor: pointer;" />-->
+        <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;font-size: 14px;" />
       </el-popover>
       <el-row v-if="hasDataPermission('manage',param.privileges)" style="float: right">
         <el-dropdown v-if="table.type ==='excel'" style="margin-right: 10px;" size="small" trigger="click" @command="clickEditExcel">
@@ -49,13 +51,13 @@
         <tab-data-preview :param="param" :table="table" :fields="fields" :data="data" :page="page" :form="tableViewRowForm" @reSearch="reSearch" />
       </el-tab-pane>
       <el-tab-pane :label="$t('dataset.field_manage')" name="fieldEdit">
-        <field-edit :param="param" />
+        <field-edit :param="param" :table="table" />
       </el-tab-pane>
-      <el-tab-pane v-if="table.type !== 'custom'" :label="$t('dataset.join_view')" name="joinView">
+      <el-tab-pane v-if="table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
-        <update-info :param="param" :table="table" />
+        <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
       </el-tab-pane>
     </el-tabs>
   </el-row>
@@ -225,5 +227,11 @@ export default {
 
   .form-item {
     margin-bottom: 6px;
+  }
+  .icon-class{
+    color:#6c6c6c;
+  }
+  .blackTheme .icon-class{
+    color: #cccccc;
   }
 </style>

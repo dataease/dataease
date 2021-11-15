@@ -9,6 +9,8 @@ import java.util.List;
  */
 public interface ITreeBase<T> {
 
+    String getNodeType();
+
     String getId();
 
     void setId(String id);

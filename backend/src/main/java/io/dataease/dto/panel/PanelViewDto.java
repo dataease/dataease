@@ -20,6 +20,10 @@ public class PanelViewDto implements ITreeBase<PanelViewDto> {
     private String name;
     @ApiModelProperty("子节点")
     private List<PanelViewDto> children;
+    @ApiModelProperty("节点类型")
+    public String getNodeType(){
+        return this.type;
+    };
 
     public void addChild(PanelViewDto dto){
         children = Optional.ofNullable(children).orElse(new ArrayList<>());

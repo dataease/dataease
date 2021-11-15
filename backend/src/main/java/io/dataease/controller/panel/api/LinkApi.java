@@ -4,9 +4,7 @@ package io.dataease.controller.panel.api;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.chart.ChartExtRequest;
-import io.dataease.controller.request.panel.link.EnablePwdRequest;
-import io.dataease.controller.request.panel.link.LinkRequest;
-import io.dataease.controller.request.panel.link.PasswordRequest;
+import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.ValidateDto;
 import io.swagger.annotations.Api;
@@ -29,6 +27,10 @@ public interface LinkApi {
     @PostMapping("/enablePwd")
     void enablePwd(EnablePwdRequest request);
 
+    @ApiOperation("过期时间")
+    @PostMapping("/resetOverTime")
+    void resetOverTime(OverTimeRequest request);
+
     @ApiOperation("启用/禁用链接分享")
     @PostMapping("/switchLink")
     void switchLink(LinkRequest request);
@@ -39,7 +41,7 @@ public interface LinkApi {
 
     @ApiOperation("验证访问")
     @PostMapping("/validate")
-    ValidateDto validate(Map<String, String> param) throws Exception;
+    ValidateDto validate(LinkValidateRequest request) throws Exception;
 
     @ApiOperation("验证密码")
     @PostMapping("/validatePwd")
@@ -55,5 +57,5 @@ public interface LinkApi {
 
     @ApiOperation("压缩链接")
     @PostMapping("/shortUrl")
-    ResultHolder shortUrl(@RequestBody Map<String,String> param);
+    String shortUrl(@RequestBody Map<String,String> param);
 }

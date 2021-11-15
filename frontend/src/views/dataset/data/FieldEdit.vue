@@ -14,7 +14,8 @@
     <el-row>
       <el-form :inline="true">
         <el-form-item class="form-item">
-          <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
+          <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" icon="el-icon-circle-plus-outline" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
+          <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel' && table.type !== 'custom'" size="mini" :loading="isSyncField" icon="el-icon-refresh-left" @click="syncField">{{ $t('dataset.sync_field') }}</el-button>
         </el-form-item>
         <el-form-item class="form-item" style="float: right;margin-right: 0;">
           <el-input
@@ -266,6 +267,10 @@ export default {
     param: {
       type: Object,
       required: true
+    },
+    table: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -287,7 +292,8 @@ export default {
       fieldActiveNames: ['d', 'q'],
       searchField: '',
       editCalcField: false,
-      currEditField: {}
+      currEditField: {},
+      isSyncField: false
     }
   },
   watch: {
@@ -310,7 +316,7 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        that.maxHeight = (currentHeight - 56 - 30 - 35 - 26 - 10) + 'px'
+        that.maxHeight = (currentHeight - 56 - 30 - 35 - 26 - 10 - 10) + 'px'
       }, 10)
     },
     initField() {
@@ -385,6 +391,38 @@ export default {
             showClose: true
           })
           this.initField()
+        })
+      }).catch(() => {
+      })
+    },
+
+    syncField() {
+      this.$confirm(this.$t('dataset.confirm_sync_field_tips'), this.$t('dataset.confirm_sync_field'), {
+        confirmButtonText: this.$t('chart.confirm'),
+        cancelButtonText: this.$t('chart.cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.isSyncField = true
+        post('/dataset/table/syncField/' + this.param.id, null).then(response => {
+          setTimeout(() => {
+            this.isSyncField = false
+            this.initField()
+            // tips
+            let msg = ''
+            let type = ''
+            if (response.data.mode === 0) {
+              msg = this.$t('dataset.sync_success')
+              type = 'success'
+            } else {
+              msg = this.$t('dataset.sync_success_1')
+              type = 'warning'
+            }
+            this.$message({
+              type: type,
+              message: msg,
+              showClose: true
+            })
+          }, 500)
         })
       }).catch(() => {
       })

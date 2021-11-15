@@ -10,13 +10,17 @@
     :placeholder="$t(options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
     @change="changeValue"
+    @focus="setOptionWidth"
   >
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"
+      :style="{width:selectOptionWidth}"
       :label="item[options.attrs.label]"
       :value="item[options.attrs.value]"
-    />
+    >
+      <span :title="item[options.attrs.label]" style="display:inline-block;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ item[options.attrs.label] }}</span>
+    </el-option>
   </el-select>
 
 </template>
@@ -43,7 +47,8 @@ export default {
   data() {
     return {
       options: null,
-      showNumber: false
+      showNumber: false,
+      selectOptionWidth: 0
     }
   },
   computed: {
@@ -118,6 +123,12 @@ export default {
           id: item,
           text: item
         }
+      })
+    },
+    setOptionWidth(event) {
+    // 下拉框弹出时，设置弹框的宽度
+      this.$nextTick(() => {
+        this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
       })
     }
 

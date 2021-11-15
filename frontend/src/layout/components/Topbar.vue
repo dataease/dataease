@@ -62,7 +62,6 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <theme-picker v-show="false" ref="de-theme" />
   </div>
 
 </template>
@@ -76,20 +75,22 @@ import Notification from '@/components/Notification'
 import bus from '@/utils/bus'
 import LangSelect from '@/components/LangSelect'
 import { getSysUI } from '@/utils/auth'
-import ThemePicker from '@/components/ThemePicker'
+import { pluginLoaded } from '@/api/user'
+import { initTheme } from '@/utils/ThemeUtil'
 export default {
   name: 'Topbar',
   components: {
     AppLink,
     Notification,
-    LangSelect,
-    ThemePicker
+    LangSelect
+
   },
   data() {
     return {
       uiInfo: null,
       logoUrl: null,
-      axiosFinished: false
+      axiosFinished: false,
+      isPluginLoaded: false
     }
   },
 
@@ -147,7 +148,6 @@ export default {
 
   mounted() {
     this.initCurrentRoutes()
-    bus.$on('set-theme-info', this.setThemeInfo)
     bus.$on('set-top-menu-info', this.setTopMenuInfo)
     bus.$on('set-top-menu-active-info', this.setTopMenuActiveInfo)
     bus.$on('set-top-text-info', this.setTopTextInfo)
@@ -155,6 +155,12 @@ export default {
   },
   created() {
     this.loadUiInfo()
+  },
+  beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+      if (this.isPluginLoaded) { initTheme() }
+    })
   },
   methods: {
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单
@@ -259,20 +265,17 @@ export default {
           })
         }
 
-        if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
+        /* if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
           if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
             document.body.className = 'blackTheme'
           } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
             document.body.className = ''
           }
-        }
+        } */
         this.axiosFinished = true
       })
     },
-    setThemeInfo(val) {
-      // console.log('切换的主题颜色是：' + val)
-      this.$refs['de-theme'] && this.$refs['de-theme'].switch && this.$refs['de-theme'].switch(val)
-    },
+
     setTopMenuInfo(val) {
       this.loadUiInfo()
     },

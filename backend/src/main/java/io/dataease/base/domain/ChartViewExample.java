@@ -454,6 +454,206 @@ public class ChartViewExample {
             return (Criteria) this;
         }
 
+        public Criteria andRenderIsNull() {
+            addCriterion("render is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderIsNotNull() {
+            addCriterion("render is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderEqualTo(String value) {
+            addCriterion("render =", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotEqualTo(String value) {
+            addCriterion("render <>", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderGreaterThan(String value) {
+            addCriterion("render >", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderGreaterThanOrEqualTo(String value) {
+            addCriterion("render >=", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderLessThan(String value) {
+            addCriterion("render <", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderLessThanOrEqualTo(String value) {
+            addCriterion("render <=", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderLike(String value) {
+            addCriterion("render like", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotLike(String value) {
+            addCriterion("render not like", value, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderIn(List<String> values) {
+            addCriterion("render in", values, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotIn(List<String> values) {
+            addCriterion("render not in", values, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderBetween(String value1, String value2) {
+            addCriterion("render between", value1, value2, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andRenderNotBetween(String value1, String value2) {
+            addCriterion("render not between", value1, value2, "render");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountIsNull() {
+            addCriterion("result_count is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountIsNotNull() {
+            addCriterion("result_count is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountEqualTo(Integer value) {
+            addCriterion("result_count =", value, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountNotEqualTo(Integer value) {
+            addCriterion("result_count <>", value, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountGreaterThan(Integer value) {
+            addCriterion("result_count >", value, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("result_count >=", value, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountLessThan(Integer value) {
+            addCriterion("result_count <", value, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountLessThanOrEqualTo(Integer value) {
+            addCriterion("result_count <=", value, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountIn(List<Integer> values) {
+            addCriterion("result_count in", values, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountNotIn(List<Integer> values) {
+            addCriterion("result_count not in", values, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountBetween(Integer value1, Integer value2) {
+            addCriterion("result_count between", value1, value2, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultCountNotBetween(Integer value1, Integer value2) {
+            addCriterion("result_count not between", value1, value2, "resultCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeIsNull() {
+            addCriterion("result_mode is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeIsNotNull() {
+            addCriterion("result_mode is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeEqualTo(String value) {
+            addCriterion("result_mode =", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeNotEqualTo(String value) {
+            addCriterion("result_mode <>", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeGreaterThan(String value) {
+            addCriterion("result_mode >", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeGreaterThanOrEqualTo(String value) {
+            addCriterion("result_mode >=", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeLessThan(String value) {
+            addCriterion("result_mode <", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeLessThanOrEqualTo(String value) {
+            addCriterion("result_mode <=", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeLike(String value) {
+            addCriterion("result_mode like", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeNotLike(String value) {
+            addCriterion("result_mode not like", value, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeIn(List<String> values) {
+            addCriterion("result_mode in", values, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeNotIn(List<String> values) {
+            addCriterion("result_mode not in", values, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeBetween(String value1, String value2) {
+            addCriterion("result_mode between", value1, value2, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andResultModeNotBetween(String value1, String value2) {
+            addCriterion("result_mode not between", value1, value2, "resultMode");
+            return (Criteria) this;
+        }
+
         public Criteria andTitleIsNull() {
             addCriterion("title is null");
             return (Criteria) this;

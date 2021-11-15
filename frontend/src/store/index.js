@@ -59,9 +59,17 @@ const data = {
     // 和当前组件联动的目标组件
     targetLinkageInfo: [],
     // 当前仪表板联动 下钻 上卷等信息
-    nowPanelTrackInfo: {},
+    nowPanelTrackInfo: {}, // 当前仪表板联动 下钻 上卷等信息
+
+    nowPanelJumpInfo: {}, // 当前仪表板的跳转信息基础信息
+
+    nowPanelJumpInfoTargetPanel: {}, // 当前仪表板的跳转信息(只包括仪表板)
+
     // 拖拽的组件信息
-    dragComponentInfo: null
+    dragComponentInfo: null,
+
+    // 仪表板组件间隙大小 px
+    componentGap: 5
   },
   mutations: {
     ...animation.mutations,
@@ -188,7 +196,12 @@ const data = {
     // 添加联动 下钻 等过滤组件
     addViewTrackFilter(state, data) {
       const viewId = data.viewId
-      const trackInfo = state.nowPanelTrackInfo
+      let trackInfo
+      if (data.option === 'linkage') {
+        trackInfo = state.nowPanelTrackInfo
+      } else {
+        trackInfo = state.nowPanelJumpInfoTargetPanel
+      }
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
         if (!element.type || element.type !== 'view') continue
@@ -262,6 +275,12 @@ const data = {
     },
     setNowPanelTrackInfo(state, trackInfo) {
       state.nowPanelTrackInfo = trackInfo
+    },
+    setNowPanelJumpInfo(state, jumpInfo) {
+      state.nowPanelJumpInfo = jumpInfo.baseJumpInfoMap
+    },
+    setNowTargetPanelJumpInfo(state, jumpInfo) {
+      state.nowPanelJumpInfoTargetPanel = jumpInfo.baseJumpInfoPanelMap
     },
     clearPanelLinkageInfo(state) {
       state.componentData.forEach(item => {

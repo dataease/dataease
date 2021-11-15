@@ -23,6 +23,8 @@ import './utils/dialog'
 import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
 import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
 import '@/components/canvas/custom-component' // 注册自定义组件
+
+import '@/utils/DateUtil'
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
@@ -79,6 +81,12 @@ Vue.config.productionTip = false
 
 import vueToPdf from 'vue-to-pdf'
 Vue.use(vueToPdf)
+
+import VueVideoPlayer from 'vue-video-player'
+
+import 'video.js/dist/video-js.css'
+
+Vue.use(VueVideoPlayer)
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
   if (this.$store.state.user.user.isAdmin) {

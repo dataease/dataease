@@ -27,13 +27,37 @@
     <div class="widget-subject">
       <div class="filter-header">
         <div class="filter-header-text">
-          <span>图片</span>
+          <span>多媒体</span>
         </div>
       </div>
 
       <div class="filter-widget-content">
         <div
           v-for="(item, index) in pictureList"
+          :key="index"
+          :data-id="item.id"
+          :data-index="index"
+          draggable
+          :class="'filter-widget '+ (item.defaultClass || '')"
+        >
+          <div class="filter-widget-icon">
+            <i :class="(item.icon || 'el-icon-setting') + ' widget-icon-i'" />
+          </div>
+          <div class="filter-widget-text">{{ item.label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget-subject">
+      <div class="filter-header">
+        <div class="filter-header-text">
+          <span>其他</span>
+        </div>
+      </div>
+
+      <div class="filter-widget-content">
+        <div
+          v-for="(item, index) in dateList"
           :key="index"
           :data-id="item.id"
           :data-index="index"
@@ -55,7 +79,7 @@
 </template>
 
 <script>
-import componentList, { assistList, pictureList } from '@/components/canvas/custom-component/component-list'
+import componentList, { assistList, pictureList, dateList } from '@/components/canvas/custom-component/component-list'
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
@@ -68,7 +92,8 @@ export default {
   data() {
     return {
       assistList,
-      pictureList
+      pictureList,
+      dateList
     }
   },
   computed: {
@@ -204,7 +229,7 @@ export default {
   }
 
   .filter-widget {
-    width: 100px;
+    width: 107px;
     height: 36px;
     position: relative;
     float: left;

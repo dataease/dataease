@@ -18,7 +18,7 @@
     <div v-if="!canEdit" :style="{ verticalAlign: element.style.verticalAlign }" @dblclick="setEdit" v-html="element.propValue" />
   </div>
   <div v-else class="v-text">
-    <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="element.propValue" />
+    <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="textInfo" />
   </div>
 </template>
 
@@ -56,6 +56,13 @@ export default {
     }
   },
   computed: {
+    textInfo() {
+      if (this.element && this.element.hyperlinks && this.element.hyperlinks.enable) {
+        return "<a title='" + this.element.hyperlinks.content + "' target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
+      } else {
+        return this.element.propValue
+      }
+    }
   },
 
   watch: {
@@ -123,9 +130,9 @@ export default {
     selectText(element) {
       const selection = window.getSelection()
       const range = document.createRange()
-      range.selectNodeContents(element)
-      selection.removeAllRanges()
-      selection.addRange(range)
+      // range.selectNodeContents(element)
+      // selection.removeAllRanges()
+      // selection.addRange(range)
     },
 
     removeSelectText() {
@@ -147,6 +154,7 @@ export default {
         width: 100%;
         height: 100%;
         outline: none;
+
     }
 
     .canEdit {
@@ -154,4 +162,9 @@ export default {
         height: 100%;
     }
 }
+::v-deep a:hover {
+  text-decoration: underline!important;
+  color: blue!important;
+}
+
 </style>

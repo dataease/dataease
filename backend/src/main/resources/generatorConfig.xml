@@ -65,8 +65,11 @@
         <!--要生成的数据库表 -->
 
 
-        <table tableName="datasource"/>
-
+<!--        <table tableName="panel_link_jump"/>-->
+<!--        <table tableName="panel_link_jump_info"/>-->
+<!--        <table tableName="panel_link_jump_target_view_info"/>-->
+        <table tableName="v_auth_model"/>
+        <table tableName="panel_link_mapping"/>
 <!--        <table tableName="sys_dict_item"/>-->
 <!--        <table tableName="dataset_table_field"/>-->
 <!--        <table tableName="v_chart">-->

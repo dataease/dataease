@@ -30,7 +30,7 @@ public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<Pane
     @ApiModelProperty("源仪表板名称")
     private String sourcePanelName;
     @ApiModelProperty("子节点")
-    private List<PanelGroupDTO> children = new ArrayList<>();
+    private List<PanelGroupDTO> children;
 
 
 }

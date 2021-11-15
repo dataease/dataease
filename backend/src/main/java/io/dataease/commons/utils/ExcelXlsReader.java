@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.datasource.dto.TableFiled;
+import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
 import org.apache.poi.hssf.eventusermodel.*;
@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
  * @desc 用于解决.xls2003版本大数据量问题
  **/
 public class ExcelXlsReader implements HSSFListener {
-
-    public ExcelReaderUtil excelReaderUtil = new ExcelReaderUtil();
 
     private int minColums = -1;
 
@@ -333,7 +331,10 @@ public class ExcelXlsReader implements HSSFListener {
                     totalSheets.add(excelSheetData);
                 }else {
                     List<String> tmp = new ArrayList<>(cellList);
-                    totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    if(totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().size() < 100){
+                        totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    }
+
                     totalRows++;
                 }
             }

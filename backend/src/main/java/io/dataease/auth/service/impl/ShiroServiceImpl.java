@@ -41,12 +41,21 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/link/**", ANON);
         filterChainDefinitionMap.put("/index.html", ANON);
         filterChainDefinitionMap.put("/link.html", ANON);
+        filterChainDefinitionMap.put("/xggznb/**", ANON);
+
+
+        //获取主题信息
+        filterChainDefinitionMap.put("/plugin/theme/themes", ANON);
+        filterChainDefinitionMap.put("/plugin/theme/items/**", ANON);
 
         //验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
         filterChainDefinitionMap.put("/api/map/areaEntitys/**", ANON);
+        filterChainDefinitionMap.put("/dataset/field/fieldValues/**", ANON);
+        filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
+
         //未读消息数量
-        filterChainDefinitionMap.put("/api/sys_msg/unReadCount", ANON);
+        // filterChainDefinitionMap.put("/api/sys_msg/unReadCount/**", ANON);
 
         filterChainDefinitionMap.put("/**/*.json", ANON);
         filterChainDefinitionMap.put("/system/ui/**", ANON);
@@ -56,10 +65,12 @@ public class ShiroServiceImpl implements ShiroService {
         // filterChainDefinitionMap.put("/axios.map", ANON);
 
         filterChainDefinitionMap.put("/api/auth/login", ANON);
-        // filterChainDefinitionMap.put("/api/auth/logout", ANON);
+        filterChainDefinitionMap.put("/api/auth/isPluginLoaded", ANON);
+        filterChainDefinitionMap.put("/system/requestTimeOut", ANON);
         filterChainDefinitionMap.put("/api/auth/validateName", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenLdap", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenOidc", ANON);
+        filterChainDefinitionMap.put("/api/auth/getPublicKey", ANON);
         filterChainDefinitionMap.put("/api/pluginCommon/component/*", ANON);
         filterChainDefinitionMap.put("/plugin/oidc/authInfo", ANON);
         filterChainDefinitionMap.put("/sso/callBack*", ANON);

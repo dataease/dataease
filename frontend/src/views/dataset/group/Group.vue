@@ -770,11 +770,14 @@ export default {
       }
     },
     saveMoveDs() {
-      this.dsForm.sceneId = this.tDs.id
+      const oldSceneId = this.dsForm.sceneId
+      const newSceneId = this.tDs.id
+      this.dsForm.sceneId = newSceneId
       this.dsForm.isRename = true
       alter(this.dsForm).then(res => {
         this.closeMoveDs()
-        this.refreshNodeBy(this.dsForm.sceneId)
+        this.refreshNodeBy(oldSceneId)
+        this.refreshNodeBy(newSceneId)
       })
     },
     targetDs(val) {

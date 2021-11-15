@@ -15,7 +15,7 @@ export const DEFAULT_SIZE = {
   barGap: 0.4,
   lineWidth: 1,
   lineType: 'solid',
-  lineSymbol: 'emptyCircle',
+  lineSymbol: 'circle',
   lineSymbolSize: 4,
   lineSmooth: false,
   lineArea: false,
@@ -30,6 +30,7 @@ export const DEFAULT_SIZE = {
   tableItemFontSize: 12,
   tableTitleHeight: 36,
   tableItemHeight: 36,
+  tablePageSize: '10',
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
@@ -86,7 +87,7 @@ export const DEFAULT_LEGEND_STYLE = {
   hPosition: 'center',
   vPosition: 'bottom',
   orient: 'horizontal',
-  icon: 'rect',
+  icon: 'circle',
   textStyle: {
     color: '#333333',
     fontSize: '12'
@@ -119,7 +120,8 @@ export const DEFAULT_XAXIS_STYLE = {
     auto: true,
     min: null,
     max: null,
-    split: null
+    split: null,
+    splitCount: null
   }
 }
 export const DEFAULT_YAXIS_STYLE = {
@@ -149,7 +151,8 @@ export const DEFAULT_YAXIS_STYLE = {
     auto: true,
     min: null,
     max: null,
-    split: null
+    split: null,
+    splitCount: null
   }
 }
 export const DEFAULT_YAXIS_EXT_STYLE = {
@@ -179,7 +182,8 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     auto: true,
     min: null,
     max: null,
-    split: null
+    split: null,
+    splitCount: null
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {
@@ -850,3 +854,16 @@ export const BASE_MIX = {
     }
   ]
 }
+
+export const COLOR_PANEL = [
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  '#999999',
+  '#00008b',
+  '#000000'
+]

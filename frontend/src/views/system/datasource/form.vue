@@ -39,10 +39,10 @@
           <el-radio v-model="form.configuration.connectionType" label="serviceName">{{ $t('datasource.oracle_service_name') }}</el-radio>
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')"  prop="configuration.username">
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')">
           <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')"  prop="configuration.password">
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')">
           <el-input v-model="form.configuration.password" autocomplete="off" show-password />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.user_name')"  >
@@ -59,14 +59,14 @@
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')" prop="configuration.port" >
           <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
         </el-form-item>
-        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'">
+        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'">
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
             {{ $t('datasource.get_schema') }}
           </el-button>
         </el-form-item>
 
-        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg'" :label="$t('datasource.schema')">
-          <el-select v-model="form.configuration.schema" filterable :placeholder="$t('datasource.please_choose_schema')" class="select-width">
+        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'" :label="$t('datasource.schema')">
+          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')" class="select-width">
             <el-option
               v-for="item in schemas"
               :key="item"
@@ -86,15 +86,6 @@
             </el-form-item>
             <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
               <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0" />
-            </el-form-item>
-            <el-form-item :label="$t('datasource.max_idle_time')" prop="configuration.maxIdleTime">
-              <el-input v-model="form.configuration.maxIdleTime" autocomplete="off" type="number" min="0" />
-            </el-form-item>
-            <el-form-item :label="$t('datasource.acquire_increment')" prop="configuration.acquireIncrement">
-              <el-input v-model="form.configuration.acquireIncrement" autocomplete="off" type="number" min="0" />
-            </el-form-item>
-            <el-form-item :label="$t('datasource.connect_timeout')" prop="configuration.connectTimeout">
-              <el-input v-model="form.configuration.connectTimeout" autocomplete="off" type="number" min="0" />
             </el-form-item>
 
           </el-collapse-item>
@@ -161,13 +152,16 @@ export default {
       },
       allTypes: [
         { name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        { name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
         { name: 'oracle', label: 'Oracle', type: 'jdbc'},
         { name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
         { name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: '' },
         { name: 'es', label: 'Elasticsearch', type: 'es' },
         { name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
         { name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
-        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' }
+        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' },
+        { name: 'redshift', label: 'AWS Redshift', type: 'jdbc' },
+        { name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: '' }
         ],
       schemas: [],
       canEdit: false,
@@ -229,8 +223,7 @@ export default {
         this.$message.error(this.$t('datasource.port_no_less_then_0'))
         return
       }
-      if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0 || this.form.configuration.maxIdleTime < 0 ||
-        this.form.configuration.acquireIncrement < 0 || this.form.configuration.idleConnectionTestPeriod < 0 || this.form.configuration.connectTimeout < 0) {
+      if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0) {
         this.$message.error(this.$t('datasource.no_less_then_0'))
         return
       }
@@ -243,14 +236,14 @@ export default {
             $confirm(this.$t('datasource.edit_datasource_msg'), () => {
               method(form).then(res => {
                 this.$success(this.$t('commons.save_success'))
-                this.refreshTree()
+                this.refreshType(form)
                 this.backToList()
               })
             })
           } else {
             method(form).then(res => {
               this.$success(this.$t('commons.save_success'))
-              this.refreshTree()
+              this.refreshType(form)
               this.backToList()
             })
           }
@@ -293,7 +286,7 @@ export default {
               } else {
                 this.$error(this.$t(res.message))
               }
-              this.refreshTree()
+              this.refreshType(data)
             }).catch(res => {
               this.$error(res.message)
             })
@@ -323,10 +316,9 @@ export default {
     },
     backToList() {
       this.$emit('switch-component', { })
-      // this.$router.push({ name: 'datasource' })
     },
-    refreshTree() {
-      this.$emit('refresh-left-tree')
+    refreshType(form) {
+      this.$emit('refresh-type', form)
     }
   }
 }

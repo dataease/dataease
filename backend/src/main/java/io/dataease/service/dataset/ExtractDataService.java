@@ -9,18 +9,18 @@ import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
-import io.dataease.datasource.constants.DatasourceTypes;
-import io.dataease.datasource.dto.*;
-import io.dataease.datasource.provider.DatasourceProvider;
-import io.dataease.datasource.provider.JdbcProvider;
-import io.dataease.datasource.provider.ProviderFactory;
-import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.datasource.service.DatasourceService;
+import io.dataease.commons.constants.DatasourceTypes;
+import io.dataease.provider.datasource.DatasourceProvider;
+import io.dataease.provider.datasource.JdbcProvider;
+import io.dataease.provider.ProviderFactory;
+import io.dataease.controller.request.datasource.DatasourceRequest;
+import io.dataease.dto.datasource.*;
+import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.exception.DataEaseException;
 import io.dataease.listener.util.CacheUtils;
-import io.dataease.provider.QueryProvider;
+import io.dataease.provider.query.QueryProvider;
 import io.dataease.service.message.DeMsgutil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -1105,13 +1105,12 @@ public class ExtractDataService {
         } catch (Exception e) {
             return false;
         }
-
         HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
         HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
         clientBuilder.setConnectionTimeout(1);
         clientBuilder.setCredentials(user, passwd);
-        CloseableHttpClient httpClient = clientBuilder.build();
         try {
+            CloseableHttpClient httpClient = clientBuilder.build();
             HttpResponse httpResponse = httpClient.execute(getMethod);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode != -1 && statusCode < 400) {

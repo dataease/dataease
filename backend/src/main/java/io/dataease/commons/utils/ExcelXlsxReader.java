@@ -1,5 +1,5 @@
 package io.dataease.commons.utils;
-import io.dataease.datasource.dto.TableFiled;
+import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
@@ -319,6 +319,7 @@ public class ExcelXlsxReader extends DefaultHandler {
         nextDataType = CellDataType.NUMBER; //cellType为空，则表示该单元格类型为数字
         formatIndex = -1;
         formatString = null;
+        isDateFormat = false;
         String cellType = attributes.getValue("t"); //单元格类型
         if ("b".equals(cellType)) { //处理布尔值
             nextDataType = CellDataType.BOOL;
@@ -339,13 +340,12 @@ public class ExcelXlsxReader extends DefaultHandler {
             formatIndex = style.getDataFormat();
             formatString = style.getDataFormatString();
             short format = this.formatIndex;
-            if (format == 14 || format == 31 || format == 57 ||format == 59||
-                    format == 58 || (176 < format && format < 178)
-                    || (182 <= format && format <= 196) ||
-                    (210 <= format && format <= 213) || (208 == format))
+            if ( (14 <= format && format <= 17) || format == 20 || format == 22 || format == 31 || format == 35 || format == 45 || format == 46 || format == 47 || (57 <= format && format <= 59)
+                    || (175 < format && format < 178) || (182 <= format && format <= 196) || (210 <= format && format <= 213) || (208 == format))
             { // 日期
                 isDateFormat = true;
             }
+
         }
 
     }
@@ -399,8 +399,12 @@ public class ExcelXlsxReader extends DefaultHandler {
                     thisStr = value;
                 }
                 thisStr = thisStr.replace("_", "").trim();
-                if(isDateFormat){
+
+                if(isDateFormat ){
                     type = "DATETIME";isDateFormat = false;
+                    if(formatString != null && formatString.contains("%")){
+                        type = getType(thisStr);
+                    }
                 }else {
                     type = getType(thisStr);
                 }

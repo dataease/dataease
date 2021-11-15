@@ -131,6 +131,14 @@
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
+                <span v-if="data.nodeType==='panel'" @click.stop>
+                  <el-button
+                    icon="el-icon-edit"
+                    type="text"
+                    size="small"
+                    @click="edit(data, node)"
+                  />
+                </span>
                 <span style="margin-left: 12px;" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickMore">
                     <span class="el-dropdown-link">
@@ -232,6 +240,7 @@ import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
 import { addGroup, delGroup, groupTree, defaultTree, findOne, panelSave } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
@@ -631,6 +640,8 @@ export default {
           //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
           temp.refreshTime = (temp.refreshTime || 5)
+          temp.refreshViewLoading = (temp.refreshViewLoading || false)
+          temp.refreshUnit = (temp.refreshUnit || 'minute')
 
           this.$store.commit('setCanvasStyle', temp)
           this.$store.dispatch('panel/setPanelInfo', data)
@@ -639,6 +650,13 @@ export default {
           getPanelAllLinkageInfo(data.id).then(rsp => {
             this.$store.commit('setNowPanelTrackInfo', rsp.data)
           })
+
+          // 刷新跳转信息
+          queryPanelJumpInfo(data.id).then(rsp => {
+            this.$store.commit('setNowPanelJumpInfo', rsp.data)
+          })
+
+          bus.$emit('set-panel-show-type', 0)
         })
       }
       if (node.expanded) {
@@ -793,6 +811,9 @@ export default {
     },
     searchTypeClick(searchTypeInfo) {
       this.searchType = searchTypeInfo
+    },
+    editFromPanelViewShow() {
+      this.edit(this.lastActiveNodeData, this.lastActiveNode)
     }
   }
 }

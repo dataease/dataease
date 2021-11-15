@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2459092 */
-  src: url('iconfont.woff2?t=1633678290478') format('woff2'),
-       url('iconfont.woff?t=1633678290478') format('woff'),
-       url('iconfont.ttf?t=1633678290478') format('truetype');
+  src: url('iconfont.woff2?t=1636358286475') format('woff2'),
+       url('iconfont.woff?t=1636358286475') format('woff'),
+       url('iconfont.ttf?t=1636358286475') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,46 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-video:before {
+  content: "\e625";
+}
+
+.icon-xuanfuanniufadongtai:before {
+  content: "\e6e8";
+}
+
+.icon-xifuxuanze:before {
+  content: "\e697";
+}
+
+.icon-margin:before {
+  content: "\e902";
+}
+
+.icon-padding:before {
+  content: "\e91b";
+}
+
+.icon-tabs:before {
+  content: "\e9a8";
+}
+
+.icon-shijian:before {
+  content: "\e665";
+}
+
+.icon-shijiangeshizhuanhuan:before {
+  content: "\e6fb";
+}
+
+.icon-chaolianjie:before {
+  content: "\e9b2";
+}
+
+.icon-kexuejishu:before {
+  content: "\e60f";
 }
 
 .icon-shujujuzhen:before {
@@ -35,10 +75,6 @@
 
 .icon-xuanfuanniu:before {
   content: "\e8e6";
-}
-
-.icon-tabs:before {
-  content: "\e62a";
 }
 
 .icon-xiyu:before {

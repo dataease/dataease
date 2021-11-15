@@ -29,6 +29,8 @@ public interface AuthUserService {
 
     Boolean supportOidc();
 
+    Boolean pluginLoaded();
+
 
 
 }

@@ -16,17 +16,17 @@ import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.datasource.constants.DatasourceTypes;
-import io.dataease.datasource.dto.TableFiled;
-import io.dataease.datasource.provider.DatasourceProvider;
-import io.dataease.datasource.provider.JdbcProvider;
-import io.dataease.datasource.provider.ProviderFactory;
-import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.commons.constants.DatasourceTypes;
+import io.dataease.dto.datasource.TableFiled;
+import io.dataease.provider.datasource.DatasourceProvider;
+import io.dataease.provider.datasource.JdbcProvider;
+import io.dataease.provider.ProviderFactory;
+import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.dataset.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
-import io.dataease.provider.DDLProvider;
-import io.dataease.provider.QueryProvider;
+import io.dataease.provider.query.DDLProvider;
+import io.dataease.provider.query.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +87,8 @@ public class DataSetTableService {
     private DatasetTableTaskLogMapper datasetTableTaskLogMapper;
     @Resource
     private ExtDataSetGroupMapper extDataSetGroupMapper;
+    @Resource
+    private DatasetTableFieldMapper datasetTableFieldMapper;
     private static String lastUpdateTime = "${__last_update_time__}";
     private static String currentUpdateTime = "${__current_update_time__}";
 
@@ -186,7 +188,7 @@ public class DataSetTableService {
             if (datasetTable.getEditType() == 0) {
                 List<String> newFields = sheet.getFields().stream().map(TableFiled::getRemarks).collect(Collectors.toList());
                 if (!oldFields.equals(newFields)) {
-                    DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
+                    DataEaseException.throwException(Translator.get("i18n_excel_colume_inconsistent"));
                 }
                 oldFields = newFields;
             }
@@ -242,7 +244,7 @@ public class DataSetTableService {
                 if (update == 1) {
                     if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
                         // 删除所有字段，重新抽象
-                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
+//                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
                         saveTableField(datasetTable);
                     }
                 }
@@ -1035,30 +1037,51 @@ public class DataSetTableService {
             qp = ProviderFactory.getQueryProvider(ds.getType());
         }
         if (CollectionUtils.isNotEmpty(fields)) {
+            List<String> originNameList = new ArrayList<>();
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
+                System.out.println(new Gson().toJson(filed));
+                originNameList.add(filed.getFieldName());
+
                 DatasetTableField datasetTableField = DatasetTableField.builder().build();
-                datasetTableField.setTableId(datasetTable.getId());
-                datasetTableField.setOriginName(filed.getFieldName());
-                datasetTableField.setName(filed.getRemarks());
-                datasetTableField.setDataeaseName(DorisTableUtils.columnName(filed.getFieldName()));
-                datasetTableField.setType(filed.getFieldType());
-                if (ObjectUtils.isEmpty(ds)) {
-                    datasetTableField.setDeType(transFieldType(filed.getFieldType()));
-                    datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
+
+                // 物理字段名设定为唯一，查询当前数据集下是否已存在该字段，存在则update，不存在则insert
+                DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+                // 字段名一致，认为字段没有改变
+                datasetTableFieldExample.createCriteria().andTableIdEqualTo(datasetTable.getId()).andOriginNameEqualTo(filed.getFieldName());
+                List<DatasetTableField> datasetTableFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+                if (CollectionUtils.isNotEmpty(datasetTableFields)) {
+                    datasetTableField.setId(datasetTableFields.get(0).getId());
+                    datasetTableField.setOriginName(filed.getFieldName());
+                    datasetTableField.setType(filed.getFieldType());
+                    datasetTableField.setSize(filed.getFieldSize());
                 } else {
-                    Integer fieldType = qp.transFieldType(filed.getFieldType());
-                    datasetTableField.setDeType(fieldType == 4 ? 2 : fieldType);
-                    datasetTableField.setDeExtractType(fieldType);
+                    datasetTableField.setTableId(datasetTable.getId());
+                    datasetTableField.setOriginName(filed.getFieldName());
+                    datasetTableField.setName(filed.getRemarks());
+                    datasetTableField.setDataeaseName(DorisTableUtils.columnName(filed.getFieldName()));
+                    datasetTableField.setType(filed.getFieldType());
+                    if (ObjectUtils.isEmpty(ds)) {
+                        datasetTableField.setDeType(transFieldType(filed.getFieldType()));
+                        datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
+                    } else {
+                        Integer fieldType = qp.transFieldType(filed.getFieldType());
+                        datasetTableField.setDeType(fieldType == 4 ? 2 : fieldType);
+                        datasetTableField.setDeExtractType(fieldType);
+                    }
+                    datasetTableField.setSize(filed.getFieldSize());
+                    datasetTableField.setChecked(true);
+                    datasetTableField.setColumnIndex(i);
+                    datasetTableField.setLastSyncTime(syncTime);
+                    datasetTableField.setExtField(0);
+                    datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
                 }
-                datasetTableField.setSize(filed.getFieldSize());
-                datasetTableField.setChecked(true);
-                datasetTableField.setColumnIndex(i);
-                datasetTableField.setLastSyncTime(syncTime);
-                datasetTableField.setExtField(0);
-                datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
                 dataSetTableFieldsService.save(datasetTableField);
             }
+            // delete 数据库中多余的字段
+            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+            datasetTableFieldExample.createCriteria().andTableIdEqualTo(datasetTable.getId()).andExtFieldEqualTo(0).andOriginNameNotIn(originNameList);
+            datasetTableFieldMapper.deleteByExample(datasetTableFieldExample);
         }
     }
 
@@ -1635,5 +1658,11 @@ public class DataSetTableService {
         } else {
             return true;
         }
+    }
+
+    public DatasetTable syncDatasetTableField(String id) throws Exception {
+        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(id);
+        saveTableField(datasetTable);
+        return datasetTable;
     }
 }

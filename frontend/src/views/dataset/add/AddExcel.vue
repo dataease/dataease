@@ -436,7 +436,7 @@ export default {
   }
 
   .el-header {
-    background-color: var(--MainContentBG, rgb(241, 243, 248));
+    background-color: var(--ContentBG, rgb(241, 243, 248));
     color: var(--TextActive, #333);
     line-height: 30px;
   }

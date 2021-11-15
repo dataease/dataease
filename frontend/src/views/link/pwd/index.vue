@@ -38,7 +38,6 @@
 
 <script>
 import { validatePwd } from '@/api/link'
-import { encrypt } from '@/utils/rsaEncrypt'
 
 export default {
   name: 'LinkPwd',
@@ -89,7 +88,8 @@ export default {
       this.$refs.pwdForm.validate(valid => {
         if (!valid) return false
         const param = {
-          password: encrypt(this.form.password),
+          /* password: encrypt(this.form.password), */
+          password: this.form.password,
           resourceId: this.resourceId
         }
         validatePwd(param).then(res => {

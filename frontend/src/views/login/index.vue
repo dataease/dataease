@@ -1,5 +1,5 @@
 <template>
-  <div class="login-background">
+  <div v-show="contentShow" class="login-background">
     <div class="login-container">
       <el-row v-loading="loading" type="flex">
         <el-col :span="12">
@@ -57,14 +57,16 @@
       </el-row>
     </div>
     <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
+
   </div>
 </template>
 
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
+import { initTheme } from '@/utils/ThemeUtil'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import Cookies from 'js-cookie'
 export default {
@@ -88,7 +90,9 @@ export default {
       loginImageUrl: null,
       loginLogoUrl: null,
       axiosFinished: false,
-      loginTypes: [0]
+      loginTypes: [0],
+      isPluginLoaded: false,
+      contentShow: false
     }
   },
   computed: {
@@ -105,6 +109,14 @@ export default {
     }
   },
   beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+      this.isPluginLoaded && initTheme()
+      this.contentShow = true
+    }).catch(() => {
+      this.contentShow = true
+    })
+
     ldapStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(1)
@@ -116,7 +128,18 @@ export default {
         this.loginTypes.push(2)
       }
     })
+    getPublicKey().then(res => {
+      if (res.success && res.data) {
+        // 保存公钥
+        localStorage.setItem('publicKey', res.data)
+      }
+    })
   },
+
+  mounted() {
+    // this.loading = false
+  },
+
   created() {
     this.$store.dispatch('user/getUI').then(() => {
       // const uiLists = this.$store.state.user.uiInfo
@@ -133,6 +156,7 @@ export default {
     }
     this.clearOidcMsg()
   },
+
   methods: {
     clearOidcMsg() {
       Cookies.remove('OidcError')
@@ -146,14 +170,13 @@ export default {
       if (this.uiInfo['ui.loginLogo'] && this.uiInfo['ui.loginLogo'].paramValue) {
         this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
       }
-      if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
-        // this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
+      /* if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
         if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
           document.body.className = 'blackTheme'
         } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
           document.body.className = ''
         }
-      }
+      } */
     },
 
     handleLogin() {
@@ -162,11 +185,12 @@ export default {
         if (valid) {
           this.loading = true
           const user = {
-            username: this.loginForm.username,
-            password: this.loginForm.password,
+            username: encrypt(this.loginForm.username),
+            password: encrypt(this.loginForm.password),
             loginType: this.loginForm.loginType
           }
-          user.password = encrypt(user.password)
+          const publicKey = localStorage.getItem('publicKey')
+          console.log(publicKey)
           this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
@@ -208,7 +232,7 @@ export default {
   min-width: 900px;
   width: 1280px;
   height: 520px;
-  background-color: var(--MainContentBG, #FFFFFF);
+  background-color: var(--ContentBG, #FFFFFF);
   @media only screen and (max-width: 1280px) {
     width: 900px;
     height: 380px;

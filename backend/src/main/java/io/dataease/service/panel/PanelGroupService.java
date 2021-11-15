@@ -4,6 +4,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
+import io.dataease.base.mapper.ext.ExtPanelLinkJumpMapper;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.TreeUtils;
@@ -55,6 +56,9 @@ public class PanelGroupService {
     private SysAuthService sysAuthService;
     @Resource
     private PanelViewService panelViewService;
+    @Resource
+    private ExtPanelLinkJumpMapper extPanelLinkJumpMapper;
+
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -115,7 +119,14 @@ public class PanelGroupService {
             newPanel.setId(panelId);
             newPanel.setCreateBy(AuthUtils.getUser().getUsername());
             panelGroupMapper.insertSelective(newPanel);
-        }  else if ("move".equals(request.getOptType())) {
+
+            try{
+                panelViewService.syncPanelViews(newPanel);
+            }catch (Exception e){
+                e.printStackTrace();
+                LOGGER.error("更新panelView出错panelId：{}" ,request.getId());
+            }        }
+        else if ("move".equals(request.getOptType())) {
             PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
             if(panelInfo.getPid().equalsIgnoreCase(request.getPid())){
                 DataEaseException.throwException(Translator.get("i18n_select_diff_folder"));
@@ -137,6 +148,7 @@ public class PanelGroupService {
             }
             panelGroupMapper.updateByPrimaryKeySelective(request);
         }
+
 
         //带有权限的返回
         PanelGroupRequest authRequest = new PanelGroupRequest();
@@ -174,6 +186,11 @@ public class PanelGroupService {
         storeService.removeByPanelId(id);
         shareService.delete(id, null);
         panelLinkService.deleteByResourceId(id);
+
+        //清理跳转信息
+        extPanelLinkJumpMapper.deleteJumpTargetViewInfoWithPanel(id);
+        extPanelLinkJumpMapper.deleteJumpInfoWithPanel(id);
+        extPanelLinkJumpMapper.deleteJumpWithPanel(id);
     }
 
 

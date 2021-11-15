@@ -1,5 +1,5 @@
 import { Liquid } from '@antv/g2plot'
-import { digToHex } from '@/views/chart/chart/util'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
 export function baseLiquid(plot, container, chart) {
@@ -8,7 +8,7 @@ export function baseLiquid(plot, container, chart) {
   let max, radius, outlineBorder, outlineDistance, waveLength, waveCount, bgColor, shape, labelContent, title
   if (chart.data) {
     if (chart.data.series.length > 0) {
-      value = chart.data.series[0].data[0].value
+      value = chart.data.series[0].data[0]
     }
   }
   let customAttr = {}
@@ -17,9 +17,8 @@ export function baseLiquid(plot, container, chart) {
     // color
     if (customAttr.color) {
       const c = JSON.parse(JSON.stringify(customAttr.color))
-      const alpha = digToHex(parseInt(c.alpha))
       c.colors.forEach(ele => {
-        colors.push(ele.concat(alpha))
+        colors.push(hexColorToRGBA(ele, c.alpha))
       })
     }
     // size
@@ -52,7 +51,7 @@ export function baseLiquid(plot, container, chart) {
   if (chart.customStyle) {
     customStyle = JSON.parse(chart.customStyle)
     if (customStyle.background) {
-      bgColor = customStyle.background.color.concat(digToHex(parseInt(customStyle.background.alpha)))
+      bgColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
     if (customStyle.text) {
       const t = JSON.parse(JSON.stringify(customStyle.text))
@@ -80,6 +79,7 @@ export function baseLiquid(plot, container, chart) {
       styleSheet: {
         brandColor: colors[0],
         paletteQualitative10: colors,
+        paletteQualitative20: colors,
         backgroundColor: bgColor
       }
     },
@@ -95,10 +95,9 @@ export function baseLiquid(plot, container, chart) {
       count: waveCount
     },
     statistic: {
-      title: title,
+      // title: title,
       content: labelContent
     }
   })
-  plot.render()
   return plot
 }

@@ -1,9 +1,9 @@
 package io.dataease.config;
 
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
-import io.dataease.commons.condition.LicStatusCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.*;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.*;
@@ -12,19 +12,17 @@ import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 @EnableOpenApi
 @Configuration
 @Import(BeanValidatorPluginsConfiguration.class)
-public class Knife4jConfiguration {
+public class Knife4jConfiguration implements BeanPostProcessor{
 
     private final OpenApiExtensionResolver openApiExtensionResolver;
 
-    @Value("${app.version}")
+    @Value("${version}")
     private String version;
 
 

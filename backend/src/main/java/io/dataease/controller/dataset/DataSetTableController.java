@@ -6,7 +6,7 @@ import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableIncrementalConfig;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.datasource.dto.TableFiled;
+import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.ExcelFileData;
 import io.dataease.service.dataset.DataSetTableService;
@@ -41,9 +41,9 @@ public class DataSetTableController {
     @ApiOperation("更新")
     @PostMapping("update")
     public void save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
-        if(datasetTable.getType().equalsIgnoreCase("excel")){
+        if (datasetTable.getType().equalsIgnoreCase("excel")) {
             dataSetTableService.saveExcel(datasetTable);
-        }else {
+        } else {
             dataSetTableService.save(datasetTable);
         }
     }
@@ -53,10 +53,10 @@ public class DataSetTableController {
     public void alter(@RequestBody DataSetTableRequest request) throws Exception {
         dataSetTableService.alter(request);
     }
-    
+
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
-    public void delete( @ApiParam(name = "id", value = "数据集ID", required = true)  @PathVariable String id) throws Exception {
+    public void delete(@ApiParam(name = "id", value = "数据集ID", required = true) @PathVariable String id) throws Exception {
         dataSetTableService.delete(id);
     }
 
@@ -132,9 +132,9 @@ public class DataSetTableController {
         return dataSetTableService.getDatasetDetail(id);
     }
 
-//    @ApiOperation("excel上传")
+    //    @ApiOperation("excel上传")
     @PostMapping("excel/upload")
-    public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId, @RequestParam("editType") Integer editType ) throws Exception {
+    public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId, @RequestParam("editType") Integer editType) throws Exception {
         return dataSetTableService.excelSaveAndParse(file, tableId, editType);
     }
 
@@ -148,5 +148,11 @@ public class DataSetTableController {
     @PostMapping("search")
     public List<DataSetTableDTO> search(@RequestBody DataSetTableRequest dataSetTableRequest) {
         return dataSetTableService.search(dataSetTableRequest);
+    }
+
+    @ApiOperation("数据集同步表结构")
+    @PostMapping("syncField/{id}")
+    public DatasetTable syncDatasetTableField(@PathVariable String id) throws Exception {
+        return dataSetTableService.syncDatasetTableField(id);
     }
 }

@@ -23,6 +23,8 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 
 @Api(tags = "系统：消息管理")
 @ApiSupport(order = 230)
@@ -35,6 +37,11 @@ public class MsgController {
 
     @ApiOperation("分页查询")
     @PostMapping("/list/{goPage}/{pageSize}")
+    @ApiImplicitParams({
+        @ApiImplicitParam(paramType="path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+        @ApiImplicitParam(paramType="path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+        @ApiImplicitParam(name = "msgRequest", value = "查询条件", required = true)
+    })
     public Pager<List<MsgGridDto>> messages(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody MsgRequest msgRequest) {
         Long userId = AuthUtils.getUser().getUserId();
         List<Long> typeIds = null;
@@ -42,23 +49,26 @@ public class MsgController {
             List<SysMsgType> sysMsgTypes = sysMsgService.queryMsgTypes();
             typeIds = sysMsgTypes.stream().filter(sysMsgType -> msgRequest.getType() == sysMsgType.getPid()).map(SysMsgType::getMsgTypeId).collect(Collectors.toList());
         }
+        Long overTime = sysMsgService.overTime();
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        Pager<List<MsgGridDto>> listPager = PageUtils.setPageInfo(page, sysMsgService.queryGrid(userId, msgRequest, typeIds));
+        Pager<List<MsgGridDto>> listPager = PageUtils.setPageInfo(page, sysMsgService.queryGrid(userId, msgRequest, typeIds, overTime));
         return listPager;
     }
 
     @ApiOperation("查询未读数量")
     @PostMapping("/unReadCount")
-    public Long unReadCount(@RequestBody Map<String, Long> request) {
-        if(null == request || null == request.get("userId")) {
+    public Long unReadCount() {;
+        Long userId = null;
+        if(null == AuthUtils.getUser() || (userId = AuthUtils.getUser().getUserId()) == null) {
             throw new RuntimeException("缺少用户ID");
         }
-        Long userId = request.get("userId");
+        // Long userId = request.get("userId");
         return sysMsgService.queryCount(userId);
     }
 
     @ApiOperation("设置已读")
     @PostMapping("/setReaded/{msgId}")
+    @ApiImplicitParam(paramType="path", name = "msgId", value = "消息ID", required = true, dataType = "Long")
     public void setReaded(@PathVariable Long msgId) {
         sysMsgService.setReaded(msgId);
     }
@@ -66,6 +76,7 @@ public class MsgController {
 
     @ApiOperation("批量设置已读")
     @PostMapping("/batchRead")
+    @ApiImplicitParam(name = "msgIds", value = "消息ID集合", required = true, dataType = "List")
     public void batchRead(@RequestBody List<Long> msgIds) {
         sysMsgService.setBatchReaded(msgIds);
     }
@@ -78,6 +89,7 @@ public class MsgController {
 
     @ApiOperation("批量删除")
     @PostMapping("/batchDelete")
+    @ApiImplicitParam(name = "msgIds", value = "消息ID集合", required = true, dataType = "List")
     public void batchDelete(@RequestBody List<Long> msgIds) {
         sysMsgService.batchDelete(msgIds);
     }

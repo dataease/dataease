@@ -64,3 +64,17 @@ export function oidcStatus() {
     method: 'post'
   })
 }
+
+export function pluginLoaded() {
+  return request({
+    url: '/api/auth/isPluginLoaded',
+    method: 'post'
+  })
+}
+
+export function getPublicKey() {
+  return request({
+    url: '/api/auth/getPublicKey',
+    method: 'get'
+  })
+}

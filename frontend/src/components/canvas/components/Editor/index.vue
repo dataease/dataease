@@ -1,11 +1,12 @@
 <template>
   <div
+    v-if="editShow"
     id="editor"
     class="editor"
     :class="[
       {
         ['edit']: isEdit ,
-        ['parent_transform']:!chartDetailsVisible
+        ['parent_transform']:!dialogVisible
       }
     ]"
     @mousedown="handleMouseDown"
@@ -51,11 +52,9 @@
       @onResizing="onResizing"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
-      @amAddItme="addItemBox(item)"
+      @amAddItem="addItemBox(item)"
+      @linkJumpSet="linkJumpSet(item)"
     >
-      <!--      <span style="position:relative;left: 0px;top:0px">-->
-      <!--        item:x-{{ item.x }}y-{{ item.y }}top-{{ item.style.top }}-->
-      <!--      </span>-->
       <component
         :is="item.component"
         v-if="item.type==='v-text'"
@@ -70,17 +69,6 @@
         :active="item === curComponent"
         @input="handleInput"
       />
-      <!-- <out-widget
-        :is="item.component"
-        v-else-if="item.type==='custom'"
-        :id="'component' + item.id"
-        class="component"
-        :style="getComponentStyleDefault(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :out-style="getShapeStyleInt(item.style)"
-        :active="item === curComponent"
-      /> -->
       <de-out-widget
         v-else-if="item.type==='custom'"
         :id="'component' + item.id"
@@ -115,6 +103,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
     </de-drag>
     <!--拖拽阴影部分-->
@@ -152,6 +141,7 @@
       width="70%"
       class="dialog-css"
       :destroy-on-close="true"
+      :show-close="true"
     >
       <span style="position: absolute;right: 70px;top:15px">
         <el-button size="mini" @click="exportExcel">
@@ -160,6 +150,17 @@
         </el-button>
       </span>
       <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="linkJumpSetVisible"
+      width="60%"
+      class="dialog-css"
+      :show-close="true"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <LinkJumpSet v-if="linkJumpSetVisible" :view-id="linkJumpSetViewId" @closeJumpSetDialog="closeJumpSetDialog" />
     </el-dialog>
   </div>
 </template>
@@ -185,6 +186,7 @@ import DeOutWidget from '@/components/dataease/DeOutWidget'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import DragShadow from '@/components/DeDrag/shadow'
 import bus from '@/utils/bus'
+import LinkJumpSet from '@/views/panel/LinkJumpSet'
 
 // 挤占式画布
 import _ from 'lodash'
@@ -324,6 +326,7 @@ function recalcCellWidth() {
 }
 
 function init() {
+  // console.log('init-cellWidth')
   this.cellWidth = this.baseWidth + this.baseMarginLeft
   this.cellHeight = this.baseHeight + this.baseMarginTop
   this.yourList = this.getList()
@@ -343,7 +346,6 @@ function init() {
   recalcCellWidth.call(this)
 
   resetPositionBox.call(this)
-
   let i = 0
   // console.log('initList:' + JSON.stringify(vm.yourList))
   const timeid = setInterval(function() {
@@ -362,6 +364,7 @@ function init() {
 }
 
 function resizePlayer(item, newSize) {
+  // console.log('resizePlayer')
   const vm = this
   removeItemFromPositionBox(item)
 
@@ -410,6 +413,7 @@ function resizePlayer(item, newSize) {
  * @param {any} position
  */
 function checkItemPosition(item, position) {
+  // console.log('checkItemPosition-info' + JSON.stringify(item))
   position = position || {}
   position.x = position.x || item.x
   position.y = position.y || item.y
@@ -455,6 +459,7 @@ function checkItemPosition(item, position) {
  * @param {any} position
  */
 function movePlayer(item, position) {
+  // console.log('movePlayer')
   const vm = this
   removeItemFromPositionBox(item)
 
@@ -469,7 +474,7 @@ function movePlayer(item, position) {
 
   item.x = position.x
   item.y = position.y
-
+  // console.log('checkItemPosition3')
   checkItemPosition.call(this, item, position)
 
   emptyTargetCell.call(this, item)
@@ -506,11 +511,13 @@ function removeItem(index) {
 }
 
 function addItem(item, index) {
+  // console.log('addItem')
   if (index < 0) {
     index = this.yourList.length
   }
   item._dragId = index
 
+  // console.log('checkItemPosition4')
   checkItemPosition.call(this, item, {
     x: item.x,
     y: item.y
@@ -638,6 +645,7 @@ function changeItemCoord(item) {
  * @param {any} item
  */
 function emptyTargetCell(item) {
+  // console.log('emptyTargetCell')
   const vm = this
   const belowItems = findBelowItems(item)
 
@@ -694,6 +702,7 @@ function moveItemDown(item, size) {
     y: item.y + size
   }
   setPlayerPosition.call(this, item, targetPosition)
+  // console.log('checkItemPosition1')
   checkItemPosition.call(this, item, targetPosition)
 
   addItemToPositionBox.call(this, item)
@@ -801,7 +810,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow },
+  components: { Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -920,11 +929,16 @@ export default {
       maxCell: 0,
       lastComponentDataLength: 0,
       positionBoxInfoArray: [],
-      yourList: []
-
+      yourList: [],
+      linkJumpSetVisible: false,
+      linkJumpSetViewId: null,
+      editShow: false
     }
   },
   computed: {
+    dialogVisible() {
+      return this.chartDetailsVisible || this.linkJumpSetVisible
+    },
     // 挤占式画布设计
     // positionBoxInfo() {
     //   return getoPsitionBox()
@@ -968,7 +982,8 @@ export default {
       'editor',
       'linkageSettingStatus',
       'curLinkageView',
-      'snapshotIndex'
+      'doSnapshotIndex',
+      'componentGap'
     ])
   },
   watch: {
@@ -1010,6 +1025,7 @@ export default {
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
+          // console.log('.initMatrix2')
           this.initMatrix()
         }
       },
@@ -1022,9 +1038,10 @@ export default {
       deep: true
     },
     // 镜像索引有变化 刷新一下矩阵（撤销重做等）
-    snapshotIndex: {
+    doSnapshotIndex: {
       handler(newVal, oldVla) {
         // console.log('snapshotIndexChange:' + newVal)
+        // console.log('.initMatrix3')
         this.initMatrix()
       },
       deep: true
@@ -1032,15 +1049,20 @@ export default {
   },
 
   mounted() {
+    setTimeout(() => {
+      this.changeScale()
+      this.editShow = true
+    }, 500)
+    // this.changeScale()
     // 获取编辑器元素
     this.$store.commit('getEditor')
     const _this = this
     // bus.$on('auxiliaryMatrixChange', this.initMatrix)
-    bus.$on('auxiliaryMatrixChange', () => {
-      _this.$nextTick(() => {
-        _this.initMatrix()
-      })
-    })
+    // bus.$on('auxiliaryMatrixChange', () => {
+    //   _this.$nextTick(() => {
+    //     _this.initMatrix()
+    //   })
+    // })
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
@@ -1275,6 +1297,7 @@ export default {
         this.baseHeight = this.matrixStyle.height
         this.cellWidth = this.matrixStyle.width
         this.cellHeight = this.matrixStyle.height
+        // console.log('.initMatrix1')
         this.initMatrix()
 
         this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
@@ -1351,7 +1374,7 @@ export default {
     },
 
     resizeView(index, item) {
-      if (item.type === 'view') {
+      if (item.type === 'view' || item.type === 'de-show-date') {
         this.$refs.wrapperChild[index].chartResize()
       }
     },
@@ -1440,6 +1463,7 @@ export default {
       infoBox.oldSizeY = item.sizey
     },
     onMouseUp(e) {
+      // console.log('onMouseUp')
       const vm = this
       if (_.isEmpty(vm.infoBox)) return
       if (vm.infoBox.cloneItem) {
@@ -1608,6 +1632,7 @@ export default {
       }, 100)
     },
     addItemBox(item) {
+      // console.log('addItemBox:' + JSON.stringify(item))
       this.yourList.push(item)
 
       this.$nextTick(function() {
@@ -1640,6 +1665,13 @@ export default {
         infoBox.oldSizeX = moveInItemInfo.sizex
         infoBox.oldSizeY = moveInItemInfo.sizey
       }
+    },
+    linkJumpSet(item) {
+      this.linkJumpSetViewId = item.propValue.viewId
+      this.linkJumpSetVisible = true
+    },
+    closeJumpSetDialog() {
+      this.linkJumpSetVisible = false
     }
   }
 }

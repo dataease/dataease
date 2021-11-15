@@ -1,6 +1,6 @@
 <template>
   <div
-    v-loading="requestStatus==='waiting'"
+    v-loading="canvasStyleData.refreshViewLoading&&requestStatus==='waiting'"
     :class="[
       {
         ['active']: active
@@ -16,8 +16,8 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
-    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'g2'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />
+    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" @onJumpClick="jumpClick" />
+    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" @onJumpClick="jumpClick" />
     <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
     <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
     <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
@@ -45,6 +45,7 @@ import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
+import { Base64 } from 'js-base64'
 export default {
   name: 'UserView',
   components: { ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
@@ -99,6 +100,9 @@ export default {
     }
   },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     filter() {
       const filter = {}
       filter.filter = this.element.filters
@@ -121,12 +125,21 @@ export default {
     trackMenu() {
       const trackMenuInfo = []
       let linkageCount = 0
+      let jumpCount = 0
       this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
         }
       })
+      this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
+        const sourceInfo = this.chart.id + '#' + item.id
+        // console.log('nowPanelJumpInfo=>' + JSON.stringify(this.nowPanelJumpInfo))
+        if (this.nowPanelJumpInfo[sourceInfo]) {
+          jumpCount++
+        }
+      })
+      jumpCount && trackMenuInfo.push('jump')
       linkageCount && trackMenuInfo.push('linkage')
       this.drillFields.length && trackMenuInfo.push('drill')
       // console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
@@ -140,7 +153,8 @@ export default {
     },
     ...mapState([
       'canvasStyleData',
-      'nowPanelTrackInfo'
+      'nowPanelTrackInfo',
+      'nowPanelJumpInfo'
     ])
   },
 
@@ -197,7 +211,7 @@ export default {
     },
     // 监听外部计时器变化
     searchCount: function(val1) {
-      if (val1 > 0) {
+      if (val1 > 0 && this.requestStatus !== 'waiting') {
         this.getData(this.element.propValue.viewId)
       }
     },
@@ -211,7 +225,10 @@ export default {
   created() {
     this.refId = uuid.v1
     // this.filter.filter = this.$store.getters.conditions
-    this.getData(this.element.propValue.viewId)
+    if (this.element && this.element.propValue && this.element.propValue.viewId) {
+      this.getData(this.element.propValue.viewId)
+    }
+
     // this.initAreas()
   },
   mounted() {
@@ -266,7 +283,7 @@ export default {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
               this.resetDrill()
             }
-            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters))
+            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
             this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
             this.requestStatus = 'merging'
             this.mergeStyle()
@@ -319,6 +336,48 @@ export default {
           showClose: true
         })
       }
+    },
+
+    jumpClick(param) {
+      let dimension, jumpInfo, sourceInfo
+      // 倒序取最后一个能匹配的
+      for (let i = param.dimensionList.length - 1; i >= 0; i--) {
+        dimension = param.dimensionList[i]
+        sourceInfo = param.viewId + '#' + dimension.id
+        jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+        if (jumpInfo) {
+          break
+        }
+      }
+      if (jumpInfo) {
+        param.sourcePanelId = this.panelInfo.id
+        param.sourceViewId = param.viewId
+        param.sourceFieldId = dimension.id
+        // 内部仪表板跳转
+        if (jumpInfo.linkType === 'inner') {
+          if (jumpInfo.targetPanelId) {
+            const url = '#/preview/' + jumpInfo.targetPanelId
+            localStorage.setItem('jumpInfoParam', JSON.stringify(param))
+            window.open(url, jumpInfo.jumpType)
+          } else {
+            this.$message({
+              type: 'warn',
+              message: '未指定跳转仪表板',
+              showClose: true
+            })
+          }
+        } else {
+          const url = jumpInfo.content
+          window.open(url, jumpInfo.jumpType)
+        }
+      } else {
+        this.$message({
+          type: 'warn',
+          message: '未获取跳转信息',
+          showClose: true
+        })
+      }
+      // console.log('param=>' + JSON.stringify(param))
     },
 
     resetDrill() {
@@ -440,11 +499,7 @@ export default {
     },
 
     renderComponent() {
-      if (this.chart.type === 'liquid') {
-        return 'g2'
-      } else {
-        return 'echarts'
-      }
+      return this.chart.render
     }
   }
 }

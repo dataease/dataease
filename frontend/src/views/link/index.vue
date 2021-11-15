@@ -3,6 +3,7 @@
     <link-error v-if="showIndex===0" :resource-id="resourceId" />
     <link-pwd v-if="showIndex===1" :resource-id="resourceId" @fresh-token="refreshToken" />
     <link-view v-if="showIndex===2" :resource-id="resourceId" />
+    <link-expire v-if="showIndex===3" :resource-id="resourceId" />
   </div>
 </template>
 <script>
@@ -11,9 +12,10 @@ import { validate } from '@/api/link'
 import LinkView from './view'
 import LinkError from './error'
 import LinkPwd from './pwd'
+import LinkExpire from './overtime'
 export default {
   components: {
-    LinkError, LinkPwd, LinkView
+    LinkError, LinkPwd, LinkView, LinkExpire
   },
   data() {
     return {
@@ -29,13 +31,19 @@ export default {
   methods: {
 
     loadInit() {
+      debugger
       this.link = getQueryVariable(this.PARAMKEY)
       validate({ link: this.link }).then(res => {
-        const { resourceId, valid, enablePwd, passPwd } = res.data
+        const { resourceId, valid, enablePwd, passPwd, expire } = res.data
         this.resourceId = resourceId
         // 如果链接无效 直接显示无效页面
         if (!valid || !resourceId) {
           this.showError()
+          return
+        }
+
+        if (expire) {
+          this.showExpire()
           return
         }
 
@@ -64,6 +72,9 @@ export default {
     // 显示仪表板
     showView() {
       this.showIndex = 2
+    },
+    showExpire() {
+      this.showIndex = 3
     }
   }
 }

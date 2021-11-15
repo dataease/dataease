@@ -7,43 +7,53 @@ import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.domain.PanelLink;
+import io.dataease.base.domain.PanelLinkMapping;
+import io.dataease.base.domain.PanelLinkMappingExample;
 import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelLinkMapper;
+import io.dataease.base.mapper.PanelLinkMappingMapper;
+import io.dataease.base.mapper.ext.ExtPanelLinkMapper;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
+import io.dataease.controller.request.panel.link.OverTimeRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
 import io.dataease.dto.panel.link.GenerateDto;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class PanelLinkService {
 
-    private static final String baseUrl = "/link.html?link=";
+    private static final String BASEURL = "/link.html?link=";
 
-    @Value("${dataease.public-link-salt:DataEaseLinkSalt}")
-    private String salt;
 
-    @Value("${dataease.short-url-site:https://dh6.ink/}")
-    private String shortUrlSite;
 
-    @Value("${dataease.short-url-api:api/url/add}")
-    private String shortUrlApi;
+    private static final String SHORT_URL_PREFIX = "/xggznb/";
 
     @Resource
     private PanelLinkMapper mapper;
 
     @Resource
     private PanelGroupMapper panelGroupMapper;
+
+    @Resource
+    private ExtPanelLinkMapper extPanelLinkMapper;
+
+    @Resource
+    private PanelLinkMappingMapper panelLinkMappingMapper;
 
     public void changeValid(LinkRequest request){
         PanelLink po = new PanelLink();
@@ -66,11 +76,20 @@ public class PanelLinkService {
         mapper.updateByPrimaryKeySelective(po);
     }
 
+    public void overTime(OverTimeRequest request) {
+        /* PanelLink po = new PanelLink();
+        po.setResourceId(request.getResourceId());
+        po.setOverTime(request.getOverTime());
+        mapper.updateByPrimaryKeySelective(po); */
+        extPanelLinkMapper.updateOverTime(request);
+    }
+
     public PanelLink findOne(String resourceId){
         PanelLink panelLink = mapper.selectByPrimaryKey(resourceId);
         return panelLink;
     }
 
+    @Transactional
     public GenerateDto currentGenerate(String resourceId) {
         PanelLink one = findOne(resourceId);
         if (ObjectUtils.isEmpty(one)) {
@@ -80,6 +99,16 @@ public class PanelLinkService {
             one.setValid(false);
             one.setEnablePwd(false);
             mapper.insert(one);
+        }
+
+
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andResourceIdEqualTo(resourceId);
+        List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
+        if(CollectionUtils.isEmpty(mappings)) {
+            PanelLinkMapping mapping = new PanelLinkMapping();
+            mapping.setResourceId(resourceId);
+            panelLinkMappingMapper.insert(mapping);
         }
         return convertDto(one);
     }
@@ -103,18 +132,19 @@ public class PanelLinkService {
     }
 
     private String buildLinkParam(String resourceId){
-        Map<String,Object> map = new HashMap<>();
+       /*  Map<String,Object> map = new HashMap<>();
         map.put("resourceId", resourceId);
         map.put("time", System.currentTimeMillis());
         map.put("salt", salt);
         Gson gson = new Gson();
-        String encrypt = encrypt(gson.toJson(map));
-        String s = null;
+        String encrypt = encrypt(gson.toJson(map)); */
+        String encrypt = encrypt(resourceId);
+        /* String s = null;
         try {
             s = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, encrypt);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } */
         return encrypt;
     }
     private GenerateDto convertDto(PanelLink linl){
@@ -122,7 +152,8 @@ public class PanelLinkService {
         result.setValid(linl.getValid());
         result.setEnablePwd(linl.getEnablePwd());
         result.setPwd(linl.getPwd());
-        result.setUri(baseUrl+buildLinkParam(linl.getResourceId()));
+        result.setUri(BASEURL+buildLinkParam(linl.getResourceId()));
+        result.setOverTime(linl.getOverTime());
         return result;
     }
 
@@ -140,15 +171,26 @@ public class PanelLinkService {
             return false;
         }
         if (StringUtils.isEmpty(panelLink.getPwd())) return false;
-        boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd()));
+        boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), panelLink.getPwd());
+        /* boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd())); */
         return verify;
     }
 
+    // 验证链接是否过期
+    public Boolean isExpire(PanelLink panelLink) {
+        if (ObjectUtils.isEmpty(panelLink.getOverTime())) {
+            return false;
+        }
+        return System.currentTimeMillis() > panelLink.getOverTime();        
+    }
+
     public boolean validatePwd(PasswordRequest request) throws Exception {
-        String password = decryptParam(request.getPassword());
+        String password = request.getPassword();
+        /* String password = decryptParam(request.getPassword()); */
         String resourceId = request.getResourceId();
         PanelLink one = findOne(resourceId);
-        String pwd = decryptParam(one.getPwd());
+        String pwd = one.getPwd();
+        /* String pwd = decryptParam(one.getPwd()); */
         boolean pass = StringUtils.equals(pwd, password);
         if (pass){
             String token = JWTUtils.signLink(resourceId, password);
@@ -164,23 +206,18 @@ public class PanelLinkService {
     }
 
 
-    public ResultHolder getShortUrl(String url) {
-        Gson gson = new Gson();
-        Map param = new HashMap<>();
-        param.put("diy", false);
-        param.put("link", url);
-        param.put("sort", "");
-        String post = HttpUtil.post(shortUrlSite + shortUrlApi, param);
-        try{
-            Map map = gson.fromJson(post, Map.class);
-            Map data = (Map) map.get("data");
-            String sort = shortUrlSite + data.get("sort").toString();
-            ResultHolder success = ResultHolder.success(sort);
-            return success;
-        }catch (Exception e) {
-            ResultHolder error = ResultHolder.error(e.getMessage());
-            return error;
-        }
+    public String getShortUrl(String resourceId) {
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andResourceIdEqualTo(resourceId);
+        List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
+        PanelLinkMapping mapping = mappings.get(0);
+        return SHORT_URL_PREFIX + mapping.getId();
+    }
 
+    public String getUrlByIndex(Long index) {
+        PanelLinkMapping mapping = panelLinkMappingMapper.selectByPrimaryKey(index);
+        String resourceId = mapping.getResourceId();
+        PanelLink one = findOne(resourceId);
+        return convertDto(one).getUri();
     }
 }

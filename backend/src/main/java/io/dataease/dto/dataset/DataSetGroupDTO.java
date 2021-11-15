@@ -19,4 +19,8 @@ public class DataSetGroupDTO extends DatasetGroup implements ITreeBase<DataSetGr
     private List<DataSetGroupDTO> children;
     @ApiModelProperty("权限")
     private String privileges;
+    @ApiModelProperty("节点类型")
+    public String getNodeType(){
+        return super.getType();
+    };
 }

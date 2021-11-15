@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="showUnionEdit">{{ $t('dataset.add_union') }}</el-button>
+    <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" icon="el-icon-circle-plus-outline" @click="showUnionEdit">{{ $t('dataset.add_union') }}</el-button>
     <el-row>
       <el-table
         size="mini"
@@ -270,6 +270,7 @@ export default {
         targetUnionRelation: ''
       }
       this.targetTable = {}
+      this.targetFieldOption = []
     },
 
     edit(item) {
