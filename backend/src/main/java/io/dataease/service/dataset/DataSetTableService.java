@@ -1228,6 +1228,7 @@ public class DataSetTableService {
         dataSetDetail.setTable(table);
         if (ObjectUtils.isNotEmpty(table)) {
             Datasource datasource = datasourceMapper.selectByPrimaryKey(table.getDataSourceId());
+            datasource.setConfiguration(null);
             dataSetDetail.setDatasource(datasource);
         }
         return dataSetDetail;

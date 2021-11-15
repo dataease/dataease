@@ -1014,6 +1014,7 @@ export default {
     field_check: '选中',
     update_info: '更新信息',
     join_view: '数据关联',
+    row_permissions: '行权限',
     text: '文本',
     time: '时间',
     value: '数值',
