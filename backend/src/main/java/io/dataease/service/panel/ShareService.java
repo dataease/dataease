@@ -136,13 +136,13 @@ public class ShareService {
         msgParam.add(panelGroupId);
         addUserIdSet.forEach(userId -> {
             if (!redUserIdSet.contains(userId) && user.getUserId() != userId){
-                DeMsgutil.sendMsg(userId, 2L, 1L,user.getNickName()+" 分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+                DeMsgutil.sendMsg(userId, 2L,user.getNickName()+" 分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
             }
         });
 
         redUserIdSet.forEach(userId -> {
             if (!addUserIdSet.contains(userId) && user.getUserId() != userId){
-                DeMsgutil.sendMsg(userId, 3L, 1L,user.getNickName()+" 取消分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+                DeMsgutil.sendMsg(userId, 3L, user.getNickName()+" 取消分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
             }
         });
 
@@ -265,7 +265,7 @@ public class ShareService {
         Gson gson = new Gson();
         userIdSet.forEach(userId -> {
             // DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!");
-            DeMsgutil.sendMsg(userId, 2L,1L, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds));
+            DeMsgutil.sendMsg(userId, 2L, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds));
         });
 
     }

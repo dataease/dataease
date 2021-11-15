@@ -413,7 +413,7 @@ public class ExtractDataService {
             if (ObjectUtils.isNotEmpty(datasetTableTask) && ObjectUtils.isNotEmpty(datasetTableTask.getName())) {
                 content += " 任务名称【" + datasetTableTask.getName() + "】";
             }
-            DeMsgutil.sendMsg(userId, typeId, 1L, content, gson.toJson(param));
+            DeMsgutil.sendMsg(userId, typeId, content, gson.toJson(param));
         });
     }
 

@@ -66,8 +66,14 @@ export default {
   mounted() {
 
   },
+  beforeCreate() {
+    // this.loadChannelData()
+
+    channelList().then(res => {
+      this.msg_channels = res.data
+    })
+  },
   created() {
-    this.loadChannelData()
     this.loadSettingData(this.loadTreeData)
   },
 
@@ -129,7 +135,7 @@ export default {
       settingList().then(res => {
         const lists = res.data
         lists.forEach(item => {
-          const key = item.typeId
+          const key = item.typeId + ''
           if (!Object.keys(temp_setting_data).includes(key)) {
             temp_setting_data[key] = []
           }

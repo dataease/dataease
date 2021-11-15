@@ -316,7 +316,7 @@ public class DatasourceService {
             
             String content = "数据源【" + datasource.getName() + "】无效";
             
-            DeMsgutil.sendMsg(userId, typeId, 1L, content, gson.toJson(param));
+            DeMsgutil.sendMsg(userId, typeId,  content, gson.toJson(param));
         });
     }
 }

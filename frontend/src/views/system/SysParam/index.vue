@@ -6,9 +6,9 @@
         <basic-setting />
       </el-tab-pane>
 
-      <!-- <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
+      <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
         <email-setting />
-      </el-tab-pane> -->
+      </el-tab-pane>
 
       <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('sysParams.display')" name="second">
         <plugin-com v-if="isPluginLoaded" ref="DisplaySetting" component-name="DisplaySetting" />
