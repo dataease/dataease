@@ -16,6 +16,7 @@ import io.dataease.controller.sys.request.MsgSettingRequest;
 import io.dataease.controller.sys.response.MsgGridDto;
 import io.dataease.controller.sys.response.SettingTreeNode;
 import io.dataease.controller.sys.response.SubscribeNode;
+import io.dataease.service.message.service.SendService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -280,15 +281,22 @@ public class SysMsgService {
         extSysMsgMapper.batchInsert(settings);
     }
 
-    public void sendMsg(Long userId, Long typeId, Long channelId, String content, String param) {
-        SysMsg sysMsg = new SysMsg();
-        sysMsg.setUserId(userId);
-        sysMsg.setTypeId(typeId);
-        sysMsg.setContent(content);
-        sysMsg.setStatus(false);
-        sysMsg.setCreateTime(System.currentTimeMillis());
-        sysMsg.setParam(param);
-        save(sysMsg);
+    public void sendMsg(Long userId, Long typeId, String content, String param) {
+        List<SubscribeNode> subscribes = subscribes(userId);
+
+        if (CollectionUtils.isNotEmpty(subscribes)) {
+            subscribes.stream().filter(item -> item.getTypeId() == typeId).forEach(sub -> {
+                SendService sendService = serviceByChannel(sub.getChannelId());
+                sendService.sendMsg(userId, typeId, content, param);
+            });
+
+        }
+
+    }
+
+    private SendService serviceByChannel(Long channelId){
+        String beanName = sysMsgChannelMapper.selectByPrimaryKey(channelId).getServiceName();
+        return (SendService)CommonBeanFactory.getBean(beanName);
     }
 
     /**

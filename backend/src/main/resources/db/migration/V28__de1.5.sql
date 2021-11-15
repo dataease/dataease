@@ -16,3 +16,14 @@ CREATE TABLE `panel_link_mapping` (
   `resource_id` varchar(255) DEFAULT NULL COMMENT '仪表板ID',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+-- ----------------------------
+-- 策略模式优化发送消息
+-- ----------------------------
+ALTER TABLE `dataease`.`sys_msg_channel`
+ADD COLUMN `service_name` varchar(255) NULL COMMENT '策略名称' AFTER `channel_name`;
+
+
+UPDATE `dataease`.`sys_msg_channel` SET `service_name` = 'sendStation' WHERE `msg_channel_id` = 1;
+INSERT INTO `dataease`.`sys_msg_channel`(`msg_channel_id`, `channel_name`, `service_name`) VALUES (2, 'webmsg.channel_email_msg', 'sendEmail');
