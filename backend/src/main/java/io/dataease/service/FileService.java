@@ -43,9 +43,7 @@ public class FileService {
         example2.createCriteria().andFileIdIn(ids);
         fileContentMapper.deleteByExample(example2);
 
-       /* LoadTestFileExample example3 = new LoadTestFileExample();
-        example3.createCriteria().andFileIdIn(ids);
-        loadTestFileMapper.deleteByExample(example3);*/
+
     }
 
     public void deleteFileRelatedByIds(List<String> ids) {

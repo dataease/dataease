@@ -40,9 +40,7 @@ public class StoreService {
         panelStoreMapper.deleteByExample(panelStoreExample);
     }
 
-    /*public void remove(Long storeId) {
-        panelStoreMapper.deleteByPrimaryKey(storeId);
-    }*/
+
 
     /**
      * 按照当前用户ID查询收藏仪表板

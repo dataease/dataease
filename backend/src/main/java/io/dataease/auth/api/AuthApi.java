@@ -30,8 +30,7 @@ public interface AuthApi {
     CurrentUserDto userInfo();
 
 
-    /*@GetMapping("/isLogin")
-    Boolean isLogin();*/
+
 
 
     @ApiOperation("登出")
