@@ -23,6 +23,12 @@
             <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
+            <span v-if="hasDataPermission('edit',panelInfo.privileges)&&activeTab==='PanelList'" style="float: right;margin-right: 10px">
+              <el-button size="mini" type="primary" @click="editPanel">
+                {{ $t('commons.edit') }}
+              </el-button>
+            </span>
+
             <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.save_to_panel')">
                 <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
@@ -61,11 +67,7 @@
                 <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
               </el-tooltip>
             </span>
-            <span v-if="hasDataPermission('edit',panelInfo.privileges)&&activeTab==='PanelList'" style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('commons.edit')">
-                <el-button class="el-icon-edit" size="mini" circle @click="editPanel" />
-              </el-tooltip>
-            </span>
+
           </el-col>
         </div>
       </el-row>
@@ -340,7 +342,7 @@ export default {
     min-height: 400px;
     height: 100%;
     min-width: 500px;
-    overflow-y: auto;
+    overflow-y: hidden;
     border-top: 1px solid #E6E6E6;
   }
 

@@ -12,7 +12,7 @@
               <el-radio v-model="panel.backgroundType" label="color" @change="onChangeType">{{ $t('chart.color') }}</el-radio>
             </el-col>
             <el-col :span="18">
-              <el-color-picker v-model="panel.color" size="mini" style="cursor: pointer;z-index: 1004;"   @change="onChangeType"/>
+              <el-color-picker v-model="panel.color" :predefine="predefineColors" size="mini" style="cursor: pointer;z-index: 1004;" @change="onChangeType" />
             </el-col>
           </el-row>
           <el-row style="height: 60px;margin-top:10px;overflow: hidden">
@@ -50,6 +50,7 @@
 
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
   name: 'BackgroundSelector',
@@ -59,7 +60,9 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       uploadDisabled: false,
-      panel: null
+      panel: null,
+      predefineColors: COLOR_PANEL
+
     }
   },
   computed: mapState([
@@ -80,7 +83,7 @@ export default {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
-      this.$store.commit('recordSnapshot','commitStyle')
+      this.$store.commit('recordSnapshot', 'commitStyle')
     },
     onChangeType() {
       this.commitStyle()

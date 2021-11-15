@@ -1,6 +1,6 @@
 <template>
-  <div id="canvasInfoMain" ref="canvasInfoMain" class="main-class">
-    <div id="canvasInfoTemp" ref="canvasInfoTemp" :style="customStyle" class="bg" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
+  <div id="canvasInfoMain" ref="canvasInfoMain" :style="customStyle" class="bg">
+    <div id="canvasInfoTemp" ref="canvasInfoTemp" class="main-class" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
       <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
         {{ $t('panel.panelNull') }}
       </el-row>
@@ -95,9 +95,7 @@ export default {
   computed: {
     customStyle() {
       let style = {
-        margin: 'auto',
-        width: this.mainWidth,
-        height: this.mainHeight
+        padding: this.componentGap + 'px'
       }
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -132,7 +130,8 @@ export default {
       'isClickComponent',
       'curComponent',
       'componentData',
-      'canvasStyleData'
+      'canvasStyleData',
+      'componentGap'
     ])
   },
   watch: {
@@ -192,15 +191,6 @@ export default {
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
       this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
-
-      // console.log('scaleHeight:' + this.scaleHeight + ';ch:' + this.canvasStyleData.height)
-
-      // this.scaleHeight = this.scaleWidth
-      // this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
-      // if (this.showType === 'width') {
-      //   this.scaleHeight = this.scaleWidth
-      //   this.mainHeight = this.canvasStyleData.height * this.scaleHeight / 100 + 'px'
-      // }
       this.handleScaleChange()
     },
     resetID(data) {

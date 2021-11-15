@@ -108,7 +108,7 @@
             <i class="icon iconfont icon-zimua" @click="goColor" />
           </el-tooltip>
           <div :style="letterDivColor" />
-          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" :predefine="predefineColors" @change="styleChange" />
         </div>
       </div>
       <div v-if="attrShow('borderColor')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
@@ -117,7 +117,7 @@
             <i class="iconfont icon-huabi" @click="goBoardColor" />
           </el-tooltip>
           <div :style="boardDivColor" />
-          <el-color-picker ref="boardColorPicker" v-model="styleInfo.borderColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker ref="boardColorPicker" v-model="styleInfo.borderColor" style="margin-top: 7px;height: 0px" size="mini" :predefine="predefineColors" @change="styleChange" />
         </div>
       </div>
 
@@ -127,7 +127,7 @@
             <i class="iconfont icon-beijingse1" @click="goBackgroundColor" />
           </el-tooltip>
           <div :style="backgroundDivColor" />
-          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" :predefine="predefineColors" size="mini" @change="styleChange" />
         </div>
       </div>
 
@@ -157,6 +157,7 @@ import { mapState } from 'vuex'
 import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
+import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
   components: { Hyperlinks, DateFormat, VideoLinks },
@@ -172,6 +173,7 @@ export default {
   },
   data() {
     return {
+      predefineColors: COLOR_PANEL,
       showMain: true,
       innerOpacity: 0,
       textAlignOptions: [
@@ -430,5 +432,9 @@ export default {
   ::v-deep .el-radio-button__inner{
     padding: 5px!important;
     width: 30px!important;
+  }
+
+  ::v-deep .el-color-dropdown__link-btn {
+    display: inline!important;
   }
 </style>
