@@ -96,11 +96,7 @@ public class LinkServer implements LinkApi {
         return chartViewService.getData(viewId, requestList);
     }
 
-    /*@Override
-    public ResultHolder shortUrl(Map<String,String> param) {
-        String url = param.get("url");
-        return panelLinkService.getShortUrl(url);
-    }*/
+
 
     @Override
     public String shortUrl(Map<String,String> param) {

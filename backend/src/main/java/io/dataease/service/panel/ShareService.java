@@ -312,20 +312,7 @@ public class ShareService {
 
         List<PanelSharePo> datas = extPanelShareMapper.query(param);
 
-        /*List<Long> targetIds = new ArrayList<>();
-        targetIds.add(userId);
-        targetIds.add(deptId);
-        targetIds.addAll(roleIds);
 
-        ConditionEntity condition = new ConditionEntity();
-        condition.setField("s.target_id");
-        condition.setOperator("in");
-        condition.setValue(targetIds);
-
-        request.setConditions(new ArrayList<ConditionEntity>(){{add(condition);}});
-
-        GridExample example = request.convertExample();
-        List<PanelSharePo> datas = extPanelShareMapper.query(example);*/
         List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po)).collect(Collectors.toList());
         return convertTree(dtoLists);
     }

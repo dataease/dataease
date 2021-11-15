@@ -77,10 +77,7 @@ public class PanelLinkService {
     }
 
     public void overTime(OverTimeRequest request) {
-        /* PanelLink po = new PanelLink();
-        po.setResourceId(request.getResourceId());
-        po.setOverTime(request.getOverTime());
-        mapper.updateByPrimaryKeySelective(po); */
+
         extPanelLinkMapper.updateOverTime(request);
     }
 
@@ -132,19 +129,9 @@ public class PanelLinkService {
     }
 
     private String buildLinkParam(String resourceId){
-       /*  Map<String,Object> map = new HashMap<>();
-        map.put("resourceId", resourceId);
-        map.put("time", System.currentTimeMillis());
-        map.put("salt", salt);
-        Gson gson = new Gson();
-        String encrypt = encrypt(gson.toJson(map)); */
+
         String encrypt = encrypt(resourceId);
-        /* String s = null;
-        try {
-            s = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, encrypt);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } */
+
         return encrypt;
     }
     private GenerateDto convertDto(PanelLink linl){
@@ -186,11 +173,9 @@ public class PanelLinkService {
 
     public boolean validatePwd(PasswordRequest request) throws Exception {
         String password = request.getPassword();
-        /* String password = decryptParam(request.getPassword()); */
         String resourceId = request.getResourceId();
         PanelLink one = findOne(resourceId);
         String pwd = one.getPwd();
-        /* String pwd = decryptParam(one.getPwd()); */
         boolean pass = StringUtils.equals(pwd, password);
         if (pass){
             String token = JWTUtils.signLink(resourceId, password);

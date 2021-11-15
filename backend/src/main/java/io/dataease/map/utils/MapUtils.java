@@ -38,11 +38,7 @@ public class MapUtils {
         return code;
     }
 
-    /*public static List<Map<String, Object>> readCodeList( ) {
-        ExcelReader reader = ExcelUtil.getReader(path);
-        List<Map<String, Object>> maps = reader.readAll();
-        return maps;
-    }*/
+
     public static List<Map<String, Object>> readCodeList( ) {
         AreaMappingExample example = new AreaMappingExample();
         List<AreaMapping> areaMappings = areaMappingMapper.selectByExample(example);
@@ -234,15 +230,7 @@ public class MapUtils {
 
 
 
-    /*public static MapResultDto buildGeometry(District district, AreaEntity areaEntity) {
-        Feature feature = buildFeature(district, areaEntity);
-        MapResultDto mapResultDto = new MapResultDto();
-        mapResultDto.setType("FeatureCollection");
-        List<Feature> features = new ArrayList<>();
-        features.add(feature);
-        mapResultDto.setFeatures(features);
-        return mapResultDto;
-    }*/
+
 
     public static MapResultDto buildGeometry(List<Feature> features) {
         MapResultDto mapResultDto = new MapResultDto();
