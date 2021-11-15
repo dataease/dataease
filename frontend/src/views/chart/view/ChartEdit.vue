@@ -1119,7 +1119,9 @@ export default {
         this.refreshGroup(view)
         this.closeChangeChart()
         // 从仪表板入口关闭
-        bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
+        if (this.$route.path.indexOf('panel') > -1) {
+          bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
+        }
         // this.$emit('switchComponent', { name: '' })
         this.$success(this.$t('commons.save_success'))
       })

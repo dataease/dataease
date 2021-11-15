@@ -1,7 +1,7 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <licbar />
-    <topbar v-if="componentName!=='PanelEdit'" />
+    <topbar v-if="!fullHeightFlag" />
 
     <de-container :style="mainStyle">
       <de-aside-container v-if="!sidebar.hide" class="le-aside-container">
@@ -62,7 +62,7 @@ export default {
       return this.$store.state.settings.showSettings
     },
     fullHeightFlag() {
-      return this.componentName === 'PanelEdit'
+      return this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit'
     },
     mainStyle() {
       if (this.fullHeightFlag) {
