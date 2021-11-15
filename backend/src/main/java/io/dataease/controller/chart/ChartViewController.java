@@ -107,4 +107,10 @@ public class ChartViewController {
     public ChartViewDTO calcData(@RequestBody ChartCalRequest request) throws Exception {
         return chartViewService.calcData(request.getView(), request.getRequestList(), false);
     }
+
+    @ApiOperation("验证视图是否使用相同数据集")
+    @GetMapping("/checkSameDataSet/{viewIdSource}/{viewIdTarget}")
+    public String checkSameDataSet(@PathVariable String viewIdSource,@PathVariable String viewIdTarget) throws Exception {
+        return chartViewService.checkSameDataSet(viewIdSource,viewIdTarget);
+    }
 }

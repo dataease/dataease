@@ -1455,4 +1455,12 @@ public class ChartViewService {
     public String searchAdviceSceneId(String panelId) {
         return extChartViewMapper.searchAdviceSceneId(AuthUtils.getUser().getUserId().toString(), panelId);
     }
+
+    public String checkSameDataSet(String viewIdSource,String viewIdTarget) {
+        if(extChartViewMapper.checkSameDataSet(viewIdSource,viewIdTarget)==1){
+            return "YES";
+        }else{
+            return "NO";
+        }
+    }
 }
