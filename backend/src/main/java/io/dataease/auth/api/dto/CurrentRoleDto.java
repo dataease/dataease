@@ -11,7 +11,6 @@ public class CurrentRoleDto implements Serializable {
     @ApiModelProperty("ID")
     private Long id;
 
-//    private String code;
     @ApiModelProperty("名称")
     private String name;
 }

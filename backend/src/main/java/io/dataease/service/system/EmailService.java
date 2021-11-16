@@ -133,8 +133,6 @@ public class EmailService {
 
 
     public void editMail(List<SystemParameter> parameters) {
-        /*List<SystemParameter> paramList = this.getParamList(ParamConstants.Classify.MAIL.getValue());
-        boolean empty = paramList.size() <= 0;*/
         parameters.forEach(parameter -> {
             SystemParameterExample example = new SystemParameterExample();
             if (parameter.getParamKey().equals(ParamConstants.MAIL.PASSWORD.getValue())) {

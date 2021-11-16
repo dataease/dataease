@@ -54,15 +54,11 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/dataset/field/fieldValues/**", ANON);
         filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
 
-        //未读消息数量
-        // filterChainDefinitionMap.put("/api/sys_msg/unReadCount/**", ANON);
-
         filterChainDefinitionMap.put("/**/*.json", ANON);
         filterChainDefinitionMap.put("/system/ui/**", ANON);
         filterChainDefinitionMap.put("/**/*.js", ANON);
         filterChainDefinitionMap.put("/**/*.css", ANON);
         filterChainDefinitionMap.put("/**/*.map", ANON);
-        // filterChainDefinitionMap.put("/axios.map", ANON);
 
         filterChainDefinitionMap.put("/api/auth/login", ANON);
         filterChainDefinitionMap.put("/api/auth/isPluginLoaded", ANON);

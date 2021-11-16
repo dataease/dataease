@@ -35,8 +35,6 @@ public class SystemParameterService {
     @Resource
     private FileService fileService;
 
-
-
     public String searchEmail() {
         return extSystemParameterMapper.email();
     }
@@ -47,21 +45,15 @@ public class SystemParameterService {
         if (!CollectionUtils.isEmpty(paramList)) {
             for (SystemParameter param : paramList) {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
-                    /* result.setFrontTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
                     result.setFrontTimeOut(param.getParamValue());
                 } 
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
-                    /* result.setMsgTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
                     result.setMsgTimeOut(param.getParamValue());
                 } 
             }
         }
         return result;
     }
-
-
-
-
 
     public String getSystemLanguage() {
         String result = StringUtils.EMPTY;
@@ -76,10 +68,6 @@ public class SystemParameterService {
         }
         return result;
     }
-
-
-
-
 
     public void editBasic(List<SystemParameter> parameters) {       
         parameters.forEach(parameter -> {
@@ -102,13 +90,9 @@ public class SystemParameterService {
         return systemParameterMapper.selectByExample(example);
     }
 
-
-
     public String getVersion() {
         return System.getenv("MS_VERSION");
     }
-
-
 
     public void saveLdap(List<SystemParameter> parameters) {
         SystemParameterExample example = new SystemParameterExample();
@@ -135,7 +119,6 @@ public class SystemParameterService {
         return param.getParamValue();
     }
 
-
     public List<SystemParameterDTO> getSystemParameterInfo(String paramConstantsType) {
         List<SystemParameter> paramList = this.getParamList(paramConstantsType);
         List<SystemParameterDTO> dtoList = new ArrayList<>();
@@ -153,8 +136,6 @@ public class SystemParameterService {
         dtoList.sort(Comparator.comparingInt(SystemParameter::getSort));
         return dtoList;
     }
-
-
 
     public void saveUIInfo(Map<String,List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles) throws IOException {
         List<SystemParameterDTO> parameters = request.get("systemParams");

@@ -4,14 +4,10 @@ import io.dataease.base.domain.SysDept;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.sys.base.BaseGridRequest;
-/*import io.dataease.controller.sys.request.DeptCreateRequest;
-import io.dataease.controller.sys.request.DeptDeleteRequest;
-import io.dataease.controller.sys.request.DeptStatusRequest;*/
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.controller.sys.response.DeptTreeNode;
 import io.dataease.service.sys.DeptService;
 import io.swagger.annotations.Api;
-/*import io.swagger.annotations.ApiOperation;*/
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

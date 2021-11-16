@@ -243,8 +243,6 @@ public class DataSetTableService {
                 // 更新数据和字段
                 if (update == 1) {
                     if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
-                        // 删除所有字段，重新抽象
-//                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
                         saveTableField(datasetTable);
                     }
                 }
@@ -735,7 +733,6 @@ public class DataSetTableService {
         String sql;
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-//        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         Datasource ds;
         if (dataSetTableRequest.getMode() == 0) {
             ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
@@ -746,7 +743,6 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
             sql = getCustomSQLDoris(dataTableInfoDTO, list);
         }
-//        String table = DorisTableUtils.dorisName(dataSetTableRequest.getId());
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         // 使用输入的sql先预执行一次,并拿到所有字段
         datasourceRequest.setQuery(sql);

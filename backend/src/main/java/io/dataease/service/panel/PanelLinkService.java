@@ -159,7 +159,6 @@ public class PanelLinkService {
         }
         if (StringUtils.isEmpty(panelLink.getPwd())) return false;
         boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), panelLink.getPwd());
-        /* boolean verify = JWTUtils.verifyLink(token, panelLink.getResourceId(), decryptParam(panelLink.getPwd())); */
         return verify;
     }
 

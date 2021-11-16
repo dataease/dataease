@@ -76,9 +76,6 @@ public class ShareService {
         PanelShareExample example = new PanelShareExample();
         example.createCriteria().andPanelGroupIdEqualTo(panelGroupId);
         List<PanelShare> panelShares = mapper.selectByExample(example);
-        /*if (CollectionUtils.isEmpty(panelShares)) {
-            return;
-        }*/
         Map<Integer, List<TempShareNode>> typeSharedMap = panelShares.stream().map(this::convertNode).collect(Collectors.groupingBy(TempShareNode::getType));
 
         for (Map.Entry<Integer, List<Long>> entry : authURDMap.entrySet()) {
@@ -169,11 +166,6 @@ public class ShareService {
     private Map<String, Object> filterData(List<Long> newTargets, List<TempShareNode> shareNodes) {
 
         Map<String, Object> result = new HashMap<>();
-        /*if (null == newTargets) {
-            result.put("add", new ArrayList<>());
-            result.put("red", new ArrayList<>());
-            return result;
-        }*/
         List<Long> newUserIds = new ArrayList<>();
         for (int i = 0; i < newTargets.size(); i++) {
             Long newTargetId = newTargets.get(i);
@@ -264,7 +256,6 @@ public class ShareService {
         String msg = StringUtils.joinWith("，", panelGroups.stream().map(PanelGroup::getName).collect(Collectors.toList()));
         Gson gson = new Gson();
         userIdSet.forEach(userId -> {
-            // DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!");
             DeMsgutil.sendMsg(userId, 2L, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds));
         });
 

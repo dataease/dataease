@@ -264,7 +264,6 @@ public class DatasourceService {
     public void updateDatasourceStatus(){
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
-            // checkAndUpdateDatasourceStatus(datasource);
             checkAndUpdateDatasourceStatus(datasource, true);
         });
     }

@@ -166,8 +166,6 @@ public class MongoQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -272,8 +270,6 @@ public class MongoQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -358,8 +354,6 @@ public class MongoQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -469,8 +463,6 @@ public class MongoQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -735,26 +727,10 @@ public class MongoQueryProvider extends QueryProvider {
             } else {
                 originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
-//            if (field.getDeType() == DeTypeConstants.DE_TIME) {
-//                if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-//                    whereName = String.format(MongoConstants.STR_TO_DATE, originName, MongoConstants.DEFAULT_DATE_FORMAT);
-//                }
-//                if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == 4) {
-//                    String cast = String.format(MongoConstants.CAST, originName, MongoConstants.DEFAULT_INT_FORMAT) + "/1000";
-//                    whereName = String.format(MongoConstants.FROM_UNIXTIME, cast, MongoConstants.DEFAULT_DATE_FORMAT);
-//                }
-//                if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-//                    whereName = originName;
-//                }
-//            } else {
-//                whereName = originName;
-//            }
             whereName = originName;
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-//                whereValue = MongoConstants.WHERE_VALUE_NULL;
                 whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-//                whereTerm = String.format(whereTerm, originName);
                 whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
                 whereValue = "''";
@@ -800,20 +776,6 @@ public class MongoQueryProvider extends QueryProvider {
                 originName = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }
 
-//            if (field.getDeType() == DeTypeConstants.DE_TIME) {
-//                if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-//                    whereName = String.format(MongoConstants.STR_TO_DATE, originName, MongoConstants.DEFAULT_DATE_FORMAT);
-//                }
-//                if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == 4) {
-//                    String cast = String.format(MongoConstants.CAST, originName, MongoConstants.DEFAULT_INT_FORMAT) + "/1000";
-//                    whereName = String.format(MongoConstants.FROM_UNIXTIME, cast, MongoConstants.DEFAULT_DATE_FORMAT);
-//                }
-//                if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-//                    whereName = originName;
-//                }
-//            } else {
-//                whereName = originName;
-//            }
             whereName = originName;
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
@@ -882,28 +844,8 @@ public class MongoQueryProvider extends QueryProvider {
     private SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
         if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
-//            if (x.getDeType() == DeTypeConstants.DE_INT || x.getDeType() == DeTypeConstants.DE_FLOAT) {
-//                fieldName = String.format(MongoConstants.UNIX_TIMESTAMP, originField) + "*1000";
-//            } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
-//                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-//                fieldName = String.format(MongoConstants.DATE_FORMAT, originField, format);
-//            } else {
-//                fieldName = originField;
-//            }
             fieldName = originField;
         } else {
-//            if (x.getDeType() == DeTypeConstants.DE_TIME) {
-//                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-//                if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-//                    fieldName = String.format(MongoConstants.DATE_FORMAT, originField, format);
-//                } else {
-//                    String cast = String.format(MongoConstants.CAST, originField, MongoConstants.DEFAULT_INT_FORMAT) + "/1000";
-//                    String from_unixtime = String.format(MongoConstants.FROM_UNIXTIME, cast, MongoConstants.DEFAULT_DATE_FORMAT);
-//                    fieldName = String.format(MongoConstants.DATE_FORMAT, from_unixtime, format);
-//                }
-//            } else {
-//                fieldName = originField;
-//            }
             fieldName = originField;
         }
         return SQLObj.builder()
@@ -919,14 +861,6 @@ public class MongoQueryProvider extends QueryProvider {
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
-//            if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-//                String cast = String.format(MongoConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? MongoConstants.DEFAULT_INT_FORMAT : MongoConstants.DEFAULT_FLOAT_FORMAT);
-//                String agg = String.format(MongoConstants.AGG_FIELD, y.getSummary(), cast);
-//                fieldName = String.format(MongoConstants.CAST, agg, MongoConstants.DEFAULT_FLOAT_FORMAT);
-//            } else {
-//                String cast = String.format(MongoConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? MongoConstants.DEFAULT_INT_FORMAT : MongoConstants.DEFAULT_FLOAT_FORMAT);
-//                fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), cast);
-//            }
             fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
         }
         return SQLObj.builder()
@@ -943,10 +877,8 @@ public class MongoQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-//                    whereValue = MongoConstants.WHERE_VALUE_NULL;
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-//                    whereTerm = String.format(whereTerm, originField);
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
                     whereValue = "''";

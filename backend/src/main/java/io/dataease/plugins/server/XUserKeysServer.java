@@ -24,7 +24,6 @@ public class XUserKeysServer {
 
     @PostMapping("validate")
     public String validate(ServletRequest request) {
-        // return ApiKeyHandler.getUser(WebUtils.toHttp(request));
         return null;
     }
 

@@ -49,7 +49,6 @@ public class IndexController {
             case valid:
                 return "doc.html";
             default:
-                // DataEaseException.throwException("Invalid License.");
                 return "nolic.html";
         }
     }

@@ -67,7 +67,6 @@ public class LinkServer implements LinkApi {
 
         ValidateDto dto = new ValidateDto();
         String resourceId = json;
-       /*  String resourceId = request.getResourceId(); */
         PanelLink one = panelLinkService.findOne(resourceId);
         dto.setResourceId(resourceId);
         if (ObjectUtils.isEmpty(one)){
