@@ -29,6 +29,11 @@ export const VIDEOLINKS = {
     muted: true,
     loop: true,
     controlBar: {
+      timeDivider: false,
+      durationDisplay: false,
+      remainingTimeDisplay: false,
+      currentTimeDisplay: false, // 当前时间
+      volumeControl: false, // 声音控制键
       fullscreenToggle: false
     },
     sources: [{
