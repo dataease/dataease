@@ -7,9 +7,9 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.dto.datasource.JdbcConfiguration;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
+import io.dataease.dto.datasource.JdbcConfiguration;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.query.QueryProvider;
 import io.dataease.provider.query.SQLConstants;
@@ -97,7 +97,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
-                String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(f.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                } else {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
                 // 处理横轴字段
@@ -184,7 +192,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
-                String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -206,7 +222,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(y.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                } else {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -275,7 +299,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
-                String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -354,7 +386,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(xList)) {
             for (int i = 0; i < xList.size(); i++) {
                 ChartViewFieldDTO x = xList.get(i);
-                String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
@@ -376,7 +416,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(y.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                } else {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -589,7 +637,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
                 ChartViewFieldDTO y = yAxis.get(i);
-                String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                String originField;
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(y.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                } else {
+                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
@@ -735,8 +791,15 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereName = "";
             String whereTerm = transMysqlFilterTerm(request.getTerm());
             String whereValue = "";
-            String originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-
+            String originName;
+            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                // 解析origin name中有关联的字段生成sql表达式
+                originName = calcFieldRegex(field.getOriginName(), tableObj);
+            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            }
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originName);
@@ -790,7 +853,16 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereName = "";
             String whereTerm = transMysqlFilterTerm(request.getOperator());
             String whereValue = "";
-            String originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+
+            String originName;
+            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                // 解析origin name中有关联的字段生成sql表达式
+                originName = calcFieldRegex(field.getOriginName(), tableObj);
+            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            }
 
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
