@@ -152,7 +152,7 @@ export default {
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
-    const tempDom = document.getElementById('canvasInfoTemp')
+    const tempDom = document.getElementById('canvasInfoMain')
     erd.listenTo(tempDom, element => {
       _this.$nextTick(() => {
         _this.restore()
