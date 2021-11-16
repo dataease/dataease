@@ -46,6 +46,11 @@ export default {
       default: function() {
         return ['drill']
       }
+    },
+    searchCount: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data() {
@@ -169,6 +174,10 @@ export default {
           this.antVRenderStatus = false
           this.myChart.destroy()
         }
+      }
+
+      if (this.myChart && this.searchCount > 0) {
+        this.myChart.options.animation = false
       }
 
       if (this.antVRenderStatus) {
