@@ -1,7 +1,8 @@
 <template>
   <el-row ref="mainPlayer">
-    <div v-if="this.element.videoLinks[this.element.videoLinks.videoType].sources[0].src" class="player">
+    <div v-if="this.element.videoLinks[this.element.videoLinks.videoType].sources[0].src" :class="{'move-bg':moveFlag}" class="player">
       <video-player
+        v-if="!moveFlag"
         ref="videoPlayer"
         class="vjs-custom-skin"
         :options="playerOptions"
@@ -62,13 +63,16 @@ export default {
     }
   },
   computed: {
+    moveFlag() {
+      return (this.element.optStatus.dragging || this.element.optStatus.resizing)
+    },
     player() {
       return this.$refs.videoPlayer.player
     },
     playerOptions() {
       const videoPlayerOptions = this.element.videoLinks[this.element.videoLinks.videoType]
       let playHeight = this.h
-      if (this.canvasStyleData.panel.gap) {
+      if (this.canvasStyleData.panel.gap === 'yes') {
         playHeight = this.h - (this.componentGap * 2)
       }
       videoPlayerOptions.height = playHeight
@@ -82,26 +86,6 @@ export default {
     ])
   },
   mounted() {
-    // console.log('this is current player instance object', this.player)
-    setTimeout(() => {
-      console.log('dynamic change options', this.player)
-
-      // change src
-      // this.playerOptions.sources[0].src = 'https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm';
-
-      // change item
-      // this.$set(this.playerOptions.sources, 0, {
-      //   type: "video/mp4",
-      //   src: 'https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm',
-      // })
-
-      // change array
-      // this.playerOptions.sources = [{
-      //   type: "video/mp4",
-      //   src: 'https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm',
-      // }]
-      this.player.muted(false)
-    }, 5000)
   },
   methods: {
     // listen event
@@ -142,7 +126,7 @@ export default {
     // player is ready
     playerReadied(player) {
       // seek to 10s
-      console.log('example player 1 readied', player)
+      // console.log('example player 1 readied', player)
       // player.currentTime(10): the player is readied', player)
     }
   }
@@ -159,6 +143,11 @@ export default {
     background-color: #FFFFFF;
     font-size: 12px;
     color: #9ea6b2;
+  }
+  .move-bg {
+    height: 100%;
+    width: 100%;
+    background-color: #000000;
   }
 </style>
 
