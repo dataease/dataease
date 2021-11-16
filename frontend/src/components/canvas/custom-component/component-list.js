@@ -26,6 +26,7 @@ export const VIDEOLINKS = {
   videoType: 'web',
   web: {
     autoplay: true,
+    height: 300,
     muted: true,
     loop: true,
     controlBar: {
@@ -43,6 +44,7 @@ export const VIDEOLINKS = {
     sources: [{
       type: 'rtmp/mp4'
     }],
+    height: 300,
     techOrder: ['flash'],
     autoplay: false,
     controls: true,

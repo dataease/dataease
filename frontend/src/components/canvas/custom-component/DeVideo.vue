@@ -1,8 +1,7 @@
 <template>
   <el-row ref="mainPlayer">
-    <div v-if="this.element.videoLinks[this.element.videoLinks.videoType].sources[0].src" :class="{'move-bg':moveFlag}" class="player">
+    <div v-if="this.element.videoLinks[this.element.videoLinks.videoType].sources[0].src" class="player">
       <video-player
-        v-if="!moveFlag"
         ref="videoPlayer"
         class="vjs-custom-skin"
         :options="playerOptions"
