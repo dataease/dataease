@@ -1405,7 +1405,7 @@ export default {
     online_video: 'Online Video',
     streaming_media: 'Streaming Media',
     auto_play: 'Auto Play',
-    video_tips: 'Video Tips',
+    video_tips: 'User Https,Now Format:mp4、webm',
     play_frequency: 'Play Frequency',
     play_once: 'Once',
     play_circle: 'Circle',

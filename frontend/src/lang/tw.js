@@ -1408,7 +1408,7 @@ export default {
     online_video: '在线视频',
     streaming_media: '流媒体',
     auto_play: '自动播放',
-    video_tips: '非HTTPS链接，可能导致无法播放',
+    video_tips: '优先HTTPS链接；当前支持格式mp4,webm',
     play_frequency: '播放频率',
     play_once: '播放一次',
     play_circle: '循环播放',
