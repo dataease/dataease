@@ -66,18 +66,15 @@ export default {
     moveFlag() {
       return (this.element.optStatus.dragging || this.element.optStatus.resizing)
     },
+    curGap() {
+      return this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix ? this.componentGap : 0
+    },
     player() {
       return this.$refs.videoPlayer.player
     },
     playerOptions() {
       const videoPlayerOptions = this.element.videoLinks[this.element.videoLinks.videoType]
-      let playHeight = this.h
-      if (this.canvasStyleData.panel.gap === 'yes') {
-        playHeight = this.h - (this.componentGap * 2)
-      }
-      videoPlayerOptions.height = playHeight
-
-      console.log('videoPlayerOptions:' + JSON.stringify(videoPlayerOptions))
+      videoPlayerOptions.height = this.h - (this.curGap * 2)
       return videoPlayerOptions
     },
     ...mapState([
