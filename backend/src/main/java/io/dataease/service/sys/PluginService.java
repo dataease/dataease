@@ -105,9 +105,6 @@ public class PluginService {
             DeFileUtils.deleteFile(folder);
         }
 
-        //mybatisLoader.loadMybatis(myPlugin);
-        //5.写表到my_plugin
-        // myPlugin.setPluginId(0L);
 
         return null;
     }
@@ -118,15 +115,7 @@ public class PluginService {
 
 
 
-    /*private String makeTargetDir(MyPlugin myPlugin) {
-        String name = myPlugin.getName();
-        String dir = pluginDir + name + "/" + myPlugin.getVersion() + "/";
-        File fileDir = new File(dir);
-        if (!fileDir.exists()) {
-            fileDir.mkdirs();
-        }
-        return dir;
-    }*/
+
     private String makeTargetDir(MyPlugin myPlugin) {
         String store = myPlugin.getStore();
         String dir = pluginDir + store + "/";

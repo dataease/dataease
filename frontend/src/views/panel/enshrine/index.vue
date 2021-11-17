@@ -55,6 +55,7 @@ export default {
           name: row.name
         }
         this.$store.dispatch('panel/setPanelInfo', data)
+        bus.$emit('set-panel-show-type', 0)
       })
     },
     resetID(data) {

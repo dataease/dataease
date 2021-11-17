@@ -26,9 +26,15 @@ export const VIDEOLINKS = {
   videoType: 'web',
   web: {
     autoplay: true,
+    height: 300,
     muted: true,
     loop: true,
     controlBar: {
+      timeDivider: false,
+      durationDisplay: false,
+      remainingTimeDisplay: false,
+      currentTimeDisplay: false, // 当前时间
+      volumeControl: false, // 声音控制键
       fullscreenToggle: false
     },
     sources: [{
@@ -38,6 +44,7 @@ export const VIDEOLINKS = {
     sources: [{
       type: 'rtmp/mp4'
     }],
+    height: 300,
     techOrder: ['flash'],
     autoplay: false,
     controls: true,

@@ -973,7 +973,8 @@ export default {
     preview: '上一步',
     next: '下一步',
     select_dataset: '选择数据集',
-    select_chart_type: '选择图表类型'
+    select_chart_type: '选择图表类型',
+    recover: '重置'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1151,7 +1152,9 @@ export default {
     excel_info_3: '3、Excel文件大小请确保在500M以内。',
     sync_field: '同步字段',
     confirm_sync_field: '确认同步',
-    confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认'
+    confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认',
+    sync_success: '同步成功',
+    sync_success_1: '同步成功，请对当前数据集重新执行数据同步操作'
   },
   datasource: {
     datasource: '数据源',
@@ -1235,6 +1238,15 @@ export default {
     link_share: '链接分享',
     link_share_desc: '开启链接后，任何人可通过此链接访问仪表板。',
     share: '分享',
+    remove_share_confirm: '确认取消当前仪表板所有分享？',
+    share_in: '分享给我',
+    share_out: '我分享的',
+    who_share: '分享人',
+    when_share: '分享时间',
+    share_to: '分享对象',
+    org: '组织',
+    role: '角色',
+    user: '用户',
     datalist: '视图列表',
     group: '目录',
     panel: '仪表板',
@@ -1405,7 +1417,7 @@ export default {
     online_video: '在线视频',
     streaming_media: '流媒体',
     auto_play: '自动播放',
-    video_tips: '非HTTPS链接，可能导致无法播放',
+    video_tips: '优先HTTPS链接；当前支持格式mp4,webm',
     play_frequency: '播放频率',
     play_once: '播放一次',
     play_circle: '循环播放',

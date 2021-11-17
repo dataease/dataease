@@ -61,8 +61,18 @@ export default {
       ]
     }
   },
+  watch: {
+    linkInfo: {
+      handler: function() {
+        this.init()
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.init()
+  },
   mounted() {
-    this.linkInfoTemp = deepCopy(this.linkInfo)
   },
   computed: {
     ...mapState([
@@ -70,6 +80,9 @@ export default {
     ])
   },
   methods: {
+    init() {
+      this.linkInfoTemp = deepCopy(this.linkInfo)
+    },
     onSubmit() {
       this.curComponent.videoLinks = this.linkInfoTemp
       this.$store.state.styleChangeTimes++

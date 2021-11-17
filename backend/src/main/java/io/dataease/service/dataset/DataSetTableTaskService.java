@@ -306,8 +306,5 @@ public class DataSetTableTaskService {
         if(!datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
             scheduleService.fireNow(datasetTableTask);
         }
-//        if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
-//            scheduleService.addSchedule(datasetTableTask);
-//        }
     }
 }

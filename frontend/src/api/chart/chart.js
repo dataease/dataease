@@ -52,3 +52,11 @@ export function searchAdviceSceneId(panelId) {
     loading: true
   })
 }
+
+export function checkSameDataSet(viewIdSource, viewIdTarget) {
+  return request({
+    url: '/chart/view/checkSameDataSet/' + viewIdSource + '/' + viewIdTarget,
+    method: 'get',
+    loading: false
+  })
+}

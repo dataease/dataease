@@ -1,6 +1,6 @@
 <template>
   <div
-    v-loading="canvasStyleData.refreshViewLoading&&requestStatus==='waiting'"
+    v-loading="loadingFlag"
     :class="[
       {
         ['active']: active
@@ -16,8 +16,8 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" @onJumpClick="jumpClick" />
-    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" @onJumpClick="jumpClick" />
+    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" :search-count="searchCount" @onChartClick="chartClick" @onJumpClick="jumpClick" />
+    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" :search-count="searchCount" @onChartClick="chartClick" @onJumpClick="jumpClick" />
     <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
     <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
     <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
@@ -54,11 +54,6 @@ export default {
       type: Object,
       default: null
     },
-    // filters: {
-    //   type: Array,
-    //   required: false,
-    //   default: null
-    // },
     outStyle: {
       type: Object,
       required: false,
@@ -100,6 +95,9 @@ export default {
     }
   },
   computed: {
+    loadingFlag() {
+      return (this.canvasStyleData.refreshViewLoading || this.searchCount === 0) && this.requestStatus === 'waiting'
+    },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
@@ -167,9 +165,6 @@ export default {
       handler(newVal, oldVal) {
         // isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
         if (isChange(newVal, oldVal)) {
-        //   if (this.chart.type === 'map') {
-        //     this.doMapLink(newVal)
-        //   }
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -202,10 +197,6 @@ export default {
     // 监听外部的样式变化 （非实时性要求）
     outStyle: {
       handler(newVal, oldVla) {
-        //
-        // if (this.$refs[this.element.propValue.id]) {
-        //   this.$refs[this.element.propValue.id].chartResize()
-        // }
       },
       deep: true
     },

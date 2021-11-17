@@ -53,6 +53,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("mongoQuery", QueryProvider.class);
             case redshift:
                 return context.getBean("redshiftQuery", QueryProvider.class);
+            case hive:
+                return context.getBean("hiveQuery", QueryProvider.class);
             default:
                 return context.getBean("mysqlQuery", QueryProvider.class);
         }

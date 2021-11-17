@@ -104,9 +104,6 @@ public class ModuleClassLoader extends URLClassLoader {
                     byte[] classBytes = baos.toByteArray();
                     classBytesMap.put(className,classBytes);
                 }
-                /*if (name.endsWith(".xml")) {
-                    loadMapperXml(name);
-                }*/
             }
         } catch (IOException e) {
             e.printStackTrace();

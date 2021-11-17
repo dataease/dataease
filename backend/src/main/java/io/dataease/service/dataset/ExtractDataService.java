@@ -189,7 +189,6 @@ public class ExtractDataService {
                     extractData(datasetTable, "all_scope");
                     replaceTable(DorisTableUtils.dorisName(datasetTableId));
                     saveSucessLog(datasetTableTaskLog);
-//                    sendWebMsg(datasetTable, null, true);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                     if(ops.equalsIgnoreCase("替换")){
                         dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
@@ -199,7 +198,6 @@ public class ExtractDataService {
                     }
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
-//                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                 } finally {
@@ -218,11 +216,9 @@ public class ExtractDataService {
                     Long execTime = System.currentTimeMillis();
                     extractData(datasetTable, "incremental_add");
                     saveSucessLog(datasetTableTaskLog);
-//                    sendWebMsg(datasetTable, null, true);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
-//                    sendWebMsg(datasetTable, null, false);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                 } finally {
                     deleteFile("incremental_add", datasetTableId);
@@ -413,7 +409,7 @@ public class ExtractDataService {
             if (ObjectUtils.isNotEmpty(datasetTableTask) && ObjectUtils.isNotEmpty(datasetTableTask.getName())) {
                 content += " 任务名称【" + datasetTableTask.getName() + "】";
             }
-            DeMsgutil.sendMsg(userId, typeId, 1L, content, gson.toJson(param));
+            DeMsgutil.sendMsg(userId, typeId, content, gson.toJson(param));
         });
     }
 
@@ -691,20 +687,6 @@ public class ExtractDataService {
         startEntry.setLocation(100, 100);
         jobMeta.addJobEntry(startEntry);
 
-        //trans
-//        JobEntryTrans transrans = new JobEntryTrans();
-//        transrans.clearResultFiles = true;
-//        transrans.clearResultRows = true;
-//        transrans.followingAbortRemotely = true;
-//        transrans.setTransname(transName);
-//        transrans.setName("Transformation");
-//        JobEntryCopy transEntry = new JobEntryCopy(transrans);
-//        transEntry.setDrawn(true);
-//        transEntry.setLocation(300, 100);
-//        jobMeta.addJobEntry(transEntry);
-
-//        jobMeta.addJobHop(new JobHopMeta(startEntry, transEntry));
-
         //exec shell
         JobEntryShell shell = new JobEntryShell();
         shell.setScript(script);
@@ -807,7 +789,6 @@ public class ExtractDataService {
             case ck:
                 CHConfiguration chConfiguration = new Gson().fromJson(datasource.getConfiguration(), CHConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "ORACLE", "Native", chConfiguration.getHost().trim(), chConfiguration.getDataBase().trim(), chConfiguration.getPort().toString(), chConfiguration.getUsername(), chConfiguration.getPassword());
-//                dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
                 dataMeta.setDatabaseType("Clickhouse");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
@@ -1010,7 +991,6 @@ public class ExtractDataService {
     }
 
     private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType) {
-//        String needToChangeColumnType = "";
         String handleBinaryTypeCode = "";
         String excelCompletion = "";
 
@@ -1128,17 +1108,6 @@ public class ExtractDataService {
             "           get(Fields.Out, filed).setValue(r, \"\");\n" +
             "           get(Fields.Out, filed).getValueMeta().setType(2);\n" +
             "     \t}";
-
-
-//    private final static String alterColumnTypeCode = "    if(\"FILED\".equalsIgnoreCase(filed)){\n" +
-//            "\t   if(tmp != null && tmp.equalsIgnoreCase(\"Y\")){\n" +
-//            "         get(Fields.Out, filed).setValue(r, 1);\n" +
-//            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
-//            "       }else{\n" +
-//            "         get(Fields.Out, filed).setValue(r, 0);\n" +
-//            "         get(Fields.Out, filed).getValueMeta().setType(2);\n" +
-//            "       }\n" +
-//            "     }\n" ;
 
     private final static String handleExcelIntColumn = " \t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
             "            try {\n" +

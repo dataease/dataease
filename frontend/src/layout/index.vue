@@ -1,14 +1,14 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <licbar />
-    <topbar />
+    <topbar v-if="!fullHeightFlag" />
 
-    <de-container style="padding-top: 56px;">
+    <de-container :style="mainStyle">
       <de-aside-container v-if="!sidebar.hide" class="le-aside-container">
         <sidebar class="sidebar-container" />
       </de-aside-container>
 
-      <de-main-container class="la-main-container">
+      <de-main-container class="la-main-container" :class="{'full-height':fullHeightFlag}">
         <app-main />
       </de-main-container>
     </de-container>
@@ -29,6 +29,8 @@ import ResizeMixin from './mixin/ResizeHandler'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
+import bus from '@/utils/bus'
+
 export default {
   name: 'Layout',
   components: {
@@ -41,6 +43,11 @@ export default {
     DeAsideContainer
   },
   mixins: [ResizeMixin],
+  data() {
+    return {
+      componentName: 'PanelMain'
+    }
+  },
   computed: {
     sidebar() {
       return this.$store.state.app.sidebar
@@ -54,6 +61,20 @@ export default {
     showSettings() {
       return this.$store.state.settings.showSettings
     },
+    fullHeightFlag() {
+      return this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit'
+    },
+    mainStyle() {
+      if (this.fullHeightFlag) {
+        return {
+          'height': '100vh!important'
+        }
+      } else {
+        return {
+          'paddingTop': '56px'
+        }
+      }
+    },
     classObj() {
       return {
         // hideSidebar: !this.sidebar.opened,
@@ -62,6 +83,11 @@ export default {
         mobile: this.device === 'mobile'
       }
     }
+  },
+  mounted() {
+    bus.$on('PanelSwitchComponent', (c) => {
+      this.componentName = c.name
+    })
   },
   methods: {
     handleClickOutside() {
@@ -126,5 +152,8 @@ export default {
         overflow-y: auto !important;
         background-color: var(--SiderBG) !important;
       }
+  }
+  .full-height {
+    height: 100vh !important;
   }
 </style>

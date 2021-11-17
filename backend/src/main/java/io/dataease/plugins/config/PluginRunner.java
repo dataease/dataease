@@ -47,7 +47,6 @@ public class PluginRunner implements ApplicationRunner {
                 }
             } catch (Exception e) {
                 LogUtil.error(e);
-                //e.printStackTrace();
             }
         });
 

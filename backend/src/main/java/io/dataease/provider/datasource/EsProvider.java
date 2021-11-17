@@ -194,10 +194,10 @@ public class EsProvider extends DatasourceProvider {
         }
 
         for (String[] row : esReponse.getRows()) {
-           if(row.length == 3 && row[1].equalsIgnoreCase("TABLE") && row[2].equalsIgnoreCase("INDEX")){
+           if(row.length == 3 && row[1].contains("TABLE") && row[2].equalsIgnoreCase("INDEX")){
                tables.add(row[0]);
            }
-            if(row.length == 2 && row[1].equalsIgnoreCase("BASE TABLE")){
+            if(row.length == 2 && row[1].contains("TABLE")){
                 tables.add(row[0]);
             }
         }
@@ -209,17 +209,7 @@ public class EsProvider extends DatasourceProvider {
         return new ArrayList<>();
     }
 
-//    @Override
-//    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-//        List<TableFiled> tableFileds = new ArrayList<>();
-//        try {
-//            String response = exexQuery(datasourceRequest, "desc " + datasourceRequest.getTable(), "?format=json");
-//            tableFileds = fetchResultField(response);
-//        } catch (Exception e) {
-//            DataEaseException.throwException(e);
-//        }
-//        return tableFileds;
-//    }
+
 
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {

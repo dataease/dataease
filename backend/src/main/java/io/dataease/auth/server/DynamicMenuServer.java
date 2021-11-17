@@ -14,7 +14,6 @@ public class DynamicMenuServer implements DynamicMenuApi {
 
     @Override
     public List<DynamicMenuDto> menus() {
-        //ServletUtils.getToken()
         return dynamicMenuService.load(null);
     }
 }

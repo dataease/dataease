@@ -46,8 +46,6 @@
       <div v-if="valid" class="auth-root-class">
         <span slot="footer">
 
-          <el-button v-if="newUrl && !form.enablePwd" v-clipboard:copy="newUrl" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_short_link') }}</el-button>
-          <el-button v-if="newUrl && form.enablePwd" v-clipboard:copy="newUrl + ' Password: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_short_link_passwd') }}</el-button>
           <el-button v-if="!form.enablePwd" v-clipboard:copy="form.uri" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link') }}</el-button>
           <el-button v-if="form.enablePwd" v-clipboard:copy="form.uri + ' Password: '+ form.pwd" v-clipboard:success="onCopy" v-clipboard:error="onError" size="mini" type="primary">{{ $t('panel.copy_link_passwd') }}</el-button>
 
@@ -77,7 +75,6 @@ export default {
       pwdNums: 4,
       valid: false,
       form: {},
-      newUrl: null,
       defaultForm: { enablePwd: false, pwd: null, uri: null },
       pickerOptions: {
         disabledDate: time => {
@@ -176,11 +173,9 @@ export default {
     },
 
     onCopy(e) {
-    //   alert('You just copied: ' + e.text)
       this.$success(this.$t('commons.copy_success'))
     },
     onError(e) {
-    //   alert('Failed to copy texts')
     },
     onChange(value) {
       const param = {
@@ -194,14 +189,10 @@ export default {
     requestShort() {
       const url = this.form.uri
       if (!url) return
-      //   if (this.origin.includes('localhost') || this.origin.includes('127.0.0.1')) {
-      //     console.log('本地无法生成短链接')
-      //     this.$warning('本地无法生成短链接')
-      //     return
-      //   }
-      shortUrl({ url }).then(res => {
+
+      shortUrl({ resourceId: this.resourceId }).then(res => {
         if (res.success) {
-          this.newUrl = res.data
+          this.form.uri = this.origin + res.data
         }
       })
     },

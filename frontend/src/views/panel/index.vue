@@ -1,6 +1,6 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
-    <de-main-container>
+    <de-main-container :class="{'full-height':fullHeightFlag}">
       <panel-main v-show="componentName==='PanelMain'" ref="panel_main" />
       <chart-edit v-if="componentName==='ChartEdit'" :param="param" />
       <panel-edit v-if="componentName==='PanelEdit'" />
@@ -25,6 +25,11 @@ export default {
       component: PanelMain,
       componentName: 'PanelMain',
       param: {}
+    }
+  },
+  computed: {
+    fullHeightFlag() {
+      return this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit'
     }
   },
   watch: {
@@ -103,4 +108,7 @@ export default {
     padding: 0;
   }
 
+  .full-height {
+    height: 100vh !important;
+  }
 </style>

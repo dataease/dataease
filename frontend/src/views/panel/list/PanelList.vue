@@ -131,6 +131,14 @@
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
+                <span v-if="data.nodeType==='panel'" @click.stop>
+                  <el-button
+                    icon="el-icon-edit"
+                    type="text"
+                    size="small"
+                    @click="edit(data, node)"
+                  />
+                </span>
                 <span style="margin-left: 12px;" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickMore">
                     <span class="el-dropdown-link">
@@ -647,6 +655,8 @@ export default {
           queryPanelJumpInfo(data.id).then(rsp => {
             this.$store.commit('setNowPanelJumpInfo', rsp.data)
           })
+
+          bus.$emit('set-panel-show-type', 0)
         })
       }
       if (node.expanded) {
@@ -801,6 +811,9 @@ export default {
     },
     searchTypeClick(searchTypeInfo) {
       this.searchType = searchTypeInfo
+    },
+    editFromPanelViewShow() {
+      this.edit(this.lastActiveNodeData, this.lastActiveNode)
     }
   }
 }

@@ -970,7 +970,8 @@ export default {
     preview: '上一步',
     next: '下一步',
     select_dataset: '選擇數據集',
-    select_chart_type: '選擇圖表類型'
+    select_chart_type: '選擇圖表類型',
+    recover: '重置'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1148,7 +1149,9 @@ export default {
     excel_info_3: '3、文件不超過500M。',
     sync_field: '同步字段',
     confirm_sync_field: '確認同步',
-    confirm_sync_field_tips: '同步字段可能會導致已編輯字段發生變更，請確認'
+    confirm_sync_field_tips: '同步字段可能會導致已編輯字段發生變更，請確認',
+    sync_success: '同步成功',
+    sync_success_1: '同步成功，請對當前數據集重新執行數據同步操作'
   },
   datasource: {
     datasource: '數據源',
@@ -1227,6 +1230,15 @@ export default {
     link_expire: '鏈接已過期！',
     link_share_desc: '開啓鏈接後，任何人可通過此鏈接訪問儀表板。',
     share: '分享',
+    remove_share_confirm: '確認取消當前儀表板所有分享？',
+    share_in: '分享給我',
+    share_out: '我分享的',
+    who_share: '分享人',
+    when_share: '分享時間',
+    share_to: '分享對象',
+    org: '組織',
+    role: '角色',
+    user: '用戶',
     datalist: '視圖列表',
     group: '目錄',
     panel: '儀表板',
@@ -1396,7 +1408,7 @@ export default {
     online_video: '在线视频',
     streaming_media: '流媒体',
     auto_play: '自动播放',
-    video_tips: '非HTTPS链接，可能导致无法播放',
+    video_tips: '优先HTTPS链接；当前支持格式mp4,webm',
     play_frequency: '播放频率',
     play_once: '播放一次',
     play_circle: '循环播放',

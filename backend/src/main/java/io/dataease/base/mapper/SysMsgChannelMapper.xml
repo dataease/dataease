@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.SysMsgChannel">
     <id column="msg_channel_id" jdbcType="BIGINT" property="msgChannelId" />
     <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+    <result column="service_name" jdbcType="VARCHAR" property="serviceName" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -64,7 +65,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    msg_channel_id, channel_name
+    msg_channel_id, channel_name, service_name
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.SysMsgChannelExample" resultMap="BaseResultMap">
     select
@@ -97,8 +98,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.SysMsgChannel">
-    insert into sys_msg_channel (msg_channel_id, channel_name)
-    values (#{msgChannelId,jdbcType=BIGINT}, #{channelName,jdbcType=VARCHAR})
+    insert into sys_msg_channel (msg_channel_id, channel_name, service_name
+      )
+    values (#{msgChannelId,jdbcType=BIGINT}, #{channelName,jdbcType=VARCHAR}, #{serviceName,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.SysMsgChannel">
     insert into sys_msg_channel
@@ -109,6 +112,9 @@
       <if test="channelName != null">
         channel_name,
       </if>
+      <if test="serviceName != null">
+        service_name,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="msgChannelId != null">
@@ -116,6 +122,9 @@
       </if>
       <if test="channelName != null">
         #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null">
+        #{serviceName,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -134,6 +143,9 @@
       <if test="record.channelName != null">
         channel_name = #{record.channelName,jdbcType=VARCHAR},
       </if>
+      <if test="record.serviceName != null">
+        service_name = #{record.serviceName,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -142,7 +154,8 @@
   <update id="updateByExample" parameterType="map">
     update sys_msg_channel
     set msg_channel_id = #{record.msgChannelId,jdbcType=BIGINT},
-      channel_name = #{record.channelName,jdbcType=VARCHAR}
+      channel_name = #{record.channelName,jdbcType=VARCHAR},
+      service_name = #{record.serviceName,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -153,12 +166,16 @@
       <if test="channelName != null">
         channel_name = #{channelName,jdbcType=VARCHAR},
       </if>
+      <if test="serviceName != null">
+        service_name = #{serviceName,jdbcType=VARCHAR},
+      </if>
     </set>
     where msg_channel_id = #{msgChannelId,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.SysMsgChannel">
     update sys_msg_channel
-    set channel_name = #{channelName,jdbcType=VARCHAR}
+    set channel_name = #{channelName,jdbcType=VARCHAR},
+      service_name = #{serviceName,jdbcType=VARCHAR}
     where msg_channel_id = #{msgChannelId,jdbcType=BIGINT}
   </update>
 </mapper>

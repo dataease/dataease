@@ -79,8 +79,6 @@ public class DeptService {
 
     @Transactional
     public int batchDelete(List<DeptDeleteRequest> requests){
-       /* Integer index = ids.stream().map(sysDeptMapper::deleteByPrimaryKey).reduce(Integer::sum).orElse(-1);
-        return index;*/
         List<Long> ids = requests.stream().map(request -> {
             Long pid = request.getPid();
             if (pid != DEPT_ROOT_PID){
@@ -127,7 +125,6 @@ public class DeptService {
 
 
     public List<SysDept> nodesTreeByCondition(BaseGridRequest request){
-        //DeptService proxy = proxy();
         List<SimpleTreeNode> allNodes = allNodes();
         List<SimpleTreeNode> targetNodes = nodeByCondition(request);
         if(CollectionUtils.isEmpty(targetNodes)){

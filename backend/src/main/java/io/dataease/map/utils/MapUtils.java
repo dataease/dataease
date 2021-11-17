@@ -34,15 +34,10 @@ public class MapUtils {
 
 
     public static String formatCode(String code) {
-//        return code.substring(3);
         return code;
     }
 
-    /*public static List<Map<String, Object>> readCodeList( ) {
-        ExcelReader reader = ExcelUtil.getReader(path);
-        List<Map<String, Object>> maps = reader.readAll();
-        return maps;
-    }*/
+
     public static List<Map<String, Object>> readCodeList( ) {
         AreaMappingExample example = new AreaMappingExample();
         List<AreaMapping> areaMappings = areaMappingMapper.selectByExample(example);
@@ -61,7 +56,6 @@ public class MapUtils {
 
     public static List<AreaEntity> readAreaEntity() {
         List<Map<String, Object>> maps = readCodeList();
-        // AreaEntity root = new AreaEntity;
 
         Map<String, AreaEntity> provinceMap = new ConcurrentHashMap<>();
         Map<String, AreaEntity> cityMap = new ConcurrentHashMap<>();
@@ -70,7 +64,6 @@ public class MapUtils {
         AreaEntity china = root();
 
         maps.stream().forEach(map -> {
-            // maps.stream().forEach(map -> {
             String province_code = map.get(Constants.PROVINCE_CODE).toString();
             String city_code = map.get(Constants.CITY_CODE).toString();
             String county_code = map.get(Constants.COUNTY_CODE).toString();
@@ -114,7 +107,6 @@ public class MapUtils {
                 }
             }
         });
-        // List<AreaEntity> treeNodes = provinceMap.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
         List<AreaEntity> result = new ArrayList<>();
         result.add(china);
         return result;
@@ -131,10 +123,6 @@ public class MapUtils {
             if (StrUtil.equals("1", mapResponse.getStatus()) && StrUtil.equalsAnyIgnoreCase("ok", mapResponse.getInfo()) && StrUtil.equalsAnyIgnoreCase("10000", mapResponse.getInfocode())) {
                 List<District> districts = mapResponse.getDistricts();
                 if (CollectionUtil.isNotEmpty(districts)) {
-
-                    /*District district = districts.get(0);
-                    MapResultDto mapResultDto = buildGeometry(district, areaEntity);
-                    writeFeatureFile(mapResultDto, areaEntity.getCode());*/
                     List<Feature> kidFeatures = districts.stream().map(district -> buildFeature(district, areaEntity)).collect(Collectors.toList());
                     MapResultDto mapResultDto = buildGeometry(kidFeatures);
                     writeFeatureFile(mapResultDto, areaEntity.getCode());
@@ -234,15 +222,7 @@ public class MapUtils {
 
 
 
-    /*public static MapResultDto buildGeometry(District district, AreaEntity areaEntity) {
-        Feature feature = buildFeature(district, areaEntity);
-        MapResultDto mapResultDto = new MapResultDto();
-        mapResultDto.setType("FeatureCollection");
-        List<Feature> features = new ArrayList<>();
-        features.add(feature);
-        mapResultDto.setFeatures(features);
-        return mapResultDto;
-    }*/
+
 
     public static MapResultDto buildGeometry(List<Feature> features) {
         MapResultDto mapResultDto = new MapResultDto();

@@ -54,10 +54,7 @@ public class SysUserController {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, sysUserService.query(request));
     }
-    /*public Pager<List<SysUserGridResponse>> userGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody UserGridRequest request) {
-        Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        return PageUtils.setPageInfo(page, sysUserService.query(request));
-    }*/
+
 
     @ApiOperation("创建用户")
     @PostMapping("/create")
@@ -146,11 +143,7 @@ public class SysUserController {
     }
 
 
-    /* @ApiOperation("同步用户")
-    @PostMapping("/sync")
-    public void importLdap(@RequestBody LdapAddRequest request) {
-        sysUserService.saveLdapUsers(request);
-    } */
+
 
     @ApiOperation("已同步用户")
     @PostMapping("/existLdapUsers")

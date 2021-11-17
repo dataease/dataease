@@ -71,7 +71,6 @@ public class AuthServer implements AuthApi {
                 LdapAddRequest ldapAddRequest = new LdapAddRequest();
                 ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>(){{add(ldapUserEntity);}});
                 ldapAddRequest.setEnabled(1L);
-                // ldapAddRequest.setDeptId(1L);
                 ldapAddRequest.setRoleIds(new ArrayList<Long>(){{add(2L);}});
                 sysUserService.validateExistUser(ldapUserEntity.getUsername(), ldapUserEntity.getNickname(), ldapUserEntity.getEmail());
                 sysUserService.saveLdapUsers(ldapAddRequest);
@@ -191,13 +190,7 @@ public class AuthServer implements AuthApi {
     @Override
     public String getPublicKey() {
         return RsaProperties.publicKey;
-    }
-    
-
-    /*@Override
-    public Boolean isLogin() {
-        return null;
-    }*/
+    }   
 
 
 }

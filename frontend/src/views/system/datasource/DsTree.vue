@@ -185,6 +185,8 @@ export default {
         return 'MongoDB'
       }else if (type === 'redshift') {
         return 'AWS Redshift'
+      } else if (type === 'hive') {
+        return 'Apache Hive'
       }
     },
 

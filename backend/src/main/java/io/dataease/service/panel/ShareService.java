@@ -15,9 +15,11 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.panel.PanelShareFineDto;
+import io.dataease.controller.request.panel.PanelShareRemoveRequest;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
+import io.dataease.dto.panel.PanelShareOutDTO;
 import io.dataease.dto.panel.PanelSharePo;
 import io.dataease.service.message.DeMsgutil;
 import lombok.Data;
@@ -74,9 +76,6 @@ public class ShareService {
         PanelShareExample example = new PanelShareExample();
         example.createCriteria().andPanelGroupIdEqualTo(panelGroupId);
         List<PanelShare> panelShares = mapper.selectByExample(example);
-        /*if (CollectionUtils.isEmpty(panelShares)) {
-            return;
-        }*/
         Map<Integer, List<TempShareNode>> typeSharedMap = panelShares.stream().map(this::convertNode).collect(Collectors.groupingBy(TempShareNode::getType));
 
         for (Map.Entry<Integer, List<Long>> entry : authURDMap.entrySet()) {
@@ -134,13 +133,13 @@ public class ShareService {
         msgParam.add(panelGroupId);
         addUserIdSet.forEach(userId -> {
             if (!redUserIdSet.contains(userId) && user.getUserId() != userId){
-                DeMsgutil.sendMsg(userId, 2L, 1L,user.getNickName()+" 分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+                DeMsgutil.sendMsg(userId, 2L,user.getNickName()+" 分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
             }
         });
 
         redUserIdSet.forEach(userId -> {
             if (!addUserIdSet.contains(userId) && user.getUserId() != userId){
-                DeMsgutil.sendMsg(userId, 3L, 1L,user.getNickName()+" 取消分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+                DeMsgutil.sendMsg(userId, 3L, user.getNickName()+" 取消分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
             }
         });
 
@@ -167,11 +166,6 @@ public class ShareService {
     private Map<String, Object> filterData(List<Long> newTargets, List<TempShareNode> shareNodes) {
 
         Map<String, Object> result = new HashMap<>();
-        /*if (null == newTargets) {
-            result.put("add", new ArrayList<>());
-            result.put("red", new ArrayList<>());
-            return result;
-        }*/
         List<Long> newUserIds = new ArrayList<>();
         for (int i = 0; i < newTargets.size(); i++) {
             Long newTargetId = newTargets.get(i);
@@ -262,8 +256,7 @@ public class ShareService {
         String msg = StringUtils.joinWith("，", panelGroups.stream().map(PanelGroup::getName).collect(Collectors.toList()));
         Gson gson = new Gson();
         userIdSet.forEach(userId -> {
-            // DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!");
-            DeMsgutil.sendMsg(userId, 2L,1L, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds));
+            DeMsgutil.sendMsg(userId, 2L, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds));
         });
 
     }
@@ -310,20 +303,7 @@ public class ShareService {
 
         List<PanelSharePo> datas = extPanelShareMapper.query(param);
 
-        /*List<Long> targetIds = new ArrayList<>();
-        targetIds.add(userId);
-        targetIds.add(deptId);
-        targetIds.addAll(roleIds);
 
-        ConditionEntity condition = new ConditionEntity();
-        condition.setField("s.target_id");
-        condition.setOperator("in");
-        condition.setValue(targetIds);
-
-        request.setConditions(new ArrayList<ConditionEntity>(){{add(condition);}});
-
-        GridExample example = request.convertExample();
-        List<PanelSharePo> datas = extPanelShareMapper.query(example);*/
         List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po)).collect(Collectors.toList());
         return convertTree(dtoLists);
     }
@@ -345,5 +325,13 @@ public class ShareService {
         return extPanelShareMapper.queryWithResource(example);
     }
 
+    public List<PanelShareOutDTO> queryTargets(String panelId) {
+        return extPanelShareMapper.queryTargets(panelId);
+    }
+
+
+    public void removeShares(PanelShareRemoveRequest removeRequest) {
+        extPanelShareMapper.removeShares(removeRequest);
+    }
 
 }
