@@ -1,0 +1,160 @@
+<template>
+  <div>
+    <div class="ds-node" @click="nodeClick">
+      <svg-icon v-if="currentNode.currentDs.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+      <svg-icon v-else-if="currentNode.currentDs.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+      <svg-icon v-else-if="currentNode.currentDs.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+
+      <span class="node-name" :title="currentNode.currentDs.name">{{ currentNode.currentDs.name }}</span>
+
+      <span class="node-menu" @click.stop>
+        <el-dropdown trigger="click" size="small" @command="nodeMenuClick">
+          <span class="el-dropdown-link">
+            <el-button icon="el-icon-more" type="text" size="small" />
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item icon="el-icon-copy-document" :command="beforeNodeMenuClick('union',currentNode)">
+              <span style="font-size: 12px;">{{ $t('dataset.union') }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item icon="el-icon-edit-outline" :command="beforeNodeMenuClick('edit',currentNode)">
+              <span style="font-size: 12px;">{{ $t('dataset.edit') }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item icon="el-icon-delete" :command="beforeNodeMenuClick('delete',currentNode)">
+              <span style="font-size: 12px;">{{ $t('dataset.delete') }}</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </span>
+    </div>
+
+    <!--选择数据集-->
+    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="30%" class="dialog-css">
+      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
+export default {
+  name: 'NodeItem',
+  components: { DatasetGroupSelectorTree },
+  props: {
+    currentNode: {
+      type: Object,
+      required: true
+    },
+    nodeIndex: {
+      type: Number,
+      required: true
+    }
+  },
+  data() {
+    return {
+      unionItem: {
+        currentDs: {},
+        currentDsField: [],
+        childrenDs: [],
+        unionToParent: {
+          unionType: '',
+          unionFields: []
+        }
+      },
+      customType: ['db', 'sql', 'excel'],
+      selectDsDialog: false,
+      // 弹框临时选中的数据集
+      tempDs: {},
+      // 父级数据集
+      tempParentDs: {}
+    }
+  },
+  methods: {
+    nodeClick() {
+      console.log('node click to edit')
+    },
+    nodeMenuClick(param) {
+      console.log(param)
+      switch (param.type) {
+        case 'union':
+          this.unionNode(param)
+          break
+        case 'edit':
+          this.editNode(param)
+          break
+        case 'delete':
+          this.deleteNode(param)
+          break
+      }
+    },
+    beforeNodeMenuClick(type, item) {
+      return {
+        'type': type,
+        'item': item
+      }
+    },
+
+    unionNode(param) {
+      this.tempParentDs = param.item
+      this.selectDs()
+    },
+    editNode(param) {
+    },
+    deleteNode(param) {
+      this.$emit('deleteNode', this.nodeIndex)
+    },
+
+    selectDs() {
+      this.selectDsDialog = true
+    },
+    firstDs(val) {
+      this.tempDs = val
+    },
+    closeSelectDs() {
+      this.selectDsDialog = false
+      this.tempDs = {}
+    },
+    confirmSelectDs() {
+      const ds = JSON.parse(JSON.stringify(this.unionItem))
+      ds.currentDs = this.tempDs
+      this.tempParentDs.childrenDs.push(ds)
+      this.closeSelectDs()
+    }
+  }
+}
+</script>
+
+<style scoped>
+.ds-node{
+  width:160px;
+  height: 26px;
+  line-height: 26px;
+  border: #dcdfe6 solid 1px;
+  min-width: 160px;
+  color: var(--TextPrimary,#606266);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+}
+.node-name{
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: pre;
+  overflow: hidden;
+  padding: 0 2px;
+}
+.ds-node .node-menu{
+  visibility: hidden;
+}
+.ds-node:hover .node-menu{
+  visibility: visible;
+}
+.ds-node:hover{
+  cursor: pointer;
+  border: var(--Main,#2681ff) solid 1px;
+}
+</style>
