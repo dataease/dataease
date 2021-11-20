@@ -684,6 +684,42 @@ div:focus {
   background: linear-gradient(to right, #fff, rgba(255,255,255,0)) !important;
 }
 
+
+.rate-date-class > .el-picker-panel__footer > .el-button--text:first-child{
+    display: none;
+  }
+  .rate-date-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
+      >.el-date-picker__header {
+          display: none;
+      }
+      >.el-picker-panel__content{
+          >table > tbody {
+            >tr:first-child {
+                display: none;
+            }
+            >tr >td.prev-month,td.next-month {
+                display: none;
+            }
+          } 
+      }
+  }
+  .rate-day-class > .el-picker-panel__footer > .el-button--text:first-child{
+    display: none;
+  }
+  .rate-day-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
+    >.el-date-picker__header {
+        display: none;
+    }
+    >.el-picker-panel__content{
+        >table > tbody {
+          >tr:not(:nth-child(3)) {
+              display: none;
+          }
+          
+        } 
+    }
+  }
+
 .chart-type .el-radio__input{
   display: none!important;
 }
