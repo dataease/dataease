@@ -3,6 +3,7 @@ package io.dataease.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -42,6 +43,7 @@ public class XEmailTaskServer {
     public void save(@RequestBody XpackEmailCreate param) throws Exception{
         XpackEmailTaskRequest request = param.fillContent();
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        request.setCreator(AuthUtils.getUser().getUserId());
         emailXpackService.save(request);
         GlobalTaskEntity globalTask = BeanUtils.copyBean(new GlobalTaskEntity(), request);
         scheduleService.addSchedule(globalTask);
