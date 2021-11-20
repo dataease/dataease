@@ -84,10 +84,6 @@ public class PanelLinkJumpService {
 
     public PanelLinkJumpDTO queryWithView(String panelId, String viewId) {
         PanelLinkJumpDTO resultInfo = extPanelLinkJumpMapper.queryWithViewId(panelId, viewId);
-        // 获取链接类型为仪表板的关联视图fieldId-PanelLinkJumpInfo Map 映射关系
-//        Map<String, PanelLinkJumpInfoDTO> mapJumpInfoArray = resultInfo.getLinkJumpInfoArray().stream().filter(jumpInfo -> StringUtils.isNotEmpty(jumpInfo.getFieldId()))
-//                .collect(Collectors.toMap(PanelLinkJumpInfoDTO::getFieldId, PanelViewLinkageDTO->PanelViewLinkageDTO));
-//        resultInfo.setMapJumpInfoArray(mapJumpInfoArray);
         return resultInfo;
     }
 

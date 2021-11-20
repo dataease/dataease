@@ -94,14 +94,7 @@ public class F2CRealm extends AuthorizingRealm {
         if (username == null) {
             throw new AuthenticationException("token invalid");
         }
-        // 使用缓存
-        /*SysUserEntity user = authUserService.getUserById(userId);
-        if (user == null) {
-            throw new AuthenticationException("User didn't existed!");
-        }
-        if (user.getEnabled()==0) {
-            throw new AuthenticationException("User is valid!");
-        }*/
+
         SysUserEntity user = userWithId(userId);
         String pass = null;
         try {
@@ -112,13 +105,7 @@ public class F2CRealm extends AuthorizingRealm {
         if (! JWTUtils.verify(token, tokenInfo, pass)) {
             throw new AuthenticationException("Username or password error");
         }
-        /*// 使用缓存
-        List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
-        // 使用缓存
-        List<String> permissions = authUserService.permissions(user.getUserId());
-        CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
-        currentUserDto.setRoles(currentRoleDtos);
-        currentUserDto.setPermissions(permissions);*/
+
         CurrentUserDto currentUserDto = queryCacheUserDto(user);
         return new SimpleAuthenticationInfo(currentUserDto, token, "f2cReam");
     }

@@ -76,7 +76,6 @@ public class ControllerLoader {
             try {
                 registerController(name);
             } catch (Exception e) {
-                // e.printStackTrace();
                 LogUtil.error(e);
             }
         });

@@ -68,7 +68,6 @@ public class DatasourceController {
     @PostMapping("/list/{goPage}/{pageSize}")
     public Pager<List<DatasourceDTO>> getDatasourceList(@RequestBody BaseGridRequest request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        // return PageUtils.setPageInfo(page, datasourceService.getDatasourceList(request));
         return PageUtils.setPageInfo(page, datasourceService.gridQuery(request));
     }
 

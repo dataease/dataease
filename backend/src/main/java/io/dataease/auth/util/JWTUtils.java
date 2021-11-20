@@ -39,9 +39,6 @@ public class JWTUtils {
         Verification verification = JWT.require(algorithm)
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("userId", tokenInfo.getUserId());
-        /* if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
-            verification.withClaim("idToken", tokenInfo.getIdToken());
-        } */
         JWTVerifier verifier = verification.build();        
         verifier.verify(token);
         return true;
@@ -55,21 +52,13 @@ public class JWTUtils {
         DecodedJWT jwt = JWT.decode(token);
         String username = jwt.getClaim("username").asString();
         Long userId = jwt.getClaim("userId").asLong();
-        // String idToken = jwt.getClaim("idToken").asString();
         if (StringUtils.isEmpty(username) || ObjectUtils.isEmpty(userId) ){
             DataEaseException.throwException("token格式错误！");
         }
         TokenInfoBuilder tokenInfoBuilder = TokenInfo.builder().username(username).userId(userId);
-        /* if (StringUtils.isNotBlank(idToken)) {
-            tokenInfoBuilder.idToken(idToken);
-        } */
         TokenInfo tokenInfo = tokenInfoBuilder.build();
         return tokenInfo;
     }
-
-
-
-
 
     public static boolean needRefresh(String token){
         Date exp = JWTUtils.getExp(token);
@@ -120,9 +109,6 @@ public class JWTUtils {
             Builder builder = JWT.create()
                     .withClaim("username", tokenInfo.getUsername())
                     .withClaim("userId", tokenInfo.getUserId());
-            /* if (StringUtils.isNotBlank(tokenInfo.getIdToken())) {
-                builder.withClaim("idToken", tokenInfo.getIdToken());
-            } */
             return builder.withExpiresAt(date).sign(algorithm);
                     
         } catch (Exception e) {

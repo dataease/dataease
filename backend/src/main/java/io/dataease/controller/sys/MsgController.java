@@ -62,7 +62,6 @@ public class MsgController {
         if(null == AuthUtils.getUser() || (userId = AuthUtils.getUser().getUserId()) == null) {
             throw new RuntimeException("缺少用户ID");
         }
-        // Long userId = request.get("userId");
         return sysMsgService.queryCount(userId);
     }
 

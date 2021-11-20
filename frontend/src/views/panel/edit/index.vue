@@ -310,7 +310,9 @@ export default {
       }
     },
     customCanvasStyle() {
-      let style = {}
+      let style = {
+        padding: this.componentGap + 'px'
+      }
 
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -340,7 +342,8 @@ export default {
       'curComponentIndex',
       'componentData',
       'linkageSettingStatus',
-      'dragComponentInfo'
+      'dragComponentInfo',
+      'componentGap'
     ])
   },
 
@@ -680,9 +683,9 @@ export default {
         this.$nextTick(() => {
           const canvasHeight = document.getElementById('canvasInfo').offsetHeight
           const canvasWidth = document.getElementById('canvasInfo').offsetWidth
-          this.outStyle.height = canvasHeight
+          this.outStyle.height = canvasHeight - (this.componentGap * 2)
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = canvasWidth + (Math.random() * 0.000001)
+          this.outStyle.width = canvasWidth - (this.componentGap * 2) + (Math.random() * 0.000001)
           // console.log(canvasHeight + '--' + canvasWidth)
         })
       }
@@ -788,9 +791,19 @@ export default {
         }
       })
 
+      component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       // position = absolution 或导致有偏移 这里中和一下偏移量
-      component.style.top = 0
-      component.style.left = 600
+      if (this.canvasStyleData.auxiliaryMatrix) {
+        component.style.left = (component.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.top = (component.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
+        component.style.width = component.sizex * this.curCanvasScale.matrixStyleOriginWidth
+        component.style.height = component.sizey * this.curCanvasScale.matrixStyleOriginHeight
+      } else {
+        component.style.left = 0
+        component.style.top = 0
+        component.x = 1
+        component.y = 1
+      }
       component.id = newComponentId
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'newViewInfo')
@@ -837,14 +850,14 @@ export default {
 
 <style scoped>
   .ms-aside-container {
-    height: calc(100vh - 91px);
+    height: calc(100vh - 35px);
     max-width: 60px;
     border: none;
     width: 60px;
   }
 
   .ms-main-container {
-    height: calc(100vh - 91px);
+    height: calc(100vh - 35px);
   }
 
   .de-header {
@@ -878,7 +891,7 @@ export default {
 .leftPanel {
   width: 100%;
   max-width: 300px;
-  height: calc(100vh - 91px);
+  height: calc(100vh - 35px);
   position: fixed;
   top: 91px;
   left: 60px;
@@ -905,14 +918,13 @@ export default {
 }
 
 .this_canvas{
-  height: calc(100vh - 91px);
+  height: calc(100vh - 35px);
   overflow-x: hidden;
   overflow-y: auto;
   background-size:100% 100% !important;
-
 }
 .el-main{
-  height: calc(100vh - 91px);
+  height: calc(100vh - 35px);
   padding: 0!important;
   overflow: auto;
   position: relative;

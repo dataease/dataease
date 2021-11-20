@@ -26,7 +26,6 @@ public class RsaUtil {
         PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec5);
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-//        byte[] result = cipher.doFinal(Base64.decodeBase64(text));
         // 下面该用分段加密
         byte[] result = null;
         byte[] b = Base64.decodeBase64(text);
@@ -50,7 +49,6 @@ public class RsaUtil {
         PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec2);
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        /*byte[] result = cipher.doFinal(text.getBytes());*/
         // 下面该用分段加密
         byte[] result = null;
         byte[] b = text.getBytes("utf-8");

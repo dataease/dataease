@@ -46,14 +46,8 @@ public class DeFileUtils {
             String path = filePath + fileName;
             // getCanonicalFile 可解析正确各种路径
             File dest = new File(path).getCanonicalFile();
-            // 检测是否存在目录
-            if (!dest.getParentFile().exists()) {
-                if (!dest.getParentFile().mkdirs()) {
-//                    System.out.println("was not successful.");
-                }
-            }
+
             // 文件写入
-            // file.transferTo(dest);
             FileOutputStream fileOutputStream = new FileOutputStream(dest);
             fileOutputStream.write(file.getBytes());
             fileOutputStream.flush();

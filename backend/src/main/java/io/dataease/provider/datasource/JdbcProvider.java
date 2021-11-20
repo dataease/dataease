@@ -170,6 +170,9 @@ public class JdbcProvider extends DatasourceProvider {
             String f = metaData.getColumnName(j + 1);
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
             String t = metaData.getColumnTypeName(j + 1);
+            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name())){
+                l = l.split("\\.")[1];
+            }
             TableFiled field = new TableFiled();
             field.setFieldName(l);
             field.setRemarks(l);
@@ -342,14 +345,25 @@ public class JdbcProvider extends DatasourceProvider {
                 password = redshiftConfigration.getPassword();
                 driver = redshiftConfigration.getDriver();
                 jdbcurl = redshiftConfigration.getJdbc();
+                break;
+            case hive:
+                HiveConfiguration hiveConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), HiveConfiguration.class);
+                username = hiveConfiguration.getUsername();
+                password = hiveConfiguration.getPassword();
+                driver = hiveConfiguration.getDriver();
+                jdbcurl = hiveConfiguration.getJdbc();
+                break;
             default:
                 break;
         }
 
         Driver driverClass = (Driver) extendedJdbcClassLoader.loadClass(driver).newInstance();
-        props.setProperty("user", username);
-        if (StringUtils.isNotBlank(password)) {
-            props.setProperty("password", password);
+
+        if (StringUtils.isNotBlank(username)) {
+            props.setProperty("user", username);
+            if (StringUtils.isNotBlank(password)) {
+                props.setProperty("password", password);
+            }
         }
 
         Connection conn = driverClass.connect(jdbcurl, props);
@@ -362,7 +376,7 @@ public class JdbcProvider extends DatasourceProvider {
         druidDataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
         druidDataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
         druidDataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
-        if(datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name())){
+        if(datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.hive.name())){
             WallFilter wallFilter = new WallFilter();
             wallFilter.setDbType(DatasourceTypes.mysql.name());
             druidDataSource.setProxyFilters(Arrays.asList(new Filter[]{wallFilter}));
@@ -424,6 +438,13 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setDriverClassName(redshiftConfigration.getDriver());
                 dataSource.setUrl(redshiftConfigration.getJdbc());
                 jdbcConfiguration = redshiftConfigration;
+                break;
+            case hive:
+                HiveConfiguration hiveConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), HiveConfiguration.class);
+                dataSource.setPassword(hiveConfiguration.getPassword());
+                dataSource.setDriverClassName(hiveConfiguration.getDriver());
+                dataSource.setUrl(hiveConfiguration.getJdbc());
+                jdbcConfiguration = hiveConfiguration;
             default:
                 break;
         }
@@ -442,7 +463,8 @@ public class JdbcProvider extends DatasourceProvider {
             case mariadb:
             case de_doris:
             case ds_doris:
-                return "show tables;";
+            case hive:
+                return "show tables";
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
                 if(StringUtils.isEmpty(sqlServerConfiguration.getSchema())){

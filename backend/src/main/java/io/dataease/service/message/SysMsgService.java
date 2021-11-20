@@ -16,6 +16,7 @@ import io.dataease.controller.sys.request.MsgSettingRequest;
 import io.dataease.controller.sys.response.MsgGridDto;
 import io.dataease.controller.sys.response.SettingTreeNode;
 import io.dataease.controller.sys.response.SubscribeNode;
+import io.dataease.service.message.service.SendService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -55,33 +56,6 @@ public class SysMsgService {
     @Autowired
     private SystemParameterService systemParameterService;
 
-    /* public List<SysMsg> query(Long userId, MsgRequest msgRequest) {
-        String orderClause = " create_time desc";
-        SysMsgExample example = new SysMsgExample();
-        SysMsgExample.Criteria criteria = example.createCriteria();
-        criteria.andUserIdEqualTo(userId);
-
-        List<String> orders = msgRequest.getOrders();
-
-        if (CollectionUtils.isNotEmpty(orders)) {
-            orderClause = String.join(", ", orders);
-        }
-
-        if (ObjectUtils.isNotEmpty(msgRequest.getType())) {
-            criteria.andTypeIdEqualTo(msgRequest.getType());
-        }
-
-        if (ObjectUtils.isNotEmpty(msgRequest.getStatus())) {
-            criteria.andStatusEqualTo(msgRequest.getStatus());
-        }
-
-        criteria.andCreateTimeGreaterThanOrEqualTo(overTime());
-
-        example.setOrderByClause(orderClause);
-        List<SysMsg> sysMsgs = sysMsgMapper.selectByExample(example);
-        return sysMsgs;
-    }
- */
     public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest, List<Long> typeIds, Long startTime) {
         String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
@@ -94,14 +68,6 @@ public class SysMsgService {
             orderClause = String.join(", ", orders);
         }
 
-        /*if (ObjectUtils.isNotEmpty(msgRequest.getType())) {
-            SysMsgTypeExample sysMsgTypeExample = new SysMsgTypeExample();
-            sysMsgTypeExample.createCriteria().andPidEqualTo(msgRequest.getType());
-
-            List<SysMsgType> sysMsgTypes = sysMsgTypeMapper.selectByExample(sysMsgTypeExample);
-            List<Long> typeIds = sysMsgTypes.stream().map(SysMsgType::getMsgTypeId).collect(Collectors.toList());
-            criteria.andTypeIdIn(typeIds);
-        }*/
         if (CollectionUtils.isNotEmpty(typeIds)){
             criteria.andTypeIdIn(typeIds);
         }
@@ -111,7 +77,6 @@ public class SysMsgService {
         }
 
         criteria.andCreateTimeGreaterThanOrEqualTo(startTime);
-        /* criteria.andCreateTimeGreaterThanOrEqualTo(overTime()); */
 
         example.setOrderByClause(orderClause);
         List<MsgGridDto> msgGridDtos = extSysMsgMapper.queryGrid(example);
@@ -211,12 +176,10 @@ public class SysMsgService {
         sysMsgSetting1.setTypeId(2L);
         sysMsgSetting1.setChannelId(1L);
         sysMsgSetting1.setEnable(true);
-       // sysMsgSetting1.setUserId(userId);
         SysMsgSetting sysMsgSetting2 = new SysMsgSetting();
         sysMsgSetting2.setTypeId(6L);
         sysMsgSetting2.setChannelId(1L);
         sysMsgSetting2.setEnable(true);
-        //sysMsgSetting2.setUserId(userId);
         List<SysMsgSetting> lists = new ArrayList<>();
         lists.add(sysMsgSetting1);
         lists.add(sysMsgSetting2);
@@ -233,7 +196,6 @@ public class SysMsgService {
     public void updateSetting(MsgSettingRequest request, Long userId) {
         Long typeId = request.getTypeId();
         Long channelId = request.getChannelId();
-        // Long userId = AuthUtils.getUser().getUserId();
         SysMsgSettingExample example = new SysMsgSettingExample();
         example.createCriteria().andUserIdEqualTo(userId).andTypeIdEqualTo(typeId).andChannelIdEqualTo(channelId);
         List<SysMsgSetting> sysMsgSettings = sysMsgSettingMapper.selectByExample(example);
@@ -280,15 +242,22 @@ public class SysMsgService {
         extSysMsgMapper.batchInsert(settings);
     }
 
-    public void sendMsg(Long userId, Long typeId, Long channelId, String content, String param) {
-        SysMsg sysMsg = new SysMsg();
-        sysMsg.setUserId(userId);
-        sysMsg.setTypeId(typeId);
-        sysMsg.setContent(content);
-        sysMsg.setStatus(false);
-        sysMsg.setCreateTime(System.currentTimeMillis());
-        sysMsg.setParam(param);
-        save(sysMsg);
+    public void sendMsg(Long userId, Long typeId, String content, String param) {
+        List<SubscribeNode> subscribes = subscribes(userId);
+
+        if (CollectionUtils.isNotEmpty(subscribes)) {
+            subscribes.stream().filter(item -> item.getTypeId() == typeId).forEach(sub -> {
+                SendService sendService = serviceByChannel(sub.getChannelId());
+                sendService.sendMsg(userId, typeId, content, param);
+            });
+
+        }
+
+    }
+
+    private SendService serviceByChannel(Long channelId){
+        String beanName = sysMsgChannelMapper.selectByPrimaryKey(channelId).getServiceName();
+        return (SendService)CommonBeanFactory.getBean(beanName);
     }
 
     /**
@@ -299,13 +268,11 @@ public class SysMsgService {
     @Cacheable(value = SysMsgConstants.SYS_MSG_USER_SUBSCRIBE, key = "#userId")
     public List<SubscribeNode> subscribes(Long userId) {
         SysMsgSettingExample example = new SysMsgSettingExample();
-        /*example.createCriteria().andUserIdEqualTo(userId).andEnableEqualTo(true);*/
         example.createCriteria().andUserIdEqualTo(userId);
         List<SysMsgSetting> sysMsgSettings = sysMsgSettingMapper.selectByExample(example);
         // 添加默认订阅
         sysMsgSettings = addDefault(sysMsgSettings);
         sysMsgSettings = sysMsgSettings.stream().filter(SysMsgSetting::getEnable).collect(Collectors.toList());
-        // sysMsgSettings.addAll(defaultSettings());
         List<SubscribeNode> resultLists = sysMsgSettings.stream().map(item -> {
             SubscribeNode subscribeNode = new SubscribeNode();
             subscribeNode.setTypeId(item.getTypeId());

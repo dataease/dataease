@@ -969,7 +969,8 @@ export default {
     preview: 'Preview',
     next: 'Next',
     select_dataset: 'Select Dataset',
-    select_chart_type: 'Select Chart Type'
+    select_chart_type: 'Select Chart Type',
+    recover: 'Reset'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1147,7 +1148,9 @@ export default {
     excel_info_3: '3、The file size shall not exceed 500m。',
     sync_field: 'Sync Field',
     confirm_sync_field: 'Confirm Sync',
-    confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm'
+    confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm',
+    sync_success: 'Success',
+    sync_success_1: 'Success，please sync data again'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1224,6 +1227,15 @@ export default {
     link_expire: 'Link is expire',
     link_share_desc: 'After opening the link, anyone can access the dashboard through this link.',
     share: 'Share',
+    remove_share_confirm: 'Sure removel All share ?',
+    share_in: 'Share in',
+    share_out: 'Share out',
+    who_share: 'Who share',
+    when_share: 'When share',
+    share_to: 'Share to',
+    org: 'Orgnization',
+    role: 'Role',
+    user: 'User',
     datalist: 'Chart List',
     group: 'Catalogue',
     panel: 'Dashboard',
@@ -1388,7 +1400,17 @@ export default {
     add_jump_field: 'Add Jump Field',
     input_jump_link: 'Input Jump Link',
     select_dimension: 'Select Dimension...',
-    please_select: 'Please Select'
+    please_select: 'Please Select',
+    video_type: 'Video Type',
+    online_video: 'Online Video',
+    streaming_media: 'Streaming Media',
+    auto_play: 'Auto Play',
+    video_tips: 'User Https,Now Format:mp4、webm',
+    play_frequency: 'Play Frequency',
+    play_once: 'Once',
+    play_circle: 'Circle',
+    video_links: 'Video Links',
+    video_add_tips: 'Please Add Video Info...'
   },
   plugin: {
     local_install: 'Local installation',

@@ -36,7 +36,6 @@ public class XOidcServer {
         Map<String, String> authParam = new HashMap<>();
         authParam.put("response_type", "code");
         authParam.put("state", "state");
-        // authParam.put("redirect_uri", "http://localhost:9528");
         
 
         oidcSettings.forEach(param -> {

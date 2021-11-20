@@ -3,6 +3,7 @@ package io.dataease.controller.chart;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.controller.request.chart.ChartCalRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.controller.response.ChartDetail;
@@ -99,5 +100,17 @@ public class ChartViewController {
     @PostMapping("search")
     public List<ChartViewDTO> search(@RequestBody ChartViewRequest chartViewRequest) {
         return chartViewService.search(chartViewRequest);
+    }
+
+    @ApiOperation("计算结果")
+    @PostMapping("/calcData")
+    public ChartViewDTO calcData(@RequestBody ChartCalRequest request) throws Exception {
+        return chartViewService.calcData(request.getView(), request.getRequestList(), false);
+    }
+
+    @ApiOperation("验证视图是否使用相同数据集")
+    @GetMapping("/checkSameDataSet/{viewIdSource}/{viewIdTarget}")
+    public String checkSameDataSet(@PathVariable String viewIdSource,@PathVariable String viewIdTarget) throws Exception {
+        return chartViewService.checkSameDataSet(viewIdSource,viewIdTarget);
     }
 }

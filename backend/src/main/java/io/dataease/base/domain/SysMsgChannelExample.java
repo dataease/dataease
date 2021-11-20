@@ -233,6 +233,76 @@ public class SysMsgChannelExample {
             addCriterion("channel_name not between", value1, value2, "channelName");
             return (Criteria) this;
         }
+
+        public Criteria andServiceNameIsNull() {
+            addCriterion("service_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameIsNotNull() {
+            addCriterion("service_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameEqualTo(String value) {
+            addCriterion("service_name =", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameNotEqualTo(String value) {
+            addCriterion("service_name <>", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameGreaterThan(String value) {
+            addCriterion("service_name >", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameGreaterThanOrEqualTo(String value) {
+            addCriterion("service_name >=", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameLessThan(String value) {
+            addCriterion("service_name <", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameLessThanOrEqualTo(String value) {
+            addCriterion("service_name <=", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameLike(String value) {
+            addCriterion("service_name like", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameNotLike(String value) {
+            addCriterion("service_name not like", value, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameIn(List<String> values) {
+            addCriterion("service_name in", values, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameNotIn(List<String> values) {
+            addCriterion("service_name not in", values, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameBetween(String value1, String value2) {
+            addCriterion("service_name between", value1, value2, "serviceName");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceNameNotBetween(String value1, String value2) {
+            addCriterion("service_name not between", value1, value2, "serviceName");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

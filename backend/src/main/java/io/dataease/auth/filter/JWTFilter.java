@@ -53,11 +53,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
 
         if (ApiKeyHandler.isApiKeyCall(httpServletRequest)) {
-            // Long userId = ApiKeyHandler.getUser(httpServletRequest);
 
             ASKToken askToken = ApiKeyHandler.buildToken(httpServletRequest);
 
-            // UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(userId.toString(), ApiKeyHandler.random);
             getSubject(request, response).login(askToken);
             return true;
         }

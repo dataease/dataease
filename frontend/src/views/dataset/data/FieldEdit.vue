@@ -14,8 +14,8 @@
     <el-row>
       <el-form :inline="true">
         <el-form-item class="form-item">
-          <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
-          <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel' && table.type !== 'custom'" size="mini" :loading="isSyncField" @click="syncField">{{ $t('dataset.sync_field') }}</el-button>
+          <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" icon="el-icon-circle-plus-outline" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
+          <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel' && table.type !== 'custom'" size="mini" :loading="isSyncField" icon="el-icon-refresh-left" @click="syncField">{{ $t('dataset.sync_field') }}</el-button>
         </el-form-item>
         <el-form-item class="form-item" style="float: right;margin-right: 0;">
           <el-input
@@ -407,6 +407,21 @@ export default {
           setTimeout(() => {
             this.isSyncField = false
             this.initField()
+            // tips
+            let msg = ''
+            let type = ''
+            if (response.data.mode === 0) {
+              msg = this.$t('dataset.sync_success')
+              type = 'success'
+            } else {
+              msg = this.$t('dataset.sync_success_1')
+              type = 'warning'
+            }
+            this.$message({
+              type: type,
+              message: msg,
+              showClose: true
+            })
           }, 500)
         })
       }).catch(() => {

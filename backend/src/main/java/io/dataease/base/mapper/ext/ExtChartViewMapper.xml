@@ -150,4 +150,8 @@
             chart_group.create_time DESC
             LIMIT 1
     </select>
+
+    <select id="checkSameDataSet" resultType="int">
+       select count(DISTINCT table_id)  from chart_view where id = #{viewIdSource} or id = #{viewIdTarget}
+    </select>
 </mapper>

@@ -23,15 +23,38 @@ export const HYPERLINKS = {
 
 // 视频信息配置
 export const VIDEOLINKS = {
-  autoplay: true,
-  muted: true,
-  loop: true,
-  language: 'zh',
-  controlBar: {
-    fullscreenToggle: false
+  videoType: 'web',
+  web: {
+    autoplay: true,
+    height: 300,
+    muted: true,
+    loop: true,
+    controlBar: {
+      timeDivider: false,
+      durationDisplay: false,
+      remainingTimeDisplay: false,
+      currentTimeDisplay: false, // 当前时间
+      volumeControl: false, // 声音控制键
+      fullscreenToggle: false
+    },
+    sources: [{
+    }]
   },
-  sources: [{
-  }]
+  rtmp: {
+    sources: [{
+      type: 'rtmp/mp4'
+    }],
+    height: 300,
+    techOrder: ['flash'],
+    autoplay: false,
+    controls: true,
+    flash: {
+      hls: {
+        withCredentials: false
+      }
+    }
+  }
+
 }
 
 export const assistList = [
@@ -208,7 +231,7 @@ const list = [
       borderRadius: ''
     },
     x: 1,
-    y: 1,
+    y: 36,
     sizex: 10,
     sizey: 6,
     auxiliaryMatrix: true
@@ -252,7 +275,6 @@ const list = [
       width: 250,
       height: 100,
       fontSize: 22,
-
       fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
@@ -260,13 +282,11 @@ const list = [
       color: '#000000',
       verticalAlign: 'middle',
       backgroundColor: '#ffffff',
-
       borderStyle: 'solid',
-      borderWidth: 1,
       borderColor: '#000000',
       borderRadius: 0,
       /* margin: 10, */
-      time_margin: 10
+      time_margin: 0
     },
     formatInfo: {
       openMode: '0',

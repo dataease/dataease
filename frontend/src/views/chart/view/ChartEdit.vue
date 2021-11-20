@@ -16,10 +16,10 @@
         <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;" />
       </el-popover>
       <span style="float: right;line-height: 40px;">
-        <!--        <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" @click="changeDs">-->
-        <!--          {{ $t('chart.change_ds') }}-->
-        <!--        </el-button>-->
-        <el-button size="mini" @click="closeEdit">
+        <el-button size="mini" :disabled="!hasEdit" @click="reset">
+          {{ $t('chart.recover') }}
+        </el-button>
+        <el-button size="mini" type="primary" @click="closeEdit">
           {{ $t('commons.save') }}
         </el-button>
 
@@ -114,7 +114,7 @@
                           <span>
                             <span class="theme-border-class">{{ $t('chart.chart_type') }}</span>
                             <span style="float: right;">
-                              <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini" @change="save(true,'chart',true,true)">
+                              <el-select v-model="view.render" class="render-select" style="width: 100px" size="mini" @change="calcData(true,'chart',true,true)">
                                 <el-option
                                   v-for="item in renderOptions"
                                   :key="item.value"
@@ -130,7 +130,7 @@
                                 v-model="view.type"
                                 style="width: 100%"
                                 :disabled="!hasDataPermission('manage',param.privileges)"
-                                @change="save(true,'chart',true,true)"
+                                @change="calcData(true,'chart',true,true)"
                               >
                                 <chart-type :chart="view" style="height: 480px" />
                               </el-radio-group>
@@ -207,10 +207,10 @@
                       {{ $t('chart.result_count') }}
                     </span>
                     <el-row>
-                      <el-radio-group v-model="view.resultMode" class="radio-span" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
+                      <el-radio-group v-model="view.resultMode" class="radio-span" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="calcData">
                         <el-radio label="all"><span>{{ $t('chart.result_mode_all') }}</span></el-radio>
                         <el-radio label="custom">
-                          <el-input v-model="view.resultCount" class="result-count" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @change="save" />
+                          <el-input v-model="view.resultCount" class="result-count" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @change="calcData" />
                         </el-radio>
                       </el-radio-group>
                     </el-row>
@@ -226,8 +226,8 @@
                         :options="places"
                         :placeholder="$t('chart.select_map_range')"
                         :normalizer="normalizer"
-                        @input="save"
-                        @deselect="save"
+                        @input="calcData"
+                        @deselect="calcData"
                       />
                     </span>
                   </el-row>
@@ -253,7 +253,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addXaxis"
-                      @update="save(true)"
+                      @update="calcData(true)"
                     >
                       <transition-group class="draggable-group">
                         <dimension-item v-for="(item,index) in view.xaxis" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="dimensionItemChange" @onDimensionItemRemove="dimensionItemRemove" @editItemFilter="showDimensionEditFilter" @onNameEdit="showRename" />
@@ -288,7 +288,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addYaxis"
-                      @update="save(true)"
+                      @update="calcData(true)"
                     >
                       <transition-group class="draggable-group">
                         <quota-item v-for="(item,index) in view.yaxis" :key="item.id" :param="param" :index="index" :item="item" :chart="chart" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
@@ -312,7 +312,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addYaxisExt"
-                      @update="save(true)"
+                      @update="calcData(true)"
                     >
                       <transition-group class="draggable-group">
                         <quota-ext-item v-for="(item,index) in view.yaxisExt" :key="item.id" :param="param" :index="index" :item="item" :chart="chart" @onQuotaItemChange="quotaItemChange" @onQuotaItemRemove="quotaItemRemove" @editItemFilter="showQuotaEditFilter" @onNameEdit="showRename" />
@@ -336,7 +336,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addStack"
-                      @update="save(true)"
+                      @update="calcData(true)"
                     >
                       <transition-group class="draggable-group">
                         <chart-drag-item v-for="(item,index) in view.extStack" :key="item.id" :conf="'sort'" :param="param" :index="index" :item="item" @onItemChange="stackItemChange" @onItemRemove="stackItemRemove" />
@@ -366,7 +366,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addBubble"
-                      @update="save(true)"
+                      @update="calcData(true)"
                     >
                       <transition-group class="draggable-group">
                         <chart-drag-item v-for="(item,index) in view.extBubble" :key="item.id" :conf="'summary'" :param="param" :index="index" :item="item" @onItemChange="bubbleItemChange" @onItemRemove="bubbleItemRemove" />
@@ -390,7 +390,7 @@
                       class="theme-item-class"
                       style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
                       @add="addCustomFilter"
-                      @update="save(true)"
+                      @update="calcData(true)"
                     >
                       <transition-group class="draggable-group">
                         <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index" :item="item" @onFilterItemRemove="filterItemRemove" @editItemFilter="showEditFilter" />
@@ -414,7 +414,7 @@
                       :move="onMove"
                       class="drag-block-style"
                       @add="addDrill"
-                      @update="save(true)"
+                      @update="calcData(true)"
                     >
                       <transition-group class="draggable-group">
                         <drill-item v-for="(item,index) in view.drillFields" :key="item.id" :param="param" :index="index" :item="item" @onDimensionItemChange="drillItemChange" @onDimensionItemRemove="drillItemRemove" />
@@ -435,7 +435,7 @@
               <el-row class="padding-lr">
                 <span class="title-text">{{ $t('chart.style_priority') }}</span>
                 <el-row>
-                  <el-radio-group v-model="view.stylePriority" class="radio-span" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="save">
+                  <el-radio-group v-model="view.stylePriority" class="radio-span" :disabled="!hasDataPermission('manage',param.privileges)" size="mini" @change="calcStyle">
                     <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
                     <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
                   </el-radio-group>
@@ -603,7 +603,7 @@
       class="dialog-css"
       :fullscreen="true"
     >
-      <field-edit :param="table" />
+      <field-edit :param="table" :table="table" />
       <div slot="title" class="dialog-footer title-text">
         <span style="font-size: 14px;">
           {{ $t('dataset.field_manage') }}
@@ -800,7 +800,8 @@ export default {
         { name: 'AntV', value: 'antv' },
         { name: 'ECharts', value: 'echarts' }
       ],
-      drill: false
+      drill: false,
+      hasEdit: false
     }
   },
   computed: {
@@ -874,7 +875,7 @@ export default {
         this.resetDatasetField()
       }
     },
-    save(getData, trigger, needRefreshGroup = false, switchType = false) {
+    buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
       if (!this.view.resultCount ||
           this.view.resultCount === '' ||
           this.view.resultCount.length > 4 ||
@@ -987,10 +988,10 @@ export default {
         }
       })
       if (view.type.startsWith('pie') ||
-        view.type.startsWith('funnel') ||
-        view.type.startsWith('text') ||
-        view.type.startsWith('gauge') ||
-        view.type === 'treemap' ||
+          view.type.startsWith('funnel') ||
+          view.type.startsWith('text') ||
+          view.type.startsWith('gauge') ||
+          view.type === 'treemap' ||
           view.type === 'liquid' ||
           view.type === 'waterfall') {
         if (view.yaxis.length > 1) {
@@ -1004,9 +1005,9 @@ export default {
         view.customAttr.label.show = true
       }
       if (view.type === 'liquid' ||
-        view.type.includes('table') ||
-        view.type.includes('text') ||
-        view.type.includes('gauge')) {
+          view.type.includes('table') ||
+          view.type.includes('text') ||
+          view.type.includes('gauge')) {
         view.drillFields = []
       }
       view.customFilter.forEach(function(ele) {
@@ -1024,6 +1025,11 @@ export default {
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
       delete view.data
+      return view
+    },
+    save(getData, trigger, needRefreshGroup = false, switchType = false) {
+      const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
+      if (!view) return
       post('/chart/view/save', view).then(response => {
         // this.get(response.data.id);
         // this.getData(response.data.id)
@@ -1043,18 +1049,85 @@ export default {
         this.closeChangeChart()
       })
     },
+    calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
+      this.hasEdit = true
+      const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
+      if (!view) return
+      post('/chart/view/calcData', {
+        view: view,
+        requestList: {
+          filter: [],
+          drill: this.drillClickDimensionList
+        }
+      }).then(response => {
+        const view = JSON.parse(JSON.stringify(response.data))
+        this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
+        this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
+        this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
+        this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
+        this.view.drillFields = view.drillFields ? JSON.parse(view.drillFields) : []
+        this.view.extBubble = view.extBubble ? JSON.parse(view.extBubble) : []
+        this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
+        this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
+        this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
+        // 将视图传入echart组件
+        this.chart = response.data
+        this.data = response.data.data
+        // console.log(JSON.stringify(this.chart))
+        this.httpRequest.status = true
+        if (this.chart.privileges) {
+          this.param.privileges = this.chart.privileges
+        }
+        if (!response.data.drill) {
+          this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+
+          this.resetDrill()
+        }
+        this.drill = response.data.drill
+        this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
+
+        this.closeChangeChart()
+      })
+    },
+
+    calcStyle() {
+      this.hasEdit = true
+      // 将视图传入echart...组件
+      const view = JSON.parse(JSON.stringify(this.view))
+      view.xaxis = JSON.stringify(this.view.xaxis)
+      view.yaxis = JSON.stringify(this.view.yaxis)
+      view.yaxisExt = JSON.stringify(this.view.yaxisExt)
+      view.extStack = JSON.stringify(this.view.extStack)
+      view.drillFields = JSON.stringify(this.view.drillFields)
+      view.extBubble = JSON.stringify(this.view.extBubble)
+      view.customAttr = JSON.stringify(this.view.customAttr)
+      view.customStyle = JSON.stringify(this.view.customStyle)
+      view.customFilter = JSON.stringify(this.view.customFilter)
+      view.data = this.data
+      this.chart = view
+    },
 
     closeEdit() {
       if (this.view.title && this.view.title.length > 50) {
         this.$warning(this.$t('chart.title_limit'))
         return
       }
-      // 从仪表板入口关闭
-      bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
-      // this.$emit('switchComponent', { name: '' })
-      this.$success(this.$t('commons.save_success'))
+      const view = this.buildParam(true, 'chart', false, false)
+      if (!view) return
+      post('/chart/view/save', view).then(response => {
+        this.hasEdit = false
+        this.refreshGroup(view)
+        this.closeChangeChart()
+        // 从仪表板入口关闭
+        if (this.$route.path.indexOf('panel') > -1) {
+          bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
+        }
+        // this.$emit('switchComponent', { name: '' })
+        this.$success(this.$t('commons.save_success'))
+      })
     },
     getData(id) {
+      this.hasEdit = false
       if (id) {
         ajaxGetData(id, {
           filter: [],
@@ -1139,12 +1212,12 @@ export default {
     },
 
     dimensionItemChange(item) {
-      this.save(true)
+      this.calcData(true)
     },
 
     dimensionItemRemove(item) {
       this.view.xaxis.splice(item.index, 1)
-      this.save(true)
+      this.calcData(true)
     },
 
     quotaItemChange(item) {
@@ -1154,7 +1227,7 @@ export default {
       //     ele.summary = item.summary
       //   }
       // })
-      this.save(true)
+      this.calcData(true)
     },
 
     quotaItemRemove(item) {
@@ -1163,63 +1236,63 @@ export default {
       } else if (item.removeType === 'quotaExt') {
         this.view.yaxisExt.splice(item.index, 1)
       }
-      this.save(true)
+      this.calcData(true)
     },
 
     onColorChange(val) {
       this.view.customAttr.color = val
-      this.save()
+      this.calcStyle()
     },
 
     onSizeChange(val) {
       this.view.customAttr.size = val
-      this.save()
+      this.calcStyle()
     },
 
     onTextChange(val) {
       this.view.customStyle.text = val
       this.view.title = val.title
-      this.save(false, '', true)
+      this.calcStyle()
     },
 
     onLegendChange(val) {
       this.view.customStyle.legend = val
-      this.save()
+      this.calcStyle()
     },
 
     onLabelChange(val) {
       this.view.customAttr.label = val
-      this.save()
+      this.calcStyle()
     },
 
     onTooltipChange(val) {
       this.view.customAttr.tooltip = val
-      this.save()
+      this.calcStyle()
     },
 
     onChangeXAxisForm(val) {
       this.view.customStyle.xAxis = val
-      this.save()
+      this.calcStyle()
     },
 
     onChangeYAxisForm(val) {
       this.view.customStyle.yAxis = val
-      this.save()
+      this.calcStyle()
     },
 
     onChangeYAxisExtForm(val) {
       this.view.customStyle.yAxisExt = val
-      this.save()
+      this.calcStyle()
     },
 
     onChangeBackgroundForm(val) {
       this.view.customStyle.background = val
-      this.save()
+      this.calcStyle()
     },
 
     onChangeSplitForm(val) {
       this.view.customStyle.split = val
-      this.save()
+      this.calcStyle()
     },
 
     showDimensionEditFilter(item) {
@@ -1242,7 +1315,7 @@ export default {
         }
       }
       this.view.xaxis[this.dimensionItem.index].filter = this.dimensionItem.filter
-      this.save(true)
+      this.calcData(true)
       this.closeDimensionFilter()
     },
 
@@ -1270,13 +1343,13 @@ export default {
       } else if (this.quotaItem.filterType === 'quotaExt') {
         this.view.yaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
       }
-      this.save(true)
+      this.calcData(true)
       this.closeQuotaFilter()
     },
 
     filterItemRemove(item) {
       this.view.customFilter.splice(item.index, 1)
-      this.save(true)
+      this.calcData(true)
     },
     showEditFilter(item) {
       this.filterItem = JSON.parse(JSON.stringify(item))
@@ -1299,7 +1372,7 @@ export default {
         }
       }
       this.view.customFilter[this.filterItem.index].filter = this.filterItem.filter
-      this.save(true)
+      this.calcData(true)
       this.closeResultFilter()
     },
 
@@ -1317,7 +1390,7 @@ export default {
           } else if (this.itemForm.renameType === 'quotaExt') {
             this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
           }
-          this.save(true)
+          this.calcData(true)
           this.closeRename()
         } else {
           return false
@@ -1371,6 +1444,7 @@ export default {
       this.selectTableFlag = false
     },
 
+    // 更换数据集
     changeChart() {
       if (this.view.tableId !== this.changeTable.id) {
         this.view.tableId = this.changeTable.id
@@ -1381,7 +1455,9 @@ export default {
         this.view.extBubble = []
         this.view.drillFields = []
       }
-      this.save(true, 'chart', false)
+      // this.save(true, 'chart', false)
+      this.calcData(true, 'chart', false)
+      this.initTableData(this.view.tableId)
     },
 
     fieldFilter(val) {
@@ -1423,22 +1499,22 @@ export default {
       }
     },
     addXaxis(e) {
-      if (this.view.type === 'map' && this.view.xaxis.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxis, e)
-      this.save(true)
+      this.calcData(true)
     },
     addYaxis(e) {
-      if ((this.view.type === 'map' || this.view.type === 'waterfall') && this.view.yaxis.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud') && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
-      this.save(true)
+      this.calcData(true)
     },
     addYaxisExt(e) {
       if (this.view.type === 'map' && this.view.yaxisExt.length > 1) {
@@ -1446,17 +1522,17 @@ export default {
       }
       this.dragCheckType(this.view.yaxisExt, 'q')
       this.dragMoveDuplicate(this.view.yaxisExt, e)
-      this.save(true)
+      this.calcData(true)
     },
     moveToDimension(e) {
       this.dragCheckType(this.dimensionData, 'd')
       this.dragMoveDuplicate(this.dimensionData, e)
-      this.save(true)
+      this.calcData(true)
     },
     moveToQuota(e) {
       this.dragCheckType(this.quotaData, 'q')
       this.dragMoveDuplicate(this.quotaData, e)
-      this.save(true)
+      this.calcData(true)
     },
     addCustomFilter(e) {
       // 记录数等自动生成字段不做为过滤条件
@@ -1468,7 +1544,7 @@ export default {
         }
       }
       this.dragMoveDuplicate(this.view.customFilter, e)
-      this.save(true)
+      this.calcData(true)
     },
 
     initAreas() {
@@ -1502,26 +1578,26 @@ export default {
       if (this.view.extStack && this.view.extStack.length > 1) {
         this.view.extStack = [this.view.extStack[0]]
       }
-      this.save(true)
+      this.calcData(true)
     },
     stackItemChange(item) {
-      this.save(true)
+      this.calcData(true)
     },
     stackItemRemove(item) {
       this.view.extStack.splice(item.index, 1)
-      this.save(true)
+      this.calcData(true)
     },
     drillItemChange(item) {
-      this.save(true)
+      this.calcData(true)
     },
     drillItemRemove(item) {
       this.view.drillFields.splice(item.index, 1)
-      this.save(true)
+      this.calcData(true)
     },
     addDrill(e) {
       this.dragCheckType(this.view.drillFields, 'd')
       this.dragMoveDuplicate(this.view.drillFields, e)
-      this.save(true)
+      this.calcData(true)
     },
 
     addBubble(e) {
@@ -1529,14 +1605,14 @@ export default {
       if (this.view.extBubble && this.view.extBubble.length > 1) {
         this.view.extBubble = [this.view.extBubble[0]]
       }
-      this.save(true)
+      this.calcData(true)
     },
     bubbleItemChange(item) {
-      this.save(true)
+      this.calcData(true)
     },
     bubbleItemRemove(item) {
       this.view.extBubble.splice(item.index, 1)
-      this.save(true)
+      this.calcData(true)
     },
 
     chartClick(param) {
@@ -1545,11 +1621,13 @@ export default {
         if (this.chart.type === 'map') {
           if (this.sendToChildren(param)) {
             this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-            this.getData(this.param.id)
+            // this.getData(this.param.id)
+            this.calcData(true, 'chart', false, false)
           }
         } else {
           this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-          this.getData(this.param.id)
+          // this.getData(this.param.id)
+          this.calcData(true, 'chart', false, false)
         }
       } else if (this.view.drillFields.length > 0) {
         this.$message({
@@ -1576,7 +1654,8 @@ export default {
         this.backToParent(index, length)
       }
 
-      this.getData(this.param.id)
+      // this.getData(this.param.id)
+      this.calcData(true, 'chart', false, false)
     },
     // 回到父级地图
     backToParent(index, length) {
@@ -1639,8 +1718,11 @@ export default {
 
     renderComponent() {
       return this.chart.render
-    }
+    },
 
+    reset() {
+      this.getData(this.param.id)
+    }
   }
 }
 </script>
@@ -1800,20 +1882,9 @@ export default {
     height: calc(100% - 6px);
   }
 
-  .chart-type{
-    padding: 4px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-
   .chart-icon{
     width: 20px;
     height: 20px;
-  }
-
-  .chart-type>>>.el-radio__input{
-    display: none !important;
   }
 
   .el-radio{
@@ -1942,13 +2013,6 @@ export default {
   }
   .drag-placeholder-style-span{
     padding-left: 16px;
-  }
-  .render-select>>>.el-input__suffix{
-    width: 20px;
-  }
-  .render-select>>>.el-input__inner{
-    padding-right: 10px;
-    padding-left: 6px;
   }
 
   .blackTheme .theme-border-class {
