@@ -16,12 +16,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.activation.DataHandler;
 import javax.annotation.Resource;
+import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 
 @Service
@@ -69,6 +76,40 @@ public class EmailService {
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             DEException.throwException(Translator.get("connection_failed"));
+        }
+    }
+
+    public void sendWithImage(String to, String title, String content, byte[] bytes) {
+        if (StringUtils.isBlank(to)) return ;
+        MailInfo mailInfo = proxy().mailInfo();
+        JavaMailSenderImpl driver = driver(mailInfo);
+
+        MimeMessage mimeMessage = driver.createMimeMessage();
+        MimeMessageHelper helper = null;
+
+        MimeBodyPart image = new MimeBodyPart();
+        DataHandler png = new DataHandler(new ByteArrayDataSource(bytes, "image/png"));
+
+        String uuid = UUID.randomUUID().toString();
+        MimeBodyPart text = new MimeBodyPart();
+        try {
+            text.setContent(content + "<br/><img src='cid:"+uuid+"' />", "text/html; charset=gb2312");
+            // text.setText(, "text/html; charset=gb2312");
+            image.setDataHandler(png);
+            image.setContentID(uuid);
+            MimeMultipart multipart = new MimeMultipart();
+            multipart.addBodyPart(text);
+            multipart.addBodyPart(image);
+            multipart.setSubType("related");
+            mimeMessage.setFrom(driver.getUsername());
+            mimeMessage.setSubject(title);
+            mimeMessage.setRecipients(Message.RecipientType.TO, to);
+            mimeMessage.setContent(multipart);
+            driver.send(mimeMessage);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+            // DEException.throwException(Translator.get("connection_failed"));
         }
     }
 
