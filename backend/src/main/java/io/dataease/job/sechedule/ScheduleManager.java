@@ -415,4 +415,8 @@ public class ScheduleManager {
         scheduler.triggerJob(jobKey);
     }
 
+    public void fireNow(JobKey jobKey) throws SchedulerException {
+        scheduler.triggerJob(jobKey);
+    }
+
 }
