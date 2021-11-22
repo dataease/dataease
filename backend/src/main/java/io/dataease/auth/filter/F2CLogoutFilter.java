@@ -4,6 +4,7 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -18,7 +19,7 @@ public class F2CLogoutFilter extends LogoutFilter {
         try {
             subject.logout();
         } catch (Exception ex) {
-            logger.error("退出登录错误",ex);
+            logger.error("退出登录错误", ex);
         }
         return true;
     }

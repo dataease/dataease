@@ -16,7 +16,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author gin
@@ -110,7 +109,7 @@ public class ChartViewController {
 
     @ApiOperation("验证视图是否使用相同数据集")
     @GetMapping("/checkSameDataSet/{viewIdSource}/{viewIdTarget}")
-    public String checkSameDataSet(@PathVariable String viewIdSource,@PathVariable String viewIdTarget) throws Exception {
-        return chartViewService.checkSameDataSet(viewIdSource,viewIdTarget);
+    public String checkSameDataSet(@PathVariable String viewIdSource, @PathVariable String viewIdTarget) throws Exception {
+        return chartViewService.checkSameDataSet(viewIdSource, viewIdTarget);
     }
 }

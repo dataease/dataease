@@ -22,7 +22,6 @@ class InnerLicenseService {
 
     License getLicense(String key) {
         License license = licenseMapper.selectByPrimaryKey(key);
-        if (license == null) return null;
         return license;
     }
 

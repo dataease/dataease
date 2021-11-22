@@ -8,7 +8,6 @@ import java.util.List;
 public interface AuthUserService {
 
 
-
     SysUserEntity getUserById(Long userId);
 
     SysUserEntity getUserByName(String username);
@@ -30,7 +29,6 @@ public interface AuthUserService {
     Boolean supportOidc();
 
     Boolean pluginLoaded();
-
 
 
 }

@@ -11,14 +11,13 @@ import javax.annotation.Resource;
 
 @Service
 public class CommonFilesService {
-    public final static String VIEW_DEFAULT_IMAGE="VIEW_DEFAULT_IMAGE";
 
     @Resource
     private FileService fileService;
 
 
     public ResponseEntity<byte[]> getImageById(String imageId,String defaultImage) {
-        byte[] bytes = null;
+        byte[] bytes;
         MediaType contentType = MediaType.parseMediaType("application/octet-stream");
         FileMetadata fileMetadata = fileService.copyFile(imageId);
         if (fileMetadata == null&& StringUtils.isNotEmpty(defaultImage)) {

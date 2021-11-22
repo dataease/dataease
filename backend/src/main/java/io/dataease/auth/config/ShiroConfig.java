@@ -20,9 +20,6 @@ import org.springframework.context.annotation.DependsOn;
 @Configuration
 public class ShiroConfig {
 
-
-
-
     @Bean("securityManager")
     public DefaultWebSecurityManager getManager(F2CRealm f2cRealm) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();

@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 public class JWTFilter extends BasicHttpAuthenticationFilter {
-
 
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -65,10 +65,10 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             return false;
         }
         // 当没有出现登录超时 且需要刷新token 则执行刷新token
-        if (JWTUtils.loginExpire(authorization)){
+        if (JWTUtils.loginExpire(authorization)) {
             throw new AuthenticationException(expireMessage);
         }
-        if (JWTUtils.needRefresh(authorization)){
+        if (JWTUtils.needRefresh(authorization)) {
             authorization = refreshToken(request, response);
         }
         JWTToken token = new JWTToken(authorization);
@@ -79,8 +79,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     }
 
 
-
     /**
+     *
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -93,9 +93,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 return loginSuccess;
             } catch (Exception e) {
                 LogUtil.error(e);
-                if (e instanceof AuthenticationException && StringUtils.equals(e.getMessage(), expireMessage)){
+                if (e instanceof AuthenticationException && StringUtils.equals(e.getMessage(), expireMessage)) {
                     responseExpire(request, response, e);
-                }else {
+                } else {
                     tokenError(request, response, e);
                 }
             }
@@ -104,16 +104,14 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     }
 
 
-
-
-    private String refreshToken(ServletRequest request, ServletResponse response) throws Exception{
+    private String refreshToken(ServletRequest request, ServletResponse response) throws Exception {
         // 获取AccessToken(Shiro中getAuthzHeader方法已经实现)
         String token = this.getAuthzHeader(request);
         // 获取当前Token的帐号信息
         TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
         AuthUserService authUserService = CommonBeanFactory.getBean(AuthUserService.class);
         SysUserEntity user = authUserService.getUserById(tokenInfo.getUserId());
-        if(user == null){
+        if (user == null) {
             DataEaseException.throwException(Translator.get("i18n_not_find_user"));
         }
         String password = user.getPassword();

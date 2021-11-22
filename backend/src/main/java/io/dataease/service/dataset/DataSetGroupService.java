@@ -99,8 +99,7 @@ public class DataSetGroupService {
         datasetGroup.setType("group");
         datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(datasetGroup);
-        List<DataSetGroupDTO> result = TreeUtils.mergeTree(treeInfo);
-        return result;
+        return TreeUtils.mergeTree(treeInfo);
     }
 
     public List<DataSetGroupDTO> tree(DataSetGroupRequest datasetGroup) {
@@ -108,8 +107,7 @@ public class DataSetGroupService {
         datasetGroup.setPid(null);
         datasetGroup.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<DataSetGroupDTO> treeInfo = extDataSetGroupMapper.search(datasetGroup);
-        List<DataSetGroupDTO> result = TreeUtils.mergeTree(treeInfo);
-        return result;
+        return TreeUtils.mergeTree(treeInfo);
     }
 
     public List<String> getAllId(List<DataSetGroupDTO> list, List<String> ids) {

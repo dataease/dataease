@@ -19,7 +19,7 @@ public class PanelPdfTemplateService {
     @Resource
     private PanelPdfTemplateMapper panelPdfTemplateMapper;
 
-    public List<PanelPdfTemplate> queryAll(){
+    public List<PanelPdfTemplate> queryAll() {
         PanelPdfTemplateExample example = new PanelPdfTemplateExample();
         example.setOrderByClause("sort asc");
         return panelPdfTemplateMapper.selectByExampleWithBLOBs(example);

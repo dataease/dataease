@@ -77,9 +77,7 @@ public class DataSetTableFieldsService {
     public List<DatasetTableField> getListByIdsEach(List<String> ids) {
         List<DatasetTableField> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(ids)) {
-            ids.forEach(id -> {
-                list.add(datasetTableFieldMapper.selectByPrimaryKey(id));
-            });
+            ids.forEach(id -> list.add(datasetTableFieldMapper.selectByPrimaryKey(id)));
         }
         return list;
     }

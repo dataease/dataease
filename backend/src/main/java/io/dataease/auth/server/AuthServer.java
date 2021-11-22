@@ -43,16 +43,12 @@ public class AuthServer implements AuthApi {
     @Autowired
     private AuthUserService authUserService;
 
-
     @Autowired
     private SysUserService sysUserService;
 
-
-
-
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
-        String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());;
+        String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
 
         // 增加ldap登录方式
@@ -67,15 +63,19 @@ public class AuthServer implements AuthApi {
             }
             XpackLdapUserEntity ldapUserEntity = validateResult.getData();
             SysUserEntity user = authUserService.getLdapUserByName(username);
-            if(ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getUserId())) {
+            if (ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getUserId())) {
                 LdapAddRequest ldapAddRequest = new LdapAddRequest();
-                ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>(){{add(ldapUserEntity);}});
+                ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>() {{
+                    add(ldapUserEntity);
+                }});
                 ldapAddRequest.setEnabled(1L);
-                ldapAddRequest.setRoleIds(new ArrayList<Long>(){{add(2L);}});
+                ldapAddRequest.setRoleIds(new ArrayList<Long>() {{
+                    add(2L);
+                }});
                 sysUserService.validateExistUser(ldapUserEntity.getUsername(), ldapUserEntity.getNickname(), ldapUserEntity.getEmail());
                 sysUserService.saveLdapUsers(ldapAddRequest);
             }
-            
+
             username = validateResult.getData().getUsername();
         }
         // 增加ldap登录方式
@@ -131,7 +131,7 @@ public class AuthServer implements AuthApi {
     @Override
     public String logout() {
         String token = ServletUtils.getToken();
-        
+
         if (isOpenOidc()) {
             HttpServletRequest request = ServletUtils.request();
             String idToken = request.getHeader("IdToken");
@@ -139,15 +139,15 @@ public class AuthServer implements AuthApi {
                 OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
                 oidcXpackService.logout(idToken);
             }
-            
+
         }
         if (StringUtils.isEmpty(token) || StringUtils.equals("null", token) || StringUtils.equals("undefined", token)) {
             return "success";
         }
-        try{
+        try {
             Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
             authUserService.clearCache(userId);
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error(e);
             return "fail";
         }
@@ -160,29 +160,27 @@ public class AuthServer implements AuthApi {
         String userName = nameDto.get("userName");
         if (StringUtils.isEmpty(userName)) return false;
         SysUserEntity userEntity = authUserService.getUserByName(userName);
-        if (ObjectUtils.isEmpty(userEntity)) return false;
-        return true;
+        return !ObjectUtils.isEmpty(userEntity);
     }
 
     @Override
     public boolean isOpenLdap() {
         Boolean licValid = PluginUtils.licValid();
-        if(!licValid) return false;
-        boolean open = authUserService.supportLdap();
-        return open;
+        if (!licValid) return false;
+        return authUserService.supportLdap();
     }
 
     @Override
     public boolean isOpenOidc() {
         Boolean licValid = PluginUtils.licValid();
-        if(!licValid) return false;
+        if (!licValid) return false;
         return authUserService.supportOidc();
     }
 
     @Override
     public boolean isPluginLoaded() {
         Boolean licValid = PluginUtils.licValid();
-        if(!licValid) return false;
+        if (!licValid) return false;
         return authUserService.pluginLoaded();
     }
 
@@ -190,7 +188,7 @@ public class AuthServer implements AuthApi {
     @Override
     public String getPublicKey() {
         return RsaProperties.publicKey;
-    }   
+    }
 
 
 }

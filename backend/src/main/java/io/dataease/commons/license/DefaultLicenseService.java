@@ -5,8 +5,8 @@ import io.dataease.base.domain.License;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,46 +17,44 @@ import java.util.List;
 public class DefaultLicenseService {
     @Resource
     private InnerLicenseService innerLicenseService;
-    @Value("${spring.application.name:null}")
-    private String moduleId;
 
     private static final String LICENSE_ID = "fit2cloud_license";
     private static final String validatorUtil = "/usr/bin/validator";
     private static final String product = "DataEase";
 
-    public F2CLicenseResponse validateLicense(String product, String licenseKey){
+    public F2CLicenseResponse validateLicense(String product, String licenseKey) {
         List<String> command = new ArrayList<String>();
         StringBuilder result = new StringBuilder();
         command.add(validatorUtil);
         command.add(licenseKey);
-        try{
+        try {
             execCommand(result, command);
             LogUtil.info("read lic content is : " + result.toString());
             F2CLicenseResponse f2CLicenseResponse = new Gson().fromJson(result.toString(), F2CLicenseResponse.class);
-            if(f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid){
+            if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid) {
                 return f2CLicenseResponse;
             }
-            if(!StringUtils.equals(f2CLicenseResponse.getLicense().getProduct(), product)){
+            if (!StringUtils.equals(f2CLicenseResponse.getLicense().getProduct(), product)) {
                 f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.invalid);
                 f2CLicenseResponse.setLicense(null);
                 f2CLicenseResponse.setMessage("The license is unavailable for this product.");
                 return f2CLicenseResponse;
             }
             return f2CLicenseResponse;
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.error(e.getMessage());
             return F2CLicenseResponse.noRecord();
         }
     }
 
 
-    private static int execCommand(StringBuilder result, List<String> command) throws Exception{
+    private static int execCommand(StringBuilder result, List<String> command) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(command);
         Process process = builder.start();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line = null;
-        while ((line=bufferedReader.readLine()) != null){
+        while ((line = bufferedReader.readLine()) != null) {
             result.append(line).append("\n");
         }
         int exitCode = process.waitFor();
@@ -66,7 +64,7 @@ public class DefaultLicenseService {
 
     public F2CLicenseResponse validateLicense() {
         try {
-            License license  = readLicense();
+            License license = readLicense();
             return validateLicense(product, license.getLicense());
         } catch (Exception e) {
             return F2CLicenseResponse.noRecord();
