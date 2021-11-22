@@ -41,10 +41,19 @@ const data = {
     ...layer.state,
     ...snapshot.state,
     ...lock.state,
-
-    editMode: 'edit', // 编辑器模式 edit preview
-    canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING, // 页面全局数据  //扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
-    componentData: [], // 画布组件数据
+    // 编辑器模式 edit preview
+    editMode: 'edit',
+    // 当前页面全局数据 包括扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
+    canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
+    // 当前展示画布缓存数据
+    componentDataCache: null,
+    // 当前展示画布组件数据
+    componentData: [],
+    // PC布局画布组件数据
+    pcComponentData: [],
+    // 移动端布局画布组件数据
+    mobileComponentData: [],
+    // 当前点击组件
     curComponent: null,
     curCanvasScale: null,
     curComponentIndex: null,
@@ -59,12 +68,11 @@ const data = {
     // 和当前组件联动的目标组件
     targetLinkageInfo: [],
     // 当前仪表板联动 下钻 上卷等信息
-    nowPanelTrackInfo: {}, // 当前仪表板联动 下钻 上卷等信息
-
-    nowPanelJumpInfo: {}, // 当前仪表板的跳转信息基础信息
-
-    nowPanelJumpInfoTargetPanel: {}, // 当前仪表板的跳转信息(只包括仪表板)
-
+    nowPanelTrackInfo: {},
+    // 当前仪表板的跳转信息基础信息
+    nowPanelJumpInfo: {},
+    // 当前仪表板的跳转信息(只包括仪表板)
+    nowPanelJumpInfoTargetPanel: {},
     // 拖拽的组件信息
     dragComponentInfo: null,
     // 仪表板组件间隙大小 px
@@ -78,6 +86,10 @@ const data = {
     mobileMatrixCount: {
       x: 6,
       y: 12
+    },
+    mobileLayoutStyle: {
+      x: 300,
+      y: 600
     }
   },
   mutations: {
@@ -116,32 +128,18 @@ const data = {
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
-      // console.log('setCurComponent:' + JSON.stringify(component))
     },
 
     setCurCanvasScale(state, curCanvasScale) {
       state.curCanvasScale = curCanvasScale
     },
 
-    // setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-    //   if (top || top === 0) curComponent.style.top = canvasStyleData.selfAdaption ? (top * 100 / curCanvasScale.scaleHeight) : top
-    //   if (left || left === 0) curComponent.style.left = canvasStyleData.selfAdaption ? (left * 100 / curCanvasScale.scaleWidth) : left
-    //   if (width || width === 0) curComponent.style.width = canvasStyleData.selfAdaption ? (width * 100 / curCanvasScale.scaleWidth) : width
-    //   if (height || height === 0) curComponent.style.height = canvasStyleData.selfAdaption ? (height * 100 / curCanvasScale.scaleHeight) : height
-    //   if (rotate || rotate === 0) curComponent.style.rotate = rotate
-    //   // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
-    // },
-
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      // console.log('cw:' + curComponent.style.width + ';w:' + width + ';sp:' + curCanvasScale.scalePointWidth)
-      const ow = curComponent.style.width
       if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
       if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001
       if (width || width === 0) curComponent.style.width = (width / curCanvasScale.scalePointWidth + 0.0000001)
       if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
       if (rotate || rotate === 0) curComponent.style.rotate = rotate
-      // console.log('setShapeStyle:curComponent' + 'top:' + top + ';left:' + left + '====' + JSON.stringify(curComponent))
-      // console.log('setShapeStyle:curComponent' + 'w:' + curComponent.style.width + ';ow:' + ow)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -152,6 +150,16 @@ const data = {
       Vue.set(state, 'componentData', componentData)
     },
 
+    setPcComponentData(state, pcComponentData = []) {
+      Vue.set(state, 'pcComponentData', pcComponentData)
+    },
+    setComponentDataCache(state, componentDataCache) {
+      Vue.set(state, 'componentDataCache', componentDataCache)
+    },
+
+    setMobileComponentData(state, mobileComponentData = []) {
+      Vue.set(state, 'mobileComponentData', mobileComponentData)
+    },
     addComponent(state, { component, index }) {
       if (index !== undefined) {
         state.componentData.splice(index, 0, component)
@@ -316,7 +324,7 @@ const data = {
       state.dragComponentInfo = null
     },
     setMobileLayoutStatus(state, status) {
-     state.mobileLayoutStatus = state
+      state.mobileLayoutStatus = status
     }
   },
   modules: {

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if="linkageSettingStatus" class="toolbar">
+    <div v-if="editControlButton" class="toolbar">
       <span style="float: right;">
-        <el-button size="mini" @click="saveLinkage">
+        <el-button size="mini" @click="editSave">
           {{ $t('commons.confirm') }}
         </el-button>
-        <el-button size="mini" @click="cancelLinkage">
+        <el-button size="mini" @click="editCancel">
           {{ $t('commons.cancel') }}
         </el-button>
       </span>
@@ -14,7 +14,6 @@
       <el-tooltip :content="'移动端布局'">
         <el-button class="icon iconfont-tb icon-yidongduan" size="mini" circle @click="openMobileLayout" />
       </el-tooltip>
-
       <el-tooltip v-if="!canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.suspension')">
         <el-button class="icon iconfont-tb icon-xuanfuanniu" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
@@ -36,7 +35,6 @@
       <el-tooltip :content="$t('panel.fullscreen_preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
-
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="changeTimes===0||snapshotIndex===lastSaveSnapshotIndex" @click="save(false)">
           {{ $t('commons.save') }}
@@ -73,7 +71,7 @@ import toast from '@/components/canvas/utils/toast'
 import { mapState } from 'vuex'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import { deepCopy, mobile2MainCanvas } from '@/components/canvas/utils/utils'
 import { panelSave } from '@/api/panel/panel'
 import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
@@ -106,28 +104,32 @@ export default {
       closePanelVisible: false
     }
   },
-  computed: mapState([
-    'componentData',
-    'canvasStyleData',
-    'areaData',
-    'curComponent',
-    'changeTimes',
-    'snapshotIndex',
-    'lastSaveSnapshotIndex',
-    'linkageSettingStatus',
-    'curLinkageView',
-    'targetLinkageInfo',
-    'mobileLayoutStatus'
-  ]),
-
+  computed: {
+    editControlButton() {
+      return this.linkageSettingStatus || this.mobileLayoutStatus
+    },
+    ...mapState([
+      'componentData',
+      'canvasStyleData',
+      'areaData',
+      'curComponent',
+      'changeTimes',
+      'snapshotIndex',
+      'lastSaveSnapshotIndex',
+      'linkageSettingStatus',
+      'curLinkageView',
+      'targetLinkageInfo',
+      'mobileLayoutStatus',
+      'mobileComponentData',
+      'componentDataCache'
+    ])
+  },
   created() {
     eventBus.$on('preview', this.preview)
     eventBus.$on('save', this.save)
     eventBus.$on('clearCanvas', this.clearCanvas)
-
     this.scale = this.canvasStyleData.scale
   },
-
   methods: {
     close() {
       // 关闭页面清理缓存
@@ -151,13 +153,11 @@ export default {
       const scale = this.scale
       return value * scale / 100
     },
-
     getOriginStyle(value) {
       const scale = this.canvasStyleData.scale
       const result = value / (scale / 100)
       return result
     },
-
     handleScaleChange() {
       clearTimeout(this.timer)
       setTimeout(() => {
@@ -171,7 +171,6 @@ export default {
             }
           })
         })
-
         this.$store.commit('setComponentData', componentData)
         this.$store.commit('setCanvasStyle', {
           ...this.canvasStyleData,
@@ -209,13 +208,13 @@ export default {
     showPanel() {
       this.$emit('showPanel', 2)
     },
+
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
         toast('只能插入图片')
         return
       }
-
       const reader = new FileReader()
       reader.onload = (res) => {
         const fileResult = res.target.result
@@ -242,10 +241,8 @@ export default {
               }
             }
           })
-
           this.$store.commit('recordSnapshot', 'handleFileChange')
         }
-
         img.src = fileResult
       }
 
@@ -260,7 +257,6 @@ export default {
     save(withClose) {
       // 清理联动信息
       this.$store.commit('clearPanelLinkageInfo')
-
       // 保存到数据库
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
@@ -300,7 +296,6 @@ export default {
     },
     saveLinkage() {
       // 字段检查
-      // let checkCount = 0
       for (const key in this.targetLinkageInfo) {
         let subCheckCount = 0
         const linkageInfo = this.targetLinkageInfo[key]
@@ -322,15 +317,6 @@ export default {
           return
         }
       }
-      // if (checkCount > 0) {
-      //   this.$message({
-      //     message: this.$t('panel.exit_un_march_linkage_field'),
-      //     type: 'error',
-      //     showClose: true
-      //   })
-      //   return
-      // }
-
       const request = {
         panelId: this.$store.state.panel.panelInfo.id,
         sourceViewId: this.curLinkageView.propValue.viewId,
@@ -348,6 +334,10 @@ export default {
         })
       })
     },
+    cancelMobileLayoutStatue(sourceComponentData) {
+      this.$store.commit('setComponentData', sourceComponentData)
+      this.$store.commit('setMobileLayoutStatus', false)
+    },
     cancelLinkage() {
       this.cancelLinkageSettingStatus()
     },
@@ -358,7 +348,55 @@ export default {
       this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
     },
     openMobileLayout() {
-      this.$store.commit('setMobileLayoutStatus', true)
+      this.$store.commit('setComponentDataCache', JSON.stringify(this.componentData))
+      this.$store.commit('setPcComponentData', this.componentData)
+      const mainComponentData = []
+      // 移动端布局转换
+      this.componentData.forEach(item => {
+        if (item.mobileSelected) {
+          item.style = item.mobileStyle.style
+          item.x = item.mobileStyle.x
+          item.y = item.mobileStyle.y
+          item.sizex = item.mobileStyle.sizex
+          item.sizey = item.mobileStyle.sizey
+          item.auxiliaryMatrix = item.mobileStyle.auxiliaryMatrix
+          mainComponentData.push(item)
+        }
+      })
+
+      this.$store.commit('setComponentData', mainComponentData)
+      this.$store.commit('setMobileLayoutStatus', !this.mobileLayoutStatus)
+    },
+    editSave() {
+      if (this.mobileLayoutStatus) {
+        this.mobileLayoutSave()
+      } else {
+        this.saveLinkage()
+      }
+    },
+    editCancel() {
+      if (this.mobileLayoutStatus) {
+        this.cancelMobileLayoutStatue(JSON.parse(this.componentDataCache))
+      } else {
+        this.cancelLinkageSettingStatus()
+      }
+    },
+    // 移动端布局保存
+    mobileLayoutSave() {
+      this.$store.state.styleChangeTimes++
+      const mobileDataObj = {}
+      this.componentData.forEach(item => {
+        mobileDataObj[item.id] = item
+      })
+      const sourceComponentData = JSON.parse(this.componentDataCache)
+      sourceComponentData.forEach(item => {
+        if (mobileDataObj[item.id]) {
+          mobile2MainCanvas(item, mobileDataObj[item.id])
+        } else {
+          item.mobileSelected = false
+        }
+      })
+      this.cancelMobileLayoutStatue(sourceComponentData)
     }
   }
 }
@@ -370,9 +408,6 @@ export default {
     height: 35px;
     line-height: 35px;
     min-width: 400px;
-    /*background: #fff;*/
-    /*border-bottom: 1px solid #ddd;*/
-
     .canvas-config {
       display: inline-block;
       margin-left: 10px;
@@ -435,7 +470,6 @@ export default {
    >>>.el-switch__core{
      width:30px!important;
      height:15px;
-     /*color:#409EFF;*/
    }
   /*设置圆*/
   >>>.el-switch__core::after{

@@ -21,7 +21,7 @@
     <de-container>
       <!--左侧导航栏-->
       <de-aside-container class="ms-aside-container">
-        <div v-if="!linkageSettingStatus" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+        <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
             <!-- 视图图表 start -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
@@ -98,8 +98,7 @@
         <div
           v-if="!previewVisible&&!mobileLayoutStatus"
           id="canvasInfo"
-          :class="{'style-hidden':canvasStyleData.selfAdaption}"
-          class="content this_canvas"
+          class="this_canvas"
           :style="customCanvasStyle"
           @drop="handleDrop"
           @dragover="handleDragOver"
@@ -107,16 +106,35 @@
           @mouseup="deselectCurComponent"
           @scroll="canvasScroll"
         >
-          <Editor ref="canvasEditor" :out-style="outStyle" />
+          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" />
         </div>
-
-        <!--移动端画布区域-->
-        <div
-          v-if="mobileLayoutStatus"
-          class="content this_canvas"
-        >
-          <Editor class="mobile-canvas" :matrix-count="mobileMatrixCount" :out-style="outStyle" />
-        </div>
+        <!--移动端画布区域 保持宽高比2.5-->
+        <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
+          <el-col :span="8" class="this_mobile_canvas_cell">
+            <div
+              v-proportion="2.5"
+              :style="customCanvasStyle"
+              class="this_mobile_canvas"
+              @drop="handleDrop"
+              @dragover="handleDragOver"
+              @mousedown="handleMouseDown"
+              @mouseup="deselectCurComponent"
+              @scroll="canvasScroll"
+            >
+              <el-row class="this_mobile_canvas_top" />
+              <el-row
+                id="canvasInfoMobile"
+                class="this_mobile_canvas_main"
+              >
+                <Editor ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" />
+              </el-row>
+              <el-row class="this_mobile_canvas_bottom" />
+            </div>
+          </el-col>
+          <el-col :span="16" class="this_mobile_canvas_cell">
+            <component-wait />
+          </el-col>
+        </el-row>
       </de-main-container>
     </de-container>
 
@@ -166,9 +184,7 @@
     <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
 
     <!--矩形样式组件-->
-    <!--    <RectangleAttr v-if="curComponent&&(curComponent.type==='rect-shape'||curComponent.type==='de-tabs')" :scroll-left="scrollLeft" :scroll-top="scrollTop" />-->
     <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
-    <!--    <FilterTextAttr v-if="curComponent&&curComponent.type==='custom'&&curComponent.options.attrs.title" :scroll-left="scrollLeft" :scroll-top="scrollTop" />-->
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -192,8 +208,7 @@ import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import componentList from '@/components/canvas/custom-component/component-list' // 左侧列表数据
-// import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
+import componentList, { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
@@ -208,12 +223,9 @@ import AssistComponent from '@/views/panel/AssistComponent'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { searchAdviceSceneId } from '@/api/chart/chart'
-
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
-// import '@/components/canvas/styles/reset.css'
-
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import FilterDialog from '../filter/filterDialog'
 import toast from '@/components/canvas/utils/toast'
@@ -223,10 +235,12 @@ import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import FilterTextAttr from '@/components/canvas/components/FilterTextAttr'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
+import ComponentWait from '@/views/panel/edit/ComponentWait'
 
 export default {
   name: 'PanelEdit',
   components: {
+    ComponentWait,
     DeMainContainer,
     DeContainer,
     DeAsideContainer,
@@ -300,8 +314,11 @@ export default {
   },
 
   computed: {
+    // 侧边显示控制
+    showAside() {
+      return !this.linkageSettingStatus && !this.mobileLayoutStatus
+    },
     showAttr() {
-      // console.log('showAttr：' + JSON.stringify(this.curComponent))
       if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
         // 过滤组件有标题才显示
         if (this.curComponent.type === 'custom' && !this.curComponent.options.attrs.title) {
@@ -331,8 +348,6 @@ export default {
           }
         }
       }
-      // console.log('customStyle=>' + JSON.stringify(style) + JSON.stringify(this.canvasStyleData))
-
       return style
     },
     panelInfo() {
@@ -349,7 +364,9 @@ export default {
       'dragComponentInfo',
       'componentGap',
       'mobileLayoutStatus',
-      'mobileMatrixCount'
+      'pcMatrixCount',
+      'mobileMatrixCount',
+      'mobileLayoutStyle'
     ])
   },
 
@@ -368,11 +385,13 @@ export default {
       this.init(newVal.id)
     },
     '$store.state.styleChangeTimes'() {
-      // console.log('styleChangeTimes' + this.$store.state.styleChangeTimes)
       if (this.$store.state.styleChangeTimes > 0) {
         this.destroyTimeMachine()
         this.recordStyleChange(this.$store.state.styleChangeTimes)
       }
+    },
+    mobileLayoutStatus() {
+      this.restore()
     }
   },
   created() {
@@ -430,7 +449,6 @@ export default {
           item.sizey = (item.sizey || 5)
         })
         this.$store.commit('setComponentData', this.resetID(componentDatas))
-        // this.$store.commit('setComponentData', this.resetID(JSON.parse(componentDataTemp)))
         const temp = JSON.parse(canvasStyleDataTemp)
         temp.refreshTime = (temp.refreshTime || 5)
         temp.refreshViewLoading = (temp.refreshViewLoading || false)
@@ -443,6 +461,7 @@ export default {
       } else if (panelId) {
         findOne(panelId).then(response => {
           const componentDatas = JSON.parse(response.data.panelData)
+          const mobileComponentData = response.data.panelDataMobile ? JSON.parse(response.data.panelDataMobile) : []
           componentDatas.forEach(item => {
             item.filters = (item.filters || [])
             item.linkageFilters = (item.linkageFilters || [])
@@ -451,9 +470,11 @@ export default {
             item.y = (item.y || 1)
             item.sizex = (item.sizex || 5)
             item.sizey = (item.sizey || 5)
+            item.mobileSelected = (item.mobileSelected || false)
+            item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
-          //   this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+          this.$store.commit('setMobileComponentData', this.resetID(mobileComponentData))
           const panelStyle = JSON.parse(response.data.panelStyle)
           panelStyle.refreshTime = (panelStyle.refreshTime || 5)
           panelStyle.refreshViewLoading = (panelStyle.refreshViewLoading || false)
@@ -506,14 +527,6 @@ export default {
         this.showIndex = -1
       }
     },
-    // insertToBody() {
-    //   this.$nextTick(() => {
-    //     const elx = this.$refs.leftPanel
-    //     const body = document.querySelector('body')
-    //     body.insertBefore(elx, body.firstChild)
-    //   })
-    // },
-
     resetID(data) {
       if (data) {
         data.forEach(item => {
@@ -587,11 +600,6 @@ export default {
         }
         component = deepCopy(this.currentFilterCom)
       }
-
-      // position = absolution 或导致有偏移 这里中和一下偏移量
-      // component.style.top = this.getPositionY(e.layerY)
-      // component.style.left = this.getPositionX(e.layerX)
-
       if (this.canvasStyleData.auxiliaryMatrix) {
         component.x = this.dropComponentInfo.x
         component.y = this.dropComponentInfo.y
@@ -622,8 +630,6 @@ export default {
     },
 
     handleMouseDown() {
-      // console.log('handleMouseDown123')
-
       this.$store.commit('setClickComponentStatus', false)
     },
 
@@ -685,16 +691,17 @@ export default {
       return result
     },
     restore() {
-      if (document.getElementById('canvasInfo')) {
-        this.$nextTick(() => {
-          const canvasHeight = document.getElementById('canvasInfo').offsetHeight
-          const canvasWidth = document.getElementById('canvasInfo').offsetWidth
-          this.outStyle.height = canvasHeight - (this.componentGap * 2)
+      this.$nextTick(() => {
+        const domInfo = this.mobileLayoutStatus ? document.getElementById('canvasInfoMobile') : document.getElementById('canvasInfo')
+        if (domInfo) {
+          this.outStyle.height = domInfo.offsetHeight - this.getGap()
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = canvasWidth - (this.componentGap * 2) + (Math.random() * 0.000001)
-          // console.log(canvasHeight + '--' + canvasWidth)
-        })
-      }
+          this.outStyle.width = domInfo.offsetWidth - this.getGap() + (Math.random() * 0.000001)
+        }
+      })
+    },
+    getGap() {
+      return this.mobileLayoutStatus ? 0 : this.componentGap * 2
     },
     closeStyleDialog() {
       this.styleDialogVisible = false
@@ -714,10 +721,6 @@ export default {
         const fileResult = res.target.result
         const img = new Image()
         img.onload = () => {
-          const scaleWith = img.width / 400
-          const scaleHeight = img.height / 200
-          let scale = scaleWith > scaleHeight ? scaleWith : scaleHeight
-          scale = scale > 1 ? scale : 1
           const component = {
             ...commonAttr,
             id: generateID(),
@@ -923,7 +926,52 @@ export default {
   }
 }
 
+.mobile_canvas_main{
+  width: 80%;
+  height: 90%;
+  margin-left: 10%;
+  margin-top: 3%;
+}
+
+.this_mobile_canvas{
+  border-radius:30px;
+  min-width: 280px;
+  max-width: 300px;
+  min-height: 700px;
+  max-height: 750px;
+  overflow: hidden;
+  background-color: #000000;
+  background-size:100% 100% !important;
+}
+
+.this_mobile_canvas_top{
+  height: 30px;
+  width: 100%;
+}
+
+.this_mobile_canvas_bottom{
+  height: 30px;
+  width: 100%;
+}
+
+.this_mobile_canvas_main{
+  overflow-x: hidden;
+  overflow-y: auto;
+  height:  calc(100% - 60px);;
+  background-color: #d7d9e3;
+  background-size:100% 100% !important;
+}
+
+.this_mobile_canvas_cell{
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .this_canvas{
+  width: 100%;
   height: calc(100vh - 35px);
   overflow-x: hidden;
   overflow-y: auto;
@@ -994,7 +1042,17 @@ export default {
   .mobile-canvas{
     width: 300px;
     height: 600px;
-    background-color: lightgray;
   }
+
+.info-class{
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  color: #9ea6b2;
+}
 
 </style>
