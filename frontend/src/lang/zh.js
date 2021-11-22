@@ -1155,7 +1155,15 @@ export default {
     confirm_sync_field: '确认同步',
     confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认',
     sync_success: '同步成功',
-    sync_success_1: '同步成功，请对当前数据集重新执行数据同步操作'
+    sync_success_1: '同步成功，请对当前数据集重新执行数据同步操作',
+    row_permission: {
+      type: '类型',
+      name: '名称',
+      condition: '条件',
+      value: '值',
+      add: '添加行权限',
+      edit: '编辑行权限'
+    }
   },
   datasource: {
     datasource: '数据源',

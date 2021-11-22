@@ -57,7 +57,7 @@
         <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane :label="$t('dataset.row_permissions')" name="rowPermissions">
-        <row-permissions :param="param" :table="table" />
+        <row-permissions v-if="tabActive=='rowPermissions'" :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
