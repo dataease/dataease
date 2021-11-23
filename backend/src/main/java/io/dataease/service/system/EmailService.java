@@ -84,14 +84,15 @@ public class EmailService {
         MailInfo mailInfo = proxy().mailInfo();
         JavaMailSenderImpl driver = driver(mailInfo);
         MimeMessage mimeMessage = driver.createMimeMessage();
+
         MimeBodyPart image = new MimeBodyPart();
         DataHandler png = new DataHandler(new ByteArrayDataSource(bytes, "image/png"));
 
         String uuid = UUID.randomUUID().toString();
         MimeBodyPart text = new MimeBodyPart();
         try {
-            text.setContent(content + "<br/><img src='cid:"+uuid+"' />", "text/html; charset=gb2312");
-            // text.setText(, "text/html; charset=gb2312");
+
+            text.setContent("<h2>"+content+"</h2>" + "<br/><img src='cid:"+uuid+"' />", "text/html; charset=gb2312");
             image.setDataHandler(png);
             image.setContentID(uuid);
             MimeMultipart multipart = new MimeMultipart();

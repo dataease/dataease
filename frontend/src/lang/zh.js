@@ -343,7 +343,8 @@ export default {
       cancel: '取消'
     },
     ukey_title: 'API Keys',
-    thumbnail: '缩略图'
+    thumbnail: '缩略图',
+    confirm_delete: '确认删除'
   },
   documentation: {
     documentation: '文档',
@@ -1649,6 +1650,50 @@ export default {
     select_openMode: '请选择展示风格',
     select_time_format: '请选择时间格式',
     select_date_format: '请选择日期格式'
+
+  },
+  xpacktask: {
+    add: '新增任务',
+    edit: '编辑任务',
+    task_id: '任务ID',
+    name: '任务名称',
+    last_exec_time: '上次执行时间',
+    last_exec_status: '上次执行状态',
+    ready: '就绪',
+    success: '成功',
+    underway: '执行中',
+    error: '失败',
+    creator: '创建人',
+    create_time: '创建时间',
+    search_by_name: '根据名称搜索',
+    exec_time: '执行时间',
+    status: '执行状态',
+    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}'
+
+  },
+  emailtask: {
+    title: '邮件主题',
+    panel: '仪表板',
+    content: '邮件正文',
+    recipients: '收件人',
+    pixel: '分辨率',
+    default: '默认',
+    custom: '自定义',
+    rate_type: '发送频率',
+    cron_exp: 'cron表达式',
+    exec_time: '执行时间',
+    start_time: '开始时间',
+    end_time: '结束时间',
+
+    preview: '预览',
+    emial_preview: '邮件预览',
+
+    simple_repeat: '简单重复',
+    once_a_day: '每天一次',
+    once_a_week: '每周一次',
+    once_a_month: '每月一次',
+    complex_repeat: '复杂重复',
+    pixel_tip: '可直接输入自定义分辨率或选择'
 
   }
 }

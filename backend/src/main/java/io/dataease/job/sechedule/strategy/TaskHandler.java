@@ -18,8 +18,8 @@ public abstract class TaskHandler implements InitializingBean {
     public void addTask(ScheduleManager scheduleManager, GlobalTaskEntity taskEntity) throws Exception {
         // 1。首先看看是否过期
         Long endTime = taskEntity.getEndTime();
+        removeTask(scheduleManager, taskEntity);
         if (taskExpire(endTime)) { // 过期了就删除任务
-            removeTask(scheduleManager, taskEntity);
             return;
         }
         JobKey jobKey = new JobKey(taskEntity.getTaskId().toString());

@@ -98,6 +98,7 @@ const actions = {
         if (!data) {
           reject('Verification failed, please Login again.')
         }
+        localStorage.setItem('userId', data.userId)
         const currentUser = data
         commit('SET_USER', currentUser)
 

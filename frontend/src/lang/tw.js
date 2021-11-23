@@ -341,7 +341,9 @@ export default {
       ok: '確認',
       cancel: '取消'
     },
-    ukey_title: 'API Keys'
+    ukey_title: 'API Keys',
+    thumbnail: '縮略圖',
+    confirm_delete: '確認刪除'
   },
   documentation: {
     documentation: '文檔',
@@ -1639,6 +1641,50 @@ export default {
     select_openMode: '請選擇展示風格',
     select_time_format: '請選擇時間各式',
     select_date_format: '請選擇日期格式'
+
+  },
+  xpacktask: {
+    add: '新增任務',
+    edit: '編輯任務',
+    task_id: '任務ID',
+    name: '任務名稱',
+    last_exec_time: '上次執行時間',
+    last_exec_status: '上次執行狀態',
+    ready: '就緒',
+    success: '成功',
+    underway: '執行中',
+    error: '失敗',
+    creator: '創建人',
+    create_time: '創建時間',
+    search_by_name: '根據名稱搜索',
+    exec_time: '執行時間',
+    status: '執行狀態',
+    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}'
+
+  },
+  emailtask: {
+    title: '郵件主題',
+    panel: '儀表板',
+    content: '郵件正文',
+    recipients: '收件人',
+    pixel: '分辨率',
+    default: '默認',
+    custom: '自定義',
+    rate_type: '發送p頻率',
+    cron_exp: 'cron表達式',
+    exec_time: '執行時間',
+    start_time: '開始時間',
+    end_time: '結束時間',
+
+    preview: '預覽',
+    emial_preview: '郵件預覽',
+
+    simple_repeat: '簡單重複',
+    once_a_day: '每天一次',
+    once_a_week: '每周一次',
+    once_a_month: '每月一次',
+    complex_repeat: '複雜重複',
+    pixel_tip: '可直接輸入分辨率或者選擇'
 
   }
 }
