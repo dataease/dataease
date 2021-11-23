@@ -23,7 +23,7 @@
             <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
-            <span v-if="hasDataPermission('edit',panelInfo.privileges)&&activeTab==='PanelList'" style="float: right;margin-right: 10px">
+            <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'" style="float: right;margin-right: 10px">
               <el-button size="mini" type="primary" @click="editPanel">
                 {{ $t('commons.edit') }}
               </el-button>
