@@ -341,7 +341,9 @@ export default {
       ok: 'Confirm',
       cancel: 'Cancel'
     },
-    ukey_title: 'API Keys'
+    ukey_title: 'API Keys',
+    thumbnail: 'thumbnail',
+    confirm_delete: 'Confirm delete'
   },
   documentation: {
     documentation: 'Documentation',
@@ -1622,6 +1624,50 @@ export default {
     select_openMode: 'Please select time category',
     select_time_format: 'Please select time format',
     select_date_format: 'Please select date format'
+
+  },
+  xpacktask: {
+    add: 'Add task',
+    edit: 'Edit task',
+    task_id: 'Task id',
+    name: 'Name',
+    last_exec_time: 'Last execute time',
+    last_exec_status: 'Last execute status',
+    ready: 'Ready',
+    success: 'Success',
+    underway: 'Underway',
+    error: 'Error',
+    creator: 'Creator',
+    create_time: 'Create time',
+    search_by_name: 'Search by name',
+    exec_time: 'Execute time',
+    status: 'Execute status',
+    pixel_error: 'Pixel only support {800 - 10000} * {500 - 6250}'
+
+  },
+  emailtask: {
+    title: 'Title',
+    panel: 'Panel',
+    content: 'Content',
+    recipients: 'Recipients',
+    pixel: 'Pixel',
+    default: 'Default',
+    custom: 'Custom',
+    rate_type: 'Rate type',
+    cron_exp: 'Cron expression',
+    exec_time: 'Execute time',
+    start_time: 'Start time',
+    end_time: 'End time',
+
+    preview: 'Preview',
+    emial_preview: 'Emial preview',
+
+    simple_repeat: 'Simple repeat',
+    once_a_day: 'Once a day',
+    once_a_week: 'Once a week',
+    once_a_month: 'Once a month',
+    complex_repeat: 'Complex repeat',
+    pixel_tip: 'Please select'
 
   }
 }

@@ -85,7 +85,6 @@ public class EmailService {
         JavaMailSenderImpl driver = driver(mailInfo);
 
         MimeMessage mimeMessage = driver.createMimeMessage();
-        MimeMessageHelper helper = null;
 
         MimeBodyPart image = new MimeBodyPart();
         DataHandler png = new DataHandler(new ByteArrayDataSource(bytes, "image/png"));
@@ -93,8 +92,8 @@ public class EmailService {
         String uuid = UUID.randomUUID().toString();
         MimeBodyPart text = new MimeBodyPart();
         try {
-            text.setContent(content + "<br/><img src='cid:"+uuid+"' />", "text/html; charset=gb2312");
-            // text.setText(, "text/html; charset=gb2312");
+
+            text.setContent("<h2>"+content+"</h2>" + "<br/><img src='cid:"+uuid+"' />", "text/html; charset=gb2312");
             image.setDataHandler(png);
             image.setContentID(uuid);
             MimeMultipart multipart = new MimeMultipart();
