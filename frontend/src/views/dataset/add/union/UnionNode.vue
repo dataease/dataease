@@ -37,10 +37,10 @@ export default {
   },
   data() {
     return {
-      path: 'm0,13 l28,0 m24,0 l28,0',
-      pathExt: 'm0,13 l28,0 m24,0 l28,0 M14,13 l0,27', // 向下直线
-      pathMore: 'M14,0 l0,13 l14,0 m24,0 l28,0', // 向上直线
-      pathMoreExt: 'M14,0 l0,13 l14,0 m24,0 l28,0 M14,13 l0,27',
+      path: 'm0,13 l18,0 m24,0 l18,0',
+      pathExt: 'm0,13 l18,0 m24,0 l18,0 M9,13 l0,27', // 向下直线
+      pathMore: 'M9,0 l0,13 l9,0 m24,0 l18,0', // 向上直线
+      pathMoreExt: 'M9,0 l0,13 l9,0 m24,0 l18,0 M9,13 l0,27',
       nodeHeight: '40px',
       lineLength: '',
       pathParam: ''
@@ -132,11 +132,11 @@ export default {
   font-size: 24px;
   line-height: 26px;
   position: absolute;
-  left: 28px;
+  left: 18px;
   color:#dcdfe6;
 }
 .join-svg-container{
-  width:80px;
+  width:60px;
 }
 .node-line{
   display: flex;

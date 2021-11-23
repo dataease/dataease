@@ -113,7 +113,11 @@ export default {
 
     },
     cancel() {
-
+      if (this.param.tableId) {
+        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
+      } else {
+        this.$emit('switchComponent', { name: '' })
+      }
     },
     selectDs() {
       this.selectDsDialog = true
