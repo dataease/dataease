@@ -934,6 +934,9 @@ export default {
       if (view.type === 'line-stack' && trigger === 'chart') {
         view.customAttr.size.lineArea = true
       }
+      if (view.type === 'line' && trigger === 'chart') {
+        view.customAttr.size.lineArea = false
+      }
       if (view.type === 'treemap' && trigger === 'chart') {
         view.customAttr.label.show = true
       }
