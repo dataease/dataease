@@ -378,9 +378,8 @@ public class DataSetTableService {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        datasourceRequest.setQuery(qp.convertTableToSql(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable(), ds));
-        return datasourceProvider.fetchResultField(datasourceRequest);
+        datasourceRequest.setTable(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable());
+        return datasourceProvider.getTableFileds(datasourceRequest);
     }
 
     public Map<String, List<DatasetTableField>> getFieldsFromDE(DataSetTableRequest dataSetTableRequest) throws Exception {
