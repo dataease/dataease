@@ -28,15 +28,15 @@
       </div>
       <!--数据集关联树型结构-->
       <div v-else class="union-container">
-        <node-item :current-node="dataset[0]" :node-index="0" @deleteNode="deleteNode" />
+        <node-item :current-node="dataset[0]" :node-index="0" @deleteNode="deleteNode" @notifyParent="calc" />
         <div v-if="dataset.length > 0">
-          <union-node v-for="(item,index) in dataset[0].childrenDs" :key="index" :node-index="index" :children-node="item" :children-list="dataset[0].childrenDs" />
+          <union-node v-for="(item,index) in dataset[0].childrenDs" :key="index" :node-index="index" :children-node="item" :children-list="dataset[0].childrenDs" @notifyParent="calc" />
         </div>
       </div>
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="30%" class="dialog-css">
+    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="30%" class="dialog-css" destroy-on-close>
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
@@ -72,17 +72,19 @@ export default {
             currentDsField: [],
             childrenDs: [],
             unionToParent: {
-              unionType: '',
+              unionType: '', // left join,right join,inner join
               unionFields: [
                 {
                   parentField: {},
                   currentField: {}
                 }
               ]
-            }
+            },
+            allChildCount: 0
           }
         ],
-        unionToParent: {}
+        unionToParent: {},
+        allChildCount: 0
       }],
       // union data
       dataset: [],
@@ -94,7 +96,8 @@ export default {
         unionToParent: {
           unionType: '',
           unionFields: []
-        }
+        },
+        allChildCount: 0
       },
       name: '',
       customType: ['db', 'sql', 'excel'],
@@ -127,9 +130,26 @@ export default {
       ds.currentDs = this.tempDs
       this.dataset.push(ds)
       this.closeSelectDs()
+      this.calc('union')
     },
     deleteNode(index) {
       this.dataset.splice(index, 1)
+      this.calc('delete')
+    },
+    calc(param) {
+      if (param.type === 'union') {
+        if (param.grandParentAdd) {
+          this.dataset[0] && this.dataset[0].allChildCount++
+        }
+      } else if (param.type === 'delete') {
+        if (param.grandParentSub) {
+          if (param.subCount > 1) {
+            this.dataset[0] && (this.dataset[0].allChildCount -= param.subCount)
+          } else {
+            this.dataset[0] && this.dataset[0].allChildCount--
+          }
+        }
+      }
     }
   }
 }
