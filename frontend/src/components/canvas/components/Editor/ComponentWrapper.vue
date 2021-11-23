@@ -37,9 +37,10 @@ import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
+import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 
 export default {
-  components: { DeOutWidget, EditBar },
+  components: { MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     config: {
@@ -71,6 +72,7 @@ export default {
       return this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix ? this.componentGap : 0
     },
     ...mapState([
+      'mobileLayoutStatus',
       'canvasStyleData',
       'curComponent',
       'componentGap'
@@ -96,7 +98,6 @@ export default {
       }
       if (prop === 'top') {
         const top = this.format(style['top'], this.scaleHeight)
-        // console.log('top:' + top)
         return top
       }
     },
@@ -107,19 +108,33 @@ export default {
     getOutStyleDefault(style) {
       const result = {
         padding: this.curGap + 'px'
-      };
-      ['width', 'left'].forEach(attr => {
-        result[attr] = style[attr] + 'px'
-      });
-      ['height', 'top'].forEach(attr => {
-        result[attr] = style[attr] + 'px'
-      })
-      result['rotate'] = style['rotate']
+      }
+      // 移动端编辑状态 且 未被移动端选中的组件 放满容器
+      if (this.mobileLayoutStatus && !this.config.mobileSelected) {
+        result.width = '100%'
+        result.height = '100%'
+      } else {
+        ['width', 'left'].forEach(attr => {
+          result[attr] = style[attr] + 'px'
+        });
+        ['height', 'top'].forEach(attr => {
+          result[attr] = style[attr] + 'px'
+        })
+        result['rotate'] = style['rotate']
+      }
       return result
     },
 
     getComponentStyleDefault(style) {
-      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // 移动端编辑状态 且 未被移动端选中的组件 放满容器
+      if (this.mobileLayoutStatus && !this.config.mobileSelected) {
+        return {
+          width: '100%',
+          height: '100%'
+        }
+      } else {
+        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      }
     },
 
     handleClick() {

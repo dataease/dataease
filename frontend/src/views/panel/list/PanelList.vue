@@ -22,19 +22,6 @@
               <el-dropdown-item @click.native="searchTypeClick('folder')">目录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-
-          <!--          <el-select-->
-          <!--            v-model="searchType"-->
-          <!--            default-first-option-->
-          <!--            size="mini"-->
-          <!--          >-->
-          <!--            <el-option-->
-          <!--              v-for="item in searchTypeList"-->
-          <!--              :key="item.value"-->
-          <!--              :label="item.label"-->
-          <!--              :value="item.value"-->
-          <!--            />-->
-          <!--          </el-select>-->
         </el-col>
       </el-row>
       <el-row>
@@ -246,7 +233,6 @@ import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
-import { post } from '@/api/chart/chart'
 
 export default {
   name: 'PanelList',
@@ -637,7 +623,6 @@ export default {
             item.sizey = (item.sizey || 5)
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
-          //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
           temp.refreshTime = (temp.refreshTime || 5)
           temp.refreshViewLoading = (temp.refreshViewLoading || false)

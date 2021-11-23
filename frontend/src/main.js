@@ -83,10 +83,12 @@ import vueToPdf from 'vue-to-pdf'
 Vue.use(vueToPdf)
 
 import VueVideoPlayer from 'vue-video-player'
-
 import 'video.js/dist/video-js.css'
-
 Vue.use(VueVideoPlayer)
+
+// 控制标签宽高成比例的指令
+import proportion from 'vue-proportion-directive'
+Vue.use(proportion)
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
   if (this.$store.state.user.user.isAdmin) {
