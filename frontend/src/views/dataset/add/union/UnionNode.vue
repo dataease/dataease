@@ -1,11 +1,16 @@
 <template>
   <div class="children-node node-container" :style="{height:nodeHeight}">
     <div class="node-line">
-      <svg-icon icon-class="inner-join" class="join-icon" @click="unionConfig" />
+      <svg-icon v-if="childrenNode.unionToParent.unionType === 'left'" icon-class="left-join" class="join-icon" @click="unionConfig" />
+      <svg-icon v-else-if="childrenNode.unionToParent.unionType === 'right'" icon-class="right-join" class="join-icon" @click="unionConfig" />
+      <svg-icon v-else-if="childrenNode.unionToParent.unionType === 'inner'" icon-class="inner-join" class="join-icon" @click="unionConfig" />
+      <svg-icon v-else icon-class="no-join" class="join-icon" @click="unionConfig" />
+
       <svg class="join-svg-container">
         <path fill="none" stroke="#dcdfe6" :d="pathParam + lineLength" />
       </svg>
     </div>
+
     <node-item :current-node="childrenNode" :node-index="nodeIndex" @deleteNode="deleteNode" @notifyParent="calc" />
     <!--递归调用自身，完成树状结构-->
     <div>
