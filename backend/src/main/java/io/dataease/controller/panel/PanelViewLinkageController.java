@@ -29,22 +29,20 @@ public class PanelViewLinkageController {
 
     @ApiOperation("获取仪表板所有视图联动信息")
     @PostMapping("/getViewLinkageGather")
-    public Map getViewLinkageGather(@RequestBody PanelLinkageRequest request){
+    public Map getViewLinkageGather(@RequestBody PanelLinkageRequest request) {
         return panelViewLinkageService.getViewLinkageGather(request);
     }
 
-
     @ApiOperation("保存仪表板视图联动信息")
     @PostMapping("/saveLinkage")
-    public BaseRspModel saveLinkage(@RequestBody PanelLinkageRequest request){
+    public BaseRspModel saveLinkage(@RequestBody PanelLinkageRequest request) {
         panelViewLinkageService.saveLinkage(request);
         return new BaseRspModel();
     }
 
-
     @ApiOperation("获取当前仪表板所有联动信息")
     @GetMapping("/getPanelAllLinkageInfo/{panelId}")
-    public Map<String, List<String>> getPanelAllLinkageInfo(@PathVariable String panelId){
+    public Map<String, List<String>> getPanelAllLinkageInfo(@PathVariable String panelId) {
         return panelViewLinkageService.getPanelAllLinkageInfo(panelId);
     }
 

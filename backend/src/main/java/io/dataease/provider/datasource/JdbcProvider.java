@@ -72,8 +72,8 @@ public class JdbcProvider extends DatasourceProvider {
 
             list = fetchResult(rs);
 
-            if(dsr.isPageable() && dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())){
-                Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize(): list.size();
+            if (dsr.isPageable() && dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())) {
+                Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize() : list.size();
                 list = list.subList((dsr.getPage() - 1) * dsr.getPageSize(), realSize);
             }
 
@@ -86,7 +86,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     public void exec(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement()){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement()) {
             Boolean result = stat.execute(datasourceRequest.getQuery());
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -97,7 +97,7 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             return fetchResult(rs);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -117,7 +117,7 @@ public class JdbcProvider extends DatasourceProvider {
                 int columType = metaData.getColumnType(j + 1);
                 switch (columType) {
                     case Types.DATE:
-                        if(rs.getDate(j + 1) != null){
+                        if (rs.getDate(j + 1) != null) {
                             row[j] = rs.getDate(j + 1).toString();
                         }
                         break;
@@ -132,8 +132,94 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
+    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+        List<TableFiled> list = new LinkedList<>();
+        try (Connection connection = getConnectionFromPool(datasourceRequest)) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                String database;
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())) {
+                    database = resultSet.getString("TABLE_SCHEM");
+                } else {
+                    database = resultSet.getString("TABLE_CAT");
+                }
+                if (database != null) {
+                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
+                        list.add(tableFiled);
+                    }
+                } else {
+                    if (tableName.equals(datasourceRequest.getTable())) {
+                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
+                        list.add(tableFiled);
+                    }
+                }
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            DataEaseException.throwException(e);
+        } catch (Exception e) {
+            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+        }
+        return list;
+    }
+
+    private TableFiled getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
+        TableFiled tableFiled = new TableFiled();
+        String colName = resultSet.getString("COLUMN_NAME");
+        tableFiled.setFieldName(colName);
+        String remarks = resultSet.getString("REMARKS");
+        if (remarks == null || remarks.equals("")) {
+            remarks = colName;
+        }
+        tableFiled.setRemarks(remarks);
+        String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
+        tableFiled.setFieldType(dbType);
+        if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
+        if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
+            tableFiled.setFieldSize(50);
+        }
+
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+            QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
+            tableFiled.setFieldSize(qp.transFieldSize(dbType));
+        }else {
+            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && tableFiled.getFieldType().equalsIgnoreCase("BOOLEAN")){
+                tableFiled.setFieldSize(1);
+            }else {
+                tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
+            }
+
+
+        }
+        return tableFiled;
+    }
+
+    private String getDatabase(DatasourceRequest datasourceRequest) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType) {
+            case mysql:
+            case de_doris:
+            case ds_doris:
+            case mariadb:
+                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
+                return mysqlConfiguration.getDataBase();
+            case sqlServer:
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
+                return sqlServerConfiguration.getDataBase();
+            case pg:
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
+                return pgConfiguration.getDataBase();
+            default:
+                JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+                return jdbcConfiguration.getDataBase();
+        }
+    }
+    @Override
     public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -146,9 +232,9 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
         Map<String, List> result = new HashMap<>();
-        List<String[]> dataList = new LinkedList<>();
-        List<TableFiled> fieldList = new ArrayList<>();
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))){
+        List<String[]> dataList;
+        List<TableFiled> fieldList;
+        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             dataList = fetchResult(rs);
             fieldList = fetchResultField(rs, datasourceRequest);
             result.put("dataList", dataList);
@@ -170,7 +256,7 @@ public class JdbcProvider extends DatasourceProvider {
             String f = metaData.getColumnName(j + 1);
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
             String t = metaData.getColumnTypeName(j + 1);
-            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name())){
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name())) {
                 l = l.split("\\.")[1];
             }
             TableFiled field = new TableFiled();
@@ -178,14 +264,16 @@ public class JdbcProvider extends DatasourceProvider {
             field.setRemarks(l);
             field.setFieldType(t);
 
-            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())) {
                 QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
                 field.setFieldSize(qp.transFieldSize(t));
-            }else {
+            } else {
                 field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
             }
-            if(t.equalsIgnoreCase("LONG")){field.setFieldSize(65533);} //oracle LONG
-            if(StringUtils.isNotEmpty(t) && t.toLowerCase().contains("date") && field.getFieldSize() < 50 ){
+            if (t.equalsIgnoreCase("LONG")) {
+                field.setFieldSize(65533);
+            } //oracle LONG
+            if (StringUtils.isNotEmpty(t) && t.toLowerCase().contains("date") && field.getFieldSize() < 50) {
                 field.setFieldSize(50);
             }
             fieldList.add(field);
@@ -197,7 +285,7 @@ public class JdbcProvider extends DatasourceProvider {
     public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<String> tables = new ArrayList<>();
         String queryStr = getTablesSql(datasourceRequest);
-        try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)){
+        try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
             while (resultSet.next()) {
                 tables.add(resultSet.getString(1));
             }
@@ -206,8 +294,8 @@ public class JdbcProvider extends DatasourceProvider {
         }
 
         String queryView = getViewSql(datasourceRequest);
-        if(queryView != null){
-            try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)){
+        if (queryView != null) {
+            try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)) {
                 while (resultSet.next()) {
                     tables.add(resultSet.getString(1));
                 }
@@ -223,7 +311,7 @@ public class JdbcProvider extends DatasourceProvider {
     public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest);
-        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)){
+        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
             while (resultSet.next()) {
                 schemas.add(resultSet.getString(1));
             }
@@ -237,7 +325,7 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
-        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)){
+        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -248,7 +336,7 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception {
         DruidDataSource dataSource = null;
-        switch (type){
+        switch (type) {
             case "add":
                 checkStatus(datasourceRequest);
                 dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
@@ -316,7 +404,7 @@ public class JdbcProvider extends DatasourceProvider {
                 password = oracleConfiguration.getPassword();
                 driver = oracleConfiguration.getDriver();
                 jdbcurl = oracleConfiguration.getJdbc();
-                props.put( "oracle.net.CONNECT_TIMEOUT" , "5000") ;
+                props.put("oracle.net.CONNECT_TIMEOUT", "5000");
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
@@ -376,7 +464,7 @@ public class JdbcProvider extends DatasourceProvider {
         druidDataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
         druidDataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
         druidDataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
-        if(datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.hive.name())){
+        if (datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.hive.name())) {
             WallFilter wallFilter = new WallFilter();
             wallFilter.setDbType(DatasourceTypes.mysql.name());
             druidDataSource.setProxyFilters(Arrays.asList(new Filter[]{wallFilter}));
@@ -467,7 +555,7 @@ public class JdbcProvider extends DatasourceProvider {
                 return "show tables";
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
-                if(StringUtils.isEmpty(sqlServerConfiguration.getSchema())){
+                if (StringUtils.isEmpty(sqlServerConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'DS_SCHEMA' ;"
@@ -475,13 +563,13 @@ public class JdbcProvider extends DatasourceProvider {
                         .replace("DS_SCHEMA", sqlServerConfiguration.getSchema());
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
-                if(StringUtils.isEmpty(oracleConfiguration.getSchema())){
+                if (StringUtils.isEmpty(oracleConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "select table_name, owner from all_tables where owner='" + oracleConfiguration.getSchema() + "'";
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
-                if(StringUtils.isEmpty(pgConfiguration.getSchema())){
+                if (StringUtils.isEmpty(pgConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", pgConfiguration.getSchema());
@@ -490,7 +578,7 @@ public class JdbcProvider extends DatasourceProvider {
                 return "SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", chConfiguration.getDataBase());
             case redshift:
                 RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
-                if(StringUtils.isEmpty(redshiftConfigration.getSchema())){
+                if (StringUtils.isEmpty(redshiftConfigration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());
@@ -510,7 +598,7 @@ public class JdbcProvider extends DatasourceProvider {
                 return null;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
-                if(StringUtils.isEmpty(sqlServerConfiguration.getSchema())){
+                if (StringUtils.isEmpty(sqlServerConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
@@ -518,19 +606,19 @@ public class JdbcProvider extends DatasourceProvider {
                         .replace("DS_SCHEMA", sqlServerConfiguration.getSchema());
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
-                if(StringUtils.isEmpty(oracleConfiguration.getSchema())){
+                if (StringUtils.isEmpty(oracleConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "select VIEW_NAME  from all_views where owner='" + oracleConfiguration.getSchema() + "'";
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
-                if(StringUtils.isEmpty(pgConfiguration.getSchema())){
+                if (StringUtils.isEmpty(pgConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", pgConfiguration.getSchema());
             case redshift:
                 RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
-                if(StringUtils.isEmpty(redshiftConfigration.getSchema())){
+                if (StringUtils.isEmpty(redshiftConfigration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "SELECT viewname FROM  pg_views WHERE schemaname='SCHEMA' ;".replace("SCHEMA", redshiftConfigration.getSchema());

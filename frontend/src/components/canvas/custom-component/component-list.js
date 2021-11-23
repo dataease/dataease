@@ -1,3 +1,17 @@
+// 基础移动端定位样式
+export const BASE_MOBILE_STYLE = {
+  style: {
+    width: 1600,
+    height: 300,
+    borderRadius: 5
+  },
+  x: 1,
+  y: 1,
+  sizex: 6,
+  sizey: 4,
+  auxiliaryMatrix: true
+}
+
 // 公共样式
 export const commonStyle = {
   rotate: 0,
@@ -90,7 +104,7 @@ export const pictureList = [
     id: '20001',
     component: 'picture-add',
     type: 'picture-add',
-    label: '拖拽上传',
+    label: '图片',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter'
   },
@@ -124,6 +138,7 @@ const list = [
     propValue: '双击输入文字',
     icon: 'wenben',
     type: 'v-text',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
       height: 100,
@@ -150,6 +165,7 @@ const list = [
     propValue: '按钮',
     icon: 'button',
     type: 'v-button',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 100,
       height: 34,
@@ -172,6 +188,7 @@ const list = [
     icon: 'tupian',
     type: 'Picture',
     propValue: require('@/components/canvas/assets/title.jpg'),
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
       height: 200,
@@ -189,6 +206,7 @@ const list = [
     icon: 'tupian',
     type: 'Picture',
     propValue: require('@/components/canvas/assets/bg-kj-1.jpg'),
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       borderStyle: 'solid',
       borderWidth: 0,
@@ -204,6 +222,7 @@ const list = [
     propValue: '',
     icon: 'juxing',
     type: 'rect-shape',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
       height: 200,
@@ -225,6 +244,7 @@ const list = [
     propValue: '',
     icon: 'juxing',
     type: 'view',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
       height: 200,
@@ -243,6 +263,7 @@ const list = [
     propValue: '',
     icon: 'tabs',
     type: 'de-tabs',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 200,
       height: 200,
@@ -271,6 +292,7 @@ const list = [
     propValue: '',
     icon: 'shijian',
     type: 'de-show-date',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 250,
       height: 100,
@@ -304,9 +326,10 @@ const list = [
     id: '20001',
     component: 'picture-add',
     type: 'picture-add',
-    label: '拖拽上传',
+    label: '图片',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
       height: 200,
@@ -324,6 +347,7 @@ const list = [
     label: '',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
       height: 200,

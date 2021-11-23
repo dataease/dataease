@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
@@ -27,11 +28,11 @@ public class AboutService {
     public F2CLicenseResponse updateLicense(String licenseKey) {
         F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.updateLicense(product, licenseKey);
         Optional.ofNullable(f2CLicenseResponse).ifPresent(resp -> {
-            if (resp.getStatus() == F2CLicenseResponse.Status.valid){
+            if (resp.getStatus() == F2CLicenseResponse.Status.valid) {
                 String dateStr = f2CLicenseResponse.getLicense().getExpired();
                 LogUtil.info("update valid lic, expired date is {}", dateStr);
                 try {
-                    Date date =  DateUtils.getDate(dateStr);
+                    Date date = DateUtils.getDate(dateStr);
                     CacheUtils.updateLicCache(date);
                     CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
                     CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
@@ -62,8 +63,7 @@ public class AboutService {
                 }
             }
             String property = CommonBeanFactory.getBean(Environment.class).getProperty("cmp.version");
-            String result = Optional.ofNullable(property).orElse("V1.0");
-            return result;
+            return Optional.ofNullable(property).orElse("V1.0");
         } catch (Exception e) {
             LogUtil.error("failed to get build version.", e);
         }

@@ -49,6 +49,7 @@ public class HiveQueryProvider extends QueryProvider {
             case "date":
                 return 1;// 时间
             case "tinyint":
+            case "smallint":
             case "int":
             case "bigint":
                 return 2;// 整型

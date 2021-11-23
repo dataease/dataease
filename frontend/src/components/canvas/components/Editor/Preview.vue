@@ -1,33 +1,41 @@
 <template>
-  <div id="canvasInfoMain" ref="canvasInfoMain" :style="customStyle" class="bg">
-    <div id="canvasInfoTemp" ref="canvasInfoTemp" class="main-class" @mouseup="deselectCurComponent" @mousedown="handleMouseDown">
-      <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
-        {{ $t('panel.panelNull') }}
-      </el-row>
-      <canvas-opt-bar />
-      <ComponentWrapper
-        v-for="(item, index) in componentDataInfo"
-        :key="index"
-        :config="item"
-        :search-count="searchCount"
-        :in-screen="inScreen"
-      />
-      <!--视图详情-->
-      <el-dialog
-        :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
-        :visible.sync="chartDetailsVisible"
-        width="70%"
-        class="dialog-css"
-        :destroy-on-close="true"
+  <div class="bg" :style="customStyle">
+    <div id="canvasInfoMain" ref="canvasInfoMain" style="width: 100%;height: 100%">
+      <div
+        id="canvasInfoTemp"
+        ref="canvasInfoTemp"
+        class="main-class"
+        @mouseup="deselectCurComponent"
+        @mousedown="handleMouseDown"
       >
-        <span style="position: absolute;right: 70px;top:15px">
-          <el-button size="mini" @click="exportExcel">
-            <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
-            {{ $t('chart.export_details') }}
-          </el-button>
-        </span>
-        <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
-      </el-dialog>
+        <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
+          {{ $t('panel.panelNull') }}
+        </el-row>
+        <canvas-opt-bar />
+        <ComponentWrapper
+          v-for="(item, index) in componentDataInfo"
+          :key="index"
+          :config="item"
+          :search-count="searchCount"
+          :in-screen="inScreen"
+        />
+        <!--视图详情-->
+        <el-dialog
+          :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+          :visible.sync="chartDetailsVisible"
+          width="70%"
+          class="dialog-css"
+          :destroy-on-close="true"
+        >
+          <span style="position: absolute;right: 70px;top:15px">
+            <el-button size="mini" @click="exportExcel">
+              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+              {{ $t('chart.export_details') }}
+            </el-button>
+          </span>
+          <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+        </el-dialog>
+      </div>
     </div>
   </div>
 </template>
@@ -94,9 +102,7 @@ export default {
   },
   computed: {
     customStyle() {
-      let style = {
-        padding: this.componentGap + 'px'
-      }
+      let style = {}
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
@@ -110,16 +116,6 @@ export default {
           }
         }
       }
-      // if (this.canvasStyleData.selfAdaption) {
-      //   style = {
-      //     overflow: 'hidden',
-      //     ...style
-      //   }
-      // }
-      // style = {
-      //   overflow-x :'hidden',
-      //   ...style
-      // }
       return style
     },
     // 此处单独计算componentData的值 不放入全局mapState中
@@ -152,17 +148,17 @@ export default {
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
-    const tempDom = document.getElementById('canvasInfoMain')
-    erd.listenTo(tempDom, element => {
+    const mainDom = document.getElementById('canvasInfoMain')
+    erd.listenTo(mainDom, element => {
       _this.$nextTick(() => {
         _this.restore()
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-        _this.mainHeight = tempDom.scrollHeight + 'px!important'
+        _this.mainHeight = mainDom.scrollHeight + 'px!important'
       })
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
-    this.$store.commit('clearLinkageSettingInfo', false)
-    this.canvasStyleDataInit()
+    _this.$store.commit('clearLinkageSettingInfo', false)
+    _this.canvasStyleDataInit()
   },
   beforeDestroy() {
     clearInterval(this.timer)
@@ -235,8 +231,6 @@ export default {
       }
     },
     handleMouseDown() {
-      // console.log('handleMouseDown123')
-
       this.$store.commit('setClickComponentStatus', false)
     }
   }
@@ -244,47 +238,45 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.bg {
+  .bg {
+    padding: 5px;
     min-width: 600px;
     min-height: 300px;
     width: 100%;
     height: 100%;
     overflow-x: hidden;
-    /*border: 1px solid #E6E6E6;*/
     background-size: 100% 100% !important;
-    .canvas-container {
-        width: 100%;
-        height: 100%;
-      .canvas {
-            position: relative;
-            margin: auto;
-        }
-    }
-}
-.main-class {
-  width: 100%;
-  height: 100%;
-}
-.custom-position {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  flex-flow: row nowrap;
-  color: #9ea6b2;
-}
-.gap_class{
-  padding:5px;
-}
-.dialog-css>>>.el-dialog__title {
-  font-size: 14px;
-}
-.dialog-css >>> .el-dialog__header {
-  padding: 20px 20px 0;
-}
-.dialog-css >>> .el-dialog__body {
-  padding: 10px 20px 20px;
-}
+  }
+
+  .main-class {
+    width: 100%;
+    height: 100%;
+  }
+
+  .custom-position {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    flex-flow: row nowrap;
+    color: #9ea6b2;
+  }
+
+  .gap_class {
+    padding: 5px;
+  }
+
+  .dialog-css > > > .el-dialog__title {
+    font-size: 14px;
+  }
+
+  .dialog-css > > > .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+
+  .dialog-css > > > .el-dialog__body {
+    padding: 10px 20px 20px;
+  }
 
 </style>

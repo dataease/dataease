@@ -17,7 +17,6 @@ import java.util.List;
 public class ChartController {
 
 
-
     @ApiOperation("查询")
     @PostMapping("list")
     public List<JSON> list(@RequestBody DataSetTableRequest dataSetTableRequest) {

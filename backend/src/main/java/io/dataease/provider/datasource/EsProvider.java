@@ -12,6 +12,8 @@ import io.dataease.dto.datasource.EsConfiguration;
 import io.dataease.dto.datasource.TableFiled;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.provider.ProviderFactory;
+import io.dataease.provider.query.QueryProvider;
 import io.dataease.provider.query.es.EsQueryProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -92,6 +94,13 @@ public class EsProvider extends DatasourceProvider {
             DataEaseException.throwException(e);
         }
         return list;
+    }
+
+    @Override
+    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+        QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
+        datasourceRequest.setQuery(qp.convertTableToSql(datasourceRequest.getTable(), datasourceRequest.getDatasource()));
+        return fetchResultField(datasourceRequest);
     }
 
     private List<String[]> fetchResult(String response) throws Exception {

@@ -38,11 +38,11 @@ import static io.dataease.provider.query.SQLConstants.TABLE_ALIAS_PREFIX;
 @Service("oracleQuery")
 public class OracleQueryProvider extends QueryProvider {
 
-    private static Integer STRING = 0;
-    private static Integer TIME = 1;
-    private static Integer INT = 2;
-    private static Integer FLOAT = 3;
-    private static Integer BOOLEAN = 4;
+    private static final Integer STRING = 0;
+    private static final Integer TIME = 1;
+    private static final Integer INT = 2;
+    private static final Integer FLOAT = 3;
+    private static final Integer BOOLEAN = 4;
 
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

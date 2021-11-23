@@ -27,4 +27,6 @@ public abstract class DatasourceProvider {
     abstract public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception;
 
     abstract public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception;
+
+    public abstract List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception;
 }

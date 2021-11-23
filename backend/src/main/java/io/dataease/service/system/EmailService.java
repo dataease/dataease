@@ -65,7 +65,7 @@ public class EmailService {
         JavaMailSenderImpl driver = driver(mailInfo);
 
         MimeMessage mimeMessage = driver.createMimeMessage();
-        MimeMessageHelper helper = null;
+        MimeMessageHelper helper;
         try {
             helper = new MimeMessageHelper(mimeMessage, true);
             helper.setFrom(driver.getUsername());
@@ -83,7 +83,6 @@ public class EmailService {
         if (StringUtils.isBlank(to)) return ;
         MailInfo mailInfo = proxy().mailInfo();
         JavaMailSenderImpl driver = driver(mailInfo);
-
         MimeMessage mimeMessage = driver.createMimeMessage();
 
         MimeBodyPart image = new MimeBodyPart();
@@ -116,7 +115,7 @@ public class EmailService {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setDefaultEncoding("UTF-8");
         javaMailSender.setHost(mailInfo.getHost());
-        javaMailSender.setPort(Integer.valueOf(mailInfo.getPort()));
+        javaMailSender.setPort(Integer.parseInt(mailInfo.getPort()));
         javaMailSender.setUsername(mailInfo.getAccount());
         javaMailSender.setPassword(mailInfo.getPassword());
         Properties props = new Properties();
@@ -196,7 +195,7 @@ public class EmailService {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setDefaultEncoding("UTF-8");
         javaMailSender.setHost(hashMap.get(ParamConstants.MAIL.SERVER.getValue()));
-        javaMailSender.setPort(Integer.valueOf(hashMap.get(ParamConstants.MAIL.PORT.getValue())));
+        javaMailSender.setPort(Integer.parseInt(hashMap.get(ParamConstants.MAIL.PORT.getValue())));
         javaMailSender.setUsername(hashMap.get(ParamConstants.MAIL.ACCOUNT.getValue()));
         javaMailSender.setPassword(hashMap.get(ParamConstants.MAIL.PASSWORD.getValue()));
         Properties props = new Properties();
@@ -218,7 +217,7 @@ public class EmailService {
         }
         if(!StringUtils.isBlank(recipients)){
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = null;
+            MimeMessageHelper helper;
             try {
                 helper = new MimeMessageHelper(mimeMessage, true);
                 helper.setFrom(javaMailSender.getUsername());

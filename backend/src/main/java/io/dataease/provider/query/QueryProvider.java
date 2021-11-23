@@ -59,8 +59,6 @@ public abstract class QueryProvider {
         return 50;
     }
 
-    ;
-
     /**
      * 单指标汇总
      *

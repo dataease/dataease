@@ -8,7 +8,6 @@
       'rect-shape'
     ]"
   >
-    <!--    <i v-if="requestStatus==='success'" style="right:25px;position: absolute;z-index: 2" class="icon iconfont icon-fangda" @click.stop="openChartDetailsDialog" />-->
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -18,7 +17,6 @@
     </div>
     <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" :search-count="searchCount" @onChartClick="chartClick" @onJumpClick="jumpClick" />
     <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" :search-count="searchCount" @onChartClick="chartClick" @onJumpClick="jumpClick" />
-    <!--    <chart-component :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" @onChartClick="chartClick" />-->
     <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
     <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 20px;bottom:14px;">
@@ -132,7 +130,6 @@ export default {
       })
       this.chart.data && this.chart.data.sourceFields && this.chart.data.sourceFields.forEach(item => {
         const sourceInfo = this.chart.id + '#' + item.id
-        // console.log('nowPanelJumpInfo=>' + JSON.stringify(this.nowPanelJumpInfo))
         if (this.nowPanelJumpInfo[sourceInfo]) {
           jumpCount++
         }
@@ -140,7 +137,6 @@ export default {
       jumpCount && trackMenuInfo.push('jump')
       linkageCount && trackMenuInfo.push('linkage')
       this.drillFields.length && trackMenuInfo.push('drill')
-      // console.log('trackMenuInfo' + JSON.stringify(trackMenuInfo))
       return trackMenuInfo
     },
     chartType() {
@@ -158,12 +154,10 @@ export default {
 
   watch: {
     'filters': function(val1, val2) {
-      // this.getData(this.element.propValue.viewId)
       isChange(val1, val2) && this.getData(this.element.propValue.viewId)
     },
     linkageFilters: {
       handler(newVal, oldVal) {
-        // isChange(newVal, oldVal) && this.getData(this.element.propValue.viewId)
         if (isChange(newVal, oldVal)) {
           this.getData(this.element.propValue.viewId)
         }
@@ -173,7 +167,6 @@ export default {
     // deep监听panel 如果改变 提交到 store
     canvasStyleData: {
       handler(newVal, oldVla) {
-        // this.chart.stylePriority == panel 优先使用仪表板样式
         this.mergeStyle()
       },
       deep: true
@@ -215,7 +208,6 @@ export default {
 
   created() {
     this.refId = uuid.v1
-    // this.filter.filter = this.$store.getters.conditions
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       this.getData(this.element.propValue.viewId)
     }
@@ -226,7 +218,6 @@ export default {
   },
   methods: {
     mergeStyle() {
-      // this.chart.stylePriority == panel 优先使用仪表板样式
       if ((this.requestStatus === 'success' || this.requestStatus === 'merging') && this.chart.stylePriority === 'panel' && this.canvasStyleData.chart) {
         const customAttrChart = JSON.parse(this.chart.customAttr)
         const customStyleChart = JSON.parse(this.chart.customStyle)
@@ -235,7 +226,6 @@ export default {
         const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
 
         // 组件样式-标题设置 - 标题修改为组件自己控制
-        // customStyleChart.text = customStylePanel.text
         // 组件样式-背景设置
         customStyleChart.background = customStylePanel.background
         // 图形属性-颜色设置
@@ -368,7 +358,6 @@ export default {
           showClose: true
         })
       }
-      // console.log('param=>' + JSON.stringify(param))
     },
 
     resetDrill() {
@@ -404,7 +393,6 @@ export default {
       this.currentAcreaNode = tempNode
       const current = this.$refs[this.element.propValue.id]
       current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
-      // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
     },
 
     // 切换下一级地图
@@ -415,12 +403,10 @@ export default {
       if (this.currentAcreaNode) {
         aCode = this.currentAcreaNode.code
       }
-      //   const aCode = this.currentAcreaNode ? this.currentAcreaNode.code : null
       const customAttr = JSON.parse(this.chart.customAttr)
       const currentNode = this.findEntityByCode(aCode || customAttr.areaCode, this.places)
       if (currentNode && currentNode.children && currentNode.children.length > 0) {
         const nextNode = currentNode.children.find(item => item.name === name)
-        // this.view.customAttr.areaCode = nextNode.code
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
         current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
@@ -439,14 +425,8 @@ export default {
       }
     },
     initAreas() {
-    //   let mapping
-    //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-    //     this.places = JSON.parse(mapping)
-    //     return
-    //   }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
-        // localStorage.setItem('areaMapping', JSON.stringify(res.data))
       })
     },
     doMapLink(linkFilters) {

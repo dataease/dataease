@@ -42,10 +42,8 @@ public class SysMsgService {
     @Resource
     private ExtSysMsgMapper extSysMsgMapper;
 
-
     @Resource
     private SysMsgTypeMapper sysMsgTypeMapper;
-
 
     @Resource
     private SysMsgChannelMapper sysMsgChannelMapper;
@@ -79,8 +77,7 @@ public class SysMsgService {
         criteria.andCreateTimeGreaterThanOrEqualTo(startTime);
 
         example.setOrderByClause(orderClause);
-        List<MsgGridDto> msgGridDtos = extSysMsgMapper.queryGrid(example);
-        return msgGridDtos;
+        return extSysMsgMapper.queryGrid(example);
     }
 
     public Long queryCount(Long userId) {
@@ -121,8 +118,7 @@ public class SysMsgService {
     @Cacheable(SysMsgConstants.SYS_MSG_TYPE)
     public List<SysMsgType> queryMsgTypes() {
         SysMsgTypeExample example = new SysMsgTypeExample();
-        List<SysMsgType> sysMsgTypes = sysMsgTypeMapper.selectByExample(example);
-        return sysMsgTypes;
+        return sysMsgTypeMapper.selectByExample(example);
     }
 
     private List<SettingTreeNode> buildTree(List<SysMsgType> lists){
@@ -133,9 +129,9 @@ public class SysMsgService {
                 rootNodes.add(settingTreeNode);
             }
             lists.forEach(tNode -> {
-                if (tNode.getPid() == settingTreeNode.getId()) {
+                if (tNode.getPid().equals(settingTreeNode.getId())) {
                     if (settingTreeNode.getChildren() == null) {
-                        settingTreeNode.setChildren(new ArrayList<SettingTreeNode>());
+                        settingTreeNode.setChildren(new ArrayList<>());
                     }
                     settingTreeNode.getChildren().add(convert(tNode));
                 }
@@ -246,7 +242,7 @@ public class SysMsgService {
         List<SubscribeNode> subscribes = subscribes(userId);
 
         if (CollectionUtils.isNotEmpty(subscribes)) {
-            subscribes.stream().filter(item -> item.getTypeId() == typeId).forEach(sub -> {
+            subscribes.stream().filter(item -> item.getTypeId().equals(typeId)).forEach(sub -> {
                 SendService sendService = serviceByChannel(sub.getChannelId());
                 sendService.sendMsg(userId, typeId, content, param);
             });
@@ -273,13 +269,12 @@ public class SysMsgService {
         // 添加默认订阅
         sysMsgSettings = addDefault(sysMsgSettings);
         sysMsgSettings = sysMsgSettings.stream().filter(SysMsgSetting::getEnable).collect(Collectors.toList());
-        List<SubscribeNode> resultLists = sysMsgSettings.stream().map(item -> {
+        return sysMsgSettings.stream().map(item -> {
             SubscribeNode subscribeNode = new SubscribeNode();
             subscribeNode.setTypeId(item.getTypeId());
             subscribeNode.setChannelId(item.getChannelId());
             return subscribeNode;
         }).collect(Collectors.toList());
-        return resultLists;
     }
 
     public List<SysMsgSetting> addDefault(List<SysMsgSetting> sourceLists) {
@@ -301,7 +296,6 @@ public class SysMsgService {
         sysMsgMapper.updateByExampleSelective(record, example);
     }
 
-    
     public Long overTime() {
         String msgTimeOut = systemParameterService.basicInfo().getMsgTimeOut();
         if(StringUtils.isNotBlank(msgTimeOut)) {

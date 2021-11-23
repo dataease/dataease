@@ -17,12 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -46,10 +46,10 @@ public class SystemParameterService {
             for (SystemParameter param : paramList) {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
                     result.setFrontTimeOut(param.getParamValue());
-                } 
+                }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
                     result.setMsgTimeOut(param.getParamValue());
-                } 
+                }
             }
         }
         return result;
@@ -69,10 +69,10 @@ public class SystemParameterService {
         return result;
     }
 
-    public void editBasic(List<SystemParameter> parameters) {       
+    public void editBasic(List<SystemParameter> parameters) {
         parameters.forEach(parameter -> {
             SystemParameterExample example = new SystemParameterExample();
-            
+
             example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
             if (systemParameterMapper.countByExample(example) > 0) {
                 systemParameterMapper.updateByPrimaryKey(parameter);
@@ -137,29 +137,29 @@ public class SystemParameterService {
         return dtoList;
     }
 
-    public void saveUIInfo(Map<String,List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles) throws IOException {
+    public void saveUIInfo(Map<String, List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles) throws IOException {
         List<SystemParameterDTO> parameters = request.get("systemParams");
         if (null != bodyFiles)
-        for (MultipartFile multipartFile : bodyFiles) {
-            if (!multipartFile.isEmpty()) {
-                //防止添加非图片文件
-                try (InputStream input = multipartFile.getInputStream()) {
-                    try {
-                        // It's an image (only BMP, GIF, JPG and PNG are recognized).
-                        ImageIO.read(input).toString();
-                    } catch (Exception e) {
-                        DEException.throwException("Uploaded images do not meet the image format requirements");
-                        return;
+            for (MultipartFile multipartFile : bodyFiles) {
+                if (!multipartFile.isEmpty()) {
+                    //防止添加非图片文件
+                    try (InputStream input = multipartFile.getInputStream()) {
+                        try {
+                            // It's an image (only BMP, GIF, JPG and PNG are recognized).
+                            ImageIO.read(input).toString();
+                        } catch (Exception e) {
+                            DEException.throwException("Uploaded images do not meet the image format requirements");
+                            return;
+                        }
                     }
+                    String multipartFileName = multipartFile.getOriginalFilename();
+                    String[] split = Objects.requireNonNull(multipartFileName).split(",");
+                    parameters.stream().filter(systemParameterDTO -> systemParameterDTO.getParamKey().equalsIgnoreCase(split[1])).forEach(systemParameterDTO -> {
+                        systemParameterDTO.setFileName(split[0]);
+                        systemParameterDTO.setFile(multipartFile);
+                    });
                 }
-                String multipartFileName = multipartFile.getOriginalFilename();
-                String[] split = Objects.requireNonNull(multipartFileName).split(",");
-                parameters.stream().filter(systemParameterDTO -> systemParameterDTO.getParamKey().equalsIgnoreCase(split[1])).forEach(systemParameterDTO -> {
-                    systemParameterDTO.setFileName(split[0]);
-                    systemParameterDTO.setFile(multipartFile);
-                });
             }
-        }
         for (SystemParameterDTO systemParameter : parameters) {
             MultipartFile file = systemParameter.getFile();
             if (systemParameter.getType().equalsIgnoreCase("file")) {
@@ -168,7 +168,7 @@ public class SystemParameterService {
                 }
                 if (file != null) {
                     fileService.deleteFileById(systemParameter.getParamValue());
-                    FileMetadata fileMetadata = fileService.saveFile(systemParameter.getFile(),systemParameter.getFileName());
+                    FileMetadata fileMetadata = fileService.saveFile(systemParameter.getFile(), systemParameter.getFileName());
                     systemParameter.setParamValue(fileMetadata.getId());
                 }
                 if (file == null && systemParameter.getFileName() == null) {
