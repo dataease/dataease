@@ -1,262 +1,178 @@
 <template>
-  <div>
-    <div class="union-container">
-      <div class="current-node ds-node">
-        <svg-icon icon-class="ds-db" class="ds-icon-db" />
-        <span class="node-name">123</span>
-        <span class="node-menu">
-          <el-dropdown trigger="click" size="small">
-            <span class="el-dropdown-link">
-              <el-button icon="el-icon-more" type="text" size="small" />
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-edit-outline">
-                <span style="font-size: 12px;">edit</span>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </span>
+  <el-row>
+    <el-row style="height: 26px;" class="title-text">
+      <span style="line-height: 26px;font-size: 14px;">
+        {{ param.tableId?$t('dataset.edit_union'):$t('dataset.add_union_table') }}
+      </span>
+      <el-row style="float: right">
+        <el-button size="mini" @click="cancel">
+          {{ $t('dataset.cancel') }}
+        </el-button>
+        <el-button size="mini" type="primary" @click="save">
+          {{ $t('dataset.confirm') }}
+        </el-button>
+      </el-row>
+    </el-row>
+    <el-divider />
+    <div>
+      <el-form :inline="true">
+        <el-form-item class="form-item">
+          <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
+        </el-form-item>
+      </el-form>
+      <!--添加第一个数据集按钮-->
+      <div v-if="dataset.length === 0">
+        <el-button type="primary" size="mini" @click="selectDs">
+          {{ $t('chart.select_dataset') }}
+        </el-button>
       </div>
-      <div>
-        <div class="children-node node-container" :style="{height:'40px'}">
-          <div class="node-line">
-            <svg-icon icon-class="inner-join" class="join-icon" />
-            <svg class="join-svg-container">
-              <path fill="none" stroke="#dcdfe6" :d="pathExt" />
-            </svg>
-          </div>
-          <div class="ds-node">
-            <svg-icon icon-class="ds-db" class="ds-icon-db" />
-            <span class="node-name">123</span>
-            <span class="node-menu">
-              <el-dropdown trigger="click" size="small">
-                <span class="el-dropdown-link">
-                  <el-button icon="el-icon-more" type="text" size="small" />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline">
-                    <span style="font-size: 12px;">edit</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-          </div>
-        </div>
-        <div class="children-node node-container" :style="{height:'120px'}">
-          <div class="node-line">
-            <svg-icon icon-class="right-join" class="join-icon" />
-            <svg class="join-svg-container">
-              <path fill="none" stroke="#dcdfe6" :d="pathMoreExt+'l0,80'" />
-            </svg>
-          </div>
-          <div class="ds-node">
-            <svg-icon icon-class="ds-db" class="ds-icon-db" />
-            <span class="node-name">123</span>
-            <span class="node-menu">
-              <el-dropdown trigger="click" size="small">
-                <span class="el-dropdown-link">
-                  <el-button icon="el-icon-more" type="text" size="small" />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline">
-                    <span style="font-size: 12px;">edit</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-          </div>
-
-          <div>
-            <div class="children-node node-container" :style="{height:'40px'}">
-              <div class="node-line">
-                <svg-icon icon-class="left-join" class="join-icon" />
-                <svg class="join-svg-container">
-                  <path fill="none" stroke="#dcdfe6" :d="pathExt" />
-                </svg>
-              </div>
-              <div class="ds-node">
-                <svg-icon icon-class="ds-db" class="ds-icon-db" />
-                <span class="node-name">123</span>
-                <span class="node-menu">
-                  <el-dropdown trigger="click" size="small">
-                    <span class="el-dropdown-link">
-                      <el-button icon="el-icon-more" type="text" size="small" />
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit-outline">
-                        <span style="font-size: 12px;">edit</span>
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </span>
-              </div>
-            </div>
-            <div class="children-node node-container" :style="{height:'40px'}">
-              <div class="node-line">
-                <svg-icon icon-class="left-join" class="join-icon" />
-                <svg class="join-svg-container">
-                  <path fill="none" stroke="#dcdfe6" :d="pathMoreExt" />
-                </svg>
-              </div>
-              <div class="ds-node">
-                <svg-icon icon-class="ds-db" class="ds-icon-db" />
-                <span class="node-name">123</span>
-                <span class="node-menu">
-                  <el-dropdown trigger="click" size="small">
-                    <span class="el-dropdown-link">
-                      <el-button icon="el-icon-more" type="text" size="small" />
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit-outline">
-                        <span style="font-size: 12px;">edit</span>
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </span>
-              </div>
-            </div>
-            <div class="children-node node-container" :style="{height:'40px'}">
-              <div class="node-line">
-                <svg-icon icon-class="left-join" class="join-icon" />
-                <svg class="join-svg-container">
-                  <path fill="none" stroke="#dcdfe6" :d="pathMore" />
-                </svg>
-              </div>
-              <div class="ds-node">
-                <svg-icon icon-class="ds-db" class="ds-icon-db" />
-                <span class="node-name">123</span>
-                <span class="node-menu">
-                  <el-dropdown trigger="click" size="small">
-                    <span class="el-dropdown-link">
-                      <el-button icon="el-icon-more" type="text" size="small" />
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit-outline">
-                        <span style="font-size: 12px;">edit</span>
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="children-node node-container" :style="{height:'40px'}">
-          <div class="node-line">
-            <svg-icon icon-class="inner-join" class="join-icon" />
-            <svg class="join-svg-container">
-              <path fill="none" stroke="#dcdfe6" :d="pathMore" />
-            </svg>
-          </div>
-          <div class="ds-node">
-            <svg-icon icon-class="ds-db" class="ds-icon-db" />
-            <span class="node-name">123</span>
-            <span class="node-menu">
-              <el-dropdown trigger="click" size="small">
-                <span class="el-dropdown-link">
-                  <el-button icon="el-icon-more" type="text" size="small" />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit-outline">
-                    <span style="font-size: 12px;">edit</span>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-          </div>
+      <!--数据集关联树型结构-->
+      <div v-else class="union-container">
+        <node-item :current-node="dataset[0]" :node-index="0" @deleteNode="deleteNode" @notifyParent="calc" />
+        <div v-if="dataset.length > 0">
+          <union-node v-for="(item,index) in dataset[0].childrenDs" :key="index" :node-index="index" :children-node="item" :children-list="dataset[0].childrenDs" @notifyParent="calc" />
         </div>
       </div>
     </div>
-  </div>
+
+    <!--选择数据集-->
+    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="30%" class="dialog-css" destroy-on-close>
+      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+  </el-row>
 </template>
 
 <script>
+import UnionNode from '@/views/dataset/add/union/UnionNode'
+import NodeItem from '@/views/dataset/add/union/NodeItem'
+import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
 export default {
   name: 'AddUnion',
+  components: { DatasetGroupSelectorTree, NodeItem, UnionNode },
+  props: {
+    param: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      dataset: [{
+      // mock data，结构比较复杂，需要这个结构多看看...
+      datasetMock: [{
         currentDs: {},
+        currentDsField: [],
         childrenDs: [
           {
             currentDs: {},
+            currentDsField: [],
             childrenDs: [],
-            unionToParent: [
-              {
-                parentField: {},
-                currentField: {}
-              }
-            ]
+            unionToParent: {
+              unionType: '', // left join,right join,inner join
+              unionFields: [
+                {
+                  parentField: {},
+                  currentField: {}
+                }
+              ]
+            },
+            allChildCount: 0
           }
         ],
-        unionToParent: []
+        unionToParent: {},
+        allChildCount: 0
       }],
-      path: 'm0,13 l28,0 m24,0 l28,0',
-      pathExt: 'm0,13 l28,0 m24,0 l28,0 M14,13  l0,27',
-      pathMore: 'M14,0 l0,13 l14,0 m24,0 l28,0',
-      pathMoreExt: 'M14,0 l0,13 l14,0 m24,0 l28,0 M14,13  l0,27'
+      // union data
+      dataset: [],
+      // union item
+      unionItem: {
+        currentDs: {},
+        currentDsField: [],
+        childrenDs: [],
+        unionToParent: {
+          unionType: '',
+          unionFields: []
+        },
+        allChildCount: 0
+      },
+      name: '',
+      customType: ['db', 'sql', 'excel'],
+      selectDsDialog: false,
+      // 弹框临时选中的数据集
+      tempDs: {}
+    }
+  },
+  mounted() {
+  },
+  methods: {
+    save() {
+
+    },
+    cancel() {
+      if (this.param.tableId) {
+        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
+      } else {
+        this.$emit('switchComponent', { name: '' })
+      }
+    },
+    selectDs() {
+      this.selectDsDialog = true
+    },
+    firstDs(val) {
+      this.tempDs = val
+    },
+    closeSelectDs() {
+      this.selectDsDialog = false
+      this.tempDs = {}
+    },
+    confirmSelectDs() {
+      const ds = JSON.parse(JSON.stringify(this.unionItem))
+      ds.currentDs = this.tempDs
+      this.dataset.push(ds)
+      this.closeSelectDs()
+      this.calc('union')
+    },
+    deleteNode(index) {
+      this.dataset.splice(index, 1)
+      this.calc('delete')
+    },
+    calc(param) {
+      if (param.type === 'union') {
+        if (param.grandParentAdd) {
+          this.dataset[0] && this.dataset[0].allChildCount++
+        }
+      } else if (param.type === 'delete') {
+        if (param.grandParentSub) {
+          if (param.subCount > 1) {
+            this.dataset[0] && (this.dataset[0].allChildCount -= param.subCount)
+          } else {
+            this.dataset[0] && this.dataset[0].allChildCount--
+          }
+        }
+      }
     }
   }
 }
 </script>
 
 <style scoped>
+.el-divider--horizontal {
+  margin: 12px 0;
+}
 .union-container{
   display: flex;
-  padding: 10px;
   width:100%;
   height:400px;
   overflow: auto;
 }
-.ds-node{
-  width:140px;
-  height: 26px;
-  line-height: 26px;
-  border: #dcdfe6 solid 1px;
-  min-width: 140px;
-  color: var(--TextPrimary,#606266);
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  padding: 0 6px;
+.form-item{
+  margin-bottom: 10px!important;
 }
-.node-container{
-  display: flex;
-  position: relative;
-}
-.join-icon{
-  height: 26px;
-  font-size: 24px;
-  line-height: 26px;
-  position: absolute;
-  left: 28px;
-  color:#dcdfe6;
-}
-.join-svg-container{
-  width:80px;
-}
-.node-name{
-  flex: 1;
-  text-overflow: ellipsis;
-  white-space: pre;
-  overflow: hidden;
-}
-.ds-node .node-menu{
-  visibility: hidden;
-}
-.ds-node:hover .node-menu{
-  visibility: visible;
-}
-.ds-node:hover{
-  cursor: pointer;
-  border: var(--Main,#2681ff) solid 1px;
-}
-.node-line{
-  display: flex;
-  position: relative;
-}
-.join-icon:hover{
-  cursor: pointer;
-  color: var(--Main,#2681ff);
+.dialog-css >>> .el-dialog__body {
+  padding: 0 20px;
 }
 </style>

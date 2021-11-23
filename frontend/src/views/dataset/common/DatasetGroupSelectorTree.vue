@@ -162,16 +162,6 @@ export default {
       this.unionDataChange()
     },
     'table': function() {
-      // if (this.table && this.table.sceneId) {
-      //   post('dataset/group/getScene/' + this.table.sceneId, {}, false).then(response => {
-      //     this.currGroup = response.data
-      //
-      //     this.$nextTick(function() {
-      //       this.sceneMode = true
-      //       this.tableTree()
-      //     })
-      //   })
-      // }
       this.treeNode(this.groupForm)
     },
     search(val) {
@@ -216,14 +206,6 @@ export default {
         name: ''
       }
     },
-
-    // tree(group) {
-    //   this.dsLoading = true
-    //   post('/dataset/group/tree', group, false).then(response => {
-    //     this.data = response.data
-    //     this.dsLoading = false
-    //   })
-    // },
 
     treeNode(group) {
       post('/dataset/group/treeNode', group).then(res => {
@@ -402,13 +384,12 @@ export default {
 
     searchTree(val) {
       const queryCondition = {
-        // withExtend: 'parent',
-        // modelType: 'dataset',
-        name: val
+        name: val,
+        sort: 'type asc,name asc,create_time desc',
+        mode: this.mode < 0 ? null : this.mode,
+        type: this.type,
+        typeFilter: this.customType ? this.customType : null
       }
-      // authModel(queryCondition).then(res => {
-      //   this.data = this.buildTree(res.data)
-      // })
       post('/dataset/table/search', queryCondition).then(res => {
         this.data = this.buildTree(res.data)
       })
@@ -422,8 +403,6 @@ export default {
       const roots = []
       arrs.forEach(el => {
         // 判断根节点 ###
-        // el.type = el.modelInnerType
-        // el.isLeaf = el.leaf
         if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
           roots.push(el)
           return
