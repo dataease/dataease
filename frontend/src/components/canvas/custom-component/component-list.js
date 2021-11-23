@@ -90,7 +90,7 @@ export const pictureList = [
     id: '20001',
     component: 'picture-add',
     type: 'picture-add',
-    label: '拖拽上传',
+    label: '图片',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter'
   },
@@ -304,7 +304,7 @@ const list = [
     id: '20001',
     component: 'picture-add',
     type: 'picture-add',
-    label: '拖拽上传',
+    label: '图片',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     style: {
