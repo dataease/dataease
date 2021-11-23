@@ -30,11 +30,11 @@ public class F2CLicenseResponse {
         this.message = message;
     }
 
-    public static enum Status {
+    public enum Status {
         no_record,
         valid,
         invalid,
-        expired;
+        expired
     }
 
     public static F2CLicenseResponse invalid(String a) {

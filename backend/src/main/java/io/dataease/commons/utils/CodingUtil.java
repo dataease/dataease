@@ -154,7 +154,6 @@ public class CodingUtil {
     }
 
 
-
     public static String secretKey() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("AES");

@@ -20,8 +20,8 @@ public class AuthUtils {
         AuthUtils.extAuthService = extAuthService;
     }
 
-    public static CurrentUserDto getUser(){
-        CurrentUserDto userDto = (CurrentUserDto)SecurityUtils.getSubject().getPrincipal();
+    public static CurrentUserDto getUser() {
+        CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
         return userDto;
     }
 

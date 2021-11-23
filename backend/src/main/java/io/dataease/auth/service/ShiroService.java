@@ -10,7 +10,7 @@ public interface ShiroService {
      * 初始化权限 -> 拿全部权限
      *
      * @param :
-     * @return: java.util.Map<java.lang.String,java.lang.String>
+     * @return: java.util.Map<java.lang.String, java.lang.String>
      */
     Map<String, String> loadFilterChainDefinitionMap();
 

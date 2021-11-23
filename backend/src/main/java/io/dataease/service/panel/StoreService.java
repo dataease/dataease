@@ -40,14 +40,6 @@ public class StoreService {
         panelStoreMapper.deleteByExample(panelStoreExample);
     }
 
-
-
-    /**
-     * 按照当前用户ID查询收藏仪表板
-     *
-     * @param request
-     * @return
-     */
     public List<PanelStoreDto> query(BaseGridRequest request) {
         Long userId = AuthUtils.getUser().getUserId();
         ConditionEntity condition = new ConditionEntity();
@@ -58,8 +50,7 @@ public class StoreService {
             add(condition);
         }});
         GridExample example = request.convertExample();
-        List<PanelStoreDto> stores = extPanelStoreMapper.query(example);
-        return stores;
+        return extPanelStoreMapper.query(example);
     }
 
 }

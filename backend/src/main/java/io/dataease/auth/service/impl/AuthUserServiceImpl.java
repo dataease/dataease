@@ -19,6 +19,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +40,13 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
+     *
      * @param userId
      * @return
      */
-    @Cacheable(value = AuthConstants.USER_CACHE_NAME,  key = "'user' + #userId" )
+    @Cacheable(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
     @Override
-    public SysUserEntity getUserById(Long userId){
+    public SysUserEntity getUserById(Long userId) {
         return authMapper.findUser(userId);
     }
 
@@ -65,30 +67,31 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public List<String> roles(Long userId){
+    public List<String> roles(Long userId) {
         return authMapper.roleCodes(userId);
     }
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
+     *
      * @param userId
      * @return
      */
-    @Cacheable(value = AuthConstants.USER_PERMISSION_CACHE_NAME,  key = "'user' + #userId" )
+    @Cacheable(value = AuthConstants.USER_PERMISSION_CACHE_NAME, key = "'user' + #userId")
     @Override
-    public List<String> permissions(Long userId){
+    public List<String> permissions(Long userId) {
         try {
             // 用户登录获取菜单权限时同时更新插件菜单表
             dynamicMenuService.syncPluginMenu();
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.error(e);
             //ignore
         }
         List<String> permissions;
         SysUser sysUser = sysUserMapper.selectByPrimaryKey(userId);
-        if(sysUser.getIsAdmin()!=null&&sysUser.getIsAdmin()){
+        if (sysUser.getIsAdmin() != null && sysUser.getIsAdmin()) {
             permissions = authMapper.permissionsAll();
-        }else{
+        } else {
             permissions = authMapper.permissions(userId);
         }
         return Optional.ofNullable(permissions).orElse(new ArrayList<>()).stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -96,10 +99,11 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
+     *
      * @param userId
      * @return
      */
-    @Cacheable(value = AuthConstants.USER_ROLE_CACHE_NAME,  key = "'user' + #userId" )
+    @Cacheable(value = AuthConstants.USER_ROLE_CACHE_NAME, key = "'user' + #userId")
     @Override
     public List<CurrentRoleDto> roleInfos(Long userId) {
         return authMapper.roles(userId);
@@ -108,6 +112,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     /**
      * 一波清除3个缓存
+     *
      * @param userId
      */
     @Caching(evict = {
@@ -117,37 +122,35 @@ public class AuthUserServiceImpl implements AuthUserService {
     })
     @Override
     public void clearCache(Long userId) {
-        LogUtil.info("正在清除用户缓存【{}】",userId);
+        LogUtil.info("正在清除用户缓存【{}】", userId);
     }
 
     @Override
     public boolean supportLdap() {
         Map<String, LdapXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LdapXpackService.class));
-        if(beansOfType.keySet().size() == 0) return false;
+        if (beansOfType.keySet().size() == 0) return false;
         LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
-        if(ObjectUtils.isEmpty(ldapXpackService)) return false;
+        if (ObjectUtils.isEmpty(ldapXpackService)) return false;
         return ldapXpackService.isOpen();
     }
 
     @Override
     public Boolean supportOidc() {
         Map<String, OidcXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((OidcXpackService.class));
-        if(beansOfType.keySet().size() == 0) return false;
+        if (beansOfType.keySet().size() == 0) return false;
         OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
-        if(ObjectUtils.isEmpty(oidcXpackService)) return false;
+        if (ObjectUtils.isEmpty(oidcXpackService)) return false;
         return oidcXpackService.isSuuportOIDC();
     }
 
     @Override
     public Boolean pluginLoaded() {
         Map<String, PluginCommonService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((PluginCommonService.class));
-        if(beansOfType.keySet().size() == 0) return false;
+        if (beansOfType.keySet().size() == 0) return false;
         PluginCommonService pluginCommonService = SpringContextUtil.getBean(PluginCommonService.class);
-        if(ObjectUtils.isEmpty(pluginCommonService)) return false;
+        if (ObjectUtils.isEmpty(pluginCommonService)) return false;
         return pluginCommonService.isPluginLoaded();
     }
 
-    
 
-    
 }

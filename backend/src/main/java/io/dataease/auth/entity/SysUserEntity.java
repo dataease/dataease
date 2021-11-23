@@ -3,6 +3,7 @@ package io.dataease.auth.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
 import java.io.Serializable;
 
 @Data

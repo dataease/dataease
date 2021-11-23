@@ -829,7 +829,6 @@ export default {
       }
     },
     canvasScroll(event) {
-      // console.log('testTop' + event.target.scrollTop)
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
     },
@@ -1022,7 +1021,6 @@ export default {
   height: 400px!important;
 
   .el-dialog__header{
-    // background-color: #f4f4f5;
     padding: 10px 20px !important;
 
     .el-dialog__headerbtn {
@@ -1033,9 +1031,9 @@ export default {
     padding: 1px 15px !important;
   }
 }
-  .style-hidden{
-    overflow-x: hidden;
-  }
+.style-hidden{
+  overflow-x: hidden;
+}
 .button-text {
     color: var(--TextActive);
 }
@@ -1053,6 +1051,11 @@ export default {
   background-color: #FFFFFF;
   font-size: 12px;
   color: #9ea6b2;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
 }
 
 </style>

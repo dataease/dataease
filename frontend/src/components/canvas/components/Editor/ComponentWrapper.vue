@@ -5,8 +5,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <!--视图右上角组件编辑器-->
-    <edit-bar v-if="curComponent && config === curComponent" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="editBarShow" :element="config" @showViewDetails="showViewDetails" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -66,6 +65,9 @@ export default {
     }
   },
   computed: {
+    editBarShow() {
+      return this.curComponent && this.config === this.curComponent
+    },
     curGap() {
       return this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix ? this.componentGap : 0
     },
@@ -159,19 +161,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.component {
+  .component {
     position: absolute;
-}
+  }
 
-.component:hover {
-  box-shadow:0px 0px 7px #0a7be0;
-}
-.gap_class{
-  padding:5px;
-}
-.component-custom {
-  outline: none;
-  width: 100% !important;
-  height: 100%;
-}
+  .component:hover {
+    box-shadow: 0px 0px 7px #0a7be0;
+  }
+
+  .gap_class {
+    padding: 5px;
+  }
+
+  .component-custom {
+    outline: none;
+    width: 100% !important;
+    height: 100%;
+  }
 </style>

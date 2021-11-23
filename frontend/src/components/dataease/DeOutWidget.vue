@@ -1,29 +1,31 @@
 <template>
-  <div ref="myContainer" class="my-container">
-    <div ref="conditionMain" class="condition-main" :class="mainClass">
-      <div v-if="element.options.attrs.title" ref="deTitleContainer" class="condition-title">
-        <div class="condition-title-absolute">
-          <div class="first-title">
-            <div class="span-container">
-              <span ref="deTitle">{{ element.options.attrs.title }}</span>
+  <div class="outside-container">
+    <div ref="myContainer" class="my-container">
+      <div ref="conditionMain" class="condition-main" :class="mainClass">
+        <div v-if="element.options.attrs.title" ref="deTitleContainer" class="condition-title">
+          <div class="condition-title-absolute">
+            <div class="first-title">
+              <div class="span-container">
+                <span ref="deTitle">{{ element.options.attrs.title }}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div ref="deContentContainer" class="condition-content" :class="element.options.attrs.title ? '' : 'condition-content-default'">
-        <div class="condition-content-container">
-          <div class="first-element">
-            <div :class="element.component === 'de-select-grid' ? 'first-element-grid-contaner': ''" class="first-element-contaner">
-              <component
-                :is="element.component"
-                v-if="element.type==='custom'"
-                :id="'component' + element.id"
-                class="component-custom"
-                :out-style="element.style"
-                :element="element"
-                :in-draw="inDraw"
-                :in-screen="inScreen"
-              />
+        <div ref="deContentContainer" class="condition-content" :class="element.options.attrs.title ? '' : 'condition-content-default'">
+          <div class="condition-content-container">
+            <div class="first-element">
+              <div :class="element.component === 'de-select-grid' ? 'first-element-grid-contaner': ''" class="first-element-contaner">
+                <component
+                  :is="element.component"
+                  v-if="element.type==='custom'"
+                  :id="'component' + element.id"
+                  class="component-custom"
+                  :out-style="element.style"
+                  :element="element"
+                  :in-draw="inDraw"
+                  :in-screen="inScreen"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -97,12 +99,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .outside-container {
+    width: 100%;
+    height: 100%;
+  }
   .my-container {
     position: absolute;
     overflow: auto;
     inset: 0px;
   }
-  .ccondition-main {
+  .condition-main {
     position: absolute;
     overflow: auto;
     inset: 0px;

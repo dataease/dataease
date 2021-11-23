@@ -108,7 +108,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
-                String fieldName = "";
+                String fieldName;
                 // 处理横轴字段
                 if (f.getDeExtractType() == DeTypeConstants.DE_TIME) { // 时间 转为 数值
                     if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {

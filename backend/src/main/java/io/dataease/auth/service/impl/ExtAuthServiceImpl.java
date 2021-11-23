@@ -6,6 +6,7 @@ import io.dataease.base.mapper.ext.ExtAuthMapper;
 import io.dataease.commons.model.AuthURD;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
@@ -18,8 +19,6 @@ public class ExtAuthServiceImpl implements ExtAuthService {
 
     @Resource
     private ExtAuthMapper extAuthMapper;
-
-
 
     @Override
     public Set<Long> userIdsByRD(AuthURD request) {

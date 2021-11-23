@@ -80,8 +80,6 @@ public class DataSetTableService {
     @Resource
     private DataSetTableUnionService dataSetTableUnionService;
     @Resource
-    private DataSetTableTaskLogService dataSetTableTaskLogService;
-    @Resource
     private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
     @Resource
     private DatasetTableTaskLogMapper datasetTableTaskLogMapper;
@@ -89,8 +87,8 @@ public class DataSetTableService {
     private ExtDataSetGroupMapper extDataSetGroupMapper;
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
-    private static String lastUpdateTime = "${__last_update_time__}";
-    private static String currentUpdateTime = "${__current_update_time__}";
+    private static final String lastUpdateTime = "${__last_update_time__}";
+    private static final String currentUpdateTime = "${__current_update_time__}";
 
     @Value("${upload.file.path}")
     private String path;
@@ -144,9 +142,7 @@ public class DataSetTableService {
                     int insert = datasetTableMapper.insert(sheetTable);
                     if (insert == 1) {
                         saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
-                        commonThreadPool.addTask(() -> {
-                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null);
-                        });
+                        commonThreadPool.addTask(() -> extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null));
                     }
                 }
             } else {
@@ -172,9 +168,7 @@ public class DataSetTableService {
                     int insert = datasetTableMapper.insert(sheetTable);
                     if (insert == 1) {
                         saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
-                        commonThreadPool.addTask(() -> {
-                            extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null);
-                        });
+                        commonThreadPool.addTask(() -> extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null));
                     }
                 }
             }
@@ -188,7 +182,7 @@ public class DataSetTableService {
             if (datasetTable.getEditType() == 0) {
                 List<String> newFields = sheet.getFields().stream().map(TableFiled::getRemarks).collect(Collectors.toList());
                 if (!oldFields.equals(newFields)) {
-                    DataEaseException.throwException(Translator.get("i18n_excel_colume_inconsistent"));
+                    DataEaseException.throwException(Translator.get("i18n_excel_column_inconsistent"));
                 }
                 oldFields = newFields;
             }
@@ -209,13 +203,9 @@ public class DataSetTableService {
 
         if (update == 1) {
             if (datasetTable.getEditType() == 0) {
-                commonThreadPool.addTask(() -> {
-                    extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换", saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields(), false));
-                });
+                commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换", saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields(), false)));
             } else if (datasetTable.getEditType() == 1) {
-                commonThreadPool.addTask(() -> {
-                    extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加", null);
-                });
+                commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加", null));
             }
         }
     }
@@ -771,9 +761,7 @@ public class DataSetTableService {
 
             // 获取每个字段在当前de数据库中的name，作为sql查询后的remarks返回前端展示
             List<DatasetTableField> checkedFieldList = new ArrayList<>();
-            dataTableInfoDTO.getList().forEach(ele -> {
-                checkedFieldList.addAll(dataSetTableFieldsService.getListByIds(ele.getCheckedFields()));
-            });
+            dataTableInfoDTO.getList().forEach(ele -> checkedFieldList.addAll(dataSetTableFieldsService.getListByIds(ele.getCheckedFields())));
             for (DatasetTableField datasetTableField : checkedFieldList) {
                 for (TableFiled tableFiled : fields) {
                     if (StringUtils.equalsIgnoreCase(tableFiled.getFieldName(), DorisTableUtils.dorisFieldName(datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))
@@ -984,9 +972,7 @@ public class DataSetTableService {
                 List<DatasetTableField> fieldList = new ArrayList<>();
                 list.forEach(ele -> {
                     List<DatasetTableField> listByIds = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
-                    listByIds.forEach(f -> {
-                        f.setDataeaseName(DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName()));
-                    });
+                    listByIds.forEach(f -> f.setDataeaseName(DorisTableUtils.dorisFieldName(ele.getTableId() + "_" + f.getDataeaseName())));
                     fieldList.addAll(listByIds);
                 });
                 for (int i = 0; i < fieldList.size(); i++) {
@@ -1187,9 +1173,7 @@ public class DataSetTableService {
             datasourceRequest.setQuery(qp.wrapSql(sql));
             List<String> sqlFileds = new ArrayList<>();
             try {
-                datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> {
-                    sqlFileds.add(filed);
-                });
+                datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableFiled::getFieldName).forEach(filed -> sqlFileds.add(filed));
             } catch (Exception e) {
                 DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }
@@ -1257,7 +1241,7 @@ public class DataSetTableService {
             }
 
             if (retrunSheetDataList.size() == 0) {
-                DataEaseException.throwException(Translator.get("i18n_excel_colume_change"));
+                DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
             }
         } else {
             retrunSheetDataList = excelSheetDataList;

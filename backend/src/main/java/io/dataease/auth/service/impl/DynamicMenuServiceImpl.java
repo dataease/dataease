@@ -13,6 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,22 +39,21 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
         //增加插件中的菜单
         List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();
-        if (CollectionUtils.isNotEmpty(pluginSysMenus) ) {
+        if (CollectionUtils.isNotEmpty(pluginSysMenus)) {
             pluginSysMenus = pluginSysMenus.stream().filter(menu -> menu.getType() <= 1).collect(Collectors.toList());
             List<DynamicMenuDto> pluginDtos = pluginSysMenus.stream().map(this::convert).collect(Collectors.toList());
             dynamicMenuDtos.addAll(pluginDtos);
         }
         dynamicMenuDtos = dynamicMenuDtos.stream().sorted((s1, s2) -> {
-            int sortIndex1 = null == s1.getMenuSort() ? 999: s1.getMenuSort();
-            int sortIndex2 = null == s2.getMenuSort() ? 999: s2.getMenuSort();
+            int sortIndex1 = null == s1.getMenuSort() ? 999 : s1.getMenuSort();
+            int sortIndex2 = null == s2.getMenuSort() ? 999 : s2.getMenuSort();
             return sortIndex1 - sortIndex2;
         }).collect(Collectors.toList());
         dynamicMenuDtos.sort((s1, s2) -> s1.getHidden().compareTo(s2.getHidden()));
-        List<DynamicMenuDto> result = buildTree(dynamicMenuDtos);
-        return result;
+        return buildTree(dynamicMenuDtos);
     }
 
-    private DynamicMenuDto convert(SysMenu sysMenu){
+    private DynamicMenuDto convert(SysMenu sysMenu) {
         DynamicMenuDto dynamicMenuDto = new DynamicMenuDto();
         dynamicMenuDto.setId(sysMenu.getMenuId());
         dynamicMenuDto.setPid(sysMenu.getPid());
@@ -72,7 +72,8 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         dynamicMenuDto.setIsPlugin(false);
         return dynamicMenuDto;
     }
-    private DynamicMenuDto convert(PluginSysMenu sysMenu){
+
+    private DynamicMenuDto convert(PluginSysMenu sysMenu) {
         DynamicMenuDto dynamicMenuDto = new DynamicMenuDto();
         dynamicMenuDto.setId(sysMenu.getMenuId());
         dynamicMenuDto.setPid(sysMenu.getPid());
@@ -93,17 +94,17 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         return dynamicMenuDto;
     }
 
-    private List<DynamicMenuDto> buildTree(List<DynamicMenuDto> lists){
+    private List<DynamicMenuDto> buildTree(List<DynamicMenuDto> lists) {
         List<DynamicMenuDto> rootNodes = new ArrayList<>();
         lists.forEach(node -> {
             if (isParent(node.getPid())) {
                 rootNodes.add(node);
             }
             lists.forEach(tNode -> {
-                if (tNode.getPid() == node.getId()) {
+                if (tNode.getPid().equals(node.getId())) {
                     if (node.getChildren() == null) {
                         node.setChildren(new ArrayList<DynamicMenuDto>());
-                        node.setRedirect(node.getPath()+"/"+tNode.getPath());//第一个子节点的path
+                        node.setRedirect(node.getPath() + "/" + tNode.getPath());//第一个子节点的path
                     }
                     node.getChildren().add(tNode);
                 }
@@ -113,8 +114,8 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
 
     }
 
-    private Boolean isParent(Long pid){
-        return null == pid || pid==0L;
+    private Boolean isParent(Long pid) {
+        return null == pid || pid == 0L;
     }
 
     @Transactional
@@ -123,7 +124,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
         Set<PluginSysMenu> pluginSysMenuSet = new HashSet<>(pluginSysMenuList);
         pluginSysMenuList = new ArrayList<>(pluginSysMenuSet);
-        if(CollectionUtils.isNotEmpty(pluginSysMenuList)){
+        if (CollectionUtils.isNotEmpty(pluginSysMenuList)) {
             extPluginSysMenuMapper.savePluginMenu(pluginSysMenuList);
         }
     }
