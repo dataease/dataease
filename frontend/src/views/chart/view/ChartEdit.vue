@@ -993,6 +993,7 @@ export default {
           view.type.startsWith('gauge') ||
           view.type === 'treemap' ||
           view.type === 'liquid' ||
+          view.type === 'word-cloud' ||
           view.type === 'waterfall') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
@@ -1000,6 +1001,9 @@ export default {
       }
       if (view.type === 'line-stack' && trigger === 'chart') {
         view.customAttr.size.lineArea = true
+      }
+      if (view.type === 'line' && trigger === 'chart') {
+        view.customAttr.size.lineArea = false
       }
       if (view.type === 'treemap' && trigger === 'chart') {
         view.customAttr.label.show = true
