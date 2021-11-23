@@ -24,8 +24,8 @@ public class F2CLinkFilter extends AnonymousFilter {
     protected boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) {
         try {
             HttpServletRequest req = (HttpServletRequest) request;
-            String link_token = req.getHeader(LINK_TOKEN_KEY);
-            DecodedJWT jwt = JWT.decode(link_token);
+            String linkToken = req.getHeader(LINK_TOKEN_KEY);
+            DecodedJWT jwt = JWT.decode(linkToken);
             Claim resourceId = jwt.getClaim("resourceId");
             String id = resourceId.asString();
             PanelLink panelLink = LinkUtil.queryLink(id);
@@ -37,7 +37,7 @@ public class F2CLinkFilter extends AnonymousFilter {
             } else {
                 pwd = panelLink.getPwd();
             }
-            return JWTUtils.verifyLink(link_token, id, pwd);
+            return JWTUtils.verifyLink(linkToken, id, pwd);
         } catch (Exception e) {
             LogUtil.error(e);
         }
