@@ -3,8 +3,7 @@ import Cookies from 'js-cookie'
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
 import Fit2CloudUI from 'fit2cloud-ui'
-// import axios from 'axios'
-// import VueAxios from 'vue-axios'
+
 import i18n from './lang' // internationalization
 import App from './App'
 import store from './store'

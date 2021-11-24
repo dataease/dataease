@@ -1,10 +1,11 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <de-aside-container style="padding: 0 0;">
-      <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain" />
+      <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain"/>
     </de-aside-container>
     <de-main-container>
-      <component :is="component" v-if="!!component" :params="param"  @refresh-type="refreshType" @switch-component="switchMain" />
+      <component :is="component" v-if="!!component" :params="param" @refresh-type="refreshType"
+                 @switch-component="switchMain"/>
     </de-main-container>
   </de-container>
 </template>
@@ -16,9 +17,10 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import DsTree from './DsTree'
 import DsForm from './form'
 import DataHome from './DataHome'
+
 export default {
   name: 'DsMain',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, DsTree, DataHome },
+  components: {DeMainContainer, DeContainer, DeAsideContainer, DsTree, DataHome},
   data() {
     return {
       component: DataHome,
@@ -26,19 +28,15 @@ export default {
       param: null
     }
   },
-  computed: {
-
-  },
-  watch: {
-
-  },
+  computed: {},
+  watch: {},
   mounted() {
     // this.clear()
   },
   methods: {
     // 切换main区内容
     switchMain(param) {
-      const { component, componentParam } = param
+      const {component, componentParam} = param
       this.component = DataHome
       this.param = null
       this.$nextTick(() => {
@@ -66,14 +64,15 @@ export default {
 </script>
 
 <style scoped>
-  .ms-aside-container {
-    height: calc(100vh - 56px);
-    padding: 0px;
-    min-width: 260px;
-    max-width: 460px;
-  }
-  .ms-main-container {
-    height: calc(100vh - 56px);
-    padding: 0px;
-  }
+.ms-aside-container {
+  height: calc(100vh - 56px);
+  padding: 0px;
+  min-width: 260px;
+  max-width: 460px;
+}
+
+.ms-main-container {
+  height: calc(100vh - 56px);
+  padding: 0px;
+}
 </style>

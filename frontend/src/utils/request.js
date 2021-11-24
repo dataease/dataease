@@ -1,19 +1,17 @@
 import axios from 'axios'
-// import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { $alert, $error } from './message'
-import { getToken, getIdToken } from '@/utils/auth'
+import {$alert, $error} from './message'
+import {getToken, getIdToken} from '@/utils/auth'
 import Config from '@/settings'
 import i18n from '@/lang'
-import { tryShowLoading, tryHideLoading } from './loading'
-import { getLinkToken, setLinkToken } from '@/utils/auth'
-// import router from '@/router'
-// const interruptTokenContineUrls = Config.interruptTokenContineUrls
+import {tryShowLoading, tryHideLoading} from './loading'
+import {getLinkToken, setLinkToken} from '@/utils/auth'
+
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
 const LinkTokenKey = Config.LinkTokenKey
 import Cookies from 'js-cookie'
-// create an axios instance
+
 
 const getTimeOut = () => {
   let time = 10
@@ -46,23 +44,18 @@ const getTimeOut = () => {
 const time = getTimeOut()
 let service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-
   timeout: time ? time * 1000 : 10000
 })
 
 // request interceptor
 service.interceptors.request.use(
   config => {
-    // do something before request is sent
     const idToken = getIdToken()
     if (idToken) {
       config.headers[Config.IdTokenKey] = idToken
     }
 
     if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
       config.headers[TokenKey] = getToken()
     }
     let linkToken = null
@@ -78,15 +71,12 @@ service.interceptors.request.use(
       const lang = i18n.locale.replace('_', '-')
       config.headers['Accept-Language'] = lang
     }
-    // 增加loading
-
     config.loading && tryShowLoading(store.getters.currentPath)
 
     return config
   },
   error => {
     error.config.loading && tryHideLoading(store.getters.currentPath)
-    // do something with request error
     return Promise.reject(error)
   }
 )
@@ -111,7 +101,6 @@ service.interceptors.response.use(response => {
   let msg
   if (error.response) {
     checkAuth(error.response)
-    // checkPermission(error.response)
     msg = error.response.data.message || error.response.data
   } else {
     msg = error.message
