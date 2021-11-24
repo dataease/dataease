@@ -8,10 +8,6 @@ RUN apk add chromium=77.0.3865.120-r0 --no-cache
 
 RUN apk add chromium-chromedriver=77.0.3865.120-r0 --no-cache
 
-RUN mkdir -p /usr/local/sbin/
-
-ADD chromedriver /usr/local/sbin/
-
 RUN mkdir -p /opt/apps
 
 RUN mkdir -p /opt/dataease/data/feature/full
