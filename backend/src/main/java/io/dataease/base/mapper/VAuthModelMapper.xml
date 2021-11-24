@@ -9,6 +9,7 @@
     <result column="model_inner_type" jdbcType="VARCHAR" property="modelInnerType" />
     <result column="auth_type" jdbcType="VARCHAR" property="authType" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="level" jdbcType="BIGINT" property="level" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.VAuthModelWithBLOBs">
     <result column="name" jdbcType="LONGVARCHAR" property="name" />
@@ -73,7 +74,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, pid, node_type, model_type, model_inner_type, auth_type, create_by
+    id, pid, node_type, model_type, model_inner_type, auth_type, create_by, `level`
   </sql>
   <sql id="Blob_Column_List">
     `name`, `label`
@@ -117,12 +118,12 @@
   <insert id="insert" parameterType="io.dataease.base.domain.VAuthModelWithBLOBs">
     insert into v_auth_model (id, pid, node_type, 
       model_type, model_inner_type, auth_type, 
-      create_by, `name`, `label`
-      )
+      create_by, `level`, `name`, 
+      `label`)
     values (#{id,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, #{nodeType,jdbcType=VARCHAR}, 
       #{modelType,jdbcType=VARCHAR}, #{modelInnerType,jdbcType=VARCHAR}, #{authType,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=VARCHAR}, #{name,jdbcType=LONGVARCHAR}, #{label,jdbcType=LONGVARCHAR}
-      )
+      #{createBy,jdbcType=VARCHAR}, #{level,jdbcType=BIGINT}, #{name,jdbcType=LONGVARCHAR}, 
+      #{label,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.VAuthModelWithBLOBs">
     insert into v_auth_model
@@ -147,6 +148,9 @@
       </if>
       <if test="createBy != null">
         create_by,
+      </if>
+      <if test="level != null">
+        `level`,
       </if>
       <if test="name != null">
         `name`,
@@ -176,6 +180,9 @@
       </if>
       <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=BIGINT},
       </if>
       <if test="name != null">
         #{name,jdbcType=LONGVARCHAR},
@@ -215,6 +222,9 @@
       <if test="record.createBy != null">
         create_by = #{record.createBy,jdbcType=VARCHAR},
       </if>
+      <if test="record.level != null">
+        `level` = #{record.level,jdbcType=BIGINT},
+      </if>
       <if test="record.name != null">
         `name` = #{record.name,jdbcType=LONGVARCHAR},
       </if>
@@ -235,6 +245,7 @@
       model_inner_type = #{record.modelInnerType,jdbcType=VARCHAR},
       auth_type = #{record.authType,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
+      `level` = #{record.level,jdbcType=BIGINT},
       `name` = #{record.name,jdbcType=LONGVARCHAR},
       `label` = #{record.label,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -249,7 +260,8 @@
       model_type = #{record.modelType,jdbcType=VARCHAR},
       model_inner_type = #{record.modelInnerType,jdbcType=VARCHAR},
       auth_type = #{record.authType,jdbcType=VARCHAR},
-      create_by = #{record.createBy,jdbcType=VARCHAR}
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      `level` = #{record.level,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>

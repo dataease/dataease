@@ -75,10 +75,7 @@
                 </foreach>
             </if>
         </where>
-        <if test="sort != null">
-            order by ${sort}
-        </if>
-
+        ORDER BY CONVERT(`name` using gbk)
 
     </select>
 </mapper>
