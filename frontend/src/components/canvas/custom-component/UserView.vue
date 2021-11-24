@@ -9,16 +9,40 @@
     ]"
   >
     <div v-if="requestStatus==='error'" class="chart-error-class">
-      <div style="font-size: 12px; color: #9ea6b2;height: 100%;display: flex;align-items: center;justify-content: center;">
+      <div class="chart-error-message-class">
         {{ message }},{{ $t('chart.chart_show_error') }}
         <br>
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <chart-component v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" :search-count="searchCount" @onChartClick="chartClick" @onJumpClick="jumpClick" />
-    <chart-component-g2 v-if="httpRequest.status &&chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'" :ref="element.propValue.id" class="chart-class" :chart="chart" :track-menu="trackMenu" :search-count="searchCount" @onChartClick="chartClick" @onJumpClick="jumpClick" />
-    <table-normal v-if="httpRequest.status &&chart.type && chart.type.includes('table')" :ref="element.propValue.id" :show-summary="chart.type === 'table-normal'" :chart="chart" class="table-class" />
-    <label-normal v-if="httpRequest.status && chart.type && chart.type.includes('text')" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <chart-component
+      v-if="charViewShowFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
+    <chart-component-g2
+      v-if="charViewG2ShowFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
+    <table-normal
+      v-if="tableShowFlag"
+      :ref="element.propValue.id"
+      :show-summary="chart.type === 'table-normal'"
+      :chart="chart"
+      class="table-class"
+    />
+    <label-normal v-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 20px;bottom:14px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
@@ -43,7 +67,7 @@ import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
-import { Base64 } from 'js-base64'
+
 export default {
   name: 'UserView',
   components: { ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
@@ -89,10 +113,24 @@ export default {
         msg: ''
       },
       timeMachine: null,
-      changeIndex: 0
+      changeIndex: 0,
+      pre: null,
+      preCanvasPanel: null
     }
   },
   computed: {
+    charViewShowFlag() {
+      return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'echarts'
+    },
+    charViewG2ShowFlag() {
+      return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'antv'
+    },
+    tableShowFlag() {
+      return this.httpRequest.status && this.chart.type && this.chart.type.includes('table')
+    },
+    labelShowFlag() {
+      return this.httpRequest.status && this.chart.type && this.chart.type.includes('text')
+    },
     loadingFlag() {
       return (this.canvasStyleData.refreshViewLoading || this.searchCount === 0) && this.requestStatus === 'waiting'
     },
@@ -104,6 +142,9 @@ export default {
       filter.filter = this.element.filters
       filter.linkageFilters = this.element.linkageFilters
       filter.drill = this.drillClickDimensionList
+      filter.resultCount = this.resultCount
+      filter.resultMode = this.resultMode
+      filter.queryFrom = 'panel'
       return filter
     },
     filters() {
@@ -111,11 +152,9 @@ export default {
       if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
     },
-
     linkageFilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
       if (!this.element.linkageFilters) return []
-      // console.log('linkageFilters:' + JSON.stringify(this.element.linkageFilters))
       return JSON.parse(JSON.stringify(this.element.linkageFilters))
     },
     trackMenu() {
@@ -145,6 +184,12 @@ export default {
     hw() {
       return this.outStyle.width * this.outStyle.height
     },
+    resultMode() {
+      return this.canvasStyleData.panel.resultMode
+    },
+    resultCount() {
+      return this.canvasStyleData.panel.resultCount
+    },
     ...mapState([
       'canvasStyleData',
       'nowPanelTrackInfo',
@@ -168,13 +213,17 @@ export default {
     canvasStyleData: {
       handler(newVal, oldVla) {
         this.mergeStyle()
+        // 如果视图结果模式模式 或者 视图结果获取数量改变 刷新视图
+        if (!this.preCanvasPanel || this.preCanvasPanel.resultCount !== newVal.panel.resultCount || this.preCanvasPanel.resultMode !== newVal.panel.resultMode) {
+          this.getData(this.element.propValue.viewId, false)
+        }
+        this.preCanvasPanel = deepCopy(newVal.panel)
       },
       deep: true
     },
     // 监听外部的样式变化 （非实时性要求）
     'hw': {
       handler(newVal, oldVla) {
-        // console.log('hw:' + newVal + '---' + oldVla)
         if (newVal !== oldVla && this.$refs[this.element.propValue.id]) {
           if (this.chart.type === 'map') {
             this.destroyTimeMachine()
@@ -205,27 +254,19 @@ export default {
       }
     }
   },
-
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
-      this.getData(this.element.propValue.viewId)
+      this.getData(this.element.propValue.viewId, false)
     }
-
-    // this.initAreas()
-  },
-  mounted() {
   },
   methods: {
     mergeStyle() {
       if ((this.requestStatus === 'success' || this.requestStatus === 'merging') && this.chart.stylePriority === 'panel' && this.canvasStyleData.chart) {
         const customAttrChart = JSON.parse(this.chart.customAttr)
         const customStyleChart = JSON.parse(this.chart.customStyle)
-
         const customAttrPanel = JSON.parse(this.canvasStyleData.chart.customAttr)
         const customStylePanel = JSON.parse(this.canvasStyleData.chart.customStyle)
-
-        // 组件样式-标题设置 - 标题修改为组件自己控制
         // 组件样式-背景设置
         customStyleChart.background = customStylePanel.background
         // 图形属性-颜色设置
@@ -234,7 +275,6 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color
         }
-
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -242,7 +282,7 @@ export default {
         }
       }
     },
-    getData(id) {
+    getData(id, cache = true) {
       if (id) {
         this.requestStatus = 'waiting'
         this.message = null
@@ -254,8 +294,11 @@ export default {
         if (!token && linkToken) {
           method = viewInfo
         }
-
-        method(id, this.filter).then(response => {
+        const requestInfo = {
+          ...this.filter,
+          cache: cache
+        }
+        method(id, requestInfo).then(response => {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
@@ -477,59 +520,72 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.rect-shape {
+  .rect-shape {
     width: 100%;
     height: 100%;
     overflow: hidden;
-}
-.chart-class{
-  height: 100%;
-}
-.table-class{
-  height: 100%;
-}
-.chart-error-class{
-  text-align: center;
-  height: calc(100% - 84px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ece7e7;
-}
-.active {
+  }
 
-}
+  .chart-class {
+    height: 100%;
+  }
 
-.active >>> .icon-fangda{
-  z-index: 2;
-  display:block!important;
-}
+  .table-class {
+    height: 100%;
+  }
 
-.rect-shape > i{
-  right: 5px;
-  color: gray;
-  position: absolute;
-}
+  .chart-error-class {
+    text-align: center;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ece7e7;
+  }
 
-.rect-shape >>> i:hover {
-  color: red;
-}
+  .chart-error-message-class {
+    font-size: 12px;
+    color: #9ea6b2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.rect-shape:hover >>> .icon-fangda {
-  z-index: 2;
-  display:block;
-}
+  .active {
 
-.rect-shape>>>.icon-fangda {
-  display:none
-}
+  }
 
-.rect-shape:hover >>> .icon-shezhi {
-  z-index: 2;
-  display:block;
-}
+  .active > > > .icon-fangda {
+    z-index: 2;
+    display: block !important;
+  }
 
-.rect-shape>>>.icon-shezhi {
-  display:none
-}
+  .rect-shape > i {
+    right: 5px;
+    color: gray;
+    position: absolute;
+  }
+
+  .rect-shape > > > i:hover {
+    color: red;
+  }
+
+  .rect-shape:hover > > > .icon-fangda {
+    z-index: 2;
+    display: block;
+  }
+
+  .rect-shape > > > .icon-fangda {
+    display: none
+  }
+
+  .rect-shape:hover > > > .icon-shezhi {
+    z-index: 2;
+    display: block;
+  }
+
+  .rect-shape > > > .icon-shezhi {
+    display: none
+  }
 </style>

@@ -956,6 +956,7 @@ export default {
     table_page_size_unit: 'Item/Page',
     result_count: 'Result',
     result_mode_all: 'ALL',
+    result_mode_custom: 'Custom',
     chart_word_cloud: 'Word Cloud',
     drag_block_word_cloud_label: 'Word Label',
     drag_block_word_cloud_size: 'Word Size',
@@ -1416,7 +1417,9 @@ export default {
     play_once: 'Once',
     play_circle: 'Circle',
     video_links: 'Video Links',
-    video_add_tips: 'Please Add Video Info...'
+    video_add_tips: 'Please Add Video Info...',
+    panel_view_result_show: 'View Result Show',
+    panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000'
   },
   plugin: {
     local_install: 'Local installation',

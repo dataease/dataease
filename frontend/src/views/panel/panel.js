@@ -1,4 +1,3 @@
-
 // eslint-disable-next-line no-unused-vars
 import { BASE_CHART, BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
@@ -7,7 +6,9 @@ export const DEFAULT_PANEL_STYLE = {
   color: '#ffffff',
   imageUrl: null,
   backgroundType: 'image',
-  gap: 'yes'
+  gap: 'yes',
+  resultMode: 'all', // 视图结果显示模式 all 视图 custom 仪表板自定义
+  resultCount: 1000 // 视图结果显示条数
 }
 
 export const CANVAS_STYLE = {

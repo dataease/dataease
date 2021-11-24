@@ -959,6 +959,7 @@ export default {
     table_page_size_unit: '条/页',
     result_count: '结果展示',
     result_mode_all: '全部',
+    result_mode_custom: '自定义',
     chart_word_cloud: '词云',
     drag_block_word_cloud_label: '词标签',
     drag_block_word_cloud_size: '词大小',
@@ -1427,7 +1428,9 @@ export default {
     play_once: '播放一次',
     play_circle: '循环播放',
     video_links: '视频链接',
-    video_add_tips: '请点击添加配置视频信息...'
+    video_add_tips: '请点击添加配置视频信息...',
+    panel_view_result_show: '视图结果展示',
+    panel_view_result_tips: '选择仪表板会覆盖视图的结果展示数量，取值范围1~10000'
   },
   plugin: {
     local_install: '本地安装',
