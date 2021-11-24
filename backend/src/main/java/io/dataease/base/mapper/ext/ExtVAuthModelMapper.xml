@@ -54,6 +54,7 @@
 		) authInfo ON v_auth_model.id = authInfo.auth_source
 	WHERE
 		FIND_IN_SET( v_auth_model.id, cids )
+		ORDER BY CONVERT(v_auth_model.label using gbk) asc
   </select>
 
 </mapper>
