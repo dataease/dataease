@@ -60,3 +60,14 @@ export function checkSameDataSet(viewIdSource, viewIdTarget) {
     loading: false
   })
 }
+
+export function ajaxGetDataOnly(id, data) {
+  return request({
+    url: '/chart/view/getData/' + id,
+    method: 'post',
+    loading: true,
+    hideMsg: true,
+    timeout: 30000,
+    data
+  })
+}

@@ -12,13 +12,10 @@ public interface ExtPanelGroupMapper {
 
     List<PanelGroupDTO> panelGroupListDefault(PanelGroupRequest request);
 
-
-
     //会级联删除pid 下的所有数据
     int deleteCircle(@Param("pid") String pid);
 
     PanelGroupDTO panelGroup(String id);
-
 
     void copyPanelView(@Param("pid") String panelId);
 

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.ext.ExtVAuthModelMapper">
+    <resultMap extends="io.dataease.base.mapper.VAuthModelMapper.ResultMapWithBLOBs" id="ExtResultMap"
+               type="io.dataease.dto.authModel.VAuthModelDTO">
+        <result column="privileges" jdbcType="VARCHAR" property="privileges"/>
+    </resultMap>
+
+    <select id="queryAuthModel" resultMap="ExtResultMap">
+		SELECT
+		v_auth_model.id,
+		v_auth_model.name,
+		v_auth_model.label,
+		v_auth_model.pid,
+		v_auth_model.node_type,
+		v_auth_model.model_type,
+		v_auth_model.model_inner_type,
+		v_auth_model.auth_type,
+		v_auth_model.create_by,
+		v_auth_model.level,
+		authInfo.PRIVILEGES AS `privileges`
+	FROM
+		( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{request.userId}, #{request.modelType} ) cids ) t,
+		v_auth_model
+		LEFT JOIN (
+		SELECT
+			auth_source,
+			group_concat( DISTINCT sys_auth_detail.privilege_extend ) AS `privileges`
+		FROM
+			(
+				`sys_auth`
+				LEFT JOIN `sys_auth_detail` ON ((
+						`sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+					)))
+		WHERE
+			sys_auth_detail.privilege_value = #{request.userId}
+			AND sys_auth.auth_source_type = #{request.modelType}
+			AND (
+				(
+					sys_auth.auth_target_type = 'dept'
+					AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{request.userId} )
+				)
+				OR (
+					sys_auth.auth_target_type = 'user'
+					AND sys_auth.auth_target = #{request.userId}
+				)
+				OR (
+					sys_auth.auth_target_type = 'role'
+					AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{request.userId} )
+				)
+			)
+		GROUP BY
+			`sys_auth`.`auth_source`
+		) authInfo ON v_auth_model.id = authInfo.auth_source
+	WHERE
+		FIND_IN_SET( v_auth_model.id, cids )
+  </select>
+
+</mapper>
