@@ -5,6 +5,7 @@ export function queryAuthModel(data) {
     url: 'authModel/queryAuthModel',
     method: 'post',
     loading: true,
+    timeout: 30000,
     data
   })
 }
