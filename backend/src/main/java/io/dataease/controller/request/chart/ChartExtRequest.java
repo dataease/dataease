@@ -22,4 +22,16 @@ public class ChartExtRequest {
 
     @ApiModelProperty("下钻维度集合")
     private List<ChartDrillRequest> drill;
+
+    @ApiModelProperty("数据查询来源")
+    private String queryFrom;
+
+    @ApiModelProperty("视图结果展示模式")
+    private String resultMode;
+
+    @ApiModelProperty("视图结果展示数量")
+    private Integer resultCount;
+
+    @ApiModelProperty("使用缓存:默认使用")
+    private boolean cache = true;
 }

@@ -1,7 +1,13 @@
 <template>
   <el-row class="slider-container">
-    <div style="height: 40px; line-height: 40px; padding-left: 15px; text-align: left; white-space: pre; text-overflow: ellipsis; left: 0px; right: 0px; top: 0px; font-weight: 700">{{ $t('panel.dashboard_theme') }} </div>
-    <div style="height: 1px; position: absolute; left: 15px; right: 15px; top: 40px; box-sizing:border-box;border-bottom: 1px solid #e8eaed" />
+    <div
+      style="height: 40px; line-height: 40px; padding-left: 15px; text-align: left; white-space: pre; text-overflow: ellipsis; left: 0px; right: 0px; top: 0px; font-weight: 700"
+    >
+      {{ $t('panel.dashboard_theme') }}
+    </div>
+    <div
+      style="height: 1px; position: absolute; left: 15px; right: 15px; top: 40px; box-sizing:border-box;border-bottom: 1px solid #e8eaed"
+    />
     <div>
       <slider />
     </div>
@@ -9,38 +15,42 @@
     <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
       <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item :title="$t('panel.panel')" name="panel">
-          <!--          <el-row class="shape-item">-->
-          <!--            <span class="shape-item" style="margin-left: 10px">{{ $t('panel.new_element_distribution') }}:</span>-->
-          <!--            &lt;!&ndash;            <el-switch v-model="canvasStyleData.auxiliaryMatrix" :width="35" name="auxiliaryMatrix" />&ndash;&gt;-->
-          <!--            <el-radio-group v-model="canvasStyleData.auxiliaryMatrix" size="mini" name="auxiliaryMatrix" @change="styleChange">-->
-          <!--              <el-radio-button :label="true">-->
-          <!--                {{ $t('panel.matrix') }}<i class="icon iconfont icon-shujujuzhen" />-->
-          <!--              </el-radio-button>-->
-          <!--              <el-radio-button :label="false">-->
-          <!--                {{ $t('panel.suspension') }}<i class="icon iconfont icon-xuanfuanniu" />-->
-          <!--              </el-radio-button>-->
-          <!--            </el-radio-group>-->
-          <!--          </el-row>-->
           <el-row class="selector-div">
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />
-            <Panel-Refresh-Time class="attr-selector" />
+            <panel-refresh-time class="attr-selector" />
+            <panel-view-result class="attr-selector" />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.module_style')" name="component">
           <el-row class="selector-div">
-            <!--            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />-->
-            <panel-background-color-selector v-if="chart" class="attr-selector" :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
+            <panel-background-color-selector
+              v-if="chart"
+              class="attr-selector"
+              :chart="chart"
+              @onChangeBackgroundForm="onChangeBackgroundForm"
+            />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
           <el-row class="selector-div">
-            <panel-color-selector :source-type="'panelEchart'" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+            <panel-color-selector
+              :source-type="'panelEchart'"
+              class="attr-selector"
+              :chart="chart"
+              @onColorChange="onColorChange"
+            />
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="$t('panel.table')" name="table">
           <el-row class="selector-div">
-            <panel-color-selector index="10002" :source-type="'panelTable'" class="attr-selector" :chart="tableChart" @onColorChange="onTableColorChange" />
+            <panel-color-selector
+              index="10002"
+              :source-type="'panelTable'"
+              class="attr-selector"
+              :chart="tableChart"
+              @onColorChange="onTableColorChange"
+            />
           </el-row>
         </el-collapse-item>
       </el-collapse>
@@ -59,9 +69,11 @@ import PanelRefreshTime from './PanelStyle/PanelRefreshTime'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import bus from '@/utils/bus'
+import PanelViewResult from '@/views/panel/SubjectSetting/PanelStyle/PanelViewResult'
 
 export default {
   components: {
+    PanelViewResult,
     slider,
     BackgroundSelector,
     ComponentGap,
@@ -82,8 +94,7 @@ export default {
     'canvasStyleData'
   ]),
 
-  watch: {
-  },
+  watch: {},
 
   mounted() {
     bus.$on('onSubjectChange', () => {
@@ -119,10 +130,8 @@ export default {
       this.tableChart.customAttr.color = this.tableChart.customAttr.tableColor
     },
     handleChange(val) {
-      // console.log(val)
     },
     onChangePanelStyle(parma) {
-      // console.log('parma:' + JSON.stringify(parma))
     },
     onColorChange(val) {
       this.chart.customAttr.color = val
@@ -171,21 +180,24 @@ export default {
     color: #3d4d66;
     font-size: 12px;
   }
-  .attr-selector{
+
+  .attr-selector {
     background-color: white;
     height: 32px;
     margin: 5px 5px 5px 5px;
-    padding:0 4px;
+    padding: 0 4px;
     display: flex;
     align-items: center;
     z-index: 10001;
   }
-  .blackTheme .attr-selector{
+
+  .blackTheme .attr-selector {
     background-color: var(--MainBG)
   }
+
   .selector-div {
-      background-color: var(--MainBG, #f7f8fa);
-      margin: 5px
+    background-color: var(--MainBG, #f7f8fa);
+    margin: 5px
   }
 
 </style>
