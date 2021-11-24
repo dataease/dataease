@@ -46,9 +46,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         XpackEmailTemplateDTO emailTemplateDTO = emailXpackService.emailTemplate(taskEntity.getTaskId());
         jobDataMap.put("emailTemplate", emailTemplateDTO);
-
-        /*SysUserEntity creator = CommonBeanFactory.getBean(AuthUserService.class).getUserById(taskEntity.getCreator());*/
-        SysUserEntity creator =authUserServiceImpl.getUserByIdNoCache(taskEntity.getCreator());
+        SysUserEntity creator = authUserServiceImpl.getUserByIdNoCache(taskEntity.getCreator());
         jobDataMap.put("creator", creator);
         return jobDataMap;
     }
@@ -56,10 +54,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // 插件没有加载 空转
-        if(!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) return;
+        if (!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) return;
 
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-        GlobalTaskEntity taskEntity = (GlobalTaskEntity)jobDataMap.get("taskEntity");
+        GlobalTaskEntity taskEntity = (GlobalTaskEntity) jobDataMap.get("taskEntity");
         if (taskExpire(taskEntity.getEndTime())) {
             ScheduleManager scheduleManager = SpringContextUtil.getBean(ScheduleManager.class);
             removeTask(scheduleManager, taskEntity);
@@ -81,7 +79,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         return CommonBeanFactory.getBean(EmailTaskHandler.class);
     }
 
-    public Long saveInstance(GlobalTaskInstance taskInstance){
+    public Long saveInstance(GlobalTaskInstance taskInstance) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         return emailXpackService.saveInstance(taskInstance);
     }
@@ -109,11 +107,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
     }
 
 
-
     @Async
     public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO, SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
-        try{
+        try {
             byte[] bytes = emailXpackService.printData(panelUrl(emailTemplateDTO.getPanelId()), tokenByUser(user), buildPixel(emailTemplateDTO));
             // 下面继续执行发送邮件的
             String recipients = emailTemplateDTO.getRecipients();
@@ -125,7 +122,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             }
             emailService.sendWithImage(recipients, emailTemplateDTO.getTitle(), contentStr, bytes);
             success(taskInstance);
-        }catch (Exception e) {
+        } catch (Exception e) {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
         }
@@ -143,12 +140,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             pixelEntity.setX(String.valueOf(x));
             pixelEntity.setY(String.valueOf(y));
             return pixelEntity;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
-
-
 
 
     private String tokenByUser(SysUserEntity user) {

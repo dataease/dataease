@@ -22,6 +22,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Api(tags = "xpack：定时报告")
@@ -42,7 +43,7 @@ public class XEmailTaskServer {
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody XpackEmailCreate param) throws Exception{
+    public void save(@RequestBody XpackEmailCreate param) throws Exception {
         XpackEmailTaskRequest request = param.fillContent();
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         request.setCreator(AuthUtils.getUser().getUserId());
@@ -59,7 +60,7 @@ public class XEmailTaskServer {
         XpackEmailCreate xpackEmailCreate = new XpackEmailCreate();
         byte[] bytes = taskForm.getContent();
 
-        if(ObjectUtils.isNotEmpty(bytes)) {
+        if (ObjectUtils.isNotEmpty(bytes)) {
             String emailContent;
             try {
                 emailContent = new String(bytes, "UTF-8");
@@ -91,8 +92,8 @@ public class XEmailTaskServer {
         }
         String imageUrl = "/system/ui/image/" + fileId;
         String html = "<div>" +
-                "<h2>"+content+"</h2>" +
-                "<img style='width: 100%;' id='"+panelId+"' src='"+imageUrl+"' />" +
+                "<h2>" + content + "</h2>" +
+                "<img style='width: 100%;' id='" + panelId + "' src='" + imageUrl + "' />" +
                 "</div>";
 
         return html;
@@ -141,7 +142,7 @@ public class XEmailTaskServer {
             result.setX(String.valueOf(x));
             result.setY(String.valueOf(y));
             return result;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
