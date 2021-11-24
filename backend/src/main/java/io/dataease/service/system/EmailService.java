@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 import javax.activation.DataHandler;
 import javax.annotation.Resource;
 import javax.mail.Message;
@@ -49,18 +48,16 @@ public class EmailService {
     private static final String SMTP_CONNECTIONTIMEOUT_VAL = "5000";
 
 
-
     @Resource
     private SystemParameterMapper systemParameterMapper;
 
     /**
-     *
      * @param to      收件人
      * @param title   标题
      * @param content 内容
      */
     public void send(String to, String title, String content) {
-        if (StringUtils.isBlank(to)) return ;
+        if (StringUtils.isBlank(to)) return;
         MailInfo mailInfo = proxy().mailInfo();
         JavaMailSenderImpl driver = driver(mailInfo);
 
@@ -69,7 +66,7 @@ public class EmailService {
         try {
             helper = new MimeMessageHelper(mimeMessage, true);
             helper.setFrom(driver.getUsername());
-            helper.setSubject(title );
+            helper.setSubject(title);
             helper.setText(content, true);
             helper.setTo(to);
             driver.send(mimeMessage);
@@ -80,7 +77,7 @@ public class EmailService {
     }
 
     public void sendWithImage(String to, String title, String content, byte[] bytes) {
-        if (StringUtils.isBlank(to)) return ;
+        if (StringUtils.isBlank(to)) return;
         MailInfo mailInfo = proxy().mailInfo();
         JavaMailSenderImpl driver = driver(mailInfo);
         MimeMessage mimeMessage = driver.createMimeMessage();
@@ -92,7 +89,7 @@ public class EmailService {
         MimeBodyPart text = new MimeBodyPart();
         try {
 
-            text.setContent("<h2>"+content+"</h2>" + "<br/><img src='cid:"+uuid+"' />", "text/html; charset=gb2312");
+            text.setContent("<h2>" + content + "</h2>" + "<br/><img src='cid:" + uuid + "' />", "text/html; charset=gb2312");
             image.setDataHandler(png);
             image.setContentID(uuid);
             MimeMultipart multipart = new MimeMultipart();
@@ -107,7 +104,6 @@ public class EmailService {
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             throw new RuntimeException(e);
-            // DEException.throwException(Translator.get("connection_failed"));
         }
     }
 
@@ -215,13 +211,13 @@ public class EmailService {
             LogUtil.error(e.getMessage(), e);
             DEException.throwException(Translator.get("connection_failed"));
         }
-        if(!StringUtils.isBlank(recipients)){
+        if (!StringUtils.isBlank(recipients)) {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper;
             try {
                 helper = new MimeMessageHelper(mimeMessage, true);
                 helper.setFrom(javaMailSender.getUsername());
-                helper.setSubject("DataEase测试邮件 " );
+                helper.setSubject("DataEase测试邮件 ");
                 helper.setText("这是一封测试邮件，邮件发送成功", true);
                 helper.setTo(recipients);
                 javaMailSender.send(mimeMessage);
