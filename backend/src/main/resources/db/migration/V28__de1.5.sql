@@ -30,7 +30,7 @@ INSERT INTO `sys_msg_channel`(`msg_channel_id`, `channel_name`, `service_name`) 
 -- ----------------------------
 BEGIN;
 INSERT INTO `sys_menu` VALUES (60, 1, 2, 1, '任务管理', 'sys-task', 'system/task/index', 1001, 'task', 'system-task', b'0', b'0', b'0', '', NULL, NULL, NULL, NULL);
-update sys_menu set pid = 60 ,title = '数据同步', icon = 'dataset-task';
+update sys_menu set pid = 60 ,title = '数据同步', icon = 'dataset-task' where menu_id = 58;
 COMMIT;
 
 
