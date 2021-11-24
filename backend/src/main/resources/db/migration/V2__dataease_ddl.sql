@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `file_metadata` (
     );
 
 CREATE TABLE IF NOT EXISTS `system_parameter` (
-    `param_key`   varchar(64) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Parameter name',
+    `param_key`   varchar(64) NOT NULL COMMENT 'Parameter name',
     `param_value` varchar(255)                               DEFAULT NULL COMMENT 'Parameter value',
     `type`        varchar(100)                      NOT NULL DEFAULT 'text' COMMENT 'Parameter type',
     `sort`        int(5)                                     DEFAULT NULL COMMENT 'Sort',

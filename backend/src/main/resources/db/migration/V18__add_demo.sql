@@ -223,9 +223,6 @@ INSERT INTO `demo_sales_dashboard` (`year`,`mounth`,`sales_dept`,`product_name`,
 INSERT INTO `demo_sales_dashboard` (`year`,`mounth`,`sales_dept`,`product_name`,`sales_qty`,`sales_amount`,`target_qty`) VALUES (2020,11,'销售三部','睡袋',77,777,500);
 INSERT INTO `demo_sales_dashboard` (`year`,`mounth`,`sales_dept`,`product_name`,`sales_qty`,`sales_amount`,`target_qty`) VALUES (2020,12,'销售一部','睡袋',67,545,500);
 
-
-
-SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------

@@ -5,8 +5,6 @@ UPDATE `chart_view` SET `ext_bubble` = '[]';
 
 ALTER TABLE `dataset_table_field` MODIFY COLUMN `origin_name` LONGTEXT;
 
-
-SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -14,11 +12,11 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 CREATE TABLE `dataset_table_function` (
       `id` bigint(20) NOT NULL COMMENT 'ID',
-      `name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '函数名称',
-      `func` varchar(500) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '函数表达式',
-      `db_type` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '所属数据库',
+      `name` varchar(255) DEFAULT NULL COMMENT '函数名称',
+      `func` varchar(500) DEFAULT NULL COMMENT '函数表达式',
+      `db_type` varchar(255) DEFAULT NULL COMMENT '所属数据库',
       `func_type` int(10) DEFAULT NULL COMMENT '函数类型：0-聚合函数；1-快速计算函数；2-数学和三角函数；3-日期函数；4-文本函数；5-逻辑函数；6-其它函数',
-      `desc` longtext COLLATE utf8mb4_bin COMMENT '描述',
+      `desc` longtext COMMENT '描述',
       PRIMARY KEY (`id`)
 ) ;
 
@@ -155,7 +153,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 ALTER TABLE `chart_view` ADD COLUMN `drill_fields` LONGTEXT COMMENT '钻取字段' AFTER `custom_filter`;
 UPDATE `chart_view` SET `drill_fields` = '[]';
 
-SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -164,12 +161,12 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `area_mapping`;
 CREATE TABLE `area_mapping`  (
   `id` bigint(20) NOT NULL COMMENT 'id',
-  `province_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '省名称',
-  `province_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '省代码',
-  `city_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '市名称',
-  `city_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '市代码',
-  `county_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '县名称',
-  `county_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '县代码',
+  `province_name` varchar(255) NULL DEFAULT NULL COMMENT '省名称',
+  `province_code` varchar(255) NULL DEFAULT NULL COMMENT '省代码',
+  `city_name` varchar(255) NULL DEFAULT NULL COMMENT '市名称',
+  `city_code` varchar(255) NULL DEFAULT NULL COMMENT '市代码',
+  `county_name` varchar(255) NULL DEFAULT NULL COMMENT '县名称',
+  `county_code` varchar(255) NULL DEFAULT NULL COMMENT '县代码',
   PRIMARY KEY (`id`) USING BTREE
 ) ;
 
