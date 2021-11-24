@@ -18,7 +18,7 @@ CREATE TABLE `dataset_table_function` (
       `func_type` int(10) DEFAULT NULL COMMENT '函数类型：0-聚合函数；1-快速计算函数；2-数学和三角函数；3-日期函数；4-文本函数；5-逻辑函数；6-其它函数',
       `desc` longtext COMMENT '描述',
       PRIMARY KEY (`id`)
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of dataset_table_function
@@ -168,7 +168,7 @@ CREATE TABLE `area_mapping`  (
   `county_name` varchar(255) NULL DEFAULT NULL COMMENT '县名称',
   `county_code` varchar(255) NULL DEFAULT NULL COMMENT '县代码',
   PRIMARY KEY (`id`) USING BTREE
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of area_mapping

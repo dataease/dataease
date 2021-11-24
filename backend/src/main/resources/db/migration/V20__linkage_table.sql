@@ -13,7 +13,7 @@ CREATE TABLE `panel_view_linkage` (
   `ext1` varchar(2000) DEFAULT NULL,
   `ext2` varchar(2000) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for panel_view_linkage_field
@@ -25,6 +25,6 @@ CREATE TABLE `panel_view_linkage_field` (
   `target_field` varchar(255) DEFAULT NULL COMMENT '目标视图字段',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

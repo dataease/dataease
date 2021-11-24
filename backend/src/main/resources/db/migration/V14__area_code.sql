@@ -7,4 +7,4 @@ CREATE TABLE `area_mapping`  (
   `county_name` varchar(255) NULL DEFAULT NULL COMMENT '县名称',
   `county_code` varchar(255) NULL DEFAULT NULL COMMENT '县代码',
   PRIMARY KEY (`id`) USING BTREE
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;

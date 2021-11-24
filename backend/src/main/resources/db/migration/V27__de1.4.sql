@@ -11,7 +11,7 @@ CREATE TABLE `panel_link_jump` (
   `link_jump_info` varchar(4000) DEFAULT NULL COMMENT '跳转信息',
   `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
   PRIMARY KEY (`id`)
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `panel_link_jump_info` (
   `id` varchar(50) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE `panel_link_jump_info` (
   `content` varchar(4000) DEFAULT NULL COMMENT '内容 linkType = outer时使用',
   `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
   PRIMARY KEY (`id`)
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `panel_link_jump_target_view_info` (
   `target_id` varchar(50) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE `panel_link_jump_target_view_info` (
   `target_view_id` varchar(50) DEFAULT NULL,
   `target_field_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`target_id`) USING BTREE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 BEGIN;
 INSERT INTO `sys_menu` VALUES (6, 1, 0, 1, '系统参数', 'system-param', 'system/SysParam/index', 6, 'sys-tools', 'system-param', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, NULL);
@@ -60,7 +60,7 @@ CREATE TABLE `sys_theme` (
   `img` varchar(255) DEFAULT NULL COMMENT '主题缩略图',
   `status` tinyint(1) DEFAULT NULL COMMENT '状态',
   PRIMARY KEY (`id`)
-) AUTO_INCREMENT=4 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=4 ROW_FORMAT=COMPACT;
 
 -- ----------------------------
 -- Records of sys_theme
@@ -82,7 +82,7 @@ CREATE TABLE `sys_theme_item` (
   `theme_id` bigint(20) NOT NULL COMMENT '主题ID',
   `key` varchar(255) DEFAULT NULL COMMENT '样式key',
   `val` varchar(255) DEFAULT NULL COMMENT '样式val'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of sys_theme_item

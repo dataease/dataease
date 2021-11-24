@@ -14,7 +14,7 @@ CREATE TABLE `sys_msg` (
   KEY `inx_msg_userid` (`user_id`) USING BTREE,
   KEY `inx_msg_type` (`type_id`) USING BTREE,
   KEY `inx_msg_status` (`status`) USING BTREE
-) COMMENT='消息通知表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='消息通知表';
 
 -- ----------------------------
 -- Table structure for sys_msg_channel
@@ -23,7 +23,7 @@ CREATE TABLE `sys_msg_channel` (
   `msg_channel_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `channel_name` varchar(255) DEFAULT NULL COMMENT '渠道名称',
   PRIMARY KEY (`msg_channel_id`) USING BTREE
-) AUTO_INCREMENT=4 COMMENT='消息渠道表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=4 COMMENT='消息渠道表';
 
 -- ----------------------------
 -- Records of sys_msg_channel
@@ -44,7 +44,7 @@ CREATE TABLE `sys_msg_type` (
   `callback` varchar(255) DEFAULT NULL COMMENT '回调方法',
   PRIMARY KEY (`msg_type_id`) USING BTREE,
   KEY `inx_msgtype_pid` (`pid`) USING BTREE
-) AUTO_INCREMENT=7 COMMENT='消息类型表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=7 COMMENT='消息类型表';
 
 -- ----------------------------
 -- Records of sys_msg_type
@@ -68,7 +68,7 @@ CREATE TABLE `sys_msg_setting` (
   `channel_id` bigint(20) NOT NULL COMMENT '渠道ID',
   `enable` tinyint(1) DEFAULT NULL COMMENT '是否启用',
   PRIMARY KEY (`msg_setting_id`) USING BTREE
-) AUTO_INCREMENT=1 COMMENT='消息设置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=1 COMMENT='消息设置表';
 
 BEGIN;
 INSERT INTO `sys_menu` VALUES (53, 1, 3, 1, '站内消息', 'sys-msg-web', 'msg/index', 1000, 'all-msg', 'system-msg-web', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);

@@ -16,7 +16,7 @@ CREATE TABLE `sys_auth`  (
   `auth_user` varchar(255) NULL DEFAULT NULL COMMENT '授权人员',
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for sys_auth_detail
@@ -33,7 +33,7 @@ CREATE TABLE `sys_auth_detail`  (
   `create_time` bigint(13) NULL DEFAULT NULL,
   `update_time` bigint(13) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of sys_auth_detail

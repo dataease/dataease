@@ -12,7 +12,7 @@ CREATE TABLE `panel_link_mapping` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `resource_id` varchar(255) DEFAULT NULL COMMENT '仪表板ID',
   PRIMARY KEY (`id`)
-) AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=1;
 
 
 -- ----------------------------
@@ -50,7 +50,7 @@ CREATE TABLE `sys_task` (
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`task_id`),
   KEY `sys_task_type` (`task_type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=1;
 
 -- ----------------------------
 -- Table structure for sys_task_instance
@@ -64,7 +64,7 @@ CREATE TABLE `sys_task_instance` (
   `status` int(10) DEFAULT NULL COMMENT '实例状态',
   `info` longtext COMMENT '执行信息',
   PRIMARY KEY (`instance_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=1;
 
 -- ----------------------------
 -- Table structure for sys_task_email
@@ -79,4 +79,4 @@ CREATE TABLE `sys_task_email` (
   `pixel` varchar(255) DEFAULT NULL COMMENT '像素',
   `task_id` bigint(20) NOT NULL COMMENT '任务ID',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=1;
