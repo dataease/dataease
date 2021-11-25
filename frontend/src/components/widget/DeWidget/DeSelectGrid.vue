@@ -18,7 +18,7 @@
           <span style="display: flex;flex: 1;width: 0;">
             <el-radio v-if="!options.attrs.multiple" v-model="options.value" :label="data.id" @change="changeRadioBox"><span> {{ node.label }} </span></el-radio>
             <el-checkbox v-if="options.attrs.multiple && data.id !== allNode.id" v-model="data.checked" :label="data.id" @change="changeCheckBox(data)"><span> {{ node.label }} </span></el-checkbox>
-            <el-checkbox v-if="inDraw && options.attrs.multiple && data.id === allNode.id" v-model="data.checked" :indeterminate="data.indeterminate" :label="data.id" @change="allCheckChange(data)"><span> {{ node.label }} </span></el-checkbox>
+            <el-checkbox v-if="options.attrs.multiple && data.id === allNode.id" v-model="data.checked" :indeterminate="data.indeterminate" :label="data.id" @change="allCheckChange(data)"><span> {{ node.label }} </span></el-checkbox>
           </span>
           <span v-if="!options.attrs.multiple && options.value && options.value === data.id" class="child">
             <span style="margin-left: 12px;" @click.stop>
@@ -100,7 +100,7 @@ export default {
           this.allNode.indeterminate = false
           this.allNode.checked = false
         }
-        this.setMutiBox()
+        // this.setMutiBox()
       } else {
         !sourceValid && (this.options.value = null)
         sourceValid && Array.isArray(sourceValue) && (this.options.value = sourceValue[0])
@@ -169,6 +169,14 @@ export default {
       if (index >= 0 && !data.checked) {
         values.splice(index, 1)
       }
+      const datas = JSON.parse(JSON.stringify(this.options.attrs.datas))
+      this.options.attrs.datas = []
+      datas.forEach(item => {
+        if (item.id === data.id) {
+          item.checked = data.checked
+        }
+      })
+      this.options.attrs.datas = datas
 
       this.setAllNodeStatus()
 
@@ -194,13 +202,15 @@ export default {
     allCheckChange(data) {
       data.indeterminate = false
       const values = []
-      // this.options.value = []
-      this.options.attrs.datas.forEach(item => {
+      this.options.value = []
+      const datas = JSON.parse(JSON.stringify(this.options.attrs.datas))
+      this.options.attrs.datas = []
+      datas.forEach(item => {
         item.checked = data.checked
         // data.checked && this.options.value.push(item.id)
         data.checked && values.push(item.id)
       })
-
+      this.options.attrs.datas = datas
       this.options.value = values
       this.setCondition()
     },
