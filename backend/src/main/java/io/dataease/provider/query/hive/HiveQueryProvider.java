@@ -40,6 +40,7 @@ public class HiveQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
+        field = field.toLowerCase();
         switch (field) {
             case "varchar":
             case "string":
