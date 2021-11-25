@@ -1036,6 +1036,12 @@ public class DataSetTableService {
                     datasetTableField.setOriginName(filed.getFieldName());
                     datasetTableField.setType(filed.getFieldType());
                     datasetTableField.setSize(filed.getFieldSize());
+                    if (ObjectUtils.isEmpty(ds)) {
+                        datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
+                    } else {
+                        Integer fieldType = qp.transFieldType(filed.getFieldType());
+                        datasetTableField.setDeExtractType(fieldType);
+                    }
                 } else {
                     datasetTableField.setTableId(datasetTable.getId());
                     datasetTableField.setOriginName(filed.getFieldName());
