@@ -307,8 +307,8 @@ const list = [
       borderStyle: 'solid',
       borderColor: '#000000',
       borderRadius: 0,
-      /* margin: 10, */
-      time_margin: 0
+      time_margin: 0,
+      padding: 10
     },
     formatInfo: {
       openMode: '0',
