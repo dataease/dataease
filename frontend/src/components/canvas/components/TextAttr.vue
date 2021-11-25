@@ -78,12 +78,12 @@
         <el-input v-model="styleInfo.margin" type="number" size="mini" min="0" max="99" @change="styleChange" />
       </div>
 
-      <el-tooltip v-if="attrShow('time_margin')" :content="$t('panel.margin')">
+      <el-tooltip v-if="attrShow('padding')" :content="$t('panel.margin')">
         <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-margin" />
       </el-tooltip>
 
-      <div v-if="attrShow('time_margin')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.time_margin" type="number" size="mini" min="0" max="99" @change="styleChange" />
+      <div v-if="attrShow('padding')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-input v-model="styleInfo.padding" type="number" size="mini" min="0" max="99" @change="styleChange" />
       </div>
 
       <el-tooltip v-if="attrShow('opacity')" :content="$t('panel.opacity')">
@@ -268,7 +268,8 @@ export default {
         'color',
         'backgroundColor',
         'date-format',
-        'time_margin'
+        'time_margin',
+        'padding'
         /* 'margin' */
       ],
       // 文本组件显示的属性
