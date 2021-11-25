@@ -80,8 +80,6 @@ CREATE TABLE `sys_menu` (
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`menu_id`) USING BTREE,
-  UNIQUE KEY `uniq_title` (`title`),
-  UNIQUE KEY `uniq_name` (`name`),
   KEY `inx_pid` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=53 ROW_FORMAT=COMPACT COMMENT='系统菜单';
 
@@ -103,10 +101,6 @@ CREATE TABLE `sys_user` (
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   `language` varchar(20) DEFAULT NULL COMMENT '语言',
   PRIMARY KEY (`user_id`) USING BTREE,
-  UNIQUE KEY `UK_kpubos9gc2cvtkb0thktkbkes` (`email`) USING BTREE,
-  UNIQUE KEY `username` (`username`) USING BTREE,
-  UNIQUE KEY `uniq_username` (`username`),
-  UNIQUE KEY `uniq_email` (`email`),
   KEY `FK5rwmryny6jthaaxkogownknqp` (`dept_id`) USING BTREE,
   KEY `inx_enabled` (`enabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=3 ROW_FORMAT=COMPACT COMMENT='系统用户';
@@ -119,23 +113,19 @@ CREATE TABLE `sys_role` (
   `update_by` varchar(255) DEFAULT NULL COMMENT '更新者',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`role_id`) USING BTREE,
-  UNIQUE KEY `uniq_name` (`name`),
-  KEY `role_name_index` (`name`)
+  PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=3 ROW_FORMAT=COMPACT COMMENT='角色表';
 
 CREATE TABLE `sys_roles_menus` (
   `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`menu_id`,`role_id`) USING BTREE,
-  KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE
+  PRIMARY KEY (`menu_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='角色菜单关联';
 
 CREATE TABLE `sys_users_roles` (
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`user_id`,`role_id`) USING BTREE,
-  KEY `FKq4eq273l04bpu4efj0jd0jb98` (`role_id`) USING BTREE
+  PRIMARY KEY (`user_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='用户角色关联';
 
 CREATE TABLE `my_plugin` (
@@ -184,9 +174,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field` (
    `checked` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否选中',
    `column_index` int(10) NOT NULL COMMENT '列位置',
    `last_sync_time` bigint(13) DEFAULT NULL COMMENT '同步时间',
-   PRIMARY KEY (`id`),
-   KEY `IDX_TABLE_ID` (`table_id`),
-   KEY `IDX_DE_TYPE` (`de_type`)
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `dataset_table_task`(
@@ -200,8 +188,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table_task`(
     `end`         varchar(50)  NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
     `end_time`    bigint(13) COMMENT '结束时间',
     `create_time` bigint(13) COMMENT '创建时间',
-    PRIMARY KEY (`id`),
-    KEY `IDX_TABLE_ID` (`table_id`)
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `dataset_table_task_log` (
@@ -213,8 +200,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table_task_log` (
   `status` varchar(50) NOT NULL COMMENT '执行状态',
   `info` longtext COMMENT '错误信息',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`),
-  KEY `IDX_TABLE_ID` (`task_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- chart start
@@ -246,8 +232,7 @@ CREATE TABLE `chart_view` (
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   `snapshot` longtext COMMENT '缩略图 ',
   `style_priority` varchar(255) DEFAULT 'panel' COMMENT '样式优先级 panel 仪表板 view 视图',
-  PRIMARY KEY (`id`),
-  KEY `IDX_TABLE_ID` (`table_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- chart end
@@ -300,8 +285,7 @@ CREATE TABLE `panel_store` (
    `panel_group_id` varchar(50) NOT NULL COMMENT '仪表板ID',
    `user_id` bigint(20) NOT NULL COMMENT '用户ID',
    `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
-   PRIMARY KEY (`store_id`) USING BTREE,
-   KEY `UK_store_user_id` (`user_id`)
+   PRIMARY KEY (`store_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=7 ROW_FORMAT=COMPACT COMMENT='仪表板收藏';
 
 
@@ -311,10 +295,7 @@ CREATE TABLE `panel_share` (
        `target_id` bigint(20) DEFAULT NULL COMMENT '目标ID',
        `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
        `type` int(8) DEFAULT NULL COMMENT '类型0:user,1:role,2dept',
-       PRIMARY KEY (`share_id`) USING BTREE,
-       KEY `UK_share_arget_id` (`target_id`) ,
-       KEY `UK_share_panel_group_id` (`panel_group_id`) ,
-       KEY `UK_share_type` (`type`)
+       PRIMARY KEY (`share_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=7 ROW_FORMAT=COMPACT COMMENT='仪表板分享';
 
 CREATE TABLE `panel_link` (
