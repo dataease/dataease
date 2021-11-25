@@ -1160,7 +1160,9 @@ export default {
     union_data: '关联数据集',
     add_union_table: '添加关联数据集',
     edit_union: '编辑关联数据集',
-    union: '关联'
+    union: '关联',
+    edit_union_relation: '编辑关联关系',
+    add_union_relation: '新建关联关系'
   },
   datasource: {
     datasource: '数据源',

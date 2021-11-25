@@ -28,9 +28,23 @@
       </div>
       <!--数据集关联树型结构-->
       <div v-else class="union-container">
-        <node-item :current-node="dataset[0]" :node-index="0" @deleteNode="deleteNode" @notifyParent="calc" />
+        <node-item
+          :current-node="dataset[0]"
+          :node-index="0"
+          @deleteNode="deleteNode"
+          @notifyParent="calc"
+          @editUnion="unionConfig"
+        />
         <div v-if="dataset.length > 0">
-          <union-node v-for="(item,index) in dataset[0].childrenDs" :key="index" :node-index="index" :children-node="item" :children-list="dataset[0].childrenDs" @notifyParent="calc" />
+          <union-node
+            v-for="(item,index) in dataset[0].childrenDs"
+            :key="index"
+            :node-index="index"
+            :children-node="item"
+            :children-list="dataset[0].childrenDs"
+            :parent-node="dataset[0]"
+            @notifyParent="calc"
+          />
         </div>
       </div>
     </div>
@@ -40,10 +54,18 @@
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+        <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-dialog>
 
+    <!--编辑关联关系-->
+    <el-dialog v-dialogDrag :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')" :visible="editUnion" :show-close="false" width="50%" class="dialog-css" destroy-on-close>
+      <union-edit :union-param="unionParam" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeEditUnion()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="confirmEditUnion()">{{ $t('dataset.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -51,9 +73,10 @@
 import UnionNode from '@/views/dataset/add/union/UnionNode'
 import NodeItem from '@/views/dataset/add/union/NodeItem'
 import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
+import UnionEdit from '@/views/dataset/add/union/UnionEdit'
 export default {
   name: 'AddUnion',
-  components: { DatasetGroupSelectorTree, NodeItem, UnionNode },
+  components: { UnionEdit, DatasetGroupSelectorTree, NodeItem, UnionNode },
   props: {
     param: {
       type: Object,
@@ -103,7 +126,9 @@ export default {
       customType: ['db', 'sql', 'excel'],
       selectDsDialog: false,
       // 弹框临时选中的数据集
-      tempDs: {}
+      tempDs: {},
+      editUnion: false,
+      unionParam: {}
     }
   },
   mounted() {
@@ -154,6 +179,22 @@ export default {
           }
         }
       }
+    },
+
+    unionConfig(param) {
+      this.unionParam = param
+      this.editUnion = true
+    },
+    closeEditUnion() {
+      this.editUnion = false
+      // 添加关联的时候，如果关闭关联关系设置的界面，则删除子节点，同时向父级传递消息
+      if (this.unionParam.type === 'add') {
+        this.dataset[0].childrenDs.pop()
+        this.calc({ type: 'delete', grandParentAdd: true, grandParentSub: true, subCount: 0 })
+      }
+    },
+    confirmEditUnion() {
+      this.editUnion = false
     }
   }
 }

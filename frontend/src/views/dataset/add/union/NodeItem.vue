@@ -32,7 +32,7 @@
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+        <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -125,7 +125,17 @@ export default {
       this.tempParentDs.childrenDs.push(ds)
       this.closeSelectDs()
       this.notifyFirstParent('union')
+
+      // 构建新建关联关系传递的参数
+      const param = {
+        type: 'add',
+        nodeIndex: this.nodeIndex,
+        node: ds,
+        parent: this.tempParentDs
+      }
+      this.$emit('editUnion', param)
     },
+    // 增加与删除事件向父级传递
     notifyFirstParent(type) {
       this.$emit('notifyParent', { type: type, grandParentAdd: true, grandParentSub: true, subCount: this.currentNode.allChildCount })
     }
@@ -162,5 +172,8 @@ export default {
 .ds-node:hover{
   cursor: pointer;
   border: var(--Main,#2681ff) solid 1px;
+}
+.dialog-css >>> .el-dialog__body {
+  padding: 0 20px;
 }
 </style>

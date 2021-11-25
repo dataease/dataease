@@ -85,11 +85,10 @@
                               <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
                               {{ $t('dataset.custom_data') }}
                             </el-dropdown-item>
-                            <!--此处菜单暂时隐藏，后续功能完整后再放开-->
-<!--                            <el-dropdown-item :command="beforeClickAddData('union',data)">-->
-<!--                              <svg-icon icon-class="ds-union" class="ds-icon-union" />-->
-<!--                              {{ $t('dataset.union_data') }}-->
-<!--                            </el-dropdown-item>-->
+                            <el-dropdown-item :command="beforeClickAddData('union',data)">
+                              <svg-icon icon-class="ds-union" class="ds-icon-union" />
+                              {{ $t('dataset.union_data') }}
+                            </el-dropdown-item>
                           </el-dropdown-menu>
                         </el-dropdown>
                       </el-dropdown-item>

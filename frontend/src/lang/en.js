@@ -1157,7 +1157,9 @@ export default {
     union_data: 'Union Dataset',
     add_union_table: 'Add Union Dataset',
     edit_union: 'Edit Union Dataset',
-    union: 'Union'
+    union: 'Union',
+    edit_union_relation: 'Edit Union Relation',
+    add_union_relation: 'Add Union Relation'
   },
   datasource: {
     datasource: 'Data Source',
