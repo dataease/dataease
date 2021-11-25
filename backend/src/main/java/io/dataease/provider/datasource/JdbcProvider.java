@@ -121,6 +121,9 @@ public class JdbcProvider extends DatasourceProvider {
                             row[j] = rs.getDate(j + 1).toString();
                         }
                         break;
+                    case Types.BOOLEAN:
+                        row[j] = rs.getBoolean(j + 1) ? "1" : "0";
+                        break;
                     default:
                         row[j] = rs.getString(j + 1);
                         break;
