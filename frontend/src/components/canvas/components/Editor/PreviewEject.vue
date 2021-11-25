@@ -1,6 +1,6 @@
 <template>
   <div v-loading="dataLoading" class="bg">
-    <Preview v-show="!dataLoading" />
+    <Preview v-if="!dataLoading" />
   </div>
 </template>
 <script>
@@ -53,8 +53,10 @@ export default {
             sourceFieldId: jumpParam.sourceFieldId,
             targetPanelId: this.panelId
           }
+          this.dataLoading = true
           // 刷新跳转目标仪表板联动信息
           queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
+            this.dataLoading = false
             this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
             this.$store.commit('addViewTrackFilter', jumpParam)
           })
