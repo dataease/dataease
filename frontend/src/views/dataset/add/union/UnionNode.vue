@@ -32,7 +32,7 @@
     </div>
 
     <!--编辑关联关系-->
-    <el-dialog v-dialogDrag :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')" :visible="editUnion" :show-close="false" width="50%" class="dialog-css" destroy-on-close>
+    <el-dialog v-if="editUnion" v-dialogDrag top="5vh" :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')" :visible="editUnion" :show-close="false" width="600px" class="dialog-css" destroy-on-close>
       <union-edit :union-param="unionParam" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeEditUnion()">{{ $t('dataset.cancel') }}</el-button>

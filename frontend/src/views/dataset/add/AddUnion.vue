@@ -50,7 +50,7 @@
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="30%" class="dialog-css" destroy-on-close>
+    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="360px" class="dialog-css" destroy-on-close>
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
@@ -59,7 +59,7 @@
     </el-dialog>
 
     <!--编辑关联关系-->
-    <el-dialog v-dialogDrag :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')" :visible="editUnion" :show-close="false" width="50%" class="dialog-css" destroy-on-close>
+    <el-dialog v-if="editUnion" v-dialogDrag top="5vh" :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')" :visible="editUnion" :show-close="false" width="600px" class="dialog-css">
       <union-edit :union-param="unionParam" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeEditUnion()">{{ $t('dataset.cancel') }}</el-button>

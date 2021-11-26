@@ -1160,7 +1160,8 @@ export default {
     edit_union: '編輯關聯數據集',
     union: '關聯',
     edit_union_relation: '編輯關聯關系',
-    add_union_relation: '新建關聯關系'
+    add_union_relation: '新建關聯關系',
+    field_select: '字段選擇'
   },
   datasource: {
     datasource: '數據源',

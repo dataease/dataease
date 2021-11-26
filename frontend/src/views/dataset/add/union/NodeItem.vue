@@ -28,7 +28,7 @@
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="30%" class="dialog-css" destroy-on-close>
+    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="360px" class="dialog-css" destroy-on-close>
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>

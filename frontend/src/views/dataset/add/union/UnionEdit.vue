@@ -1,26 +1,26 @@
 <template>
-  <div v-if="unionParam.type" style="height:400px;">
+  <div v-if="unionParam.type" style="height:600px;">
     <div class="field-style">
       <div class="fields">
         <p>{{ unionParam.parent.currentDs.name }}</p>
-        <div style="height: 150px;width: 100%;overflow-y: auto">
-          <p v-for="item in parentField" :key="item.id">
-            {{ item.name }}
-          </p>
-        </div>
+        <union-field-list :field-list="parentField" :union-param="unionParam" />
       </div>
       <div class="fields">
         <p>{{ unionParam.node.currentDs.name }}</p>
+        <union-field-list :field-list="nodeField" :union-param="unionParam" />
       </div>
     </div>
+    <el-divider />
   </div>
 </template>
 
 <script>
 import { post } from '@/api/dataset/dataset'
+import UnionFieldList from '@/views/dataset/add/union/UnionFieldList'
 
 export default {
   name: 'UnionEdit',
+  components: { UnionFieldList },
   props: {
     unionParam: {
       type: Object,
@@ -59,17 +59,21 @@ export default {
 
 <style scoped>
 .field-style{
-  height: 180px;
+  height: 300px;
 }
 .fields{
   box-sizing: border-box;
-  -moz-box-sizing: border-box; /* Firefox */
-  -webkit-box-sizing: border-box; /* Safari */
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   width: 50%;
   float: left;
-  padding: 0 4px;
+  padding: 0 6px;
 }
 p{
-  font-size: 12px;
+  font-size: 14px;
+  margin: 6px 0!important;
+}
+.el-divider--horizontal {
+  margin: 12px 0;
 }
 </style>

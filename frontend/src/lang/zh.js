@@ -1162,7 +1162,8 @@ export default {
     edit_union: '编辑关联数据集',
     union: '关联',
     edit_union_relation: '编辑关联关系',
-    add_union_relation: '新建关联关系'
+    add_union_relation: '新建关联关系',
+    field_select: '字段选择'
   },
   datasource: {
     datasource: '数据源',
