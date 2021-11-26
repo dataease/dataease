@@ -1,7 +1,7 @@
 <template>
   <el-row class="slider-container">
     <div
-      style="height: 40px; line-height: 40px; padding-left: 15px; text-align: left; white-space: pre; text-overflow: ellipsis; left: 0px; right: 0px; top: 0px; font-weight: 700"
+      style="height: 40px; padding-left: 15px; text-align: left; white-space: pre; text-overflow: ellipsis; left: 0px; right: 0px; top: 0px; font-weight: 700"
     >
       {{ $t('panel.dashboard_theme') }}
     </div>
