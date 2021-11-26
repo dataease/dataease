@@ -35,13 +35,21 @@ public class JWTUtils {
      * @return 是否正确
      */
     public static boolean verify(String token, TokenInfo tokenInfo, String secret) {
+
         Algorithm algorithm = Algorithm.HMAC256(secret);
         Verification verification = JWT.require(algorithm)
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("userId", tokenInfo.getUserId());
         JWTVerifier verifier = verification.build();
+
+        verifySign(algorithm, token);
         verifier.verify(token);
         return true;
+    }
+
+    public static void verifySign(Algorithm algorithm, String token) {
+        DecodedJWT decode = JWT.decode(token);
+        algorithm.verify(decode);
     }
 
     /**
