@@ -21,5 +21,7 @@ public class VAuthModel implements Serializable {
 
     private Long level;
 
+    private Long mode;
+
     private static final long serialVersionUID = 1L;
 }

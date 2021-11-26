@@ -653,6 +653,66 @@ public class VAuthModelExample {
             addCriterion("`level` not between", value1, value2, "level");
             return (Criteria) this;
         }
+
+        public Criteria andModeIsNull() {
+            addCriterion("`mode` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeIsNotNull() {
+            addCriterion("`mode` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeEqualTo(Long value) {
+            addCriterion("`mode` =", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotEqualTo(Long value) {
+            addCriterion("`mode` <>", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeGreaterThan(Long value) {
+            addCriterion("`mode` >", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeGreaterThanOrEqualTo(Long value) {
+            addCriterion("`mode` >=", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeLessThan(Long value) {
+            addCriterion("`mode` <", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeLessThanOrEqualTo(Long value) {
+            addCriterion("`mode` <=", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeIn(List<Long> values) {
+            addCriterion("`mode` in", values, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotIn(List<Long> values) {
+            addCriterion("`mode` not in", values, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeBetween(Long value1, Long value2) {
+            addCriterion("`mode` between", value1, value2, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotBetween(Long value1, Long value2) {
+            addCriterion("`mode` not between", value1, value2, "mode");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

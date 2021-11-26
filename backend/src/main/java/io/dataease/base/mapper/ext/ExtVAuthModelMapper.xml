@@ -18,6 +18,7 @@
 		v_auth_model.auth_type,
 		v_auth_model.create_by,
 		v_auth_model.level,
+		v_auth_model.mode,
 		authInfo.PRIVILEGES AS `privileges`
 	FROM
 		( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{request.userId}, #{request.modelType} ) cids ) t,
