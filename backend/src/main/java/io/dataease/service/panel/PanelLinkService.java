@@ -32,7 +32,7 @@ import java.util.List;
 public class PanelLinkService {
 
     private static final String BASEURL = "/link.html?link=";
-    private static final String SHORT_URL_PREFIX = "/xggznb/";
+    private static final String SHORT_URL_PREFIX = "/link/";
 
     @Resource
     private PanelLinkMapper mapper;

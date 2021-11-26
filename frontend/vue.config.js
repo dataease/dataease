@@ -36,16 +36,6 @@ module.exports = {
       entry: 'src/main.js',
       template: 'public/index.html',
       filename: 'index.html'
-    },
-    link: {
-      entry: 'src/link/link.js',
-      template: 'public/link.html',
-      filename: 'link.html'
-    },
-    nolic: {
-      entry: 'src/nolic/nolic.js',
-      template: 'public/nolic.html',
-      filename: 'nolic.html'
     }
   },
   configureWebpack: {
