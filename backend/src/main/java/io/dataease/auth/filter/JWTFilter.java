@@ -1,5 +1,6 @@
 package io.dataease.auth.filter;
 
+import com.auth0.jwt.algorithms.Algorithm;
 import io.dataease.auth.entity.ASKToken;
 import io.dataease.auth.entity.JWTToken;
 import io.dataease.auth.entity.SysUserEntity;
@@ -115,9 +116,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             DataEaseException.throwException(Translator.get("i18n_not_find_user"));
         }
         String password = user.getPassword();
-
+        Algorithm algorithm = Algorithm.HMAC256(password);
+        JWTUtils.verifySign(algorithm, token);
         String newToken = JWTUtils.sign(tokenInfo, password);
-
         // 设置响应的Header头新Token
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         httpServletResponse.addHeader("Access-Control-Expose-Headers", "RefreshAuthorization");
