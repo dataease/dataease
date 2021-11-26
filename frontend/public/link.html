@@ -4,10 +4,30 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="shortcut icon" href="<%= BASE_URL %>favicon.ico">
-  <title>DataEase</title>
+  
 </head>
 <body style="height: 100%;">
 <div id="link"></div>
 </body>
+<script>
+    function getQueryVariable(variable) {
+        debugger
+        let query = window.location.search.substring(1)
+        let vars = []
+        if (!query) {
+            query = document.cookie   
+            vars = query.split(';')         
+        }else {
+            vars = query.split('&')
+        }
+        for (var i = 0; i < vars.length; i++) {
+            const pair = vars[i].split('=')
+            if (pair[0].trim() === variable) { return pair[1] }
+        }
+        return (false)
+    }
+    const link = getQueryVariable('link')
+    const url = "/#/delink?link="+encodeURIComponent(link)
+    window.location.href = url
+</script>
 </html>

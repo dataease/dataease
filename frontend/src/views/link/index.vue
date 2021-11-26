@@ -17,6 +17,7 @@ export default {
   components: {
     LinkError, LinkPwd, LinkView, LinkExpire
   },
+
   data() {
     return {
       resourceId: null,
@@ -32,8 +33,16 @@ export default {
 
     loadInit() {
       debugger
-      this.link = getQueryVariable(this.PARAMKEY)
-      validate({ link: this.link }).then(res => {
+      // this.link = getQueryVariable(this.PARAMKEY)
+      this.link = this.$route.query.link
+      if (!this.link) {
+        this.link = getQueryVariable(this.PARAMKEY)
+      }
+      if (!this.link) {
+        this.showError()
+        return
+      }
+      validate({ link: encodeURIComponent(this.link) }).then(res => {
         const { resourceId, valid, enablePwd, passPwd, expire } = res.data
         this.resourceId = resourceId
         // 如果链接无效 直接显示无效页面

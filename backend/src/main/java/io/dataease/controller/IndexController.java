@@ -32,15 +32,6 @@ public class IndexController {
         return "index.html";
     }
 
-    @GetMapping("/link")
-    public String link() {
-        return "link.html";
-    }
-
-    @GetMapping("/test")
-    public String test() {
-        return "test.html";
-    }
 
     @GetMapping("/deApi")
     public String deApi() {
@@ -53,12 +44,12 @@ public class IndexController {
         }
     }
 
-    @GetMapping("/xggznb/{index}")
-    public String xggznb(@PathVariable(value = "index", required = true) Long index)  {
+    @GetMapping("/link/{index}")
+    public String xggznb(@PathVariable(value = "index", required = true) Long index) {
         String url = panelLinkService.getUrlByIndex(index);
         HttpServletResponse response = ServletUtils.response();
         String param = url.substring(url.indexOf("?") + 1);
-        Cookie cookie = new Cookie("link", param);
+        Cookie cookie = new Cookie("link", param.split("=")[1]);
         response.addCookie(cookie);
         return url;
     }
