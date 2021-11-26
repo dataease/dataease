@@ -45,7 +45,7 @@ public class IndexController {
     }
 
     @GetMapping("/link/{index}")
-    public String xggznb(@PathVariable(value = "index", required = true) Long index) {
+    public String link(@PathVariable(value = "index", required = true) Long index) {
         String url = panelLinkService.getUrlByIndex(index);
         HttpServletResponse response = ServletUtils.response();
         String param = url.substring(url.indexOf("?") + 1);
