@@ -10,9 +10,7 @@ import io.dataease.dto.datasource.TableFiled;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.ExcelFileData;
 import io.dataease.service.dataset.DataSetTableService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -132,8 +130,13 @@ public class DataSetTableController {
         return dataSetTableService.getDatasetDetail(id);
     }
 
-    //    @ApiOperation("excel上传")
+    @ApiOperation("excel上传")
     @PostMapping("excel/upload")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
+        @ApiImplicitParam(name = "tableId", value = "数据表ID", required = true, dataType = "String"),
+        @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
+    })
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId, @RequestParam("editType") Integer editType) throws Exception {
         return dataSetTableService.excelSaveAndParse(file, tableId, editType);
     }
