@@ -11,7 +11,7 @@ import { filterAsyncRouter } from '@/store/modules/permission'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/401', '/404'] // no redirect whitelist
+const whiteList = ['/login', '/401', '/404', '/delink', '/nolic'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -29,7 +29,7 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo || to.path.indexOf('/preview/') > -1) {
+      if (hasGetUserInfo || to.path.indexOf('/preview/') > -1 || to.path.indexOf('/delink') > -1 || to.path.indexOf('/nolic') > -1) {
         next()
         store.dispatch('permission/setCurrentPath', to.path)
       } else {
