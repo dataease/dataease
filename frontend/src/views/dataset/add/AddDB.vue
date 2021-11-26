@@ -100,6 +100,7 @@ export default {
         for (let i = 0; i < this.options.length; i++) {
           if (this.options[i].id === val) {
             this.selectedDatasource = this.options[i]
+            this.mode = '0'
           }
         }
       }
@@ -133,8 +134,6 @@ export default {
       })
     },
     save() {
-      // console.log(this.checkTableList);
-      // console.log(this.scene);
       let ds = {}
       this.options.forEach(ele => {
         if (ele.id === this.dataSource) {
@@ -158,7 +157,6 @@ export default {
         })
       })
       post('/dataset/table/batchAdd', tables).then(response => {
-        // this.$store.dispatch('dataset/setSceneData', new Date().getTime())
         this.$emit('saveSuccess', tables[0])
         this.cancel()
       })
@@ -166,7 +164,6 @@ export default {
 
     cancel() {
       this.dataReset()
-      // this.$router.push('/dataset/home')
       this.$emit('switchComponent', { name: '' })
     },
 
