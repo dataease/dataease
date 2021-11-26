@@ -10,7 +10,6 @@
 
 <script>
 import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
-// import eventBus from '@/components/canvas/utils/eventBus'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
@@ -183,15 +182,7 @@ export default {
       if (this.antVRenderStatus) {
         this.myChart.render()
       }
-      // } else {
-      //   if (this.myChart) {
-      //     this.antVRenderStatus = false
-      //     this.myChart.destroy()
-      //   }
-      // }
-
       this.setBackGroundBorder()
-      // console.log(JSON.stringify(chart_option))
     },
 
     antVAction(param) {
@@ -205,20 +196,10 @@ export default {
         this.trackClick(this.trackMenu[0])
       } else { // 视图关联多个事件
         this.trackBarStyle.left = param.x + 'px'
-        this.trackBarStyle.top = (param.y - 15) + 'px'
+        this.trackBarStyle.top = (param.y + 10) + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
     },
-
-    // myEcharts(option) {
-    //   // 指定图表的配置项和数据
-    //   const chart = this.myChart
-    //   this.setBackGroundBorder()
-    //   setTimeout(chart.setOption(option, true), 500)
-    //   window.onresize = function() {
-    //     chart.resize()
-    //   }
-    // },
     setBackGroundBorder() {
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)

@@ -31,7 +31,10 @@ export default {
   },
   methods: {
     trackButtonClick() {
-      this.$refs.trackButton.click()
+      const _this = this
+      setTimeout(() => {
+        _this.$refs.trackButton.click()
+      }, 50)
     },
     trackMenuClick(menu) {
       this.$emit('trackClick', menu)
