@@ -2,7 +2,7 @@
   <div :style="{ 'height': containerHeight}">
     <div ref="canvasContainer" class="time-s-class" style="height: calc(100% - 50px);" :style="{'margin':timeMargin +'px'}">
       <canvas
-        id="canvas"
+        :id="'simple-canvas'+element.id"
         class="de-canvas"
         :width="canvas_width"
         :height="canvas_height"
@@ -47,7 +47,7 @@ export default {
     }
   },
   mounted() {
-    this.canvas = document.getElementById('canvas')
+    this.canvas = document.getElementById('simple-canvas' + this.element.id)
     this.draw = this.canvas.getContext('2d')
     this.canvas_width = this.element.style.width
     this.canvas_height = this.element.style.height

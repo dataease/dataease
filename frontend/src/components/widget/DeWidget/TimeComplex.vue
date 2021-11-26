@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas id="canvas" width="500" height="500" />
+    <canvas :id="'complex_canvas'+element.id" width="500" height="500" />
   </div>
 </template>
 
@@ -30,7 +30,7 @@ export default {
     }
   },
   mounted() {
-    this.canvas = document.getElementById('canvas')
+    this.canvas = document.getElementById('complex_canvas' + this.element.id)
     this.initCtx()
     this.initCtxBack()
     this.initNumBack()
