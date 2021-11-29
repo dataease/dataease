@@ -12,5 +12,8 @@ import lombok.Data;
 public class VAuthModelRequest extends VAuthModelDTO {
 
     private String userId;
+    private String privileges;
+    private Integer datasetMode;
+    private boolean clearEmptyDir;
 
 }

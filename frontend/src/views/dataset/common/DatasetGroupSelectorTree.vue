@@ -129,7 +129,12 @@ export default {
       type: String,
       required: false,
       default: 'use'
-    }
+    },
+    clearEmptyDir: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
   },
   data() {
     return {
@@ -224,7 +229,7 @@ export default {
     },
 
     treeNode(group) {
-      queryAuthModel({ modelType: 'dataset' }).then(res => {
+      queryAuthModel({ modelType: 'dataset', privileges: this.privileges, datasetMode: this.mode, clearEmptyDir: this.clearEmptyDir}).then(res => {
         this.data = res.data
       })
     },

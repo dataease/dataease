@@ -17,4 +17,5 @@ public class VAuthModelDTO extends VAuthModelWithBLOBs  implements ITreeBase<VAu
     private String privileges;
 
     private List<VAuthModelDTO> children;
+    private long allLeafs = 0l;
 }
