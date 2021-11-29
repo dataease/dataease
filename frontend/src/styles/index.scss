@@ -744,6 +744,12 @@ div:focus {
   border: 1px solid #999999!important;
   margin: 0 0 6px 6px!important;
 }
-
+.de-checkbox {
+  width: 100%;
+  margin-left: 0px !important;
+  .el-checkbox__input {
+    padding: 0 0 8px 0 !important;
+  }
+}
 
 
