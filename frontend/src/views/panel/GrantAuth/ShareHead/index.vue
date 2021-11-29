@@ -7,22 +7,20 @@
         </el-col>
 
         <el-col :span="8" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
-          <span>{{ $t('panel.when_share') + ': ' + (granterTime ? new Date(granterTime).format('yyyy年-MM月-dd日') : '') }}</span>
+          <span>{{ $t('panel.when_share') + ': ' + (granterTime ? new Date(granterTime).format('yyyy-MM-dd hh:mm:ss') : '') }}</span>
         </el-col>
 
         <el-col :span="8" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
-          <el-link type="primary" disabled class="share-checked">
-            <!-- <el-checkbox v-model="checked" disabled>组织</el-checkbox> -->
+          <!-- 分享维度提醒 先注释 因为后面有可能还是需要的 -->
+          <!-- <el-link type="primary" disabled class="share-checked">
             {{ $t('panel.org') }}
           </el-link>
           <el-link type="success" disabled class="share-checked">
-            <!-- <el-checkbox v-model="checked" disabled>角色</el-checkbox> -->
             {{ $t('panel.role') }}
           </el-link>
           <el-link type="info" disabled class="share-checked">
-            <!-- <el-checkbox v-model="checked" disabled>用户</el-checkbox> -->
             {{ $t('panel.user') }}
-          </el-link>
+          </el-link> -->
         </el-col>
       </el-row>
       <el-row style="display: flex;">
@@ -68,6 +66,7 @@
 <script>
 import GrantAuth from '../index'
 import { shareTargets, removeShares } from '@/api/panel/share'
+import bus from '@/utils/bus'
 export default {
   name: 'ShareHead',
   components: { GrantAuth },
@@ -135,7 +134,13 @@ export default {
           this.granterTime = item.createTime
           return item
         }).sort((a, b) => b.type - a.type)
+        if (!this.dynamicTags || this.dynamicTags.length === 0) {
+          this.afterRemoveAll()
+        }
       })
+    },
+    afterRemoveAll() {
+      bus.$emit('refresh-my-share-out')
     }
   }
 }
