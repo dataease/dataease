@@ -93,11 +93,10 @@
                               <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
                               {{ $t('dataset.custom_data') }}
                             </el-dropdown-item>
-                            <!--此处菜单暂时隐藏，后续功能完整后再放开-->
-                            <!--                            <el-dropdown-item :command="beforeClickAddData('union',data)">-->
-                            <!--                              <svg-icon icon-class="ds-union" class="ds-icon-union" />-->
-                            <!--                              {{ $t('dataset.union_data') }}-->
-                            <!--                            </el-dropdown-item>-->
+                            <el-dropdown-item :command="beforeClickAddData('union',data)">
+                              <svg-icon icon-class="ds-union" class="ds-icon-union" />
+                              {{ $t('dataset.union_data') }}
+                            </el-dropdown-item>
                           </el-dropdown-menu>
                         </el-dropdown>
                       </el-dropdown-item>
@@ -131,10 +130,11 @@
             <span v-else slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span>
-                  <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
-                  <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-                  <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-                  <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                  <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                  <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                  <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                  <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                  <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
                 </span>
                 <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
                   <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
