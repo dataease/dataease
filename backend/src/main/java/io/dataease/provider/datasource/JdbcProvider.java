@@ -13,6 +13,7 @@ import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.query.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -32,7 +33,7 @@ public class JdbcProvider extends DatasourceProvider {
     public static final Pattern WITH_SQL_FRAGMENT = Pattern.compile(REG_WITH_SQL_FRAGMENT);
 
     @PostConstruct
-    public void init() throws Exception{
+    public void init() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(FILE_PATH).toURI().toURL()}, classLoader);
         File file = new File(FILE_PATH);
@@ -59,16 +60,16 @@ public class JdbcProvider extends DatasourceProvider {
     /**
      * 这里使用声明式缓存不是很妥当
      * 改为chartViewService中使用编程式缓存
-    @Cacheable(
-            value = JdbcConstants.JDBC_PROVIDER_KEY,
-            key = "'provider_sql_' + #dsr.datasource.id + '_' + #dsr.table + '_' + #dsr.query",
-            condition = "#dsr.pageSize == null || #dsr.pageSize == 0L"
-    )
+     *
+     * @Cacheable( value = JdbcConstants.JDBC_PROVIDER_KEY,
+     * key = "'provider_sql_' + #dsr.datasource.id + '_' + #dsr.table + '_' + #dsr.query",
+     * condition = "#dsr.pageSize == null || #dsr.pageSize == 0L"
+     * )
      */
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
-        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()) )){
+        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()))) {
 
             list = fetchResult(rs);
 
@@ -180,22 +181,27 @@ public class JdbcProvider extends DatasourceProvider {
         tableFiled.setRemarks(remarks);
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
         tableFiled.setFieldType(dbType);
-        if(dbType.equalsIgnoreCase("LONG")){tableFiled.setFieldSize(65533);}
-        if(StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50 ){
+        if (dbType.equalsIgnoreCase("LONG")) {
+            tableFiled.setFieldSize(65533);
+        }
+        if (StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50) {
             tableFiled.setFieldSize(50);
         }
 
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())){
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())) {
             QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
             tableFiled.setFieldSize(qp.transFieldSize(dbType));
-        }else {
-            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && tableFiled.getFieldType().equalsIgnoreCase("BOOLEAN")){
+        } else {
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && tableFiled.getFieldType().equalsIgnoreCase("BOOLEAN")) {
                 tableFiled.setFieldSize(1);
-            }else {
-                tableFiled.setFieldSize(Integer.valueOf(resultSet.getString("COLUMN_SIZE")));
+            } else {
+                String size = resultSet.getString("COLUMN_SIZE");
+                if (size == null) {
+                    tableFiled.setFieldSize(1);
+                } else {
+                    tableFiled.setFieldSize(Integer.valueOf(size));
+                }
             }
-
-
         }
         return tableFiled;
     }
@@ -220,6 +226,7 @@ public class JdbcProvider extends DatasourceProvider {
                 return jdbcConfiguration.getDataBase();
         }
     }
+
     @Override
     public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
