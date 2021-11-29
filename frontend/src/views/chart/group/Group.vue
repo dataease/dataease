@@ -447,9 +447,9 @@ export default {
   mounted() {
     if (this.mountedInit) {
       this.treeNode(true)
-      this.refresh()
-      this.getChartGroupTree()
     }
+    this.refresh()
+    this.getChartGroupTree()
   },
   methods: {
     clickAdd(param) {

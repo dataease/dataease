@@ -304,7 +304,7 @@ export default {
       }
     },
     changePdfTemplate() {
-      this.pdfTemplateContent = this.pdfTemplateAll[this.pdfTemplateSelectedIndex].templateContent
+      this.pdfTemplateContent = this.pdfTemplateAll[this.pdfTemplateSelectedIndex] ? this.pdfTemplateAll[this.pdfTemplateSelectedIndex].templateContent : ''
     },
     closePreExport() {
       this.pdfExportShow = false
