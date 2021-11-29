@@ -85,10 +85,10 @@ export default {
     },
     // 验证密码是否正确 如果正确 设置请求头部带LINK-PWD-TOKEN=entrypt(pwd)再刷新页面
     refresh() {
+      this.msg = null
       this.$refs.pwdForm.validate(valid => {
         if (!valid) return false
         const param = {
-          /* password: encrypt(this.form.password), */
           password: this.form.password,
           resourceId: this.resourceId
         }
@@ -96,7 +96,6 @@ export default {
           if (!res.data) {
             this.msg = this.$t('pblink.pwd_error')
           } else {
-            // window.location.reload()
             this.$emit('fresh-token')
           }
         })
