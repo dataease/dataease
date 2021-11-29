@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -436,6 +437,13 @@ public class JdbcProvider extends DatasourceProvider {
                 password = mongodbConfiguration.getPassword();
                 driver = mongodbConfiguration.getDriver();
                 jdbcurl = mongodbConfiguration.getJdbc();
+                try {
+                    if (!InetAddress.getByName(mongodbConfiguration.getHost()).isReachable(1000)) {
+                       throw new Exception("unknown host");
+                    }
+                } catch (Exception e) {
+                    throw new Exception("unknown host");
+                }
                 break;
             case redshift:
                 RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);

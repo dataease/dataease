@@ -364,7 +364,7 @@ export default {
               if (res.success) {
                 this.$success(this.$t('datasource.validate_success'))
               } else {
-                this.$error(this.$t(res.message))
+                this.$error(res.message)
               }
               this.refreshType(data)
             }).catch(res => {
