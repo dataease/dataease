@@ -522,7 +522,8 @@ export default {
       const stick = evt.target.closest('.el-icon-magic-stick')
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
-      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen) {
+      const suffix = evt.target.closest('.el-input__suffix')
+      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen&&!suffix) {
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
