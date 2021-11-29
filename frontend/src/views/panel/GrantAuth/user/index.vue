@@ -2,11 +2,12 @@
   <div class="my_table">
     <el-table
       ref="table"
-      :data="data.filter(node => !keyWord || node[fieldName].toLowerCase().includes(keyWord.toLowerCase()))"
+      :data="tableData"
       :show-header="true"
       style="width: 100%"
       :row-style="{height: '35px'}"
-      @filter-change="filterChange"
+      @select="selectOne"
+      @select-all="selectAll"
     >
       <el-table-column
         :column-key="fieldName"
@@ -47,7 +48,14 @@ export default {
       filter_options: [{ text: this.$t('panel.unshared_people'), value: 0 }, { text: this.$t('panel.shared_people'), value: 1 }],
       fieldName: 'nickName',
       type: 0, // 类型0代表用户
-      shares: []
+      shares: [],
+      tableData: []
+    }
+  },
+  watch: {
+    'keyWord': function(val) {
+      this.tableData = this.data.filter(node => !val || node[this.fieldName].toLowerCase().includes(val.toLowerCase()))
+      this.setCheckNodes()
     }
   },
   created() {
@@ -63,47 +71,21 @@ export default {
       const param = temp || {}
       userLists(1, 0, param).then(response => {
         const data = response.data
-        // this.total = data.itemCount
         this.data = data.listObject.filter(ele => ele.id !== this.$store.getters.user.userId)
+        this.tableData = data.listObject.filter(ele => ele.id !== this.$store.getters.user.userId)
         this.queryShareNodeIds()
       })
     },
     filterHandler(value, row, column) {
-      // const property = column['property']
-      // return row[property] === value
       const userId = row['userId']
       return !(value ^ this.shares.includes(userId))
     },
 
-    filterChange(obj) {
-      const arr = obj[this.fieldName]
-      if (arr.length === 0) {
-        this.initColumnLabel()
-      } else {
-        this.columnLabel = this.filter_options[arr[0]].text
-      }
-      this.$nextTick(() => {
-        this.setCheckNodes()
-      })
-    },
-
     getSelected() {
       return {
-        userIds: this.$refs.table.store.states.selection.map(item => item.userId)
+        userIds: this.shares
       }
     },
-
-    /*  save(msg) {
-      const rows = this.$refs.table.store.states.selection
-      const request = this.buildRequest(rows)
-      saveShare(request).then(response => {
-        this.$success(msg)
-        return true
-      }).catch(err => {
-        this.$error(err.message)
-        return false
-      })
-    }, */
 
     cancel() {
       console.log('user cancel')
@@ -134,10 +116,38 @@ export default {
     },
 
     setCheckNodes() {
-      this.data.forEach(node => {
-        const nodeId = node.userId
-        this.shares.includes(nodeId) && this.$refs.table.toggleRowSelection(node, true)
+      this.$nextTick(() => {
+        this.$refs.table.store.states.data.forEach(node => {
+          const nodeId = node.userId
+          this.shares.includes(nodeId) && this.$refs.table.toggleRowSelection(node, true)
+        })
       })
+    },
+    selectOne(selection, row) {
+      if (selection.some(node => node.userId === row.userId)) {
+        // 如果选中了 且 已有分享数据不包含当前节点则添加
+        if (!this.shares.includes(row.userId)) {
+          this.shares.push(row.userId)
+        }
+      } else {
+        // 如果取消选中 则移除
+        this.shares = this.shares.filter(nodeId => row.userId !== nodeId)
+      }
+    },
+    selectAll(selection) {
+      // 1.全选
+      if (selection && selection.length > 0) {
+        selection.forEach(node => {
+          if (!this.shares.includes(node.userId)) {
+            this.shares.push(node.userId)
+          }
+        })
+      } else {
+        // 2.全部取消
+        const currentNodes = this.$refs.table.store.states.data
+        const currentNodeIds = currentNodes.map(node => node.userId)
+        this.shares = this.shares.filter(nodeId => !currentNodeIds.includes(nodeId))
+      }
     }
 
   }
