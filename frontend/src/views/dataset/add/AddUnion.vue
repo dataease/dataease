@@ -31,9 +31,11 @@
         <node-item
           :current-node="dataset[0]"
           :node-index="0"
+          :origin-data="dataset"
           @deleteNode="deleteNode"
           @notifyParent="calc"
           @editUnion="unionConfig"
+          @cancelUnionEdit="cancelUnion"
         />
         <div v-if="dataset.length > 0">
           <union-node
@@ -43,7 +45,9 @@
             :children-node="item"
             :children-list="dataset[0].childrenDs"
             :parent-node="dataset[0]"
+            :origin-data="dataset"
             @notifyParent="calc"
+            @cancelUnionEdit="cancelUnion"
           />
         </div>
       </div>
@@ -194,7 +198,11 @@ export default {
       }
     },
     confirmEditUnion() {
+      // todo 校验关联关系与字段，必填
       this.editUnion = false
+    },
+    cancelUnion(val) {
+      this.dataset = val
     }
   }
 }
