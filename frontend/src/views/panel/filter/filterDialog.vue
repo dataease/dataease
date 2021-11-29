@@ -663,6 +663,7 @@ export default {
     showTitleChange(value) {
       if (!value) {
         this.componentInfo.options.attrs.title = ''
+        this.componentInfo.style.backgroundColor = ''
       }
       this.$emit('re-fresh-component', this.componentInfo)
     }

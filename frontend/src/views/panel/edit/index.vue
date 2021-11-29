@@ -523,7 +523,7 @@ export default {
       const xuanfuanniu = evt.target.closest('.icon-xuanfuanniu')
       const shujujuzhen = evt.target.closest('.icon-shujujuzhen')
       const suffix = evt.target.closest('.el-input__suffix')
-      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen&&!suffix) {
+      if (!parent && !self && !stick && !xuanfuanniu && !shujujuzhen && !suffix) {
         this.show = false
         window.removeEventListener('click', this.closeSidebar)
         this.showIndex = -1
@@ -649,21 +649,22 @@ export default {
       this.beforeDialogValue = []
       this.filterVisible = true
     },
-    cancelFilter() {
+    closeFilter() {
       this.beforeDialogValue = []
       this.filterVisible = false
       this.currentWidget = null
       this.clearCurrentInfo()
+    },
+    cancelFilter() {
+      this.closeFilter()
       bus.$emit('onRemoveLastItem')
     },
     sureFilter() {
       this.currentFilterCom.options.value = []
       const component = deepCopy(this.currentFilterCom)
-
-      //   this.$store.commit('addComponent', { component })
       this.$store.commit('setComponentWithId', component)
       this.$store.commit('recordSnapshot', 'sureFilter')
-      this.cancelFilter()
+      this.closeFilter()
     },
     reFreshComponent(component) {
       this.currentFilterCom = component

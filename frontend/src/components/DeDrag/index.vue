@@ -30,7 +30,7 @@
       :style="mainSlotStyle"
     >
       <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
-      <mobile-check-bar v-if="mobileCheckBarShow" :element="element"  @amRemoveItem="amRemoveItem" />
+      <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
         v-for="(handlei, indexi) in actualHandles"
@@ -536,7 +536,7 @@ export default {
       return this.$store.state.curComponent
     },
     curGap() {
-      return this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix ? this.componentGap : 0
+      return this.element.auxiliaryMatrix && this.element.type !== 'custom' ? this.componentGap : 0
     },
     ...mapState([
       'editor',
