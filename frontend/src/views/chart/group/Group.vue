@@ -337,6 +337,11 @@ export default {
       type: String,
       required: false,
       default: null
+    },
+    mountedInit: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -440,10 +445,11 @@ export default {
 
   },
   mounted() {
-    this.treeNode(this.groupForm)
-    this.refresh()
-    // this.chartTree()
-    this.getChartGroupTree()
+    if (this.mountedInit) {
+      this.treeNode(true)
+      this.refresh()
+      this.getChartGroupTree()
+    }
   },
   methods: {
     clickAdd(param) {
@@ -620,9 +626,17 @@ export default {
       })
     },
 
-    treeNode(group) {
-      queryAuthModel({ modelType: 'chart' }).then(res => {
-        this.tData = res.data
+    treeNode(cache = false) {
+      const modelInfo = localStorage.getItem('chart-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+      }
+      queryAuthModel({ modelType: 'chart' }, !userCache).then(res => {
+        localStorage.setItem('chart-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+        }
       })
     },
 

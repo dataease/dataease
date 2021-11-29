@@ -325,7 +325,7 @@ export default {
     this.kettleState()
   },
   mounted() {
-    this.treeNode(this.groupForm)
+    this.treeNode(true)
     this.refresh()
   },
   methods: {
@@ -407,7 +407,7 @@ export default {
               showClose: true
             })
             this.expandedArray.push(group.pid)
-            this.treeNode(group.pid)
+            this.treeNode()
           })
         } else {
           return false
@@ -451,7 +451,7 @@ export default {
             message: this.$t('dataset.delete_success'),
             showClose: true
           })
-          this.treeNode(data.pid)
+          this.treeNode()
         })
       }).catch(() => {
       })
@@ -469,7 +469,7 @@ export default {
             message: this.$t('dataset.delete_success'),
             showClose: true
           })
-          this.treeNode(data.sceneId)
+          this.treeNode()
           this.$store.dispatch('dataset/setTable', new Date().getTime())
         })
       }).catch(() => {
@@ -496,9 +496,17 @@ export default {
       }
     },
 
-    treeNode(group) {
-      queryAuthModel({ modelType: 'dataset' }).then(res => {
-        this.tData = res.data
+    treeNode(cache) {
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+      }
+      queryAuthModel({ modelType: 'dataset' }, !userCache).then(res => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+        }
       })
     },
 
@@ -682,7 +690,7 @@ export default {
         this.searchTree(val)
       } else {
         this.isTreeSearch = false
-        this.treeNode(this.groupForm)
+        this.treeNode()
       }
     },
     filterNode(value, data) {
