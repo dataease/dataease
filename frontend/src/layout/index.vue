@@ -12,14 +12,6 @@
         <app-main />
       </de-main-container>
     </de-container>
-
-    <!-- <de-main-container>
-      <app-main />
-    </de-main-container> -->
-
-    <!-- <div :class="{sidebarHide: sidebar.hide}" class="main-container">
-      <app-main />
-    </div> -->
   </div>
 </template>
 
@@ -62,7 +54,7 @@ export default {
       return this.$store.state.settings.showSettings
     },
     fullHeightFlag() {
-      return this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit'
+      return this.$route.path.indexOf('panel') > -1 && (this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit')
     },
     mainStyle() {
       if (this.fullHeightFlag) {

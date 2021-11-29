@@ -40,7 +40,7 @@ export function chartGroupTree(data) {
   return request({
     url: '/chart/group/tree',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }

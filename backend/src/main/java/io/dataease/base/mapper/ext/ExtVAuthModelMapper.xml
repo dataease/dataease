@@ -18,6 +18,7 @@
 		v_auth_model.auth_type,
 		v_auth_model.create_by,
 		v_auth_model.level,
+		v_auth_model.mode,
 		authInfo.PRIVILEGES AS `privileges`
 	FROM
 		( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{request.userId}, #{request.modelType} ) cids ) t,
@@ -33,7 +34,7 @@
 						`sys_auth`.`id` = `sys_auth_detail`.`auth_id`
 					)))
 		WHERE
-			sys_auth_detail.privilege_value = #{request.userId}
+			sys_auth_detail.privilege_value = 1
 			AND sys_auth.auth_source_type = #{request.modelType}
 			AND (
 				(
@@ -54,7 +55,7 @@
 		) authInfo ON v_auth_model.id = authInfo.auth_source
 	WHERE
 		FIND_IN_SET( v_auth_model.id, cids )
-		ORDER BY CONVERT(v_auth_model.label using gbk) asc
+		ORDER BY v_auth_model.node_type desc, CONVERT(v_auth_model.label using gbk) asc
   </select>
 
 </mapper>

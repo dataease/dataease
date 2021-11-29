@@ -1,6 +1,7 @@
 package io.dataease.controller.request.chart;
 
 import io.dataease.base.domain.ChartViewWithBLOBs;
+import io.dataease.dto.chart.ChartViewDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ import lombok.Data;
 @Data
 public class ChartCalRequest {
     @ApiModelProperty("视图")
-    private ChartViewWithBLOBs view;
+    private ChartViewDTO view;
     @ApiModelProperty("额外请求参数")
     private ChartExtRequest requestList;
 }

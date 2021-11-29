@@ -10,7 +10,7 @@
 
       <el-form ref="dsForm" :model="form" :rules="rule" size="small"
                :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit "
-               label-width="auto" label-position="right">
+               label-width="180px" label-position="right">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="form.name" autocomplete="off"/>
         </el-form-item>

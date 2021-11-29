@@ -2,15 +2,14 @@
   <div :style="{ 'height': containerHeight}">
     <div ref="canvasContainer" class="time-s-class" style="height: calc(100% - 50px);" :style="{'margin':timeMargin +'px'}">
       <canvas
-        id="canvas"
+        :id="'simple-canvas'+element.id"
         class="de-canvas"
         :width="canvas_width"
         :height="canvas_height"
       />
-      <!-- <canvas  id="canvas" class="de-canvas" :width="$refs.canvasContainer.clientWidth" :height="$refs.canvasContainer.clientHeight" /> -->
     </div>
     <div style="height: 50px;display: flex;align-items: center;">
-      <p id="fulltime" :style="{'fontSize': (parseInt(element.style.fontSize) * 1) + 'px', 'color':element.style.color}" style="width:100%;margin:auto;" />
+      <p :id="element.id + '_fulltime'" :style="{'fontSize': (parseInt(element.style.fontSize) * 1) + 'px', 'color':element.style.color}" style="width:100%;margin:auto;" />
     </div>
   </div>
 </template>
@@ -47,7 +46,7 @@ export default {
     }
   },
   mounted() {
-    this.canvas = document.getElementById('canvas')
+    this.canvas = document.getElementById('simple-canvas' + this.element.id)
     this.draw = this.canvas.getContext('2d')
     this.canvas_width = this.element.style.width
     this.canvas_height = this.element.style.height
@@ -119,7 +118,7 @@ export default {
       }
       const nowWeek = this.week[time.getDay()]
       var fullTime = showWeek ? (nowDate + ' ' + nowWeek) : nowDate
-      var fullDoc = document.getElementById('fulltime')
+      var fullDoc = document.getElementById(this.element.id + '_fulltime')
       fullDoc.innerHTML = fullTime
 
       const draw = draws
@@ -140,8 +139,6 @@ export default {
         draw.beginPath()
 
         draw.moveTo(0, side_length / 2 - 0)
-        /* draw.moveTo(0, side_length / 2 - 70)
-        draw.lineTo(0, side_length / 2 - 50) */
         draw.lineTo(0, side_length / 2 - 20)
         draw.closePath()
         draw.stroke()
@@ -157,8 +154,6 @@ export default {
         draw.beginPath()
 
         draw.moveTo(0, side_length / 2 - 0)
-        // draw.lineTo(0, side_length / 2 - 50)
-        // draw.lineTo(0, side_length / 2 - 60)
         draw.lineTo(0, side_length / 2 - 10)
         draw.closePath()
         draw.stroke()
@@ -169,21 +164,18 @@ export default {
       // 画时阵
       draw.save()
       draw.strokeStyle = this.element.style.color
-      // draw.translate(250, 250)
       draw.translate(canvas_w / 2, canvas_h / 2)
       const hourzs = h + min / 60// 获取浮点类型的小时
       draw.rotate(hourzs * 30 * Math.PI / 180)
       draw.lineWidth = 6
       draw.beginPath()
       draw.moveTo(0, 0)
-      /* draw.lineTo(0, -(side_length / 2 - 60) / 3) */
       draw.lineTo(0, -(side_length / 2) * 0.5)
       draw.closePath()
       draw.stroke()
       draw.restore()
       // 画分针
       draw.save()
-      // draw.translate(250, 250)
       draw.translate(canvas_w / 2, canvas_h / 2)
 
       draw.rotate(min * 6 * Math.PI / 180)
@@ -192,13 +184,11 @@ export default {
       draw.beginPath()
       draw.moveTo(0, 0)
       draw.lineTo(0, -(side_length / 2) * 0.7)
-      /* draw.lineTo(0, -(side_length / 2 - 60) * 3 / 5) */
       draw.closePath()
       draw.stroke()
       draw.restore()
       // 画秒针
       draw.save()
-      // draw.translate(250, 250)
       draw.translate(canvas_w / 2, canvas_h / 2)
       draw.rotate(s * 6 * Math.PI / 180)
       draw.strokeStyle = this.element.style.color
@@ -206,16 +196,13 @@ export default {
       draw.beginPath()
       draw.moveTo(0, 15)
       draw.lineTo(0, -(side_length / 2) * 0.9)
-      /* draw.lineTo(0, -(side_length / 2 - 60)) */
       draw.closePath()
       draw.stroke()
       draw.restore()
 
       // 画中心原点
-      // draw.fillStyle = 'rgba(255,255,255,1)'
       draw.lineWidth = 2
       draw.beginPath()
-      // draw.arc(250, 250, 4, 0, 360, false)
       draw.arc(canvas_w / 2, canvas_h / 2, 4, 0, 360, false)
       draw.closePath()
       draw.fill()

@@ -162,11 +162,11 @@ export default {
     height: 100%;
   }
   .first-element-contaner {
-      width: calc(100% - 10px);
+      width: 100%;
       background: initial;
       position:absolute;
-      bottom: 5px;
-      margin: 0 4px;
+      bottom: 0px;
+      margin: 0 0px;
       div {
           width: 100%;
       }
@@ -174,7 +174,7 @@ export default {
   .first-element-grid-contaner {
       background: #fff;
       border: 1px solid #d7dae2;
-      top: 5px;
+      top: 0px;
   }
   .condition-main-line {
       height: 40px !important;

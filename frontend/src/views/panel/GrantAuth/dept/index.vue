@@ -18,13 +18,13 @@
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
           <span>
-            <span style="margin-left: 6px">{{ data.name }}</span>
+            <span style="margin-left: 6px">{{ node.data.name }}</span>
           </span>
           <span @click.stop>
 
             <div>
               <span class="auth-span">
-                <el-checkbox v-model="data.checked" />
+                <el-checkbox v-model="data.checked" @change="nodeStatusChange(data)" />
               </span>
             </div>
           </span>
@@ -68,7 +68,8 @@ export default {
           return !data.hasChildren
         }
       },
-      expandNodeIds: []
+      expandNodeIds: [],
+      sharesLoad: false
     }
   },
   watch: {
@@ -125,33 +126,36 @@ export default {
       } else {
         param = { conditions: [this.defaultCondition] }
       }
-
-      this.queryShareNodeIds(() => {
-        loadTable(param).then(res => {
-          let data = res.data
-          data = data.map(obj => {
-            if (obj.subCount > 0) {
-              obj.hasChildren = true
-            }
-            return obj
-          })
-
-          this.setCheckExpandNodes(data)
-          this.expandNodeIds = []
-          if (condition && condition.value) {
-            // data = data.map(node => {
-            //   delete (node.hasChildren)
-            //   return node
-            // })
-            this.data = this.buildTree(data)
-            this.$nextTick(() => {
-              // this.expandNodeIds.push()
-              this.expandResult(this.data)
-            })
-          } else {
-            this.data = data
-          }
+      if (!this.sharesLoad) {
+        this.queryShareNodeIds(() => {
+          this.sharesLoad = true
+          this.loadTreeData(param, condition)
         })
+      } else {
+        this.loadTreeData(param, condition)
+      }
+    },
+
+    loadTreeData(param, condition) {
+      loadTable(param).then(res => {
+        let data = res.data
+        data = data.map(obj => {
+          if (obj.subCount > 0) {
+            obj.hasChildren = true
+          }
+          return obj
+        })
+
+        this.setCheckExpandNodes(data)
+        this.expandNodeIds = []
+        if (condition && condition.value) {
+          this.data = this.buildTree(data)
+          this.$nextTick(() => {
+            this.expandResult(this.data)
+          })
+        } else {
+          this.data = data
+        }
       })
     },
 
@@ -185,18 +189,8 @@ export default {
     },
 
     getSelected() {
-    //   const ids = []
-    //   this.searchChecked(ids)
-    //   return {
-    //     deptIds: ids
-    //   }
-      // const ids = []
-      const nodesMap = this.$refs.tree.store.nodesMap
-
-      const ids = Object.values(nodesMap).filter(node => node.data.checked).map(item => item.data.deptId)
-
       return {
-        deptIds: ids
+        deptIds: this.shares
       }
     },
 
@@ -221,24 +215,26 @@ export default {
         const shares = res.data
         const nodeIds = shares.map(share => share.targetId)
         this.shares = nodeIds
-        // this.$nextTick(() => {
-        //   this.setCheckNodes()
-        // })
+
         callBack && callBack()
       })
     },
 
-    // setCheckNodes() {
-    //   this.data.forEach(node => {
-    //     const nodeId = node.deptId
-    //     this.shares.includes(nodeId) && (node.checked = true)
-    //   })
-    // },
     setCheckExpandNodes(rows) {
       rows.forEach(node => {
         const nodeId = node.deptId
         this.shares.includes(nodeId) && (node.checked = true)
       })
+    },
+
+    nodeStatusChange(val) {
+      if (val.checked) {
+        if (!this.shares.includes(val.deptId)) {
+          this.shares.push(val.deptId)
+        }
+      } else {
+        this.shares = this.shares.filter(deptId => deptId !== val.deptId)
+      }
     }
 
   }

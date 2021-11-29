@@ -28,7 +28,7 @@ export default {
   },
   computed: {
     fullHeightFlag() {
-      return this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit'
+      return this.$route.path.indexOf('panel') > -1 && (this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit')
     }
   },
   watch: {
@@ -49,6 +49,7 @@ export default {
     })
   },
   created() {
+    bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
     this.$store.dispatch('app/toggleSideBarHide', true)
     const routerParam = this.$router.currentRoute.params
     this.toMsgShare(routerParam)

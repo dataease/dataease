@@ -10,7 +10,8 @@ export function getStyle(style, filter = []) {
     'borderWidth',
     'letterSpacing',
     'borderRadius',
-    'margin'
+    'margin',
+    'padding'
   ]
 
   const result = {}
@@ -75,7 +76,7 @@ export function colorRgb(color, opacity) {
     }
     // 处理六位的颜色值
     var sColorChange = []
-    for (var i = 1; i < 7; i += 2) {
+    for (let i = 1; i < 7; i += 2) {
       sColorChange.push(parseInt('0x' + sColor.slice(i, i + 2)))
     }
     if (opacity || opacity === 0) {

@@ -79,11 +79,6 @@ public class ChartViewService {
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
-        try {
-            calcData(chartView, new ChartExtRequest(), true);
-        } catch (Exception e) {
-
-        }
         return getOneWithPermission(chartView.getId());
     }
 
@@ -167,12 +162,9 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getOneWithPermission(String id) {
-        ChartViewRequest chartViewRequest = new ChartViewRequest();
-        chartViewRequest.setId(id);
-        chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        return extChartViewMapper.searchOne(chartViewRequest);
+        String userId = AuthUtils.getUser()!=null?String.valueOf(AuthUtils.getUser().getUserId()):"NONE";
+        return extChartViewMapper.searchOneWithPrivileges(userId,id);
     }
-
     public void delete(String id) {
         chartViewMapper.deleteByPrimaryKey(id);
     }
@@ -184,7 +176,7 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
-        ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
+        ChartViewDTO view = this.getOneWithPermission(id);
         // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
         if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
             view.setResultMode(request.getResultMode());
@@ -193,7 +185,7 @@ public class ChartViewService {
         return calcData(view, request, request.isCache());
     }
 
-    public ChartViewDTO calcData(ChartViewWithBLOBs view, ChartExtRequest requestList, boolean cache) throws Exception {
+    public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
