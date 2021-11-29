@@ -700,7 +700,7 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
         }
-        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0";
+        String tmpSql = "SELECT TOP 0 * FROM (" + sql + ") AS DE_SQLSERVER_TMP ";
         return tmpSql;
     }
 
