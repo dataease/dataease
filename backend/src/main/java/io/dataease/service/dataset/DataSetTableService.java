@@ -980,6 +980,7 @@ public class DataSetTableService {
                     datasetTableField.setTableId(datasetTable.getId());
                     datasetTableField.setColumnIndex(i);
                 }
+                dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
                 dataSetTableFieldsService.batchEdit(fieldList);
                 // custom 创建doris视图
                 if (datasetTable.getMode() == 1) {
