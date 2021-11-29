@@ -14,9 +14,11 @@
     <node-item
       :current-node="childrenNode"
       :node-index="nodeIndex"
+      :origin-data="originData"
       @deleteNode="deleteNode"
       @notifyParent="calc"
       @editUnion="unionConfig"
+      @cancelUnionEdit="cancelUnion"
     />
     <!--递归调用自身，完成树状结构-->
     <div>
@@ -27,7 +29,9 @@
         :children-node="item"
         :children-list="childrenNode.childrenDs"
         :parent-node="childrenNode"
+        :origin-data="originData"
         @notifyParent="calc"
+        @cancelUnionEdit="cancelUnion"
       />
     </div>
 
@@ -67,6 +71,10 @@ export default {
     nodeIndex: {
       type: Number,
       required: true
+    },
+    originData: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -79,7 +87,8 @@ export default {
       lineLength: '',
       pathParam: '',
       editUnion: false,
-      unionParam: {}
+      unionParam: {},
+      tempData: []
     }
   },
   watch: {
@@ -111,6 +120,7 @@ export default {
       this.unionConfig(param)
     },
     unionConfig(param) {
+      this.tempData = JSON.parse(JSON.stringify(this.originData))
       this.unionParam = param
       this.editUnion = true
     },
@@ -175,10 +185,17 @@ export default {
         this.childrenNode.childrenDs.pop()
         // 添加关联的时候，如果关闭关联关系设置的界面，则删除子节点，同时向父级传递消息
         this.notifyFirstParent({ type: 'delete', grandParentAdd: true, grandParentSub: true, subCount: 0 })
+      } else {
+        // 向第一级传递
+        this.$emit('cancelUnionEdit', this.tempData)
       }
     },
     confirmEditUnion() {
       this.editUnion = false
+    },
+    // 向上级传递
+    cancelUnion(val) {
+      this.$emit('cancelUnionEdit', val)
     }
   }
 }

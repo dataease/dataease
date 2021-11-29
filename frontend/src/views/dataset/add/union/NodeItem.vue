@@ -61,6 +61,10 @@ export default {
     nodeIndex: {
       type: Number,
       required: true
+    },
+    originData: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -81,11 +85,13 @@ export default {
       tempDs: {},
       // 父级数据集
       tempParentDs: {},
-      editField: false
+      editField: false,
+      tempData: []
     }
   },
   methods: {
     nodeClick() {
+      this.tempData = JSON.parse(JSON.stringify(this.originData))
       this.editField = true
     },
     nodeMenuClick(param) {
@@ -153,6 +159,7 @@ export default {
     },
     closeEditField() {
       this.editField = false
+      this.$emit('cancelUnionEdit', this.tempData)
     },
     confirmEditField() {
       this.editField = false
