@@ -428,8 +428,8 @@ export default {
               type: 'success',
               showClose: true
             })
-            _this.expandedArray.push(response.data.sceneId)
-            _this.$refs.datasetTreeRef.setCurrentKey(response.data.id)
+            _this.expandedArray.push(table.sceneId)
+            _this.$refs.datasetTreeRef.setCurrentKey(table.id)
             _this.treeNode()
             this.$store.dispatch('dataset/setTable', new Date().getTime())
           })

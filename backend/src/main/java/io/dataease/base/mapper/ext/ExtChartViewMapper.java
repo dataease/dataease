@@ -22,4 +22,6 @@ public interface ExtChartViewMapper {
     String searchAdviceSceneId(@Param("userId") String userId,@Param("panelId") String panelId);
 
     int checkSameDataSet(@Param("viewIdSource") String viewIdSource,@Param("viewIdTarget") String viewIdTarget);
+
+    ChartViewDTO searchOneWithPrivileges(@Param("userId") String userId,@Param("id") String id );
 }

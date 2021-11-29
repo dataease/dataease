@@ -88,10 +88,6 @@ public class ChartViewController {
     public ChartViewDTO getOneWithPermission(@PathVariable String id, @RequestBody ChartExtRequest requestList) throws Exception {
         //如果能获取用户 则添加对应的权限
         ChartViewDTO dto = chartViewService.getData(id, requestList);
-        if (dto != null && AuthUtils.getUser() != null) {
-            ChartViewDTO permissionDto = chartViewService.getOneWithPermission(dto.getId());
-            dto.setPrivileges(permissionDto.getPrivileges());
-        }
         return dto;
     }
 
