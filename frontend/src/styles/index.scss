@@ -693,39 +693,38 @@ div:focus {
 
 
 .rate-date-class > .el-picker-panel__footer > .el-button--text:first-child{
+  display: none;
+}
+.rate-date-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
+  >.el-date-picker__header {
     display: none;
   }
-  .rate-date-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
-      >.el-date-picker__header {
-          display: none;
-      }
-      >.el-picker-panel__content{
-          >table > tbody {
-            >tr:first-child {
-                display: none;
-            }
-            >tr >td.prev-month,td.next-month {
-                display: none;
-            }
-          } 
-      }
-  }
-  .rate-day-class > .el-picker-panel__footer > .el-button--text:first-child{
-    display: none;
-  }
-  .rate-day-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
-    >.el-date-picker__header {
+  >.el-picker-panel__content{
+    >table > tbody {
+      >tr:first-child {
         display: none;
-    }
-    >.el-picker-panel__content{
-        >table > tbody {
-          >tr:not(:nth-child(3)) {
-              display: none;
-          }
-          
-        } 
+      }
+      >tr >td.prev-month,td.next-month {
+        display: none;
+      }
     }
   }
+}
+.rate-day-class > .el-picker-panel__footer > .el-button--text:first-child{
+  display: none;
+}
+.rate-day-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
+  >.el-date-picker__header {
+    display: none;
+  }
+  >.el-picker-panel__content{
+    >table > tbody {
+      >tr:not(:nth-child(3)) {
+        display: none;
+      }
+    }
+  }
+}
 
 .chart-type .el-radio__input{
   display: none!important;
@@ -735,10 +734,22 @@ div:focus {
   padding-left: 0!important;
 }
 
+.chart-type .radio-row .radio-style{
+  width: 80px;
+  height: 60px;
+  padding: 0;
+}
+
 .el-color-predefine__color-selector{
   border: 1px solid #999999!important;
   margin: 0 0 6px 6px!important;
 }
-
+.de-checkbox {
+  width: 100%;
+  margin-left: 0px !important;
+  .el-checkbox__input {
+    padding: 0 0 8px 0 !important;
+  }
+}
 
 

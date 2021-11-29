@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="ds-node" @click="nodeClick">
-      <svg-icon v-if="currentNode.currentDs.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
-      <svg-icon v-else-if="currentNode.currentDs.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-      <svg-icon v-else-if="currentNode.currentDs.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+      <svg-icon v-if="currentNode.currentDs.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
+      <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+      <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
 
       <span class="node-name" :title="currentNode.currentDs.name">{{ currentNode.currentDs.name }}</span>
 
@@ -28,11 +28,20 @@
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="30%" class="dialog-css" destroy-on-close>
+    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="360px" class="dialog-css" destroy-on-close>
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+        <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--编辑单个数据集字段-->
+    <el-dialog v-if="editField" v-dialogDrag :title="$t('dataset.field_select')" :visible="editField" :show-close="false" width="360px" class="dialog-css" destroy-on-close>
+      <union-field-edit :node="currentNode" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeEditField()">{{ $t('dataset.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="confirmEditField()">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -40,9 +49,10 @@
 
 <script>
 import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
+import UnionFieldEdit from '@/views/dataset/add/union/UnionFieldEdit'
 export default {
   name: 'NodeItem',
-  components: { DatasetGroupSelectorTree },
+  components: { UnionFieldEdit, DatasetGroupSelectorTree },
   props: {
     currentNode: {
       type: Object,
@@ -60,7 +70,7 @@ export default {
         currentDsField: [],
         childrenDs: [],
         unionToParent: {
-          unionType: '',
+          unionType: 'left',
           unionFields: []
         },
         allChildCount: 0
@@ -70,12 +80,13 @@ export default {
       // 弹框临时选中的数据集
       tempDs: {},
       // 父级数据集
-      tempParentDs: {}
+      tempParentDs: {},
+      editField: false
     }
   },
   methods: {
     nodeClick() {
-      console.log('node click to edit')
+      this.editField = true
     },
     nodeMenuClick(param) {
       switch (param.type) {
@@ -102,6 +113,7 @@ export default {
       this.selectDs()
     },
     editNode(param) {
+      this.nodeClick()
     },
     deleteNode(param) {
       this.$emit('deleteNode', this.nodeIndex)
@@ -125,9 +137,25 @@ export default {
       this.tempParentDs.childrenDs.push(ds)
       this.closeSelectDs()
       this.notifyFirstParent('union')
+
+      // 构建新建关联关系传递的参数
+      const param = {
+        type: 'add',
+        nodeIndex: this.nodeIndex,
+        node: ds,
+        parent: this.tempParentDs
+      }
+      this.$emit('editUnion', param)
     },
+    // 增加与删除事件向父级传递
     notifyFirstParent(type) {
       this.$emit('notifyParent', { type: type, grandParentAdd: true, grandParentSub: true, subCount: this.currentNode.allChildCount })
+    },
+    closeEditField() {
+      this.editField = false
+    },
+    confirmEditField() {
+      this.editField = false
     }
   }
 }
@@ -162,5 +190,8 @@ export default {
 .ds-node:hover{
   cursor: pointer;
   border: var(--Main,#2681ff) solid 1px;
+}
+.dialog-css >>> .el-dialog__body {
+  padding: 0 20px;
 }
 </style>

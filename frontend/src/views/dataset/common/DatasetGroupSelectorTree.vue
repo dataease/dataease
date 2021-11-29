@@ -186,7 +186,7 @@ export default {
       this.unionDataChange()
     },
     'table': function() {
-      this.treeNode(this.groupForm)
+      this.treeNode()
     },
     filterText(val) {
       this.searchPids = []
@@ -198,7 +198,7 @@ export default {
     }
   },
   mounted() {
-    this.treeNode(this.groupForm)
+    this.treeNode(true)
   },
   created() {
     this.kettleState()
@@ -227,10 +227,17 @@ export default {
         name: ''
       }
     },
-
-    treeNode(group) {
-      queryAuthModel({ modelType: 'dataset', privileges: this.privileges, datasetMode: this.mode, clearEmptyDir: this.clearEmptyDir}).then(res => {
-        this.data = res.data
+    treeNode(cache) {
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.data = JSON.parse(modelInfo)
+      }
+      queryAuthModel({ modelType: 'dataset', privileges: this.privileges, datasetMode: this.mode, clearEmptyDir: this.clearEmptyDir}, !userCache).then(res => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.data = res.data
+        }
       })
     },
     nodeClick(data, node) {

@@ -93,11 +93,10 @@
                               <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
                               {{ $t('dataset.custom_data') }}
                             </el-dropdown-item>
-                            <!--此处菜单暂时隐藏，后续功能完整后再放开-->
-                            <!--                            <el-dropdown-item :command="beforeClickAddData('union',data)">-->
-                            <!--                              <svg-icon icon-class="ds-union" class="ds-icon-union" />-->
-                            <!--                              {{ $t('dataset.union_data') }}-->
-                            <!--                            </el-dropdown-item>-->
+                            <el-dropdown-item :command="beforeClickAddData('union',data)">
+                              <svg-icon icon-class="ds-union" class="ds-icon-union" />
+                              {{ $t('dataset.union_data') }}
+                            </el-dropdown-item>
                           </el-dropdown-menu>
                         </el-dropdown>
                       </el-dropdown-item>
@@ -135,6 +134,7 @@
                   <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
                   <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                   <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                  <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
                 </span>
                 <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
                   <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
@@ -325,7 +325,7 @@ export default {
     this.kettleState()
   },
   mounted() {
-    this.treeNode(this.groupForm)
+    this.treeNode(true)
     this.refresh()
   },
   methods: {
@@ -407,7 +407,7 @@ export default {
               showClose: true
             })
             this.expandedArray.push(group.pid)
-            this.treeNode(group.pid)
+            this.treeNode()
           })
         } else {
           return false
@@ -451,7 +451,7 @@ export default {
             message: this.$t('dataset.delete_success'),
             showClose: true
           })
-          this.treeNode(data.pid)
+          this.treeNode()
         })
       }).catch(() => {
       })
@@ -469,7 +469,7 @@ export default {
             message: this.$t('dataset.delete_success'),
             showClose: true
           })
-          this.treeNode(data.sceneId)
+          this.treeNode()
           this.$store.dispatch('dataset/setTable', new Date().getTime())
         })
       }).catch(() => {
@@ -496,9 +496,17 @@ export default {
       }
     },
 
-    treeNode(group) {
-      queryAuthModel({ modelType: 'dataset' }).then(res => {
-        this.tData = res.data
+    treeNode(cache) {
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+      }
+      queryAuthModel({ modelType: 'dataset' }, !userCache).then(res => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+        }
       })
     },
 
@@ -682,7 +690,7 @@ export default {
         this.searchTree(val)
       } else {
         this.isTreeSearch = false
-        this.treeNode(this.groupForm)
+        this.treeNode()
       }
     },
     filterNode(value, data) {

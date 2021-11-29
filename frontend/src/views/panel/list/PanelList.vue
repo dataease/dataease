@@ -233,6 +233,7 @@ import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
+import { queryAuthModel } from '@/api/authModel/authModel'
 
 export default {
   name: 'PanelList',
@@ -334,7 +335,11 @@ export default {
       searchMap: {
         all: this.$t('commons.all'),
         folder: this.$t('commons.folder')
-      }
+      },
+      initLocalStorage: [
+        'chart',
+        'dataset'
+      ]
     }
   },
   computed: {
@@ -367,9 +372,20 @@ export default {
     this.$store.commit('setComponentData', [])
     this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
     this.defaultTree()
-    this.tree(this.groupForm)
+    this.tree(true)
+    this.initCache()
   },
   methods: {
+    initCache() {
+      // 初始化时提前加载视图和数据集的缓存
+      this.initLocalStorage.forEach(item => {
+        if (!localStorage.getItem(item + '-tree')) {
+          queryAuthModel({ modelType: item }, false).then(res => {
+            localStorage.setItem(item + '-tree', JSON.stringify(res.data))
+          })
+        }
+      })
+    },
     closeEditPanelDialog(panelInfo) {
       this.editPanel.visible = false
       if (panelInfo) {
@@ -392,7 +408,7 @@ export default {
           }
           this.activeNodeAndClick(panelInfo)
         } else {
-          this.tree(this.groupForm)
+          this.tree()
         }
       }
     },
@@ -535,7 +551,7 @@ export default {
               type: 'success',
               showClose: true
             })
-            this.tree(this.groupForm)
+            this.tree()
             this.defaultTree()
           })
         } else {
@@ -562,7 +578,7 @@ export default {
             showClose: true
           })
           this.clearCanvas()
-          this.tree(this.groupForm)
+          this.tree()
           this.defaultTree()
         })
       }).catch(() => {
@@ -591,17 +607,32 @@ export default {
         sort: 'node_type desc,name asc'
       }
     },
-    tree(group) {
-      groupTree(group).then(res => {
-        this.tData = res.data
+    tree(cache = false) {
+      const modelInfo = localStorage.getItem('panel-main-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+      }
+      groupTree(this.groupForm, !userCache).then(res => {
+        localStorage.setItem('panel-main-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+        }
       })
     },
     defaultTree() {
       const requestInfo = {
         panelType: 'system'
       }
-      defaultTree(requestInfo).then(res => {
-        this.defaultData = res.data
+      const modelInfo = localStorage.getItem('panel-default-tree')
+      if (modelInfo) {
+        this.defaultData = JSON.parse(modelInfo)
+      }
+      defaultTree(requestInfo, false).then(res => {
+        localStorage.setItem('panel-default-tree', JSON.stringify(res.data))
+        if (!modelInfo) {
+          this.defaultData = res.data
+        }
       })
     },
 
@@ -768,7 +799,7 @@ export default {
       this.moveInfo.pid = this.tGroup.id
       this.moveInfo['optType'] = 'move'
       panelSave(this.moveInfo).then(response => {
-        this.tree(this.groupForm)
+        this.tree()
         this.closeMoveGroup()
       })
     },
