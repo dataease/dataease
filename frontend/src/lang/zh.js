@@ -1198,7 +1198,7 @@ export default {
     get_schema: '获取 Schema',
     schema: '数据库 Schema',
     please_choose_schema: '请选择数据库 Schema',
-    edit_datasource_msg: '修改数据源信息，可能会导致改数据源下的数据集不可用，确认修改？',
+    edit_datasource_msg: '修改数据源信息，可能会导致该数据源下的数据集不可用，确认修改？',
     in_valid: '无效数据源',
     initial_pool_size: '初始连接数',
     min_pool_size: '最小连接数',
