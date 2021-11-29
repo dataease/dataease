@@ -80,7 +80,7 @@ export function listDatasource() {
 export function getTable(id, hideMsg = false) {
   return request({
     url: '/dataset/table/get/' + id,
-    loading: true,
+    loading: false,
     method: 'post',
     hideMsg: hideMsg
   })

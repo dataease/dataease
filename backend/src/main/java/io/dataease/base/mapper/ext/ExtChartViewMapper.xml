@@ -8,6 +8,13 @@
         <result column="privileges" property="privileges"/>
     </resultMap>
 
+    <select id="searchOneWithPrivileges" resultMap="BaseResultMapDTO">
+        select
+        chart_view.*,
+        get_auths(id,'chart',#{userId}) as `privileges`
+        from chart_view where id = #{id}
+    </select>
+
     <select id="searchOne" resultMap="BaseResultMapDTO">
         select
         id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,
