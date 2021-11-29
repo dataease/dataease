@@ -1160,7 +1160,8 @@ export default {
     union: 'Union',
     edit_union_relation: 'Edit Union Relation',
     add_union_relation: 'Add Union Relation',
-    field_select: 'Select Field'
+    field_select: 'Select Field',
+    add_union_field: 'Add Union Field'
   },
   datasource: {
     datasource: 'Data Source',

@@ -3,24 +3,26 @@
     <div class="field-style">
       <div class="fields">
         <p>{{ unionParam.parent.currentDs.name }}</p>
-        <union-field-list :field-list="parentField" :union-param="unionParam" />
+        <union-field-list :field-list="parentField" :node="unionParam.parent" @checkedFields="changeParentFields" />
       </div>
       <div class="fields">
         <p>{{ unionParam.node.currentDs.name }}</p>
-        <union-field-list :field-list="nodeField" :union-param="unionParam" />
+        <union-field-list :field-list="nodeField" :node="unionParam.node" @checkedFields="changeNodeFields" />
       </div>
     </div>
     <el-divider />
+    <union-item-edit :parent-field-list="parentField" :node-field-list="nodeField" :union-param="unionParam" />
   </div>
 </template>
 
 <script>
 import { post } from '@/api/dataset/dataset'
 import UnionFieldList from '@/views/dataset/add/union/UnionFieldList'
+import UnionItemEdit from '@/views/dataset/add/union/UnionItemEdit'
 
 export default {
   name: 'UnionEdit',
-  components: { UnionFieldList },
+  components: { UnionItemEdit, UnionFieldList },
   props: {
     unionParam: {
       type: Object,
@@ -52,6 +54,13 @@ export default {
       post('/dataset/field/list/' + this.unionParam.node.currentDs.id, null, true).then(response => {
         this.nodeField = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
       })
+    },
+
+    changeParentFields(val) {
+      this.unionParam.parent.currentDsField = val
+    },
+    changeNodeFields(val) {
+      this.unionParam.node.currentDsField = val
     }
   }
 }

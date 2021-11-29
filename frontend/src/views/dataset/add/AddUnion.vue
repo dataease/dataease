@@ -95,7 +95,7 @@ export default {
             currentDsField: [],
             childrenDs: [],
             unionToParent: {
-              unionType: '', // left join,right join,inner join
+              unionType: 'left', // left join,right join,inner join
               unionFields: [
                 {
                   parentField: {},
@@ -117,7 +117,7 @@ export default {
         currentDsField: [],
         childrenDs: [],
         unionToParent: {
-          unionType: '',
+          unionType: 'left',
           unionFields: []
         },
         allChildCount: 0

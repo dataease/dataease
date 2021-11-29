@@ -60,7 +60,7 @@ export default {
         currentDsField: [],
         childrenDs: [],
         unionToParent: {
-          unionType: '',
+          unionType: 'left',
           unionFields: []
         },
         allChildCount: 0

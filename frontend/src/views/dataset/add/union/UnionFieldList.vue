@@ -52,7 +52,7 @@ export default {
       type: Array,
       required: true
     },
-    unionParam: {
+    node: {
       type: Object,
       required: true
     }
@@ -84,17 +84,23 @@ export default {
   },
   methods: {
     init() {
-      this.checkedFields = this.unionParam.parent.currentDsField
+      this.checkedFields = this.node.currentDsField
       this.handleCheckedCitiesChange(this.checkedFields)
     },
     handleCheckAllChange(val) {
       this.checkedFields = val ? this.fieldList.map(ele => ele.id) : []
       this.isIndeterminate = false
+      this.returnCheckedFields()
     },
     handleCheckedCitiesChange(value) {
       const checkedCount = value.length
       this.checkAll = checkedCount === this.fieldList.length
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.fieldList.length
+      this.returnCheckedFields()
+    },
+
+    returnCheckedFields() {
+      this.$emit('checkedFields', this.checkedFields)
     }
   }
 }
@@ -116,7 +122,7 @@ span{
   padding: 0 0 0 10px;
 }
 .field-block-body{
-  height: 200px;
+  height: 210px;
   overflow-y: auto;
 }
 .field-origin-style{
