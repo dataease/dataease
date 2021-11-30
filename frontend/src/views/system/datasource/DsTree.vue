@@ -44,14 +44,16 @@
                 </span>
                 <span v-if="data.status === 'Error'">
                   <svg-icon icon-class="exclamationmark" class="ds-icon-scene"/>
-                  <el-tooltip v-if="data.status === 'Error'"
-                              style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
-                              effect="dark" :content="$t('datasource.in_valid')" placement="right">
-                    <el-button type="text" :style="!!data.msgNode ? {'color': 'red'} : {}"> {{ data.name }} </el-button>
-                  </el-tooltip>
                 </span>
                 <span v-if="data.type === 'folder'">
                   <i class="el-icon-folder"/>
+                </span>
+                <span v-if=" data.status === 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                  <el-tooltip effect="dark" :content="$t('datasource.in_valid')" placement="right">
+                    <span>
+                      {{ data.name }}
+                    </span>
+                  </el-tooltip>
                 </span>
                 <span v-if=" data.status !== 'Error'"
                       style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
