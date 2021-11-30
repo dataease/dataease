@@ -80,13 +80,14 @@ export default {
       panelId: '',
       needToChangeHeight: [
         'top',
-        'height',
-        'fontSize',
-        'borderWidth'
+        'height'
       ],
       needToChangeWidth: [
         'left',
-        'width'
+        'width',
+        'fontSize',
+        'borderWidth',
+        'letterSpacing'
       ],
       scaleWidth: '100',
       scaleHeight: '100',
