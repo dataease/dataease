@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="union-container">
     <div class="union-header">
       {{ $t('dataset.join_view') }}
       <div class="union-header-operator">
@@ -152,7 +152,7 @@ export default {
 span{
   font-size: 12px;
 }
-.container{
+.union-container{
   height: 275px;
 }
 .union-header{
@@ -177,6 +177,7 @@ span{
 }
 .union-body{
   height: 240px;
+  width: 100%;
 }
 .union-body-header{
   height: 30px;
