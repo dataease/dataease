@@ -80,8 +80,6 @@
 import { isKettleRunning, post } from '@/api/dataset/dataset'
 import { hasDataPermission } from '@/utils/permission'
 import { queryAuthModel } from '@/api/authModel/authModel'
-
-
 export default {
   name: 'DatasetGroupSelectorTree',
   props: {
@@ -134,7 +132,7 @@ export default {
       type: Boolean,
       required: false,
       default: false
-    },
+    }
   },
   data() {
     return {
@@ -186,7 +184,7 @@ export default {
       this.unionDataChange()
     },
     'table': function() {
-      this.treeNode(this.groupForm)
+      this.treeNode()
     },
     filterText(val) {
       this.searchPids = []
@@ -198,7 +196,7 @@ export default {
     }
   },
   mounted() {
-    this.treeNode(this.groupForm)
+    this.treeNode(true)
   },
   created() {
     this.kettleState()
@@ -220,17 +218,23 @@ export default {
         sort: 'type desc,name asc'
       }
     },
-
     closeTable() {
       this.editTable = false
       this.tableForm = {
         name: ''
       }
     },
-
-    treeNode(group) {
-      queryAuthModel({ modelType: 'dataset', privileges: this.privileges, datasetMode: this.mode, clearEmptyDir: this.clearEmptyDir}).then(res => {
-        this.data = res.data
+    treeNode(cache) {
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.data = JSON.parse(modelInfo)
+      }
+      queryAuthModel({ modelType: 'dataset', privileges: this.privileges, datasetMode: this.mode, clearEmptyDir: this.clearEmptyDir }, !userCache).then(res => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.data = res.data
+        }
       })
     },
     nodeClick(data, node) {
@@ -246,11 +250,9 @@ export default {
         }
       }
     },
-
     back() {
       this.sceneMode = false
     },
-
     sceneClick(data, node) {
       if (data.disabled) {
         this.$message({
@@ -280,7 +282,6 @@ export default {
         this.$emit('getTable', data)
       }
     },
-
     unionDataChange() {
       if (!this.sceneMode) {
         return
@@ -304,7 +305,6 @@ export default {
       })
       unionList.push(this.checkedList[0].tableId)
       const notUnionList = tableList.concat(unionList).filter(v => tableList.includes(v) && !unionList.includes(v))
-
       notUnionList.forEach(ele => {
         const span = document.getElementById(ele).parentNode
         const div1 = span.parentNode
@@ -314,7 +314,6 @@ export default {
         div2.style.setProperty('pointer-events', 'none')
       })
     },
-
     nodeExpand(data) {
       if (data.id) {
         this.expandedArray.push(data.id)
@@ -346,76 +345,66 @@ export default {
     searchTypeClick(searchTypeInfo) {
       this.searchType = searchTypeInfo
     }
-
   }
 }
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0
-  }
-
-  .search-input {
-    padding: 12px 0;
-  }
-
-  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
-    display: none;
-  }
-
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
-  }
-
-  .custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding:0 8px;
-  }
-
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    flex-flow: row nowrap;
-  }
-
-  .form-item {
-    margin-bottom: 0;
-  }
-
-  .title-css {
-    height: 26px;
-  }
-
-  .title-text {
-    line-height: 26px;
-  }
-
-  .scene-title{
-    width: 100%;
-    display: flex;
-  }
-  .scene-title-name{
-    width: 100%;
-    overflow: hidden;
-    display: inline-block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  .tree-style {
-    padding: 10px;
-    height: 100%;
-    overflow-y: auto;
-  }
+.el-divider--horizontal {
+  margin: 12px 0
+}
+.search-input {
+  padding: 12px 0;
+}
+.tree-list>>>.el-tree-node__expand-icon.is-leaf{
+  display: none;
+}
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding:0 8px;
+}
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  flex-flow: row nowrap;
+}
+.form-item {
+  margin-bottom: 0;
+}
+.title-css {
+  height: 26px;
+}
+.title-text {
+  line-height: 26px;
+}
+.scene-title{
+  width: 100%;
+  display: flex;
+}
+.scene-title-name{
+  width: 100%;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tree-style {
+  padding: 10px;
+  height: 100%;
+  overflow-y: auto;
+}
 </style>
