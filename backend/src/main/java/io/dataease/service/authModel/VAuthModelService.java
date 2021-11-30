@@ -27,16 +27,18 @@ public class VAuthModelService {
     public List<VAuthModelDTO> queryAuthModel(VAuthModelRequest request) {
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<VAuthModelDTO> result = extVAuthModelMapper.queryAuthModel(request);
-        result = filterData(request, result);
-        List<VAuthModelDTO> vAuthModelDTOS = TreeUtils.mergeTree(result);
+        // 定时任务选数据集时，列表需去除空目录
         if (request.isClearEmptyDir()) {
+            result = filterData(request, result);
+            List<VAuthModelDTO> vAuthModelDTOS = TreeUtils.mergeTree(result);
             setAllLeafs(vAuthModelDTOS);
             removeEmptyDir(vAuthModelDTOS);
+            return vAuthModelDTOS;
         }
-        return vAuthModelDTOS;
+        return TreeUtils.mergeTree(result);
     }
 
-    private List<VAuthModelDTO> filterData(VAuthModelRequest request, List<VAuthModelDTO> result){
+    private List<VAuthModelDTO> filterData(VAuthModelRequest request, List<VAuthModelDTO> result) {
         if (request.getDatasetMode() != null && request.getDatasetMode() == 1) {
             result = result.stream().filter(vAuthModelDTO -> {
                 if (vAuthModelDTO.getNodeType().equalsIgnoreCase("spine") || (vAuthModelDTO.getNodeType().equalsIgnoreCase("leaf") && vAuthModelDTO.getMode().equals(1L)) && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("excel") && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("custom")) {
