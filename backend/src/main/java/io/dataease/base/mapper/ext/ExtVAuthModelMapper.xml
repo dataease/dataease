@@ -19,9 +19,10 @@
 		v_auth_model.create_by,
 		v_auth_model.level,
 		v_auth_model.mode,
+		v_auth_model.data_source_id,
 		authInfo.PRIVILEGES AS `privileges`
 	FROM
-		( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{request.userId}, #{request.modelType} ) cids ) t,
+		( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{record.userId}, #{record.modelType} ) cids ) t,
 		v_auth_model
 		LEFT JOIN (
 		SELECT
@@ -35,19 +36,19 @@
 					)))
 		WHERE
 			sys_auth_detail.privilege_value = 1
-			AND sys_auth.auth_source_type = #{request.modelType}
+			AND sys_auth.auth_source_type = #{record.modelType}
 			AND (
 				(
 					sys_auth.auth_target_type = 'dept'
-					AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{request.userId} )
+					AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{record.userId} )
 				)
 				OR (
 					sys_auth.auth_target_type = 'user'
-					AND sys_auth.auth_target = #{request.userId}
+					AND sys_auth.auth_target = #{record.userId}
 				)
 				OR (
 					sys_auth.auth_target_type = 'role'
-					AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{request.userId} )
+					AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{record.userId} )
 				)
 			)
 		GROUP BY
@@ -92,10 +93,13 @@
 			and v_auth_model.`label` = #{record.label,jdbcType=LONGVARCHAR}
 		</if>
 		<if test="record.modelInnerTypeArray != null and record.modelInnerTypeArray.size() > 0">
-			v_auth_model.model_inner_type in
-			<foreach collection="modelInnerTypeArray" item="item" separator="," open="(" close=")">
+			and v_auth_model.model_inner_type in
+			<foreach collection="record.modelInnerTypeArray" item="item" separator="," open="(" close=")">
 				#{item}
 			</foreach>
+		</if>
+		<if test='record.modelType != null and record.modelType == "dataset"'>
+			or (v_auth_model.`model_inner_type` = 'group' and v_auth_model.model_type = 'dataset')
 		</if>
 		ORDER BY v_auth_model.node_type desc, CONVERT(v_auth_model.label using gbk) asc
   </select>
