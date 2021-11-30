@@ -139,6 +139,7 @@ export default {
     overflow: auto hidden;
     inset: 33px 0px 0px;
     position: absolute;
+    letter-spacing: 0px!important;
   }
   .condition-content-container {
     position: relative;
