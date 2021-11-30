@@ -66,7 +66,7 @@ export default {
       return (this.element.optStatus.dragging || this.element.optStatus.resizing)
     },
     curGap() {
-      return this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix ? this.componentGap : 0
+      return this.element.auxiliaryMatrix ? this.componentGap : 0
     },
     player() {
       return this.$refs.videoPlayer.player

@@ -55,6 +55,48 @@
 		) authInfo ON v_auth_model.id = authInfo.auth_source
 	WHERE
 		FIND_IN_SET( v_auth_model.id, cids )
+		<if test="record.id != null">
+			and v_auth_model.id = #{record.id,jdbcType=VARCHAR}
+		</if>
+		<if test="record.pid != null">
+			and v_auth_model.pid = #{record.pid,jdbcType=VARCHAR}
+		</if>
+		<if test="record.nodeType != null">
+			and v_auth_model.node_type = #{record.nodeType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.modelType != null">
+			and v_auth_model.model_type = #{record.modelType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.modelInnerType != null">
+			and v_auth_model.model_inner_type = #{record.modelInnerType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.authType != null">
+			and v_auth_model.auth_type = #{record.authType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.createBy != null">
+			and v_auth_model.create_by = #{record.createBy,jdbcType=VARCHAR}
+		</if>
+		<if test="record.level != null">
+			and v_auth_model.`level` = #{record.level,jdbcType=BIGINT}
+		</if>
+		<if test="record.mode != null">
+			and v_auth_model.`mode` = #{record.mode,jdbcType=BIGINT}
+		</if>
+		<if test="record.dataSourceId != null">
+			and v_auth_model.data_source_id = #{record.dataSourceId,jdbcType=VARCHAR}
+		</if>
+		<if test="record.name != null">
+			and v_auth_model.`name` = #{record.name,jdbcType=LONGVARCHAR}
+		</if>
+		<if test="record.label != null">
+			and v_auth_model.`label` = #{record.label,jdbcType=LONGVARCHAR}
+		</if>
+		<if test="record.modelInnerTypeArray != null and record.modelInnerTypeArray.size() > 0">
+			v_auth_model.model_inner_type in
+			<foreach collection="modelInnerTypeArray" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
 		ORDER BY v_auth_model.node_type desc, CONVERT(v_auth_model.label using gbk) asc
   </select>
 

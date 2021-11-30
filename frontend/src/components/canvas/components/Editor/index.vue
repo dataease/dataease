@@ -58,7 +58,7 @@
     >
       <component
         :is="item.component"
-        v-if="item.type==='v-text'"
+        v-if="renderOk&&item.type==='v-text'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -71,7 +71,7 @@
         @input="handleInput"
       />
       <de-out-widget
-        v-else-if="item.type==='custom'"
+        v-else-if="renderOk&&item.type==='custom'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -83,7 +83,7 @@
       />
       <component
         :is="item.component"
-        v-else-if="item.type==='other'"
+        v-else-if="renderOk&&item.type==='other'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -95,7 +95,7 @@
       />
       <component
         :is="item.component"
-        v-else
+        v-else-if="renderOk"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -327,6 +327,7 @@ function init() {
   const vm = this
   recalcCellWidth.call(this)
   resetPositionBox.call(this)
+  // initPosition(this)
   let i = 0
   const timeid = setInterval(function() {
     if (i >= vm.yourList.length) {
@@ -468,6 +469,15 @@ function removeItem(index) {
   })
 
   this.yourList.splice(index, 1, {})
+}
+
+function initPosition(_this) {
+  _this.yourList.forEach(item => {
+    checkItemPosition.call(_this, item, {
+      x: item.x,
+      y: item.y
+    })
+  })
 }
 
 function addItem(item, index) {
@@ -995,41 +1005,6 @@ export default {
         e.preventDefault()
       }
       this.hideArea()
-      // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
-      const rectInfo = this.editor.getBoundingClientRect()
-      this.editorX = rectInfo.x
-      this.editorY = rectInfo.y
-
-      const startX = e.clientX
-      const startY = e.clientY
-      this.start.x = startX - this.editorX
-      this.start.y = startY - this.editorY
-      // 展示选中区域
-      this.isShowArea = true
-
-      const move = (moveEvent) => {
-        this.width = Math.abs(moveEvent.clientX - startX)
-        this.height = Math.abs(moveEvent.clientY - startY)
-        if (moveEvent.clientX < startX) {
-          this.start.x = moveEvent.clientX - this.editorX
-        }
-
-        if (moveEvent.clientY < startY) {
-          this.start.y = moveEvent.clientY - this.editorY
-        }
-      }
-      const up = (e) => {
-        document.removeEventListener('mousemove', move)
-        document.removeEventListener('mouseup', up)
-        if (e.clientX === startX && e.clientY === startY) {
-          this.hideArea()
-          return
-        }
-        this.createGroup()
-      }
-      document.addEventListener('mousemove', move)
-      document.addEventListener('mouseup', up)
-
       // 挤占式画布设计
       this.containerMouseDown(e)
     },
