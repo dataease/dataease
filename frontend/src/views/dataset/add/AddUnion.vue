@@ -8,7 +8,7 @@
         <el-button size="mini" @click="cancel">
           {{ $t('dataset.cancel') }}
         </el-button>
-        <el-button size="mini" type="primary" @click="save">
+        <el-button :disabled="!name || dataset.length === 0" size="mini" type="primary" @click="save">
           {{ $t('dataset.confirm') }}
         </el-button>
       </el-row>
@@ -17,7 +17,7 @@
     <div>
       <el-form :inline="true">
         <el-form-item class="form-item">
-          <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
+          <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" clearable />
         </el-form-item>
       </el-form>
       <!--添加第一个数据集按钮-->
@@ -78,6 +78,7 @@ import UnionNode from '@/views/dataset/add/union/UnionNode'
 import NodeItem from '@/views/dataset/add/union/NodeItem'
 import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
 import UnionEdit from '@/views/dataset/add/union/UnionEdit'
+import { getTable, post } from '@/api/dataset/dataset'
 export default {
   name: 'AddUnion',
   components: { UnionEdit, DatasetGroupSelectorTree, NodeItem, UnionNode },
@@ -126,7 +127,7 @@ export default {
         },
         allChildCount: 0
       },
-      name: '',
+      name: '关联数据集',
       customType: ['db', 'sql', 'excel'],
       selectDsDialog: false,
       // 弹框临时选中的数据集
@@ -135,11 +136,45 @@ export default {
       unionParam: {}
     }
   },
+  watch: {
+    'param.tableId': function() {
+      this.initTableData()
+    }
+  },
   mounted() {
+    this.initTableData()
   },
   methods: {
     save() {
-
+      if (!this.name || this.name === '') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.pls_input_name'),
+          type: 'error'
+        })
+        return
+      }
+      if (this.name.length > 50) {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.char_can_not_more_50'),
+          type: 'error'
+        })
+        return
+      }
+      const table = {
+        id: this.param.tableId,
+        name: this.name,
+        sceneId: this.param.id,
+        dataSourceId: this.dataset[0].currentDs.dataSourceId,
+        type: 'union',
+        mode: this.dataset[0].currentDs.mode,
+        info: '{"list":' + JSON.stringify(this.dataset) + '}'
+      }
+      post('/dataset/table/update', table).then(response => {
+        this.$emit('saveSuccess', table)
+        this.cancel()
+      })
     },
     cancel() {
       if (this.param.tableId) {
@@ -198,11 +233,46 @@ export default {
       }
     },
     confirmEditUnion() {
-      // todo 校验关联关系与字段，必填
-      this.editUnion = false
+      // 校验关联关系与字段，必填
+      if (this.checkUnion()) {
+        this.editUnion = false
+      } else {
+        this.$message({
+          message: this.$t('dataset.union_error'),
+          type: 'error',
+          showClose: true
+        })
+      }
     },
     cancelUnion(val) {
       this.dataset = val
+    },
+
+    checkUnion() {
+      const union = this.unionParam.node.unionToParent
+      if (!union.unionType) {
+        return false
+      }
+      if (!union.unionFields || union.unionFields.length < 1) {
+        return false
+      }
+      for (let i = 0; i < union.unionFields.length; i++) {
+        const ele = union.unionFields[i]
+        if (!ele.parentField || !ele.parentField.id || !ele.currentField || !ele.currentField.id) {
+          return false
+        }
+      }
+      return true
+    },
+
+    initTableData() {
+      if (this.param.tableId) {
+        getTable(this.param.tableId).then(response => {
+          const table = JSON.parse(JSON.stringify(response.data))
+          this.name = table.name
+          this.dataset = JSON.parse(table.info).list
+        })
+      }
     }
   }
 }

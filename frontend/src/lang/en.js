@@ -1161,7 +1161,9 @@ export default {
     edit_union_relation: 'Edit Union Relation',
     add_union_relation: 'Add Union Relation',
     field_select: 'Select Field',
-    add_union_field: 'Add Union Field'
+    add_union_field: 'Add Union Field',
+    union_error: 'Union relation and field can not be empty',
+    union_repeat: 'This dataset is already union，do not union repeat'
   },
   datasource: {
     datasource: 'Data Source',
