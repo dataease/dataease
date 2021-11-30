@@ -8,7 +8,7 @@
         <el-button size="mini" @click="cancel">
           {{ $t('dataset.cancel') }}
         </el-button>
-        <el-button :disabled="!name" size="mini" type="primary" @click="save">
+        <el-button :disabled="!name || dataset.length === 0" size="mini" type="primary" @click="save">
           {{ $t('dataset.confirm') }}
         </el-button>
       </el-row>

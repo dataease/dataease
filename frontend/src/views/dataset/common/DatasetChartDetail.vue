@@ -39,6 +39,7 @@
             <p v-if="detail.table.type === 'sql'" class="info-content">{{ $t('dataset.sql_data') }}</p>
             <p v-if="detail.table.type === 'excel'" class="info-content">{{ $t('dataset.excel_data') }}</p>
             <p v-if="detail.table.type === 'custom'" class="info-content">{{ $t('dataset.custom_data') }}</p>
+            <p v-if="detail.table.type === 'union'" class="info-content">{{ $t('dataset.union_data') }}</p>
           </el-col>
           <el-col v-show="detail.table.type === 'db'" class="info-item">
             <p class="info-title">{{ $t('dataset.table') }}</p>
@@ -73,6 +74,14 @@
             <p v-if="detail.datasource.type === 'mysql'" class="info-content">MySQL</p>
             <p v-if="detail.datasource.type === 'sqlServer'" class="info-content">SQL Server</p>
             <p v-if="detail.datasource.type === 'oracle'" class="info-content">Oracle</p>
+            <p v-if="detail.datasource.type === 'hive'" class="info-content">Apache Hive</p>
+            <p v-if="detail.datasource.type === 'pg'" class="info-content">PostgreSQL</p>
+            <p v-if="detail.datasource.type === 'es'" class="info-content">Elasticsearch</p>
+            <p v-if="detail.datasource.type === 'mariadb'" class="info-content">MariaDB</p>
+            <p v-if="detail.datasource.type === 'ds_doris'" class="info-content">Doris</p>
+            <p v-if="detail.datasource.type === 'ck'" class="info-content">ClickHouse</p>
+            <p v-if="detail.datasource.type === 'redshift'" class="info-content">AWS Redshift</p>
+            <p v-if="detail.datasource.type === 'mongo'" class="info-content">MongoDB</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('dataset.create_time') }}</p>
