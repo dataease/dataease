@@ -1164,7 +1164,9 @@ export default {
     edit_union_relation: '编辑关联关系',
     add_union_relation: '新建关联关系',
     field_select: '字段选择',
-    add_union_field: '添加关联字段'
+    add_union_field: '添加关联字段',
+    union_error: '关联关系与关联字段不能为空',
+    union_repeat: '当前数据集已被关联，请勿重复关联'
   },
   datasource: {
     datasource: '数据源',
