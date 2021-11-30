@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree :privileges="privileges" :mode="mode" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
+      <dataset-group-selector-tree :privileges="privileges" :mode="mode" :clearEmptyDir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />
@@ -49,7 +49,12 @@ export default {
       type: String,
       required: false,
       default: 'use'
-    }
+    },
+    clearEmptyDir: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
   },
   data() {
     return {
