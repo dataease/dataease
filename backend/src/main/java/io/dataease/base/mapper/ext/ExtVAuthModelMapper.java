@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ExtVAuthModelMapper {
 
-    List<VAuthModelDTO> queryAuthModel (@Param("request") VAuthModelRequest request);
+    List<VAuthModelDTO> queryAuthModel (@Param("record") VAuthModelRequest request);
 
 }
