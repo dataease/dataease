@@ -78,7 +78,6 @@
 
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
-import { hasDataPermission } from '@/utils/permission'
 import { queryAuthModel } from '@/api/authModel/authModel'
 export default {
   name: 'DatasetGroupSelectorTree',
@@ -196,7 +195,7 @@ export default {
     }
   },
   mounted() {
-    this.treeNode(true)
+    this.treeNode()
   },
   created() {
     this.kettleState()
@@ -230,8 +229,18 @@ export default {
       if (userCache) {
         this.data = JSON.parse(modelInfo)
       }
-      queryAuthModel({ modelType: 'dataset', privileges: this.privileges, datasetMode: this.mode, clearEmptyDir: this.clearEmptyDir }, !userCache).then(res => {
-        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+      this.customType ? this.customType.push('group') : null
+      queryAuthModel({
+        modelType: 'dataset',
+        privileges: this.privileges,
+        datasetMode: this.mode,
+        clearEmptyDir: this.clearEmptyDir,
+        mode: this.mode < 0 ? null : this.mode,
+        modelInnerTypeArray: this.customType
+      }, !userCache).then(res => {
+        if (cache) {
+          localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        }
         if (!userCache) {
           this.data = res.data
         }
