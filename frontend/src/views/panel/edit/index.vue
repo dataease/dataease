@@ -699,7 +699,7 @@ export default {
         if (domInfo) {
           this.outStyle.height = domInfo.offsetHeight - this.getGap()
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = domInfo.offsetWidth - this.getGap() + (Math.random() * 0.000001)
+          this.outStyle.width = domInfo.offsetWidth - this.getGap() + (Math.random() * 0.000001) + 2
         }
       })
     },
@@ -1057,8 +1057,8 @@ export default {
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+  width: 2px!important;
+  height: 2px!important;
 }
 
 </style>

@@ -280,4 +280,9 @@ export default {
     padding: 10px 20px 20px;
   }
 
+  ::-webkit-scrollbar {
+    width: 0px!important;
+    height: 0px!important;
+  }
+
 </style>

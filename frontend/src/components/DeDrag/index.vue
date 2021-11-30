@@ -451,9 +451,8 @@ export default {
       }
     },
     style() {
-      // console.log('style-top:' + this.y + '--' + this.top)
       return {
-        padding: this.curGap + 'px',
+        padding: this.curGap + 'px!important',
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
         height: this.computedHeight,
@@ -529,7 +528,6 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      // console.log('style=>' + JSON.stringify(style))
       return style
     },
     curComponent() {
@@ -698,7 +696,7 @@ export default {
         const rect = this.$el.parentNode.getBoundingClientRect()
         this.parentX = rect.x
         this.parentY = rect.y
-        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)), 100000]
+        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, 100000]
       }
       if (typeof this.parent === 'string') {
         const parentNode = document.querySelector(this.parent)
@@ -1810,35 +1808,8 @@ export default {
   transition: 0.2s
 }
 
-.gap_class{
-  padding:5px;
-}
-
 .de-drag-active{
   outline: 1px solid #70c0ff;
   user-select: none;
 }
-
-/*.mouseOn >>> .icon-shezhi{*/
-/*  z-index: 2;*/
-/*  display:block!important;*/
-/*}*/
-/*.vdr > i{*/
-/*  right: 5px;*/
-/*  color: gray;*/
-/*  position: absolute;*/
-/*}*/
-
-/*.vdr >>> i:hover {*/
-/*  color: red;*/
-/*}*/
-
-/*.vdr:hover >>> i {*/
-/*  z-index: 2;*/
-/*  display:block;*/
-/*}*/
-
-/*.vdr>>>.icon-shezhi {*/
-/*  display:none*/
-/*}*/
 </style>
