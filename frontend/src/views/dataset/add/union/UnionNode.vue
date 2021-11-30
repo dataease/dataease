@@ -191,11 +191,37 @@ export default {
       }
     },
     confirmEditUnion() {
-      this.editUnion = false
+      // 校验关联关系与字段，必填
+      if (this.checkUnion()) {
+        this.editUnion = false
+      } else {
+        this.$message({
+          message: this.$t('dataset.union_error'),
+          type: 'error',
+          showClose: true
+        })
+      }
     },
     // 向上级传递
     cancelUnion(val) {
       this.$emit('cancelUnionEdit', val)
+    },
+
+    checkUnion() {
+      const union = this.unionParam.node.unionToParent
+      if (!union.unionType) {
+        return false
+      }
+      if (!union.unionFields || union.unionFields.length < 1) {
+        return false
+      }
+      for (let i = 0; i < union.unionFields.length; i++) {
+        const ele = union.unionFields[i]
+        if (!ele.parentField || !ele.parentField.id || !ele.currentField || !ele.currentField.id) {
+          return false
+        }
+      }
+      return true
     }
   }
 }

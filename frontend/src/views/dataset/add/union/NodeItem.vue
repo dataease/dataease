@@ -13,7 +13,7 @@
             <el-button icon="el-icon-more" type="text" size="small" />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-copy-document" :command="beforeNodeMenuClick('union',currentNode)">
+            <el-dropdown-item :disabled="currentNode.currentDs.mode === 0 && currentNode.currentDs.modelInnerType === 'sql'" icon="el-icon-copy-document" :command="beforeNodeMenuClick('union',currentNode)">
               <span style="font-size: 12px;">{{ $t('dataset.union') }}</span>
             </el-dropdown-item>
             <el-dropdown-item icon="el-icon-edit-outline" :command="beforeNodeMenuClick('edit',currentNode)">
@@ -29,7 +29,7 @@
 
     <!--选择数据集-->
     <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="360px" class="dialog-css" destroy-on-close>
-      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
+      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="currentNode.currentDs.mode" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
         <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
@@ -127,6 +127,16 @@ export default {
     },
 
     selectDs() {
+      // 根据父级node，过滤不同的数据集
+      if (this.currentNode.currentDs.mode === 1) {
+        this.customType = ['db', 'sql', 'excel']
+      } else if (this.currentNode.currentDs.mode === 0) {
+        if (this.currentNode.currentDs.modelInnerType === 'db') {
+          this.customType = ['db']
+        } else {
+          this.customType = []
+        }
+      }
       this.selectDsDialog = true
     },
     // 弹框中选择数据集
@@ -138,6 +148,27 @@ export default {
       this.tempDs = {}
     },
     confirmSelectDs() {
+      // 校验当前数据集是否已被关联，以及直连模式是否属于同一数据源
+      if (this.tempDs.mode === 0) {
+        if (this.tempDs.dataSourceId !== this.tempParentDs.currentDs.dataSourceId) {
+          this.$message({
+            type: 'error',
+            message: this.$t('dataset.can_not_union_diff_datasource'),
+            showClose: true
+          })
+          return
+        }
+      }
+      const arr = this.getAllDs()
+      if (arr.indexOf(this.tempDs.id) > -1) {
+        this.$message({
+          type: 'error',
+          message: this.$t('dataset.union_repeat'),
+          showClose: true
+        })
+        return
+      }
+      // check over
       const ds = JSON.parse(JSON.stringify(this.unionItem))
       ds.currentDs = this.tempDs
       this.tempParentDs.childrenDs.push(ds)
@@ -163,6 +194,25 @@ export default {
     },
     confirmEditField() {
       this.editField = false
+    },
+
+    getAllDs() {
+      const arr = []
+      for (let i = 0; i < this.originData.length; i++) {
+        arr.push(this.originData[0].currentDs.id)
+        if (this.originData[0].childrenDs && this.originData[0].childrenDs.length > 0) {
+          this.getDs(this.originData[0].childrenDs, arr)
+        }
+      }
+      return arr
+    },
+    getDs(dsList, arr) {
+      for (let i = 0; i < dsList.length; i++) {
+        arr.push(dsList[i].currentDs.id)
+        if (dsList[i].childrenDs && dsList[i].childrenDs.length > 0) {
+          this.getDs(dsList[i].childrenDs, arr)
+        }
+      }
     }
   }
 }
