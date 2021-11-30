@@ -371,7 +371,7 @@ export default {
   mounted() {
     this.$store.commit('setComponentData', [])
     this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-    this.defaultTree()
+    this.defaultTree(true)
     this.tree(true)
     this.initCache()
   },
@@ -620,17 +620,19 @@ export default {
         }
       })
     },
-    defaultTree() {
+    defaultTree(cache = false) {
       const requestInfo = {
         panelType: 'system'
       }
       const modelInfo = localStorage.getItem('panel-default-tree')
-      if (modelInfo) {
+      const userCache = (modelInfo && cache)
+
+      if (userCache) {
         this.defaultData = JSON.parse(modelInfo)
       }
       defaultTree(requestInfo, false).then(res => {
         localStorage.setItem('panel-default-tree', JSON.stringify(res.data))
-        if (!modelInfo) {
+        if (!userCache) {
           this.defaultData = res.data
         }
       })
