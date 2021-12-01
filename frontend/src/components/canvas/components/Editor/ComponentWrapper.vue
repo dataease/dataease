@@ -70,7 +70,7 @@ export default {
       return this.curComponent && this.config === this.curComponent
     },
     curGap() {
-      return  this.config.auxiliaryMatrix ? this.componentGap : 0
+      return this.config.auxiliaryMatrix ? this.componentGap : 0
     },
     ...mapState([
       'mobileLayoutStatus',

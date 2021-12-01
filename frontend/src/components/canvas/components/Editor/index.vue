@@ -471,6 +471,7 @@ function removeItem(index) {
   this.yourList.splice(index, 1, {})
 }
 
+// eslint-disable-next-line no-unused-vars
 function initPosition(_this) {
   _this.yourList.forEach(item => {
     checkItemPosition.call(_this, item, {
@@ -501,6 +502,7 @@ function addItem(item, index) {
   // makeCoordinate.call(this, item);
 }
 
+// eslint-disable-next-line no-unused-vars
 function changeToCoord(left, top, width, height) {
   return {
     x1: left,
@@ -517,6 +519,7 @@ function changeToCoord(left, top, width, height) {
  *
  * @param {any} tCoord 比对对象的坐标
  */
+// eslint-disable-next-line no-unused-vars
 function findClosetCoords(item, tCoord) {
   if (isOverlay) return
   let i = coordinates.length
@@ -560,6 +563,7 @@ function findClosetCoords(item, tCoord) {
  *
  * @param {any} item
  */
+// eslint-disable-next-line no-unused-vars
 function makeCoordinate(item) {
   const width = this.cellWidth * (item.sizex) - this.baseMarginLeft
   const height = this.cellHeight * (item.sizey) - this.baseMarginTop
@@ -750,7 +754,7 @@ function findBelowItems(item) {
 
   return _.sortBy(_.values(belowItems), 'y')
 }
-
+// eslint-disable-next-line no-unused-vars
 function getoPsitionBox() {
   return positionBox
 }
@@ -1287,6 +1291,7 @@ export default {
       this.resizeStart.call(null, e, item, index)
 
       // e.preventDefault();
+      // eslint-disable-next-line no-unused-vars
       const target = $(e.target)
 
       if (!this.infoBox) {

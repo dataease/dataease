@@ -93,6 +93,7 @@ export default {
       required: false,
       default: false
     },
+    // eslint-disable-next-line vue/require-default-prop
     componentIndex: {
       type: Number,
       required: false

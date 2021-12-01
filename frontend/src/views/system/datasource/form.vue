@@ -1,26 +1,36 @@
 <template>
   <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')">
     <template v-slot:header>
-      <el-icon name="back" class="back-button" @click.native="backToList"/>
+      <el-icon name="back" class="back-button" @click.native="backToList" />
       {{
         params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('datasource.show_info') : formType == 'add' ? $t('datasource.create') : $t('datasource.modify')
       }}
     </template>
     <div>
 
-      <el-form ref="dsForm" :model="form" :rules="rule" size="small"
-               :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit "
-               label-width="180px" label-position="right">
+      <el-form
+        ref="dsForm"
+        :model="form"
+        :rules="rule"
+        size="small"
+        :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit "
+        label-width="180px"
+        label-position="right"
+      >
         <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off"/>
+          <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('commons.description')" prop="desc">
-          <el-input v-model="form.desc" autocomplete="off"/>
+          <el-input v-model="form.desc" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type">
-          <el-select v-model="form.type" :placeholder="$t('datasource.please_choose_type')" class="select-width"
-                     :disabled="formType=='modify' || (formType==='add' && params && !!params.type)"
-                     @change="changeType()">
+          <el-select
+            v-model="form.type"
+            :placeholder="$t('datasource.please_choose_type')"
+            class="select-width"
+            :disabled="formType=='modify' || (formType==='add' && params && !!params.type)"
+            @change="changeType()"
+          >
             <el-option
               v-for="item in allTypes"
               :key="item.name"
@@ -30,22 +40,37 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.host')"
-                      prop="configuration.host">
-          <el-input v-model="form.configuration.host" autocomplete="off"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc'"
+          :label="$t('datasource.host')"
+          prop="configuration.host"
+        >
+          <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.datasource_url')"
-                      prop="configuration.url">
-          <el-input v-model="form.configuration.url" :placeholder="$t('datasource.please_input_datasource_url')"
-                    autocomplete="off"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='es'"
+          :label="$t('datasource.datasource_url')"
+          prop="configuration.url"
+        >
+          <el-input
+            v-model="form.configuration.url"
+            :placeholder="$t('datasource.please_input_datasource_url')"
+            autocomplete="off"
+          />
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.data_base')"
-                      prop="configuration.dataBase">
-          <el-input v-model="form.configuration.dataBase" autocomplete="off"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc'"
+          :label="$t('datasource.data_base')"
+          prop="configuration.dataBase"
+        >
+          <el-input v-model="form.configuration.dataBase" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.oracle_connection_type')"
-                      prop="configuration.connectionType">
+        <el-form-item
+          v-if="form.type=='oracle'"
+          :label="$t('datasource.oracle_connection_type')"
+          prop="configuration.connectionType"
+        >
           <el-radio v-model="form.configuration.connectionType" label="sid">{{ $t('datasource.oracle_sid') }}</el-radio>
           <el-radio v-model="form.configuration.connectionType" label="serviceName">
             {{ $t('datasource.oracle_service_name') }}
@@ -53,26 +78,31 @@
         </el-form-item>
 
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')">
-          <el-input v-model="form.configuration.username" autocomplete="off"/>
+          <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')">
-          <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
+          <el-input v-model="form.configuration.password" autocomplete="off" show-password />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.user_name')">
-          <el-input v-model="form.configuration.esUsername" autocomplete="off"/>
+          <el-input v-model="form.configuration.esUsername" autocomplete="off" />
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.password')">
-          <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password/>
+          <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password />
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle'"
-                      :label="$t('datasource.extra_params')">
-          <el-input v-model="form.configuration.extraParams" autocomplete="off"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle'"
+          :label="$t('datasource.extra_params')"
+        >
+          <el-input v-model="form.configuration.extraParams" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.port')"
-                      prop="configuration.port">
-          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc'"
+          :label="$t('datasource.port')"
+          prop="configuration.port"
+        >
+          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
         </el-form-item>
         <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'">
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
@@ -80,10 +110,16 @@
           </el-button>
         </el-form-item>
 
-        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'"
-                      :label="$t('datasource.schema')">
-          <el-select filterable v-model="form.configuration.schema" :placeholder="$t('datasource.please_choose_schema')"
-                     class="select-width">
+        <el-form-item
+          v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'"
+          :label="$t('datasource.schema')"
+        >
+          <el-select
+            v-model="form.configuration.schema"
+            filterable
+            :placeholder="$t('datasource.please_choose_schema')"
+            class="select-width"
+          >
             <el-option
               v-for="item in schemas"
               :key="item"
@@ -95,33 +131,48 @@
         <el-collapse v-if="form.configuration.dataSourceType=='jdbc'">
           <el-collapse-item :title="$t('datasource.priority')" name="1">
             <el-form-item :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
-              <el-input v-model="form.configuration.initialPoolSize" autocomplete="off" type="number" min="0"
-                        size="small"/>
+              <el-input
+                v-model="form.configuration.initialPoolSize"
+                autocomplete="off"
+                type="number"
+                min="0"
+                size="small"
+              />
             </el-form-item>
             <el-form-item :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
-              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
             <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
-              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
 
           </el-collapse-item>
         </el-collapse>
       </el-form>
       <div v-if="canEdit" slot="footer" class="dialog-footer">
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-                   @click="validaDatasource">{{ $t('commons.validate') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          @click="validaDatasource"
+        >{{ $t('commons.validate') }}
         </el-button>
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
-                   @click="save">{{ $t('commons.save') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          type="primary"
+          @click="save"
+        >{{ $t('commons.save') }}
         </el-button>
       </div>
       <div v-else slot="footer" class="dialog-footer">
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-                   @click="validaDatasource">{{ $t('commons.validate') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          @click="validaDatasource"
+        >{{ $t('commons.validate') }}
         </el-button>
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
-                   @click="changeEdit">{{ $t('commons.edit') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          type="primary"
+          @click="changeEdit"
+        >{{ $t('commons.edit') }}
         </el-button>
       </div>
     </div>
@@ -130,13 +181,13 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import {addDs, editDs, getSchema, validateDs, validateDsById} from '@/api/system/datasource'
-import {$confirm} from '@/utils/message'
+import { addDs, editDs, getSchema, validateDs, validateDsById } from '@/api/system/datasource'
+import { $confirm } from '@/utils/message'
 import i18n from '@/lang/index'
 
 export default {
   name: 'DsForm',
-  components: {LayoutContent},
+  components: { LayoutContent },
   props: {
     params: {
       type: Object,
@@ -158,10 +209,10 @@ export default {
         }
       },
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{min: 0, max: 50, message: i18n.t('datasource.input_limit_0_50'), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
+        name: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
+          { min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        desc: [{ min: 0, max: 50, message: i18n.t('datasource.input_limit_0_50'), trigger: 'blur' }],
+        type: [{ required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change' }],
         'configuration.dataBase': [{
           required: true,
           message: i18n.t('datasource.please_input_data_base'),
@@ -182,9 +233,9 @@ export default {
           message: i18n.t('datasource.please_input_password'),
           trigger: 'change'
         }],
-        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'change'}],
-        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
-        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'change'}],
+        'configuration.host': [{ required: true, message: i18n.t('datasource.please_input_host'), trigger: 'change' }],
+        'configuration.url': [{ required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change' }],
+        'configuration.port': [{ required: true, message: i18n.t('datasource.please_input_port'), trigger: 'change' }],
         'configuration.initialPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_initial_pool_size'),
@@ -223,11 +274,11 @@ export default {
           type: 'jdbc',
           extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
         },
-        {name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
-        {name: 'oracle', label: 'Oracle', type: 'jdbc'},
-        {name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
-        {name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: ''},
-        {name: 'es', label: 'Elasticsearch', type: 'es'},
+        { name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: '' },
+        { name: 'oracle', label: 'Oracle', type: 'jdbc' },
+        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: '' },
+        { name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: '' },
+        { name: 'es', label: 'Elasticsearch', type: 'es' },
         {
           name: 'mariadb',
           label: 'MariaDB',
@@ -240,9 +291,9 @@ export default {
           type: 'jdbc',
           extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
         },
-        {name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: ''},
-        {name: 'redshift', label: 'AWS Redshift', type: 'jdbc'},
-        {name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: ''}
+        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' },
+        { name: 'redshift', label: 'AWS Redshift', type: 'jdbc' },
+        { name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: '' }
       ],
       schemas: [],
       canEdit: false,

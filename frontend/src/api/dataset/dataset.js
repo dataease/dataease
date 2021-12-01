@@ -150,6 +150,7 @@ export function taskList(spage, size, data) {
   return request({
     url: '/dataset/group/isKettleRunning',
     method: 'post',
+    // eslint-disable-next-line no-undef
     loading: showLoading
   })
 }
