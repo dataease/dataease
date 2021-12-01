@@ -4,7 +4,7 @@
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
-        :style="{height:mainHeight}"
+        :style="[{height:mainHeight},screenShotStyle]"
         class="main-class"
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
@@ -60,6 +60,10 @@ export default {
     event: 'change'
   },
   props: {
+    screenShot: {
+      type: Boolean,
+      default: false
+    },
     show: {
       type: Boolean,
       default: false
@@ -119,6 +123,9 @@ export default {
         }
       }
       return style
+    },
+    screenShotStyle() {
+      return this.screenShot ? this.customStyle : {}
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {

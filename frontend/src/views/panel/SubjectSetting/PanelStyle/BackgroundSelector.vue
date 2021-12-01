@@ -106,6 +106,7 @@ export default {
         _this.panel.imageUrl = reader.result
         this.commitStyle()
       }
+      this.$store.state.styleChangeTimes++
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
