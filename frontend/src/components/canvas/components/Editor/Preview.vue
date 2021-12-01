@@ -4,6 +4,7 @@
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
+        :style="{height:mainHeight}"
         class="main-class"
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
@@ -153,8 +154,14 @@ export default {
     erd.listenTo(mainDom, element => {
       _this.$nextTick(() => {
         _this.restore()
+      })
+    })
+    // 监听div变动事件
+    const tempCanvas = document.getElementById('canvasInfoTemp')
+    erd.listenTo(tempCanvas, element => {
+      _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-        _this.mainHeight = mainDom.scrollHeight + 'px!important'
+        _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
       })
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
