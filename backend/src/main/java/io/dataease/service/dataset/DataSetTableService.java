@@ -7,6 +7,7 @@ import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.base.mapper.ext.UtilMapper;
+import io.dataease.commons.constants.DatasourceTypes;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.TaskStatus;
@@ -15,16 +16,16 @@ import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
-import io.dataease.controller.response.DataSetDetail;
-import io.dataease.commons.constants.DatasourceTypes;
-import io.dataease.dto.datasource.TableFiled;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.datasource.JdbcProvider;
-import io.dataease.provider.ProviderFactory;
 import io.dataease.controller.request.datasource.DatasourceRequest;
+import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.dataset.*;
+import io.dataease.dto.datasource.TableFiled;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.loader.ClassloaderResponsity;
+import io.dataease.provider.ProviderFactory;
+import io.dataease.provider.datasource.DatasourceProvider;
+import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.provider.query.DDLProvider;
 import io.dataease.provider.query.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,6 +40,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,6 +95,8 @@ public class DataSetTableService {
 
     @Value("${upload.file.path}")
     private String path;
+
+    private static Logger logger = LoggerFactory.getLogger(ClassloaderResponsity.class);
 
     public void batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
         for (DataSetTableRequest table : datasetTable) {
@@ -469,8 +474,8 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(true);
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
 
                 try {
@@ -478,8 +483,8 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
             } else {
                 // check doris table
@@ -497,15 +502,15 @@ public class DataSetTableService {
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
             }
 
@@ -532,16 +537,16 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(true);
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
                 try {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
             } else {
                 // check doris table
@@ -559,15 +564,15 @@ public class DataSetTableService {
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
@@ -586,15 +591,15 @@ public class DataSetTableService {
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
-                e.printStackTrace();
-                DEException.throwException(e.getMessage());
+                logger.error(e.getMessage());
+                DEException.throwException(Translator.get("i18n_ds_error"));
             }
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                 dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
-                e.printStackTrace();
-                DEException.throwException(e.getMessage());
+                logger.error(e.getMessage());
+                DEException.throwException(Translator.get("i18n_ds_error"));
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             if (datasetTable.getMode() == 0) {
@@ -609,7 +614,13 @@ public class DataSetTableService {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
 
-                String sql = getCustomSQLDatasource(dt, list, ds);
+                String sql = "";
+                try {
+                    sql = getCustomSQLDatasource(dt, list, ds);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
+                }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false));
                 map.put("sql", datasourceRequest.getQuery());
@@ -622,16 +633,16 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(true);
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
                 try {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields, Integer.valueOf(dataSetTableRequest.getRow()), false));
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
             } else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -645,16 +656,16 @@ public class DataSetTableService {
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
 
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    DEException.throwException(e.getMessage());
+                    logger.error(e.getMessage());
+                    DEException.throwException(Translator.get("i18n_ds_error"));
                 }
             }
         }
