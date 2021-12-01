@@ -132,6 +132,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import {addDs, editDs, getSchema, validateDs, validateDsById} from '@/api/system/datasource'
 import {$confirm} from '@/utils/message'
+import i18n from '@/lang/index'
 
 export default {
   name: 'DsForm',
@@ -157,61 +158,61 @@ export default {
         }
       },
       rule: {
-        name: [{required: true, message: this.$t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 25, message: this.$t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{min: 0, max: 50, message: this.$t('datasource.input_limit_0_50'), trigger: 'blur'}],
-        type: [{required: true, message: this.$t('datasource.please_choose_type'), trigger: 'change'}],
+        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
+          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
+        desc: [{min: 0, max: 50, message: i18n.t('datasource.input_limit_0_50'), trigger: 'blur'}],
+        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
         'configuration.dataBase': [{
           required: true,
-          message: this.$t('datasource.please_input_data_base'),
+          message: i18n.t('datasource.please_input_data_base'),
           trigger: 'blur'
         }],
         'configuration.connectionType': [{
           required: true,
-          message: this.$t('datasource.please_select_oracle_type'),
+          message: i18n.t('datasource.please_select_oracle_type'),
           trigger: 'blur'
         }],
         'configuration.username': [{
           required: true,
-          message: this.$t('datasource.please_input_user_name'),
+          message: i18n.t('datasource.please_input_user_name'),
           trigger: 'blur'
         }],
         'configuration.password': [{
           required: true,
-          message: this.$t('datasource.please_input_password'),
+          message: i18n.t('datasource.please_input_password'),
           trigger: 'change'
         }],
-        'configuration.host': [{required: true, message: this.$t('datasource.please_input_host'), trigger: 'change'}],
-        'configuration.url': [{required: true, message: this.$t('datasource.please_input_url'), trigger: 'change'}],
-        'configuration.port': [{required: true, message: this.$t('datasource.please_input_port'), trigger: 'change'}],
+        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'change'}],
+        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
+        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'change'}],
         'configuration.initialPoolSize': [{
           required: true,
-          message: this.$t('datasource.please_input_initial_pool_size'),
+          message: i18n.t('datasource.please_input_initial_pool_size'),
           trigger: 'change'
         }],
         'configuration.minPoolSize': [{
           required: true,
-          message: this.$t('datasource.please_input_min_pool_size'),
+          message: i18n.t('datasource.please_input_min_pool_size'),
           trigger: 'change'
         }],
         'configuration.maxPoolSize': [{
           required: true,
-          message: this.$t('datasource.please_input_max_pool_size'),
+          message: i18n.t('datasource.please_input_max_pool_size'),
           trigger: 'change'
         }],
         'configuration.maxIdleTime': [{
           required: true,
-          message: this.$t('datasource.please_input_max_idle_time'),
+          message: i18n.t('datasource.please_input_max_idle_time'),
           trigger: 'change'
         }],
         'configuration.acquireIncrement': [{
           required: true,
-          message: this.$t('datasource.please_input_acquire_increment'),
+          message: i18n.t('datasource.please_input_acquire_increment'),
           trigger: 'change'
         }],
         'configuration.connectTimeout': [{
           required: true,
-          message: this.$t('datasource.please_input_connect_timeout'),
+          message: i18n.t('datasource.please_input_connect_timeout'),
           trigger: 'change'
         }]
       },
@@ -296,15 +297,15 @@ export default {
     },
     save() {
       if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer')) {
-        this.$message.error(this.$t('datasource.please_choose_schema'))
+        this.$message.error(i18n.t('datasource.please_choose_schema'))
         return
       }
       if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
-        this.$message.error(this.$t('datasource.port_no_less_then_0'))
+        this.$message.error(i18n.t('datasource.port_no_less_then_0'))
         return
       }
       if (this.form.configuration.initialPoolSize < 0 || this.form.configuration.minPoolSize < 0 || this.form.configuration.maxPoolSize < 0) {
-        this.$message.error(this.$t('datasource.no_less_then_0'))
+        this.$message.error(i18n.t('datasource.no_less_then_0'))
         return
       }
       this.$refs.dsForm.validate(valid => {
@@ -313,16 +314,16 @@ export default {
           const form = JSON.parse(JSON.stringify(this.form))
           form.configuration = JSON.stringify(form.configuration)
           if (this.formType !== 'add' && this.originConfiguration !== form.configuration) {
-            $confirm(this.$t('datasource.edit_datasource_msg'), () => {
+            $confirm(i18n.t('datasource.edit_datasource_msg'), () => {
               method(form).then(res => {
-                this.$success(this.$t('commons.save_success'))
+                this.$success(i18n.t('commons.save_success'))
                 this.refreshType(form)
                 this.backToList()
               })
             })
           } else {
             method(form).then(res => {
-              this.$success(this.$t('commons.save_success'))
+              this.$success(i18n.t('commons.save_success'))
               this.refreshType(form)
               this.backToList()
             })
@@ -339,7 +340,7 @@ export default {
           data.configuration = JSON.stringify(data.configuration)
           getSchema(data).then(res => {
             this.schemas = res.data
-            this.$success(this.$t('commons.success'))
+            this.$success(i18n.t('commons.success'))
           })
         } else {
           return false
@@ -348,11 +349,11 @@ export default {
     },
     validaDatasource() {
       if (!this.form.configuration.schema && this.form.type === 'oracle') {
-        this.$message.error(this.$t('datasource.please_choose_schema'))
+        this.$message.error(i18n.t('datasource.please_choose_schema'))
         return
       }
       if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
-        this.$message.error(this.$t('datasource.port_no_less_then_0'))
+        this.$message.error(i18n.t('datasource.port_no_less_then_0'))
         return
       }
       this.$refs.dsForm.validate(valid => {
@@ -362,9 +363,9 @@ export default {
           if (data.showModel === 'show' && !this.canEdit) {
             validateDsById(data.id).then(res => {
               if (res.success) {
-                this.$success(this.$t('datasource.validate_success'))
+                this.$success(i18n.t('datasource.validate_success'))
               } else {
-                this.$error(this.$t(res.message))
+                this.$error(res.message)
               }
               this.refreshType(data)
             }).catch(res => {
@@ -373,9 +374,9 @@ export default {
           } else {
             validateDs(data).then(res => {
               if (res.success) {
-                this.$success(this.$t('datasource.validate_success'))
+                this.$success(i18n.t('datasource.validate_success'))
               } else {
-                this.$error(this.$t(res.message))
+                this.$error(res.message)
               }
             }).catch(res => {
               this.$error(res.message)
