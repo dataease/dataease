@@ -813,6 +813,10 @@ export default {
           y: 18
         }
       }
+    },
+    scrollTop: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -1251,9 +1255,8 @@ export default {
       }
     },
     handleDragOver(e) {
-      // console.log('handleDragOver-Editor')
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
-      this.dragComponentInfo.shadowStyle.y = e.pageY - 90
+      this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
       this.dragComponentInfo.style.top = this.dragComponentInfo.shadowStyle.y / this.scalePointHeight
       if (this.dragComponentInfo.auxiliaryMatrix) {
