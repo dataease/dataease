@@ -661,8 +661,7 @@ export default {
     },
     sureFilter() {
       this.currentFilterCom.options.value = []
-      const component = deepCopy(this.currentFilterCom)
-      this.$store.commit('setComponentWithId', component)
+      this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.closeFilter()
     },
