@@ -1263,7 +1263,7 @@ public class DataSetTableService {
         } else {
             retrunSheetDataList = excelSheetDataList;
         }
-
+        retrunSheetDataList = retrunSheetDataList.stream().filter(excelSheetData -> CollectionUtils.isNotEmpty(excelSheetData.getFields())).collect(Collectors.toList());
         // save file
         String excelId = UUID.randomUUID().toString();
         String filePath = saveFile(file, excelId);
