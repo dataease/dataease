@@ -26,6 +26,7 @@
       :element="config"
       :search-count="searchCount"
       :h="config.style.height"
+      :edit-mode="'preview'"
     />
   </div>
 </template>
