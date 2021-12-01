@@ -106,7 +106,7 @@
           @mouseup="deselectCurComponent"
           @scroll="canvasScroll"
         >
-          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" />
+          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
         </div>
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
@@ -126,7 +126,7 @@
                 id="canvasInfoMobile"
                 class="this_mobile_canvas_main"
               >
-                <Editor ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" />
+                <Editor ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
               </el-row>
               <el-row class="this_mobile_canvas_bottom" />
             </div>
@@ -661,8 +661,6 @@ export default {
     },
     sureFilter() {
       this.currentFilterCom.options.value = []
-      const component = deepCopy(this.currentFilterCom)
-      this.$store.commit('setComponentWithId', component)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.closeFilter()
     },

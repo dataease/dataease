@@ -4,6 +4,7 @@
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
+        :style="[{height:mainHeight},screenShotStyle]"
         class="main-class"
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
@@ -59,6 +60,10 @@ export default {
     event: 'change'
   },
   props: {
+    screenShot: {
+      type: Boolean,
+      default: false
+    },
     show: {
       type: Boolean,
       default: false
@@ -119,6 +124,9 @@ export default {
       }
       return style
     },
+    screenShotStyle() {
+      return this.screenShot ? this.customStyle : {}
+    },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
       return this.componentDataShow
@@ -153,8 +161,14 @@ export default {
     erd.listenTo(mainDom, element => {
       _this.$nextTick(() => {
         _this.restore()
+      })
+    })
+    // 监听div变动事件
+    const tempCanvas = document.getElementById('canvasInfoTemp')
+    erd.listenTo(tempCanvas, element => {
+      _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-        _this.mainHeight = mainDom.scrollHeight + 'px!important'
+        _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
       })
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
