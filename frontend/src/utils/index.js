@@ -4,6 +4,9 @@ export function timeSection(date, type) {
   if (!date) {
     return null
   }
+  if (!(date instanceof Date)) {
+    date = new Date(date)
+  }
   const timeRanger = new Array(2)
 
   date.setHours(0)
