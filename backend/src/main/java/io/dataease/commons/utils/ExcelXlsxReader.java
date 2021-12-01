@@ -384,9 +384,14 @@ public class ExcelXlsxReader extends DefaultHandler {
                 String sstIndex = value.toString();
                 try {
                     int idx = Integer.parseInt(sstIndex);
-                    XSSFRichTextString rtss = new XSSFRichTextString(sst.getEntryAt(idx));//根据idx索引值获取内容值
-                    thisStr = rtss.toString();
-                    rtss = null;
+                    if(sst != null){
+                        XSSFRichTextString rtss = new XSSFRichTextString(sst.getEntryAt(idx));//根据idx索引值获取内容值
+                        thisStr = rtss.toString();
+                        rtss = null;
+                    }else {
+                        thisStr = value.toString();
+                    }
+
                 } catch (NumberFormatException ex) {
                     thisStr = value.toString();
                 }
