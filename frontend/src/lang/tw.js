@@ -1428,7 +1428,8 @@ export default {
     video_links: '視頻鏈接',
     video_add_tips: '請點擊添加配置視頻信息...',
     panel_view_result_show: '視圖結果展示',
-    panel_view_result_tips: '選擇儀表板會覆蓋視圖的結果展示數量，取值範圍1~10000'
+    panel_view_result_tips: '選擇儀表板會覆蓋視圖的結果展示數量，取值範圍1~10000',
+    timeout_refresh: '请求超时，稍后刷新...'
   },
   plugin: {
     local_install: '本地安裝',

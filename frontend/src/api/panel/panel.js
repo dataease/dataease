@@ -60,7 +60,7 @@ export function viewData(id, data) {
   return request({
     url: '/chart/view/getData/' + id,
     method: 'post',
-    timeout: 30000,
+    timeout: 10000,
     hideMsg: true,
     data
   })
