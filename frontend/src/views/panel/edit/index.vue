@@ -661,6 +661,7 @@ export default {
     },
     sureFilter() {
       this.currentFilterCom.options.value = []
+      this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.closeFilter()
     },
