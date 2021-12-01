@@ -1,6 +1,6 @@
 <template>
   <el-row ref="mainPlayer">
-    <div v-if="this.element.videoLinks[this.element.videoLinks.videoType].sources[0].src" class="player">
+    <div v-if="element.videoLinks[element.videoLinks.videoType].sources[0].src" class="player">
       <video-player
         ref="videoPlayer"
         class="vjs-custom-skin"
@@ -62,10 +62,7 @@ export default {
       pOption: {}
     }
   },
-  created() {
-    this.pOption = this.element.videoLinks[this.element.videoLinks.videoType]
-    this.pOption.height = this.h - (this.curGap * 2)
-  },
+
   computed: {
     moveFlag() {
       return (this.element.optStatus.dragging || this.element.optStatus.resizing)
@@ -85,6 +82,10 @@ export default {
       'componentGap',
       'canvasStyleData'
     ])
+  },
+  created() {
+    this.pOption = this.element.videoLinks[this.element.videoLinks.videoType]
+    this.pOption.height = this.h - (this.curGap * 2)
   },
   mounted() {
   },

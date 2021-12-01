@@ -60,7 +60,7 @@
             <span v-if="scope.row.status === 'Underway'" style="color: green">
               <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
             </span>
-            <span v-if="scope.row.status === 'Stopped'" >
+            <span v-if="scope.row.status === 'Stopped'">
               <div style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
             </span>
             <span v-if="scope.row.status === 'Pending'" class="blue-color">
@@ -168,7 +168,7 @@
 
     <!--添加任务-选择数据集-->
     <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
-      <table-selector privileges="manage" :mode="1" :clearEmptyDir="true" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
+      <table-selector privileges="manage" :mode="1" :clear-empty-dir="true" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="small" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>
