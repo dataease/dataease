@@ -1100,6 +1100,7 @@ export default {
       if (newVal === 'map' && newVal !== oldVal) {
         this.initAreas()
       }
+      this.$emit('typeChange', newVal)
     }
   },
   created() {
