@@ -9,7 +9,7 @@
       style="height: 1px; position: absolute; left: 15px; right: 15px; top: 40px; box-sizing:border-box;border-bottom: 1px solid #e8eaed"
     />
     <div>
-      <slider />
+      <slider v-if="sliderShow" @reload="sliderReload" />
     </div>
     <!--折叠面板-->
     <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
@@ -83,6 +83,7 @@ export default {
   },
   data() {
     return {
+      sliderShow: true,
       panelInfo: this.$store.state.panel.panelInfo,
       activeNames: ['panel'],
       chart: null,
@@ -110,7 +111,12 @@ export default {
   },
 
   methods: {
-
+    sliderReload() {
+      this.sliderShow = false
+      this.$nextTick(() => {
+        this.sliderShow = true
+      })
+    },
     init() {
       // 初始化赋值
       const chart = deepCopy(this.canvasStyleData.chart)
