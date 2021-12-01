@@ -165,7 +165,7 @@ span{
 .union-header-operator{
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
 }
 .union-selector{
   display: inline-block;

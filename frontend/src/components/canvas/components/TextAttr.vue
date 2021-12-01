@@ -283,24 +283,7 @@ export default {
       ]
     }
   },
-  watch: {
-    innerOpacity: {
-      handler(oldVal, newVal) {
-        this.styleInfo['opacity'] = this.innerOpacity / 100
-      }
-    },
-    curComponent: {
-      handler(oldVal, newVal) {
-        this.$nextTick(() => {
-          this.init()
-        })
-        // console.log('curComponent change')
-      }
-    }
-  },
-  mounted() {
-    this.init()
-  },
+
   computed: {
     boardDivColor() {
       const style = {
@@ -348,6 +331,25 @@ export default {
     ])
 
   },
+  watch: {
+    innerOpacity: {
+      handler(oldVal, newVal) {
+        this.styleInfo['opacity'] = this.innerOpacity / 100
+      }
+    },
+    curComponent: {
+      handler(oldVal, newVal) {
+        this.$nextTick(() => {
+          this.init()
+        })
+        // console.log('curComponent change')
+      }
+    }
+  },
+  mounted() {
+    this.init()
+  },
+
   methods: {
     init() {
       if (this.styleInfo['opacity']) {
