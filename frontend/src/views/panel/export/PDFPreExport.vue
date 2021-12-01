@@ -27,6 +27,7 @@ import { pdfTemplateReplaceAll } from '@/utils/StringUtils.js'
 export default {
   name: 'PDFPreExport',
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     panelName: {
       type: String,
       required: false
