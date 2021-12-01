@@ -4,7 +4,7 @@
       <video-player
         ref="videoPlayer"
         class="vjs-custom-skin"
-        :options="playerOptions"
+        :options="editMode==='preview'?pOption:playerOptions"
         :playsinline="true"
         @play="onPlayerPlay($event)"
         @pause="onPlayerPause($event)"
@@ -45,7 +45,7 @@ export default {
     editMode: {
       type: String,
       require: false,
-      default: 'preview'
+      default: 'edit'
     },
     active: {
       type: Boolean,
@@ -59,7 +59,12 @@ export default {
   },
   data() {
     return {
+      pOption: {}
     }
+  },
+  created() {
+    this.pOption = this.element.videoLinks[this.element.videoLinks.videoType]
+    this.pOption.height = this.h - (this.curGap * 2)
   },
   computed: {
     moveFlag() {

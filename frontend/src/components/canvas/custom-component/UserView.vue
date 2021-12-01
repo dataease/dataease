@@ -319,13 +319,17 @@ export default {
           }
           return true
         }).catch(err => {
-          this.httpRequest.status = err.response.data.success
-          this.httpRequest.msg = err.response.data.message
           this.requestStatus = 'error'
-          if (err && err.response && err.response.data) {
-            this.message = err.response.data.message
+          if (err.message && err.message.indexOf('timeout') > -1) {
+            this.message = this.$t('panel.timeout_refresh')
           } else {
-            this.message = err
+            this.httpRequest.status = err.response.data.success
+            this.httpRequest.msg = err.response.data.message
+            if (err && err.response && err.response.data) {
+              this.message = err.response.data.message
+            } else {
+              this.message = err
+            }
           }
           return true
         })
