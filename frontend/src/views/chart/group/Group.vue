@@ -422,7 +422,9 @@ export default {
       searchMap: {
         all: this.$t('commons.all'),
         folder: this.$t('commons.folder')
-      }
+      },
+      currentNodeData: {},
+      currentKey: null
     }
   },
   watch: {
@@ -626,16 +628,28 @@ export default {
       })
     },
 
+    initCurrentNode() {
+      if (this.currentKey) {
+        this.$nextTick(() => {
+          this.$refs.chartTreeRef.setCurrentKey(this.currentKey)
+          this.$nextTick(() => {
+            document.querySelector('.is-current').firstChild.click()
+          })
+        })
+      }
+    },
     treeNode(cache = false) {
       const modelInfo = localStorage.getItem('chart-tree')
       const userCache = (modelInfo && cache)
       if (userCache) {
         this.tData = JSON.parse(modelInfo)
+        this.initCurrentNode()
       }
       queryAuthModel({ modelType: 'chart' }, !userCache).then(res => {
         localStorage.setItem('chart-tree', JSON.stringify(res.data))
         if (!userCache) {
           this.tData = res.data
+          this.initCurrentNode()
         }
       })
     },
@@ -655,6 +669,7 @@ export default {
     },
 
     nodeClick(data, node) {
+      this.currentNodeData = data
       if (data.modelInnerType !== 'group') {
         this.$emit('switchComponent', { name: 'ChartEdit', param: data })
       }
@@ -767,8 +782,7 @@ export default {
           this.$emit('newViewInfo', { 'id': response.data.id })
         } else {
           _this.expandedArray.push(response.data.sceneId)
-          _this.$refs.chartTreeRef.setCurrentKey(response.data.id)
-          _this.$emit('switchComponent', { name: 'ChartEdit', param: response.data })
+          _this.currentKey = response.data.id
           _this.treeNode()
         }
       })
@@ -923,6 +937,11 @@ export default {
     },
     searchTypeClick(searchTypeInfo) {
       this.searchType = searchTypeInfo
+    },
+    nodeTypeChange(newType) {
+      if (this.currentNodeData) {
+        this.currentNodeData.modelInnerType = newType
+      }
     }
   }
 }
