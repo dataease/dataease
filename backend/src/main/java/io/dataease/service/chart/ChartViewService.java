@@ -13,21 +13,21 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
+import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.ProviderFactory;
-import io.dataease.controller.request.datasource.DatasourceRequest;
-import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.provider.ProviderFactory;
+import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.query.QueryProvider;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
+import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -162,9 +162,10 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getOneWithPermission(String id) {
-        String userId = AuthUtils.getUser()!=null?String.valueOf(AuthUtils.getUser().getUserId()):"NONE";
-        return extChartViewMapper.searchOneWithPrivileges(userId,id);
+        String userId = AuthUtils.getUser() != null ? String.valueOf(AuthUtils.getUser().getUserId()) : "NONE";
+        return extChartViewMapper.searchOneWithPrivileges(userId, id);
     }
+
     public void delete(String id) {
         chartViewMapper.deleteByPrimaryKey(id);
     }
@@ -365,6 +366,22 @@ public class ChartViewService {
                 DataTableInfoDTO dt = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, list, ds);
+                if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, customFilter, extFilterList, view));
+                } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, customFilter, extFilterList, extStack, view));
+                } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, customFilter, extFilterList, extBubble, view));
+                } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, customFilter, extFilterList, ds, view));
+                } else {
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, customFilter, extFilterList, view));
+                }
+            } else if (StringUtils.equalsIgnoreCase(table.getType(), "union")) {
+                DataTableInfoDTO dt = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
+                Map<String, Object> sqlMap = dataSetTableService.getUnionSQLDatasource(dt, ds);
+                String sql = (String) sqlMap.get("sql");
+
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, customFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {

@@ -1,5 +1,6 @@
 package io.dataease.dto.dataset;
 
+import io.dataease.dto.dataset.union.UnionDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,5 +17,6 @@ public class DataTableInfoDTO {
     private String sql;
     private List<ExcelSheetData> excelSheetDataList;
     private String data;// file path
-    private List<DataTableInfoCustomUnion> list;
+    private List<DataTableInfoCustomUnion> list;// 自定义数据集
+    private List<UnionDTO> union;// 关联数据集
 }

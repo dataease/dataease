@@ -1166,7 +1166,8 @@ export default {
     field_select: '字段选择',
     add_union_field: '添加关联字段',
     union_error: '关联关系与关联字段不能为空',
-    union_repeat: '当前数据集已被关联，请勿重复关联'
+    union_repeat: '当前数据集已被关联，请勿重复关联',
+    preview_result: '预览结果'
   },
   datasource: {
     datasource: '数据源',

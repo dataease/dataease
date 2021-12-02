@@ -22,6 +22,10 @@ public class DorisTableUtils {
         return "f_" + Md5Utils.md5(dorisName);
     }
 
+    public static String dorisFieldNameShort(String dorisName) {
+        return "f_" + Md5Utils.md5(dorisName).substring(8, 24);
+    }
+
     public static String columnName(String filedName) {
         return "C_" + Md5Utils.md5(filedName);
     }

@@ -15,9 +15,14 @@
     </el-row>
     <el-divider />
     <div>
-      <el-form :inline="true">
+      <el-form :inline="true" style="display: flex;align-items: center;justify-content: space-between;">
         <el-form-item class="form-item">
           <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" clearable />
+        </el-form-item>
+        <el-form-item class="form-item">
+          <el-button size="mini" @click="previewData">
+            {{ $t('dataset.preview_result') }}
+          </el-button>
         </el-form-item>
       </el-form>
       <!--添加第一个数据集按钮-->
@@ -70,6 +75,11 @@
         <el-button type="primary" size="mini" @click="confirmEditUnion()">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <!--数据预览界面-->
+    <el-drawer v-if="showPreview" :title="$t('dataset.preview_result')" :visible.sync="showPreview" direction="btt" class="preview-style">
+      <union-preview :table="previewTable" :dataset="dataset" />
+    </el-drawer>
   </el-row>
 </template>
 
@@ -79,9 +89,10 @@ import NodeItem from '@/views/dataset/add/union/NodeItem'
 import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
 import UnionEdit from '@/views/dataset/add/union/UnionEdit'
 import { getTable, post } from '@/api/dataset/dataset'
+import UnionPreview from '@/views/dataset/add/union/UnionPreview'
 export default {
   name: 'AddUnion',
-  components: { UnionEdit, DatasetGroupSelectorTree, NodeItem, UnionNode },
+  components: { UnionPreview, UnionEdit, DatasetGroupSelectorTree, NodeItem, UnionNode },
   props: {
     param: {
       type: Object,
@@ -133,7 +144,9 @@ export default {
       // 弹框临时选中的数据集
       tempDs: {},
       editUnion: false,
-      unionParam: {}
+      unionParam: {},
+      showPreview: false,
+      previewTable: {}
     }
   },
   watch: {
@@ -169,7 +182,7 @@ export default {
         dataSourceId: this.dataset[0].currentDs.dataSourceId,
         type: 'union',
         mode: this.dataset[0].currentDs.mode,
-        info: '{"list":' + JSON.stringify(this.dataset) + '}'
+        info: '{"union":' + JSON.stringify(this.dataset) + '}'
       }
       post('/dataset/table/update', table).then(response => {
         this.$emit('saveSuccess', table)
@@ -270,9 +283,22 @@ export default {
         getTable(this.param.tableId).then(response => {
           const table = JSON.parse(JSON.stringify(response.data))
           this.name = table.name
-          this.dataset = JSON.parse(table.info).list
+          this.dataset = JSON.parse(table.info).union
         })
       }
+    },
+
+    previewData() {
+      this.previewTable = {
+        id: this.param.tableId,
+        name: this.name,
+        sceneId: this.param.id,
+        dataSourceId: this.dataset[0].currentDs.dataSourceId,
+        type: 'union',
+        mode: this.dataset[0].currentDs.mode,
+        info: '{"union":' + JSON.stringify(this.dataset) + '}'
+      }
+      this.showPreview = true
     }
   }
 }
@@ -293,5 +319,16 @@ export default {
 }
 .dialog-css >>> .el-dialog__body {
   padding: 0 20px;
+}
+.preview-style >>> .el-drawer{
+  height: 50%!important;
+}
+.preview-style >>> .el-drawer .el-drawer__header{
+  margin-bottom: 10px!important;
+  padding: 10px 16px 0!important;
+  font-size: 14px;
+}
+.preview-style >>> .el-drawer .el-drawer__body{
+  padding: 0 16px 10px!important;
 }
 </style>
