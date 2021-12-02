@@ -1164,7 +1164,8 @@ export default {
     field_select: '字段選擇',
     add_union_field: '添加關聯字段',
     union_error: '關聯關系與關聯字段不能為空',
-    union_repeat: '當前數據集已被關聯，請勿重復關聯'
+    union_repeat: '當前數據集已被關聯，請勿重復關聯',
+    preview_result: '預覽結果'
   },
   datasource: {
     datasource: '數據源',

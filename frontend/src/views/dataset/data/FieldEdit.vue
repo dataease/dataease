@@ -15,7 +15,7 @@
       <el-form :inline="true">
         <el-form-item class="form-item">
           <el-button v-if="hasDataPermission('manage',param.privileges)" size="mini" icon="el-icon-circle-plus-outline" @click="addCalcField">{{ $t('dataset.add_calc_field') }}</el-button>
-          <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel' && table.type !== 'custom'" size="mini" :loading="isSyncField" icon="el-icon-refresh-left" @click="syncField">{{ $t('dataset.sync_field') }}</el-button>
+          <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel' && table.type !== 'custom' && table.type !== 'union'" size="mini" :loading="isSyncField" icon="el-icon-refresh-left" @click="syncField">{{ $t('dataset.sync_field') }}</el-button>
         </el-form-item>
         <el-form-item class="form-item" style="float: right;margin-right: 0;">
           <el-input
@@ -43,7 +43,7 @@
               <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
             </template>
           </el-table-column>
-          <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+          <el-table-column v-if="!(table.mode === 0 && (table.type === 'custom' || table.type === 'union'))" property="originName" :label="$t('dataset.field_origin_name')" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                 <span style="font-size: 12px;">{{ scope.row.originName }}</span>
@@ -149,7 +149,7 @@
               <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
             </template>
           </el-table-column>
-          <el-table-column v-if="!(param.mode === 0 && param.type === 'custom')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+          <el-table-column v-if="!(table.mode === 0 && (table.type === 'custom' || table.type === 'union'))" property="originName" :label="$t('dataset.field_origin_name')" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                 <span style="font-size: 12px;">{{ scope.row.originName }}</span>
