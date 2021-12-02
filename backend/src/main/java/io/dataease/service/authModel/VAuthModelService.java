@@ -41,7 +41,7 @@ public class VAuthModelService {
     private List<VAuthModelDTO> filterData(VAuthModelRequest request, List<VAuthModelDTO> result) {
         if (request.getDatasetMode() != null && request.getDatasetMode() == 1) {
             result = result.stream().filter(vAuthModelDTO -> {
-                if (vAuthModelDTO.getNodeType().equalsIgnoreCase("spine") || (vAuthModelDTO.getNodeType().equalsIgnoreCase("leaf") && vAuthModelDTO.getMode().equals(1L)) && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("excel") && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("custom")) {
+                if (vAuthModelDTO.getNodeType().equalsIgnoreCase("spine") || (vAuthModelDTO.getNodeType().equalsIgnoreCase("leaf") && vAuthModelDTO.getMode().equals(1L)) && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("excel") && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("custom") && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("union")) {
                     return true;
                 } else {
                     return false;
