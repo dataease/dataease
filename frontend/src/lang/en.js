@@ -1426,7 +1426,9 @@ export default {
     video_add_tips: 'Please Add Video Info...',
     panel_view_result_show: 'View Result Show',
     panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000',
-    timeout_refresh: 'Timeout，Will Refresh...'
+    timeout_refresh: 'Timeout，Will Refresh...',
+    mobile_layout: 'Mobile Layout',
+    component_hidden: 'Component Hidden'
   },
   plugin: {
     local_install: 'Local installation',
