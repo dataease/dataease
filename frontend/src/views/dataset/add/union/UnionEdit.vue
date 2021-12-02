@@ -2,11 +2,11 @@
   <div v-if="unionParam.type" style="height:600px;">
     <div class="field-style">
       <div class="fields">
-        <p>{{ unionParam.parent.currentDs.name }}</p>
+        <p :title="unionParam.parent.currentDs.name">{{ unionParam.parent.currentDs.name }}</p>
         <union-field-list :field-list="parentField" :node="unionParam.parent" @checkedFields="changeParentFields" />
       </div>
       <div class="fields">
-        <p>{{ unionParam.node.currentDs.name }}</p>
+        <p :title="unionParam.parent.currentDs.name">{{ unionParam.node.currentDs.name }}</p>
         <union-field-list :field-list="nodeField" :node="unionParam.node" @checkedFields="changeNodeFields" />
       </div>
     </div>
@@ -81,6 +81,9 @@ export default {
 p{
   font-size: 14px;
   margin: 6px 0!important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .el-divider--horizontal {
   margin: 12px 0;
