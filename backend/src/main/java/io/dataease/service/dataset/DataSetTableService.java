@@ -281,7 +281,7 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dorisDatasource);
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(dorisDatasource.getType());
-        if (StringUtils.equalsIgnoreCase("custom", table.getType())) {
+        if (StringUtils.equalsIgnoreCase("custom", table.getType()) || StringUtils.equalsIgnoreCase("union", table.getType())) {
             datasourceRequest.setQuery(ddlProvider.dropView(dorisTableName));
             jdbcProvider.exec(datasourceRequest);
             datasourceRequest.setQuery(ddlProvider.dropView(DorisTableUtils.dorisTmpName(dorisTableName)));
@@ -1070,7 +1070,7 @@ public class DataSetTableService {
     private Map<String, Object> getUnionSQLDoris(DataTableInfoDTO dataTableInfoDTO) {
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
-        Map<String, String[]> checkedInfo = new TreeMap<>();
+        Map<String, String[]> checkedInfo = new LinkedHashMap<>();
         List<UnionParamDTO> unionList = new ArrayList<>();
         List<DatasetTableField> checkedFields = new ArrayList<>();
         String sql = "";
@@ -1183,7 +1183,7 @@ public class DataSetTableService {
 
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
-        Map<String, String[]> checkedInfo = new TreeMap<>();
+        Map<String, String[]> checkedInfo = new LinkedHashMap<>();
         List<UnionParamDTO> unionList = new ArrayList<>();
         List<DatasetTableField> checkedFields = new ArrayList<>();
         String sql = "";
@@ -1272,12 +1272,12 @@ public class DataSetTableService {
             UnionDTO unionDTO = childrenDs.get(i);
 
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(unionDTO.getCurrentDs().getId());
-            String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             String tableId = unionDTO.getCurrentDs().getId();
-
             if (ObjectUtils.isEmpty(datasetTable)) {
                 DEException.throwException(Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
             }
+            String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
+
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
             if (CollectionUtils.isEmpty(fields)) {
                 DEException.throwException(Translator.get("i18n_cst_ds_tb_or_field_deleted") + String.format(":table id [%s]", tableId));
@@ -1473,7 +1473,11 @@ public class DataSetTableService {
                     datasetTableField.setTableId(datasetTable.getId());
                     datasetTableField.setOriginName(filed.getFieldName());
                     datasetTableField.setName(filed.getRemarks());
-                    datasetTableField.setDataeaseName(DorisTableUtils.columnName(filed.getFieldName()));
+                    if (datasetTable.getMode() == 1 && StringUtils.equalsIgnoreCase("union", datasetTable.getType())) {
+                        datasetTableField.setDataeaseName(filed.getFieldName());
+                    } else {
+                        datasetTableField.setDataeaseName(DorisTableUtils.columnName(filed.getFieldName()));
+                    }
                     datasetTableField.setType(filed.getFieldType());
                     if (ObjectUtils.isEmpty(ds)) {
                         datasetTableField.setDeType(transFieldType(filed.getFieldType()));
