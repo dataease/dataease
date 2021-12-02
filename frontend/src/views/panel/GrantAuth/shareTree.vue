@@ -11,15 +11,7 @@
               </span>
               <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
             </span>
-            <!--  <span :class="!!data.msgNode ? 'msg-node-class': ''">
-              <span v-if="!!data.id">
-                <el-button
-                  icon="el-icon-picture-outline"
-                  type="text"
-                />
-              </span>
-              <span style="margin-left: 6px">{{ data.name }}</span>
-            </span> -->
+
           </span>
         </el-tree>
       </div>
@@ -28,9 +20,9 @@
     <el-row>
       <span class="header-title">{{ $t('panel.share_out') }}</span>
       <div class="block" style="margin-top:8px;">
-        <el-tree :data="outDatas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expand-all="true" @node-click="viewMyShare">
+        <el-tree :data="outDatas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expand-all="true">
           <span slot-scope="{ data }" class="custom-tree-node father">
-            <span style="display: flex; flex: 1 1 0%; width: 0px;">
+            <span style="display: flex; flex: 1 1 0%; width: 0px;" @click="viewMyShare(data)">
               <span v-if="!!data.id">
                 <svg-icon icon-class="panel" class="ds-icon-scene" />
               </span>
@@ -79,7 +71,18 @@ export default {
       outDatas: []
     }
   },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    }
+  },
   created() {
+    bus.$on('refresh-my-share-out', () => {
+      this.initOutData().then(res => {
+        this.outDatas = res.data
+        this.setMainNull()
+      })
+    })
     this.initData().then(res => {
       this.datas = res.data
       if (this.msgPanelIds && this.msgPanelIds.length > 0) {
@@ -145,7 +148,6 @@ export default {
       })
     },
     removeCurrent(node) {
-      console.log(node)
       const param = {
         panelId: node.id
       }
@@ -156,6 +158,7 @@ export default {
         type: 'warning'
       }).then(() => {
         removeShares(param).then(res => {
+          this.panelInfo && this.panelInfo.id && node.id === this.panelInfo.id && this.setMainNull()
           this.initOutData().then(res => {
             this.outDatas = res.data
           })
@@ -167,6 +170,9 @@ export default {
           message: this.$t('commons.delete_cancelled')
         })
       })
+    },
+    setMainNull() {
+      this.$store.dispatch('panel/setPanelInfo', { id: null, name: '', preStyle: null })
     }
 
   }

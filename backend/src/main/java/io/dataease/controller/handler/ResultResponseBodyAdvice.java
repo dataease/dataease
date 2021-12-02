@@ -55,7 +55,7 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     // i18n
     private Object translate(Object obj, String type) {
-       return Translator.translateObject(obj);
+        return Translator.translateObject(obj);
     }
 
 

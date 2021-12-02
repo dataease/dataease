@@ -341,7 +341,9 @@ export default {
       ok: 'Confirm',
       cancel: 'Cancel'
     },
-    ukey_title: 'API Keys'
+    ukey_title: 'API Keys',
+    thumbnail: 'thumbnail',
+    confirm_delete: 'Confirm delete'
   },
   documentation: {
     documentation: 'Documentation',
@@ -653,9 +655,9 @@ export default {
     process: 'Speed of progress',
     add_chart: 'Add Chart',
     db_data: 'Database Dataset',
-    sql_data: 'SQL data set',
-    excel_data: 'Excel data set',
-    custom_data: 'Custom data set',
+    sql_data: 'SQL Dataset',
+    excel_data: 'Excel Dataset',
+    custom_data: 'Custom Dataset',
     pls_slc_tbl_left: 'Please select the chart from the left',
     add_db_table: 'Add Database Dataset',
     pls_slc_data_source: 'Please select data source',
@@ -954,6 +956,7 @@ export default {
     table_page_size_unit: 'Item/Page',
     result_count: 'Result',
     result_mode_all: 'ALL',
+    result_mode_custom: 'Custom',
     chart_word_cloud: 'Word Cloud',
     drag_block_word_cloud_label: 'Word Label',
     drag_block_word_cloud_size: 'Word Size',
@@ -994,9 +997,9 @@ export default {
     process: 'Speed of progress',
     update: 'update',
     db_data: 'Database Dataset',
-    sql_data: 'SQL data set',
-    excel_data: 'Excel data set',
-    custom_data: 'Custom data set',
+    sql_data: 'SQL Dataset',
+    excel_data: 'Excel Dataset',
+    custom_data: 'Custom Dataset',
     pls_slc_tbl_left: 'Please select the chart from the left',
     add_db_table: 'Add Database Dataset',
     pls_slc_data_source: 'Please select data source',
@@ -1150,7 +1153,17 @@ export default {
     confirm_sync_field: 'Confirm Sync',
     confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm',
     sync_success: 'Success',
-    sync_success_1: 'Success，please sync data again'
+    sync_success_1: 'Success，please sync data again',
+    union_data: 'Union Dataset',
+    add_union_table: 'Add Union Dataset',
+    edit_union: 'Edit Union Dataset',
+    union: 'Union',
+    edit_union_relation: 'Edit Union Relation',
+    add_union_relation: 'Add Union Relation',
+    field_select: 'Select Field',
+    add_union_field: 'Add Union Field',
+    union_error: 'Union relation and field can not be empty',
+    union_repeat: 'This dataset is already union，do not union repeat'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1405,12 +1418,15 @@ export default {
     online_video: 'Online Video',
     streaming_media: 'Streaming Media',
     auto_play: 'Auto Play',
-    video_tips: 'Video Tips',
+    video_tips: 'User Https,Now Format:mp4、webm',
     play_frequency: 'Play Frequency',
     play_once: 'Once',
     play_circle: 'Circle',
     video_links: 'Video Links',
-    video_add_tips: 'Please Add Video Info...'
+    video_add_tips: 'Please Add Video Info...',
+    panel_view_result_show: 'View Result Show',
+    panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000',
+    timeout_refresh: 'Timeout，Will Refresh...'
   },
   plugin: {
     local_install: 'Local installation',
@@ -1622,6 +1638,50 @@ export default {
     select_openMode: 'Please select time category',
     select_time_format: 'Please select time format',
     select_date_format: 'Please select date format'
+
+  },
+  xpacktask: {
+    add: 'Add task',
+    edit: 'Edit task',
+    task_id: 'Task id',
+    name: 'Name',
+    last_exec_time: 'Last execute time',
+    last_exec_status: 'Last execute status',
+    ready: 'Ready',
+    success: 'Success',
+    underway: 'Underway',
+    error: 'Error',
+    creator: 'Creator',
+    create_time: 'Create time',
+    search_by_name: 'Search by name',
+    exec_time: 'Execute time',
+    status: 'Execute status',
+    pixel_error: 'Pixel only support {800 - 10000} * {500 - 6250}'
+
+  },
+  emailtask: {
+    title: 'Title',
+    panel: 'Panel',
+    content: 'Content',
+    recipients: 'Recipients',
+    pixel: 'Pixel',
+    default: 'Default',
+    custom: 'Custom',
+    rate_type: 'Rate type',
+    cron_exp: 'Cron expression',
+    exec_time: 'Execute time',
+    start_time: 'Start time',
+    end_time: 'End time',
+
+    preview: 'Preview',
+    emial_preview: 'Emial preview',
+
+    simple_repeat: 'Simple repeat',
+    once_a_day: 'Once a day',
+    once_a_week: 'Once a week',
+    once_a_month: 'Once a month',
+    complex_repeat: 'Complex repeat',
+    pixel_tip: 'Please select'
 
   }
 }

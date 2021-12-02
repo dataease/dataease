@@ -72,6 +72,12 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/delink',
+    component: () => import('@/views/link'),
+    hidden: true
+  },
+
+  {
     path: '/preview/:reportId',
     component: () => import('@/components/canvas/components/Editor/PreviewEject'),
     hidden: true
@@ -208,7 +214,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+//   mode: 'history', // require service support
   mode: 'hash',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes

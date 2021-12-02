@@ -15,11 +15,10 @@
     </el-row>
 
     <el-row style="height: 120px;overflow-y: auto">
-
-      <el-row v-for="(item, index) in linkageInfo.linkageFields" :key="index">
+      <el-row v-for="(itemLinkage, index) in linkageInfo.linkageFields" :key="index">
         <el-col :span="11">
           <div class="select-filed">
-            <el-select v-model="item.sourceField" size="mini" placeholder="请选择">
+            <el-select v-model="itemLinkage.sourceField" size="mini" placeholder="请选择">
               <el-option
                 v-for="item in sourceLinkageInfo.targetViewFields"
                 :key="item.id"
@@ -39,7 +38,7 @@
         </el-col>
         <el-col :span="11">
           <div class="select-filed">
-            <el-select v-model="item.targetField" size="mini" placeholder="请选择">
+            <el-select v-model="itemLinkage.targetField" size="mini" placeholder="请选择">
               <el-option
                 v-for="item in linkageInfo.targetViewFields"
                 :key="item.id"
@@ -52,7 +51,7 @@
                   <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
                   <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
                 </span>
-                <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+                <span style="float: left; color: #8492a6; font-size: 12px">{{ itemLinkage.targetField }}-{{ item.name }}</span>
               </el-option>
             </el-select>
           </div>
@@ -66,7 +65,7 @@
     </el-row>
 
     <el-row class="bottom">
-      <el-button size="mini" type="success" icon="el-icon-plus" round @click="addLinkageField">追加联动依赖字段</el-button>
+      <el-button size="mini" type="success" icon="el-icon-plus" round @click="addLinkageField(null,null)">追加联动依赖字段</el-button>
     </el-row>
 
     <!--    <el-button slot="reference">T</el-button>-->
@@ -76,6 +75,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { checkSameDataSet } from '@/api/chart/chart'
 export default {
 
   props: {
@@ -104,6 +104,17 @@ export default {
         'custom'
       ]
     }
+  },
+  mounted() {
+    // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
+    checkSameDataSet(this.curLinkageView.propValue.viewId, this.element.propValue.viewId).then(res => {
+      console.log('linkageFields:' + JSON.stringify(this.linkageInfo.linkageFields))
+      if (res.data === 'YES' && this.linkageInfo.linkageFields.length === 0) {
+        this.sourceLinkageInfo.targetViewFields.forEach(item => {
+          this.addLinkageField(item.id, item.id)
+        })
+      }
+    })
   },
   computed: {
     linkageInfo() {
@@ -137,10 +148,10 @@ export default {
     deleteLinkageField(index) {
       this.linkageInfo.linkageFields.splice(index, 1)
     },
-    addLinkageField() {
+    addLinkageField(sourceFieldId, targetFieldId) {
       const linkageFieldItem = {
-        sourceViewId: null,
-        targetViewId: null
+        sourceField: sourceFieldId,
+        targetField: targetFieldId
       }
       this.linkageInfo.linkageFields.push(linkageFieldItem)
     }

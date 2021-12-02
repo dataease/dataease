@@ -36,7 +36,6 @@ public class ViewServer implements ViewApi {
         if(CollectionUtils.isNotEmpty(groups)&&CollectionUtils.isNotEmpty(views)){
             groups.addAll(views);
         }
-//        List<PanelViewDto> panelViewDtos = panelViewService.buildTree(groups, views);
         return TreeUtils.mergeTree(groups);
     }
 

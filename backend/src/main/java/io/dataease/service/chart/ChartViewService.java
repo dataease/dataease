@@ -6,6 +6,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -78,11 +79,6 @@ public class ChartViewService {
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
-        try {
-            calcData(chartView, new ChartExtRequest(), true);
-        } catch (Exception e) {
-
-        }
         return getOneWithPermission(chartView.getId());
     }
 
@@ -166,12 +162,9 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getOneWithPermission(String id) {
-        ChartViewRequest chartViewRequest = new ChartViewRequest();
-        chartViewRequest.setId(id);
-        chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        return extChartViewMapper.searchOne(chartViewRequest);
+        String userId = AuthUtils.getUser()!=null?String.valueOf(AuthUtils.getUser().getUserId()):"NONE";
+        return extChartViewMapper.searchOneWithPrivileges(userId,id);
     }
-
     public void delete(String id) {
         chartViewMapper.deleteByPrimaryKey(id);
     }
@@ -182,12 +175,17 @@ public class ChartViewService {
         chartViewMapper.deleteByExample(chartViewExample);
     }
 
-    public ChartViewDTO getData(String id, ChartExtRequest requestList) throws Exception {
-        ChartViewWithBLOBs view = chartViewMapper.selectByPrimaryKey(id);
-        return calcData(view, requestList, true);
+    public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
+        ChartViewDTO view = this.getOneWithPermission(id);
+        // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
+        if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
+            view.setResultMode(request.getResultMode());
+            view.setResultCount(request.getResultCount());
+        }
+        return calcData(view, request, request.isCache());
     }
 
-    public ChartViewDTO calcData(ChartViewWithBLOBs view, ChartExtRequest requestList, boolean cache) throws Exception {
+    public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
@@ -380,17 +378,6 @@ public class ChartViewService {
                 }
             }
             data = datasourceProvider.getData(datasourceRequest);
-            /**
-             * 直连不实用缓存
-             String key = "provider_sql_"+datasourceRequest.getDatasource().getId() + "_" + datasourceRequest.getTable() + "_" +datasourceRequest.getQuery();
-             Object cache;
-             if ((cache = CacheUtils.get(JdbcConstants.JDBC_PROVIDER_KEY, key)) == null) {
-             data = datasourceProvider.getData(datasourceRequest);
-             CacheUtils.put(JdbcConstants.JDBC_PROVIDER_KEY,key ,data, null, null);
-             }else {
-             data = (List<String[]>) cache;
-             }
-             */
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
             Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -410,22 +397,6 @@ public class ChartViewService {
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList, ds, view));
             }
-            /*// 定时抽取使用缓存
-            Object cache;
-            // 仪表板有参数不实用缓存
-            if (CollectionUtils.isNotEmpty(requestList.getFilter())) {
-                data = datasourceProvider.getData(datasourceRequest);
-            }
-            // 仪表板无参数 且 未缓存过该视图 则查询后缓存
-            else if ((cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, id)) == null) {
-                lock.lock();
-                data = datasourceProvider.getData(datasourceRequest);
-                CacheUtils.put(JdbcConstants.VIEW_CACHE_KEY, id, data, null, null);
-            }
-            // 仪表板有缓存 使用缓存
-            else {
-                data = (List<String[]>) cache;
-            }*/
             // 仪表板有参数不实用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
                     || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
@@ -444,10 +415,6 @@ public class ChartViewService {
                 }
             }
         }
-//        // 返回数据量判定
-//        if (StringUtils.equalsIgnoreCase("custom", view.getResultMode()) && data.size() > view.getResultCount()) {
-//            data = data.subList(0, view.getResultCount());
-//        }
 
         Map<String, Object> map = new TreeMap<>();
         // 图表组件可再扩展
@@ -1303,11 +1270,7 @@ public class ChartViewService {
                 chartQuotaDTO.setId(yAxis.get(j).getId());
                 quotaList.add(chartQuotaDTO);
                 scatterChartDataDTO.setQuotaList(quotaList);
-//                try {
-//                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
-//                } catch (Exception e) {
-//                    axisChartDataDTO.setValue(new BigDecimal(0));
-//                }
+
                 if (CollectionUtils.isNotEmpty(extBubble) && extBubble.size() > 0) {
                     try {
                         scatterChartDataDTO.setValue(new Object[]{
@@ -1331,41 +1294,6 @@ public class ChartViewService {
                 series.get(j).getData().add(scatterChartDataDTO);
             }
         }
-
-        /*for (String[] d : data) {
-            StringBuilder a = new StringBuilder();
-            for (int i = 0; i < xAxis.size(); i++) {
-                if (i == xAxis.size() - 1) {
-                    a.append(d[i]);
-                } else {
-                    a.append(d[i]).append("\n");
-                }
-            }
-            x.add(a.toString());
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
-                int j = i - xAxis.size();
-                if (CollectionUtils.isNotEmpty(extBubble) && extBubble.size() > 0) {
-                    try {
-                        series.get(j).getData().add(new Object[]{
-                                a.toString(),
-                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]),
-                                new BigDecimal(StringUtils.isEmpty(d[xAxis.size() + yAxis.size()]) ? "0" : d[xAxis.size() + yAxis.size()])
-                        });
-                    } catch (Exception e) {
-                        series.get(j).getData().add(new Object[]{a.toString(), new BigDecimal(0), new BigDecimal(0)});
-                    }
-                } else {
-                    try {
-                        series.get(j).getData().add(new Object[]{
-                                a.toString(),
-                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i])
-                        });
-                    } catch (Exception e) {
-                        series.get(j).getData().add(new Object[]{a.toString(), new BigDecimal(0)});
-                    }
-                }
-            }
-        }*/
 
         map.put("x", x);
         map.put("series", series);
@@ -1404,9 +1332,6 @@ public class ChartViewService {
     }
 
     private void checkName(ChartViewWithBLOBs chartView) {
-//        if (StringUtils.isEmpty(chartView.getId())) {
-//            return;
-//        }
         ChartViewExample chartViewExample = new ChartViewExample();
         ChartViewExample.Criteria criteria = chartViewExample.createCriteria();
         if (StringUtils.isNotEmpty(chartView.getId())) {
@@ -1454,5 +1379,13 @@ public class ChartViewService {
 
     public String searchAdviceSceneId(String panelId) {
         return extChartViewMapper.searchAdviceSceneId(AuthUtils.getUser().getUserId().toString(), panelId);
+    }
+
+    public String checkSameDataSet(String viewIdSource, String viewIdTarget) {
+        if (extChartViewMapper.checkSameDataSet(viewIdSource, viewIdTarget) == 1) {
+            return "YES";
+        } else {
+            return "NO";
+        }
     }
 }

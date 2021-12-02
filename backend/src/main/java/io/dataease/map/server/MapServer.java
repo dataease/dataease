@@ -28,7 +28,6 @@ public class MapServer implements MapApi {
     @Override
     public String asyncGeometry() {
         try {
-            // List<AreaEntity> areaEntities = MapUtils.readAreaEntity();
             List<AreaEntity> areaEntities = mapService.areaEntities();
             MapUtils.recursionWriteFull(areaEntities);
         }catch (Exception e) {

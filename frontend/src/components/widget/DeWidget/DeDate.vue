@@ -2,7 +2,7 @@
   <el-date-picker
     v-if="options!== null && options.attrs!==null"
     ref="dateRef"
-    v-model="options.value"
+    v-model="values"
     :type="options.attrs.type"
     :range-separator="$t(options.attrs.rangeSeparator)"
     :start-placeholder="$t(options.attrs.startPlaceholder)"
@@ -10,6 +10,7 @@
     :placeholder="$t(options.attrs.placeholder)"
     :append-to-body="inScreen"
     style="min-height: 36px;"
+    value-format="timestamp"
     @change="dateChange"
   />
 </template>
@@ -42,11 +43,13 @@ export default {
   },
   created() {
     this.options = this.element.options
-    if ((this.options.attrs.type === 'date' || this.options.attrs.type === 'daterange') && Array.isArray(this.options.value) && this.options.value.length === 0) {
-      this.options.value = null
-    }
-    if (!!this.options && !!this.options.value && Object.keys(this.options.value).length === 0) {
-      this.options.value = null
+
+    if (this.options.value) {
+      if (this.options.attrs.type !== 'daterange') {
+        this.values = Array.isArray(this.options.value) ? this.options.value[0] : this.options.value
+      } else {
+        this.values = this.options.value
+      }
     }
   },
   methods: {
@@ -54,6 +57,15 @@ export default {
       this.setCondition()
     },
     setCondition() {
+      if (this.values) {
+        if (this.options.attrs.type !== 'daterange') {
+          this.options.value = Array.isArray(this.values) ? this.values[0] : this.values
+        } else {
+          this.options.value = this.values
+        }
+      } else {
+        this.options.value = []
+      }
       const param = {
         component: this.element,
         value: Array.isArray(this.options.value) ? this.options.value : [this.options.value],

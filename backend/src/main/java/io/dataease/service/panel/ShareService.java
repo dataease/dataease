@@ -76,14 +76,11 @@ public class ShareService {
         PanelShareExample example = new PanelShareExample();
         example.createCriteria().andPanelGroupIdEqualTo(panelGroupId);
         List<PanelShare> panelShares = mapper.selectByExample(example);
-        /*if (CollectionUtils.isEmpty(panelShares)) {
-            return;
-        }*/
         Map<Integer, List<TempShareNode>> typeSharedMap = panelShares.stream().map(this::convertNode).collect(Collectors.groupingBy(TempShareNode::getType));
 
         for (Map.Entry<Integer, List<Long>> entry : authURDMap.entrySet()) {
             Integer key = entry.getKey();
-            List<TempShareNode> shareNodes = null;
+            List<TempShareNode> shareNodes;
             if (null == typeSharedMap || null == typeSharedMap.get(key)) {
                 shareNodes = new ArrayList<>();
             }else{
@@ -124,25 +121,22 @@ public class ShareService {
         // 下面是消息发送
         Set<Long> addUserIdSet = AuthUtils.userIdsByURD(addAuthURD);
         Set<Long> redUserIdSet = AuthUtils.userIdsByURD(sharedAuthURD);
-
-
-        PanelGroup panelGroup = panelGroupMapper.selectByPrimaryKey(panelGroupId);;
+        PanelGroup panelGroup = panelGroupMapper.selectByPrimaryKey(panelGroupId);
         CurrentUserDto user = AuthUtils.getUser();
         Gson gson = new Gson();
         String msg = panelGroup.getName();
 
-
-        List<String> msgParam = new ArrayList<String>();
+        List<String> msgParam = new ArrayList<>();
         msgParam.add(panelGroupId);
         addUserIdSet.forEach(userId -> {
-            if (!redUserIdSet.contains(userId) && user.getUserId() != userId){
-                DeMsgutil.sendMsg(userId, 2L, 1L,user.getNickName()+" 分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+            if (!redUserIdSet.contains(userId) && !user.getUserId().equals(userId)){
+                DeMsgutil.sendMsg(userId, 2L,user.getNickName()+" 分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
             }
         });
 
         redUserIdSet.forEach(userId -> {
-            if (!addUserIdSet.contains(userId) && user.getUserId() != userId){
-                DeMsgutil.sendMsg(userId, 3L, 1L,user.getNickName()+" 取消分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
+            if (!addUserIdSet.contains(userId) && !user.getUserId().equals(userId)){
+                DeMsgutil.sendMsg(userId, 3L, user.getNickName()+" 取消分享了仪表板【"+msg+"】，请查收!", gson.toJson(msgParam));
             }
         });
 
@@ -167,13 +161,7 @@ public class ShareService {
      * @return
      */
     private Map<String, Object> filterData(List<Long> newTargets, List<TempShareNode> shareNodes) {
-
         Map<String, Object> result = new HashMap<>();
-        /*if (null == newTargets) {
-            result.put("add", new ArrayList<>());
-            result.put("red", new ArrayList<>());
-            return result;
-        }*/
         List<Long> newUserIds = new ArrayList<>();
         for (int i = 0; i < newTargets.size(); i++) {
             Long newTargetId = newTargets.get(i);
@@ -181,7 +169,7 @@ public class ShareService {
             for (int j = 0; j < shareNodes.size(); j++) {
                 TempShareNode shareNode = shareNodes.get(j);
                 Long sharedId = shareNode.getTargetId();
-                if (newTargetId == sharedId) {
+                if (newTargetId.equals(sharedId)) {
                     shareNode.setMatched(true); // 已分享 重新命中
                     isNew = false;
                 }
@@ -206,7 +194,7 @@ public class ShareService {
         private Boolean matched = false;
 
         public boolean targetMatch(Long tid) {
-            return targetId == tid;
+            return targetId.equals(tid);
         }
     }
 
@@ -225,9 +213,7 @@ public class ShareService {
         // 使用原生对象会导致事物失效 所以这里需要使用spring代理对象
         if (CollectionUtils.isNotEmpty(panelIds)){
             ShareService proxy = CommonBeanFactory.getBean(ShareService.class);
-            panelIds.forEach(panelId -> {
-                proxy.delete(panelId, type);
-            });
+            panelIds.forEach(panelId -> proxy.delete(panelId, type));
         }
         if (CollectionUtils.isEmpty(targetIds)) return;
 
@@ -247,7 +233,7 @@ public class ShareService {
         }
 
         // 下面是发送提醒消息逻辑
-        Set<Long> userIdSet = new HashSet<Long>();
+        Set<Long> userIdSet;
         AuthURD authURD = new AuthURD();
         if (type == 0) {
             authURD.setUserIds(targetIds);
@@ -263,10 +249,7 @@ public class ShareService {
         CurrentUserDto user = AuthUtils.getUser();
         String msg = StringUtils.joinWith("，", panelGroups.stream().map(PanelGroup::getName).collect(Collectors.toList()));
         Gson gson = new Gson();
-        userIdSet.forEach(userId -> {
-            // DeMsgutil.sendMsg(userId, 0, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!");
-            DeMsgutil.sendMsg(userId, 2L,1L, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds));
-        });
+        userIdSet.forEach(userId -> DeMsgutil.sendMsg(userId, 2L, user.getNickName()+" 分享了仪表板【"+msg+"】给您，请查收!", gson.toJson(panelIds)));
 
     }
 
@@ -295,8 +278,7 @@ public class ShareService {
 
     public List<PanelSharePo> queryShareOut() {
         String username = AuthUtils.getUser().getUsername();
-        List<PanelSharePo> panelSharePos = extPanelShareMapper.queryOut(username);
-        return panelSharePos;
+        return extPanelShareMapper.queryOut(username);
     }
 
     public List<PanelShareDto> queryTree(BaseGridRequest request){
@@ -311,21 +293,6 @@ public class ShareService {
         param.put("roleIds", roleIds);
 
         List<PanelSharePo> datas = extPanelShareMapper.query(param);
-
-        /*List<Long> targetIds = new ArrayList<>();
-        targetIds.add(userId);
-        targetIds.add(deptId);
-        targetIds.addAll(roleIds);
-
-        ConditionEntity condition = new ConditionEntity();
-        condition.setField("s.target_id");
-        condition.setOperator("in");
-        condition.setValue(targetIds);
-
-        request.setConditions(new ArrayList<ConditionEntity>(){{add(condition);}});
-
-        GridExample example = request.convertExample();
-        List<PanelSharePo> datas = extPanelShareMapper.query(example);*/
         List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po)).collect(Collectors.toList());
         return convertTree(dtoLists);
     }
@@ -350,7 +317,6 @@ public class ShareService {
     public List<PanelShareOutDTO> queryTargets(String panelId) {
         return extPanelShareMapper.queryTargets(panelId);
     }
-
 
     public void removeShares(PanelShareRemoveRequest removeRequest) {
         extPanelShareMapper.removeShares(removeRequest);

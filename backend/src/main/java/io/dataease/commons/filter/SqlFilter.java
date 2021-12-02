@@ -3,6 +3,7 @@ package io.dataease.commons.filter;
 import io.dataease.commons.holder.ThreadLocalContextHolder;
 import io.dataease.commons.wrapper.XssAndSqlHttpServletRequestWrapper;
 import org.apache.commons.lang3.StringUtils;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,8 +11,6 @@ import java.io.*;
 
 
 public class SqlFilter implements Filter {
-
-
 
 
     @Override
@@ -31,7 +30,7 @@ public class SqlFilter implements Filter {
         }
 
         String method = "GET";
-        String param = "";
+        String param;
         XssAndSqlHttpServletRequestWrapper xssRequest = null;
         if (request instanceof HttpServletRequest) {
             method = ((HttpServletRequest) request).getMethod();
@@ -39,8 +38,8 @@ public class SqlFilter implements Filter {
         }
         if ("POST".equalsIgnoreCase(method)) {
             param = this.getBodyString(xssRequest.getReader());
-            if(StringUtils.isNotBlank(param)){
-                if(xssRequest.checkXSSAndSql(param)){
+            if (StringUtils.isNotBlank(param)) {
+                if (xssRequest.checkXSSAndSql(param)) {
                     response.setCharacterEncoding("UTF-8");
                     response.setContentType("application/json;charset=UTF-8");
                     PrintWriter out = response.getWriter();

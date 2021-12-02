@@ -1,8 +1,7 @@
 <template>
-  <!-- <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa"> -->
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <de-main-container>
-      <ds-main ref="dsMain" />
+      <ds-main ref="dsMain"/>
     </de-main-container>
   </de-container>
 </template>
@@ -12,9 +11,10 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DsMain from './DsMain'
 import bus from '@/utils/bus'
+
 export default {
   name: 'Panel',
-  components: { DeMainContainer, DeContainer, DsMain },
+  components: {DeMainContainer, DeContainer, DsMain},
   data() {
     return {
       component: DsMain,
@@ -40,9 +40,6 @@ export default {
         if (panelShareTypeIds.includes(routerParam.msgType)) { // 是数据集同步
           if (routerParam.sourceParam) {
             try {
-            //   const msgParam = JSON.parse(routerParam.sourceParam)
-            //   this.param = msgParam.id
-            //   this.component = ViewTable
               this.$nextTick(() => {
                 this.$refs.dsMain && this.$refs.dsMain.msg2Current && this.$refs.dsMain.msg2Current(routerParam.sourceParam)
               })
@@ -58,16 +55,5 @@ export default {
 </script>
 
 <style scoped>
-  .ms-aside-container {
-    height: calc(100vh - 56px);
-    padding: 0px;
-    min-width: 260px;
-    max-width: 460px;
-  }
-
-  .ms-main-container {
-    height: calc(100vh - 56px);
-    padding: 0;
-  }
 
 </style>

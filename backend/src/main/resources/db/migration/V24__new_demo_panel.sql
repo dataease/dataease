@@ -1,6 +1,3 @@
-
-
-SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -12,7 +9,7 @@ CREATE TABLE `demo_gdp_2021` (
   `2020GDP` varchar(255) DEFAULT NULL,
   `increase` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=10;
 
 -- ----------------------------
 -- Records of demo_gdp_2021
@@ -30,7 +27,7 @@ CREATE TABLE `demo_gdp_by_city` (
   `city` varchar(255) DEFAULT NULL,
   `gdp` double(255,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=309 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=309;
 
 -- ----------------------------
 -- Records of demo_gdp_by_city
@@ -354,7 +351,7 @@ CREATE TABLE `demo_gdp_by_city_top10` (
   `province` varchar(255) DEFAULT NULL,
   `city` varchar(255) DEFAULT NULL,
   `gdp` double(255,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_gdp_by_city_top10
@@ -380,7 +377,7 @@ CREATE TABLE `demo_gdp_by_industry` (
   `industry` varchar(255) DEFAULT NULL,
   `GDP` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=4;
 
 -- ----------------------------
 -- Records of demo_gdp_by_industry
@@ -399,7 +396,7 @@ CREATE TABLE `demo_gdp_district_top100` (
   `province` varchar(255) DEFAULT NULL,
   `num` int(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=17;
 
 -- ----------------------------
 -- Records of demo_gdp_district_top100
@@ -432,7 +429,7 @@ CREATE TABLE `demo_gdp_history` (
   `gdp` double(255,2) DEFAULT NULL,
   `percent` double(255,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=11;
 
 -- ----------------------------
 -- Records of demo_gdp_history

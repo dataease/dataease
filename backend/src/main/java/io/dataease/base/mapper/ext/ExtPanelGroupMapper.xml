@@ -86,7 +86,7 @@
                 and panel_group.level = #{level}
             </if>
         </where>
-        order by panel_group.name asc,panel_group.create_time desc
+        ORDER BY CONVERT(panel_group.name using gbk)
     </select>
 
     <select id="panelGroupList" resultMap="BaseResultMapDTO">
@@ -160,7 +160,7 @@
                 and panel_group.level = #{level}
             </if>
         </where>
-        order by panel_group.name asc,panel_group.create_time desc
+     ORDER BY panel_group.node_type desc, CONVERT(panel_group.name using gbk)
     </select>
 
     <delete id="deleteCircle">

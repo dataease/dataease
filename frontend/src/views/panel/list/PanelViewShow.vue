@@ -23,7 +23,7 @@
             <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
-            <span v-if="hasDataPermission('edit',panelInfo.privileges)&&activeTab==='PanelList'" style="float: right;margin-right: 10px">
+            <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
               <el-button size="mini" type="primary" @click="editPanel">
                 {{ $t('commons.edit') }}
               </el-button>
@@ -75,7 +75,7 @@
       <el-row class="panel-design-preview">
         <div id="imageWrapper" ref="imageWrapper" style="width: 100%;height: 100%">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMain" :in-screen="!fullscreen" :show-type="'width'" />
+            <Preview v-if="showMain" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
           </fullscreen>
         </div>
       </el-row>
@@ -134,6 +134,7 @@ export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     activeTab: {
       type: String,
       required: false
@@ -304,7 +305,7 @@ export default {
       }
     },
     changePdfTemplate() {
-      this.pdfTemplateContent = this.pdfTemplateAll[this.pdfTemplateSelectedIndex].templateContent
+      this.pdfTemplateContent = this.pdfTemplateAll[this.pdfTemplateSelectedIndex] ? this.pdfTemplateAll[this.pdfTemplateSelectedIndex].templateContent : ''
     },
     closePreExport() {
       this.pdfExportShow = false

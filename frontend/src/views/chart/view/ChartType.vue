@@ -487,10 +487,4 @@ export default {
   white-space: pre;
   font-size: 12px;
 }
-
-.radio-style{
-  width: 80px;
-  height: 60px;
-  padding: 0;
-}
 </style>

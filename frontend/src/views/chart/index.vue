@@ -2,12 +2,12 @@
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <de-aside-container>
-      <group :save-status="saveStatus" @switchComponent="switchComponent" />
+      <group ref="group" :save-status="saveStatus" @switchComponent="switchComponent" />
     </de-aside-container>
 
     <de-main-container>
       <!--        <router-view />-->
-      <component :is="component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" />
+      <component :is="component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" @typeChange="typeChange" />
     </de-main-container>
   </de-container>
 </template>
@@ -49,6 +49,9 @@ export default {
     },
     saveSuccess(val) {
       this.saveStatus = val
+    },
+    typeChange(newType) {
+      this.$refs.group.nodeTypeChange(newType)
     }
   }
 }

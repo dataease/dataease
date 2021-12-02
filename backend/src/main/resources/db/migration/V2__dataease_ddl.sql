@@ -2,9 +2,7 @@ CREATE TABLE IF NOT EXISTS `file_content` (
     `file_id` varchar(64)  NOT NULL COMMENT 'File ID',
     `file`    longblob COMMENT 'File content',
     PRIMARY KEY (`file_id`)
-    )
-    ENGINE = InnoDB
-    DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `file_metadata` (
     `id`          varchar(64) NOT NULL COMMENT 'File ID',
@@ -14,40 +12,28 @@ CREATE TABLE IF NOT EXISTS `file_metadata` (
     `create_time` bigint(13)  NOT NULL COMMENT 'Create timestamp',
     `update_time` bigint(13)  NOT NULL COMMENT 'Update timestamp',
     PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `system_parameter` (
-    `param_key`   varchar(64) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Parameter name',
+    `param_key`   varchar(64) NOT NULL COMMENT 'Parameter name',
     `param_value` varchar(255)                               DEFAULT NULL COMMENT 'Parameter value',
     `type`        varchar(100)                      NOT NULL DEFAULT 'text' COMMENT 'Parameter type',
     `sort`        int(5)                                     DEFAULT NULL COMMENT 'Sort',
     PRIMARY KEY (`param_key`)
-)ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
-/*CREATE TABLE IF NOT EXISTS `user_role` (
-    `id`          varchar(50) NOT NULL COMMENT 'ID of user''s role info',
-    `user_id`     varchar(50) NOT NULL COMMENT 'User ID of this user-role info',
-    `role_id`     varchar(50) NOT NULL COMMENT 'Role ID of this user-role info',
-    `source_id`   varchar(50) DEFAULT NULL COMMENT 'The (system|organization|workspace) ID of this user-role info',
+
+CREATE TABLE IF NOT EXISTS `datasource` (
+    `id`          varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+    `name`     varchar(50) NOT NULL COMMENT '名称',
+    `desc`  varchar(50) COMMENT '描述',
+    `type`  varchar(50) NOT NULL COMMENT '类型',
+    `configuration`  longtext NOT NULL COMMENT '详细信息',
     `create_time` bigint(13)  NOT NULL COMMENT 'Create timestamp',
-    `update_time` bigint(13)  NOT NULL COMMENT 'Update timestamp',
+    `update_time` bigint(13) NOT NULL COMMENT 'Update timestamp',
+    `create_by` varchar(50)  COMMENT '创建人ID',
     PRIMARY KEY (`id`)
-)ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;*/
-
-CREATE TABLE `datasource` (
-  `id`          varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
-  `name`     varchar(50) NOT NULL COMMENT '名称',
-  `desc`  varchar(50) COMMENT '描述',
-  `type`  varchar(50) NOT NULL COMMENT '类型',
-  `configuration`  longtext NOT NULL COMMENT '详细信息',
-  `create_time` bigint(13)  NOT NULL COMMENT 'Create timestamp',
-  `update_time` bigint(13) NOT NULL COMMENT 'Update timestamp',
-  `create_by` varchar(50)  COMMENT '创建人ID',
-  PRIMARY KEY (`id`)
-)ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `dataset_group` (
     `id` varchar(50) NOT NULL COMMENT 'ID',
@@ -58,9 +44,7 @@ CREATE TABLE IF NOT EXISTS `dataset_group` (
     `create_by` varchar(50)  COMMENT '创建人ID',
     `create_time` bigint(13) COMMENT '创建时间',
     PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `sys_dept` (
   `dept_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -74,7 +58,7 @@ CREATE TABLE `sys_dept` (
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`dept_id`) USING BTREE,
   KEY `inx_pid` (`pid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='组织机构';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=2 ROW_FORMAT=COMPACT COMMENT='组织机构';
 
 CREATE TABLE `sys_menu` (
   `menu_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -96,10 +80,8 @@ CREATE TABLE `sys_menu` (
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`menu_id`) USING BTREE,
-  UNIQUE KEY `uniq_title` (`title`),
-  UNIQUE KEY `uniq_name` (`name`),
   KEY `inx_pid` (`pid`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统菜单';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=53 ROW_FORMAT=COMPACT COMMENT='系统菜单';
 
 CREATE TABLE `sys_user` (
   `user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -119,13 +101,9 @@ CREATE TABLE `sys_user` (
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   `language` varchar(20) DEFAULT NULL COMMENT '语言',
   PRIMARY KEY (`user_id`) USING BTREE,
-  UNIQUE KEY `UK_kpubos9gc2cvtkb0thktkbkes` (`email`) USING BTREE,
-  UNIQUE KEY `username` (`username`) USING BTREE,
-  UNIQUE KEY `uniq_username` (`username`),
-  UNIQUE KEY `uniq_email` (`email`),
   KEY `FK5rwmryny6jthaaxkogownknqp` (`dept_id`) USING BTREE,
   KEY `inx_enabled` (`enabled`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统用户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=3 ROW_FORMAT=COMPACT COMMENT='系统用户';
 
 CREATE TABLE `sys_role` (
   `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -135,24 +113,20 @@ CREATE TABLE `sys_role` (
   `update_by` varchar(255) DEFAULT NULL COMMENT '更新者',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`role_id`) USING BTREE,
-  UNIQUE KEY `uniq_name` (`name`),
-  KEY `role_name_index` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=3 ROW_FORMAT=COMPACT COMMENT='角色表';
 
 CREATE TABLE `sys_roles_menus` (
   `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`menu_id`,`role_id`) USING BTREE,
-  KEY `FKcngg2qadojhi3a651a5adkvbq` (`role_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色菜单关联';
+  PRIMARY KEY (`menu_id`,`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='角色菜单关联';
 
 CREATE TABLE `sys_users_roles` (
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`user_id`,`role_id`) USING BTREE,
-  KEY `FKq4eq273l04bpu4efj0jd0jb98` (`role_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户角色关联';
+  PRIMARY KEY (`user_id`,`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='用户角色关联';
 
 CREATE TABLE `my_plugin` (
   `plugin_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -171,11 +145,10 @@ CREATE TABLE `my_plugin` (
   `module_name` varchar(255) DEFAULT NULL COMMENT 'jar包名称',
   `icon` varchar(255) DEFAULT NULL COMMENT '图标',
   PRIMARY KEY (`plugin_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='插件表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=2 ROW_FORMAT=COMPACT COMMENT='插件表';
 
 
-CREATE TABLE IF NOT EXISTS `dataset_table`
-(
+CREATE TABLE IF NOT EXISTS `dataset_table` (
     `id`             varchar(50) NOT NULL COMMENT 'ID',
     `name`           varchar(64) NOT NULL COMMENT '表名称',
     `scene_id`       varchar(50) NOT NULL COMMENT '场景ID',
@@ -186,8 +159,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table`
     `create_by`      varchar(50) COMMENT '创建人ID',
     `create_time`    bigint(13) COMMENT '创建时间',
     PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB
-    DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `dataset_table_field` (
    `id` varchar(50) NOT NULL COMMENT 'ID',
@@ -202,13 +174,10 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field` (
    `checked` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否选中',
    `column_index` int(10) NOT NULL COMMENT '列位置',
    `last_sync_time` bigint(13) DEFAULT NULL COMMENT '同步时间',
-   PRIMARY KEY (`id`),
-   KEY `IDX_TABLE_ID` (`table_id`),
-   KEY `IDX_DE_TYPE` (`de_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS `dataset_table_task`
-(
+CREATE TABLE IF NOT EXISTS `dataset_table_task`(
     `id`          varchar(50)  NOT NULL COMMENT 'ID',
     `table_id`    varchar(50)  NOT NULL COMMENT '表ID',
     `name`        varchar(255) NOT NULL COMMENT '任务名称',
@@ -219,10 +188,8 @@ CREATE TABLE IF NOT EXISTS `dataset_table_task`
     `end`         varchar(50)  NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
     `end_time`    bigint(13) COMMENT '结束时间',
     `create_time` bigint(13) COMMENT '创建时间',
-    PRIMARY KEY (`id`),
-    KEY `IDX_TABLE_ID` (`table_id`)
-    ) ENGINE = InnoDB
-    DEFAULT CHARSET = utf8mb4;
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `dataset_table_task_log` (
   `id` varchar(50) NOT NULL COMMENT 'ID',
@@ -233,13 +200,11 @@ CREATE TABLE IF NOT EXISTS `dataset_table_task_log` (
   `status` varchar(50) NOT NULL COMMENT '执行状态',
   `info` longtext COMMENT '错误信息',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`),
-  KEY `IDX_TABLE_ID` (`task_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- chart start
-CREATE TABLE IF NOT EXISTS `chart_group`
-(
+CREATE TABLE IF NOT EXISTS `chart_group`(
     `id`          varchar(50) NOT NULL COMMENT 'ID',
     `name`        varchar(64) NOT NULL COMMENT '名称',
     `pid`         varchar(50) COMMENT '父级ID',
@@ -248,8 +213,7 @@ CREATE TABLE IF NOT EXISTS `chart_group`
     `create_by`   varchar(50) COMMENT '创建人ID',
     `create_time` bigint(13) COMMENT '创建时间',
     PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB
-    DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `chart_view` (
   `id` varchar(50) NOT NULL COMMENT 'ID',
@@ -268,9 +232,8 @@ CREATE TABLE `chart_view` (
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   `snapshot` longtext COMMENT '缩略图 ',
   `style_priority` varchar(255) DEFAULT 'panel' COMMENT '样式优先级 panel 仪表板 view 视图',
-  PRIMARY KEY (`id`),
-  KEY `IDX_TABLE_ID` (`table_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- chart end
 
@@ -285,7 +248,7 @@ CREATE TABLE `panel_design` (
     `update_time` bigint(13) DEFAULT NULL COMMENT '修改时间',
     `update_person` varchar(255) DEFAULT NULL COMMENT '修改人',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='仪表板和组件的关联关系 组件分为普通视图和系统组件';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='仪表板和组件的关联关系 组件分为普通视图和系统组件';
 
 CREATE TABLE `panel_group` (
   `id` varchar(50) NOT NULL,
@@ -303,7 +266,7 @@ CREATE TABLE `panel_group` (
   `extend2` varchar(255) DEFAULT NULL,
   `remark` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 
 CREATE TABLE `panel_view` (
@@ -315,16 +278,15 @@ CREATE TABLE `panel_view` (
   `update_by` varchar(255) DEFAULT NULL COMMENT '更新人',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `panel_store` (
    `store_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
    `panel_group_id` varchar(50) NOT NULL COMMENT '仪表板ID',
    `user_id` bigint(20) NOT NULL COMMENT '用户ID',
    `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
-   PRIMARY KEY (`store_id`) USING BTREE,
-   KEY `UK_store_user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板收藏';
+   PRIMARY KEY (`store_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=7 ROW_FORMAT=COMPACT COMMENT='仪表板收藏';
 
 
 CREATE TABLE `panel_share` (
@@ -333,11 +295,8 @@ CREATE TABLE `panel_share` (
        `target_id` bigint(20) DEFAULT NULL COMMENT '目标ID',
        `create_time` bigint(13) DEFAULT NULL COMMENT '创建日期',
        `type` int(8) DEFAULT NULL COMMENT '类型0:user,1:role,2dept',
-       PRIMARY KEY (`share_id`) USING BTREE,
-       KEY `UK_share_arget_id` (`target_id`) ,
-       KEY `UK_share_panel_group_id` (`panel_group_id`) ,
-       KEY `UK_share_type` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板分享';
+       PRIMARY KEY (`share_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=7 ROW_FORMAT=COMPACT COMMENT='仪表板分享';
 
 CREATE TABLE `panel_link` (
       `resource_id` varchar(50) NOT NULL COMMENT '资源ID',
@@ -345,7 +304,7 @@ CREATE TABLE `panel_link` (
       `enable_pwd` tinyint(1) default 0 COMMENT '启用密码',
       `pwd` varchar(255) DEFAULT NULL  COMMENT '密码',
       PRIMARY KEY (`resource_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='仪表板链接';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='仪表板链接';
 
 CREATE TABLE `panel_template` (
       `id` varchar(50) NOT NULL,
@@ -361,7 +320,7 @@ CREATE TABLE `panel_template` (
       `template_data` longtext COMMENT 'template 数据',
       `dynamic_data` longtext COMMENT '预存数据',
       PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `panel_subject` (
      `id` varchar(50) NOT NULL,
@@ -373,20 +332,17 @@ CREATE TABLE `panel_subject` (
      `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
      `update_by` varchar(255) DEFAULT NULL COMMENT '更新人',
      PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS `dataset_table_incremental_config`
-(
+CREATE TABLE IF NOT EXISTS `dataset_table_incremental_config` (
     `id`          varchar(50)  NOT NULL COMMENT 'ID',
     `table_id`    varchar(50)  NOT NULL COMMENT '表ID',
     `incremental_delete`  longtext COMMENT '详细信息',
     `incremental_add`  longtext COMMENT '详细信息',
     PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB
-    DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS `dataset_table_union`
-(
+CREATE TABLE IF NOT EXISTS `dataset_table_union` (
     `id`                    varchar(50) NOT NULL COMMENT 'ID',
     `source_table_id`       varchar(50) COMMENT '关联表ID',
     `source_table_field_id` varchar(50) COMMENT '关联字段ID',
@@ -397,8 +353,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table_union`
     `create_by`             varchar(50) COMMENT '创建人ID',
     `create_time`           bigint(13) COMMENT '创建时间',
     PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB
-    DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `license` (
    `id` varchar(50) NOT NULL,
@@ -406,7 +361,7 @@ CREATE TABLE `license` (
    `license` longtext COMMENT 'license',
    `f2c_license` longtext COMMENT 'F2C License',
    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 
 CREATE TABLE `plugin_sys_menu` (
@@ -430,4 +385,4 @@ CREATE TABLE `plugin_sys_menu` (
   `update_time` bigint(13) DEFAULT NULL,
   `no_layout` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`menu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;

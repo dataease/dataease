@@ -2,7 +2,6 @@ package io.dataease.auth.service.impl;
 
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.base.domain.SysAuth;
-import io.dataease.base.mapper.SysAuthMapper;
 import io.dataease.base.mapper.ext.ExtAuthMapper;
 import io.dataease.commons.model.AuthURD;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,6 @@ public class ExtAuthServiceImpl implements ExtAuthService {
 
     @Resource
     private ExtAuthMapper extAuthMapper;
-
-    @Resource
-    private SysAuthMapper sysAuthMapper;
 
     @Override
     public Set<Long> userIdsByRD(AuthURD request) {
@@ -42,9 +38,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Override
     public AuthURD resourceTarget(String resourceId) {
         AuthURD authURD = new AuthURD();
-        /*SysAuthExample example = new SysAuthExample();
-        example.createCriteria().andAuthSourceEqualTo(resourceId);
-        List<SysAuth> sysAuths = sysAuthMapper.selectByExample(example);*/
+
         List<SysAuth> sysAuths = extAuthMapper.queryByResource(resourceId);
 
         Map<String, List<SysAuth>> authMap = sysAuths.stream().collect(Collectors.groupingBy(SysAuth::getAuthTargetType));

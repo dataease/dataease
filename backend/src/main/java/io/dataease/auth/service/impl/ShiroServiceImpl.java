@@ -3,14 +3,14 @@ package io.dataease.auth.service.impl;
 import io.dataease.auth.service.ShiroService;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.springframework.stereotype.Service;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
 public class ShiroServiceImpl implements ShiroService {
-    
-    private final static String ANON = "anon";
 
+    private final static String ANON = "anon";
 
 
     @Override
@@ -20,15 +20,15 @@ public class ShiroServiceImpl implements ShiroService {
         // 配置过滤:不会被拦截的链接 -> 放行 start ----------------------------------------------------------
         // 放行Swagger2页面，需要放行这些
 
-        filterChainDefinitionMap.put("/doc.html**","doc");
-        filterChainDefinitionMap.put("/deApi**",ANON);
-        filterChainDefinitionMap.put("/swagger-ui.html",ANON);
-        filterChainDefinitionMap.put("/swagger-ui/**",ANON);
-        filterChainDefinitionMap.put("/swagger/**",ANON);
+        filterChainDefinitionMap.put("/doc.html**", "doc");
+        filterChainDefinitionMap.put("/deApi**", ANON);
+        filterChainDefinitionMap.put("/swagger-ui.html", ANON);
+        filterChainDefinitionMap.put("/swagger-ui/**", ANON);
+        filterChainDefinitionMap.put("/swagger/**", ANON);
         filterChainDefinitionMap.put("/webjars/**", ANON);
-        filterChainDefinitionMap.put("/swagger-resources/**",ANON);
-        filterChainDefinitionMap.put("/v2/**",ANON);
-        filterChainDefinitionMap.put("/v3/**",ANON);
+        filterChainDefinitionMap.put("/swagger-resources/**", ANON);
+        filterChainDefinitionMap.put("/v2/**", ANON);
+        filterChainDefinitionMap.put("/v3/**", ANON);
 
         filterChainDefinitionMap.put("/static/**", ANON);
         filterChainDefinitionMap.put("/css/**", ANON);
@@ -41,7 +41,6 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/link/**", ANON);
         filterChainDefinitionMap.put("/index.html", ANON);
         filterChainDefinitionMap.put("/link.html", ANON);
-        filterChainDefinitionMap.put("/xggznb/**", ANON);
 
 
         //获取主题信息
@@ -54,15 +53,11 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/dataset/field/fieldValues/**", ANON);
         filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
 
-        //未读消息数量
-        // filterChainDefinitionMap.put("/api/sys_msg/unReadCount/**", ANON);
-
         filterChainDefinitionMap.put("/**/*.json", ANON);
         filterChainDefinitionMap.put("/system/ui/**", ANON);
         filterChainDefinitionMap.put("/**/*.js", ANON);
         filterChainDefinitionMap.put("/**/*.css", ANON);
         filterChainDefinitionMap.put("/**/*.map", ANON);
-        // filterChainDefinitionMap.put("/axios.map", ANON);
 
         filterChainDefinitionMap.put("/api/auth/login", ANON);
         filterChainDefinitionMap.put("/api/auth/isPluginLoaded", ANON);
@@ -94,8 +89,7 @@ public class ShiroServiceImpl implements ShiroService {
 
         return filterChainDefinitionMap;
     }
-    
-   
+
 
     @Override
     public void updatePermission(ShiroFilterFactoryBean shiroFilterFactoryBean, Integer roleId, Boolean isRemoveSession) {

@@ -7,7 +7,8 @@
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item v-for="bread in dataSetBreads" :key="bread.label">
-                <a v-if="bread.link" :class="{'link-text' : bread.link}" @click="backToLink(bread)"> {{ bread.label }}</a>
+                <a v-if="bread.link" :class="{'link-text' : bread.link}" @click="backToLink(bread)">
+                  {{ bread.label }}</a>
                 <span v-else>{{ bread.label }}</span>
               </el-breadcrumb-item>
             </el-breadcrumb>
@@ -66,7 +67,12 @@
                     @start="start1"
                   >
                     <transition-group>
-                      <div v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))" :key="item.id" :class="componentInfo && componentInfo.options.attrs.fieldId === item.id ? 'filter-db-row-checked' : 'filter-db-row'" class="filter-db-row">
+                      <div
+                        v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))"
+                        :key="item.id"
+                        :class="componentInfo && componentInfo.options.attrs.fieldId === item.id ? 'filter-db-row-checked' : 'filter-db-row'"
+                        class="filter-db-row"
+                      >
                         <i class="el-icon-s-data" />
                         <span> {{ item.name }}</span>
                       </div>
@@ -81,7 +87,8 @@
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item v-for="bread in componentSetBreads" :key="bread.label">
-                <a v-if="bread.link" :class="{'link-text' : bread.link}" @click="comBackLink(bread)"> {{ bread.label }}</a>
+                <a v-if="bread.link" :class="{'link-text' : bread.link}" @click="comBackLink(bread)">
+                  {{ bread.label }}</a>
                 <span v-else>{{ bread.label }}</span>
               </el-breadcrumb-item>
             </el-breadcrumb>
@@ -135,7 +142,12 @@
                     @start="start1"
                   >
                     <transition-group>
-                      <div v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))" :key="item.id" :class="componentInfo && componentInfo.options.attrs.fieldId === item.id ? 'filter-db-row-checked' : 'filter-db-row'" class="filter-db-row">
+                      <div
+                        v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))"
+                        :key="item.id"
+                        :class="componentInfo && componentInfo.options.attrs.fieldId === item.id ? 'filter-db-row-checked' : 'filter-db-row'"
+                        class="filter-db-row"
+                      >
                         <i class="el-icon-s-data" />
                         <span> {{ item.name }}</span>
                       </div>
@@ -171,7 +183,13 @@
                       @end="end2"
                     >
                       <transition-group class="list-group" :data-value="$t('panel.drag_here')">
-                        <drag-item v-for="(item,index) in selectField" :key="item.id" :item="item" :index="index" @closeItem="closeItem" />
+                        <drag-item
+                          v-for="(item,index) in selectField"
+                          :key="item.id"
+                          :item="item"
+                          :index="index"
+                          @closeItem="closeItem"
+                        />
                       </transition-group>
                     </draggable>
                   </el-row>
@@ -192,46 +210,72 @@
               />
             </div>
           </el-col>
-          <el-col :span="16"><div class="filter-options-right">
-            <span style="padding-right: 10px;">
-              <el-checkbox v-model="componentInfo.options.attrs.showTitle" @change="showTitleChange">显示标题</el-checkbox>
-              <el-popover
-                v-model="titlePopovervisible"
-                placement="bottom-end"
-                :disabled="!componentInfo.options.attrs.showTitle"
-                width="200"
-              >
-                <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
-                  <el-input v-model="componentInfo.options.attrs.title" placeholder="请输入标题" type="textarea" maxlength="15" show-word-limit />
-                </div>
+          <el-col :span="16">
+            <div class="filter-options-right">
+              <span style="padding-right: 10px;">
+                <el-checkbox v-model="componentInfo.options.attrs.showTitle" @change="showTitleChange">显示标题
+                </el-checkbox>
+                <el-popover
+                  v-model="titlePopovervisible"
+                  placement="bottom-end"
+                  :disabled="!componentInfo.options.attrs.showTitle"
+                  width="200"
+                >
+                  <div
+                    style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;"
+                  >
+                    <el-input
+                      v-model="componentInfo.options.attrs.title"
+                      placeholder="请输入标题"
+                      type="textarea"
+                      maxlength="15"
+                      show-word-limit
+                    />
+                  </div>
 
-                <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.showTitle, 'i-filter-inactive': !componentInfo.options.attrs.showTitle}" class="el-icon-setting i-filter" />
-              </el-popover>
-            </span>
-            <span style="padding-left: 10px;">
-              <el-checkbox v-model="componentInfo.options.attrs.enableRange" @change="enableRangeChange"><span>  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
+                  <i
+                    slot="reference"
+                    :class="{'i-filter-active': componentInfo.options.attrs.showTitle, 'i-filter-inactive': !componentInfo.options.attrs.showTitle}"
+                    class="el-icon-setting i-filter"
+                  />
+                </el-popover>
+              </span>
+              <span style="padding-left: 10px;">
+                <el-checkbox v-model="componentInfo.options.attrs.enableRange" @change="enableRangeChange"><span>
+                  {{ $t('panel.custom_scope') }} </span> </el-checkbox>
 
-              <el-popover
-                v-model="popovervisible"
-                placement="bottom-end"
-                :disabled="!componentInfo.options.attrs.enableRange"
-                width="200"
-              >
-                <div class="view-container-class">
-                  <el-checkbox-group v-model="componentInfo.options.attrs.viewIds" @change="checkedViewsChange">
-                    <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id">
-                      <span>
-                        <svg-icon :icon-class="item.type" class="chart-icon" />
-                        <span style="margin-left: 6px">{{ item.name }}</span>
-                      </span>
-                    </el-checkbox>
-                  </el-checkbox-group>
-                </div>
+                <el-popover
+                  v-model="popovervisible"
+                  placement="bottom-end"
+                  :disabled="!componentInfo.options.attrs.enableRange"
+                  width="200"
+                >
+                  <div class="view-container-class">
+                    <el-checkbox-group v-model="componentInfo.options.attrs.viewIds" @change="checkedViewsChange">
+                      <el-checkbox v-for="(item ) in viewInfos" :key="item.id" :label="item.id" class="de-checkbox">
+                        <div class="span-div">
+                          <svg-icon :icon-class="item.type" class="chart-icon" />
+                          <span
+                            v-if="item.name && item.name.length <= 7"
+                            style="margin-left: 6px"
+                          >{{ item.name }}</span>
+                          <el-tooltip v-else class="item" effect="dark" :content="item.name" placement="left">
+                            <span style="margin-left: 6px">{{ item.name }}</span>
+                          </el-tooltip>
+                        </div>
 
-                <i slot="reference" :class="{'i-filter-active': componentInfo.options.attrs.enableRange, 'i-filter-inactive': !componentInfo.options.attrs.enableRange}" class="el-icon-setting i-filter" />
-              </el-popover>
-            </span>
-          </div>
+                      </el-checkbox>
+                    </el-checkbox-group>
+                  </div>
+
+                  <i
+                    slot="reference"
+                    :class="{'i-filter-active': componentInfo.options.attrs.enableRange, 'i-filter-inactive': !componentInfo.options.attrs.enableRange}"
+                    class="el-icon-setting i-filter"
+                  />
+                </el-popover>
+              </span>
+            </div>
 
           </el-col>
         </el-row>
@@ -261,11 +305,22 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import draggable from 'vuedraggable'
 import DragItem from '@/components/DragItem'
-import { mapState } from 'vuex'
-// import { ApplicationContext } from '@/utils/ApplicationContext'
-import { groupTree, fieldList, fieldValues, post } from '@/api/dataset/dataset'
-import { viewsWithIds } from '@/api/panel/view'
-import { authModel } from '@/api/system/sysAuth'
+import {
+  mapState
+} from 'vuex'
+  // import { ApplicationContext } from '@/utils/ApplicationContext'
+import {
+  groupTree,
+  fieldList,
+  fieldValues,
+  post
+} from '@/api/dataset/dataset'
+import {
+  viewsWithIds
+} from '@/api/panel/view'
+import {
+  authModel
+} from '@/api/system/sysAuth'
 export default {
   name: 'FilterDialog',
   components: {
@@ -292,12 +347,16 @@ export default {
       activeName: 'dataset',
       showDomType: 'tree',
       comShowDomType: 'view',
-      dataSetBreads: [
-        { label: this.$t('panel.data_list'), link: false, type: 'root' }
-      ],
-      componentSetBreads: [
-        { label: this.$t('panel.component_list'), link: false, type: 'root' }
-      ],
+      dataSetBreads: [{
+        label: this.$t('panel.data_list'),
+        link: false,
+        type: 'root'
+      }],
+      componentSetBreads: [{
+        label: this.$t('panel.component_list'),
+        link: false,
+        type: 'root'
+      }],
       datas: [],
       sceneDatas: [],
       //   viewDatas: [],
@@ -441,7 +500,8 @@ export default {
         // 判断根节点 ###
         el.type = el.modelInnerType
         el.isLeaf = el.leaf
-        if (el[this.defaultProps.parentId] === null || el[this.defaultProps.parentId] === 0 || el[this.defaultProps.parentId] === '0') {
+        if (el[this.defaultProps.parentId] === null || el[this.defaultProps.parentId] === 0 || el[this
+          .defaultProps.parentId] === '0') {
           roots.push(el)
           return
         }
@@ -512,11 +572,19 @@ export default {
       tail.link = true
     },
     addTail(node) {
-      const tail = { link: false, label: node.label || node.name, type: node.type }
+      const tail = {
+        link: false,
+        label: node.label || node.name,
+        type: node.type
+      }
       this.dataSetBreads.push(tail)
     },
     comAddTail(node) {
-      const tail = { link: false, label: node.label || node.name, type: node.type }
+      const tail = {
+        link: false,
+        label: node.label || node.name,
+        type: node.type
+      }
       this.componentSetBreads.push(tail)
     },
 
@@ -529,19 +597,19 @@ export default {
           return
         }
       }
-    //   this.dataSetBreads = this.dataSetBreads.slice(0, this.dataSetBreads.length - 1)
-    //   this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
+      //   this.dataSetBreads = this.dataSetBreads.slice(0, this.dataSetBreads.length - 1)
+      //   this.dataSetBreads[this.dataSetBreads.length - 1]['link'] = false
     },
     comRemoveTail() {
       this.componentSetBreads = this.componentSetBreads.slice(0, this.componentSetBreads.length - 1)
       this.componentSetBreads[this.componentSetBreads.length - 1]['link'] = false
     },
     backToLink(bread) {
-    //   if (bread.type === 'field') {
-    //     this.showDomType = 'db'
-    //   } else {
-    //     this.showDomType = 'tree'
-    //   }
+      //   if (bread.type === 'field') {
+      //     this.showDomType = 'db'
+      //   } else {
+      //     this.showDomType = 'tree'
+      //   }
       this.showDomType = 'tree'
 
       this.removeTail(bread)
@@ -645,7 +713,7 @@ export default {
 
     multipleChange(value) {
       // this.componentInfo.options.attrs.multiple = value
-    //   this.componentInfo.options.value = null
+      //   this.componentInfo.options.value = null
       this.$emit('re-fresh-component', this.componentInfo)
     },
 
@@ -663,21 +731,25 @@ export default {
     showTitleChange(value) {
       if (!value) {
         this.componentInfo.options.attrs.title = ''
+        this.componentInfo.style.backgroundColor = ''
       }
       this.$emit('re-fresh-component', this.componentInfo)
     }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
   .my-form-item {
-      cursor: text;
+    cursor: text;
   }
+
   .de-dialog-container {
     height: 50vh !important;
 
   }
+
   .ms-aside-container {
     width: 40% !important;
     min-width: 230px !important;
@@ -697,179 +769,202 @@ export default {
 
   .filter-field {
     //   background: #99a9bf;
-      border-radius: 4px;
-      height: 45px;
-      .field-content {
-        position: relative;
-        display: table;
-        width: 100%;
-        height: 100%;
-        white-space: nowrap;
+    border-radius: 4px;
+    height: 45px;
 
-        .field-content-left {
-            width: 50px;
-            max-width: 50px;
-            position: relative;
-            display: table-cell;
-            vertical-align: middle;
-            margin: 0px;
-            padding: 8px;
-            height: 100%;
-            border-right: none;
-            border: 1px solid var(--TableBorderColor, #E6E6E6);;
-            .field-content-text {
-                box-sizing: border-box;
-                overflow: hidden;
-                overflow-x: hidden;
-                overflow-y: hidden;
-                word-break: break-all;
-            }
+    .field-content {
+      position: relative;
+      display: table;
+      width: 100%;
+      height: 100%;
+      white-space: nowrap;
+
+      .field-content-left {
+        width: 50px;
+        max-width: 50px;
+        position: relative;
+        display: table-cell;
+        vertical-align: middle;
+        margin: 0px;
+        padding: 8px;
+        height: 100%;
+        border-right: none;
+        border: 1px solid var(--TableBorderColor, #E6E6E6);
+        ;
+
+        .field-content-text {
+          box-sizing: border-box;
+          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: hidden;
+          word-break: break-all;
         }
-        .field-content-right {
-            border-left: none;
-            color: #9ea6b2;
-            border: 1px solid var(--TableBorderColor, #E6E6E6);
-            width: 0%;
-            max-width: 0%;
-            position: relative;
-            display: table-cell;
-            vertical-align: middle;
-            margin: 0px;
-            padding: 0 0 0 0;
-            height: 100%;
-        }
+      }
+
+      .field-content-right {
+        border-left: none;
+        color: #9ea6b2;
+        border: 1px solid var(--TableBorderColor, #E6E6E6);
+        width: 0%;
+        max-width: 0%;
+        position: relative;
+        display: table-cell;
+        vertical-align: middle;
+        margin: 0px;
+        padding: 0 0 0 0;
+        height: 100%;
+      }
     }
 
   }
+
   .filter-options-left {
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      flex-wrap: nowrap;
-      height: 50px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    height: 50px;
   }
+
   .filter-options-right {
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      flex-wrap: nowrap;
-      height: 50px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    height: 50px;
   }
 
   .filter-content {
-      height: calc(50vh - 120px);
-      top: 160px;
+    height: calc(50vh - 120px);
+    top: 160px;
 
   }
 
   .filter-dialog-tabs {
-      border: 1px solid var(--TableBorderColor, #E6E6E6);
-      padding: 10px;
-      height: 100%;
-      >>> div.el-tabs__content {
-          height: calc(100% - 55px);
-      }
+    border: 1px solid var(--TableBorderColor, #E6E6E6);
+    padding: 10px;
+    height: 100%;
+
+    >>>div.el-tabs__content {
+      height: calc(100% - 55px);
+    }
   }
 
   .filter-common {
-      margin: 10px 5px;
+    margin: 10px 5px;
 
   }
 
   .component-header {
-      margin: 5px 5px 15px;
+    margin: 5px 5px 15px;
   }
 
   .component-result-content {
-      height: calc(50vh - 150px);
-      overflow-y: auto;
+    height: calc(50vh - 150px);
+    overflow-y: auto;
   }
 
   .link-text {
-      font-weight: 450  !important;
-      color: #409EFF;
+    font-weight: 450 !important;
+    color: #409EFF;
   }
+
   .filter-db-row {
-      i {
-          color: #3685f2;
-      }
+    i {
+      color: #3685f2;
+    }
+
     // background-color: #3685f2;
     // color: #fff;
   }
+
   .filter-db-row:hover {
-      background-color: var(--background-color-base, #f5f7fa) !important;
-      cursor: pointer;
+    background-color: var(--background-color-base, #f5f7fa) !important;
+    cursor: pointer;
   }
+
   .filter-db-row-checked:hover {
-      background-color: var(--background-color-base, #f5f7fa) !important;
-      color: inherit;
-      cursor: pointer;
-      i {
-        background-color: inherit;
-        color: #3685f2;
-      }
+    background-color: var(--background-color-base, #f5f7fa) !important;
+    color: inherit;
+    cursor: pointer;
+
+    i {
+      background-color: inherit;
+      color: #3685f2;
+    }
   }
+
   .filter-db-row-checked {
     background-color: #3685f2 !important;
     color: #fff;
+
     i {
-        background-color: #3685f2;
-        color: #fff;
+      background-color: #3685f2;
+      color: #fff;
     }
   }
+
   .draggable-group {
     display: inline-block;
     width: 100%;
     height: calc(100% - 6px);
   }
+
   .box-card {
-      width: 100%;
-      height: 100%;
+    width: 100%;
+    height: 100%;
   }
+
   .i-filter {
     text-align: center;
     margin-left: 5px;
     margin-top: 1px;
   }
+
   .i-filter-inactive {
-      color: #9ea6b2!important;
-      cursor: not-allowed!important;
+    color: #9ea6b2 !important;
+    cursor: not-allowed !important;
   }
+
   .i-filter-active {
-      cursor: pointer!important;
+    cursor: pointer !important;
   }
 
   .view-container-class {
 
-      min-height: 150px;
-      max-height: 200px;
-      width: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      word-break:break-all;
-      position: relative;
-        >>> label {
-            width: 100%;
-            margin-left: 0px !important;
-        }
+    min-height: 150px;
+    max-height: 200px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    word-break: break-all;
+    position: relative;
+
   }
 
   .list-group:empty,
-  .list-group > div:empty {
+  .list-group>div:empty {
     display: inline-block;
     width: 100%;
     height: calc(100% - 13px);
   }
 
   .list-group:empty:before,
-  .list-group > div:empty:before {
+  .list-group>div:empty:before {
     content: attr(data-value);
   }
 
   .blackTheme .theme-drag {
-      background-color: var(--MainBG, #fff);
+    background-color: var(--MainBG, #fff);
+  }
+
+  .span-div {
+    width: 135px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
 </style>

@@ -14,5 +14,4 @@ public interface ExtAuthMapper {
     List<Long> queryUserIdWithDeptIds(@Param("deptIds") List<Long> deptIds);
 
     List<SysAuth> queryByResource(@Param("resourceId") String resourceId);
-    // Set<Long> queryUserIdWithRD(@Param("roleIds") List<Long> roleIds, @Param("deptIds") List<Long> deptIds);
 }

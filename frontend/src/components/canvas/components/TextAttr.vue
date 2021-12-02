@@ -78,14 +78,6 @@
         <el-input v-model="styleInfo.margin" type="number" size="mini" min="0" max="99" @change="styleChange" />
       </div>
 
-      <el-tooltip v-if="attrShow('time_margin')" :content="$t('panel.margin')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-margin" />
-      </el-tooltip>
-
-      <div v-if="attrShow('time_margin')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.time_margin" type="number" size="mini" min="0" max="99" @change="styleChange" />
-      </div>
-
       <el-tooltip v-if="attrShow('opacity')" :content="$t('panel.opacity')">
         <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-touming" />
       </el-tooltip>
@@ -108,7 +100,7 @@
             <i class="icon iconfont icon-zimua" @click="goColor" />
           </el-tooltip>
           <div :style="letterDivColor" />
-          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" :predefine="predefineColors" @change="styleChange" />
         </div>
       </div>
       <div v-if="attrShow('borderColor')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
@@ -117,7 +109,7 @@
             <i class="iconfont icon-huabi" @click="goBoardColor" />
           </el-tooltip>
           <div :style="boardDivColor" />
-          <el-color-picker ref="boardColorPicker" v-model="styleInfo.borderColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker ref="boardColorPicker" v-model="styleInfo.borderColor" style="margin-top: 7px;height: 0px" size="mini" :predefine="predefineColors" @change="styleChange" />
         </div>
       </div>
 
@@ -127,7 +119,7 @@
             <i class="iconfont icon-beijingse1" @click="goBackgroundColor" />
           </el-tooltip>
           <div :style="backgroundDivColor" />
-          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" :predefine="predefineColors" size="mini" @change="styleChange" />
         </div>
       </div>
 
@@ -157,6 +149,7 @@ import { mapState } from 'vuex'
 import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
+import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
   components: { Hyperlinks, DateFormat, VideoLinks },
@@ -172,6 +165,7 @@ export default {
   },
   data() {
     return {
+      predefineColors: COLOR_PANEL,
       showMain: true,
       innerOpacity: 0,
       textAlignOptions: [
@@ -266,7 +260,8 @@ export default {
         'color',
         'backgroundColor',
         'date-format',
-        'time_margin'
+        'time_margin',
+        'padding'
         /* 'margin' */
       ],
       // 文本组件显示的属性
@@ -288,24 +283,7 @@ export default {
       ]
     }
   },
-  watch: {
-    innerOpacity: {
-      handler(oldVal, newVal) {
-        this.styleInfo['opacity'] = this.innerOpacity / 100
-      }
-    },
-    curComponent: {
-      handler(oldVal, newVal) {
-        this.$nextTick(() => {
-          this.init()
-        })
-        // console.log('curComponent change')
-      }
-    }
-  },
-  mounted() {
-    this.init()
-  },
+
   computed: {
     boardDivColor() {
       const style = {
@@ -353,6 +331,25 @@ export default {
     ])
 
   },
+  watch: {
+    innerOpacity: {
+      handler(oldVal, newVal) {
+        this.styleInfo['opacity'] = this.innerOpacity / 100
+      }
+    },
+    curComponent: {
+      handler(oldVal, newVal) {
+        this.$nextTick(() => {
+          this.init()
+        })
+        // console.log('curComponent change')
+      }
+    }
+  },
+  mounted() {
+    this.init()
+  },
+
   methods: {
     init() {
       if (this.styleInfo['opacity']) {
@@ -430,5 +427,9 @@ export default {
   ::v-deep .el-radio-button__inner{
     padding: 5px!important;
     width: 30px!important;
+  }
+
+  ::v-deep .el-color-dropdown__link-btn {
+    display: inline!important;
   }
 </style>

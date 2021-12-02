@@ -11,9 +11,8 @@
         select
         id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
         get_auths(id,'dataset',#{userId}) as `privileges`
-        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_table
+        from dataset_table
         <where>
-            FIND_IN_SET(dataset_table.id,cids)
             <if test="id != null">
                 and id = #{id,jdbcType=VARCHAR}
             </if>
@@ -92,8 +91,6 @@
                 </foreach>
             </if>
         </where>
-        <if test="sort != null">
-            order by ${sort}
-        </if>
+        ORDER BY CONVERT(`name` using gbk)
     </select>
 </mapper>

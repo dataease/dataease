@@ -9,20 +9,14 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 
-
 public class LicStatusCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
-        // BeanDefinitionRegistry registry = conditionContext.getRegistry();
-
-        // DefaultLicenseService defaultLicenseService = conditionContext.getBeanFactory().getBean(DefaultLicenseService.class);
 
         DefaultLicenseService defaultLicenseService = CommonBeanFactory.getBean(DefaultLicenseService.class);
 
-        /*if (null == defaultLicenseService) {
-            registry.registerBeanDefinition();
-        }*/
+
         if (ObjectUtils.isNotEmpty(defaultLicenseService)) {
             F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
             return F2CLicenseResponse.Status.valid == f2CLicenseResponse.getStatus();

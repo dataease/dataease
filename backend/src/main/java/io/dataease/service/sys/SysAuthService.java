@@ -14,8 +14,8 @@ public class SysAuthService {
     @Resource
     private ExtSysAuthMapper extSysAuthMapper;
 
-    public void checkTreeNoManageCount(String modelType,String nodeId){
-        if(extSysAuthMapper.checkTreeNoManageCount(AuthUtils.getUser().getUserId(),modelType,nodeId)){
+    public void checkTreeNoManageCount(String modelType, String nodeId) {
+        if (extSysAuthMapper.checkTreeNoManageCount(AuthUtils.getUser().getUserId(), modelType, nodeId)) {
             throw new RuntimeException(Translator.get("i18n_no_all_delete_privilege_folder"));
         }
     }

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-form ref="createOrganization" inline :model="form" size="small" label-width="80px">
+    <el-form ref="linkForm" inline :model="form" size="small" :rules="rules" label-width="80px">
 
-      <el-form-item ref="form" :label="$t('panel.link_share')">
+      <el-form-item :label="$t('panel.link_share')">
         <el-switch
           v-model="valid"
           style="width: 370px;"
@@ -22,7 +22,7 @@
         />
       </el-form-item>
 
-      <el-form-item v-if="valid" :label="$t('panel.over_time')">
+      <el-form-item v-if="valid" :label="$t('panel.over_time')" prop="overTime">
         <el-date-picker
           v-model="form.overTime"
           type="datetime"
@@ -78,8 +78,10 @@ export default {
       defaultForm: { enablePwd: false, pwd: null, uri: null },
       pickerOptions: {
         disabledDate: time => {
-          return time < (Date.now() - 8.64e7)
+          return time.getTime() < (Date.now() - 8.64e7)
+          /* return time.getTime() < Date.now() */
         },
+
         shortcuts: [{
           text: '一天',
           onClick: function(picker) {
@@ -96,6 +98,14 @@ export default {
             picker.$emit('pick', this.limitDate('month'))
           }
         }]
+      },
+      selectOptions: {
+        minTime: '15:51'
+      },
+      rules: {
+        overTime: [
+          { required: false, validator: this.validateMin, trigger: 'blur' }
+        ]
       }
     }
   },
@@ -109,6 +119,7 @@ export default {
     this.currentGenerate()
   },
   methods: {
+
     currentGenerate() {
       loadGenerate(this.resourceId).then(res => {
         const { valid, enablePwd, pwd, uri, overTime } = res.data
@@ -162,13 +173,19 @@ export default {
       })
     },
     resetOverTime(value) {
-      const param = {
-        resourceId: this.resourceId,
-        overTime: value
-      }
-      setOverTime(param).then(res => {
+      this.$refs.linkForm.validate(valid => {
+        if (!valid) {
+          return false
+        }
+
+        const param = {
+          resourceId: this.resourceId,
+          overTime: value
+        }
+        setOverTime(param).then(res => {
         // this.form.overTime = value
-        this.$forceUpdate()
+          this.$forceUpdate()
+        })
       })
     },
 
@@ -222,6 +239,14 @@ export default {
         return new Date(result.format('yyyy-MM-dd') + ' 23:59:59')
       }
       return null
+    },
+    validateMin(rule, value, callback) {
+      if (!value) return callback()
+      const val = new Date(value)
+      if (val.getTime() < Date.now()) {
+        return callback(new Error('不能小于当前时间'))
+      }
+      return callback()
     }
   }
 }

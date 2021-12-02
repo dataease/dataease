@@ -4,6 +4,9 @@ import io.dataease.base.domain.DatasetTableTask;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.job.sechedule.ExtractDataJob;
 import io.dataease.job.sechedule.ScheduleManager;
+import io.dataease.job.sechedule.strategy.TaskHandler;
+import io.dataease.job.sechedule.strategy.TaskStrategyFactory;
+import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
@@ -56,7 +59,24 @@ public class ScheduleService {
         scheduleManager.removeJob(new JobKey(datasetTableTask.getId(), datasetTableTask.getTableId()), new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId()));
     }
 
-    public void fireNow(DatasetTableTask datasetTableTask) throws Exception{
+    public void fireNow(DatasetTableTask datasetTableTask) throws Exception {
         scheduleManager.fireNow(datasetTableTask.getId(), datasetTableTask.getTableId());
     }
+
+    public void addSchedule(GlobalTaskEntity task) throws Exception {
+        TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
+        taskHandler.addTask(scheduleManager, task);
+    }
+
+    public void deleteSchedule(GlobalTaskEntity task) {
+        TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
+        taskHandler.removeTask(scheduleManager, task);
+    }
+
+    public void fireNow(GlobalTaskEntity task) throws Exception {
+        TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
+        taskHandler.executeTask(scheduleManager, task);
+    }
+
+
 }

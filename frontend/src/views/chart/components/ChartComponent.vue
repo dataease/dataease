@@ -55,6 +55,11 @@ export default {
       default: function() {
         return ['drill']
       }
+    },
+    searchCount: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data() {
@@ -156,6 +161,9 @@ export default {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
       }
       // console.log(JSON.stringify(chart_option))
+      if (this.myChart && this.searchCount > 0) {
+        chart_option.animation = false
+      }
 
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)

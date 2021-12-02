@@ -40,6 +40,7 @@ public class HiveQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
+        field = field.toLowerCase();
         switch (field) {
             case "varchar":
             case "string":
@@ -49,6 +50,7 @@ public class HiveQueryProvider extends QueryProvider {
             case "date":
                 return 1;// 时间
             case "tinyint":
+            case "smallint":
             case "int":
             case "bigint":
                 return 2;// 整型
@@ -180,8 +182,7 @@ public class HiveQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -286,8 +287,7 @@ public class HiveQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -372,8 +372,7 @@ public class HiveQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -483,8 +482,7 @@ public class HiveQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
+
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -764,10 +762,8 @@ public class HiveQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-//                whereValue = HiveConstants.WHERE_VALUE_NULL;
                 whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-//                whereTerm = String.format(whereTerm, originName);
                 whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
                 whereValue = "''";
@@ -937,10 +933,8 @@ public class HiveQueryProvider extends QueryProvider {
                     whereName = originField;
                 }
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-//                    whereValue = HiveConstants.WHERE_VALUE_NULL;
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-//                    whereTerm = String.format(whereTerm, originField);
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
                     whereValue = "''";
@@ -993,10 +987,8 @@ public class HiveQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-//                    whereValue = HiveConstants.WHERE_VALUE_NULL;
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-//                    whereTerm = String.format(whereTerm, originField);
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
                     whereValue = "''";

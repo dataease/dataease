@@ -9,4 +9,4 @@ CREATE TABLE `panel_view` (
   `update_by` varchar(255) DEFAULT NULL COMMENT '更新人',
   `update_time` bigint(13) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;

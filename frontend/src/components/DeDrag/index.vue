@@ -29,7 +29,8 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="curComponent&&(active||linkageSettingStatus)" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
+      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
+      <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
         v-for="(handlei, indexi) in actualHandles"
@@ -55,13 +56,13 @@ let eventsFor = events.mouse
 // private
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
-import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
+import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 
 export default {
   replace: true,
   name: 'Dedrag',
-  components: { EditBar },
+  components: { EditBar, MobileCheckBar },
   props: {
     className: {
       type: String,
@@ -362,10 +363,8 @@ export default {
       // 新增 保存中心点位置，用于计算旋转的方向矢量
       lastCenterX: 0,
       lastCenterY: 0,
-      //
       parentX: 0,
       parentY: 0,
-
       // private
       // 鼠标移入事件
       mouseOn: false,
@@ -374,6 +373,16 @@ export default {
     }
   },
   computed: {
+    // 编辑组件显示
+    editBarShow() {
+      // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置撞他 3.当前不在移动端画布编辑状态
+      return this.curComponent && (this.active || this.linkageSettingStatus) && !this.mobileLayoutStatus
+    },
+    // 移动端编辑组件选择按钮显示
+    mobileCheckBarShow() {
+      // 显示条件：1.当前是移动端画布编辑状态 2.当前组件在激活状态或者鼠标移入状态
+      return this.mobileLayoutStatus && (this.active || this.mouseOn)
+    },
     handleStyle() {
       return (stick, index) => {
         if (!this.handleInfo.switch) return { display: this.enabled ? 'block' : 'none' }
@@ -442,9 +451,8 @@ export default {
       }
     },
     style() {
-      // console.log('style-top:' + this.y + '--' + this.top)
       return {
-        padding: this.curGap + 'px',
+        padding: this.curGap + 'px!important',
         transform: `translate(${this.left}px, ${this.top}px) rotate(${this.rotate}deg)`,
         width: this.computedWidth,
         height: this.computedHeight,
@@ -520,20 +528,20 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      // console.log('style=>' + JSON.stringify(style))
       return style
     },
     curComponent() {
       return this.$store.state.curComponent
     },
     curGap() {
-      return this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix ? this.componentGap : 0
+      return this.element.auxiliaryMatrix && this.element.type !== 'custom' ? this.componentGap : 0
     },
     ...mapState([
       'editor',
       'curCanvasScale',
       'canvasStyleData',
       'linkageSettingStatus',
+      'mobileLayoutStatus',
       'componentGap'
     ])
   },
@@ -688,7 +696,7 @@ export default {
         const rect = this.$el.parentNode.getBoundingClientRect()
         this.parentX = rect.x
         this.parentY = rect.y
-        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)), 100000]
+        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, 100000]
       }
       if (typeof this.parent === 'string') {
         const parentNode = document.querySelector(this.parent)
@@ -1800,35 +1808,8 @@ export default {
   transition: 0.2s
 }
 
-.gap_class{
-  padding:5px;
-}
-
 .de-drag-active{
   outline: 1px solid #70c0ff;
   user-select: none;
 }
-
-/*.mouseOn >>> .icon-shezhi{*/
-/*  z-index: 2;*/
-/*  display:block!important;*/
-/*}*/
-/*.vdr > i{*/
-/*  right: 5px;*/
-/*  color: gray;*/
-/*  position: absolute;*/
-/*}*/
-
-/*.vdr >>> i:hover {*/
-/*  color: red;*/
-/*}*/
-
-/*.vdr:hover >>> i {*/
-/*  z-index: 2;*/
-/*  display:block;*/
-/*}*/
-
-/*.vdr>>>.icon-shezhi {*/
-/*  display:none*/
-/*}*/
 </style>

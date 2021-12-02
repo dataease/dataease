@@ -5,10 +5,11 @@
         <span class="title-text">
           {{ $t('commons.datasource') }}
         </span>
-        <el-button v-permission="['datasource:add']" icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="addFolder" />
+        <el-button v-permission="['datasource:add']" icon="el-icon-plus" type="text" size="mini" style="float: right;"
+                   @click="addFolder"/>
 
       </el-row>
-      <el-divider />
+      <el-divider/>
       <el-row>
         <el-form>
           <el-form-item class="form-item">
@@ -39,18 +40,23 @@
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type !== 'folder' && data.status !== 'Error'">
-                  <svg-icon icon-class="datasource" class="ds-icon-scene" />
+                  <svg-icon icon-class="datasource" class="ds-icon-scene"/>
                 </span>
                 <span v-if="data.status === 'Error'">
-                  <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
-                  <el-tooltip v-if="data.status === 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" effect="dark" :content="$t('datasource.in_valid')" placement="right">
-                    <el-button type="text" :style="!!data.msgNode ? {'color': 'red'} : {}"> {{ data.name }} </el-button>
-                  </el-tooltip>
+                  <svg-icon icon-class="exclamationmark" class="ds-icon-scene"/>
                 </span>
                 <span v-if="data.type === 'folder'">
-                  <i class="el-icon-folder" />
+                  <i class="el-icon-folder"/>
                 </span>
-                <span v-if=" data.status !== 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span v-if=" data.status === 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                  <el-tooltip effect="dark" :content="$t('datasource.in_valid')" placement="right">
+                    <span>
+                      {{ data.name }}
+                    </span>
+                  </el-tooltip>
+                </span>
+                <span v-if=" data.status !== 'Error'"
+                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                   {{ data.name }}
                 </span>
 
@@ -87,7 +93,7 @@
   </el-col>
 </template>
 <script>
-import { listDatasource, listDatasourceByType, delDs } from '@/api/system/datasource'
+import {listDatasource, listDatasourceByType, delDs} from '@/api/system/datasource'
 
 export default {
   name: 'DsTree',
@@ -135,7 +141,7 @@ export default {
       listDatasourceByType(datasource.type).then(res => {
         typeData = this.buildTree(res.data)
         for (let index = 0; index < this.tData.length; index++) {
-          if(typeData[0].id === this.tData[index].id){
+          if (typeData[0].id === this.tData[index].id) {
             this.tData[index].children = typeData[0].children
           }
         }
@@ -156,7 +162,12 @@ export default {
         if (!(element.type in types)) {
           types[element.type] = []
           // newArr.push(...element, ...{ children: types[element.type] })
-          newArr.push({ id: element.type, name: this.transTypeToName(element.type), type: 'folder', children: types[element.type] })
+          newArr.push({
+            id: element.type,
+            name: this.transTypeToName(element.type),
+            type: 'folder',
+            children: types[element.type]
+          })
         }
         types[element.type].push(element)
         // newArr.children.push({ id: element.id, label: element.name })
@@ -183,7 +194,7 @@ export default {
         return 'Doris'
       } else if (type === 'mongo') {
         return 'MongoDB'
-      }else if (type === 'redshift') {
+      } else if (type === 'redshift') {
         return 'AWS Redshift'
       } else if (type === 'hive') {
         return 'Apache Hive'
@@ -194,7 +205,7 @@ export default {
       this.switchMain('DsForm')
     },
     addFolderWithType(data) {
-      this.switchMain('DsForm', { type: data.id })
+      this.switchMain('DsForm', {type: data.id})
     },
     nodeClick(node, data) {
       if (node.type === 'folder') return
@@ -202,7 +213,7 @@ export default {
     },
 
     clickFileMore(param) {
-      const { optType, data } = param
+      const {optType, data} = param
       switch (optType) {
         case 'edit':
           this.edit(data)
@@ -215,13 +226,13 @@ export default {
       }
     },
     beforeClickFile(optType, data, node) {
-      return { optType, data, node }
+      return {optType, data, node}
     },
     edit(row) {
       this.switchMain('DsForm', row)
     },
     showInfo(row) {
-      const param = { ...row.data, ...{ showModel: 'show' }}
+      const param = {...row.data, ...{showModel: 'show'}}
       this.switchMain('DsForm', param)
     },
     _handleDelete(datasource) {
@@ -232,6 +243,7 @@ export default {
       }).then(() => {
         delDs(datasource.id).then(res => {
           this.$success(this.$t('commons.delete_success'))
+          this.switchMain('DataHome')
           this.refreshType(datasource)
         })
       }).catch(() => {
@@ -266,100 +278,106 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .el-divider--horizontal {
-    margin: 12px 0
-  }
+.el-divider--horizontal {
+  margin: 12px 0
+}
 
-  .search-input {
-    padding: 12px 0;
-  }
+.search-input {
+  padding: 12px 0;
+}
 
-  .custom-tree-container{
-    margin-top: 10px;
-  }
+.custom-tree-container {
+  margin-top: 10px;
+}
 
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right:8px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 
-  .custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding:0 8px;
-  }
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 0 8px;
+}
 
-  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
-    display: none;
-  }
+.tree-list > > > .el-tree-node__expand-icon.is-leaf {
+  display: none;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    flex-flow: row nowrap;
-  }
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  flex-flow: row nowrap;
+}
 
-  .form-item {
-    margin-bottom: 0;
-  }
+.form-item {
+  margin-bottom: 0;
+}
 
-  .title-css {
-    height: 26px;
-  }
+.title-css {
+  height: 26px;
+}
 
-  .title-text {
-    line-height: 26px;
-  }
+.title-text {
+  line-height: 26px;
+}
 
-  .dialog-css >>> .el-dialog__header {
-    padding: 20px 20px 0;
-  }
+.dialog-css > > > .el-dialog__header {
+  padding: 20px 20px 0;
+}
 
-  .dialog-css >>> .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
+.dialog-css > > > .el-dialog__body {
+  padding: 10px 20px 20px;
+}
 
-  .form-item>>>.el-form-item__label{
-    font-size: 12px;
-  }
+.form-item > > > .el-form-item__label {
+  font-size: 12px;
+}
 
-  .scene-title{
-    width: 100%;
-    display: flex;
-  }
-  .scene-title-name{
-    width: 100%;
-    overflow: hidden;
-    display: inline-block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  .father .child {
-    /*display: none;*/
-    visibility: hidden;
-  }
-  .father:hover .child {
-    /*display: inline;*/
-    visibility: visible;
-  }
-  .tree-style {
-    padding: 10px 15px;
-    height: 100%;
-    overflow-y: auto;
-  }
-  .msg-node-class {
+.scene-title {
+  width: 100%;
+  display: flex;
+}
+
+.scene-title-name {
+  width: 100%;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.father .child {
+  /*display: none;*/
+  visibility: hidden;
+}
+
+.father:hover .child {
+  /*display: inline;*/
+  visibility: visible;
+}
+
+.tree-style {
+  padding: 10px 15px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.msg-node-class {
+  color: red;
+
+  > > > i {
     color: red;
-    >>> i{
-      color: red;
-    }
   }
+}
 </style>

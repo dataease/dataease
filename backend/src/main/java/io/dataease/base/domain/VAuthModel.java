@@ -19,5 +19,11 @@ public class VAuthModel implements Serializable {
 
     private String createBy;
 
+    private Long level;
+
+    private Long mode;
+
+    private String dataSourceId;
+
     private static final long serialVersionUID = 1L;
 }

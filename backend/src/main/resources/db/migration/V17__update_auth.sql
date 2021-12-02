@@ -33,7 +33,7 @@ SELECT
 	`sys_dept`.`dept_id` AS `id`,
 	`sys_dept`.`name` AS `name`,
 	`sys_dept`.`name` AS `lable`,
-	cast( `sys_dept`.`pid` AS CHAR charset utf8mb4 ) AS `pid`,
+	cast( `sys_dept`.`pid` AS CHAR ) AS `pid`,
 IF
 	(( `sys_dept`.`sub_count` = 0 ), 'leaf', 'spine' ) AS `node_type`,
 	'dept' AS `model_type`,

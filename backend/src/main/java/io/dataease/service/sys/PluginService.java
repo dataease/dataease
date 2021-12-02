@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
@@ -45,24 +46,24 @@ public class PluginService {
 
     public List<MyPlugin> query(BaseGridRequest request) {
         GridExample gridExample = request.convertExample();
-        List<MyPlugin> results = extSysPluginMapper.query(gridExample);
-        return results;
+        return extSysPluginMapper.query(gridExample);
     }
 
     /**
      * 从本地安装处插件
+     *
      * @param file
      * @return
      */
     public Map<String, Object> localInstall(MultipartFile file) {
         //1.上传文件到服务器pluginDir目录下
-        File dest = DeFileUtils.upload(file, pluginDir+"temp/");
+        File dest = DeFileUtils.upload(file, pluginDir + "temp/");
         //2.解压目标文件dest 得到plugin.json和jar
-        String folder = pluginDir+"folder/";
+        String folder = pluginDir + "folder/";
         try {
             ZipUtils.upZipFile(dest, folder);
         } catch (IOException e) {
-            DeFileUtils.deleteFile(pluginDir+"temp/");
+            DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
             // 需要删除文件
             e.printStackTrace();
@@ -71,7 +72,7 @@ public class PluginService {
         File folderFile = new File(folder);
         File[] jsonFiles = folderFile.listFiles(this::isPluginJson);
         if (ArrayUtils.isEmpty(jsonFiles)) {
-            DeFileUtils.deleteFile(pluginDir+"temp/");
+            DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
             throw new RuntimeException("缺少插件描述文件");
         }
@@ -79,7 +80,7 @@ public class PluginService {
         //4.加载jar包 失败则 直接返回错误 删除文件
         File[] jarFiles = folderFile.listFiles(this::isPluginJar);
         if (ArrayUtils.isEmpty(jarFiles)) {
-            DeFileUtils.deleteFile(pluginDir+"temp/");
+            DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
             throw new RuntimeException("缺少插件jar文件");
         }
@@ -87,7 +88,7 @@ public class PluginService {
         try {
             File jarFile = jarFiles[0];
             targetDir = makeTargetDir(myPlugin);
-            String jarPath = null;
+            String jarPath;
             jarPath = DeFileUtils.copy(jarFile, targetDir);
             loadJar(jarPath, myPlugin);
             myPluginMapper.insert(myPlugin);
@@ -100,15 +101,10 @@ public class PluginService {
                 DeFileUtils.deleteFile(targetDir);
             }
             e.printStackTrace();
-        }finally {
-            DeFileUtils.deleteFile(pluginDir+"temp/");
+        } finally {
+            DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
         }
-
-        //mybatisLoader.loadMybatis(myPlugin);
-        //5.写表到my_plugin
-        // myPlugin.setPluginId(0L);
-
         return null;
     }
 
@@ -116,17 +112,6 @@ public class PluginService {
         loadjarUtil.loadJar(jarPath, myPlugin);
     }
 
-
-
-    /*private String makeTargetDir(MyPlugin myPlugin) {
-        String name = myPlugin.getName();
-        String dir = pluginDir + name + "/" + myPlugin.getVersion() + "/";
-        File fileDir = new File(dir);
-        if (!fileDir.exists()) {
-            fileDir.mkdirs();
-        }
-        return dir;
-    }*/
     private String makeTargetDir(MyPlugin myPlugin) {
         String store = myPlugin.getStore();
         String dir = pluginDir + store + "/";
@@ -139,6 +124,7 @@ public class PluginService {
 
     /**
      * 卸载插件
+     *
      * @param pluginId
      * @return
      */
@@ -152,6 +138,7 @@ public class PluginService {
 
     /**
      * 改变插件状态
+     *
      * @param pluginId
      * @param status   true ？ 使用状态 : 禁用状态
      * @return
@@ -176,14 +163,15 @@ public class PluginService {
 
     /**
      * 从plugin.json文件反序列化为MyPlugin实例对象
+     *
      * @return
      */
     private MyPlugin formatJsonFile(File file) {
         String str = DeFileUtils.readJson(file);
         Gson gson = new Gson();
         Map<String, Object> myPlugin = gson.fromJson(str, Map.class);
-        myPlugin.put("free", (Double)myPlugin.get("free") > 0.0);
-        myPlugin.put("loadMybatis", (Double)myPlugin.get("loadMybatis") > 0.0);
+        myPlugin.put("free", (Double) myPlugin.get("free") > 0.0);
+        myPlugin.put("loadMybatis", (Double) myPlugin.get("loadMybatis") > 0.0);
         MyPlugin result = new MyPlugin();
         try {
             org.apache.commons.beanutils.BeanUtils.populate(result, myPlugin);
@@ -193,12 +181,13 @@ public class PluginService {
             e.printStackTrace();
         }
         //BeanUtils.copyBean(result, myPlugin);
-        return  result;
+        return result;
     }
 
     /**
      * 从插件商城远程安装插件
      * 2.0版本实现
+     *
      * @param params
      * @return
      */

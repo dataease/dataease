@@ -340,6 +340,13 @@ div:focus {
   margin: 0 2px 0 0;
 }
 
+.ds-icon-union{
+  width: 14px;
+  height: 14px;
+  color: #a479e7;
+  margin: 0 2px 0 0;
+}
+
 .showRightPanel {
   .el-popper {
     position: fixed !important;
@@ -684,12 +691,65 @@ div:focus {
   background: linear-gradient(to right, #fff, rgba(255,255,255,0)) !important;
 }
 
+
+.rate-date-class > .el-picker-panel__footer > .el-button--text:first-child{
+  display: none;
+}
+.rate-date-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
+  >.el-date-picker__header {
+    display: none;
+  }
+  >.el-picker-panel__content{
+    >table > tbody {
+      >tr:first-child {
+        display: none;
+      }
+      >tr >td.prev-month,td.next-month {
+        display: none;
+      }
+    }
+  }
+}
+.rate-day-class > .el-picker-panel__footer > .el-button--text:first-child{
+  display: none;
+}
+.rate-day-class > .el-picker-panel__body-wrapper > .el-picker-panel__body {
+  >.el-date-picker__header {
+    display: none;
+  }
+  >.el-picker-panel__content{
+    >table > tbody {
+      >tr:not(:nth-child(3)) {
+        display: none;
+      }
+    }
+  }
+}
+
 .chart-type .el-radio__input{
   display: none!important;
 }
 
 .chart-type .el-radio__label{
   padding-left: 0!important;
+}
+
+.chart-type .radio-row .radio-style{
+  width: 80px;
+  height: 60px;
+  padding: 0;
+}
+
+.el-color-predefine__color-selector{
+  border: 1px solid #999999!important;
+  margin: 0 0 6px 6px!important;
+}
+.de-checkbox {
+  width: 100%;
+  margin-left: 0px !important;
+  .el-checkbox__input {
+    padding: 0 0 8px 0 !important;
+  }
 }
 
 

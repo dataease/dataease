@@ -154,11 +154,16 @@ export default {
       })
     },
     querySubjectWithGroup() {
-      this.slidersLoading = true
+      const _this = this
+      _this.slidersLoading = true
       querySubjectWithGroup({}).then(response => {
-        this.sliders = []
-        this.sliders = response.data
-        this.slidersLoading = false
+        _this.sliders = []
+        _this.sliders = response.data
+        _this.slidersLoading = false
+        if (_this.sliders.length < _this.currentIndex) {
+          _this.currentIndex = 1
+          this.$emit('reload')
+        }
       }).catch(() => {
         this.slidersLoading = false
       })

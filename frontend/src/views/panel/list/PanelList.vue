@@ -22,19 +22,6 @@
               <el-dropdown-item @click.native="searchTypeClick('folder')">目录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-
-          <!--          <el-select-->
-          <!--            v-model="searchType"-->
-          <!--            default-first-option-->
-          <!--            size="mini"-->
-          <!--          >-->
-          <!--            <el-option-->
-          <!--              v-for="item in searchTypeList"-->
-          <!--              :key="item.value"-->
-          <!--              :label="item.label"-->
-          <!--              :value="item.value"-->
-          <!--            />-->
-          <!--          </el-select>-->
         </el-col>
       </el-row>
       <el-row>
@@ -246,7 +233,7 @@ import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
-import { post } from '@/api/chart/chart'
+import { queryAuthModel } from '@/api/authModel/authModel'
 
 export default {
   name: 'PanelList',
@@ -348,7 +335,11 @@ export default {
       searchMap: {
         all: this.$t('commons.all'),
         folder: this.$t('commons.folder')
-      }
+      },
+      initLocalStorage: [
+        'chart',
+        'dataset'
+      ]
     }
   },
   computed: {
@@ -380,10 +371,21 @@ export default {
   mounted() {
     this.$store.commit('setComponentData', [])
     this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-    this.defaultTree()
-    this.tree(this.groupForm)
+    this.defaultTree(true)
+    this.tree(true)
+    this.initCache()
   },
   methods: {
+    initCache() {
+      // 初始化时提前加载视图和数据集的缓存
+      this.initLocalStorage.forEach(item => {
+        if (!localStorage.getItem(item + '-tree')) {
+          queryAuthModel({ modelType: item }, false).then(res => {
+            localStorage.setItem(item + '-tree', JSON.stringify(res.data))
+          })
+        }
+      })
+    },
     closeEditPanelDialog(panelInfo) {
       this.editPanel.visible = false
       if (panelInfo) {
@@ -406,7 +408,7 @@ export default {
           }
           this.activeNodeAndClick(panelInfo)
         } else {
-          this.tree(this.groupForm)
+          this.tree()
         }
       }
     },
@@ -549,7 +551,7 @@ export default {
               type: 'success',
               showClose: true
             })
-            this.tree(this.groupForm)
+            this.tree()
             this.defaultTree()
           })
         } else {
@@ -576,7 +578,7 @@ export default {
             showClose: true
           })
           this.clearCanvas()
-          this.tree(this.groupForm)
+          this.tree()
           this.defaultTree()
         })
       }).catch(() => {
@@ -605,17 +607,34 @@ export default {
         sort: 'node_type desc,name asc'
       }
     },
-    tree(group) {
-      groupTree(group).then(res => {
-        this.tData = res.data
+    tree(cache = false) {
+      const modelInfo = localStorage.getItem('panel-main-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+      }
+      groupTree(this.groupForm, !userCache).then(res => {
+        localStorage.setItem('panel-main-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+        }
       })
     },
-    defaultTree() {
+    defaultTree(cache = false) {
       const requestInfo = {
         panelType: 'system'
       }
-      defaultTree(requestInfo).then(res => {
-        this.defaultData = res.data
+      const modelInfo = localStorage.getItem('panel-default-tree')
+      const userCache = (modelInfo && cache)
+
+      if (userCache) {
+        this.defaultData = JSON.parse(modelInfo)
+      }
+      defaultTree(requestInfo, false).then(res => {
+        localStorage.setItem('panel-default-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.defaultData = res.data
+        }
       })
     },
 
@@ -637,7 +656,6 @@ export default {
             item.sizey = (item.sizey || 5)
           })
           this.$store.commit('setComponentData', this.resetID(componentDatas))
-          //   this.$store.commit('setComponentData', sourceInfo.type === 'custom' ? sourceInfo : this.resetID(sourceInfo))
           const temp = JSON.parse(response.data.panelStyle)
           temp.refreshTime = (temp.refreshTime || 5)
           temp.refreshViewLoading = (temp.refreshViewLoading || false)
@@ -783,7 +801,7 @@ export default {
       this.moveInfo.pid = this.tGroup.id
       this.moveInfo['optType'] = 'move'
       panelSave(this.moveInfo).then(response => {
-        this.tree(this.groupForm)
+        this.tree()
         this.closeMoveGroup()
       })
     },

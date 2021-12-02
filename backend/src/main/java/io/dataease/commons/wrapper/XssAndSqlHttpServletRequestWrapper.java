@@ -124,12 +124,6 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
                 case '<':
                     sb.append("＜");// 转义小于号
                     break;
-                // case '\'':
-                // sb.append("＇");// 转义单引号
-                // break;
-                // case '\"':
-                // sb.append("＂");// 转义双引号
-                // break;
                 case '&':
                     sb.append("＆");// 转义&
                     break;
@@ -261,7 +255,6 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
                     "<[\r\n| | ]*script[\r\n| | ]*>(.*?)</[\r\n| | ]*script[\r\n| | ]*>", Pattern.CASE_INSENSITIVE);
             flag = scriptPattern.matcher(value).find();
             if (flag) {
-                // threadLocal.set("包含XSS攻击脚本，请检查参数！");
                 return flag;
             }
             // Avoid anything in a

@@ -22,6 +22,7 @@
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
+      ref="deDragRef"
       :key="item.id"
       :class="{item:true,moveAnimation:moveAnimate,movingItem:item.isPlayer}"
       :index="index"
@@ -57,7 +58,7 @@
     >
       <component
         :is="item.component"
-        v-if="item.type==='v-text'"
+        v-if="renderOk&&item.type==='v-text'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -70,7 +71,7 @@
         @input="handleInput"
       />
       <de-out-widget
-        v-else-if="item.type==='custom'"
+        v-else-if="renderOk&&item.type==='custom'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -82,7 +83,7 @@
       />
       <component
         :is="item.component"
-        v-else-if="item.type==='other'"
+        v-else-if="renderOk&&item.type==='other'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -94,7 +95,7 @@
       />
       <component
         :is="item.component"
-        v-else
+        v-else-if="renderOk"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -244,15 +245,12 @@ function resetPositionBox() {
   const rows = this.matrixCount.y // 初始100行，后面根据需求会自动增加
   for (let i = 0; i < rows; i++) {
     const row = []
-
     for (let j = 0; j < this.maxCell; j++) {
       row.push({
         el: false
       })
     }
-
     positionBox.push(row)
-    // console.log('positionBox:' + JSON.stringify(positionBox))
   }
 }
 
@@ -262,7 +260,6 @@ function resetPositionBox() {
  * @param {any} item
  */
 function addItemToPositionBox(item) {
-  // console.log('itemInfo:' + JSON.stringify(item))
   const pb = positionBox
   if (item.x <= 0 || item.y <= 0) return
 
@@ -289,15 +286,11 @@ function fillPositionBox(maxY) {
       pb.push(row)
     }
   }
-
   itemMaxY = maxY
-  // console.log('height:' + ((itemMaxY) * this.cellHeight) + 'px')
-  // $(this.$el).css('height', ((itemMaxY) * this.cellHeight) + 'px')
 }
 
 function removeItemFromPositionBox(item) {
   const pb = positionBox
-  // console.log('removeItem=>x:' + item.x + ';y:' + item.y + ';sizex:' + item.sizex + ';sizey:' + item.sizey)
   if (!item || item.x <= 0 || item.y <= 0) return
   for (let i = item.x - 1; i < item.x - 1 + item.sizex; i++) {
     for (let j = item.y - 1; j < item.y - 1 + item.sizey; j++) {
@@ -313,20 +306,10 @@ function removeItemFromPositionBox(item) {
  *
  */
 function recalcCellWidth() {
-  // const containerNode = this.$refs['container']
-  // this.outStyle.width && this.outStyle.height
-  // const containerWidth = this.outStyle.width
-
-  // const cells = Math.round(containerWidth / this.cellWidth)
   this.maxCell = this.matrixCount.x
-
-  // if (containerWidth % this.cellWidth !=== 0) {
-  //     this.cellWidth += containerWidth % this.cellWidth / cells;
-  // }
 }
 
 function init() {
-  // console.log('init-cellWidth')
   this.cellWidth = this.baseWidth + this.baseMarginLeft
   this.cellHeight = this.baseHeight + this.baseMarginTop
   this.yourList = this.getList()
@@ -342,12 +325,10 @@ function init() {
   itemMaxX = 0
 
   const vm = this
-
   recalcCellWidth.call(this)
-
   resetPositionBox.call(this)
+  // initPosition(this)
   let i = 0
-  // console.log('initList:' + JSON.stringify(vm.yourList))
   const timeid = setInterval(function() {
     if (i >= vm.yourList.length) {
       clearInterval(timeid)
@@ -364,15 +345,12 @@ function init() {
 }
 
 function resizePlayer(item, newSize) {
-  // console.log('resizePlayer')
   const vm = this
   removeItemFromPositionBox(item)
 
   const belowItems = findBelowItems.call(this, item)
-
   _.forEach(belowItems, function(upItem) {
     const canGoUpRows = canItemGoUp(upItem)
-
     if (canGoUpRows > 0) {
       moveItemUp.call(vm, upItem, canGoUpRows)
     }
@@ -394,13 +372,9 @@ function resizePlayer(item, newSize) {
   }
 
   emptyTargetCell.call(this, item)
-
   addItemToPositionBox.call(this, item)
-
   changeItemCoord.call(this, item)
-
   const canGoUpRows = canItemGoUp(item)
-
   if (canGoUpRows > 0) {
     moveItemUp.call(this, item, canGoUpRows)
   }
@@ -413,7 +387,6 @@ function resizePlayer(item, newSize) {
  * @param {any} position
  */
 function checkItemPosition(item, position) {
-  // console.log('checkItemPosition-info' + JSON.stringify(item))
   position = position || {}
   position.x = position.x || item.x
   position.y = position.y || item.y
@@ -459,12 +432,10 @@ function checkItemPosition(item, position) {
  * @param {any} position
  */
 function movePlayer(item, position) {
-  // console.log('movePlayer')
   const vm = this
   removeItemFromPositionBox(item)
 
   const belowItems = findBelowItems.call(this, item)
-
   _.forEach(belowItems, function(upItem) {
     const canGoUpRows = canItemGoUp(upItem)
     if (canGoUpRows > 0) {
@@ -474,17 +445,11 @@ function movePlayer(item, position) {
 
   item.x = position.x
   item.y = position.y
-  // console.log('checkItemPosition3')
   checkItemPosition.call(this, item, position)
-
   emptyTargetCell.call(this, item)
-
   addItemToPositionBox.call(this, item)
-
   changeItemCoord.call(this, item)
-
   const canGoUpRows = canItemGoUp(item)
-
   if (canGoUpRows > 0) {
     moveItemUp.call(this, item, canGoUpRows)
   }
@@ -496,12 +461,8 @@ function removeItem(index) {
   removeItemFromPositionBox(item)
 
   const belowItems = findBelowItems.call(this, item)
-
-  // $(this.$refs['item' + item._dragId][0]).remove();
-
   _.forEach(belowItems, function(upItem) {
     const canGoUpRows = canItemGoUp(upItem)
-
     if (canGoUpRows > 0) {
       moveItemUp.call(vm, upItem, canGoUpRows)
     }
@@ -510,33 +471,38 @@ function removeItem(index) {
   this.yourList.splice(index, 1, {})
 }
 
+// eslint-disable-next-line no-unused-vars
+function initPosition(_this) {
+  _this.yourList.forEach(item => {
+    checkItemPosition.call(_this, item, {
+      x: item.x,
+      y: item.y
+    })
+  })
+}
+
 function addItem(item, index) {
   // console.log('addItem')
   if (index < 0) {
     index = this.yourList.length
   }
   item._dragId = index
-
-  // console.log('checkItemPosition4')
   checkItemPosition.call(this, item, {
     x: item.x,
     y: item.y
   })
 
   emptyTargetCell.call(this, item)
-
   addItemToPositionBox.call(this, item)
-
   const canGoUpRows = canItemGoUp(item)
-
   if (canGoUpRows > 0) {
     moveItemUp.call(this, item, canGoUpRows)
   }
-
   // 生成坐标点
   // makeCoordinate.call(this, item);
 }
 
+// eslint-disable-next-line no-unused-vars
 function changeToCoord(left, top, width, height) {
   return {
     x1: left,
@@ -553,6 +519,7 @@ function changeToCoord(left, top, width, height) {
  *
  * @param {any} tCoord 比对对象的坐标
  */
+// eslint-disable-next-line no-unused-vars
 function findClosetCoords(item, tCoord) {
   if (isOverlay) return
   let i = coordinates.length
@@ -596,6 +563,7 @@ function findClosetCoords(item, tCoord) {
  *
  * @param {any} item
  */
+// eslint-disable-next-line no-unused-vars
 function makeCoordinate(item) {
   const width = this.cellWidth * (item.sizex) - this.baseMarginLeft
   const height = this.cellHeight * (item.sizey) - this.baseMarginTop
@@ -645,7 +613,6 @@ function changeItemCoord(item) {
  * @param {any} item
  */
 function emptyTargetCell(item) {
-  // console.log('emptyTargetCell')
   const vm = this
   const belowItems = findBelowItems(item)
 
@@ -687,9 +654,7 @@ function canItemGoUp(item) {
 function moveItemDown(item, size) {
   const vm = this
   removeItemFromPositionBox(item)
-
   const belowItems = findBelowItems(item)
-
   _.forEach(belowItems, function(downItem, index) {
     if (downItem._dragId === item._dragId) return
     const moveSize = calcDiff(item, downItem, size)
@@ -697,23 +662,17 @@ function moveItemDown(item, size) {
       moveItemDown.call(vm, downItem, moveSize)
     }
   })
-
   const targetPosition = {
     y: item.y + size
   }
   setPlayerPosition.call(this, item, targetPosition)
-  // console.log('checkItemPosition1')
   checkItemPosition.call(this, item, targetPosition)
-
   addItemToPositionBox.call(this, item)
-
   changeItemCoord.call(this, item)
 }
 
 function setPlayerPosition(item, position) {
-  const vm = this
   position = position || {}
-
   const targetX = position.x || item.x
   const targetY = position.y || item.y
 
@@ -721,14 +680,8 @@ function setPlayerPosition(item, position) {
   item.y = targetY
 
   // 还原到像素
-  // item.style.left = (item.x - 1) * this.matrixStyle.width
-  // item.style.top = (item.y - 1) * this.matrixStyle.height
   item.style.left = ((item.x - 1) * this.matrixStyle.width) / this.scalePointWidth
   item.style.top = ((item.y - 1) * this.matrixStyle.height) / this.scalePointHeight
-  // console.log('setPlayerPosition:' + item._dragId + '--' + item.x + '--' + item.y + '--top' + item.style.top)
-
-  // console.log('setPlayerPosition:x=' + item.style.left + ';y=' + item.style.top + 'componentData:' + JSON.stringify(this.componentData))
-
   if (item.y + item.sizey > itemMaxY) {
     itemMaxY = item.y + item.sizey
   }
@@ -762,14 +715,11 @@ function calcDiff(parent, son, size) {
 }
 
 function moveItemUp(item, size) {
-  // console.log('moveItemUp')
   const vm = this
 
   removeItemFromPositionBox(item)
 
   const belowItems = findBelowItems.call(this, item)
-
-  // item.y -= size;
   setPlayerPosition.call(this, item, {
     y: item.y - size
   })
@@ -804,7 +754,7 @@ function findBelowItems(item) {
 
   return _.sortBy(_.values(belowItems), 'y')
 }
-
+// eslint-disable-next-line no-unused-vars
 function getoPsitionBox() {
   return positionBox
 }
@@ -857,6 +807,20 @@ export default {
       required: false,
       type: Function,
       default: function() {}
+    },
+    matrixCount: {
+      required: false,
+      type: Object,
+      default: () => {
+        return {
+          x: 36,
+          y: 18
+        }
+      }
+    },
+    scrollTop: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -900,11 +864,6 @@ export default {
         originWidth: 80, // 原始尺寸
         originHeight: 20
       },
-      // 矩阵数量 默认 128 * 72
-      matrixCount: {
-        x: 36,
-        y: 18
-      },
       customStyleHistory: null,
       showDrag: true,
       vLine: [],
@@ -940,9 +899,6 @@ export default {
       return this.chartDetailsVisible || this.linkJumpSetVisible
     },
     // 挤占式画布设计
-    // positionBoxInfo() {
-    //   return getoPsitionBox()
-    // },
     coordinates() {
       return coordinates
     },
@@ -965,8 +921,6 @@ export default {
           }
         }
       }
-      // console.log('customStyle=>' + JSON.stringify(style) + JSON.stringify(this.canvasStyleData))
-
       return style
     },
     panelInfo() {
@@ -983,65 +937,44 @@ export default {
       'linkageSettingStatus',
       'curLinkageView',
       'doSnapshotIndex',
-      'componentGap'
+      'componentGap',
+      'mobileLayoutStatus'
     ])
   },
   watch: {
     customStyle: {
       handler(newVal) {
         // 获取当前宽高（宽高改变后重新渲染画布）
-        // if (oldVla && newVal !== oldVla) {
-        //   this.showDrag = false
-        //   this.$nextTick(() => (this.showDrag = true))
-        // }
       },
       deep: true
     },
     outStyle: {
       handler(newVal, oldVla) {
+        this.resizeParentBoundsRef()
         this.changeScale()
-        // console.log('newVal:' + JSON.stringify(newVal) + 'oldVla:' + JSON.stringify(this.outStyleOld))
-        if (this.outStyleOld && (newVal.width > this.outStyleOld.width || newVal.height > this.outStyleOld.height)) {
-          this.resizeParentBounds()
-        }
         this.outStyleOld = deepCopy(newVal)
       },
       deep: true
     },
-    // canvasStyleData: {
-    //   handler(newVal, oldVla) {
-    //     // 第一次变化 不需要 重置边界 待改进
-    //     if (this.changeIndex++ > 0) {
-    //       // this.resizeParentBounds()
-    //       this.$store.state.styleChangeTimes++
-    //     }
-    //     // this.changeScale()
-    //   },
-    //   deep: true
-    // },
     componentData: {
       handler(newVal, oldVla) {
-        // console.log('newVal:' + JSON.stringify(newVal) + ';oldVla:' + JSON.stringify(oldVla))
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
-          // console.log('.initMatrix2')
           this.initMatrix()
+          // console.log('componentData-initMatrix')
         }
       },
       deep: true
     },
     positionBox: {
       handler(newVal, oldVla) {
-        // console.log('positionBox:' + JSON.stringify(positionBox))
       },
       deep: true
     },
     // 镜像索引有变化 刷新一下矩阵（撤销重做等）
     doSnapshotIndex: {
       handler(newVal, oldVla) {
-        // console.log('snapshotIndexChange:' + newVal)
-        // console.log('.initMatrix3')
         this.initMatrix()
       },
       deep: true
@@ -1053,22 +986,12 @@ export default {
       this.changeScale()
       this.editShow = true
     }, 500)
-    // this.changeScale()
     // 获取编辑器元素
     this.$store.commit('getEditor')
     const _this = this
-    // bus.$on('auxiliaryMatrixChange', this.initMatrix)
-    // bus.$on('auxiliaryMatrixChange', () => {
-    //   _this.$nextTick(() => {
-    //     _this.initMatrix()
-    //   })
-    // })
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
-    // bus.$on('delete-condition', condition => {
-    //   this.deleteCondition(condition)
-    // })
     eventBus.$on('startMoveIn', this.startMoveIn)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
@@ -1081,7 +1004,6 @@ export default {
     }
   },
   created() {
-    // this.$store.dispatch('conditions/clear')
   },
   methods: {
     changeStyleWithScale,
@@ -1090,48 +1012,7 @@ export default {
       if (!this.curComponent || (this.curComponent.component !== 'v-text' && this.curComponent.component !== 'rect-shape')) {
         e.preventDefault()
       }
-
       this.hideArea()
-
-      // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
-      const rectInfo = this.editor.getBoundingClientRect()
-      this.editorX = rectInfo.x
-      this.editorY = rectInfo.y
-
-      const startX = e.clientX
-      const startY = e.clientY
-      this.start.x = startX - this.editorX
-      this.start.y = startY - this.editorY
-      // 展示选中区域
-      this.isShowArea = true
-
-      const move = (moveEvent) => {
-        this.width = Math.abs(moveEvent.clientX - startX)
-        this.height = Math.abs(moveEvent.clientY - startY)
-        if (moveEvent.clientX < startX) {
-          this.start.x = moveEvent.clientX - this.editorX
-        }
-
-        if (moveEvent.clientY < startY) {
-          this.start.y = moveEvent.clientY - this.editorY
-        }
-      }
-
-      const up = (e) => {
-        document.removeEventListener('mousemove', move)
-        document.removeEventListener('mouseup', up)
-
-        if (e.clientX === startX && e.clientY === startY) {
-          this.hideArea()
-          return
-        }
-
-        this.createGroup()
-      }
-
-      document.addEventListener('mousemove', move)
-      document.addEventListener('mouseup', up)
-
       // 挤占式画布设计
       this.containerMouseDown(e)
     },
@@ -1337,7 +1218,6 @@ export default {
       }
     },
     getRefLineParams(params) {
-      // console.log(JSON.stringify(params))
       const { vLine, hLine } = params
       this.vLine = vLine
       this.hLine = hLine
@@ -1350,11 +1230,11 @@ export default {
     parentBoundsChange(index) {
       this.timeMachine = setTimeout(() => {
         if (index === this.changeIndex) {
-          this.showDrag = false
-          this.$nextTick(() => (this.showDrag = true))
+          this.changeScale()
+          console.log('changeScale')
         }
         this.destroyTimeMachine()
-      }, 500)
+      }, 1500)
     },
     destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
@@ -1379,9 +1259,8 @@ export default {
       }
     },
     handleDragOver(e) {
-      // console.log('handleDragOver-Editor')
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
-      this.dragComponentInfo.shadowStyle.y = e.pageY - 90
+      this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
       this.dragComponentInfo.style.top = this.dragComponentInfo.shadowStyle.y / this.scalePointHeight
       if (this.dragComponentInfo.auxiliaryMatrix) {
@@ -1408,19 +1287,16 @@ export default {
 
     // 挤占式画布设计
     startResize(e, item, index) {
-      // console.log('startResize:' + index)
       if (!this.resizable) return
       this.resizeStart.call(null, e, item, index)
 
       // e.preventDefault();
+      // eslint-disable-next-line no-unused-vars
       const target = $(e.target)
 
       if (!this.infoBox) {
         this.infoBox = {}
       }
-
-      const itemNode = target.parents('.item')
-
       this.infoBox.resizeItem = item
       this.infoBox.resizeItemIndex = index
       // this.onStartMove(e, item, index)
@@ -1432,22 +1308,14 @@ export default {
       if (!this.infoBox) {
         this.infoBox = {}
       }
-      // console.log('containerMouseDown=' + e.pageX + ';' + e.pageY)
-
       this.infoBox.startX = e.pageX
       this.infoBox.startY = e.pageY
     },
     onStartMove(e, item, index) {
-      // console.log('onStartMove:' + index)
-      const vm = this
-      // e.preventDefault();
-
       if (!this.infoBox) {
         this.infoBox = {}
       }
       const infoBox = this.infoBox
-      const target = $(e.target)
-
       this.dragStart.call(null, e, item, index)
       infoBox.moveItem = item
       infoBox.moveItemIndex = index
@@ -1485,15 +1353,9 @@ export default {
       const infoBox = this.infoBox
       const resizeItem = _.get(infoBox, 'resizeItem')
       const vm = this
-      // console.log('resizeItem')
-
       vm.$set(resizeItem, 'isPlayer', true)
-      const nowItemIndex = infoBox.resizeItemIndex
-      // const cloneItem = infoBox.cloneItem
       const startX = infoBox.startX
       const startY = infoBox.startY
-      const oldSizeX = infoBox.oldSizeX
-      const oldSizeY = infoBox.oldSizeY
       const moveXSize = e.pageX - startX // X方向移动的距离
       const moveYSize = e.pageY - startY // Y方向移动的距离
 
@@ -1534,8 +1396,6 @@ export default {
       const infoBox = this.infoBox
       const moveItem = _.get(infoBox, 'moveItem')
       const vm = this
-      // console.log('onDragging')
-
       scrollScreen(e)
       if (!vm.draggable) return
       vm.dragging.call(null, e, moveItem, moveItem._dragId)
@@ -1584,10 +1444,7 @@ export default {
       }
     },
     getList() {
-      // console.log('getList:')
-
       // 不使用copy 保持原有对象
-      // const returnList = _.sortBy(_.cloneDeep(this.componentData), 'y')
       const finalList = []
       _.forEach(this.componentData, function(item, index) {
         if (_.isEmpty(item)) return
@@ -1598,7 +1455,6 @@ export default {
         }
       })
       return finalList
-      // return this.componentData
     },
     /**
      * 获取x最大值
@@ -1649,8 +1505,6 @@ export default {
       if (this.$store.state.dragComponentInfo.auxiliaryMatrix) {
         const moveInItemInfo = this.$store.state.dragComponentInfo
         this.addItemBox(moveInItemInfo)
-        // console.log('startMoveIn:')
-        const vm = this
         // e.preventDefault();
         if (!this.infoBox) {
           this.infoBox = {}
@@ -1672,6 +1526,13 @@ export default {
     },
     closeJumpSetDialog() {
       this.linkJumpSetVisible = false
+    },
+    // 调整父级组件边界
+    resizeParentBoundsRef() {
+      const _this = this
+      _this.componentData.forEach(function(data, index) {
+        _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].checkParentSize()
+      })
     }
   }
 }

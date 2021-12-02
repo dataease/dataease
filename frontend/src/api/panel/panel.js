@@ -36,20 +36,22 @@ export function querySubjectWithGroup(data) {
   })
 }
 
-export function defaultTree(data) {
+export function defaultTree(data, loading = true, timeout = 30000) {
   return request({
     url: '/panel/group/defaultTree',
     method: 'post',
-    loading: true,
+    loading: loading,
+    timeout: timeout,
     data
   })
 }
 
-export function groupTree(data) {
+export function groupTree(data, loading = true, timeout = 30000) {
   return request({
     url: '/panel/group/tree',
     method: 'post',
-    loading: true,
+    loading: loading,
+    timeout: timeout,
     data
   })
 }
