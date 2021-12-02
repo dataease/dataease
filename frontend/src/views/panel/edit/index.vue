@@ -113,7 +113,7 @@
           <el-col :span="8" class="this_mobile_canvas_cell">
             <div
               v-proportion="2.5"
-              :style="customCanvasStyle"
+              :style="customCanvasMobileStyle"
               class="this_mobile_canvas"
               @drop="handleDrop"
               @dragover="handleDragOver"
@@ -329,6 +329,11 @@ export default {
         }
       } else {
         return false
+      }
+    },
+    customCanvasMobileStyle() {
+      return {
+        padding: this.componentGap + 'px'
       }
     },
     customCanvasStyle() {

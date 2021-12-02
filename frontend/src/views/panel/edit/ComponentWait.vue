@@ -1,7 +1,7 @@
 <template>
   <el-row class="component-wait">
     <el-row class="component-wait-title">
-      隐藏的组件
+      {{ $t('panel.component_hidden') }}
     </el-row>
     <el-row class="component-wait-main">
       <component-wait-item
@@ -73,6 +73,8 @@ export default {
   .component-wait-title {
     width: 100%;
     height: 30px;
+    color: #FFFFFF;
+    vertical-align: center;
     background-color: #9ea6b2;
     border-bottom: 1px black;
   }
