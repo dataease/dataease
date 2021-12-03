@@ -20,7 +20,7 @@
           <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" clearable />
         </el-form-item>
         <el-form-item class="form-item">
-          <el-button size="mini" @click="previewData">
+          <el-button :disabled="dataset.length === 0" size="mini" @click="previewData">
             {{ $t('dataset.preview_result') }}
           </el-button>
         </el-form-item>
