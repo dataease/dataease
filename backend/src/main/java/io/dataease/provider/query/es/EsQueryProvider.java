@@ -898,7 +898,7 @@ public class EsQueryProvider extends QueryProvider {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
                 String agg = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(EsSqlLConstants.CAST, agg, EsSqlLConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(EsSqlLConstants.ROUND, agg, "2");
             } else {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
                 fieldName = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), cast);
