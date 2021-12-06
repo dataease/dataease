@@ -45,6 +45,8 @@
             highlight-current
             :expand-on-click-node="true"
             :filter-node-method="filterNode"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
             @node-click="nodeClick"
           >
             <span v-if="data.modelInnerType === 'group'" slot-scope="{ node, data }" class="custom-tree-node father">
@@ -523,14 +525,6 @@ export default {
     nodeClick(data, node) {
       if (data.modelInnerType !== 'group') {
         this.$emit('switchComponent', { name: 'ViewTable', param: data })
-      }
-      if (node.expanded) {
-        this.expandedArray.push(data.id)
-      } else {
-        const index = this.expandedArray.indexOf(data.id)
-        if (index > -1) {
-          this.expandedArray.splice(index, 1)
-        }
       }
     },
 

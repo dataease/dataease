@@ -44,6 +44,8 @@
             :expand-on-click-node="true"
             :filter-node-method="filterNode"
             @node-click="nodeClick"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
           >
             <span v-if="data.modelInnerType ==='group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
@@ -672,14 +674,6 @@ export default {
       this.currentNodeData = data
       if (data.modelInnerType !== 'group') {
         this.$emit('switchComponent', { name: 'ChartEdit', param: data })
-      }
-      if (node.expanded) {
-        this.expandedArray.push(data.id)
-      } else {
-        const index = this.expandedArray.indexOf(data.id)
-        if (index > -1) {
-          this.expandedArray.splice(index, 1)
-        }
       }
     },
 
