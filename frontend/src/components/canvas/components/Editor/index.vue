@@ -327,7 +327,7 @@ function init() {
   const vm = this
   recalcCellWidth.call(this)
   resetPositionBox.call(this)
-  // initPosition(this)
+  initPosition(this)
   let i = 0
   const timeid = setInterval(function() {
     if (i >= vm.yourList.length) {
@@ -471,13 +471,11 @@ function removeItem(index) {
   this.yourList.splice(index, 1, {})
 }
 
-// eslint-disable-next-line no-unused-vars
+// 矩阵设计初始化的时候 预占位，防止编辑仪表板页面，初始化和视图编辑返回时出现组件位置变化问题
 function initPosition(_this) {
   _this.yourList.forEach(item => {
-    checkItemPosition.call(_this, item, {
-      x: item.x,
-      y: item.y
-    })
+    fillPositionBox.call(_this, item.y + item.sizey)
+    addItemToPositionBox.call(_this, item)
   })
 }
 
