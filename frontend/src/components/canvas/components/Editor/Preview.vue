@@ -108,7 +108,9 @@ export default {
   },
   computed: {
     customStyle() {
-      let style = {}
+      let style = {
+        width: '100%'
+      }
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
@@ -266,6 +268,7 @@ export default {
   .main-class {
     width: 100%;
     height: 100%;
+    background-size: 100% 100% !important;
   }
 
   .custom-position {

@@ -46,6 +46,7 @@
                       <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
                       <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                       <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                      <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
                     </span>
                     <el-tooltip class="item" effect="dark" placement="top">
                       <div slot="content">{{ node.label }}</div>

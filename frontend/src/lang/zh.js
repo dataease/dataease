@@ -1166,7 +1166,8 @@ export default {
     field_select: '字段选择',
     add_union_field: '添加关联字段',
     union_error: '关联关系与关联字段不能为空',
-    union_repeat: '当前数据集已被关联，请勿重复关联'
+    union_repeat: '当前数据集已被关联，请勿重复关联',
+    preview_result: '预览结果'
   },
   datasource: {
     datasource: '数据源',
@@ -1437,7 +1438,9 @@ export default {
     video_add_tips: '请点击添加配置视频信息...',
     panel_view_result_show: '视图结果展示',
     panel_view_result_tips: '选择仪表板会覆盖视图的结果展示数量，取值范围1~10000',
-    timeout_refresh: '请求超时，稍后刷新...'
+    timeout_refresh: '请求超时，稍后刷新...',
+    mobile_layout: '移动端布局',
+    component_hidden: '隐藏的组件'
   },
   plugin: {
     local_install: '本地安装',

@@ -37,7 +37,7 @@
       </ux-table-column>
     </ux-grid>
     <el-row style="margin-top: 4px;">
-      <span v-if="table.type === 'excel' || table.type === 'custom'" class="table-count">
+      <span v-if="table.type === 'excel' || table.type === 'custom' || table.type === 'union'" class="table-count">
         <span v-if="page.total <= currentPage.show">
           {{ $t('dataset.preview_total') }}
           <span class="span-number">{{ page.total }}</span>

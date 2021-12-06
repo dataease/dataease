@@ -1163,7 +1163,8 @@ export default {
     field_select: 'Select Field',
     add_union_field: 'Add Union Field',
     union_error: 'Union relation and field can not be empty',
-    union_repeat: 'This dataset is already union，do not union repeat'
+    union_repeat: 'This dataset is already union，do not union repeat',
+    preview_result: 'Preview'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1426,7 +1427,9 @@ export default {
     video_add_tips: 'Please Add Video Info...',
     panel_view_result_show: 'View Result Show',
     panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000',
-    timeout_refresh: 'Timeout，Will Refresh...'
+    timeout_refresh: 'Timeout，Will Refresh...',
+    mobile_layout: 'Mobile Layout',
+    component_hidden: 'Component Hidden'
   },
   plugin: {
     local_install: 'Local installation',

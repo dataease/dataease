@@ -133,9 +133,9 @@ public class DataSetTableController {
     @ApiOperation("excel上传")
     @PostMapping("excel/upload")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
-        @ApiImplicitParam(name = "tableId", value = "数据表ID", required = true, dataType = "String"),
-        @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
+            @ApiImplicitParam(name = "tableId", value = "数据表ID", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
     })
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("tableId") String tableId, @RequestParam("editType") Integer editType) throws Exception {
         return dataSetTableService.excelSaveAndParse(file, tableId, editType);
@@ -157,5 +157,11 @@ public class DataSetTableController {
     @PostMapping("syncField/{id}")
     public DatasetTable syncDatasetTableField(@PathVariable String id) throws Exception {
         return dataSetTableService.syncDatasetTableField(id);
+    }
+
+    @ApiOperation("关联数据集预览数据")
+    @PostMapping("unionPreview")
+    public Map<String, Object> unionPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getUnionPreview(dataSetTableRequest);
     }
 }
