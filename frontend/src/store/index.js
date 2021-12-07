@@ -325,6 +325,26 @@ const data = {
     },
     setMobileLayoutStatus(state, status) {
       state.mobileLayoutStatus = status
+    },
+    // 启用移动端布局
+    openMobileLayout(state) {
+      state.componentDataCache = JSON.stringify(state.componentData)
+      state.pcComponentData = state.componentData
+      const mainComponentData = []
+      // 移动端布局转换
+      state.componentData.forEach(item => {
+        if (item.mobileSelected) {
+          item.style = item.mobileStyle.style
+          item.x = item.mobileStyle.x
+          item.y = item.mobileStyle.y
+          item.sizex = item.mobileStyle.sizex
+          item.sizey = item.mobileStyle.sizey
+          item.auxiliaryMatrix = item.mobileStyle.auxiliaryMatrix
+          mainComponentData.push(item)
+        }
+      })
+      state.componentData = mainComponentData
+      state.mobileLayoutStatus = !state.mobileLayoutStatus
     }
   },
   modules: {

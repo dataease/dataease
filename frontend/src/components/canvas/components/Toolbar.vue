@@ -347,25 +347,9 @@ export default {
     auxiliaryMatrixChange() {
       this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
     },
+    // 启用移动端布局
     openMobileLayout() {
-      this.$store.commit('setComponentDataCache', JSON.stringify(this.componentData))
-      this.$store.commit('setPcComponentData', this.componentData)
-      const mainComponentData = []
-      // 移动端布局转换
-      this.componentData.forEach(item => {
-        if (item.mobileSelected) {
-          item.style = item.mobileStyle.style
-          item.x = item.mobileStyle.x
-          item.y = item.mobileStyle.y
-          item.sizex = item.mobileStyle.sizex
-          item.sizey = item.mobileStyle.sizey
-          item.auxiliaryMatrix = item.mobileStyle.auxiliaryMatrix
-          mainComponentData.push(item)
-        }
-      })
-
-      this.$store.commit('setComponentData', mainComponentData)
-      this.$store.commit('setMobileLayoutStatus', !this.mobileLayoutStatus)
+      this.$store.commit('openMobileLayout')
     },
     editSave() {
       if (this.mobileLayoutStatus) {
