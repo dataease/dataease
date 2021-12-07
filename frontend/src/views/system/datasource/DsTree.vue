@@ -198,6 +198,8 @@ export default {
         return 'AWS Redshift'
       } else if (type === 'hive') {
         return 'Apache Hive'
+      } else if (type === 'db2') {
+        return 'Db2'
       }
     },
 

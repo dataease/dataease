@@ -1,6 +1,9 @@
-querySql(groups, aggregators, filters, orders, table)
+querySql(limitFiled, groups, aggregators, filters, orders, table)
 ::=<<
 SELECT
+<if(limitFiled)>
+   <limitFiled.limitFiled>
+<endif>
 <if(!groups && !aggregators)>
     *
 <endif>

@@ -282,7 +282,11 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            SQLObj limitFiled = SQLObj.builder().limitFiled("top " + view.getResultCount() + " ").build();
+            st.add("limitFiled", limitFiled);
+        }
+        return st.render();
     }
 
     @Override
@@ -353,7 +357,11 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            SQLObj limitFiled = SQLObj.builder().limitFiled("top " + view.getResultCount() + " ").build();
+            st.add("limitFiled", limitFiled);
+        }
+        return st.render();
     }
 
     @Override
@@ -491,7 +499,11 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            SQLObj limitFiled = SQLObj.builder().limitFiled("top " + view.getResultCount() + " ").build();
+            st.add("limitFiled", limitFiled);
+        }
+        return st.render();
     }
 
     @Override
@@ -604,7 +616,11 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            SQLObj limitFiled = SQLObj.builder().limitFiled("top " + view.getResultCount() + " ").build();
+            st.add("limitFiled", limitFiled);
+        }
+        return st.render();
     }
 
     @Override
@@ -686,7 +702,11 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            SQLObj limitFiled = SQLObj.builder().limitFiled("top " + view.getResultCount() + " ").build();
+            st.add("limitFiled", limitFiled);
+        }
+        return st.render();
     }
 
     @Override
@@ -1056,13 +1076,5 @@ public class SqlserverQueryProvider extends QueryProvider {
                     String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
         }
         return originField;
-    }
-
-    private String sqlLimit(String sql, ChartViewWithBLOBs view) {
-        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
-            return String.format("SELECT top %s * from ( %s ) as DE_SQLSERVER_TMP ", view.getResultCount(), sqlFix(sql));
-        } else {
-            return sql;
-        }
     }
 }
