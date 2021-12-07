@@ -7,7 +7,6 @@ import io.dataease.mobile.dto.HomeItemDTO;
 import io.dataease.base.mapper.ext.HomeMapper;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,15 +19,11 @@ public class HomeService {
     private HomeMapper homeMapper;
 
     public List<HomeItemDTO> query(Integer type) {
-        List<HomeItemDTO> result = new ArrayList<>();
         CurrentUserDto user = AuthUtils.getUser();
         switch (type){
-            case 0:
-                result = homeMapper.queryStore(user.getUserId());
-                break;
+
             case 1:
-                result = homeMapper.queryHistory();
-                break;
+                return homeMapper.queryHistory();
             case 2:
                 Map<String, Object> param = new HashMap<>();
                 Long deptId = user.getDeptId();
@@ -36,9 +31,10 @@ public class HomeService {
                 param.put("userId", user.getUserId());
                 param.put("deptId", deptId);
                 param.put("roleIds", roleIds);
-                result = homeMapper.queryShare(param);
-                break;
+                List<HomeItemDTO> result = homeMapper.queryShare(param);
+                return result;
+            default:
+                return homeMapper.queryStore(user.getUserId());
         }
-        return result;
     }
 }
