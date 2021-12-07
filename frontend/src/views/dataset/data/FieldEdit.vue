@@ -43,7 +43,7 @@
               <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
             </template>
           </el-table-column>
-          <el-table-column v-if="!(table.mode === 0 && (table.type === 'custom' || table.type === 'union'))" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+          <el-table-column v-if="!((table.mode === 0 && table.type === 'custom') || table.type === 'union')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                 <span style="font-size: 12px;">{{ scope.row.originName }}</span>
@@ -94,7 +94,7 @@
           </el-table-column>
           <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="100">
             <template slot-scope="scope">
-              <span>
+              <span v-if="scope.row.extField === 0">
                 <span v-if="scope.row.deExtractType === 0">
                   <svg-icon v-if="scope.row.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
@@ -112,6 +112,9 @@
                   <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
                   <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>
+              </span>
+              <span v-else-if="scope.row.extField === 2" :title="$t('dataset.calc_field')" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                <span style="font-size: 12px;color: #c0c0c0">{{ $t('dataset.calc_field') }}</span>
               </span>
             </template>
           </el-table-column>
@@ -149,7 +152,7 @@
               <el-input v-model="scope.row.name" size="mini" :disabled="!hasDataPermission('manage',param.privileges)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
             </template>
           </el-table-column>
-          <el-table-column v-if="!(table.mode === 0 && (table.type === 'custom' || table.type === 'union'))" property="originName" :label="$t('dataset.field_origin_name')" width="100">
+          <el-table-column v-if="!((table.mode === 0 && table.type === 'custom') || table.type === 'union')" property="originName" :label="$t('dataset.field_origin_name')" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                 <span style="font-size: 12px;">{{ scope.row.originName }}</span>
@@ -200,7 +203,7 @@
           </el-table-column>
           <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="100">
             <template slot-scope="scope">
-              <span>
+              <span v-if="scope.row.extField === 0">
                 <span v-if="scope.row.deExtractType === 0">
                   <svg-icon v-if="scope.row.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
@@ -218,6 +221,9 @@
                   <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
                   <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>
+              </span>
+              <span v-else-if="scope.row.extField === 2" :title="$t('dataset.calc_field')" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                <span style="font-size: 12px;color: #c0c0c0">{{ $t('dataset.calc_field') }}</span>
               </span>
             </template>
           </el-table-column>

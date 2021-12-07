@@ -20,7 +20,7 @@
           <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" clearable />
         </el-form-item>
         <el-form-item class="form-item">
-          <el-button size="mini" @click="previewData">
+          <el-button :disabled="dataset.length === 0" size="mini" @click="previewData">
             {{ $t('dataset.preview_result') }}
           </el-button>
         </el-form-item>
@@ -88,7 +88,7 @@ import UnionNode from '@/views/dataset/add/union/UnionNode'
 import NodeItem from '@/views/dataset/add/union/NodeItem'
 import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
 import UnionEdit from '@/views/dataset/add/union/UnionEdit'
-import { getTable, post } from '@/api/dataset/dataset'
+import { post } from '@/api/dataset/dataset'
 import UnionPreview from '@/views/dataset/add/union/UnionPreview'
 export default {
   name: 'AddUnion',
@@ -151,6 +151,7 @@ export default {
   },
   watch: {
     'param.tableId': function() {
+      this.resetComponent()
       this.initTableData()
     }
   },
@@ -280,7 +281,7 @@ export default {
 
     initTableData() {
       if (this.param.tableId) {
-        getTable(this.param.tableId).then(response => {
+        post('/dataset/table/get/' + this.param.tableId, null).then(response => {
           const table = JSON.parse(JSON.stringify(response.data))
           this.name = table.name
           this.dataset = JSON.parse(table.info).union
@@ -299,6 +300,11 @@ export default {
         info: '{"union":' + JSON.stringify(this.dataset) + '}'
       }
       this.showPreview = true
+    },
+
+    resetComponent() {
+      this.dataset = []
+      this.name = '关联数据集'
     }
   }
 }
@@ -310,8 +316,8 @@ export default {
 }
 .union-container{
   display: flex;
-  width:100%;
-  height:400px;
+  width: 100%;
+  height: calc(100vh - 200px);
   overflow: auto;
 }
 .form-item{

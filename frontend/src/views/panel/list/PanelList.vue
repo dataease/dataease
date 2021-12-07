@@ -29,7 +29,6 @@
         <div class="block">
           <el-tree
             ref="default_panel_tree"
-            :default-expanded-keys="expandedArray"
             :data="defaultData"
             node-key="id"
             :highlight-current="activeTree==='system'"
@@ -84,6 +83,8 @@
             :highlight-current="activeTree==='self'"
             :expand-on-click-node="true"
             :filter-node-method="filterNode"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
             @node-click="nodeClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
@@ -677,13 +678,15 @@ export default {
           bus.$emit('set-panel-show-type', 0)
         })
       }
-      if (node.expanded) {
+    },
+    nodeExpand(data) {
+      if (data.id) {
         this.expandedArray.push(data.id)
-      } else {
-        const index = this.expandedArray.indexOf(data.id)
-        if (index > -1) {
-          this.expandedArray.splice(index, 1)
-        }
+      }
+    },
+    nodeCollapse(data) {
+      if (data.id) {
+        this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
       }
     },
     back() {

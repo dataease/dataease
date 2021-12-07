@@ -30,7 +30,7 @@ export const DEFAULT_SIZE = {
   tableItemFontSize: 12,
   tableTitleHeight: 36,
   tableItemHeight: 36,
-  tablePageSize: '10',
+  tablePageSize: '20',
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
