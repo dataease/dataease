@@ -8,6 +8,7 @@
       v-if="config.type==='custom'"
       :id="'component' + config.id"
       class="component-custom"
+      :style="getComponentStyleDefault(config.style)"
       :out-style="outStyle"
       :element="config"
     />
@@ -17,6 +18,7 @@
       ref="wrapperChild"
       :out-style="outStyle"
       :prop-value="config.propValue"
+      :style="getComponentStyleDefault(config.style)"
       :is-edit="false"
       :element="config"
       :h="itemHeight"
@@ -27,6 +29,7 @@
 <script>
 import { mapState } from 'vuex'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import { getStyle } from '@/components/canvas/utils/style'
 
 export default {
   name: 'ComponentWaitItem',
@@ -75,6 +78,9 @@ export default {
     ])
   },
   methods: {
+    getComponentStyleDefault(style) {
+      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+    }
   }
 }
 </script>
