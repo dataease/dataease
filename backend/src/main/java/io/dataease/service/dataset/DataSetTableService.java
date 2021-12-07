@@ -816,17 +816,12 @@ public class DataSetTableService {
         List<DatasetTableField> fieldList = (List<DatasetTableField>) sqlMap.get("field");
         List<UnionParamDTO> join = (List<UnionParamDTO>) sqlMap.get("join");
 
-        // 处理结果
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        // 使用输入的sql先预执行一次,并拿到所有字段
-        datasourceRequest.setQuery(sql);
-
         Map<String, Object> res = new HashMap<>();
+        // 处理结果
         try {
-            List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
-
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            datasourceRequest.setQuery(qp.createSQLPreview(sql, null));
             Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
             List<String[]> data = result.get("dataList");
             List<TableFiled> fields = result.get("fieldList");
@@ -878,16 +873,11 @@ public class DataSetTableService {
             datasourceRequest.setDatasource(ds);
             sql = getCustomSQLDoris(dataTableInfoDTO, list);
         }
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-        // 使用输入的sql先预执行一次,并拿到所有字段
-        datasourceRequest.setQuery(sql);
-
         Map<String, Object> res = new HashMap<>();
         try {
-            List<TableFiled> previewFields = datasourceProvider.fetchResultField(datasourceRequest);
-
+            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createSQLPreview(sql, previewFields.get(0).getFieldName()));
+            datasourceRequest.setQuery(qp.createSQLPreview(sql, null));
             Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
             List<String[]> data = result.get("dataList");
             List<TableFiled> fields = result.get("fieldList");
