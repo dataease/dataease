@@ -769,6 +769,15 @@ public class ExtractDataService {
                 inputStep = inputStep(transMeta, selectSQL);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.ck);
                 break;
+            case db2:
+                Db2Configuration db2Configuration = new Gson().fromJson(datasource.getConfiguration(), Db2Configuration.class);
+                dataMeta = new DatabaseMeta("db", "DB2", "Native", db2Configuration.getHost().trim(), db2Configuration.getDataBase().trim(), db2Configuration.getPort().toString(), db2Configuration.getUsername(), db2Configuration.getPassword());
+                dataMeta.setDatabaseType("DB2");
+                transMeta.addDatabase(dataMeta);
+                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
+                inputStep = inputStep(transMeta, selectSQL);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.db2);
+                break;
             case excel:
                 inputStep = excelInputStep(datasetTable.getInfo(), datasetTableFields);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.excel);
